@@ -1,0 +1,65 @@
+version: '3.8'
+services:
+  traefik:
+    image: 'traefik:v2.4'
+    container_name: traefik
+    command:
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
+    ports:
+      - '80:80'
+      - '8080:8080'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+
+  postgresql:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # mock-api:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./apps/mock-api/Dockerfile
+  #   image: mock-api
+  #   container_name: mock-api
+  #   ports:
+  #     - 80
+  #   restart: always
+  #   environment:
+  #     NODE_ENV: development
+  #   labels:
+  #     - 'traefik.enable=true'
+  #     - 'traefik.http.routers.mock-api.rule=Host(`mock-api.localtest.me`)'
+  #     - 'traefik.http.routers.mock-api.entrypoints=web'
+
+  web:
+    build:
+      context: ./
+      dockerfile: ./apps/web/Dockerfile.dev
+    image: web
+    container_name: web
+    volumes:
+      - ./apps/web:/app/apps/web
+      - ./libs:/app/libs
+    ports:
+      - 80
+    restart: always
+    environment:
+      NODE_ENV: development
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.web.rule=Host(`web.localtest.me`)'
+      - 'traefik.http.routers.web.entrypoints=web'
+
+volumes:
+  db:
+    driver: local

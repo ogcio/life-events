@@ -1,0 +1,14 @@
+{
+  "name": "starterkit",
+  "workspaces": ["apps/*", "packages/*"],
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "docker-compose down &&  DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans",
+    "reset-docker": "docker-compose down && docker system prune -a -f && docker builder prune -f && docker image prune -f",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Unlicense"
+}
