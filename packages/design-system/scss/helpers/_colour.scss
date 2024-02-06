@@ -1,0 +1,50 @@
+@import '../settings/colours-palette';
+
+////
+/// @group helpers/colour
+////
+
+/// Get colour
+///
+/// @param {String} $colour - Name of colour from the colour palette
+///   (`$govie-colours`)
+/// @return {Colour} Representation of named colour
+///
+/// @throw if `$colour` is not a colour from the colour palette
+/// @access public
+
+@function govie-colour($colour) {
+  $colour: quote($colour);
+
+  @if not map-has-key($govie-colours, $colour) {
+    @error "Unknown colour `#{$colour}`";
+  }
+
+  @return map-get($govie-colours, $colour);
+}
+
+/// Make a colour darker by mixing it with black
+/// SASS `mix` function doesn't work with CSS vars, so won't work on storybook
+/// @param {Colour} $colour - colour to shade
+/// @param {Number} $percentage - percentage of black to mix with $colour
+/// @return {Colour}
+/// @access public
+
+@function govie-shade($colour, $percentage) {
+  @if $govie-is-storybook {
+    @return $colour;
+  } @else {
+    @return mix(#000000, $colour, $percentage);
+  }
+}
+
+/// Make a colour lighter by mixing it with white
+///
+/// @param {Colour} $colour - colour to tint
+/// @param {Number} $percentage - percentage of white to mix with $colour
+/// @return {Colour}
+/// @access public
+
+@function govie-tint($colour, $percentage) {
+  @return mix(govie-colour('white'), $colour, $percentage * 1%);
+}

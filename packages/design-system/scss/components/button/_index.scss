@@ -1,0 +1,453 @@
+////
+/// @group components/button
+////
+///
+
+/// Button component text colour
+///
+/// @type Colour
+/// @access public
+
+$govie-button-text-colour: govie-colour('black') !default;
+
+/// Button component background colour
+///
+/// @type Colour
+/// @access public
+
+$govie-button-background-colour: transparent !default;
+
+/// Button component hover background colour
+///
+/// @type Colour
+/// @access public
+
+$govie-button-hover-background-colour: govie-colour('light-grey') !default;
+
+/// Primary button component background colour
+///
+/// @type Colour
+/// @access public
+
+$govie-primary-button-background-colour: #004d44 !default;
+
+/// Primary button component hover background colour
+///
+/// @type Colour
+/// @access public
+
+$govie-primary-button-hover-background-colour: #002e28 !default;
+
+/// Primary button component text colour
+///
+/// @type Colour
+/// @access public
+
+$govie-primary-button-text-colour: govie-colour('white') !default;
+
+/// Secondary button component background colour
+///
+/// @type Colour
+/// @access public
+
+$govie-secondary-button-background-colour: govie-colour('light-grey') !default;
+
+/// Secondary button component hover background colour
+///
+/// @type Colour
+/// @access public
+
+$govie-secondary-button-hover-background-colour: govie-colour(
+  'mid-grey'
+) !default;
+
+/// Secondary button component text colour
+///
+/// @type Colour
+/// @access public
+
+$govie-secondary-button-text-colour: govie-colour('black') !default;
+
+/// Tertiary button component background colour
+///
+/// @type Colour
+/// @access public
+
+$govie-tertiary-button-background-colour: govie-colour('red') !default;
+
+/// Tertiary button component hover background colour
+///
+/// @type Colour
+/// @access public
+
+$govie-tertiary-button-hover-background-colour: govie-colour(
+  'dark-red'
+) !default;
+
+/// Tertiary button component text colour
+///
+/// @type Colour
+/// @access public
+
+$govie-tertiary-button-text-colour: govie-colour('black') !default;
+
+@include govie-exports('govie/component/button') {
+  // Because the shadow (s0) is visually 'part of' the button, we need to reduce
+  // the height of the button to compensate by adjusting its padding (s1) and
+  // increase the bottom margin to include it (s2).
+  $button-shadow-size: $govie-border-width-form-element;
+
+  .govie-button {
+    @include govie-font($size: 19, $line-height: 19px);
+
+    box-sizing: border-box;
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    height: 48px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-left: 0;
+
+    @include govie-responsive-margin(
+      6,
+      'bottom',
+      $adjustment: $button-shadow-size
+    ); // s2
+
+    padding: (govie-spacing(2) - $govie-border-width-form-element)
+      govie-spacing(2) + $govie-border-width-form-element;
+
+    border: $govie-border-width-form-element solid transparent;
+    border-radius: 4px;
+    color: $govie-primary-button-text-colour;
+    background-color: $govie-primary-button-background-colour;
+    box-shadow: 0 $button-shadow-size 0 govie-colour('black');
+    text-align: center;
+    vertical-align: top;
+    cursor: pointer;
+    -webkit-appearance: none;
+
+    @include govie-if-ie8 {
+      border-bottom: $button-shadow-size solid transparent;
+    }
+
+    @include govie-media-query($from: tablet) {
+      width: auto;
+    }
+
+    // Ensure that any global link styles are overridden
+    &:link,
+    &:visited,
+    &:active,
+    &:hover {
+      color: $govie-primary-button-text-colour;
+      text-decoration: none;
+    }
+
+    // Fix unwanted button padding in Firefox
+    &::-moz-focus-inner {
+      padding: 0;
+      border: 0;
+    }
+
+    &:hover {
+      background-color: $govie-primary-button-hover-background-colour;
+    }
+
+    &:active {
+      border-color: $govie-input-border-colour;
+      border-width: $govie-focus-width;
+      color: $govie-focus-text-colour;
+      background-color: $govie-focus-colour;
+
+      // Bump the button down so it looks like its being pressed in
+      top: $button-shadow-size;
+
+      svg path {
+        fill: $govie-focus-text-colour;
+      }
+
+      @include govie-if-ie8 {
+        border-bottom-width: 0;
+      }
+    }
+
+    &:focus {
+      border-color: $govie-input-border-colour;
+      border-width: $govie-focus-width;
+
+      &:hover {
+        border-color: $govie-focus-colour;
+
+        &:active {
+          border-color: $govie-input-border-colour;
+        }
+      }
+
+      // When colours are overridden, for example when users have a dark mode,
+      // backgrounds and box-shadows disappear, so we need to ensure there's a
+      // transparent outline which will be set to a visible colour.
+      // Since Internet Explorer 8 does not support box-shadow, we want to force the user-agent outlines
+      @include govie-not-ie8 {
+        outline: $govie-focus-width solid transparent;
+      }
+      // Since Internet Explorer does not support `:not()` we set a clearer focus style to match user-agent outlines.
+      @include govie-if-ie8 {
+        border-color: $govie-focus-colour;
+        background-color: $govie-focus-colour;
+      }
+      box-shadow: inset 0 0 0 1px transparent;
+    }
+
+    &:focus:not(:active):not(:hover) {
+      border-color: $govie-focus-colour;
+      box-shadow: 0 2px 0 transparent;
+    }
+
+    // The following adjustments do not work for <input type="button"> as
+    // non-container elements cannot include pseudo elements (i.e. ::before).
+
+    // Use a pseudo element to expand the click target area to include the
+    // button's shadow as well, in case users try to click it.
+    &:before {
+      content: '';
+      display: block;
+
+      position: absolute;
+
+      top: -$govie-border-width-form-element;
+      right: -$govie-border-width-form-element;
+      bottom: -($govie-border-width-form-element + $button-shadow-size);
+      left: -$govie-border-width-form-element;
+
+      background: transparent;
+    }
+
+    // When the button is active it is shifted down by $button-shadow-size to
+    // denote a 'pressed' state. If the user happened to click at the very top
+    // of the button, their mouse is no longer over the button (because it has
+    // 'moved beneath them') and so the click event is not fired.
+    //
+    // This corrects that by shifting the top of the pseudo element so that it
+    // continues to cover the area that the user originally clicked, which means
+    // the click event is still fired.
+    //
+    // 🎉
+    &:active:before {
+      top: -($govie-border-width-form-element + $button-shadow-size);
+    }
+  }
+
+  .govie-button--disabled,
+  .govie-button[disabled='disabled'],
+  .govie-button[disabled] {
+    opacity: (0.5);
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: $govie-primary-button-background-colour;
+      color: $govie-primary-button-text-colour;
+      border-color: transparent;
+      cursor: default;
+
+      svg path {
+        fill: $govie-primary-button-text-colour;
+      }
+    }
+
+    &:active {
+      top: 0;
+      border-width: $govie-border-width-form-element;
+    }
+  }
+
+  .govie-button--flat,
+  .govie-button--outlined {
+    background-color: $govie-button-background-colour;
+    box-shadow: none;
+    border-radius: 0;
+
+    &,
+    &:link,
+    &:visited,
+    &:active,
+    &:hover {
+      color: $govie-button-text-colour;
+      border-color: transparent;
+    }
+
+    &:hover {
+      background-color: $govie-button-hover-background-colour;
+
+      &:focus:active {
+        background-color: $govie-focus-colour;
+      }
+    }
+
+    &[disabled] {
+      color: $govie-button-text-colour;
+      border-color: transparent;
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: $govie-button-text-colour;
+        background-color: $govie-button-background-colour;
+        border-color: transparent;
+      }
+    }
+
+    svg {
+      path {
+        fill: $govie-button-text-colour;
+      }
+    }
+  }
+
+  .govie-button--outlined {
+    border: $govie-border-width-form-element solid $govie-button-text-colour;
+    border-radius: 4px;
+
+    &,
+    &:link,
+    &:visited,
+    &:active,
+    &:hover {
+      border-color: $govie-button-text-colour;
+    }
+  }
+
+  .govie-button--secondary {
+    background-color: $govie-secondary-button-background-colour;
+    box-shadow: 0px 1px 0px govie-colour('black');
+
+    &,
+    &:link,
+    &:visited,
+    &:active,
+    &:hover {
+      color: $govie-secondary-button-text-colour;
+      border-color: transparent;
+    }
+
+    &:hover {
+      background-color: $govie-secondary-button-hover-background-colour;
+
+      &:focus:active {
+        background-color: $govie-focus-colour;
+      }
+    }
+
+    &[disabled] {
+      &:focus:not(:active):not(:hover) {
+        border-color: transparent;
+      }
+
+      &:hover {
+        background-color: $govie-secondary-button-background-colour;
+        color: $govie-secondary-button-text-colour;
+      }
+    }
+
+    svg {
+      path {
+        fill: $govie-button-text-colour;
+      }
+    }
+  }
+
+  .govie-button--tertiary {
+    background-color: $govie-tertiary-button-background-colour;
+
+    &,
+    &:link,
+    &:visited,
+    &:active,
+    &:hover {
+      border-color: transparent;
+    }
+
+    &:hover {
+      background-color: $govie-tertiary-button-hover-background-colour;
+
+      &:focus:active {
+        background-color: $govie-focus-colour;
+        color: $govie-tertiary-button-text-colour;
+      }
+    }
+
+    &[disabled] {
+      background-color: $govie-tertiary-button-background-colour;
+
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: $govie-tertiary-button-background-colour;
+      }
+    }
+  }
+
+  .govie-button--icon {
+    min-height: auto;
+    -ms-flex-pack: center;
+        justify-content: center;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -ms-flex-align: center;
+        align-items: center;
+  }
+
+  .govie-button__icon-right,
+  .govie-button__icon-left {
+    vertical-align: middle;
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+    -ms-flex-item-align: center;
+        align-self: center;
+    // Work around SVGs not inheriting color from parent in forced color mode
+    // (https://github.com/w3c/csswg-drafts/issues/6310)
+    forced-color-adjust: auto;
+  }
+
+  .govie-button__icon-right {
+    margin-left: govie-spacing(1);
+
+    @include govie-media-query($from: desktop) {
+      margin-left: govie-spacing(2);
+    }
+  }
+
+  .govie-button__icon-left {
+    margin-right: govie-spacing(1);
+
+    @include govie-media-query($from: desktop) {
+      margin-right: govie-spacing(2);
+    }
+  }
+  // =========================================================
+  // Small Button
+  // =========================================================
+
+  .govie-button--small {
+    @include govie-font($size: 14, $line-height: 16px);
+    height: 30px;
+    padding: (govie-spacing(1) - $govie-border-width-form-element)
+      govie-spacing(1) + $govie-border-width-form-element;
+  }
+
+  // =========================================================
+  // Medium Button
+  // =========================================================
+
+  .govie-button--medium {
+    @include govie-font($size: 16, $line-height: 20px);
+    height: 36px;
+    padding: (
+        govie-spacing(2) - $govie-border-width-form-element -
+          ($button-shadow-size / 2)
+      )
+      govie-spacing(2) + $govie-border-width-form-element;
+  }
+}

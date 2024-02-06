@@ -1,0 +1,169 @@
+@include govie-exports("govie/component/summary-list") {
+  .govie-summary-list {
+    @include govie-font($size: 19);
+    @include govie-text-colour;
+    @include govie-media-query($from: tablet) {
+      display: table;
+      width: 100%;
+      table-layout: fixed; // Required to allow us to wrap words that overflow.
+      border-collapse: collapse;
+    }
+    margin: 0; // Reset default user agent styles
+    @include govie-responsive-margin(6, "bottom");
+  }
+
+  .govie-summary-list__row {
+    border-bottom: 1px solid $govie-border-colour;
+
+    @include govie-media-query($until: tablet) {
+      margin-bottom: govie-spacing(3);
+    }
+    @include govie-media-query($from: tablet) {
+      display: table-row;
+    }
+  }
+
+  // Remove right padding from the last column in the row
+  .govie-summary-list__row:not(.govie-summary-list__row--no-actions) > :last-child {
+    padding-right: 0;
+  }
+
+  // Provide an empty 'cell' for rows that don't have actions – otherwise the
+  // bottom border is not drawn for that part of the row in some browsers.
+  .govie-summary-list__row--no-actions {
+    @include govie-media-query($from: tablet) {
+      &:after {
+        content: "";
+        display: table-cell;
+        width: 20%;
+      }
+    }
+  }
+
+  .govie-summary-list__key,
+  .govie-summary-list__value,
+  .govie-summary-list__actions {
+    margin: 0; // Reset default user agent styles
+
+    @include govie-media-query($from: tablet) {
+      display: table-cell;
+      padding-top: govie-spacing(2);
+      padding-right: govie-spacing(4);
+      padding-bottom: govie-spacing(2);
+    }
+  }
+
+  .govie-summary-list__actions {
+    margin-bottom: govie-spacing(3);
+    @include govie-media-query($from: tablet) {
+      width: 20%;
+      padding-right: 0; // Needed for IE8
+      text-align: right;
+    }
+  }
+
+  .govie-summary-list__key,
+  .govie-summary-list__value {
+    // Automatic wrapping for unbreakable text (e.g. URLs)
+    word-wrap: break-word; // Fallback for older browsers only
+    overflow-wrap: break-word;
+  }
+
+  .govie-summary-list__key {
+    margin-bottom: govie-spacing(1);
+    @include govie-typography-weight-bold;
+    @include govie-media-query($from: tablet) {
+      width: 30%;
+    }
+  }
+
+  .govie-summary-list__value {
+    @include govie-media-query($until: tablet) {
+      margin-bottom: govie-spacing(3);
+    }
+  }
+
+  .govie-summary-list__value > p {
+    margin-bottom: govie-spacing(2);
+  }
+
+  .govie-summary-list__value > :last-child {
+    margin-bottom: 0;
+  }
+
+  .govie-summary-list__actions-list {
+    width: 100%;
+    margin: 0; // Reset default user agent styles
+    padding: 0; // Reset default user agent styles
+  }
+
+  .govie-summary-list__actions-list-item {
+    display: inline-block;
+  }
+
+  // In older browsers such as IE8, :last-child is not available,
+  // so only show the border divider where it is available.
+  @include govie-media-query($until: tablet) {
+    .govie-summary-list__actions-list-item {
+      margin-right: govie-spacing(2);
+      padding-right: govie-spacing(2);
+    }
+
+    .govie-summary-list__actions-list-item:not(:last-child) {
+      border-right: 1px solid $govie-border-colour;
+    }
+
+    .govie-summary-list__actions-list-item:last-child {
+      margin-right: 0;
+      padding-right: 0;
+      border: 0;
+    }
+  }
+
+  @include govie-media-query($from: tablet) {
+    .govie-summary-list__actions-list-item {
+      margin-left: govie-spacing(2);
+      padding-left: govie-spacing(2);
+    }
+
+    .govie-summary-list__actions-list-item:not(:first-child) {
+      border-left: 1px solid $govie-border-colour;
+    }
+
+    .govie-summary-list__actions-list-item:first-child {
+      margin-left: 0;
+      padding-left: 0;
+      border: 0;
+    }
+  }
+
+  // No border on entire summary list
+  .govie-summary-list--no-border {
+    .govie-summary-list__row {
+      border: 0;
+    }
+
+    // Increase padding by 1px to compensate for 'missing' border
+    @include govie-media-query($from: tablet) {
+      .govie-summary-list__key,
+      .govie-summary-list__value,
+      .govie-summary-list__actions {
+        padding-bottom: govie-spacing(2) + 1px;
+      }
+    }
+  }
+
+  // No border on specific rows
+  .govie-summary-list__row--no-border {
+    border: 0;
+
+    // Increase padding by 1px to compensate for 'missing' border
+    @include govie-media-query($from: tablet) {
+      .govie-summary-list__key,
+      .govie-summary-list__value,
+      .govie-summary-list__actions {
+        padding-bottom: govie-spacing(2) + 1px;
+      }
+    }
+  }
+}

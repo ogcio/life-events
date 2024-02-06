@@ -1,0 +1,89 @@
+@include govie-exports("govie/component/notification-banner") {
+  .govie-notification-banner {
+    @include govie-font($size: 19);
+    @include govie-responsive-margin(8, "bottom");
+
+    border: $govie-border-width solid $govie-brand-colour;
+
+    background-color: $govie-brand-colour;
+
+    &:focus {
+      outline: $govie-focus-width solid $govie-focus-colour;
+    }
+  }
+
+  .govie-notification-banner__header {
+    padding: 2px govie-spacing(3) govie-spacing(1);
+
+    // Ensures the notification header appears separate to the notification body text in high contrast mode
+    border-bottom: 1px solid transparent;
+
+    @include govie-media-query($from: tablet) {
+      padding: 2px govie-spacing(4) govie-spacing(1);
+    }
+  }
+
+  .govie-notification-banner__title {
+    @include govie-font($size: 19, $weight: bold);
+
+    margin: 0;
+
+    padding: 0;
+
+    color: govie-colour("white");
+  }
+
+  .govie-notification-banner__content {
+    $padding-tablet: govie-spacing(4);
+    @include govie-text-colour;
+    padding: govie-spacing(3);
+
+    background-color: $govie-body-background-colour;
+
+    @include govie-media-query($from: tablet) {
+      padding: $padding-tablet;
+    }
+
+    // Wrap content at the same place that a 2/3 grid column ends, to maintain
+    // shorter line-lengths when the notification banner is full width
+    > * {
+      // When elements have their own padding (like lists), include the padding
+      // in the max-width calculation
+      box-sizing: border-box;
+
+      // Calculate the internal width of a two-thirds column...
+      $two-col-width: ($govie-page-width * 2 / 3) - ($govie-gutter * 1 / 3);
+
+      // ...and then factor in the left border and padding
+      $banner-exterior: ($padding-tablet + $govie-border-width);
+      max-width: $two-col-width - $banner-exterior;
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .govie-notification-banner__heading {
+    @include govie-font($size: 24, $weight: bold);
+
+    margin: 0 0 govie-spacing(3) 0;
+
+    padding: 0;
+  }
+
+  .govie-notification-banner__link {
+    @include govie-link-common;
+    @include govie-link-style-no-visited-state;
+  }
+
+  .govie-notification-banner--success {
+    border-color: $govie-success-colour;
+
+    background-color: $govie-success-colour;
+
+    .govie-notification-banner__link {
+      @include govie-link-style-success;
+    }
+  }
+}

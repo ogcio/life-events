@@ -1,0 +1,14 @@
+// stylelint-disable declaration-no-important
+@include govie-exports('govie/overrides/text-align') {
+  .govie-\!-text-align-left {
+    text-align: left !important;
+  }
+
+  .govie-\!-text-align-centre {
+    text-align: center !important;
+  }
+
+  .govie-\!-text-align-right {
+    text-align: right !important;
+  }
+}

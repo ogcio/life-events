@@ -1,0 +1,979 @@
+$icon-size: 20px;
+$govie-bar-height: 50px;
+$govie-pseudo-underline-height: 3px;
+
+$govie-search-input-size: 40px;
+$govie-large-search-input-size: 50px;
+
+$after-link-padding: govie-spacing(4);
+$after-button-padding-right: govie-spacing(4);
+$after-button-padding-left: govie-spacing(4);
+
+@mixin chevron($colour, $update: false) {
+  @if $update == true {
+    border-bottom-color: $colour;
+    border-right-color: $colour;
+  } @else {
+    @include prefixed-transform($rotate: 45deg, $translateY: -35%);
+    border-bottom: 2px solid $colour;
+    border-right: 2px solid $colour;
+    content: '';
+    display: inline-block;
+    height: 8px;
+    margin: 0 10px 0 2px;
+    vertical-align: middle;
+    width: 8px;
+  }
+}
+
+@mixin make-selectable-area-bigger {
+  background: none;
+  bottom: 0;
+  content: '';
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+@mixin pseudo-underline(
+  $left: govie-spacing(4),
+  $right: govie-spacing(4),
+  $width: false
+) {
+  background: none;
+  content: '';
+  height: $govie-pseudo-underline-height;
+  left: $left;
+  position: absolute;
+  right: $right;
+  bottom: 0;
+  top: auto;
+  @if $width {
+    width: $width;
+  }
+}
+
+@mixin focus-and-focus-visible {
+  &:focus {
+    @content;
+  }
+
+  &:focus-visible {
+    @content;
+  }
+}
+
+@mixin focus-not-focus-visible {
+  & {
+    @content;
+  }
+
+  &:focus:not(:focus-visible) {
+    @content;
+  }
+}
+
+.govie-superheader {
+  background: $govie-header-surface-colour;
+  position: relative;
+  border-bottom: govie-spacing(2) solid govie-colour('white');
+
+  .lte-ie8 & {
+    height: $govie-bar-height;
+  }
+
+  [hidden] {
+    display: none;
+  }
+}
+
+.govie-superheader__container {
+  position: relative;
+
+  .govie-superheader__container {
+    @include govie-clearfix;
+    position: relative;
+    margin-bottom: govie-spacing(-2);
+    border-bottom: govie-spacing(2) solid $govie-header-footer-border-colour;
+  }
+}
+
+.govie-superheader__button-width-container {
+  position: relative;
+}
+
+.govie-superheader__button-container {
+  @include govie-media-query($until: tablet) {
+    margin-right: govie-spacing(-3);
+  }
+
+  top: -$govie-bar-height;
+  position: absolute;
+  right: 0;
+
+  @include govie-media-query($until: 300px) {
+    position: static;
+  }
+}
+
+.govie-superheader__header-logo {
+  display: inline-block;
+  height: govie-spacing(6);
+  padding-bottom: govie-spacing(2);
+  padding-top: govie-spacing(2);
+}
+
+.govie-superheader__content {
+  width: 100%;
+}
+
+.govie-superheader__navigation-toggle-wrapper {
+  position: relative;
+}
+
+.govie-superheader__navigation-item,
+.govie-superheader__search-item {
+  position: relative;
+  background: $govie-header-surface-colour;
+  display: block;
+  float: left;
+  margin: 0;
+  padding: 0;
+  height: 50px;
+}
+
+.govie-superheader__search-item {
+  background: $govie-header-footer-border-colour;
+}
+
+// Top level navigation links and search link.
+.govie-superheader__navigation-item-link,
+.govie-superheader__search-item-link {
+  @include govie-link-common;
+  @include govie-link-style-no-visited-state;
+
+  display: inline-block;
+  font-size: 19px;
+  font-size: govie-px-to-rem(19px);
+  font-weight: bold;
+  padding: govie-spacing(3) 0;
+  position: relative;
+
+  @include govie-media-query($from: desktop) {
+    display: block;
+    margin: 0;
+  }
+
+  &:hover {
+    @include govie-link-hover-decoration;
+  }
+
+  &,
+  &:link,
+  &:visited {
+    @include focus-and-focus-visible {
+      @include govie-focused-text;
+    }
+
+    // Undoes the :focus styles *only* for browsers that support :focus-visible.
+    // See https://www.tpgi.com/focus-visible-and-backwards-compatibility/
+    &:focus:not(:focus-visible) {
+      background: none;
+      box-shadow: none;
+      color: $govie-link-colour;
+
+      .govie-superheader__navigation-item-link-inner {
+        border-color: govie-colour('mid-grey');
+      }
+
+      &:hover {
+        @include govie-link-decoration;
+        @include govie-link-hover-decoration;
+      }
+    }
+
+    &:after {
+      @include make-selectable-area-bigger;
+      @include pseudo-underline(
+        $left: $after-link-padding,
+        $right: $after-link-padding
+      );
+    }
+
+    float: left;
+    font-size: 16px;
+    font-size: govie-px-to-rem(16px);
+    height: govie-spacing(4);
+
+    &:before {
+      @include chevron(govie-colour('white'), true);
+    }
+
+    &:hover {
+      color: govie-colour('mid-grey');
+
+      &:after {
+        background: govie-colour('mid-grey');
+      }
+    }
+
+    @include focus-and-focus-visible {
+      .govie-superheader__navigation-item-link-inner {
+        border-color: $govie-focus-colour;
+        background: $govie-focus-colour;
+      }
+
+      &,
+      &:hover {
+        box-shadow: none;
+        color: $govie-focus-text-colour;
+
+        &:after {
+          background: $govie-focus-text-colour;
+        }
+      }
+    }
+
+    @include focus-not-focus-visible {
+      &,
+      &:hover {
+        text-decoration: none;
+      }
+
+      & {
+        color: govie-colour('white');
+      }
+
+      &:hover {
+        color: govie-colour('mid-grey');
+
+        &:after {
+          background: govie-colour('mid-grey');
+        }
+      }
+
+      &:after {
+        background: none;
+      }
+    }
+
+    .js-module-initialised & {
+      // If js is initialised, we are hiding the links and
+      // making the buttons visible instead. This means we have
+      // to remove the padding added to make the links vertically
+      // aligned, as the buttons are styled vertically aligned by
+      // default.
+
+      padding: 0;
+      margin: 0;
+
+      &:after {
+        @include pseudo-underline(
+          $left: $after-button-padding-left,
+          $right: $after-button-padding-right,
+          $width: 100%
+        );
+      }
+    }
+  }
+
+  &:after {
+    @include make-selectable-area-bigger;
+  }
+}
+
+.govie-superheader__navigation-item-link {
+  @include govie-media-query($from: desktop) {
+    padding: govie-spacing(3) 0;
+  }
+
+  .js-module-initialised & {
+    margin-left: govie-spacing(4);
+    @include govie-link-style-no-underline;
+  }
+}
+
+.govie-superheader__navigation-item-link-inner {
+  background-color: govie-colour('black');
+  border-left: 1px solid govie-colour('mid-grey');
+  padding: govie-spacing(1) $after-link-padding;
+}
+
+// Search link and dropdown.
+.govie-superheader__search-item-link {
+  padding: govie-spacing(3);
+
+  @include govie-media-query($until: desktop) {
+    margin: 0;
+  }
+
+  &:link,
+  &:visited {
+    background: $govie-header-footer-border-colour;
+
+    &:hover {
+      background: govie-colour('black');
+
+      &:before {
+        left: 0;
+        right: 0;
+      }
+    }
+
+    &:focus {
+      background: $govie-focus-colour;
+
+      &:before {
+        content: none;
+      }
+    }
+
+    &:after {
+      left: 0;
+      right: 0;
+      width: 100%;
+    }
+
+    @include focus-not-focus-visible {
+      background: $govie-link-colour;
+
+      &:hover {
+        background: govie-colour('black');
+      }
+    }
+
+    @include focus-and-focus-visible {
+      &:hover {
+        background: $govie-focus-colour;
+      }
+
+      &:after,
+      &:hover:after {
+        background: $govie-focus-colour;
+      }
+    }
+  }
+}
+
+.govie-superheader__search-item-link-icon,
+.govie-superheader__search-toggle-button-link-icon {
+  height: $icon-size;
+  pointer-events: none;
+  width: $icon-size;
+
+  .govie-superheader__open-button & {
+    display: none;
+  }
+}
+
+// Search and popular content dropdown.
+.govie-superheader__search-and-popular {
+  display: none;
+  padding-bottom: govie-spacing(4);
+  padding-top: govie-spacing(4);
+
+  .js-module-initialised & {
+    display: block;
+  }
+}
+
+// Styles for top level navigation toggle button.
+.govie-superheader__navigation-top-toggle-button {
+  @include govie-link-common;
+  @include govie-link-style-no-visited-state;
+  @include govie-link-style-no-underline;
+
+  &:after {
+    @include pseudo-underline(
+      $left: $after-button-padding-left,
+      $right: $after-button-padding-right
+    );
+  }
+
+  &:hover {
+    color: govie-colour('white');
+
+    &::after {
+      background: $govie-header-footer-border-colour;
+    }
+  }
+
+  font-size: 16px;
+  font-size: govie-px-to-rem(16px);
+  font-weight: 700;
+  background: $govie-header-surface-colour;
+  border: 0;
+  box-sizing: border-box;
+  color: govie-colour('white');
+  cursor: pointer;
+  height: $govie-bar-height;
+  padding: 0;
+  position: relative;
+  margin: 0;
+  vertical-align: top;
+
+  @include govie-media-query($from: desktop) {
+    background: $govie-header-surface-colour;
+    display: block;
+    float: left;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    right: 0;
+  }
+
+  // Undoes the :focus styles *only* for browsers that support :focus-visible.
+  // See https://www.tpgi.com/focus-visible-and-backwards-compatibility/
+  @include focus-not-focus-visible {
+    background: none;
+    box-shadow: none;
+    color: govie-colour('white');
+
+    .govie-superheader__navigation-top-toggle-button-inner {
+      &:before {
+        @include chevron(govie-colour('white'), true);
+      }
+    }
+  }
+
+  // Open button modifier
+  &.govie-superheader__open-button {
+    @include focus-and-focus-visible {
+      box-shadow: none;
+
+      .govie-superheader__navigation-top-toggle-button-inner {
+        &:before {
+          @include prefixed-transform($rotate: 225deg, $translateY: 1px);
+        }
+      }
+    }
+
+    @include focus-not-focus-visible {
+      .govie-superheader__navigation-top-toggle-button-inner {
+        @include govie-media-query($from: 360px) {
+          &:before {
+            @include prefixed-transform($rotate: 225deg, $translateY: 1px);
+          }
+        }
+      }
+    }
+  }
+}
+
+.govie-superheader__navigation-top-toggle-button-inner {
+  display: inline-block;
+  border-left: 1px solid govie-colour('mid-grey');
+  margin: 0;
+  padding: govie-spacing(1) govie-spacing(4);
+
+  @include govie-media-query($from: desktop) {
+    border-right: 0;
+  }
+
+  &:before {
+    @include chevron(govie-colour('white'));
+  }
+}
+
+// Styles for search toggle button.
+.govie-superheader__search-toggle-button {
+  @include govie-font($size: 19, $weight: 'bold', $line-height: 20px);
+  background: none;
+  border: 0;
+  color: govie-colour('white');
+  cursor: pointer;
+  height: $govie-bar-height;
+  padding: govie-spacing(3);
+  position: relative;
+  width: $govie-bar-height;
+
+  @include focus-and-focus-visible {
+    box-shadow: none;
+    z-index: 11;
+
+    path {
+      fill: govie-colour('white');
+    }
+  }
+
+  @include govie-media-query($from: desktop) {
+    border: 0;
+    margin: 0;
+    right: 0;
+
+    &:hover {
+      background: $govie-header-surface-colour;
+      border-bottom: $govie-pseudo-underline-height solid
+        $govie-header-footer-border-colour;
+    }
+  }
+
+  // Open button modifier
+  &.govie-superheader__open-button {
+    @include focus-and-focus-visible {
+      box-shadow: none;
+
+      @include govie-media-query($from: 360px) {
+        &:before {
+          @include chevron(govie-colour('black'), true);
+        }
+      }
+    }
+  }
+}
+
+.govie-superheader__navigation-top-toggle-close-icon {
+  color: govie-colour('white');
+  display: none;
+
+  .govie-superheader__open-button & {
+    display: block;
+  }
+
+  path {
+    fill: govie-colour('white');
+  }
+}
+
+.govie-superheader__search-container {
+  padding-bottom: govie-spacing(3);
+}
+
+// Dropdown menu.
+.govie-superheader__navigation-dropdown-menu {
+  @include govie-media-query($until: 300px) {
+    padding-top: 80px;
+  }
+
+  background: $govie-footer-surface-colour;
+  border-bottom: 1px govie-colour('mid-grey') solid;
+  padding-top: govie-spacing(6);
+
+  @include govie-media-query($from: desktop) {
+    padding-top: govie-spacing(5);
+  }
+}
+
+// Language dropdown menu.
+.govie-superheader__navigation-language-dropdown-menu {
+  position: absolute;
+
+  background: govie-colour('white');
+  margin-top: govie-spacing(9);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  .govie-superheader__navigation-language-dropdown-menu-list {
+    list-style-type: none;
+    padding: 0;
+    min-width: 187px;
+
+    .govie-superheader__navigation-language-dropdown-menu-list-item {
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 20px;
+      padding: 12px 10px;
+
+      &:hover {
+        background-color: govie-colour('light-grey');
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.govie-superheader__navigation-language-selector {
+  box-sizing: border-box;
+  padding: 0 15px 20px;
+
+  @include govie-media-query($from: desktop) {
+    display: none;
+  }
+
+  .govie-superheader__navigation-language-title {
+    @include govie-link-common;
+    @include govie-link-style-no-visited-state;
+    @include govie-font($size: 27, $weight: 'bold');
+    background: transparent;
+    border: none;
+    padding-left: 0;
+    cursor: pointer;
+
+    span {
+      &::after {
+        @include chevron(govie-colour('black'));
+        margin-left: govie-spacing(2);
+      }
+    }
+
+    &.govie-superheader__open-button {
+      span {
+        &::after {
+          @include prefixed-transform($rotate: 225deg, $translateY: 1px);
+        }
+      }
+    }
+  }
+}
+
+.govie-superheader__navigation-language-menu {
+  @include govie-media-query($from: mobile, $until: desktop) {
+    display: none;
+  }
+}
+.govie-superheader__navigation-language-dropdown-menu-mobile {
+  list-style-type: none;
+  padding: 0;
+}
+
+// Dropdown menu description.
+.govie-superheader__menu-description {
+  display: none;
+
+  @include govie-media-query($from: desktop) {
+    display: block;
+    padding: govie-spacing(7) 0 govie-spacing(7) 0;
+  }
+}
+
+// Dropdown menu items.
+.govie-superheader__dropdown-list-item {
+  box-sizing: border-box;
+  padding: 0 0 govie-spacing(3) 0;
+  position: relative;
+  margin: 0 0 govie-spacing(2) 0;
+  @include govie-media-query($from: desktop) {
+    padding: 0 0 govie-spacing(3) 0;
+    margin: 0 govie-spacing(3) govie-spacing(1) govie-spacing(3);
+  }
+}
+
+// Navigation menu items.
+.govie-superheader__navigation-second-items {
+  list-style: none;
+  margin: 0;
+  padding: govie-spacing(3) govie-spacing(5) govie-spacing(5) 0;
+
+  @include govie-media-query($from: desktop) {
+    margin: 0 (0 - govie-spacing(3)) govie-spacing(9);
+    padding: govie-spacing(2) 0 0 0;
+  }
+}
+
+.govie-superheader__column--government-activity {
+  position: relative;
+
+  @include govie-media-query($until: desktop) {
+    margin-top: govie-spacing(6);
+  }
+}
+
+.govie-superheader__navigation-second-items--topics {
+  @include govie-media-query($from: desktop) {
+    @include columns($items: 16, $columns: 2, $selector: 'li', $flow: column);
+  }
+}
+
+.govie-superheader__navigation-second-item-link {
+  font-size: 16px;
+  font-size: govie-px-to-rem(16px);
+  color: govie-colour('black') !important;
+
+  &:after {
+    @include make-selectable-area-bigger;
+  }
+
+  @include govie-media-query($from: desktop) {
+    padding: 0;
+
+    &:after {
+      @include make-selectable-area-bigger;
+    }
+  }
+}
+
+.govie-superheader__navigation-second-item-link--with-description {
+  font-size: 16px;
+  font-size: govie-px-to-rem(16px);
+  font-weight: bold;
+
+  &:after {
+    @include make-selectable-area-bigger;
+    height: calc(100% - 20px);
+  }
+}
+
+.govie-superheader__navigation-second-item-description {
+  @include govie-typography-common;
+  font-size: 16px;
+  font-size: govie-px-to-rem(16px);
+  font-weight: normal;
+  margin: govie-spacing(1) 0 0 0;
+}
+
+.govie-superheader__search-form {
+  padding: govie-spacing(2) 0 govie-spacing(6) 0;
+}
+
+// Popular links.
+.govie-superheader__popular-item {
+  position: relative;
+  padding: govie-spacing(1) 0;
+}
+
+.govie-superheader__popular-link {
+  display: inline-block;
+  font-size: 16px;
+  font-size: govie-px-to-rem(16px);
+  padding: 0;
+  color: govie-colour('black') !important;
+
+  &:after {
+    @include make-selectable-area-bigger;
+  }
+}
+
+.govie-superheader__width-container {
+  @include govie-media-query($until: desktop) {
+    margin: 0;
+    margin-top: govie-spacing(6);
+  }
+
+  @include govie-media-query($from: desktop) {
+    margin: 0 auto;
+    max-width: 960px;
+    padding: govie-spacing(5);
+  }
+}
+
+.govie-superheader__column-header {
+  @include govie-font($size: 27, $weight: 'bold');
+  padding-bottom: govie-spacing(4);
+  border-bottom: 1px solid govie-colour('mid-grey');
+}
+
+@include govie-media-query($media-type: print) {
+  .govie-superheader__content {
+    display: none;
+  }
+}
+
+//
+// Search input
+//
+
+@mixin large-mode {
+  .govie-superheader-search__label {
+    @include govie-font($size: 19, $line-height: 50px);
+  }
+
+  .govie-superheader-search__input[type='search'] {
+    height: $govie-large-search-input-size;
+  }
+
+  .govie-superheader-search__submit {
+    width: $govie-large-search-input-size;
+    height: $govie-large-search-input-size;
+
+    .govie-superheader-search__icon {
+      @include icon-positioning($govie-large-search-input-size);
+    }
+  }
+}
+
+.govie-superheader-search {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.govie-superheader-search__label {
+  @include govie-font($size: 19, $line-height: 40px);
+  display: block;
+  color: $govie-text-colour;
+
+  h1 {
+    @include govie-font($size: 19, $line-height: 40px);
+    margin: 0;
+  }
+
+  .js-enabled & {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    bottom: 2px;
+    padding-left: govie-spacing(3);
+    z-index: 1;
+    color: $govie-secondary-text-colour;
+    background: govie-colour('white');
+  }
+
+  // match label colour with the label component colour
+  // when javascript is enabled and inline_label option  is set to false
+  .js-enabled .govie-superheader-search--separate-label & {
+    color: $govie-text-colour;
+  }
+}
+
+%govie-superheader-search-input-focus {
+  outline: $govie-focus-width solid $govie-focus-colour;
+  // Ensure outline appears outside of the element
+  outline-offset: 0;
+  // Double the border by adding its width again. Use `box-shadow` for this // instead of changing `border-width`
+  // Also, `outline` cannot be utilised here as it is already used for the yellow focus state.
+  box-shadow: inset 0 0 0 $govie-border-width-form-element;
+
+  @include govie-if-ie8 {
+    // IE8 doesn't support `box-shadow` so double the border with
+    // `border-width`.
+    border-width: $govie-border-width-form-element * 2;
+  }
+}
+
+.govie-superheader-search__input[type='search'] {
+  // overly specific to prevent some overrides from outside
+  @include govie-font($size: 19, $line-height: 1.47);
+  margin: 0;
+  width: 100%;
+  height: govie-em(40, 16);
+  padding: govie-em(6, 16);
+  border: $govie-border-width-form-element solid $govie-input-border-colour;
+  background: govie-colour('white');
+  border-radius: 0; // otherwise iphones apply an automatic border radius
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+  @include govie-media-query($from: tablet) {
+    height: govie-em(40, 19);
+    padding: govie-em(6, 19);
+  }
+
+  // the .focus class is added by JS and ensures that the input remains above the label once clicked/filled in
+  &:focus,
+  &.focus {
+    z-index: 2;
+  }
+
+  &:focus {
+    @extend %govie-superheader-search-input-focus;
+  }
+}
+
+@mixin icon-positioning($container-size) {
+  $icon-dimension: 20px;
+  $icon-position: ($container-size - $icon-dimension) / 2;
+
+  display: block;
+  pointer-events: none;
+  position: absolute;
+  height: $icon-dimension;
+  width: $icon-dimension;
+  top: $icon-position;
+  left: $icon-position;
+}
+
+.govie-superheader-search__submit {
+  border: 0;
+  cursor: pointer;
+  border-radius: 0;
+  position: relative;
+  padding: 0;
+  width: $govie-search-input-size;
+  height: $govie-search-input-size;
+  text-indent: -5000px;
+  overflow: hidden;
+
+  .govie-superheader-search__icon {
+    @include icon-positioning($govie-search-input-size);
+  }
+
+  &:focus {
+    z-index: 2;
+    outline: $govie-focus-width solid $govie-focus-colour;
+    // Ensure outline appears outside of the element
+    outline-offset: 0;
+    // Double the border by adding its width again. Use `box-shadow` for this
+    // instead of changing `border-width` - this is for consistency with
+    // Also, `outline` cannot be utilised
+    // here as it is already used for the yellow focus state.
+    box-shadow: inset 0 0 0 $govie-border-width-form-element * 2
+      govie-colour('black');
+
+    @include govie-if-ie8 {
+      // IE8 doesn't support `box-shadow` so double the border with
+      // `border-width`.
+      border-width: $govie-border-width-form-element * 2;
+    }
+  }
+
+  &::-moz-focus-inner {
+    border: 0;
+  }
+}
+
+.govie-superheader-search__item-wrapper {
+  display: table;
+  width: 100%;
+  background: govie-colour('white');
+}
+
+// general class applied to search input and button wrapper
+.govie-superheader-search__item {
+  position: relative;
+  display: table-cell;
+  vertical-align: top;
+}
+
+.govie-superheader-search__submit-wrapper {
+  width: 1%;
+}
+
+.govie-superheader-search--on-white {
+  .govie-superheader-search__submit {
+    background-color: $govie-header-footer-border-colour;
+    color: govie-colour('white');
+  }
+
+  .govie-superheader-search__input[type='search'] {
+    border-right-width: 0;
+
+    // add the border once focused
+    &:focus {
+      border-right-width: 2px;
+    }
+  }
+}
+
+.govie-superheader-search--no-border {
+  .govie-superheader-search__label {
+    color: govie-colour('white');
+  }
+
+  .govie-superheader-search__input[type='search'] {
+    border: 0;
+  }
+
+  .js-enabled & {
+    .govie-superheader-search__label {
+      color: $govie-secondary-text-colour;
+    }
+  }
+}
+
+.govie-superheader-search--large {
+  @include large-mode;
+}
+
+.govie-superheader-search--large-on-mobile {
+  @include govie-media-query($until: 'tablet') {
+    @include large-mode;
+  }
+}
+
+.govie-superheader-search--separate-label {
+  .govie-superheader-search__label {
+    position: relative;
+    top: auto;
+    left: auto;
+    padding-left: 0;
+  }
+}

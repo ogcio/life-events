@@ -1,0 +1,168 @@
+@include govie-exports("govie/component/footer") {
+
+  $govie-footer-background: $govie-footer-surface-colour;
+  $govie-footer-border: $govie-header-footer-border-colour;
+  $govie-footer-text: $govie-text-colour;
+
+  $govie-footer-logo-image-width-2x: 380px;
+  $govie-footer-logo-image-height-2x: 130px;
+  // Half the 2x image so that it fits the regular 1x size.
+  $govie-footer-logo-image-width: ($govie-footer-logo-image-width-2x / 2);
+  $govie-footer-logo-image-height: ($govie-footer-logo-image-height-2x / 2);
+
+  .govie-footer {
+    @include govie-font($size: 16);
+    @include govie-responsive-padding(7, "top");
+    @include govie-responsive-padding(5, "bottom");
+
+    border-top: 1px solid $govie-footer-border;
+    color: $govie-footer-text;
+    background: $govie-footer-background;
+  }
+
+  .govie-footer__link {
+    @include govie-link-common;
+    @include govie-link-style-text;
+  }
+
+  .govie-footer__section-break {
+    margin: 0; // Reset `<hr>` default margins
+    @include govie-responsive-margin(8, "bottom");
+    border: 0; // Reset `<hr>` default borders
+    border-bottom: 1px solid $govie-footer-border;
+  }
+
+  .govie-footer__meta {
+    display: -ms-flexbox;
+    display: flex; // Support: Flexbox
+    margin-right: -$govie-gutter-half;
+    margin-left: -$govie-gutter-half;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap; // Support: Flexbox
+    -ms-flex-align: end;
+        align-items: flex-end; // Support: Flexbox
+    -ms-flex-pack: center;
+        justify-content: center; // Support: Flexbox
+  }
+
+  .govie-footer__meta-item {
+    margin-right: $govie-gutter-half;
+    margin-bottom: govie-spacing(5);
+    margin-left: $govie-gutter-half;
+  }
+
+  .govie-footer__meta-item--grow {
+    -ms-flex: 1;
+        flex: 1; // Support: Flexbox
+    @include govie-media-query ($until: tablet) {
+      -ms-flex-preferred-size: 320px;
+          flex-basis: 320px; // Support: Flexbox
+    }
+  }
+
+  .govie-footer__licence-logo {
+    display: inline-block;
+    margin-right: govie-spacing(2);
+    @include govie-media-query ($until: desktop) {
+      margin-bottom: govie-spacing(3);
+    }
+    vertical-align: top;
+    // Work around SVGs not inheriting color from parent in forced color mode
+    // (https://github.com/w3c/csswg-drafts/issues/6310)
+    forced-color-adjust: auto;
+  }
+
+  .govie-footer__licence-description {
+    display: inline-block;
+  }
+
+  .govie-footer__copyright-logo {
+    display: inline-block;
+    min-width: $govie-footer-logo-image-width;
+    padding-top: ($govie-footer-logo-image-height + govie-spacing(2));
+    background-image: govie-image-url("logotype.png");
+    @include govie-device-pixel-ratio {
+      // TODO: 2x image
+      // background-image: govie-image-url("logotype-2x.png");
+      background-image: govie-image-url("logotype.png");
+    }
+    background-repeat: no-repeat;
+    background-position: 50% 0%;
+    background-size: $govie-footer-logo-image-width $govie-footer-logo-image-height;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .govie-footer__inline-list {
+    margin-top: 0;
+    margin-bottom: govie-spacing(3);
+    padding: 0;
+  }
+
+  .govie-footer__meta-custom {
+    margin-bottom: govie-spacing(4);
+  }
+
+  .govie-footer__inline-list-item {
+    display: inline-block;
+    margin-right: govie-spacing(3);
+    margin-bottom: govie-spacing(1);
+  }
+
+  .govie-footer__heading {
+    margin-bottom: govie-spacing(6);
+    padding-bottom: govie-spacing(4);
+
+    @include govie-media-query ($until: tablet) {
+      padding-bottom: govie-spacing(2);
+    }
+    border-bottom: 1px solid $govie-footer-border;
+  }
+
+  .govie-footer__navigation {
+    @include govie-clearfix;
+    margin-right: -$govie-gutter-half;
+    margin-left: -$govie-gutter-half;
+  }
+
+  .govie-footer__section {
+    display: inline-block;
+    margin-bottom: $govie-gutter;
+    vertical-align: top;
+  }
+
+  .govie-footer__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    -webkit-column-gap: $govie-gutter;
+            column-gap: $govie-gutter; // Support: Columns
+
+    // Disable thicker underlines on hover because of a bug in Chromium
+    // affecting links within columns
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=1190987
+    .govie-footer__link:hover {
+      text-decoration-thickness: auto;
+    }
+  }
+
+  @include govie-media-query ($from: desktop) {
+    .govie-footer__list--columns-2 {
+      -webkit-column-count: 2;
+              column-count: 2; // Support: Columns
+    }
+
+    .govie-footer__list--columns-3 {
+      -webkit-column-count: 3;
+              column-count: 3; // Support: Columns
+    }
+  }
+
+  .govie-footer__list-item {
+    @include govie-responsive-margin(4, "bottom");
+  }
+
+  .govie-footer__list-item:last-child {
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,80 @@
+@include govie-exports("govie/component/back-link") {
+
+  // Size of chevron (excluding border)
+  $chevron-size: 7px;
+
+  // Size of chevron border
+  $chevron-border-width: 1px;
+
+  // Colour of chevron
+  $chevron-border-colour: $govie-secondary-text-colour;
+
+  .govie-back-link {
+    @include govie-typography-responsive($size: 16);
+    @include govie-link-common;
+    @include govie-link-style-text;
+
+    display: inline-block;
+    position: relative;
+
+    margin-top: govie-spacing(3);
+    margin-bottom: govie-spacing(3);
+
+    // Allow space for the arrow
+    padding-left: 14px;
+  }
+
+  // Prepend left pointing chevron
+  .govie-back-link:before {
+    content: "";
+    display: block;
+
+    // Vertically align with the parent element
+    position: absolute;
+    top: 0;
+    bottom: 0;
+
+    left: 3px;
+
+    width: $chevron-size;
+    height: $chevron-size;
+
+    margin: auto 0;
+
+    -webkit-transform: rotate(225deg);
+
+        -ms-transform: rotate(225deg);
+
+            transform: rotate(225deg);
+
+    border: solid;
+    border-width: $chevron-border-width $chevron-border-width 0 0;
+    border-color: $chevron-border-colour;
+
+    // Fall back to a less than sign for IE8
+    @include govie-if-ie8 {
+      content: "\003c"; // Less than sign (<)
+      width: auto;
+      height: auto;
+      border: 0;
+      color: $chevron-border-colour;
+
+      // IE8 doesn't seem to like rendering pseudo-elements using @font-faces,
+      // so fall back to using another sans-serif font to render the chevron.
+      font-family: Arial, sans-serif;
+    }
+  }
+
+  .govie-back-link:focus:before {
+    border-color: $govie-focus-text-colour;
+  }
+
+  .govie-back-link:after {
+    content: "";
+    position: absolute;
+    top: -14px;
+    right: 0;
+    bottom: -14px;
+    left: 0;
+  }
+}

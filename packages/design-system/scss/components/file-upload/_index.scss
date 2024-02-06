@@ -1,0 +1,50 @@
+@import "../error-message/index";
+@import "../hint/index";
+@import "../label/index";
+
+@include govie-exports("govie/component/file-upload") {
+  $component-padding: govie-spacing(1);
+
+  .govie-file-upload {
+    @include govie-font($size: 19);
+    @include govie-text-colour;
+    max-width: 100%;
+    margin-left: -$component-padding;
+    padding: $component-padding;
+
+    // The default file upload button in Safari does not
+    // support setting a custom font-size. Set `-webkit-appearance`
+    // to `button` to drop out of the native appearance so the
+    // font-size is set to 19px
+    // https://bugs.webkit.org/show_bug.cgi?id=224746
+    &::-webkit-file-upload-button {
+      -webkit-appearance: button;
+      color: inherit;
+      font: inherit;
+    }
+
+    &:focus {
+      outline: $govie-focus-width solid $govie-focus-colour;
+      // Use `box-shadow` to add border instead of changing `border-width`
+      // (which changes element size) and since `outline` is already used for the
+      // yellow focus state.
+      box-shadow: inset 0 0 0 4px $govie-input-border-colour;
+
+      @include govie-if-ie8 {
+        // IE8 doesn't support `box-shadow` so add an actual border
+        border: 4px solid $govie-input-border-colour;
+      }
+    }
+
+    // Set "focus-within" to fix https://bugzilla.mozilla.org/show_bug.cgi?id=1430196
+    // so that component receives focus in Firefox.
+    // This can't be set together with `:focus` as all versions of IE fail
+    // to recognise `focus-within` and don't set any styles from the block
+    // when it's a selector.
+    &:focus-within {
+      outline: $govie-focus-width solid $govie-focus-colour;
+
+      box-shadow: inset 0 0 0 4px $govie-input-border-colour;
+    }
+  }
+}

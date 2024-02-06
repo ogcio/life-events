@@ -1,0 +1,56 @@
+@include govie-exports("govie/component/panel") {
+  .govie-panel {
+    @include govie-font($size: 19);
+
+    box-sizing: border-box;
+
+    margin-bottom: govie-spacing(3);
+    padding: govie-spacing(7) - $govie-border-width;
+
+    border: $govie-border-width solid transparent;
+
+    text-align: center;
+
+    @include govie-media-query($until: tablet) {
+      padding: govie-spacing(3) - $govie-border-width;
+
+      // This is an if-all-else-fails attempt to stop long words from overflowing the container
+      // on very narrow viewports by forcing them to break and wrap instead. This
+      // overflowing is more likely to happen when user increases text size on a mobile eg. using
+      // iOS Safari text resize controls.
+      //
+      // The overflowing is a particular problem with the panel component since it uses white
+      // text: when the text overflows the container, it is invisible on the white (page)
+      // background. When the text in our other components overflow, the user might have to scroll
+      // horizontally to view it but the the text remains legible.
+      overflow-wrap: break-word;
+      word-wrap: break-word; // Support IE (autoprefixer doesn't add this as it's not a prefix)
+    }
+  }
+
+  .govie-panel--confirmation {
+    color: govie-colour("white");
+    background: govie-colour("green");
+
+    @include govie-media-query($media-type: print) {
+      border-color: currentcolor;
+      color: $govie-print-text-colour;
+      background: none;
+    }
+  }
+
+  .govie-panel__title {
+    margin-top: 0;
+    margin-bottom: govie-spacing(6);
+
+    @include govie-font($size: 48, $weight: bold);
+  }
+
+  .govie-panel__title:last-child {
+    margin-bottom: 0;
+  }
+
+  .govie-panel__body {
+    @include govie-font($size: 36);
+  }
+}

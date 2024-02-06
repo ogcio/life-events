@@ -1,0 +1,65 @@
+@include govie-exports('govie/core/lists') {
+  %govie-list {
+    @include govie-font($size: 19);
+    @include govie-text-colour;
+    margin-top: 0;
+    @include govie-responsive-margin(4, 'bottom');
+    padding-left: 0;
+    list-style-type: none;
+
+    // Add a top margin for nested lists
+    %govie-list {
+      margin-top: govie-spacing(2);
+    }
+  }
+
+  %govie-list > li {
+    // Lists without numbers or bullets should always have extra space between
+    // list items. Lists with numbers or bullets only have this extra space on
+    // tablet and above
+    margin-bottom: govie-spacing(1);
+  }
+
+  .govie-list {
+    @extend %govie-list;
+  }
+
+  %govie-list--bullet {
+    padding-left: govie-spacing(4);
+    list-style-type: disc;
+  }
+
+  %govie-list--number {
+    padding-left: govie-spacing(4);
+    list-style-type: decimal;
+  }
+
+  %govie-list--bullet > li,
+  %govie-list--number > li {
+    margin-bottom: 0;
+
+    @include govie-media-query($from: tablet) {
+      margin-bottom: govie-spacing(1);
+    }
+  }
+
+  %govie-list--spaced > li {
+    margin-bottom: govie-spacing(2);
+
+    @include govie-media-query($from: tablet) {
+      margin-bottom: govie-spacing(3);
+    }
+  }
+
+  .govie-list--bullet {
+    @extend %govie-list--bullet;
+  }
+
+  .govie-list--number {
+    @extend %govie-list--number;
+  }
+
+  .govie-list--spaced {
+    @extend %govie-list--spaced;
+  }
+}

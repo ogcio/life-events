@@ -1,0 +1,34 @@
+@include govie-exports('govie/core/links') {
+  %govie-link {
+    @include govie-link-common;
+    @include govie-link-style-default;
+    @include govie-link-print-friendly;
+  }
+
+  .govie-link {
+    @extend %govie-link;
+  }
+
+  // Variant classes should always be used in conjunction with the .govie-link
+  // class, so we do not need the common link styles as they will be inherited.
+
+  .govie-link--muted {
+    @include govie-link-style-muted;
+  }
+
+  .govie-link--text-colour {
+    @include govie-link-style-text;
+  }
+
+  .govie-link--inverse {
+    @include govie-link-style-inverse;
+  }
+
+  .govie-link--no-underline {
+    @include govie-link-style-no-underline;
+  }
+
+  .govie-link--no-visited-state {
+    @include govie-link-style-no-visited-state;
+  }
+}

@@ -1,0 +1,213 @@
+@include govie-exports('govie/core/typography') {
+  // Headings
+
+  %govie-heading-xl {
+    @include govie-text-colour;
+    @include govie-font($size: 48, $weight: bold);
+
+    display: block;
+
+    margin-top: 0;
+    @include govie-responsive-margin(8, 'bottom');
+  }
+
+  .govie-heading-xl {
+    @extend %govie-heading-xl;
+  }
+
+  %govie-heading-l {
+    @include govie-text-colour;
+    @include govie-font($size: 36, $weight: bold);
+
+    display: block;
+
+    margin-top: 0;
+    @include govie-responsive-margin(6, 'bottom');
+  }
+
+  .govie-heading-l {
+    @extend %govie-heading-l;
+  }
+
+  %govie-heading-m {
+    @include govie-text-colour;
+    @include govie-font($size: 24, $weight: bold);
+
+    display: block;
+
+    margin-top: 0;
+    @include govie-responsive-margin(4, 'bottom');
+  }
+
+  .govie-heading-m {
+    @extend %govie-heading-m;
+  }
+
+  %govie-heading-s {
+    @include govie-text-colour;
+    @include govie-font($size: 19, $weight: bold);
+
+    display: block;
+
+    margin-top: 0;
+    @include govie-responsive-margin(4, 'bottom');
+  }
+
+  .govie-heading-s {
+    @extend %govie-heading-s;
+  }
+
+  // Captions to be used inside headings
+
+  .govie-caption-xl {
+    @include govie-font($size: 27);
+
+    display: block;
+
+    margin-bottom: govie-spacing(1);
+
+    color: $govie-secondary-text-colour;
+  }
+
+  .govie-caption-l {
+    @include govie-font($size: 24);
+
+    display: block;
+
+    margin-bottom: govie-spacing(1);
+    color: $govie-secondary-text-colour;
+
+    @include govie-media-query($from: tablet) {
+      margin-bottom: 0;
+    }
+  }
+
+  .govie-caption-m {
+    @include govie-font($size: 19);
+
+    display: block;
+
+    color: $govie-secondary-text-colour;
+  }
+
+  // Body (paragraphs)
+
+  %govie-body-l {
+    @include govie-text-colour;
+    @include govie-font($size: 24);
+
+    margin-top: 0;
+    @include govie-responsive-margin(6, 'bottom');
+  }
+
+  .govie-body-l {
+    @extend %govie-body-l;
+  }
+
+  %govie-body-m {
+    @include govie-text-colour;
+    @include govie-font($size: 19);
+
+    margin-top: 0;
+    @include govie-responsive-margin(4, 'bottom');
+  }
+
+  .govie-body-m {
+    @extend %govie-body-m;
+  }
+
+  %govie-body-s {
+    @include govie-text-colour;
+    @include govie-font($size: 16);
+
+    margin-top: 0;
+    @include govie-responsive-margin(4, 'bottom');
+  }
+
+  .govie-body-s {
+    @extend %govie-body-s;
+  }
+
+  %govie-body-xs {
+    @include govie-text-colour;
+    @include govie-font($size: 14);
+
+    margin-top: 0;
+    @include govie-responsive-margin(4, 'bottom');
+  }
+
+  .govie-body-xs {
+    @extend %govie-body-xs;
+  }
+
+  // Usage aliases
+
+  // Using extend to alias means we also inherit any contextual adjustments that
+  // refer to the 'original' class name
+
+  .govie-body-lead {
+    @extend %govie-body-l;
+  }
+
+  .govie-body {
+    @extend %govie-body-m;
+  }
+
+  // Contextual adjustments
+  // Add top padding to headings that appear directly after paragraphs.
+
+  %govie-body-l + %govie-heading-l {
+    padding-top: govie-spacing(1);
+
+    @include govie-media-query($from: tablet) {
+      padding-top: govie-spacing(2);
+    }
+  }
+
+  %govie-body-m + %govie-heading-l,
+  %govie-body-s + %govie-heading-l,
+  %govie-list + %govie-heading-l {
+    @include govie-responsive-padding(4, 'top');
+  }
+
+  %govie-body-m + %govie-heading-m,
+  %govie-body-s + %govie-heading-m,
+  %govie-list + %govie-heading-m,
+  %govie-body-m + %govie-heading-s,
+  %govie-body-s + %govie-heading-s,
+  %govie-list + %govie-heading-s {
+    padding-top: govie-spacing(1);
+
+    @include govie-media-query($from: tablet) {
+      padding-top: govie-spacing(2);
+    }
+  }
+}
+
+h1,
+h2,
+h3 {
+  display: block;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  font-weight: bold !important;
+  font-family: 'Lato', arial, sans-serif;
+}
+
+h1 {
+  font-size: 2em !important;
+  margin-block-start: 0.67em;
+  margin-block-end: 0.67em;
+}
+
+h2 {
+  font-size: 1.5em !important;
+  margin-block-start: 0.83em;
+  margin-block-end: 0.83em;
+}
+
+h3 {
+  font-size: 1.17em !important;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+}

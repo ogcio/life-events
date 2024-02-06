@@ -1,0 +1,54 @@
+@import 'typography-font-families';
+
+////
+/// @group settings/typography
+////
+
+// =========================================================
+// Font families
+// =========================================================
+
+/// Font families to use for all typography on screen media
+///
+/// @type List
+/// @access public
+
+$govie-font-family: $govie-font-family-lato !default;
+
+/// Font families to use for print media
+///
+/// We recommend that you use system fonts when printing. This will avoid issues
+/// with some printer drivers and operating systems.
+///
+/// @type List
+/// @access public
+
+$govie-font-family-print: sans-serif !default;
+
+/// Include the default @font-face declarations
+///
+/// If you have set $govie-font-family to something other than
+/// `$govie-font-family-lato` this option is disabled by default.
+///
+/// @type Boolean
+/// @access public
+
+$govie-include-default-font-face: (
+  $govie-font-family == $govie-font-family-lato
+) !default;
+
+// =========================================================
+// Font weights
+// =========================================================
+
+/// Font weight for regular typography
+///
+/// @type Number
+/// @access public
+$govie-font-weight-regular: 400 !default;
+
+/// Font weight for bold typography
+///
+/// @type Number
+/// @access public
+$govie-font-weight-bold: 700 !default;

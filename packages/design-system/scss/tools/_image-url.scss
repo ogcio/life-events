@@ -1,0 +1,24 @@
+////
+/// @group tools/assets
+////
+
+/// Image URL
+///
+/// If a custom image-url handler is defined ($govie-image-url-function) then
+/// it will be called, otherwise a url will be returned with the filename
+/// appended to the image path.
+///
+/// @param {String} Filename for the image to load
+/// @return {String} URL for the filename, wrapped in `url()`
+/// @access public
+
+@function govie-image-url($filename) {
+  $use-custom-function: variable-exists('govie-image-url-function') and
+    $govie-image-url-function and function-exists($govie-image-url-function);
+
+  @if $use-custom-function {
+    @return call(get-function($govie-image-url-function), $filename);
+  } @else {
+    @return url($govie-images-path + $filename);
+  }
+}

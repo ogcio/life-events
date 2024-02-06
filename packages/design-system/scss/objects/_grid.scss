@@ -1,0 +1,24 @@
+@import '../base';
+
+@include govie-exports('govie/objects/grid') {
+  .govie-grid-row {
+    @include govie-clearfix;
+    margin-right: -($govie-gutter-half);
+    margin-left: -($govie-gutter-half);
+  }
+
+  @each $width in map-keys($govie-grid-widths) {
+    .govie-grid-column-#{$width} {
+      @include govie-grid-column($width);
+    }
+  }
+
+  // These *must* be defined in a separate loop as they have the same
+  // specificity as the non-breakpoint specific classes, so need to appear after
+  // them in the outputted CSS
+  @each $width in map-keys($govie-grid-widths) {
+    .govie-grid-column-#{$width}-from-desktop {
+      @include govie-grid-column($width, $at: desktop);
+    }
+  }
+}

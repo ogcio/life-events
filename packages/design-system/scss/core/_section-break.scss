@@ -1,0 +1,49 @@
+@include govie-exports('govie/core/section-break') {
+  %govie-section-break {
+    margin: 0;
+    border: 0;
+  }
+
+  .govie-section-break {
+    @extend %govie-section-break;
+  }
+
+  // Sizes
+
+  %govie-section-break--xl {
+    @include govie-responsive-margin(8, 'top');
+    @include govie-responsive-margin(8, 'bottom');
+  }
+
+  .govie-section-break--xl {
+    @extend %govie-section-break--xl;
+  }
+
+  %govie-section-break--l {
+    @include govie-responsive-margin(6, 'top');
+    @include govie-responsive-margin(6, 'bottom');
+  }
+
+  .govie-section-break--l {
+    @extend %govie-section-break--l;
+  }
+
+  %govie-section-break--m {
+    @include govie-responsive-margin(4, 'top');
+    @include govie-responsive-margin(4, 'bottom');
+  }
+
+  .govie-section-break--m {
+    @extend %govie-section-break--m;
+  }
+
+  // Visible variant
+
+  %govie-section-break--visible {
+    border-bottom: 1px solid $govie-border-colour;
+  }
+
+  .govie-section-break--visible {
+    @extend %govie-section-break--visible;
+  }
+}

@@ -1,0 +1,41 @@
+@include govie-exports("govie/component/label") {
+  .govie-label {
+    @include govie-font($size: 19);
+    @include govie-text-colour;
+
+    display: block;
+
+    margin-bottom: govie-spacing(1);
+  }
+
+  // Modifiers that make labels look more like their equivalent headings
+
+  .govie-label--xl {
+    @include govie-font($size: 48, $weight: bold);
+    margin-bottom: govie-spacing(3);
+  }
+
+  .govie-label--l {
+    @include govie-font($size: 36, $weight: bold);
+    margin-bottom: govie-spacing(3);
+  }
+
+  .govie-label--m {
+    @include govie-font($size: 24, $weight: bold);
+    margin-bottom: govie-spacing(2);
+  }
+
+  .govie-label--s {
+    @include govie-font($size: 19, $weight: bold);
+  }
+
+  // When the label is nested inside a heading, override the heading so that it
+  // does not have a margin. Effectively we want to be able to treat the heading
+  // as if it is not there.
+  //
+  // This breaks BEM conventions because it exists as a parent of the 'block',
+  // so we can't really consider an element.
+  .govie-label-wrapper {
+    margin: 0;
+  }
+}

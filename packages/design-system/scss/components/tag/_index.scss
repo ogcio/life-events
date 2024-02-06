@@ -1,0 +1,69 @@
+@include govie-exports('govie/component/tag') {
+  .govie-tag {
+    display: inline-block;
+
+    // When a user customises their colours often the background is removed,
+    // by adding a outline we ensure that the tag component still keeps it's meaning.
+    // https://accessibility.blog.gov.uk/2017/03/27/how-users-change-colours-on-websites/
+    outline: 2px solid transparent;
+    outline-offset: -2px;
+
+    color: govie-colour('white');
+    background-color: govie-colour('blue');
+    letter-spacing: 1px;
+
+    text-decoration: none;
+    border-radius: 4px;
+
+    @include govie-font($size: 16, $weight: regular, $line-height: 1);
+    padding-top: 5px;
+    padding-right: 8px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+  }
+
+  .govie-tag--grey {
+    color: govie-colour('bright-grey');
+    background: govie-colour('background-grey');
+  }
+
+  .govie-tag--purple {
+    color: govie-colour('dark-purple');
+    background: govie-colour('light-purple');
+  }
+
+  .govie-tag--turquoise {
+    color: govie-colour('dark-turquoise');
+    background: govie-colour('light-turquoise');
+  }
+
+  .govie-tag--blue {
+    color: govie-colour('bright-blue');
+    background: govie-colour('light-blue');
+  }
+
+  .govie-tag--yellow {
+    color: govie-colour('dark-yellow');
+    background: govie-colour('light-yellow');
+  }
+
+  .govie-tag--orange {
+    color: govie-colour('dark-orange');
+    background: govie-colour('light-orange');
+  }
+
+  .govie-tag--red {
+    color: govie-colour('bright-red');
+    background: govie-colour('light-red');
+  }
+
+  .govie-tag--pink {
+    color: govie-colour('dark-pink');
+    background: govie-colour('light-pink');
+  }
+
+  .govie-tag--green {
+    color: govie-colour('dark-green');
+    background: govie-colour('light-green');
+  }
+}

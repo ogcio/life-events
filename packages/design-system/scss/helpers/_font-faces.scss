@@ -1,0 +1,40 @@
+////
+/// @group helpers
+////
+
+@import "../tools/exports";
+
+/// Font Face - Lato
+///
+/// Outputs the font-face declaration for Lato at the root of the CSS document
+/// the first time it is called.
+///
+/// @access private
+
+@mixin _govie-font-face-lato {
+  @include govie-not-ie8 {
+    // In IE8, which cannot render WOFF format, we fall back to system fonts
+    @include govie-exports("/helpers/font-faces") {
+      @at-root {
+        /* stylelint-disable-line scss/comment-no-loud  */
+        @font-face {
+          font-family: "Lato";
+          font-style: normal;
+          font-weight: normal;
+          src: govie-font-url("lato-regular.woff2") format("woff2"),
+            govie-font-url("lato-regular.woff") format("woff");
+          font-display: fallback;
+        }
+
+        @font-face {
+          font-family: "Lato";
+          font-style: normal;
+          font-weight: bold;
+          src: govie-font-url("lato-bold.woff2") format("woff2"),
+            govie-font-url("lato-bold.woff") format("woff");
+          font-display: fallback;
+        }
+      }
+    }
+  }
+}

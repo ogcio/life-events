@@ -1,0 +1,12 @@
+@include govie-exports("govie/component/error-message") {
+  .govie-error-message {
+    @include govie-font($size: 19, $weight: bold);
+
+    display: block;
+    margin-top: 0; // Reset any default browser margins for paragraphs
+    margin-bottom: govie-spacing(3);
+    clear: both;
+
+    color: $govie-error-colour;
+  }
+}

@@ -1,0 +1,18 @@
+@import 'links';
+@import 'typography';
+
+@mixin govie-global-styles {
+  a {
+    @extend %govie-link;
+  }
+
+  p {
+    @extend %govie-body-m;
+  }
+}
+
+@include govie-exports('govie/core/global-styles') {
+  @if $govie-global-styles == true {
+    @include govie-global-styles;
+  }
+}

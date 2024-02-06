@@ -1,0 +1,247 @@
+@include govie-exports("govie/component/pagination") {
+  // Flexbox enhancement for small screen visual design
+  // Falls back to a float: left layout on non-flex browsers
+  .govie-pagination {
+    @include govie-responsive-margin(6, "bottom");
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+        flex-direction: column;
+    -ms-flex-align: center;
+        align-items: center;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+
+    @include govie-media-query($from: tablet) {
+      -ms-flex-direction: row;
+          flex-direction: row;
+      -ms-flex-align: start;
+          align-items: flex-start;
+    }
+  }
+
+  .govie-pagination__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .govie-pagination__item,
+  .govie-pagination__next,
+  .govie-pagination__prev {
+    @include govie-font(19);
+    box-sizing: border-box;
+    position: relative;
+    min-width: 45px;
+    min-height: 45px;
+    padding: govie-spacing(2) govie-spacing(3);
+    float: left; // Float is ignored if flex is active for prev/next links
+
+    &:hover {
+      background-color: govie-colour("light-grey");
+    }
+  }
+
+  .govie-pagination__item {
+    // Hide items on small screens except the prev/next items,
+    // non-link items and the first and last items
+    display: none;
+
+    // Center align pagination links in their parent list item so that they
+    // visually sit in the middle of their touch area
+    text-align: center;
+
+    @include govie-media-query($from: tablet) {
+      display: block;
+    }
+  }
+
+  .govie-pagination__prev,
+  .govie-pagination__next {
+    @include govie-typography-weight-bold;
+
+    // Use flex to get around a whitespace issue between the arrow svg and the link text
+    // without having to rely on whitespace control from backend tooling
+    .govie-pagination__link {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-align: center;
+          align-items: center;
+    }
+  }
+
+  .govie-pagination__prev {
+    padding-left: 0;
+  }
+
+  .govie-pagination__next {
+    padding-right: 0;
+  }
+
+  // Only show first, last and non-link items on mobile
+  .govie-pagination__item--current,
+  .govie-pagination__item--ellipses,
+  .govie-pagination__item:first-child,
+  .govie-pagination__item:last-child {
+    display: block;
+  }
+
+  .govie-pagination__item--current {
+    @include govie-typography-weight-bold;
+    outline: 1px solid transparent;
+    background-color: $govie-link-colour;
+
+    &:hover {
+      background-color: $govie-link-colour;
+    }
+
+    .govie-pagination__link {
+      @include govie-link-style-inverse;
+    }
+  }
+
+  .govie-pagination__item--ellipses {
+    @include govie-typography-weight-bold;
+    color: $govie-secondary-text-colour;
+
+    // Remove hover state for ellipsis items as they don't have links within them
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  .govie-pagination__link {
+    display: block;
+    min-width: govie-spacing(3);
+
+    // Increase the touch area for the link to the parent element.
+    @media screen {
+      &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+    }
+
+    // Add link hover decoration to prev/next text if no label present on prev/next only mode
+    // We do this so that we have a hover state in all possible instances
+    &:hover,
+    &:active {
+      .govie-pagination__link-title--decorated {
+        @include govie-link-decoration;
+      }
+
+      .govie-pagination__link-label,
+      .govie-pagination__link-title--decorated {
+        @include govie-link-hover-decoration;
+      }
+    }
+
+    &:focus {
+      .govie-pagination__icon {
+        color: $govie-focus-text-colour;
+      }
+
+      .govie-pagination__link-label {
+        text-decoration: none;
+      }
+
+      .govie-pagination__link-title--decorated {
+        text-decoration: none;
+      }
+    }
+  }
+
+  .govie-pagination__link-label {
+    @include govie-font($size: 19, $weight: "regular");
+    @include govie-link-decoration;
+    display: inline-block;
+    padding-left: govie-spacing(6);
+  }
+
+  .govie-pagination__icon {
+    // Set size using rems to make the icon scale with text if user resizes text in their browser
+    width: govie-px-to-rem(15px);
+    height: govie-px-to-rem(13px);
+    color: $govie-secondary-text-colour;
+    fill: currentcolor;
+    forced-color-adjust: auto;
+  }
+
+  .govie-pagination__icon--prev {
+    margin-right: govie-spacing(3);
+  }
+
+  .govie-pagination__icon--next {
+    margin-left: govie-spacing(3);
+  }
+
+  // Block mode - position previous and next links above and below numbers
+  .govie-pagination--block {
+    display: block;
+
+    .govie-pagination__item {
+      padding: govie-spacing(3);
+      float: none;
+    }
+
+    .govie-pagination__next,
+    .govie-pagination__prev {
+      padding-left: 0;
+      float: none;
+    }
+
+    .govie-pagination__next {
+      padding-right: govie-spacing(3);
+
+      .govie-pagination__icon {
+        margin-left: 0;
+      }
+    }
+
+    // Only apply a border between prev and next if both are present
+    .govie-pagination__prev + .govie-pagination__next {
+      border-top: 1px solid $govie-border-colour;
+    }
+
+    // Reset both these elements to their inline default, both to ensure that the focus state
+    // for block mode "shrink wraps" text as expected
+    .govie-pagination__link,
+    .govie-pagination__link-title {
+      display: inline;
+    }
+
+    // Set the after pseudo element to a block which makes the title visually display
+    // as block level whilst programmatically being inline
+    // We do this to get around an NVDA quirk where adjacent block level
+    // elements are always read out separately
+    .govie-pagination__link-title:after {
+      content: "";
+      display: block;
+    }
+
+    .govie-pagination__link {
+      text-align: left;
+
+      &:focus {
+        // apply focus styling to the label within the link as if it were being focused
+        // to get around a display issue with a focusable inline element containing a mixture
+        // of inline and inline-block level elements
+        .govie-pagination__link-label {
+          @include govie-focused-text;
+        }
+      }
+
+      &:not(:focus) {
+        text-decoration: none;
+      }
+    }
+
+    .govie-pagination__icon {
+      margin-right: govie-spacing(2);
+    }
+  }
+}

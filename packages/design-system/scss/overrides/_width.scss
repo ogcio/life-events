@@ -1,0 +1,46 @@
+// stylelint-disable declaration-no-important
+@include govie-exports('govie/overrides/width') {
+  .govie-\!-width-full {
+    width: 100% !important;
+  }
+
+  .govie-\!-width-three-quarters {
+    width: 100% !important;
+
+    @include govie-media-query($from: tablet) {
+      width: 75% !important;
+    }
+  }
+
+  .govie-\!-width-two-thirds {
+    width: 100% !important;
+
+    @include govie-media-query($from: tablet) {
+      width: 66.66% !important;
+    }
+  }
+
+  .govie-\!-width-one-half {
+    width: 100% !important;
+
+    @include govie-media-query($from: tablet) {
+      width: 50% !important;
+    }
+  }
+
+  .govie-\!-width-one-third {
+    width: 100% !important;
+
+    @include govie-media-query($from: tablet) {
+      width: 33.33% !important;
+    }
+  }
+
+  .govie-\!-width-one-quarter {
+    width: 100% !important;
+
+    @include govie-media-query($from: tablet) {
+      width: 25% !important;
+    }
+  }
+}

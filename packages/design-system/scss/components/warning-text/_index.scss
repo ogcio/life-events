@@ -1,0 +1,66 @@
+@include govie-exports("govie/component/warning-text") {
+  .govie-warning-text {
+    position: relative;
+    @include govie-responsive-margin(6, "bottom");
+    padding: govie-spacing(2) 0;
+  }
+
+  .govie-warning-text__assistive {
+    @include govie-visually-hidden;
+  }
+
+  .govie-warning-text__icon {
+    @include govie-font($size: false, $weight: bold);
+
+    box-sizing: border-box;
+
+    display: inline-block;
+
+    position: absolute;
+    left: 0;
+
+    min-width: 35px;
+    min-height: 35px;
+    margin-top: -7px;
+
+    @include govie-media-query($from: tablet) {
+      margin-top: -5px;
+    }
+
+    // When a user customises their colours the background colour will often be removed.
+    // Adding a border to the component keeps it's shape as a circle.
+    border: 3px solid govie-colour("black");
+    border-radius: 50%;
+
+    color: govie-colour("white");
+    background: govie-colour("black");
+
+    font-size: 30px;
+    line-height: 29px;
+
+    text-align: center;
+
+    // Prevent the exclamation mark from being included when the warning text
+    // is copied, for example.
+    -webkit-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+
+    // Improve rendering in Windows High Contrast Mode (Edge), where a
+    // readability backplate behind the exclamation mark obscures the circle
+    forced-color-adjust: none;
+
+    @media screen and (forced-colors: active) {
+      border-color: windowText;
+      color: windowText;
+      background: transparent;
+    }
+  }
+
+  .govie-warning-text__text {
+    @include govie-font($size: 19, $weight: bold);
+    @include govie-text-colour;
+    display: block;
+    padding-left: 45px;
+  }
+}

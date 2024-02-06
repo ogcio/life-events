@@ -1,0 +1,25 @@
+@import "../error-message/index";
+@import "../hint/index";
+@import "../label/index";
+@import "../textarea/index";
+
+@include govie-exports("govie/component/character-count") {
+  .govie-character-count {
+    @include govie-responsive-margin(6, "bottom");
+
+    .govie-form-group,
+    .govie-textarea {
+      margin-bottom: govie-spacing(1);
+    }
+  }
+
+  .govie-character-count__message {
+    @include govie-font($size: false, $tabular: true);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .govie-character-count__message--disabled {
+    visibility: hidden;
+  }
+}

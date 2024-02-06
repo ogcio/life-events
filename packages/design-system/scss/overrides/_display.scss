@@ -1,0 +1,24 @@
+// stylelint-disable declaration-no-important
+@include govie-exports('govie/overrides/display') {
+  .govie-\!-display-inline {
+    display: inline !important;
+  }
+
+  .govie-\!-display-inline-block {
+    display: inline-block !important;
+  }
+
+  .govie-\!-display-block {
+    display: block !important;
+  }
+
+  .govie-\!-display-none {
+    display: none !important;
+  }
+
+  @include govie-media-query($media-type: print) {
+    .govie-\!-display-none-print {
+      display: none !important;
+    }
+  }
+}

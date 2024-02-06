@@ -1,0 +1,42 @@
+@include govie-exports("govie/component/hint") {
+  .govie-hint {
+    @include govie-font($size: 19);
+
+    margin-bottom: govie-spacing(3);
+
+    color: $govie-secondary-text-colour;
+  }
+
+  // Reduces margin-bottom of hint when used after the default label (no class)
+  // or govie-label--s for better vertical alignment.
+
+  // This adjustment will not work when the label is inside the <h1>, however it
+  // is unlikely that the default or govie-label--s class would be used in this
+  // case.
+
+  // This adjustment will not work in browsers that do not support :not().
+  // Users with these browsers will see the default size margin (5px larger).
+
+  .govie-label:not(.govie-label--m):not(.govie-label--l):not(.govie-label--xl) + .govie-hint {
+    margin-bottom: govie-spacing(2);
+  }
+
+  // Reduces margin-bottom of hint when used after the default legend (no class)
+  // or govie-fieldset__legend--s for better vertical alignment.
+
+  // This adjustment will not work when the legend is outside the <h1>, however
+  // it is unlikely that the default or govie-fieldset__legend--s class would be
+  // used in this case.
+
+  // This adjustment will not work in browsers that do not support :not().
+  // Users with these browsers will see the default size margin (5px larger).
+
+  .govie-fieldset__legend:not(.govie-fieldset__legend--m):not(.govie-fieldset__legend--l):not(.govie-fieldset__legend--xl) + .govie-hint {
+    margin-bottom: govie-spacing(2);
+  }
+
+  // Reduces visual spacing of legend when there is a hint
+  .govie-fieldset__legend + .govie-hint {
+    margin-top: govie-spacing(-1);
+  }
+}

@@ -1,0 +1,43 @@
+@import "../../core/lists";
+
+@include govie-exports("govie/component/error-summary") {
+  .govie-error-summary {
+    @include govie-text-colour;
+    @include govie-responsive-padding(4);
+    @include govie-responsive-margin(8, "bottom");
+
+    border: $govie-border-width solid $govie-error-colour;
+
+    &:focus {
+      outline: $govie-focus-width solid $govie-focus-colour;
+    }
+  }
+
+  .govie-error-summary__title {
+    @include govie-font($size: 24, $weight: bold);
+
+    margin-top: 0;
+    @include govie-responsive-margin(4, "bottom");
+  }
+
+  .govie-error-summary__body {
+    @include govie-font($size: 19);
+
+    p {
+      margin-top: 0;
+      @include govie-responsive-margin(4, "bottom");
+    }
+  }
+
+  // Cross-component class - adjusts styling of list component
+  .govie-error-summary__list {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .govie-error-summary__list a {
+    @include govie-typography-weight-bold;
+    @include govie-link-common;
+    @include govie-link-style-error;
+  }
+}

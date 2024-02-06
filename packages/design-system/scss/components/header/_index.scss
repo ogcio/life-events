@@ -1,0 +1,329 @@
+@include govie-exports('govie/component/header') {
+  $govie-header-background: $govie-header-surface-colour;
+  $govie-header-border-color: $govie-header-footer-border-colour;
+  $govie-header-border-width: govie-spacing(2);
+  $govie-header-text: govie-colour('white');
+  $govie-header-link-active: #1d8feb;
+  $govie-header-nav-item-border-color: #2e3133;
+  $govie-header-link-underline-thickness: 3px;
+
+  .govie-header {
+    @include govie-font($size: 16);
+
+    border-bottom: govie-spacing(2) solid govie-colour('white');
+    color: $govie-header-text;
+    background: $govie-header-background;
+  }
+
+  .govie-header__container--full-width {
+    padding: 0 govie-spacing(3);
+    border-color: $govie-header-border-color;
+
+    .govie-header__menu-button {
+      right: govie-spacing(3);
+    }
+  }
+
+  .govie-header__container {
+    @include govie-clearfix;
+    position: relative;
+    margin-bottom: -$govie-header-border-width;
+    padding-top: govie-spacing(2);
+    border-bottom: $govie-header-border-width solid $govie-header-border-color;
+  }
+
+  .govie-header__logotype {
+    display: inline-block;
+
+    // Add a gap after the logo in case it's followed by a product name. This
+    // gets removed later if the logotype is a :last-child.
+    margin-right: govie-spacing(1);
+
+    // Prevent readability backplate from obscuring underline in Windows High
+    // Contrast Mode
+    @media (forced-colors: active) {
+      forced-color-adjust: none;
+      color: linktext;
+    }
+
+    // Remove the gap after the logo if there's no product name to keep hover
+    // and focus states neat
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .govie-header__logotype-full {
+    position: relative;
+    top: -5px;
+    margin-right: 1px;
+    fill: currentcolor;
+    vertical-align: top;
+  }
+
+  .govie-header__logotype-fallback-image {
+    width: 110px;
+    height: 40px;
+    border: 0;
+    vertical-align: bottom;
+  }
+
+  .govie-header__product-name {
+    @include govie-font($size: 24, $line-height: 1);
+    display: inline-table;
+  }
+
+  .govie-header__link {
+    // Avoid using the `govie-link-common` mixin because the links in the header
+    // get a special treatment, because:
+    //
+    // - underlines are only visible on hover
+    // - all links get a 3px underline regardless of text size, as there are
+    //   multiple grouped elements close to one another and having slightly
+    //   different underline widths looks unbalanced
+    @include govie-typography-common;
+    @include govie-link-style-inverse;
+
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-decoration-thickness: $govie-header-link-underline-thickness;
+
+      @if $govie-link-underline-offset {
+        text-underline-offset: $govie-link-underline-offset;
+      }
+    }
+
+    &:focus {
+      @include govie-focused-text;
+    }
+  }
+
+  .govie-header__link--homepage {
+    // Font size needs to be set on the link so that the box sizing is correct
+    // in Firefox
+    @include govie-font($size: false, $weight: bold);
+
+    display: inline-block;
+    margin-right: govie-spacing(2);
+    font-size: 30px; // We don't have a mixin that produces 30px font size
+    line-height: 1;
+
+    @include govie-media-query($from: tablet) {
+      display: inline;
+
+      &:focus {
+        // Replicate the focus box shadow but without the -2px y-offset of the first yellow shadow
+        // This is to stop the logo getting cut off by the box shadow when focused on above a product name
+        box-shadow: 0 0 $govie-focus-colour;
+      }
+    }
+
+    &:link,
+    &:visited {
+      text-decoration: none;
+    }
+
+    &:hover,
+    &:active {
+      // Negate the added border
+      margin-bottom: $govie-header-link-underline-thickness * -1;
+      // Omitting colour will use default value of currentColor – if we
+      // specified currentColor explicitly IE8 would ignore this rule.
+      border-bottom: $govie-header-link-underline-thickness solid;
+    }
+
+    // Remove any borders that show when focused and hovered.
+    &:focus {
+      margin-bottom: 0;
+      border-bottom: 0;
+    }
+  }
+
+  // The govie-header__link--service-name class is deprecated - use
+  // govie-header__service-name instead.
+  .govie-header__service-name,
+  .govie-header__link--service-name {
+    display: inline-block;
+    margin-bottom: govie-spacing(2);
+    @include govie-font($size: 24, $weight: bold);
+  }
+
+  .govie-header__logo,
+  .govie-header__content {
+    box-sizing: border-box;
+  }
+
+  .govie-header__logo {
+    @include govie-responsive-margin(2, 'bottom');
+    padding-right: govie-spacing(8);
+
+    @include govie-media-query($from: desktop) {
+      width: 33.33%;
+      padding-right: $govie-gutter-half;
+      float: left;
+      vertical-align: top;
+    }
+  }
+
+  .govie-header__content {
+    @include govie-media-query($from: desktop) {
+      width: 66.66%;
+      padding-left: $govie-gutter-half;
+      float: left;
+    }
+  }
+
+  .govie-header__menu-button {
+    @include govie-font($size: 16);
+    display: none;
+    position: absolute;
+    top: govie-spacing(4);
+    right: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: govie-colour('white');
+    background: none;
+    cursor: pointer;
+
+    &:hover {
+      -webkit-text-decoration: solid underline $govie-header-link-underline-thickness;
+              text-decoration: solid underline $govie-header-link-underline-thickness;
+
+      @if $govie-link-underline-offset {
+        text-underline-offset: $govie-link-underline-offset;
+      }
+    }
+
+    &:focus {
+      @include govie-focused-text;
+    }
+
+    &:after {
+      @include govie-shape-arrow(
+        $direction: down,
+        $base: 10px,
+        $display: inline-block
+      );
+      content: '';
+      margin-left: govie-spacing(1);
+    }
+
+    &[aria-expanded='true']:after {
+      @include govie-shape-arrow(
+        $direction: up,
+        $base: 10px,
+        $display: inline-block
+      );
+    }
+
+    @include govie-media-query($from: tablet) {
+      top: govie-spacing(3);
+    }
+
+    .js-enabled & {
+      display: block;
+    }
+
+    &[hidden],
+    .js-enabled &[hidden] {
+      display: none;
+    }
+  }
+
+  .govie-header__navigation {
+    @include govie-media-query($from: desktop) {
+      margin-bottom: govie-spacing(2);
+    }
+  }
+
+  .govie-header__navigation-list {
+    // Reset user-agent default list styles
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .govie-header__navigation--end {
+    @include govie-media-query($from: desktop) {
+      margin: 0;
+      padding: govie-spacing(1) 0;
+      text-align: right;
+    }
+  }
+
+  // The govie-header__navigation--no-service-name class is deprecated and will
+  // be removed in the next major release.
+  .govie-header__navigation--no-service-name {
+    padding-top: govie-spacing(7);
+  }
+
+  .govie-header__navigation-item {
+    padding: govie-spacing(2) 0;
+    border-bottom: 1px solid $govie-header-nav-item-border-color;
+
+    @include govie-media-query($from: desktop) {
+      display: inline-block;
+      margin-right: govie-spacing(3);
+      padding: govie-spacing(1) 0;
+      border: 0;
+    }
+
+    a {
+      @include govie-font($size: 16, $weight: bold);
+      white-space: nowrap;
+    }
+  }
+
+  .govie-header__navigation-item--active {
+    a {
+      &:link,
+      &:hover,
+      &:visited {
+        color: $govie-header-link-active;
+      }
+
+      // When focussed, the text colour needs to be darker to ensure that colour
+      // contrast is still acceptable
+      &:focus {
+        color: $govie-focus-text-colour;
+      }
+    }
+  }
+
+  .govie-header__navigation-item:last-child {
+    margin-right: 0;
+    border-bottom: 0;
+  }
+
+  @include govie-media-query($media-type: print) {
+    .govie-header {
+      border-bottom-width: 0;
+      color: govie-colour('black');
+      background: transparent;
+    }
+
+    // Hide the inverted crown when printing in browsers that don't support SVG.
+    .govie-header__logotype-fallback-image {
+      display: none;
+    }
+
+    .govie-header__link {
+      &:link,
+      &:visited {
+        color: govie-colour('black');
+      }
+
+      // Do not append link href to GOV.UK link when printing (e.g. '(/)')
+      &:after {
+        display: none;
+      }
+    }
+  }
+}

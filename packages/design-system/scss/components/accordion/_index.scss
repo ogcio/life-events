@@ -1,0 +1,373 @@
+@include govie-exports("govie/component/accordion") {
+  $govie-accordion-base-colour: govie-colour("black");
+  $govie-accordion-hover-colour: govie-colour("light-grey");
+  $govie-accordion-icon-focus-colour: $govie-focus-colour;
+  $govie-accordion-bottom-border-width: 1px;
+
+  .govie-accordion {
+    @include govie-responsive-margin(6, "bottom");
+  }
+
+  .govie-accordion__section {
+    padding-top: govie-spacing(3);
+  }
+
+  .govie-accordion__section-heading {
+    // Override browser defaults to ensure consistent element height
+    margin-top: 0;
+    margin-bottom: 0;
+
+    padding-top: govie-spacing(3);
+    padding-bottom: govie-spacing(3);
+  }
+
+  .govie-accordion__section-button {
+    @include govie-font($size: 24, $weight: bold);
+    @include govie-text-colour;
+
+    display: block;
+    margin-bottom: 0;
+    padding-top: govie-spacing(3);
+  }
+
+  // Remove the bottom margin from the last item inside the content
+  .govie-accordion__section-content > :last-child {
+    margin-bottom: 0;
+  }
+
+  // JavaScript enabled
+  .js-enabled {
+    .govie-accordion {
+      // Border at the bottom of the whole accordion
+      border-bottom: $govie-accordion-bottom-border-width solid $govie-border-colour;
+    }
+
+    .govie-accordion__section {
+      padding-top: 0;
+    }
+
+    // Hide the body of collapsed sections
+    .govie-accordion__section-content {
+      display: none;
+      @include govie-responsive-padding(8, "bottom");
+      @include govie-responsive-padding(3, "top");
+    }
+
+    // Show the body of expanded sections
+    .govie-accordion__section--expanded .govie-accordion__section-content {
+      display: block;
+    }
+
+    .govie-accordion__show-all {
+      @include govie-font($size: 19);
+      position: relative;
+      z-index: 1;
+
+      margin-bottom: 9px;
+      padding: govie-spacing(1) 2px govie-spacing(1) 0;
+
+      border-width: 0;
+
+      color: $govie-link-colour;
+      background: none;
+
+      cursor: pointer;
+      -webkit-appearance: none;
+
+      @include govie-media-query ($from: desktop) {
+        margin-bottom: 14px;
+      }
+
+      // Remove default button focus outline in Firefox
+      &::-moz-focus-inner {
+        padding: 0;
+        border: 0;
+      }
+
+      &:hover {
+        color: $govie-accordion-base-colour;
+        background: $govie-accordion-hover-colour;
+        // The GOV.UK Design System focus state adds a box-shadow to the top and bottom of the
+        // button. We add a grey box-shadow on hover too, to make the height of the hover state
+        // match the height of the focus state.
+        box-shadow: 0 -2px $govie-accordion-hover-colour, 0 4px $govie-accordion-hover-colour;
+
+        .govie-accordion__section-toggle-text {
+          color: $govie-accordion-base-colour;
+        }
+
+        .govie-accordion-nav__chevron {
+          color: $govie-accordion-base-colour;
+          background: $govie-accordion-base-colour;
+        }
+
+        .govie-accordion-nav__chevron:after {
+          color: $govie-accordion-hover-colour;
+        }
+      }
+
+      &:focus {
+        @include govie-focused-text;
+
+        .govie-accordion-nav__chevron {
+          background: $govie-accordion-base-colour;
+        }
+
+        .govie-accordion-nav__chevron:after {
+          color: $govie-accordion-icon-focus-colour;
+        }
+      }
+    }
+
+    .govie-accordion__section-heading {
+      padding: 0;
+    }
+
+    // Create Chevron icon aligned with text
+    .govie-accordion-nav__chevron {
+      box-sizing: border-box;
+      display: inline-block;
+
+      position: relative;
+
+      // Set size using rems to make the icon scale with text if user resizes text in their browser
+      width: govie-px-to-rem(20px);
+      height: govie-px-to-rem(20px);
+
+      border: govie-px-to-rem(1px) solid;
+      border-radius: 50%;
+
+      vertical-align: middle;
+
+      // IE8 fallback of icon
+      @include govie-if-ie8 {
+        display: inline-block;
+        max-height: 20px;
+        line-height: 1;
+      }
+
+      // Create inner chevron arrow
+      &:after {
+        content: "";
+        box-sizing: border-box;
+        display: block;
+
+        position: absolute;
+        bottom: govie-px-to-rem(5px);
+        left: govie-px-to-rem(6px);
+
+        width: govie-px-to-rem(6px);
+        height: govie-px-to-rem(6px);
+
+        -webkit-transform: rotate(-45deg);
+
+            -ms-transform: rotate(-45deg);
+
+                transform: rotate(-45deg);
+
+        border-top: govie-px-to-rem(2px) solid;
+        border-right: govie-px-to-rem(2px) solid;
+
+        // IE8 fallback of icon with HTML symbol
+        @include govie-if-ie8 {
+          content: "\25B2"; // "▲"
+          position: relative;
+          border: 0;
+        }
+      }
+    }
+
+    // Rotate icon to create "Down" version
+    .govie-accordion-nav__chevron--down {
+      -webkit-transform: rotate(180deg);
+          -ms-transform: rotate(180deg);
+              transform: rotate(180deg);
+
+      // IE8 fallback of arrow icon
+      @include govie-if-ie8 {
+        &:after {
+          content: "\25BC"; // "▼"
+          -webkit-transform: none;
+              -ms-transform: none;
+                  transform: none;
+        }
+      }
+    }
+
+    .govie-accordion__section-button {
+      width: 100%;
+
+      padding: govie-spacing(2) 0 0 0;
+
+      border: 0;
+
+      border-top: $govie-accordion-bottom-border-width solid $govie-border-colour;
+
+      // Visually separate the section from the one underneath when user changes colours in their
+      // browser. See https://github.com/alphagov/govie-frontend/issues/2321#issuecomment-924201488
+      border-bottom: govie-spacing(2) solid transparent;
+
+      color: $govie-text-colour;
+      background: none;
+
+      text-align: left;
+      // Section headers have a pointer cursor as an additional affordance
+      cursor: pointer;
+      -webkit-appearance: none;
+
+      @include govie-media-query ($from: tablet) {
+        padding-bottom: govie-spacing(2);
+      }
+
+      &:active {
+        color: $govie-link-active-colour;
+        background: none;
+      }
+
+      &:hover {
+        color: $govie-accordion-base-colour;
+        background: $govie-accordion-hover-colour;
+
+        .govie-accordion__section-toggle-text {
+          color: $govie-accordion-base-colour;
+        }
+
+        .govie-accordion-nav__chevron {
+          color: $govie-accordion-base-colour;
+          background: $govie-accordion-base-colour;
+        }
+
+        .govie-accordion-nav__chevron:after {
+          color: $govie-accordion-hover-colour;
+        }
+      }
+
+      &:focus {
+        // Remove default focus border around button as
+        // styling is being applied to inner text elements that receive focus
+        outline: 0;
+
+        .govie-accordion__section-heading-text-focus,
+        .govie-accordion__section-summary-focus,
+        .govie-accordion__section-toggle-focus {
+          @include govie-focused-text;
+        }
+
+        .govie-accordion-nav__chevron {
+          color: $govie-accordion-base-colour;
+          background: $govie-accordion-base-colour;
+        }
+
+        .govie-accordion-nav__chevron:after {
+          color: $govie-accordion-icon-focus-colour;
+        }
+      }
+
+      // Remove default button focus outline in Firefox
+      &::-moz-focus-inner {
+        padding: 0;
+        border: 0;
+      }
+    }
+
+    // Remove the transparent border when the section is expanded to make it clear that the heading
+    // relates to the content below. Adjust padding to maintain the height of the element.
+    // See https://github.com/alphagov/govie-frontend/pull/2257#issuecomment-951920798
+    .govie-accordion__section--expanded .govie-accordion__section-button {
+      padding-bottom: govie-spacing(4);
+      border-bottom: 0;
+    }
+
+    // As Chevron icon is vertically aligned it overlaps with the focus state bottom border
+    // Styling adds some spacing
+    .govie-accordion__section-button:focus .govie-accordion__section-toggle-focus {
+      padding-bottom: 3px;
+
+      @include govie-media-query ($from: desktop) {
+        padding-bottom: 2px;
+      }
+    }
+
+    .govie-accordion__section-toggle,
+    .govie-accordion__section-heading-text,
+    .govie-accordion__section-summary {
+      display: block;
+      margin-bottom: 13px;
+
+      .govie-accordion__section-heading-text-focus,
+      .govie-accordion__section-summary-focus,
+      .govie-accordion__section-toggle-focus {
+        display: inline;
+      }
+    }
+
+    // Add toggle link with Chevron icon on left.
+    .govie-accordion__section-toggle {
+      @include govie-typography-responsive($size: 19);
+      @include govie-typography-weight-regular;
+      color: $govie-link-colour;
+    }
+
+    // Add space between the icon and text.
+    // Avoid applying spacing directly to the icon as the use of `transform` will change the
+    // placement of any margins.
+    .govie-accordion__show-all-text,
+    .govie-accordion__section-toggle-text {
+      margin-left: govie-spacing(1);
+      vertical-align: middle;
+    }
+
+    // Background colour adjustment when user changes colours in Firefox
+    //
+    // When user changes colours in Firefox, text colour inside <button> is always black
+    // (regardless of the custom colours the user has set). This is fine when the text in the
+    // button is not nested inside another element because when user changes colours in Firefox,
+    // the immediate background colour of buttons is always white (again, regardless of user's
+    // custom colours).
+    //
+    // However, when the text inside <button> is wrapped inside another element AND that element
+    // sets a background colour, the text colour is still black but the background of that nested
+    // element gets the user's custom background colour. When the custom background is a lighter
+    // hue, the contrast might be sufficient. But if the user's custom background colour is a
+    // darker colour, the contrast with the text might not be sufficient.
+    //
+    // To ensure sufficient contrast, override the background colour set by the focus state on the
+    // nested elements to be transparent.
+    //
+    // Also override the background colour of the Show/Hide chevrons which set a background colour
+    // on hover.
+    @media screen and (forced-colors: active) {
+      .govie-accordion__show-all:hover,
+      .govie-accordion__section-button:hover {
+        .govie-accordion-nav__chevron {
+          background-color: transparent;
+        }
+      }
+
+      .govie-accordion__show-all:focus,
+      .govie-accordion__section-button:focus {
+        .govie-accordion__section-heading-text-focus,
+        .govie-accordion__section-summary-focus,
+        .govie-accordion__section-toggle-focus,
+        .govie-accordion-nav__chevron {
+          background: transparent;
+          background-color: transparent;
+        }
+      }
+    }
+
+    // For devices that can't hover such as touch devices,
+    // remove hover state as it can be stuck in that state (iOS).
+    @media (hover: none) {
+      .govie-accordion__section-header:hover {
+        border-top-color: $govie-border-colour;
+
+        box-shadow: inset 0 3px 0 0 $govie-link-colour;
+
+        .govie-accordion__section-button {
+          border-top-color: $govie-border-colour;
+        }
+      }
+    }
+  }
+}
