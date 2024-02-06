@@ -1,0 +1,53 @@
+@import '../base';
+
+////
+/// @group objects/layout
+////
+
+// Example usage with Breadcrumbs, phase banners, back links:
+// <div class="govie-width-container">
+//   <!-- Breadcrumbs, phase banners, back links are placed in here. -->
+//   <div class="govie-main-wrapper">
+//       <!-- Wrapper for the main content of your page which applies padding
+//            to the top / bottom -->
+//   </div>
+// </div>
+//
+// Example usage without Breadcrumbs, phase banners, back links:
+// <div class="govie-width-container">
+//   <div class="govie-main-wrapper govie-main-wrapper--l">
+//       <!-- Wrapper for the main content of your page which applies padding
+//            to the top / bottom -->
+//   </div>
+// </div>
+
+@include govie-exports('govie/objects/main-wrapper') {
+  .govie-main-wrapper {
+    // In IE11 the `main` element can be used, but is not recognized  –
+    // meaning it's not defined in IE's default style sheet,
+    // so it uses CSS initial value, which is inline.
+    display: block;
+    padding-top: govie-spacing(4);
+    padding-bottom: govie-spacing(4);
+
+    @include govie-media-query($from: tablet) {
+      // This spacing is manually adjusted to replicate the margin of
+      // govie-heading-xl (50px) minus the spacing of back link and
+      // breadcrumbs (10px)
+      padding-top: govie-spacing(7);
+      padding-bottom: govie-spacing(7);
+    }
+  }
+
+  // Using the `.govie-main-wrapper--auto-spacing` modifier should apply the
+  // correct spacing depending on whether there are any elements
+  // (such the back link, breadcrumbs or phase banner components) before the
+  // `.govie-main-wrapper` in the `govie-width-container`.
+  //
+  // If you need to control the spacing manually, use the
+  // `govie-main-wrapper--l` modifier instead.
+  .govie-main-wrapper--auto-spacing:first-child,
+  .govie-main-wrapper--l {
+    @include govie-responsive-padding(8, 'top');
+  }
+}

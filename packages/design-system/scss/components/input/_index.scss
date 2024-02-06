@@ -1,0 +1,172 @@
+@import "../error-message/index";
+@import "../hint/index";
+@import "../label/index";
+
+@include govie-exports("govie/component/input") {
+  .govie-input {
+    @include govie-font($size: 19);
+
+    box-sizing: border-box;
+    width: 100%;
+    height: 40px;
+    margin-top: 0;
+
+    padding: govie-spacing(1);
+    // setting any background-color makes text invisible when changing colours to dark backgrounds in Firefox (https://bugzilla.mozilla.org/show_bug.cgi?id=1335476)
+    // as background-color and color need to always be set together, color should not be set either
+    border: $govie-border-width-form-element solid $govie-input-border-colour;
+    border-radius: 0;
+
+    // Disable inner shadow and remove rounded corners
+    -webkit-appearance: none;
+            appearance: none;
+
+    &:focus {
+      outline: $govie-focus-width solid $govie-focus-colour;
+      // Ensure outline appears outside of the element
+      outline-offset: 0;
+      // Double the border by adding its width again. Use `box-shadow` for this // instead of changing `border-width` - this is for consistency with
+      // components such as textarea where we avoid changing `border-width` as
+      // it will change the element size. Also, `outline` cannot be utilised
+      // here as it is already used for the yellow focus state.
+      box-shadow: inset 0 0 0 $govie-border-width-form-element;
+
+      @include govie-if-ie8 {
+        // IE8 doesn't support `box-shadow` so double the border with
+        // `border-width`.
+        border-width: $govie-border-width-form-element * 2;
+      }
+    }
+  }
+
+  .govie-input::-webkit-outer-spin-button,
+  .govie-input::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
+
+  .govie-input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  .govie-input--error {
+    border-color: $govie-error-colour;
+
+    &:focus {
+      border-color: $govie-input-border-colour;
+    }
+  }
+
+  // em measurements are based on the point size of the typeface
+  // Extra space is added on the right hand side to allow for the Safari prefill icon
+
+  .govie-input--width-30 {
+    max-width: 29.5em;
+  }
+
+  .govie-input--width-20 {
+    max-width: 20.5em;
+  }
+
+  .govie-input--width-10 {
+    max-width: 11.5em;
+  }
+
+  .govie-input--width-5 {
+    max-width: 5.5em;
+  }
+
+  .govie-input--width-4 {
+    max-width: 4.5em;
+  }
+
+  .govie-input--width-3 {
+    max-width: 3.75em;
+  }
+
+  .govie-input--width-2 {
+    max-width: 2.75em;
+  }
+
+  .govie-input__wrapper {
+    display: -ms-flexbox;
+    display: flex;
+
+    .govie-input {
+      -ms-flex: 0 1 auto;
+          flex: 0 1 auto;
+    }
+
+    .govie-input:focus {
+      // Hack to stop focus style being overlapped by the suffix
+      z-index: 1;
+    }
+
+    // Split prefix/suffix onto separate lines on narrow screens
+    @include govie-media-query($until: mobile) {
+      display: block;
+
+      .govie-input {
+        // Set max-width to override potential width override class on the input
+        max-width: 100%;
+      }
+    }
+  }
+
+  .govie-input__prefix,
+  .govie-input__suffix {
+    @include govie-font($size: 19);
+
+    box-sizing: border-box;
+    display: inline-block;
+    min-width: 40px;
+    height: 40px;
+
+    padding: govie-spacing(1);
+    border: $govie-border-width-form-element solid $govie-input-border-colour;
+    background-color: govie-colour("light-grey");
+
+    text-align: center;
+    @include govie-media-query($until: tablet) {
+      line-height: 1.6;
+    }
+    white-space: nowrap;
+
+    // Emphasise non-editable status of prefixes and suffixes
+    cursor: default;
+
+    -ms-flex: 0 0 auto;
+
+        flex: 0 0 auto;
+
+    // Split prefix/suffix onto separate lines on narrow screens
+    @include govie-media-query($until: mobile) {
+      display: block;
+      height: 100%;
+      white-space: normal;
+    }
+  }
+
+  .govie-input__prefix {
+    @include govie-media-query($until: mobile) {
+      border-bottom: 0;
+    }
+    @include govie-media-query($from: mobile) {
+      @include govie-not-ie8 {
+        border-right: 0;
+      }
+    }
+  }
+
+  // Split prefix/suffix onto separate lines on narrow screens
+  .govie-input__suffix {
+    @include govie-media-query($until: mobile) {
+      border-top: 0;
+    }
+    @include govie-media-query($from: mobile) {
+      @include govie-not-ie8 {
+        border-left: 0;
+      }
+    }
+  }
+}

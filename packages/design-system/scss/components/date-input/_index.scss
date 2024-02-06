@@ -1,0 +1,26 @@
+@import "../error-message/index";
+@import "../input/index";
+@import "../hint/index";
+@import "../label/index";
+
+@include govie-exports("govie/component/date-input") {
+  .govie-date-input {
+    @include govie-clearfix;
+    // font-size: 0 removes whitespace caused by inline-block
+    font-size: 0;
+  }
+
+  .govie-date-input__item {
+    display: inline-block;
+    margin-right: govie-spacing(4);
+    margin-bottom: 0;
+  }
+
+  .govie-date-input__label {
+    display: block;
+  }
+
+  .govie-date-input__input {
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,133 @@
+/// Button inside button group component background colour
+///
+/// @type Colour
+/// @access public
+
+$govie-button-group-button-background-colour: transparent !default;
+
+/// Button inside button group component hover background colour
+///
+/// @type Colour
+/// @access public
+
+$govie-button-group-button-hover-background-colour: govie-tint(
+  #cce2d8,
+  60
+) !default;
+
+@include govie-exports('govie/component/button-group') {
+  .govie-conjoined-button-group {
+    // Flexbox is used to center-align links on mobile, align everything along
+    // the baseline on tablet and above, and to removes extra whitespace that
+    // we'd get between the buttons and links because they're inline-blocks.
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+        flex-direction: column;
+    -ms-flex-align: center;
+        align-items: center;
+
+    .govie-button {
+      margin: 0;
+      background-color: $govie-button-group-button-background-colour;
+      border: $govie-border-width-form-element solid
+        $govie-primary-button-background-colour;
+      color: $govie-primary-button-background-colour;
+      box-shadow: none;
+      border-radius: 0;
+
+      svg path {
+        fill: $govie-primary-button-background-colour;
+      }
+
+      &:hover {
+        background-color: govie-colour('light-grey');
+      }
+
+      &:focus {
+        background-color: $govie-button-group-button-hover-background-colour;
+        border-color: $govie-primary-button-background-colour;
+        color: govie-colour('black');
+
+        &:not(:active):not(:hover) {
+          border-color: $govie-primary-button-background-colour;
+        }
+      }
+
+      &:first-of-type {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 0;
+        border-top-right-radius: 4px;
+      }
+
+      &:first-of-type {
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 0;
+        border-top-right-radius: 4px;
+      }
+
+      &:not(:first-child) {
+        margin-left: 0;
+        margin-top: -($govie-border-width-form-element);
+      }
+
+      &:active {
+        top: 0;
+        border-width: $govie-border-width-form-element;
+        color: govie-colour('black');
+        background-color: $govie-focus-colour;
+        border-color: govie-colour('black');
+      }
+    }
+
+    .govie-button--disabled,
+    .govie-button[disabled='disabled'],
+    .govie-button[disabled] {
+      opacity: (0.5);
+
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: $govie-button-group-button-background-colour;
+        color: $govie-primary-button-background-colour;
+        border-color: $govie-primary-button-background-colour;
+        cursor: default;
+
+        svg path {
+          fill: $govie-primary-button-background-colour;
+        }
+      }
+    }
+
+    // On tablet and above, we also introduce a 'column gap' between the
+    // buttons and links in each row and left align links
+    @include govie-media-query($from: tablet) {
+      // Cancel out the column gap for the last item in each row
+      //   margin-right: ($horizontal-gap * -1);
+
+      -ms-flex-direction: row;
+
+          flex-direction: row;
+      -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
+      -ms-flex-align: baseline;
+          align-items: baseline;
+
+      .govie-button {
+        &:first-of-type {
+          border-top-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+        }
+
+        &:last-of-type {
+          border-top-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+        }
+
+        &:not(:first-child) {
+          margin-left: -($govie-border-width-form-element);
+        }
+      }
+    }
+  }
+}

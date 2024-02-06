@@ -1,0 +1,99 @@
+////
+/// @group overrides
+////
+
+// stylelint-disable declaration-no-important
+
+/// Directions for spacing
+///
+/// @type Map
+/// @access private
+
+$_spacing-directions: ('top', 'right', 'bottom', 'left') !default;
+
+/// Generate responsive spacing override classes
+///
+/// Generate spacing override classes for the given property (e.g. margin)
+/// for each point in the responsive spacing scale.
+///
+/// @param {String} $property - Property to add spacing to (e.g. 'margin')
+///
+/// @example css
+///  .govie-\!-margin-4 {
+///    margin: 15px !important;
+///  }
+///
+///  @media (min-width: 40.0625em) {
+///    .govie-\!-margin-4 {
+///      margin: 20px !important;
+///    }
+///  }
+///
+/// @access private
+
+@mixin _govie-generate-responsive-spacing-overrides($property) {
+  // For each point in the spacing scale (defined in settings), create an
+  // override that affects all directions...
+  @each $scale-point, $scale-map in $govie-spacing-responsive-scale {
+    .govie-\!-#{$property}-#{$scale-point} {
+      @include _govie-responsive-spacing($scale-point, $property, 'all', true);
+    }
+
+    // ... and then an override for each individual direction
+    @each $direction in $_spacing-directions {
+      .govie-\!-#{$property}-#{$direction}-#{$scale-point} {
+        @include _govie-responsive-spacing(
+          $scale-point,
+          $property,
+          $direction,
+          true
+        );
+      }
+    }
+  }
+}
+
+/// Generate static spacing override classes
+///
+/// Generate spacing override classes for the given property (e.g. margin)
+/// for each point in the non-responsive spacing scale.
+///
+/// The classes in the format govie-#{$property}-static-#{$spacing-point}
+/// and govie-\!-#{$property}-#{$direction}-static-#{$spacing-point} are deprecated.
+/// For example: govie-!-margin-static-2 or govie-!-margin-top-static-2
+///
+/// Use classes in the format .govie-\!-static-#{$property}-#{$spacing-point}
+/// and .govie-\!-static-#{$property}-#{$direction}-#{$spacing-point} instead.
+/// For example: govie-!-static-margin-2 or govie-!-static-margin-top-2
+///
+/// @param {String} $property - Property to add spacing to (e.g. 'margin')
+///
+/// @example css
+///   .govie-\!-static-margin-4 {
+///      margin: 20px !important;
+///   }
+///
+/// @access private
+@mixin _govie-generate-static-spacing-overrides($property) {
+  @each $spacing-point in map-keys($govie-spacing-points) {
+    .govie-\!-#{$property}-static-#{$spacing-point},
+    .govie-\!-static-#{$property}-#{$spacing-point} {
+      #{$property}: govie-spacing($spacing-point) !important;
+    }
+
+    @each $direction in $_spacing-directions {
+      .govie-\!-#{$property}-#{$direction}-static-#{$spacing-point},
+      .govie-\!-static-#{$property}-#{$direction}-#{$spacing-point} {
+        #{$property}-#{$direction}: govie-spacing($spacing-point) !important;
+      }
+    }
+  }
+}
+
+@include govie-exports('govie/overrides/spacing') {
+  @include _govie-generate-responsive-spacing-overrides('margin');
+  @include _govie-generate-responsive-spacing-overrides('padding');
+
+  @include _govie-generate-static-spacing-overrides('margin');
+  @include _govie-generate-static-spacing-overrides('padding');
+}

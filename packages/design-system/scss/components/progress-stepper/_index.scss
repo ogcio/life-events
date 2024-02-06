@@ -1,0 +1,128 @@
+@include govie-exports("govie/component/progress-stepper") {
+  .govie-progress-stepper {
+    width: 100%;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: row;
+        flex-direction: row;
+    -ms-flex-align: start;
+        align-items: flex-start;
+  }
+
+  .govie-progress-stepper__step {
+    padding-left: 8px;
+    padding-right: 8px;
+    -ms-flex: 1;
+        flex: 1;
+    position: relative;
+  }
+
+  .govie-progress-stepper__step-label {
+    position: relative;
+    -ms-flex-direction: column;
+        flex-direction: column;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+        align-items: center;
+  }
+
+  .govie-progress-stepper__label-text {
+    @include govie-font($size: 16, $line-height: 20px);
+    
+    width: 100%;
+    color: govie-colour("dark-grey");
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  .govie-progress-stepper__label-icon, .govie-progress-stepper__completed-icon {
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+    display: -ms-flexbox;
+    display: flex;
+    padding-right: 0px;
+    z-index: 3;
+  }
+
+  .govie-progress-stepper__label-icon {
+    display: block;
+  }
+
+  .govie-progress-stepper__label-icon-text {
+    @include govie-font($size: 24, $weight: bold);
+
+    fill: govie-colour("white");;
+  }
+
+  .govie-progress-stepper__label-icon-circle {
+    fill: govie-colour("dark-grey");
+  }
+
+  .govie-progress-stepper__completed-icon {
+    display: none;
+  }
+
+  .govie-progress-stepper__completed-icon svg {
+    fill: $govie-header-surface-colour;
+  }
+
+  .govie-progress-stepper__active-icon {
+    display: none;
+    position: absolute;
+    top: -8px;
+    z-index: 2;
+  }
+
+  .govie-progress-stepper__active-icon-circle {
+    fill: $govie-header-surface-colour;
+    fill-opacity: 0.2;
+  }
+
+  .govie-progress-stepper__step-connector {
+    -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+    position: absolute;
+    top: 20px;
+    left: calc(-50% + 20px);
+    right: calc(50% + 20px);
+    z-index: 1;
+  }
+
+  .govie-progress-stepper__step-connector-line {
+    display: block;
+    border-color: govie-colour("mid-grey");
+    border-top-style: solid;
+    border-top-width: 2px;
+  }
+
+  .govie-progress-stepper__step--completed, .govie-progress-stepper__step--active {
+    .govie-progress-stepper__label-text {
+      color: $govie-text-colour;
+    }
+
+    .govie-progress-stepper__label-icon-circle {
+      fill: $govie-header-surface-colour;
+    }
+
+    .govie-progress-stepper__step-connector-line {
+      border-color: $govie-header-surface-colour;
+    }
+  }
+
+  .govie-progress-stepper__step--completed {
+    .govie-progress-stepper__completed-icon {
+      display: block;
+    }
+
+    .govie-progress-stepper__label-icon {
+      display: none;
+    }
+  }
+
+  .govie-progress-stepper__step--active {
+    .govie-progress-stepper__active-icon {
+      display: block;
+    }
+  }
+}

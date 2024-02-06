@@ -3,9 +3,19 @@
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
+  "module": "dist/esm/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c"
   },
   "author": "",
-  "license": "Unlicense"
+  "license": "Unlicense",
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.9.6",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-scss": "^4.0.0",
+    "sass": "^1.70.0"
+  }
 }

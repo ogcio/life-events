@@ -1,0 +1,21 @@
+@include govie-exports('govie/overrides/typography') {
+  // Font size and line height
+
+  // Generate typography override classes for each responsive font map in the
+  // typography scale eg .govie-\!-font-size-80
+  @each $size in map-keys($govie-typography-scale) {
+    .govie-\!-font-size-#{$size} {
+      @include govie-typography-responsive($size, $important: true);
+    }
+  }
+
+  // Weights
+
+  .govie-\!-font-weight-regular {
+    @include govie-typography-weight-regular($important: true);
+  }
+
+  .govie-\!-font-weight-bold {
+    @include govie-typography-weight-bold($important: true);
+  }
+}

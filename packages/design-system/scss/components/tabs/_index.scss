@@ -1,0 +1,130 @@
+@include govie-exports("govie/component/tabs") {
+  .govie-tabs {
+    @include govie-responsive-margin(1, "top");
+    @include govie-responsive-margin(6, "bottom");
+  }
+
+  .govie-tabs__title {
+    @include govie-font($size: 19);
+    @include govie-text-colour;
+    margin-bottom: govie-spacing(2);
+  }
+
+  .govie-tabs__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    @include govie-responsive-margin(6, "bottom");
+  }
+
+  .govie-tabs__list-item {
+    @include govie-font($size: 19);
+    margin-left: govie-spacing(5);
+
+    &:before {
+      @include govie-text-colour;
+      content: "\2014 "; // "— "
+      margin-left: govie-spacing(-5);
+      padding-right: govie-spacing(1);
+    }
+  }
+
+  .govie-tabs__tab {
+    @include govie-link-common;
+    @include govie-link-style-default;
+
+    display: inline-block;
+    margin-bottom: govie-spacing(2);
+  }
+
+  .govie-tabs__panel {
+    @include govie-responsive-margin(8, "bottom");
+  }
+
+  // JavaScript enabled
+  .js-enabled {
+
+    @include govie-media-query($from: tablet) {
+      .govie-tabs__list {
+        @include govie-clearfix;
+        margin-bottom: 0;
+        border-bottom: 1px solid $govie-border-colour;
+      }
+
+      .govie-tabs__title {
+        display: none;
+      }
+
+      .govie-tabs__list-item {
+        position: relative;
+
+        margin-right: govie-spacing(1);
+        margin-bottom: 0;
+        margin-left: 0;
+        padding: govie-spacing(2) govie-spacing(4);
+
+        float: left;
+        background-color: govie-colour("light-grey");
+        text-align: center;
+
+        &:before {
+          content: none;
+        }
+      }
+
+      .govie-tabs__list-item--selected {
+        $border-width: 1px;
+
+        position: relative;
+
+        margin-top: govie-spacing(-1);
+
+        // Compensation for border (otherwise we get a shift)
+        margin-bottom: -$border-width;
+        padding-top: govie-spacing(3) - $border-width;
+        padding-right: govie-spacing(4) - $border-width;
+        padding-bottom: govie-spacing(3) + $border-width;
+        padding-left: govie-spacing(4) - $border-width;
+
+        border: $border-width solid $govie-border-colour;
+        border-bottom: 0;
+
+        background-color: $govie-body-background-colour;
+
+        .govie-tabs__tab {
+          text-decoration: none;
+        }
+      }
+
+      .govie-tabs__tab {
+        @include govie-link-style-text;
+
+        margin-bottom: 0;
+
+        &:after {
+          content: "";
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+        }
+      }
+
+      .govie-tabs__panel {
+        @include govie-responsive-margin(0, "bottom");
+        padding: govie-spacing(6) govie-spacing(4);
+        border: 1px solid $govie-border-colour;
+        border-top: 0;
+
+        & > :last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .govie-tabs__panel--hidden {
+        display: none;
+      }
+    }
+  }
+}

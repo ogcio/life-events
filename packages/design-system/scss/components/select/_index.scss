@@ -1,0 +1,57 @@
+@import "../error-message/index";
+@import "../hint/index";
+@import "../label/index";
+
+@include govie-exports("govie/component/select") {
+  .govie-select {
+    @include govie-font($size: 19, $line-height: 1.25);
+
+    box-sizing: border-box; // should this be global?
+
+    // This min-width was chosen because:
+    // - it makes the Select noticeably wider than it is taller (which is what users expect)
+    // - 11.5em matches the 'length-10' variant of the input component
+    // - it fits comfortably on screens as narrow as 240px wide
+    min-width: 11.5em;
+    max-width: 100%;
+    height: 40px;
+    padding: govie-spacing(1); // was 5px 4px 4px - size of it should be adjusted to match other form elements
+    border: $govie-border-width-form-element solid $govie-input-border-colour;
+
+    // Default user agent colours for selects can have low contrast,
+    // and may look disabled (#2435)
+    color: $govie-text-colour;
+    background-color: govie-colour("white");
+
+    &:focus {
+      outline: $govie-focus-width solid $govie-focus-colour;
+      // Ensure outline appears outside of the element
+      outline-offset: 0;
+      // Double the border by adding its width again. Use `box-shadow` to do
+      // this instead of changing `border-width` (which changes element size) and
+      // since `outline` is already used for the yellow focus state.
+      box-shadow: inset 0 0 0 $govie-border-width-form-element;
+
+      @include govie-if-ie8 {
+        // IE8 doesn't support `box-shadow` so double the border with
+        // `border-width`.
+        border-width: $govie-border-width-form-element * 2;
+      }
+    }
+  }
+
+  .govie-select option:active,
+  .govie-select option:checked,
+  .govie-select:focus::-ms-value {
+    color: govie-colour("white");
+    background-color: govie-colour("blue");
+  }
+
+  .govie-select--error {
+    border-color: $govie-error-colour;
+
+    &:focus {
+      border-color: $govie-input-border-colour;
+    }
+  }
+}

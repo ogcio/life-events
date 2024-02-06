@@ -1,0 +1,64 @@
+@include govie-exports("govie/component/fieldset") {
+  .govie-fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    @include govie-clearfix;
+  }
+
+  // Fix for Firefox < 53
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=504622
+  @supports not (caret-color: auto) {
+    .govie-fieldset,
+    x:-moz-any-link { // stylelint-disable-line selector-type-no-unknown
+      display: table-cell;
+    }
+  }
+
+  .govie-fieldset__legend {
+    @include govie-font($size: 19);
+    @include govie-text-colour;
+
+    // Fix legend text wrapping in Edge and IE
+    // 1. IE9-11 & Edge 12-13
+    // 2. IE8-11
+    box-sizing: border-box; // 1
+    display: table;         // 2
+    max-width: 100%;        // 1
+    margin-bottom: govie-spacing(2);
+    padding: 0;
+
+    white-space: normal;    // 1
+  }
+
+  // Modifiers that make legends look more like their equivalent headings
+
+  .govie-fieldset__legend--xl {
+    @include govie-font($size: 48, $weight: bold);
+    margin-bottom: govie-spacing(3);
+  }
+
+  .govie-fieldset__legend--l {
+    @include govie-font($size: 36, $weight: bold);
+    margin-bottom: govie-spacing(3);
+  }
+
+  .govie-fieldset__legend--m {
+    @include govie-font($size: 24, $weight: bold);
+    margin-bottom: govie-spacing(3);
+  }
+
+  .govie-fieldset__legend--s {
+    @include govie-font($size: 19, $weight: bold);
+  }
+
+  // When the legend contains an H1, we want the H1 to inherit all styles from
+  // the legend. Effectively we want to be able to treat the heading as if it is
+  // not there.
+  .govie-fieldset__heading {
+    margin: 0;
+    font-size: inherit;
+    font-weight: inherit;
+  }
+}

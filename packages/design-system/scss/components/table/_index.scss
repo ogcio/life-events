@@ -1,0 +1,70 @@
+@include govie-exports("govie/component/table") {
+  .govie-table {
+    @include govie-font($size: 19);
+    @include govie-text-colour;
+    width: 100%;
+    @include govie-responsive-margin(6, "bottom");
+
+    border-spacing: 0;
+    border-collapse: collapse;
+  }
+
+  .govie-table__header {
+    @include govie-typography-weight-bold;
+  }
+
+  .govie-table__header,
+  .govie-table__cell {
+    padding: govie-spacing(2) govie-spacing(4) govie-spacing(2) 0;
+    border-bottom: 1px solid $govie-border-colour;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .govie-table__header--vertical-centralized,
+  .govie-table__cell--vertical-centralized {
+    vertical-align: middle;
+  }
+
+  .govie-table__cell--numeric {
+    @include govie-font($size: false, $tabular: true);
+  }
+
+  .govie-table__header--numeric,
+  .govie-table__cell--numeric {
+    text-align: right;
+  }
+
+  .govie-table__header:last-child,
+  .govie-table__cell:last-child {
+    padding-right: 0;
+  }
+
+  .govie-table__caption {
+    @include govie-typography-weight-bold;
+
+    display: table-caption;
+    text-align: left;
+  }
+
+  // Modifiers that make captions look more like their equivalent headings
+
+  .govie-table__caption--xl {
+    @include govie-font($size: 48, $weight: bold);
+    margin-bottom: govie-spacing(3);
+  }
+
+  .govie-table__caption--l {
+    @include govie-font($size: 36, $weight: bold);
+    margin-bottom: govie-spacing(3);
+  }
+
+  .govie-table__caption--m {
+    @include govie-font($size: 24, $weight: bold);
+    margin-bottom: govie-spacing(3);
+  }
+
+  .govie-table__caption--s {
+    @include govie-font($size: 19, $weight: bold);
+  }
+}

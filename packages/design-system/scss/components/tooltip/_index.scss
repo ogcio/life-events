@@ -1,0 +1,84 @@
+@include govie-exports('govie/component/tooltip') {
+  .govie-tooltip {
+    display: none;
+  }
+
+  .govie-tooltip-container {
+    opacity: 0;
+    text-align: center;
+    color: govie-colour('white');
+    background: govie-colour('black');
+    position: absolute;
+    z-index: 100;
+    padding: 8px 16px;
+    pointer-events: none;
+    border-radius: 8px;
+    @include govie-font($size: 16, $line-height: 20px);
+
+    &.govie-tooltip-container--top {
+      margin-top: 20px;
+    }
+
+    &.govie-tooltip-container--show {
+      opacity: 1;
+      pointer-events: all;
+
+      &.govie-tooltip-container--top {
+        margin-top: 10px;
+      }
+    }
+
+    &:after {
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid govie-colour('black');
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -8px;
+      margin-left: -10px;
+    }
+
+    &.govie-tooltip-container--top:after {
+      top: -20px;
+      bottom: auto;
+      border-width: 10px;
+      border-style: solid;
+      border-color: transparent transparent govie-colour('black') transparent;
+    }
+
+    &.govie-tooltip-container--left:after {
+      left: auto;
+      right: -16px;
+      margin: 0;
+      top: 50%;
+      margin-top: -10px;
+      border-width: 10px;
+      border-style: solid;
+      border-color: transparent transparent transparent govie-colour('black');
+    }
+
+    &.govie-tooltip-container--right:after {
+      right: auto;
+      left: -16px;
+      margin: 0;
+      top: 50%;
+      margin-top: -10px;
+      border-width: 10px;
+      border-style: solid;
+      border-color: transparent govie-colour('black') transparent transparent;
+    }
+  }
+
+  [data-module='govie-tooltip'] {
+    display: inline-block;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+  }
+}

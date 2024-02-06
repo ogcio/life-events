@@ -1,0 +1,169 @@
+////
+/// @group settings/colours
+////
+
+@import '../helpers/colour';
+
+// =========================================================
+// Generic
+// =========================================================
+
+/// Brand colour
+///
+/// @type Colour
+/// @access public
+
+$govie-brand-colour: govie-colour('blue') !default;
+
+/// Text colour
+///
+/// @type Colour
+/// @access public
+
+$govie-text-colour: govie-colour('black') !default;
+
+/// Text colour for print media
+///
+/// Use 'true black' to avoid printers using colour ink to print body text
+///
+/// @type Colour
+/// @access public
+
+$govie-print-text-colour: #000000 !default;
+
+/// Secondary text colour
+///
+/// Used in for example 'muted' text and help text.
+///
+/// @type Colour
+/// @access public
+
+$govie-secondary-text-colour: govie-colour('dark-grey') !default;
+
+/// Focus colour
+///
+/// Used for outline (and background, where appropriate) when interactive
+/// elements (links, form controls) have keyboard focus.
+///
+/// @type Colour
+/// @access public
+
+$govie-focus-colour: govie-colour('yellow') !default;
+
+/// Focused text colour
+///
+/// Ensure that the contrast between the text and background colour passes
+/// WCAG Level AA contrast requirements.
+///
+/// @type Colour
+/// @access public
+
+$govie-focus-text-colour: govie-colour('black') !default;
+
+/// Error colour
+///
+/// Used to highlight error messages and form controls in an error state
+///
+/// @type Colour
+/// @access public
+
+$govie-error-colour: govie-colour('dark-red') !default;
+
+/// Success colour
+///
+/// Used to highlight success messages and banners
+///
+/// @type Colour
+/// @access public
+
+$govie-success-colour: govie-colour('green') !default;
+
+/// Border colour
+///
+/// Used in for example borders, separators, rules and keylines.
+///
+/// @type Colour
+/// @access public
+
+$govie-border-colour: govie-colour('mid-grey');
+
+/// Input border colour
+///
+/// Used for form inputs and controls
+///
+/// @type Colour
+/// @access public
+
+$govie-input-border-colour: govie-colour('black') !default;
+
+/// Input hover colour
+///
+/// Used for hover states on form controls
+///
+/// @type Colour
+/// @access public
+
+$govie-hover-colour: govie-colour('mid-grey');
+
+// =============================================================================
+// Links
+// =============================================================================
+
+/// Link colour
+///
+/// @type Colour
+/// @access public
+
+$govie-link-colour: govie-colour('mid-blue') !default;
+
+/// Visited link colour
+///
+/// @type Colour
+/// @access public
+
+$govie-link-visited-colour: govie-colour('purple') !default;
+
+/// Link hover colour
+///
+/// @type Colour
+/// @access public
+
+$govie-link-hover-colour: govie-colour('dark-blue') !default;
+
+/// Active link colour
+///
+/// @type Colour
+/// @access public
+
+$govie-link-active-colour: govie-colour('black') !default;
+
+/// Header surface colour
+///
+/// @type Colour
+/// @access public
+
+$govie-header-surface-colour: #004d44 !default;
+
+/// Header and footer border colour
+///
+/// @type Colour
+/// @access public
+
+$govie-header-footer-border-colour: #a39161 !default;
+
+///  Footer surface colour
+///
+/// Used by the footer component and template to give the illusion of a long
+/// footer.
+///
+/// @type Colour
+/// @access public
+
+$govie-footer-surface-colour: govie-tint(#a39161, 90) !default;
+
+/// Body background colour
+///
+/// @type Colour
+/// @access public
+
+$govie-body-background-colour: govie-colour('white') !default;

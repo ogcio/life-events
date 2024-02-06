@@ -1,0 +1,88 @@
+@include govie-exports("govie/component/details") {
+  .govie-details {
+    @include govie-font($size: 19);
+    @include govie-text-colour;
+    @include govie-responsive-margin(6, "bottom");
+
+    display: block;
+  }
+
+  .govie-details__summary {
+    // Make the focus outline shrink-wrap the text content of the summary
+    display: inline-block;
+
+    // Absolutely position the marker against this element
+    position: relative;
+
+    margin-bottom: govie-spacing(1);
+
+    // Allow for absolutely positioned marker and align with disclosed text
+    padding-left: govie-spacing(4) + $govie-border-width;
+
+    // Style the summary to look like a link...
+    color: $govie-link-colour;
+    cursor: pointer;
+
+    &:hover {
+      color: $govie-link-hover-colour;
+    }
+
+    &:focus {
+      @include govie-focused-text;
+    }
+  }
+
+  // ...but only underline the text, not the arrow
+  .govie-details__summary-text {
+    @include govie-link-decoration;
+  }
+
+  .govie-details__summary:hover .govie-details__summary-text {
+    @include govie-link-hover-decoration;
+  }
+
+  // Remove the underline when focussed to avoid duplicate borders
+  .govie-details__summary:focus .govie-details__summary-text {
+    text-decoration: none;
+  }
+
+  // Remove the default details marker so we can style our own consistently and
+  // ensure it displays in Firefox (see implementation.md for details)
+  .govie-details__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  // Append our own open / closed marker using a pseudo-element
+  .govie-details__summary:before {
+    content: "";
+    position: absolute;
+
+    top: -1px;
+    bottom: 0;
+    left: 0;
+
+    margin: auto;
+
+    @include govie-shape-arrow($direction: right, $base: 14px);
+
+    .govie-details[open] > & {
+      @include govie-shape-arrow($direction: down, $base: 14px);
+    }
+  }
+
+  .govie-details__text {
+    padding-top: govie-spacing(3);
+    padding-bottom: govie-spacing(3);
+    padding-left: govie-spacing(4);
+    border-left: $govie-border-width solid $govie-border-colour;
+  }
+
+  .govie-details__text p {
+    margin-top: 0;
+    margin-bottom: govie-spacing(4);
+  }
+
+  .govie-details__text > :last-child {
+    margin-bottom: 0;
+  }
+}
