@@ -1,0 +1,47 @@
+.ds-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.ds-icon-events {
+  mask-image: url("../assets/icons/events.svg");
+  -webkit-mask-image: url("../assets/icons/events.svg");
+}
+.ds-icon-about {
+  mask-image: url("../assets/icons/about.svg");
+  -webkit-mask-image: url("../assets/icons/about.svg");
+}
+.ds-icon-birth {
+  mask-image: url("../assets/icons/birth.svg");
+  -webkit-mask-image: url("../assets/icons/birth.svg");
+}
+.ds-icon-health {
+  mask-image: url("../assets/icons/health.svg");
+  -webkit-mask-image: url("../assets/icons/health.svg");
+}
+.ds-icon-driving {
+  mask-image: url("../assets/icons/driving.svg");
+  -webkit-mask-image: url("../assets/icons/driving.svg");
+}
+.ds-icon-employment {
+  mask-image: url("../assets/icons/employment.svg");
+  -webkit-mask-image: url("../assets/icons/employment.svg");
+}
+.ds-icon-business {
+  mask-image: url("../assets/icons/business.svg");
+  -webkit-mask-image: url("../assets/icons/business.svg");
+}
+.ds-icon-housing {
+  mask-image: url("../assets/icons/housing.svg");
+  -webkit-mask-image: url("../assets/icons/housing.svg");
+}
+.ds-icon-death {
+  mask-image: url("../assets/icons/death.svg");
+  -webkit-mask-image: url("../assets/icons/death.svg");
+}
