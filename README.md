@@ -1,7 +1,7 @@
 # Mono Repo Starter Kit
 NextJS app starter kit, using the [OGCIO](https://www.ogcio.gov.ie/) building blocks.
 
-The starter kit follows a mono repo architecture. It includes a local postgres database and a Hasura API for quick prototyping. It's up to the dev teams involved to eventually evolve or replace these services with production ready APIs.
+The starter kit follows a mono repo architecture. It's up to the dev teams involved to eventually evolve or replace these services with production ready APIs.
 The OGCIO design system requires a wrapper for usage within NextJS. This is done to ensure seamless integration of the design system while preserving the progressive enhancement capabilities.
 
 All building blocks and 3rd party services are mocked in this monorepo. 
@@ -21,3 +21,7 @@ This repo requires:
 This should start several docker containers using docker-compose. 
 
 Visit http://web.localtest.me/ 
+
+# Localisation
+
+Translation files are stored in /web/messages. Localisation works on React server components and it uses [next-intl](https://next-intl-docs.vercel.app/)
