@@ -25,21 +25,23 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  # mock-api:
-  #   build:
-  #     context: ./
-  #     dockerfile: ./apps/mock-api/Dockerfile
-  #   image: mock-api
-  #   container_name: mock-api
-  #   ports:
-  #     - 80
-  #   restart: always
-  #   environment:
-  #     NODE_ENV: development
-  #   labels:
-  #     - 'traefik.enable=true'
-  #     - 'traefik.http.routers.mock-api.rule=Host(`mock-api.localtest.me`)'
-  #     - 'traefik.http.routers.mock-api.entrypoints=web'
+  mock-api:
+    build:
+      context: ./
+      dockerfile: ./apps/mock-api/Dockerfile.dev
+    image: mock-api
+    container_name: mock-api
+    volumes:
+      - ./apps/mock-api/src:/app/apps/mock-api/src
+    ports:
+      - 80
+    restart: always
+    environment:
+      NODE_ENV: development
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.mock-api.rule=Host(`mock-api.localtest.me`)'
+      - 'traefik.http.routers.mock-api.entrypoints=web'
 
   web:
     build:

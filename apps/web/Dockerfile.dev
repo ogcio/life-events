@@ -10,8 +10,8 @@ COPY ./apps/web/package*.json /app/apps/web/
 COPY ./packages/design-system/package*.json /app/packages/design-system/
 RUN npm ci
 
-COPY ./apps/web/ /dev/apps/web/
-COPY ./packages/design-system/ /dev/packages/design-system/
+COPY ./apps/web/ /app/apps/web/
+COPY ./packages/design-system/ /app/packages/design-system/
 
 EXPOSE 80
 
