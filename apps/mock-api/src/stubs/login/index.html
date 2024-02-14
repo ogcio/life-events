@@ -1,4 +1,61 @@
-TODO login form
+<h1>Pretend Gov ID Login</h1>
 
-URL: http://mock-api.localtest.me/login/
-Remember to keep the trailing /
+<form method="POST" action="http://web.localtest.me/en/api/auth">
+  <input
+    id="id_token"
+    type="hidden"
+    name="id_token"
+    value="{createUnsecuredJwt(firstName,"
+    lastName)}
+    readonly
+  />
+  <input id="submit_btn" type="submit" value="Login" />
+</form>
+
+<script type="module">
+  import { faker } from "https://esm.sh/@faker-js/faker";
+  import * as jose from "https://cdnjs.cloudflare.com/ajax/libs/jose/5.2.2/index.js";
+
+  const createUnsecuredJwt = (firstName, lastName) => {
+    // Based on the govid jwt token, filled with some random data
+    const body = {
+      ver: "1.0",
+      iss: `https://account.mygovid.ie/123/`,
+      sub: "rayareP7P1tpbKlhdCIP3bUrvnBubjTulLynzBDwIWI=",
+      aud: "90b25d29-392c-4572-9c98-0fba36185a9f",
+      exp: Date.now() + 1000 + 60,
+      nonce:
+        "638433403850391380.ZWI3ZmJlMzgtM2U5MS00NmZhLTkxZmItZjg3MjI4OTZmZDA1NjQzNzQ5NjctZjVlYi00YjA1LThlYTItOWM3ZDhiODkwN2Y0",
+      iat: 1707743623,
+      auth_time: Date.now(),
+      email: `${firstName}.${lastName}@mail.ie`,
+      oid: Math.round(Math.random() * 10000).toString(),
+      LastJourney: "Login",
+      givenName: firstName,
+      surname: lastName,
+      mobile: "+0000000000000",
+      DSPOnlineLevel: "0",
+      DSPOnlineLevelStatic: "0",
+      AcceptedPrivacyTerms: true,
+      AcceptedPrivacyTermsVersionNumber: "7",
+      SMS2FAEnabled: false,
+      AcceptedPrivacyTermsDateTime: 1707743379,
+      trustFrameworkPolicy: "B2C_1A_signin-V5-LIVE",
+      CorrelationId: "123",
+      nbf: 1707743623,
+    };
+
+    return new jose.UnsecuredJWT(body).encode();
+  };
+
+  const firstName = faker.person.firstName();
+  const lastName = faker.person.lastName();
+  document.querySelector("#id_token").value = createUnsecuredJwt(
+    firstName,
+    lastName
+  );
+
+  document.querySelector(
+    "#submit_btn"
+  ).value = `Login ${firstName} ${lastName}`;
+</script>

@@ -1,12 +1,13 @@
-import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { redirect, RedirectType } from "next/navigation";
+import { routeDefinitions } from "../routeDefinitions";
 
-export default function Page() {
-  const t = useTranslations('Index');
-  return (
-    <div>
-      <h1>{t('title')}</h1>
-      <Link href="/about">About </Link>
-    </div>
-  );
-}
+type Props = {
+  params: {
+    locale: string;
+  };
+};
+
+export default (props: Props) => {
+  const path = `${props.params.locale}/${routeDefinitions.events.slug}`;
+  redirect(path, RedirectType.replace);
+};

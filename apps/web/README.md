@@ -25,3 +25,9 @@ pnpm create next-app --example with-playwright with-playwright-app
 ```
 
 Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+
+## Note on next design system
+
+Currently the next design system is not registered on npm thus the preferred way of installing it is by using [yalc](https://github.com/wclr/yalc).
+
+Make sure to build and yalc publish the design system, and yalc add in the web app directory.

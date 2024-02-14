@@ -57,6 +57,10 @@ services:
     restart: always
     environment:
       NODE_ENV: development
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST: postgresql
+      POSTGRES_PORT: 5432
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.web.rule=Host(`web.localtest.me`)'

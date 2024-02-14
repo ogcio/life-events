@@ -45,3 +45,7 @@
   mask-image: url("../assets/icons/death.svg");
   -webkit-mask-image: url("../assets/icons/death.svg");
 }
+.ds-icon-logout {
+  mask-image: url("../assets/icons/logout.svg");
+  -webkit-mask-image: url("../assets/icons/logout.svg");
+}

@@ -1,3 +1,8 @@
+import "design-system/dist/style.css";
+import "design-system/dist/esm/index.css";
+import Header from "./Header";
+import Footer from "./Footer";
+
 export default function RootLayout({
   children,
   params: { locale },
@@ -7,7 +12,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang={locale}>
-      <body>{children}</body>
+      <body
+        style={{ margin: "unset", minHeight: "100vh", position: "relative" }}
+      >
+        <Header />
+        <div className="govie-width-container">{children}</div>
+        <Footer />
+      </body>
     </html>
   );
 }
