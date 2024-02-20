@@ -1,5 +1,3 @@
-// import "./scss/all.scss";
-
 import { colours } from "./colours.js";
 import Icon from "./Icons/Icon.js";
 

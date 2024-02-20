@@ -5,11 +5,13 @@ import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adap
 type GovIdJwtPayload = {
   surname: string;
   givenName: string;
+  email: string;
 };
 
 type SessionTokenDecoded = {
   firstName: string;
   lastName: string;
+  email: string;
 };
 
 type Session = {
@@ -18,7 +20,7 @@ type Session = {
 
 export interface Sessions {
   get(key: string): Promise<Session | undefined>;
-  set(session: Session): Promise<string>;
+  set(session: Session, userId: string): Promise<string>;
   delete(key: string): Promise<void>;
   utils: {
     decodeJwt(token: string): SessionTokenDecoded;
@@ -46,10 +48,10 @@ export const PgSessions: Sessions = {
     const [{ token }] = query.rows;
     return { token };
   },
-  async set(session: Session) {
+  async set(session: Session, userId: string) {
     const query = await pgpool.query<{ id: string }, string[]>(
-      `INSERT INTO govid_sessions(token) VALUES($1) RETURNING id`,
-      [session.token]
+      `INSERT INTO govid_sessions(token, user_id) VALUES($1, $2) RETURNING id`,
+      [session.token, userId]
     );
 
     if (!query.rowCount) {
@@ -65,7 +67,11 @@ export const PgSessions: Sessions = {
   utils: {
     decodeJwt(token: string) {
       const decoded = jose.decodeJwt<jose.JWTPayload & GovIdJwtPayload>(token);
-      return { firstName: decoded.givenName, lastName: decoded.surname };
+      return {
+        firstName: decoded.givenName,
+        lastName: decoded.surname,
+        email: decoded.email,
+      };
     },
   },
 };

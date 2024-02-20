@@ -1,5 +1,27 @@
 {
-    "Index": {
-      "title": "Leathanach baile"
-    }
+  "Index": {
+    "title": "Leathanach baile"
+  },
+  "CheckYourDetailsForm": {
+    "title": "Check your details",
+    "formTitle": "Personal details",
+    "userName": "Name",
+    "dateOfBirth": "Date of Birth",
+    "currentAddress": "Current address",
+    "emailAddress": "Email address",
+    "mobileNumber": "Mobile number",
+    "timeAtCurrentAddress": "Time at current address",
+    "disclaimerText": "By continuing you are confirming that, to the best of your knowledge, the details you are providing are correct and you are consenting to us submitting these details to ID verification agencies to check your identity.",
+    "detailsSummary": "How will DVA use my data?",
+    "detailsText": "A long detailed description of what DVA will use the data and something about GDPR probably. We all appreciate some good copy.",
+    "submitText": "Confirm and continue",
+    "change": "Change",
+    "sex": "Sex"
+  },
+  "RenewDriversLicence": {
+    "title": "Renew your driving licence"
+  },
+  "Generic": {
+    "back": "back"
+  }
 }
