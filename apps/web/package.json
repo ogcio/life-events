@@ -7,6 +7,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "design-system": "*",
     "jose": "^5.2.2",
     "next": "latest",
     "next-intl": "^3.7.0",

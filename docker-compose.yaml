@@ -54,8 +54,8 @@ services:
     image: web
     container_name: web
     volumes:
-      - ./apps/web:/app/apps/web
-      - ./libs:/app/libs
+      - ./apps/web/app:/app/apps/web/app
+      - ./apps/web/messages:/app/apps/web/messages
     ports:
       - 80
     restart: always

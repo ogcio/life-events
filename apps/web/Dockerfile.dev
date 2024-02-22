@@ -13,6 +13,10 @@ RUN npm ci
 COPY ./apps/web/ /app/apps/web/
 COPY ./packages/design-system/ /app/packages/design-system/
 
+# hack for some reason deps aren't being installed properly
+RUN npm i @rollup/rollup-linux-arm64-musl
+RUN npm run build --workspace=packages/design-system
+
 EXPOSE 80
 
 CMD [ "npm", "--prefix", "apps/web",  "run", "dev" ]
