@@ -18,8 +18,8 @@ services:
     image: postgres:15.2-alpine
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
       - 5432:5432
     volumes:
@@ -37,14 +37,14 @@ services:
       - 80
     restart: always
     environment:
-      NODE_ENV: development
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_HOST: postgresql
-      POSTGRES_PORT: 5432
+      NODE_ENV: ${NODE_ENV:-development}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgresql}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.mock-api.rule=Host(`mock-api.localtest.me`)'
+      - 'traefik.http.routers.mock-api.rule=Host(`${API_ENDPOINT:-mock-api.localtest.me}`)'
       - 'traefik.http.routers.mock-api.entrypoints=web'
 
   web:
@@ -60,14 +60,14 @@ services:
       - 80
     restart: always
     environment:
-      NODE_ENV: development
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_HOST: postgresql
-      POSTGRES_PORT: 5432
+      NODE_ENV: ${NODE_ENV:-development}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgresql}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.web.rule=Host(`web.localtest.me`)'
+      - 'traefik.http.routers.web.rule=Host(`${WEB_ENDPOINT:-web.localtest.me}`)'
       - 'traefik.http.routers.web.entrypoints=web'
 
 volumes:
