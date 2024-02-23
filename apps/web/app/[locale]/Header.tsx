@@ -4,7 +4,11 @@ import ds from "design-system/";
 export default () => {
   return (
     <header role="banner" data-module="govie-header" className="govie-header">
-      <div className="govie-header__container govie-width-container">
+      <div
+        className="govie-header__container govie-width-container"
+        // all designs are made for 1440px
+        style={{ maxWidth: "1440px" }}
+      >
         <div className="govie-header__logo">
           <a
             href="/"
@@ -78,9 +82,20 @@ export default () => {
             </span>
           </a>
         </div>
-        <Link href="logout" style={{ float: "right" }}>
-          <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={35} />
-        </Link>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div className="govie-!-font-size-27">
+            <strong>PROTOTYPE</strong>
+          </div>
+          <Link href="/logout" style={{ float: "right" }}>
+            <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={35} />
+          </Link>
+        </div>
       </div>
     </header>
   );

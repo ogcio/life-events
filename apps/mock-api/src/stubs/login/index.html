@@ -190,7 +190,9 @@
   }
 
   usersSelectElement.addEventListener("change", (e) => {
-    const user = apiUsers.users.find((user) => user.govid_email === e.target.value);
+    const user = apiUsers.users.find(
+      (user) => user.govid_email === e.target.value
+    );
 
     let firstName, lastName;
     if (user) {

@@ -1,6 +1,7 @@
 import { Pool } from "pg";
 import * as jose from "jose";
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import { cookies } from "next/headers";
+import { redirect, RedirectType } from "next/navigation";
 
 type GovIdJwtPayload = {
   surname: string;
@@ -16,15 +17,13 @@ type SessionTokenDecoded = {
 
 type Session = {
   token: string;
+  userId: string;
 };
 
 export interface Sessions {
-  get(key: string): Promise<Session | undefined>;
-  set(session: Session, userId: string): Promise<string>;
+  get(): Promise<SessionTokenDecoded & { userId: string }>;
+  set(session: Session): Promise<string>;
   delete(key: string): Promise<void>;
-  utils: {
-    decodeJwt(token: string): SessionTokenDecoded;
-  };
 }
 
 export const pgpool = new Pool({
@@ -34,24 +33,51 @@ export const pgpool = new Pool({
   password: process.env.POSTGRES_PASSWORD,
 });
 
-export const PgSessions: Sessions = {
-  async get(key: string) {
-    const query = await pgpool.query<{ token: string }, [string]>(
-      `SELECT token FROM govid_sessions WHERE id=$1`,
-      [key]
-    );
+async function getPgSession(key: string) {
+  const query = await pgpool.query<{ token: string; userId: string }, [string]>(
+    `SELECT token, user_id AS "userId" FROM govid_sessions WHERE id=$1`,
+    [key]
+  );
 
-    if (!query.rowCount) {
-      return undefined;
+  if (!query.rowCount) {
+    return undefined;
+  }
+
+  const [{ token, userId }] = query.rows;
+  return { token, userId };
+}
+
+export function decodeJwt(token: string) {
+  const decoded = jose.decodeJwt<jose.JWTPayload & GovIdJwtPayload>(token);
+  return {
+    firstName: decoded.givenName,
+    lastName: decoded.surname,
+    email: decoded.email,
+  };
+}
+
+export const PgSessions: Sessions = {
+  async get() {
+    const sessionId = cookies().get("sessionId")?.value;
+    if (!sessionId) {
+      return redirect("/logout", RedirectType.replace);
     }
 
-    const [{ token }] = query.rows;
-    return { token };
+    const session = await getPgSession(sessionId); //PgSessions.get(sessionId);
+
+    if (!session) {
+      return redirect("/logout", RedirectType.replace);
+    }
+
+    return {
+      ...decodeJwt(session.token),
+      userId: session.userId,
+    };
   },
-  async set(session: Session, userId: string) {
+  async set(session: Session) {
     const query = await pgpool.query<{ id: string }, string[]>(
       `INSERT INTO govid_sessions(token, user_id) VALUES($1, $2) RETURNING id`,
-      [session.token, userId]
+      [session.token, session.userId]
     );
 
     if (!query.rowCount) {
@@ -63,15 +89,5 @@ export const PgSessions: Sessions = {
   },
   async delete(key: string) {
     await pgpool.query("DELETE FROM govid_sessions WHERE id=$1", [key]);
-  },
-  utils: {
-    decodeJwt(token: string) {
-      const decoded = jose.decodeJwt<jose.JWTPayload & GovIdJwtPayload>(token);
-      return {
-        firstName: decoded.givenName,
-        lastName: decoded.surname,
-        email: decoded.email,
-      };
-    },
   },
 };

@@ -2,6 +2,17 @@
   "Index": {
     "title": "Homepage"
   },
+  "BreadcrumbsBySlug": {
+    "home": "Home",
+    "renew-licence": "Renew your driving licence",
+    "confirm-application": "Confirm application",
+    "proof-of-address": "Proof of address",
+    "new-address": "Enter your new address",
+    "check-details": "Check your details",
+    "change-details": "Change your details *",
+    "payment-selection": "Payment selection",
+    "payment-success": "Payment successful"
+  },
   "CheckYourDetailsForm": {
     "title": "Check your details",
     "formTitle": "Personal details",
@@ -18,10 +29,96 @@
     "change": "Change",
     "sex": "Sex"
   },
+  "DetailsSummaryForm": {
+    "title": "Confirm your application",
+    "formTitle": "Personal details",
+    "userName": "Name",
+    "dateOfBirth": "Date of Birth",
+    "currentAddress": "Current address",
+    "emailAddress": "Email address",
+    "mobileNumber": "Mobile number",
+    "timeAtCurrentAddress": "Time at current address",
+    "disclaimerText": "By continuing you are confirming that, to the best of your knowledge, the details you are providing are correct and you are consenting to us submitting these details to ID verification agencies to check your identity.",
+    "detailsSummary": "How will DVA use my data?",
+    "detailsText": "A long detailed description of what DVA will use the data and something about GDPR probably. We all appreciate some good copy.",
+    "submitText": "Confirm and continue to payment",
+    "change": "Change",
+    "sex": "Sex",
+    "proofOfAddress": "Proof of address",
+    "type": "Type",
+    "applyingForTitle": "Applying for:",
+    "renewDriversLicence": "Driving licence renewal",
+    "bankStatement": "Bank statement",
+    "utilityBill": "Utility bill",
+    "taxDocuments": "Tax document",
+    "noDocuments": "No document"
+  },
+  "ChangeSimpleDetailsForm": {
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
+    "continue": "Continue"
+  },
+  "AddressForm": {
+    "title": "Enter your new address",
+    "warningText": "Enter your details exactly as they appear on your identity document.",
+    "warning": "Warning",
+    "addressSearchTitle": "Address search",
+    "searchHint": "Enter an Eircode or street (for example, F91 DK74 or Ballincar Heights)",
+    "findAddress": "Find address",
+    "selectHint": "Choose yor address from the drop-down list",
+    "continueWithAddress": "Continue with this address",
+    "notListedTextLink": "Address not listed - Enter manually"
+  },
+  "ProofOfAddressForm": {
+    "infoTitle": "You'll now need to upload proof of address",
+    "instructionProof": "Please upload proof of address",
+    "instructionRequirement": "This can be a recent utility bill; bank statement; or tax documents.",
+    "instructionDisclaimer": "A mobile phone bill is not acceptable.",
+    "detailsSummary": "Unable to confirm online? See how you can confirm at your local authority",
+    "detailsText": "This is the content for writing well for the web.",
+    "continue": "Continue",
+    "documentsTitle": "What identity documents do you have?",
+    "documentsDisclaimer": "This will be used to confirm your identity (must be no more than 3 months old).",
+    "utilityBill": "Utility bill",
+    "bankStatement": "Bank statement",
+    "taxDocuments": "Tax documents",
+    "or": "or",
+    "noDocuments": "I do not have any of these documents"
+  },
+  "PaymentSuccessful": {
+    "panelTitle": "Your payment was successful",
+    "panelReferenceText": "Your reference number",
+    "panelReferenceNumber": "HDJ2123F*",
+    "title": "What happens next?",
+    "body": "Once approved your driving licence will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
+    "summaryTitle": "Payment summary",
+    "paymentFor": "Payment for",
+    "totalFeePaid": "Total fee paid",
+    "dateOfTransaction": "Date of transaction",
+    "submitText": "Return to My Portal",
+    "renewDriversLicence": "Driving licence renewal"
+  },
   "RenewDriversLicence": {
     "title": "Renew your driving licence"
   },
   "Generic": {
     "back": "back"
+  },
+  "MyLifeEvents": {
+    "renewDriversLicence": {
+      "title": {
+        "base": "Renew your drivers licence",
+        "pre": "Continue your driving licence renewal",
+        "mid": "Your driving licence renewal is being processed",
+        "post": "Your driving licence is now available"
+      },
+      "description": {
+        "base": "Expires on {date} - Apply now",
+        "pre": "Expires on {date}",
+        "mid": "We will notify you again when your new licence is available in your Digital Wallet",
+        "post": "It is now available in your digital wallet and will be posted to you"
+      }
+    }
   }
 }

@@ -12,7 +12,7 @@ export const routeDefinitions = {
   driving: {
     slug: "driving",
     renewLicense: {
-      slug: "renew-license",
+      slug: "renew-licence",
       path() {
         return `${routeDefinitions.driving.slug}/${routeDefinitions.driving.renewLicense.slug}`;
       },

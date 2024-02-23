@@ -13,10 +13,22 @@ export default function RootLayout({
   return (
     <html lang={locale}>
       <body
-        style={{ margin: "unset", minHeight: "100vh", position: "relative" }}
+        style={{
+          margin: "unset",
+          minHeight: "100vh",
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+        }}
       >
         <Header />
-        <div className="govie-width-container">{children}</div>
+        {/* All designs are made for 1440 px  */}
+        <div
+          className="govie-width-container"
+          style={{ maxWidth: "1440px", width: "100%" }}
+        >
+          {children}
+        </div>
         <Footer />
       </body>
     </html>

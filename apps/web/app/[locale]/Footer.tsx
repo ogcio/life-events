@@ -5,7 +5,7 @@ export default () => (
   <footer
     className="govie-footer"
     role="contentinfo"
-    style={{ position: "absolute", bottom: 0, width: "100%" }}
+    style={{ width: "100%", marginTop: "auto" }}
   >
     <div className="govie-width-container">
       <div className="govie-footer__meta">

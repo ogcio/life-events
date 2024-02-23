@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { pgpool, PgSessions } from "../../../sessions";
+import { decodeJwt, pgpool, PgSessions } from "../../../sessions";
 import { redirect, RedirectType } from "next/navigation";
 
 export async function POST(req: Request) {
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   }
 
   // Note, this is purely conceptual. There's no signing at this time. Read description of jose.decodeJwt for further info once we're at that stage.
-  const { email, firstName, lastName } = PgSessions.utils.decodeJwt(token);
+  const { email, firstName, lastName } = decodeJwt(token);
 
   const q = await pgpool.query(
     `
@@ -30,12 +30,10 @@ export async function POST(req: Request) {
 
   const [{ id }] = q.rows;
 
-  const ssid = await PgSessions.set(
-    {
-      token,
-    },
-    id
-  );
+  const ssid = await PgSessions.set({
+    token,
+    userId: id,
+  });
 
   cookies().set({
     name: "sessionId",

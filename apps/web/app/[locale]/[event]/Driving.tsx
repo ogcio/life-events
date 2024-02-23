@@ -39,7 +39,6 @@ export default () => (
       </ul>
     </section>
     <section style={{ margin: "1rem 0", flex: 1 }}>
-      <h1 className="govie-heading-l">Open Events</h1>
       <ul className="govie-list">
         {mockOpenEvents.map((evt) => (
           <li

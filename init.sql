@@ -19,3 +19,12 @@ CREATE TABLE IF NOT EXISTS users(
     user_name TEXT NOT NULL,
     PRIMARY KEY(govid_email)
 );
+
+
+CREATE TABLE IF NOT EXISTS user_flow_data(
+    user_id UUID NOT NULL,
+    flow TEXT NOT NULL,
+    flow_data JSONB NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    primary key(flow, user_id)
+);

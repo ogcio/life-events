@@ -19,22 +19,12 @@ type Props = {
 export default async (props: Props) => {
   let children: JSX.Element | null = null;
 
-  const sessionId = cookies().get("sessionId")?.value;
-  if (!sessionId) {
-    return redirect("/logout", RedirectType.replace);
-  }
-
-  const session = await PgSessions.get(sessionId);
-
-  if (!session) {
-    return redirect("/logout", RedirectType.replace);
-  }
-
-  const { firstName, lastName } = PgSessions.utils.decodeJwt(session.token);
+  const { firstName, lastName } = await PgSessions.get();
   const useName = [firstName, lastName].join(" ");
 
   switch (props.params.event) {
     case routeDefinitions.events.slug:
+      // @ts-expect-error Async Server Component
       children = <MyLifeEvents />;
       break;
     case routeDefinitions.aboutMe.slug:
