@@ -8,5 +8,12 @@ export async function GET(request: Request) {
     PgSessions.delete(sessionCookie.value);
     cookies().delete(sessionCookie.name);
   }
-  redirect("http://mock-api.localtest.me/login/", RedirectType.replace);
+
+  const loginUrl = process.env.LOGIN_URL;
+
+  if (!loginUrl) {
+    throw Error("Missing env var LOGIN_URL");
+  }
+  
+  redirect(loginUrl, RedirectType.replace);
 }

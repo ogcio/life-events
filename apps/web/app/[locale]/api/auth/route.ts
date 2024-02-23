@@ -7,8 +7,14 @@ export async function POST(req: Request) {
   const token = formData.get("id_token")?.toString() ?? "";
   const password = formData.get("password");
 
+  const loginUrl = process.env.LOGIN_URL;
+
+  if (!loginUrl) {
+    throw Error("Missing env var LOGIN_URL");
+  }
+
   if (!token || password !== "123") {
-    redirect("http://mock-api.localtest.me/login/", RedirectType.replace);
+    redirect(loginUrl, RedirectType.replace);
   }
 
   // Note, this is purely conceptual. There's no signing at this time. Read description of jose.decodeJwt for further info once we're at that stage.
