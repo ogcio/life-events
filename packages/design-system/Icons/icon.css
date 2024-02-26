@@ -49,3 +49,11 @@
   mask-image: url("../assets/icons/logout.svg");
   -webkit-mask-image: url("../assets/icons/logout.svg");
 }
+.ds-icon-payments {
+  mask-image: url("../assets/icons/payments.svg");
+  -webkit-mask-image: url("../assets/icons/payments.svg");
+}
+.ds-icon-providers {
+  mask-image: url("../assets/icons/providers.svg");
+  -webkit-mask-image: url("../assets/icons/providers.svg");
+}

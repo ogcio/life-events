@@ -14,6 +14,8 @@ type Props = {
     | "business"
     | "housing"
     | "death"
+    | "payments"
+    | "providers"
     | "logout";
 };
 

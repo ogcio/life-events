@@ -28,3 +28,14 @@ CREATE TABLE IF NOT EXISTS user_flow_data(
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     primary key(flow, user_id)
 );
+
+CREATE TABLE IF NOT EXISTS payment_providers(
+    user_id UUID NOT NULL,
+    provider_id UUID NOT NULL DEFAULT gen_random_uuid(),
+    provider_name TEXT NOT NULL,
+    provider_type TEXT NOT NULL,
+    status TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    primary key(provider_id)
+);
+

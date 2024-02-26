@@ -120,5 +120,28 @@
         "post": "It is now available in your digital wallet and will be posted to you"
       }
     }
+  },
+  "payments": {
+    "menu": {
+      "payments": "Payments",
+      "providers": "Providers"
+    },
+    "Providers": {
+      "title": "Your payments integrations",
+      "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "add": "New account",
+      "table": {
+        "provider": "Provider",
+        "status": "Status",
+        "account": "Account",
+        "actions": "Actions",
+        "emptyMessage": "No providers"
+      },
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "unknown": "Unknown"
+      }
+    }
   }
 }
