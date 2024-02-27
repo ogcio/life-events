@@ -1,6 +1,7 @@
 import LifeEventsMenu from "./LifeEventsMenu";
 import { routeDefinitions } from "../../routeDefinitions";
 import { cookies } from "next/headers";
+import { getFeatureFlag } from "../../utils";
 
 /**
  * If a path from an event continues (not final), we can't use the menu in a next layout
@@ -10,7 +11,7 @@ import { cookies } from "next/headers";
  * about the action and thus unable to determine wether to show the menu or not.
  */
 
-export default function WithEventMenu({
+export default async function WithEventMenu({
   children,
   selectedEvent,
   userName,
@@ -19,6 +20,7 @@ export default function WithEventMenu({
   userName: string;
   selectedEvent?: string;
 }) {
+  const eventsFeatureFlag = await getFeatureFlag("events");
   return (
     <div
       style={{
@@ -33,12 +35,16 @@ export default function WithEventMenu({
           ppsn="TUV1234123"
           selected={selectedEvent ?? ""}
           options={[
-            {
-              key: "events",
-              icon: "events",
-              url: "/" + routeDefinitions.events.slug,
-              label: "Events",
-            },
+            ...(eventsFeatureFlag?.is_enabled
+              ? [
+                  {
+                    key: "events",
+                    icon: "events",
+                    url: "/" + routeDefinitions.events.slug,
+                    label: "Events",
+                  },
+                ]
+              : []),
             {
               key: "about-me",
               icon: "about",

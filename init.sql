@@ -39,3 +39,11 @@ CREATE TABLE IF NOT EXISTS payment_providers(
     primary key(provider_id)
 );
 
+
+CREATE TABLE IF NOT EXISTS feature_flags(
+    slug TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    is_enabled BOOLEAN NOT NULL DEFAULT false,
+    PRIMARY KEY(slug)
+);
