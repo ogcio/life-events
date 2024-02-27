@@ -1,15 +1,9 @@
 {
-  "private": true,
-  "scripts": {
-    "dev": "next dev -p 80",
-    "build": "next build",
-    "start": "next start",
-    "test:e2e": "playwright test"
-  },
+  "name": "feature-flags",
+  "version": "0.0.1",
+  "description": "",
   "dependencies": {
     "design-system": "*",
-    "feature-flags": "*",
-    "jose": "^5.2.2",
     "next": "latest",
     "next-intl": "^3.7.0",
     "pg": "^8.11.3",
@@ -17,8 +11,6 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.4.1",
-    "@playwright/test": "^1.40.1",
     "@types/node": "20.10.4",
     "@types/pg": "^8.11.0",
     "@types/react": "18.2.45",

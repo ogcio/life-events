@@ -143,24 +143,5 @@
         "unknown": "Unknown"
       }
     }
-  },
-  "FeatureFlags": {
-    "menu": {
-      "featureFlags": "Feature Flags"
-    },
-    "add": "Create new feature flag",
-    "delete": "Delete",
-    "enable": "Enable",
-    "disable": "Disable",
-    "title": "Feature Flags",
-    "actions": "Actions",
-    "form": {
-      "slug": "Slug",
-      "title": "Title",
-      "description": "Description",
-      "enabled": "Enabled",
-      "disabled": "Disabled",
-      "save": "Save"
-    }
   }
 }
