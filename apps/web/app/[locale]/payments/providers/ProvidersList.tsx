@@ -11,7 +11,8 @@ async function getProviders() {
     {
       provider_id: string,
       provider_name: string,
-      provider_type: string
+      provider_type: string,
+      provider_data: any,
       status: string
     },
     string[]
@@ -21,6 +22,7 @@ async function getProviders() {
         provider_id,
         provider_name,
         provider_type,
+        provider_data,
         status
       FROM payment_providers
       WHERE user_id = $1
@@ -32,6 +34,7 @@ async function getProviders() {
     return [];
   }
 
+  console.log(providersQueryResult.rows)
   return providersQueryResult.rows;
 }
 

@@ -120,5 +120,50 @@
         "post": "It is now available in your digital wallet and will be posted to you"
       }
     }
+  },
+  "payments": {
+    "menu": {
+      "payments": "Payments",
+      "providers": "Providers"
+    },
+    "Providers": {
+      "title": "Your payments integrations",
+      "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "add": "New account",
+      "table": {
+        "provider": "Provider",
+        "status": "Status",
+        "account": "Account",
+        "actions": "Actions",
+        "emptyMessage": "No providers"
+      },
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "unknown": "Unknown"
+      }
+    },
+    "AddProvider": {
+      "title": "Add payment provider",
+      "description":"Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "openbankingDescription": "OpenBanking Lorem ipsum dolor sit amet consectetur.",
+      "stripeDescription": "Stripe Lorem ipsum dolor sit amet consectetur.",
+      "worldpayDescription": "WorldPay Lorem ipsum dolor sit amet consectetur.",
+      "selectHint": "Choose the type of payment provider",
+      "label": "Payment provider",
+      "openbanking": "OpenBanking",
+      "stripe": "Stripe",
+      "worldpay": "WorldPay",
+      "continue": "Continue"
+    },
+    "AddOpenbanking": {
+      "title": "Add OpenBanking payment provider",
+      "name": "Name",
+      "nameHint": "Give a name to this payment provider to help you recognize it",
+      "accountHolderName": "Bank account holder name",
+      "sortCode": "Bank sort code",
+      "accountNumber": "Bank account number",
+      "confirm": "Confirm"
+    }
   }
 }

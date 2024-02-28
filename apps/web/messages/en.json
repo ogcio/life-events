@@ -180,6 +180,28 @@
         "disconnected": "Disconnected",
         "unknown": "Unknown"
       }
+    },
+    "AddProvider": {
+      "title": "Add payment provider",
+      "description":"Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "openbankingDescription": "OpenBanking Lorem ipsum dolor sit amet consectetur.",
+      "stripeDescription": "Stripe Lorem ipsum dolor sit amet consectetur.",
+      "worldpayDescription": "WorldPay Lorem ipsum dolor sit amet consectetur.",
+      "selectHint": "Choose the type of payment provider",
+      "label": "Payment provider",
+      "openbanking": "OpenBanking",
+      "stripe": "Stripe",
+      "worldpay": "WorldPay",
+      "continue": "Continue"
+    },
+    "AddOpenbanking": {
+      "title": "Add OpenBanking payment provider",
+      "name": "Name",
+      "nameHint": "Give a name to this payment provider to help you recognize it",
+      "accountHolderName": "Bank account holder name",
+      "sortCode": "Bank sort code",
+      "accountNumber": "Bank account number",
+      "confirm": "Confirm"
     }
   }
 }

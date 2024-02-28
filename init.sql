@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS payment_providers(
     provider_name TEXT NOT NULL,
     provider_type TEXT NOT NULL,
     status TEXT NOT NULL,
+    provider_data JSONB NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     primary key(provider_id)
 );
