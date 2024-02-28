@@ -1,7 +1,7 @@
 import LifeEventsMenu from "./LifeEventsMenu";
 import { routeDefinitions } from "../../routeDefinitions";
 import { cookies } from "next/headers";
-import { getFeatureFlag } from "../../utils";
+import { getFeatureFlag } from "feature-flags/utils";
 
 /**
  * If a path from an event continues (not final), we can't use the menu in a next layout
@@ -20,7 +20,7 @@ export default async function WithEventMenu({
   userName: string;
   selectedEvent?: string;
 }) {
-  const eventsFeatureFlag = await getFeatureFlag("events");
+  const eventsFeatureFlag = await getFeatureFlag("portal", "events");
   return (
     <div
       style={{
