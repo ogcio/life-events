@@ -65,6 +65,15 @@
     ></span>
 
     <form method="POST" action="/en/api/auth">
+      <label>
+        <input
+          type="checkbox"
+          name="public_servant"
+          style="vertical-align: middle; position: relative; bottom: 4px"
+        />
+        Public Servant
+      </label>
+
       <div
         style="
           display: flex;
@@ -77,8 +86,8 @@
           id="id_token"
           type="hidden"
           name="id_token"
-          value="{createUnsecuredJwt(firstName,"
-          lastName)}
+          value="{createUnsecuredJwt(firstName, lastName)"
+          }
           readonly
         />
 
@@ -184,7 +193,9 @@
 
   for (const u of apiUsers.users) {
     var option = document.createElement("option");
-    option.text = u.user_name;
+    option.text = `${u.user_name} ${
+      u.is_public_servant ? "(public servant)" : ""
+    }`.trim();
     option.value = u.govid_email;
     usersSelectElement.add(option);
   }
@@ -199,9 +210,13 @@
       const nameSplit = user.user_name.split(" ");
       firstName = nameSplit.at(0);
       lastName = nameSplit.slice(1).join(" ");
+      document.querySelector("input[name='public_servant']").checked =
+        user.is_public_servant;
+      document.querySelector("input[name='public_servant']").disabled = true;
     } else {
       firstName = faker.person.firstName();
       lastName = faker.person.lastName();
+      document.querySelector("input[name='public_servant']").disabled = false;
     }
 
     document.querySelector("#id_token").value = createUnsecuredJwt(

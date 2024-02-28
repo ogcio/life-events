@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS users(
     govid_email TEXT NOT NULL, -- At least in testing/mocking phase, we want to use this for fake "logging in" since id wont be very exiting to use
     govid TEXT NOT NULL,
     user_name TEXT NOT NULL,
+    is_public_servant BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY(govid_email)
 );
 

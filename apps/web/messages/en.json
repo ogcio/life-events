@@ -111,14 +111,52 @@
         "base": "Renew your drivers licence",
         "pre": "Continue your driving licence renewal",
         "mid": "Your driving licence renewal is being processed",
-        "post": "Your driving licence is now available"
+        "post": "Your driving licence is now available",
+        "rejected": "Your driving licence is rejected"
       },
       "description": {
         "base": "Expires on {date} - Apply now",
         "pre": "Expires on {date}",
         "mid": "We will notify you again when your new licence is available in your Digital Wallet",
-        "post": "It is now available in your digital wallet and will be posted to you"
+        "post": "It is now available in your digital wallet and will be posted to you",
+        "rejected": "{rejectedReason}"
       }
+    }
+  },
+  "Admin": {
+    "RenewLicenceUserDetails": {
+      "title": "Review {flow} application",
+      "renewDriversLicence": "Driving licence renewal",
+      "name": "Name",
+      "sex": "Sex",
+      "address": "Address",
+      "addressVerified": "Address verified",
+      "yes": "Yes",
+      "no": "No",
+      "proofOfAddress": "Proof of address",
+      "mobile": "Mobile",
+      "email": "Email",
+      "totalPaid": "Total paid",
+      "payDate": "Pay date",
+      "reject": "Reject",
+      "approve": "Approve"
+    },
+    "RejectReasonForm": {
+      "title": "Reason for rejection",
+      "inputLabel": "Provide the reason for the user to see",
+      "submit": "Submit",
+      "cancel": "Cancel"
+    },
+    "EventsTable": {
+      "title": "Life events",
+      "renewDriversLicence": "Driving licence renewal",
+      "nameColumn": "Name",
+      "typeColumn": "Event type",
+      "statusColumn": "Status",
+      "actionColumn": "Action",
+      "view": "View",
+      "back": "Back",
+      "eventNotFound": "Event not found"
     }
   },
   "payments": {

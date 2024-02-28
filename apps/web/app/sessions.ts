@@ -21,7 +21,9 @@ type Session = {
 };
 
 export interface Sessions {
-  get(): Promise<SessionTokenDecoded & { userId: string }>;
+  get(): Promise<
+    SessionTokenDecoded & { userId: string; publicServant: boolean }
+  >;
   set(session: Session): Promise<string>;
   delete(key: string): Promise<void>;
 }
@@ -34,8 +36,18 @@ export const pgpool = new Pool({
 });
 
 async function getPgSession(key: string) {
-  const query = await pgpool.query<{ token: string; userId: string }, [string]>(
-    `SELECT token, user_id AS "userId" FROM govid_sessions WHERE id=$1`,
+  const query = await pgpool.query<
+    { token: string; userId: string; publicServant: boolean },
+    [string]
+  >(
+    `
+      SELECT 
+        s.token, 
+        s.user_id AS "userId",
+        u.is_public_servant as "publicServant"
+      FROM govid_sessions s
+      JOIN users u on u.id = s.user_id
+      WHERE s.id=$1`,
     [key]
   );
 
@@ -43,8 +55,8 @@ async function getPgSession(key: string) {
     return undefined;
   }
 
-  const [{ token, userId }] = query.rows;
-  return { token, userId };
+  const [{ token, userId, publicServant }] = query.rows;
+  return { token, userId, publicServant };
 }
 
 export function decodeJwt(token: string) {
@@ -72,6 +84,7 @@ export const PgSessions: Sessions = {
     return {
       ...decodeJwt(session.token),
       userId: session.userId,
+      publicServant: session.publicServant,
     };
   },
   async set(session: Session) {

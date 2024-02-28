@@ -29,6 +29,8 @@ export type RenewDriversLicenceFlow = {
   totalFeePaid: string;
   dateOfPayment: string;
   confirmedApplication: string;
+  successfulAt: string;
+  rejectReason: string;
 };
 
 export function emptyRenewDriversLicenceFlow(): RenewDriversLicenceFlow {
@@ -48,5 +50,7 @@ export function emptyRenewDriversLicenceFlow(): RenewDriversLicenceFlow {
     totalFeePaid: "",
     dateOfPayment: "",
     confirmedApplication: "",
+    successfulAt: "",
+    rejectReason: "",
   };
 }

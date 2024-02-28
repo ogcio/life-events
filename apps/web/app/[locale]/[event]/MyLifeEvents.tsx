@@ -46,7 +46,14 @@ async function getFlows() {
     let titleKey = row.flow;
 
     let successful = false;
-    if (row.data.paymentId) {
+    if (row.data.successfulAt) {
+      successful = true;
+      descriptionKey += ".description.post";
+      titleKey += ".title.post";
+    } else if (row.data.rejectReason) {
+      titleKey += ".title.rejected";
+      descriptionKey += ".description.rejected";
+    } else if (row.data.paymentId) {
       successful = true;
       descriptionKey += ".description.mid";
       titleKey += ".title.mid";
@@ -60,6 +67,7 @@ async function getFlows() {
       flowKey: row.flow,
       titleKey,
       descriptionKey: descriptionKey,
+      rejectedReaason: row.data.rejectReason,
       slug: "driving/" + driversConstants.slug.renewLicence, // get from some key to slug map or object
     };
   });
@@ -133,7 +141,10 @@ export default async () => {
                   className="govie-body"
                   style={{ margin: "unset", overflow: "auto" }}
                 >
-                  {t(evt.descriptionKey, { date: "19th March" })}
+                  {t(evt.descriptionKey, {
+                    date: "19th March",
+                    rejectedReason: evt.rejectedReaason,
+                  })}
                 </p>
               </div>
             </li>
