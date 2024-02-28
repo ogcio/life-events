@@ -163,6 +163,7 @@ export default async (props: NextPageProps) => {
             addressSearchQuery={props.searchParams?.adr}
             flow={renewDriversLicenceFlowKey}
             userId={userId}
+            data={data}
           />
         </FormLayout>
       );

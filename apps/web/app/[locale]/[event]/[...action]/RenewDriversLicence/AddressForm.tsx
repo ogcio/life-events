@@ -2,10 +2,11 @@ import { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
 import { pgpool } from "../../../../sessions";
 
-type Props = {
+type Props<TData> = {
   userId: string;
   flow: string;
   addressSearchQuery?: string;
+  data: TData;
 };
 
 function SearchForm() {
@@ -37,7 +38,7 @@ function SearchForm() {
   );
 }
 
-async function SelectForm(props: Props) {
+async function SelectForm<TData>(props: Props<TData>) {
   const t = useTranslations("AddressForm");
   const selectName = "selected-addr";
   async function submitAction(formData: FormData) {
@@ -51,10 +52,22 @@ async function SelectForm(props: Props) {
     // Store this in our currently added address (might wanna do this at the "verified" step)
     await pgpool.query(
       `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('currentAddress',$1::TEXT, 'timeAtAddress','10 years')
-        WHERE user_id = $2 AND flow = $3
+        INSERT INTO user_flow_data (flow, user_id, flow_data) 
+        VALUES($1, $2, $3)
+        ON CONFLICT (flow, user_id) DO
+        UPDATE SET flow_data = user_flow_data.flow_data || jsonb_build_object('currentAddress',$4::TEXT, 'timeAtAddress','10 years')
+        WHERE user_flow_data.user_id = $2 AND user_flow_data.flow = $1
     `,
-      [selectedAddress, props.userId, props.flow]
+      [
+        props.flow,
+        props.userId,
+        JSON.stringify({
+          ...props.data,
+          currentAddress: selectedAddress,
+          timeAtAddress: "5 months",
+        }),
+        selectedAddress,
+      ]
     );
 
     redirect("/driving/renew-licence/proof-of-address");
@@ -95,7 +108,7 @@ async function SelectForm(props: Props) {
   );
 }
 
-export default (props: Props) => {
+export default <TData,>(props: Props<TData>) => {
   const t = useTranslations("AddressForm");
   const Form = props.addressSearchQuery ? SelectForm : SearchForm;
   return (
@@ -120,6 +133,7 @@ export default (props: Props) => {
           addressSearchQuery={props.addressSearchQuery}
           flow={props.flow}
           userId={props.userId}
+          data={props.data}
         />
       </div>
     </div>
