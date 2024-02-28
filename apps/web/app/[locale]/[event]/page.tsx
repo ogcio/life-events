@@ -4,7 +4,7 @@ import AboutMe from "./AboutMe";
 import Driving from "./Driving";
 import MyLifeEvents from "./MyLifeEvents";
 import { routeDefinitions } from "../../routeDefinitions";
-import { PgSessions } from "../../sessions";
+import { PgSessions } from "auth/sessions";
 
 import WithEventMenu from "./WithEventMenu";
 import { cookies } from "next/headers";

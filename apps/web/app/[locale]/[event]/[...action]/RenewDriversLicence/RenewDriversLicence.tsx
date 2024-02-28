@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
-import { pgpool, PgSessions } from "../../../../sessions";
+import { PgSessions } from "auth/sessions";
 import ActionBreadcrumb from "../ActionBreadcrumb";
 import {
   emptyRenewDriversLicenceFlow,
@@ -16,6 +16,7 @@ import PaymentPlaceholder from "./PaymentPlaceholder";
 import PaymentSuccess from "./PaymentSuccess";
 import ProofOfAddress from "./ProofOfAddress";
 import SimpleDetailsForm from "./SimpleDetailsForm";
+import { pgpool } from "../../../../dbConnection";
 
 // move
 type StepFn<TData> = (data: TData) => string | null;

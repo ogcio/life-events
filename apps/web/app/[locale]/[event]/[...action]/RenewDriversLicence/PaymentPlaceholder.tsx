@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../../sessions";
+import { pgpool } from "../../../../dbConnection";
 
 const pay = ~~(20 + Math.random() * 80);
 export default (props: { flow: string; userId: string }) => {

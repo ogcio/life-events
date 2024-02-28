@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../../sessions";
+import { pgpool } from "../../../../dbConnection";
 import {
   emptyRenewDriversLicenceFlow,
   RenewDriversLicenceFlow,

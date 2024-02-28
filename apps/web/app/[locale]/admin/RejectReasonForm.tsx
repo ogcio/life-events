@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../sessions";
+import { pgpool } from "../../dbConnection";
 import { NextPageProps } from "../[event]/[...action]/types";
 
 type Props = NextPageProps & {

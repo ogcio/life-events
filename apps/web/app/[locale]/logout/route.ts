@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
-import { PgSessions } from "../../sessions";
+import { PgSessions } from "auth/sessions";
 
 export async function GET(request: Request) {
   const sessionCookie = cookies().get("sessionId");
@@ -14,6 +14,6 @@ export async function GET(request: Request) {
   if (!loginUrl) {
     throw Error("Missing env var LOGIN_URL");
   }
-  
+
   redirect(loginUrl, RedirectType.replace);
 }

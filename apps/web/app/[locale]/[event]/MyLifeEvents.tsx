@@ -1,11 +1,12 @@
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { pgpool, PgSessions } from "../../sessions";
+import { PgSessions } from "auth/sessions";
 import OpenEventStatusImage from "./OpenEventStatusImage";
 import { driversConstants } from "./[...action]/RenewDriversLicence/constants";
 import { renewDriversLicenceFlowKey } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { RenewDriversLicenceFlow } from "./[...action]/types";
+import { pgpool } from "../../dbConnection";
 
 async function getEvents() {
   "use server";

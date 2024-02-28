@@ -9,7 +9,7 @@
   "dependencies": {
     "design-system": "*",
     "feature-flags": "*",
-    "jose": "^5.2.2",
+    "auth": "*",
     "next": "latest",
     "next-intl": "^3.7.0",
     "pg": "^8.11.3",

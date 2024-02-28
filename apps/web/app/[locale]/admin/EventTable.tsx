@@ -1,12 +1,12 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { pgpool } from "../../sessions";
 import {
   NextPageProps,
   RenewDriversLicenceFlow,
 } from "../[event]/[...action]/types";
 import RejectReasonForm from "./RejectReasonForm";
 import RenewLicenceUserDetails from "./RenewLicenceUserDetails";
+import { pgpool } from "../../dbConnection";
 
 export default async (props: NextPageProps) => {
   const t = await getTranslations("Admin.EventsTable");

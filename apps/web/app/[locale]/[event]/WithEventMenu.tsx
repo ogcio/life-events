@@ -1,6 +1,5 @@
 import LifeEventsMenu from "./LifeEventsMenu";
 import { routeDefinitions } from "../../routeDefinitions";
-import { cookies } from "next/headers";
 import { getFeatureFlag } from "feature-flags/utils";
 
 /**

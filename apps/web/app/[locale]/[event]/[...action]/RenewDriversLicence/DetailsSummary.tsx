@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
-import { pgpool } from "../../../../sessions";
+import { pgpool } from "../../../../dbConnection";
 import { RenewDriversLicenceFlow } from "../types";
 import { ListRow } from "./CheckYourDetails";
 import { driversConstants } from "./constants";

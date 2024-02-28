@@ -9,12 +9,14 @@ COPY ./package*.json /app/
 COPY ./apps/web/package*.json /app/apps/web/
 COPY ./packages/design-system/package*.json /app/packages/design-system/
 COPY ./packages/feature-flags/package*.json /app/packages/feature-flags/
+COPY ./packages/auth/package*.json /app/packages/auth/
 
 RUN npm ci
 
 COPY ./apps/web/ /app/apps/web/
 COPY ./packages/design-system/ /app/packages/design-system/
 COPY ./packages/feature-flags/ /app/packages/feature-flags/
+COPY ./packages/auth/ /app/packages/auth/
 
 # hack for some reason deps aren't being installed properly
 RUN npm i @rollup/rollup-linux-arm64-musl

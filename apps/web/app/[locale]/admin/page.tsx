@@ -1,5 +1,5 @@
 import { RedirectType, redirect } from "next/navigation";
-import { PgSessions } from "../../sessions";
+import { PgSessions } from "auth/sessions";
 import { NextPageProps } from "../[event]/[...action]/types";
 import EventTable from "./EventTable";
 

@@ -28,7 +28,7 @@ export interface Sessions {
   delete(key: string): Promise<void>;
 }
 
-export const pgpool = new Pool({
+const pgpool = new Pool({
   host: process.env.POSTGRES_HOST,
   port: Number(process.env.POSTGRES_PORT),
   user: process.env.POSTGRES_USER,
