@@ -3,7 +3,7 @@ import ds from "design-system";
 import { useTranslations } from "next-intl";
 import { NextPageProps } from "../types";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../../sessions";
+import { pgpool } from "../../../../dbConnection";
 import { revalidatePath } from "next/cache";
 import { driversConstants } from "./constants";
 

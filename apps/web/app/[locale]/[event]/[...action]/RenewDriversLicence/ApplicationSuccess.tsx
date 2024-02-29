@@ -1,6 +1,5 @@
 import { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../../sessions";
 
 type Props = {
   flow: string;

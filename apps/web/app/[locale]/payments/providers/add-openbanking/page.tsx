@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
-import { PgSessions, pgpool } from "../../../../sessions";
+import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
+import { pgpool } from "../../../../dbConnection";
 
 export default async () => {
   const t = await getTranslations("payments.AddOpenbanking");
