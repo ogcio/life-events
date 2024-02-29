@@ -18,7 +18,11 @@ export default (
     | "monthOfBirth"
     | "yearOfBirth"
     | "proofOfAddressRequest"
-  > & { flow: string; userId: string }
+  > & {
+    flow: string;
+    userId: string;
+    onSubmit?: (formData?: FormData) => Promise<void>;
+  }
 ) => {
   const t = useTranslations("DetailsSummaryForm");
   async function submitAction() {
@@ -119,7 +123,7 @@ export default (
             <div className="govie-details__text">{t("detailsText")}</div>
           </details>
 
-          <form action={submitAction}>
+          <form action={props.onSubmit || submitAction}>
             <button className="govie-button">{t("submitText")}</button>
           </form>
         </div>

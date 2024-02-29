@@ -7,6 +7,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "dayjs": "^1.11.10",
     "design-system": "*",
     "feature-flags": "*",
     "auth": "*",

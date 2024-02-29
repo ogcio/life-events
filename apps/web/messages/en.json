@@ -11,7 +11,9 @@
     "check-details": "Check your details",
     "change-details": "Change your details *",
     "payment-selection": "Payment selection",
-    "payment-success": "Payment successful"
+    "payment-success": "Payment successful",
+    "application-success": "Application successful",
+    "medical-certificate": "Medical form upload"
   },
   "CheckYourDetailsForm": {
     "title": "Check your details",
@@ -99,6 +101,17 @@
     "submitText": "Return to My Portal",
     "renewDriversLicence": "Driving licence renewal"
   },
+  "ApplicationSuccessful": {
+    "panelTitle": "Your application was successful",
+    "panelReferenceText": "Your reference number",
+    "panelReferenceNumber": "HDJ2123F*",
+    "title": "What happens next?",
+    "body": "Once approved your driving licence will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
+    "summaryTitle": "Application summary",
+    "submitText": "Return to My Portal",
+    "renewDriversLicence": "Driving licence renewal",
+    "purpose": "Application for"
+  },
   "RenewDriversLicence": {
     "title": "Renew your driving licence"
   },
@@ -123,6 +136,15 @@
       }
     }
   },
+  "MedicalForm": {
+    "infoTitle": "You are 75 or above",
+    "formTitle": "Please upload your Meidcal form",
+    "body": "Please have your Medical form ready for upload.",
+    "detailsSummary": "Unable to confirm online? See how you can confirm at your local authority",
+    "detailsText": "This is the content for writing well for the web.",
+    "continue": "Continue",
+    "uploadLabel": "Please upload here"
+  },
   "Admin": {
     "RenewLicenceUserDetails": {
       "title": "Review {flow} application",
@@ -139,7 +161,8 @@
       "totalPaid": "Total paid",
       "payDate": "Pay date",
       "reject": "Reject",
-      "approve": "Approve"
+      "approve": "Approve",
+      "birthDay": "Date of birth"
     },
     "RejectReasonForm": {
       "title": "Reason for rejection",

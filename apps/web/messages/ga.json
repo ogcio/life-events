@@ -11,7 +11,9 @@
     "check-details": "Check your details",
     "change-details": "Change your details *",
     "payment-selection": "Payment selection",
-    "payment-success": "Payment successful"
+    "payment-success": "Payment successful",
+    "application-success": "Application successful",
+    "medical-certificate": "Medical form upload"
   },
   "CheckYourDetailsForm": {
     "title": "Check your details",
@@ -99,6 +101,17 @@
     "submitText": "Return to My Portal",
     "renewDriversLicence": "Driving licence renewal"
   },
+  "ApplicationSuccessful": {
+    "panelTitle": "Your application was successful",
+    "panelReferenceText": "Your reference number",
+    "panelReferenceNumber": "HDJ2123F*",
+    "title": "What happens next?",
+    "body": "Once approved your driving licence will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
+    "summaryTitle": "Application summary",
+    "submitText": "Return to My Portal",
+    "renewDriversLicence": "Driving licence renewal",
+    "purpose": "Application for"
+  },
   "RenewDriversLicence": {
     "title": "Renew your driving licence"
   },
@@ -111,13 +124,84 @@
         "base": "Renew your drivers licence",
         "pre": "Continue your driving licence renewal",
         "mid": "Your driving licence renewal is being processed",
-        "post": "Your driving licence is now available"
+        "post": "Your driving licence is now available",
+        "rejected": "Your driving licence is rejected"
       },
       "description": {
         "base": "Expires on {date} - Apply now",
         "pre": "Expires on {date}",
         "mid": "We will notify you again when your new licence is available in your Digital Wallet",
-        "post": "It is now available in your digital wallet and will be posted to you"
+        "post": "It is now available in your digital wallet and will be posted to you",
+        "rejected": "{rejectedReason}"
+      }
+    }
+  },
+  "MedicalForm": {
+    "infoTitle": "You are 75 or above",
+    "formTitle": "Please upload your Meidcal form",
+    "body": "Please have your Medical form ready for upload.",
+    "detailsSummary": "Unable to confirm online? See how you can confirm at your local authority",
+    "detailsText": "This is the content for writing well for the web.",
+    "continue": "Continue",
+    "uploadLabel": "Please upload here"
+  },
+  "Admin": {
+    "RenewLicenceUserDetails": {
+      "title": "Review {flow} application",
+      "renewDriversLicence": "Driving licence renewal",
+      "name": "Name",
+      "sex": "Sex",
+      "address": "Address",
+      "addressVerified": "Address verified",
+      "yes": "Yes",
+      "no": "No",
+      "proofOfAddress": "Proof of address",
+      "mobile": "Mobile",
+      "email": "Email",
+      "totalPaid": "Total paid",
+      "payDate": "Pay date",
+      "reject": "Reject",
+      "approve": "Approve",
+      "birthDay": "Date of birth"
+    },
+    "RejectReasonForm": {
+      "title": "Reason for rejection",
+      "inputLabel": "Provide the reason for the user to see",
+      "submit": "Submit",
+      "cancel": "Cancel"
+    },
+    "EventsTable": {
+      "title": "Life events",
+      "renewDriversLicence": "Driving licence renewal",
+      "nameColumn": "Name",
+      "typeColumn": "Event type",
+      "statusColumn": "Status",
+      "actionColumn": "Action",
+      "view": "View",
+      "back": "Back",
+      "eventNotFound": "Event not found"
+    }
+  },
+  "payments": {
+    "menu": {
+      "payments": "Payments",
+      "providers": "Providers"
+    },
+    "Providers": {
+      "title": "Your payments integrations",
+      "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "add": "New account",
+      "table": {
+        "provider": "Provider",
+        "status": "Status",
+        "account": "Account",
+        "actions": "Actions",
+        "emptyMessage": "No providers"
+      },
+      "status": {
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "unknown": "Unknown"
       }
     }
   },

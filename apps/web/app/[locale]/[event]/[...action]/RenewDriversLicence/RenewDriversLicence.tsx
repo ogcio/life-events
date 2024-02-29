@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
@@ -9,9 +10,11 @@ import {
   RenewDriversLicenceFlow,
 } from "../types";
 import AddressForm from "./AddressForm";
+import ApplicationSuccess from "./ApplicationSuccess";
 import CheckYourDetails from "./CheckYourDetails";
 import { driversConstants } from "./constants";
 import DetailsSummary from "./DetailsSummary";
+import MedicalForm from "./MedicalForm";
 import PaymentPlaceholder from "./PaymentPlaceholder";
 import PaymentSuccess from "./PaymentSuccess";
 import ProofOfAddress from "./ProofOfAddress";
@@ -43,6 +46,32 @@ export function getNextSlug(data: RenewDriversLicenceFlow) {
     },
     ({ confirmedApplication }) =>
       !confirmedApplication ? driversConstants.slug.confirmApplication : null,
+    ({ dayOfBirth, monthOfBirth, yearOfBirth, medicalCertificate }) => {
+      const birthDay = dayjs(
+        new Date(
+          Number(yearOfBirth),
+          Number(monthOfBirth) - 1,
+          Number(dayOfBirth)
+        )
+      );
+      const yearDiff = dayjs().diff(birthDay, "years", true);
+
+      return yearDiff >= 75 && !medicalCertificate
+        ? driversConstants.slug.medicalCertificate
+        : null;
+    },
+    ({ dayOfBirth, monthOfBirth, yearOfBirth }) => {
+      const birthDay = dayjs(
+        new Date(
+          Number(yearOfBirth),
+          Number(monthOfBirth) - 1,
+          Number(dayOfBirth)
+        )
+      );
+      const yearDiff = dayjs().diff(birthDay, "years", true);
+
+      return yearDiff >= 70 ? driversConstants.slug.applicationSuccess : null;
+    },
     ({ paymentId }) =>
       !paymentId ? driversConstants.slug.paymentSelection : null,
     ({ paymentId }) =>
@@ -72,7 +101,7 @@ function FormLayout(
   }>
 ) {
   return (
-    <div style={{ width: "90%", margin: "0 auto" }}>
+    <>
       <ActionBreadcrumb action={props.action} step={props.step} />
       {props.children}
       {props.backHref && (
@@ -80,7 +109,7 @@ function FormLayout(
           Back
         </Link>
       )}
-    </div>
+    </>
   );
 }
 
@@ -129,6 +158,34 @@ export default async (props: NextPageProps) => {
   const baseActionHref = `/${props.params.locale}/driving/${actionSlug}/${nextSlug}`;
 
   switch (stepSlug) {
+    case driversConstants.slug.applicationSuccess:
+      return stepSlug === nextSlug ? (
+        <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
+          <ApplicationSuccess flow={renewDriversLicenceFlowKey} />
+        </FormLayout>
+      ) : (
+        redirect(nextSlug)
+      );
+    case driversConstants.slug.medicalCertificate:
+      return stepSlug === nextSlug ? (
+        <FormLayout
+          action={{
+            slug: actionSlug,
+            href: baseActionHref,
+          }}
+          step={stepSlug}
+          backHref={baseActionHref}
+        >
+          <MedicalForm
+            flow={renewDriversLicenceFlowKey}
+            userId={userId}
+            params={props.params}
+            searchParams={props.searchParams}
+          />
+        </FormLayout>
+      ) : (
+        redirect(nextSlug)
+      );
     case driversConstants.slug.confirmApplication:
       return stepSlug === nextSlug ? (
         <FormLayout action={{ slug: actionSlug }} step={stepSlug}>

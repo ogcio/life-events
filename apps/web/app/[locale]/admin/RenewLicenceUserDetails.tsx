@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -18,6 +19,7 @@ type Props = NextPageProps & {
   userId: string;
   totalFeePaid: string;
   dateOfPayment: string;
+  birthDay: string;
 };
 
 export default ({
@@ -34,6 +36,7 @@ export default ({
   dateOfPayment,
   totalFeePaid,
   searchParams,
+  birthDay,
 }: Props) => {
   const t = useTranslations("Admin.RenewLicenceUserDetails");
   async function approveAction(formData: FormData) {
@@ -65,6 +68,12 @@ export default ({
         <div className="govie-grid-column-two-thirds-from-desktop">
           <dl className="govie-summary-list">
             <ListRow item={{ key: t("name"), value: userName }} />
+            <ListRow
+              item={{
+                key: t("birthDay"),
+                value: dayjs(birthDay).format("DD/MM/YYYY"),
+              }}
+            />
             <ListRow item={{ key: t("sex"), value: sex }} />
             <ListRow
               item={{
@@ -84,7 +93,10 @@ export default ({
             <ListRow item={{ key: t("mobile"), value: mobile }} />
             <ListRow item={{ key: t("email"), value: email }} />
             <ListRow
-              item={{ key: t("totalPaid"), value: `€${totalFeePaid}` }}
+              item={{
+                key: t("totalPaid"),
+                value: totalFeePaid ? `€${totalFeePaid}` : "",
+              }}
             />
             <ListRow item={{ key: t("payDate"), value: dateOfPayment }} />
           </dl>

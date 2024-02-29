@@ -9,6 +9,8 @@ export const driversConstants = {
     proofOfAddress: "proof-of-address",
     paymentSelection: "payment-selection",
     paymentSuccess: "payment-success",
+    applicationSuccess: "application-success",
+    medicalCertificate: "medical-certificate",
   },
   toDateString(year: string, month: string, day: string) {
     return year && month && day ? `${day}/${month}/${year}` : "";

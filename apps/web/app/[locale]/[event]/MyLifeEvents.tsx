@@ -4,7 +4,10 @@ import Link from "next/link";
 import { PgSessions } from "auth/sessions";
 import OpenEventStatusImage from "./OpenEventStatusImage";
 import { driversConstants } from "./[...action]/RenewDriversLicence/constants";
-import { renewDriversLicenceFlowKey } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
+import {
+  getNextSlug,
+  renewDriversLicenceFlowKey,
+} from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { RenewDriversLicenceFlow } from "./[...action]/types";
 import { pgpool } from "../../dbConnection";
 
@@ -46,6 +49,8 @@ async function getFlows() {
     let descriptionKey = row.flow;
     let titleKey = row.flow;
 
+    const step = getNextSlug(row.data);
+
     let successful = false;
     if (row.data.successfulAt) {
       successful = true;
@@ -54,7 +59,12 @@ async function getFlows() {
     } else if (row.data.rejectReason) {
       titleKey += ".title.rejected";
       descriptionKey += ".description.rejected";
-    } else if (row.data.paymentId) {
+    } else if (
+      [
+        driversConstants.slug.applicationSuccess,
+        driversConstants.slug.paymentSuccess,
+      ].includes(step)
+    ) {
       successful = true;
       descriptionKey += ".description.mid";
       titleKey += ".title.mid";

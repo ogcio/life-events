@@ -31,6 +31,7 @@ export type RenewDriversLicenceFlow = {
   confirmedApplication: string;
   successfulAt: string;
   rejectReason: string;
+  medicalCertificate: string;
 };
 
 export function emptyRenewDriversLicenceFlow(): RenewDriversLicenceFlow {
@@ -52,5 +53,6 @@ export function emptyRenewDriversLicenceFlow(): RenewDriversLicenceFlow {
     confirmedApplication: "",
     successfulAt: "",
     rejectReason: "",
+    medicalCertificate: "",
   };
 }

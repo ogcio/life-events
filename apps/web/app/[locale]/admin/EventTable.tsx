@@ -18,7 +18,6 @@ export default async (props: NextPageProps) => {
         fd.flow_data    
     FROM user_flow_data fd
     JOIN users u on u.id = fd.user_id and u.is_public_servant = false
-    WHERE (fd.flow_data -> 'paymentId')::jsonb ? '' IS false
   `);
 
   if (props.searchParams && Object.keys(props.searchParams).length) {
@@ -49,6 +48,9 @@ export default async (props: NextPageProps) => {
       proofOfAddressRequest,
       totalFeePaid,
       dateOfPayment,
+      dayOfBirth,
+      monthOfBirth,
+      yearOfBirth,
     }: RenewDriversLicenceFlow = item.flow_data;
 
     const searchParamsWithRejectionOpen = new URLSearchParams(
@@ -80,6 +82,7 @@ export default async (props: NextPageProps) => {
           userId={item.id}
           userName={userName}
           searchParams={props.searchParams}
+          birthDay={`${yearOfBirth}-${monthOfBirth}-${dayOfBirth}`}
         />
 
         <Link className="govie-back-link" href="/admin">
@@ -90,7 +93,6 @@ export default async (props: NextPageProps) => {
   }
 
   const status = (flowData: RenewDriversLicenceFlow) => {
-    console.log(flowData);
     if (flowData.successfulAt) {
       return "Approved";
     }
