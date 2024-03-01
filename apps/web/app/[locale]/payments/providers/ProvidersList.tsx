@@ -1,7 +1,14 @@
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { PgSessions } from "auth/sessions";
-import ProviderStatus from "./ProviderStatus";
+import ProviderStatusTag from "./ProviderStatusTag";
 import { pgpool } from "../../../dbConnection";
+import {
+  ProviderData,
+  ProviderStatus,
+  ProviderType,
+  parseProvider,
+} from "./types";
 
 async function getProviders() {
   "use server";
@@ -12,9 +19,9 @@ async function getProviders() {
     {
       provider_id: string;
       provider_name: string;
-      provider_type: string;
-      provider_data: any;
-      status: string;
+      provider_type: ProviderType;
+      provider_data: ProviderData;
+      status: ProviderStatus;
     },
     string[]
   >(
@@ -35,8 +42,7 @@ async function getProviders() {
     return [];
   }
 
-  console.log(providersQueryResult.rows);
-  return providersQueryResult.rows;
+  return providersQueryResult.rows.map(parseProvider);
 }
 
 export default async () => {
@@ -70,18 +76,18 @@ export default async () => {
       </thead>
       <tbody className="govie-table__body">
         {providers.map((provider) => (
-          <tr className="govie-table__row">
+          <tr key={provider.id} className="govie-table__row">
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-              {provider.provider_type}
+              {provider.type}
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-              <ProviderStatus status={provider.status}></ProviderStatus>
+              <ProviderStatusTag status={provider.status}></ProviderStatusTag>
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-              {provider.provider_name}
+              {provider.name}
             </td>
-            <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s govie-table__cell--numeric">
-              12345
+            <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s govie-table__header--numeric">
+              <Link href={`providers/${provider.id}`}>{t("edit")}</Link>
             </td>
           </tr>
         ))}

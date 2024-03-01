@@ -2,10 +2,10 @@ import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
 import { pgpool } from "../../../../dbConnection";
-import OpenBankingFields from "./OpenBankingFields";
+import BankTransferFields from "./BankTransferFields";
 
 export default async () => {
-  const t = await getTranslations("payments.AddOpenbanking");
+  const t = await getTranslations("payments.AddBankTransfer");
 
   const { userId } = await PgSessions.get();
 
@@ -24,7 +24,7 @@ export default async () => {
       [
         userId,
         providerName,
-        "openbanking",
+        "banktransfer",
         "connected",
         {
           sort_code: sortCode,
@@ -42,7 +42,7 @@ export default async () => {
       <legend className="govie-fieldset__legend govie-fieldset__legend--m">
         <h1 className="govie-fieldset__heading">{t("title")}</h1>
       </legend>
-      <OpenBankingFields />
+      <BankTransferFields />
       <button
         id="button"
         type="submit"

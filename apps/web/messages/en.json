@@ -196,34 +196,60 @@
         "status": "Status",
         "account": "Account",
         "actions": "Actions",
-        "emptyMessage": "No providers"
+        "emptyMessage": "No providers",
+        "edit": "edit"
       },
       "status": {
         "connected": "Connected",
         "disconnected": "Disconnected",
         "unknown": "Unknown"
+      },
+      "edit": {
+        "save": "Save",
+        "disable": "Disable",
+        "enable": "Enable"
       }
     },
     "AddProvider": {
       "title": "Add payment provider",
       "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "openbankingDescription": "OpenBanking Lorem ipsum dolor sit amet consectetur.",
-      "stripeDescription": "Stripe Lorem ipsum dolor sit amet consectetur.",
-      "worldpayDescription": "WorldPay Lorem ipsum dolor sit amet consectetur.",
+      "openbankingDescription": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "stripeDescription": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "worldpayDescription": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
       "selectHint": "Choose the type of payment provider",
       "label": "Payment provider",
+      "banktransfer": "Manual Bank Transfer",
+      "banktransferDescription": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
       "openbanking": "OpenBanking",
       "stripe": "Stripe",
       "worldpay": "WorldPay",
-      "continue": "Continue"
+      "continue": "Continue",
+      "select": "Select"
     },
     "AddOpenbanking": {
       "title": "Add OpenBanking payment provider",
+      "editTitle": "Edit OpenBanking payment provider",
       "name": "Name",
       "nameHint": "Give a name to this payment provider to help you recognize it",
       "accountHolderName": "Bank account holder name",
+      "accountHolderNameHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
       "sortCode": "Bank sort code",
+      "sortCodeHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
       "accountNumber": "Bank account number",
+      "accountNumberHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "confirm": "Confirm"
+    },
+    "AddBankTransfer": {
+      "title": "Add Manual Bank Transfer payment provider",
+      "editTitle": "Edit Manual Bank Transfer payment provider",
+      "name": "Name",
+      "nameHint": "Give a name to this payment provider to help you recognize it",
+      "accountHolderName": "Bank account holder name",
+      "accountHolderNameHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "sortCode": "Bank sort code",
+      "sortCodeHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "accountNumber": "Bank account number",
+      "accountNumberHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
       "confirm": "Confirm"
     }
   },

@@ -1,4 +1,4 @@
-import PaymentsMenu from "./PaymentsMenu"
+import PaymentsMenu from "./PaymentsMenu";
 
 export default ({ children }) => {
   return (
@@ -12,5 +12,5 @@ export default ({ children }) => {
       <PaymentsMenu />
       {children}
     </div>
-  )
-}
+  );
+};

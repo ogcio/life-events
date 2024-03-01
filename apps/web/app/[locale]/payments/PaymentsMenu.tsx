@@ -12,7 +12,7 @@ export default () => {
       <li tabIndex={0}>
         <Link
           className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
-          href={'/payments'}
+          href={"/payments"}
           style={{
             margin: "unset",
             paddingLeft: "12px",
@@ -21,18 +21,18 @@ export default () => {
             justifyContent: "flex-start",
           }}
         >
-           <Icon
-              icon={'payments'}
-              className="govie-button__icon-left"
-              color={ds.colours.ogcio.darkGreen}
-            />
-          {t('payments')}
+          <Icon
+            icon={"payments"}
+            className="govie-button__icon-left"
+            color={ds.colours.ogcio.darkGreen}
+          />
+          {t("payments")}
         </Link>
       </li>
       <li tabIndex={1}>
         <Link
           className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
-          href={'/payments/providers'}
+          href={"/payments/providers"}
           style={{
             margin: "unset",
             paddingLeft: "12px",
@@ -41,14 +41,14 @@ export default () => {
             justifyContent: "flex-start",
           }}
         >
-           <Icon
-              icon={'providers'}
-              className="govie-button__icon-left"
-              color={ds.colours.ogcio.darkGreen}
-            />
-          {t('providers')}
+          <Icon
+            icon={"providers"}
+            className="govie-button__icon-left"
+            color={ds.colours.ogcio.darkGreen}
+          />
+          {t("providers")}
         </Link>
       </li>
     </ol>
-  )
-}
+  );
+};
