@@ -203,33 +203,10 @@
         "disconnected": "Disconnected",
         "unknown": "Unknown"
       }
-    }
-  },
-  "payments": {
-    "menu": {
-      "payments": "Payments",
-      "providers": "Providers"
-    },
-    "Providers": {
-      "title": "Your payments integrations",
-      "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "add": "New account",
-      "table": {
-        "provider": "Provider",
-        "status": "Status",
-        "account": "Account",
-        "actions": "Actions",
-        "emptyMessage": "No providers"
-      },
-      "status": {
-        "connected": "Connected",
-        "disconnected": "Disconnected",
-        "unknown": "Unknown"
-      }
     },
     "AddProvider": {
       "title": "Add payment provider",
-      "description":"Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
       "openbankingDescription": "OpenBanking Lorem ipsum dolor sit amet consectetur.",
       "stripeDescription": "Stripe Lorem ipsum dolor sit amet consectetur.",
       "worldpayDescription": "WorldPay Lorem ipsum dolor sit amet consectetur.",
@@ -248,6 +225,31 @@
       "sortCode": "Bank sort code",
       "accountNumber": "Bank account number",
       "confirm": "Confirm"
+    }
+  },
+  "EmailTemplates": {
+    "menu": {
+      "templates": "Email templates",
+      "addTemplate": "Add new template"
+    },
+    "title": "Email Templates",
+
+    "form": {
+      "addFormTitle": "Add new template",
+      "editFormTitle": "Edit this template",
+      "name": "Template name",
+      "subject": "Subject",
+      "body": "Body",
+      "save": "Save"
+    },
+    "list": {
+      "name": "Template name",
+      "subject": "Subject",
+      "actions": {
+        "label": "Actions",
+        "edit": "Edit",
+        "delete": "Delete"
+      }
     }
   }
 }

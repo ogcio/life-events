@@ -50,3 +50,10 @@ CREATE TABLE IF NOT EXISTS feature_flags(
     is_enabled BOOLEAN NOT NULL DEFAULT false,
     PRIMARY KEY(application, slug)
 );
+
+CREATE TABLE templates (
+    id UUID NOT NULL DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    body TEXT NOT NULL
+);
