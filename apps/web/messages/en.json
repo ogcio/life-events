@@ -251,6 +251,36 @@
       "accountNumber": "Bank account number",
       "accountNumberHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
       "confirm": "Confirm"
+    },
+    "Payments": {
+      "createPayment": "Create payment",
+      "transactions": "Transactions",
+      "paymentRequests": "Payment requests",
+      "table": {
+        "status": "Status",
+        "reference": "Reference",
+        "payee": "Citizen Name",
+        "amount": "Amount",
+        "date": "Date",
+        "title": "Title",
+        "paymentTitle": "Description",
+        "beneficiaryAccount": "Beneficiary Account"
+      }
+    },
+    "createPayment": {
+      "title": "Payment Setup Form",
+      "form": {
+        "title": "Title",
+        "description": "Description",
+        "beneficiaryAccount": "Beneficiary Account",
+        "reference": "Reference",
+        "amount": "Amount",
+        "currencySymbol": "€",
+        "submit": "Continue"
+      },
+      "copyLink": "Copy link",
+      "goBack": "Back to payments",
+      "paymentLink": "Payment link"
     }
   },
   "formErrors": {
@@ -286,5 +316,28 @@
         "delete": "Delete"
       }
     }
+  },
+  "PayPaymentRequest": {
+    "title": "Pay your fee",
+    "toPay": "Total to pay",
+    "payByBank": "Pay by bank app",
+    "payByBankDescription": "Make a direct payment securely from your bank app - no card needed",
+    "payByCard": "Credit/Debit card",
+    "payNow": "Pay now"
+  },
+  "PaymentRequestComplete": {
+    "title": "Your payment was successful",
+    "yourRef": "Your reference number",
+    "summary": {
+      "title": "Payment for",
+      "amount": "Totla fee paid",
+      "date": "Date of transaction"
+    },
+    "back": "Back to My Portal"
+  },
+  "PaymentRequestError": {
+    "back": "Back to My Portal",
+    "sorry": "Sorry, there was a problem",
+    "tryAgain": "Please return to My Portal and attempt the payment again"
   }
 }

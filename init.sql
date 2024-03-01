@@ -41,7 +41,6 @@ CREATE TABLE IF NOT EXISTS payment_providers(
     primary key(provider_id)
 );
 
-
 CREATE TABLE IF NOT EXISTS feature_flags(
     application TEXT NOT NULL,
     slug TEXT NOT NULL,
@@ -56,14 +55,37 @@ CREATE TABLE IF NOT EXISTS form_errors(
     flow TEXT NOT NULL,
     slug TEXT NOT NULL,
     field TEXT NOT NULL,
-    error_value TEXT, 
+    error_value TEXT,
     error_message TEXT NOT NULL
 );
-
 
 CREATE TABLE templates (
     id UUID NOT NULL DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     subject TEXT NOT NULL,
     body TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS payment_requests(
+    payment_request_id UUID NOT NULL DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    provider_id UUID NOT NULL,
+    reference TEXT NOT NULL,
+    amount NUMERIC NOT NULL,
+    status TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    primary key(payment_request_id)
+);
+
+CREATE TABLE IF NOT EXISTS payment_transactions(
+    transaction_id SERIAL NOT NULL,
+    payment_request_id UUID NOT NULL,
+    user_id UUID NOT NULL,
+    tl_payment_id TEXT NOT NULL,
+    status TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    primary key(transaction_id)
 );

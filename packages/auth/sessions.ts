@@ -41,8 +41,8 @@ async function getPgSession(key: string) {
     [string]
   >(
     `
-      SELECT 
-        s.token, 
+      SELECT
+        s.token,
         s.user_id AS "userId",
         u.is_public_servant as "publicServant"
       FROM govid_sessions s

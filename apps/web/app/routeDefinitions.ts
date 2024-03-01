@@ -22,4 +22,25 @@ export const routeDefinitions = {
   business: { slug: "business" },
   housing: { slug: "housing" },
   death: { slug: "death" },
+  paymentRequest: {
+    slug: "paymentRequest",
+    pay: {
+      slug: "pay",
+      path() {
+        return `${routeDefinitions.paymentRequest.slug}/${routeDefinitions.paymentRequest.pay.slug}`;
+      },
+    },
+    complete: {
+      slug: "complete",
+      path() {
+        return `${routeDefinitions.paymentRequest.slug}/${routeDefinitions.paymentRequest.complete.slug}`;
+      },
+    },
+    error: {
+      slug: "error",
+      path() {
+        return `${routeDefinitions.paymentRequest.slug}/${routeDefinitions.paymentRequest.error.slug}`;
+      },
+    }
+  }
 };

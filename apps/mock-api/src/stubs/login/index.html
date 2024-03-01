@@ -187,7 +187,7 @@
   import { faker } from "https://esm.sh/@faker-js/faker";
   import * as jose from "https://cdnjs.cloudflare.com/ajax/libs/jose/5.2.2/index.js";
 
-  const apiUsers = await (await fetch("/login/api/users")).json();
+  const apiUsers = await (await fetch(location.protocol + '//' + location.host + "/static/login/api/users")).json();
 
   const usersSelectElement = document.querySelector("#user_select");
 

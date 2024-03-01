@@ -22,7 +22,6 @@ export default async (props: Props) => {
 
   switch (props.params.event) {
     case routeDefinitions.events.slug:
-      // @ts-expect-error Async Server Component
       children = <MyLifeEvents />;
       break;
     case routeDefinitions.aboutMe.slug:

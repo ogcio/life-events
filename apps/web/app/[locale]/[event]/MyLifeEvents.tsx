@@ -31,7 +31,7 @@ async function getFlows() {
     string[]
   >(
     `
-      SELECT 
+      SELECT
         flow,
         flow_data as "data"
       FROM user_flow_data

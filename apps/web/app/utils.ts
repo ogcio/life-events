@@ -194,10 +194,17 @@ export async function getFormErrors(
     string[]
   >(
     `
-    DELETE FROM form_errors 
+    DELETE FROM form_errors
     WHERE user_id = $1 AND slug = $2 AND flow = $3
     RETURNING field, error_message AS "messageKey", error_value AS "errorValue"
   `,
     [userId, slug, flow]
   );
+}
+
+export function formatCurrency(amount: number) {
+  return new Intl.NumberFormat("en-IE", {
+    style: "currency",
+    currency: "EUR",
+  }).format(amount / 100);
 }

@@ -42,10 +42,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgresql}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.mock-api.rule=Host(`${API_ENDPOINT:-web.localtest.me}`) && PathPrefix(`/login`)'
-      - 'traefik.http.routers.mock-api.entrypoints=web'
+      - 'traefik.http.routers.api-static.rule=Host(`${API_ENDPOINT:-web.localtest.me}`) && PathPrefix(`/static`)'
+      - 'traefik.http.routers.api-static.entrypoints=web'
 
   web:
     build:
@@ -59,13 +60,19 @@ services:
     ports:
       - 80
     restart: always
+    env_file:
+      - path: ./.env
+        required: true
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_HOST: ${POSTGRES_HOST:-postgresql}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-      LOGIN_URL: ${LOGIN_URL:-http://web.localtest.me/login/}
+      LOGIN_URL: ${LOGIN_URL:-http://web.localtest.me/static/login/}
+      HOST_URL: ${HOST_URL:-http://web.localtest.me/}
+      TL_AUTH_SERVER_URI: ${TL_AUTH_SERVER_URI:-https://auth.truelayer-sandbox.com}
+      TL_ENVIRONMENT_URI: ${TL_ENVIRONMENT_URI:-https://api.truelayer-sandbox.com}
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.web.rule=Host(`${WEB_ENDPOINT:-web.localtest.me}`)'
