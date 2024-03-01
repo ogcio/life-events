@@ -61,8 +61,7 @@ services:
       - 80
     restart: always
     env_file:
-      - path: ./.env
-        required: true
+      - ./.env
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
