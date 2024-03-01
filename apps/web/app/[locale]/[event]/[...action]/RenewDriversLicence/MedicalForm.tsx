@@ -26,8 +26,8 @@ async function Form(props: { userId: string; flow: string }) {
     if (!medicalDocUpload.size) {
       formErrors.push({
         errorValue: "",
-        field: "medicalDocUpload",
-        messageKey: formConstants.errors.noFile,
+        field: formConstants.fieldTranslationKeys.medical,
+        messageKey: formConstants.errorTranslationKeys.noFile,
       });
     }
 
@@ -69,7 +69,9 @@ async function Form(props: { userId: string; flow: string }) {
           {Boolean(errors.rowCount) && (
             <p id="changed-name-error" className="govie-error-message">
               <span className="govie-visually-hidden">Error:</span>
-              {errorT(errors.rows.at(0)?.messageKey)}
+              {errorT(errors.rows.at(0)?.messageKey, {
+                field: errors.rows.at(0)?.field,
+              })}
             </p>
           )}
           <label className="govie-body " htmlFor="medicalDocUpload">

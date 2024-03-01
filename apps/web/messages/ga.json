@@ -284,13 +284,21 @@
     }
   },
   "formErrors": {
-    "invalidEmail": "Invalid email",
-    "empty": "Field required",
+    "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
+    "invalidField": "Enter {indArticleCheck, select, an {an} other {a}} valid {field}",
     "emptySelection": "No selection",
-    "invalidRangeMonth": "Invalid value for month",
-    "invalidRangeYear": "Invalid value for year",
-    "invalidRangeDay": "Invalid value for day",
-    "noFile": "No required file selected"
+    "noFile": "No required file selected",
+    "fields": {
+      "name": "name",
+      "email": "email address",
+      "day": "day",
+      "month": "month",
+      "year": "year",
+      "mobile": "mobile phone number",
+      "sex": "sex",
+      "address": "address",
+      "medical": "medical document"
+    }
   },
   "EmailTemplates": {
     "menu": {

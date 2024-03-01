@@ -48,7 +48,7 @@ export default async (props: {
       formErrors.push({
         errorValue: "",
         field: "identity-selection",
-        messageKey: formConstants.errors.emptySelection,
+        messageKey: formConstants.errorTranslationKeys.emptySelection,
       });
     }
 
@@ -60,7 +60,7 @@ export default async (props: {
       formErrors.push({
         errorValue: identityficationSelection,
         field: "identity-selection",
-        messageKey: formConstants.errors.noFile,
+        messageKey: formConstants.errorTranslationKeys.noFile,
       });
     }
 

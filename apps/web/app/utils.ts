@@ -8,14 +8,22 @@ export type FormError = {
 };
 
 export const formConstants = {
-  errors: {
+  errorTranslationKeys: {
     empty: "empty",
+    invalidField: "invalidField",
     emptySelection: "emptySelection",
     noFile: "noFile",
-    invalidEmail: "invalidEmail",
-    invalidRangeMonth: "invalidRangeMonth",
-    invalidRangeYear: "invalidRangeYear",
-    invalidRangeDay: "invalidRangeDay",
+  },
+  fieldTranslationKeys: {
+    name: "name",
+    email: "email",
+    day: "day",
+    month: "month",
+    year: "year",
+    mobile: "mobile",
+    sex: "sex",
+    address: "address",
+    medical: "medical",
   },
 };
 
@@ -58,7 +66,7 @@ export const formValidation = {
     if (!day?.value) {
       formErrors.push({
         field: day.field,
-        messageKey: formConstants.errors.empty,
+        messageKey: formConstants.errorTranslationKeys.empty,
         errorValue: "",
       });
     }
@@ -66,7 +74,7 @@ export const formValidation = {
     if (!month?.value) {
       formErrors.push({
         field: month.field,
-        messageKey: formConstants.errors.empty,
+        messageKey: formConstants.errorTranslationKeys.empty,
         errorValue: "",
       });
     }
@@ -74,7 +82,7 @@ export const formValidation = {
     if (!year.value) {
       formErrors.push({
         field: year.field,
-        messageKey: formConstants.errors.empty,
+        messageKey: formConstants.errorTranslationKeys.empty,
         errorValue: "",
       });
     }
@@ -86,28 +94,37 @@ export const formValidation = {
         year.value > 1900 && year.value <= new Date().getUTCFullYear();
 
       if (!isValidMonth) {
-        formErrors.push({
-          field: month.field,
-          messageKey: formConstants.errors.invalidRangeMonth,
-          errorValue: month.value?.toString() || "",
-        });
+        formErrors.push(
+          {
+            field: month.field,
+            messageKey: formConstants.errorTranslationKeys.invalidField,
+            errorValue: month.value?.toString() || "",
+          },
+          {
+            // impossible to validate a day without month
+            errorValue: day.value.toString() || "",
+            field: day.field,
+            messageKey: formConstants.errorTranslationKeys.invalidField,
+          }
+        );
       }
 
       if (!isValidYear) {
         formErrors.push({
           field: year.field,
-          messageKey: formConstants.errors.invalidRangeYear,
+          messageKey: formConstants.errorTranslationKeys.invalidField,
           errorValue: year.value?.toString() || "",
         });
       }
 
+      // Actual day validation
       if (isValidMonth && isValidYear) {
         const date = dayjs(`${year.value}-${month.value}`);
 
         if (day.value > date.daysInMonth() || day.value < 0) {
           formErrors.push({
             field: day.field,
-            messageKey: formConstants.errors.invalidRangeDay,
+            messageKey: formConstants.errorTranslationKeys.invalidField,
             errorValue: day.value?.toString() || "",
           });
         }
@@ -120,7 +137,7 @@ export const formValidation = {
       ? [
           {
             field,
-            messageKey: formConstants.errors.empty,
+            messageKey: formConstants.errorTranslationKeys.empty,
             errorValue: value?.toString() || "",
           },
         ]
@@ -131,7 +148,7 @@ export const formValidation = {
       ? [
           {
             field,
-            messageKey: formConstants.errors.empty,
+            messageKey: formConstants.errorTranslationKeys.empty,
             errorValue: value || "",
           },
         ]
@@ -141,7 +158,7 @@ export const formValidation = {
       ? [
           {
             field,
-            messageKey: formConstants.errors.invalidEmail,
+            messageKey: formConstants.errorTranslationKeys.invalidField,
             errorValue: value || "",
           },
         ]

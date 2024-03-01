@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
+  formConstants,
   getFormErrors,
   insertFormErrors,
   urlConstants,
@@ -34,9 +35,9 @@ async function SearchForm<TData>(props: Props<TData>) {
       await insertFormErrors(
         [
           {
-            messageKey: "empty",
+            messageKey: formConstants.errorTranslationKeys.empty,
             errorValue: "",
-            field: "currentAddress",
+            field: formConstants.fieldTranslationKeys.address,
           },
         ],
         props.userId,
@@ -66,7 +67,10 @@ async function SearchForm<TData>(props: Props<TData>) {
         {addressError && (
           <p id="input-field-error" className="govie-error-message">
             <span className="govie-visually-hidden">Error:</span>
-            {errorT(addressError.messageKey)}
+            {errorT(addressError.messageKey, {
+              field: errorT("fields.address"),
+              indArticleCheck: "an",
+            })}
           </p>
         )}
         <input

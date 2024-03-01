@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { pgpool } from "../../../../dbConnection";
 import {
+  formConstants,
   FormError,
   formValidation,
   getFormErrors,
@@ -13,12 +14,6 @@ import {
   emptyRenewDriversLicenceFlow,
   RenewDriversLicenceFlow,
 } from "../types";
-
-const errorMap = {
-  dayOfBirth: "All date fields must be filled",
-  monthOfBirth: "All date fields must be filled",
-  yearOfBirth: "All date fields must be filled",
-};
 
 export default async (
   props: Pick<
@@ -49,6 +44,7 @@ export default async (
     // Validations
     // Date of birth
     const dayOfBirth = parseInt(formData.get("dayOfBirth")?.toString() || "");
+
     const monthOfBirth = parseInt(
       formData.get("monthOfBirth")?.toString() || ""
     );
@@ -56,27 +52,50 @@ export default async (
 
     formErrors.push(
       ...formValidation.dateErrors(
-        { field: "yearOfBirth", value: yearOfBirth },
-        { field: "monthOfBirth", value: monthOfBirth },
-        { field: "dayOfBirth", value: dayOfBirth }
+        { field: formConstants.fieldTranslationKeys.year, value: yearOfBirth },
+        {
+          field: formConstants.fieldTranslationKeys.month,
+          value: monthOfBirth,
+        },
+        { field: formConstants.fieldTranslationKeys.day, value: dayOfBirth }
       )
     );
 
     // Name
     const userName = formData.get("userName")?.toString();
-    formErrors.push(...formValidation.stringNotEmpty("userName", userName));
+    formErrors.push(
+      ...formValidation.stringNotEmpty(
+        formConstants.fieldTranslationKeys.name,
+        userName
+      )
+    );
 
     // Email
     const email = formData.get("email")?.toString();
-    formErrors.push(...formValidation.emailErrors("email", email));
+    formErrors.push(
+      ...formValidation.emailErrors(
+        formConstants.fieldTranslationKeys.email,
+        email
+      )
+    );
 
     // Phone
     const phone = formData.get("mobile")?.toString();
-    formErrors.push(...formValidation.stringNotEmpty("mobile", phone));
+    formErrors.push(
+      ...formValidation.stringNotEmpty(
+        formConstants.fieldTranslationKeys.mobile,
+        phone
+      )
+    );
 
     // Sex
     const sex = formData.get("sex")?.toString();
-    formErrors.push(...formValidation.stringNotEmpty("sex", sex));
+    formErrors.push(
+      ...formValidation.stringNotEmpty(
+        formConstants.fieldTranslationKeys.sex,
+        sex
+      )
+    );
 
     if (formErrors.length) {
       await insertFormErrors(
@@ -167,16 +186,36 @@ export default async (
     return redirect(props.urlBase);
   }
 
-  const dateOfBirthError = errors.rows.find((row) =>
-    ["dayOfBirth", "monthOfBirth", "yearOfBirth"].includes(row.field)
+  // const dateOfBirthError = errors.rows.find((row) =>
+  //   ["dayOfBirth", "monthOfBirth", "yearOfBirth"].includes(row.field)
+  // );
+  const nameError = errors.rows.find(
+    (row) => row.field === formConstants.fieldTranslationKeys.name
   );
-  const nameError = errors.rows.find((row) => row.field === "userName");
-  const emailError = errors.rows.find((row) => row.field === "email");
-  const phoneError = errors.rows.find((row) => row.field === "mobile");
-  const sexError = errors.rows.find((row) => row.field === "sex");
-  const dayError = errors.rows.find((row) => row.field === "dayOfBirth");
-  const monthError = errors.rows.find((row) => row.field === "monthOfBirth");
-  const yearError = errors.rows.find((row) => row.field === "yearOfBirth");
+  const emailError = errors.rows.find(
+    (row) => row.field === formConstants.fieldTranslationKeys.email
+  );
+  const phoneError = errors.rows.find(
+    (row) => row.field === formConstants.fieldTranslationKeys.mobile
+  );
+  const sexError = errors.rows.find(
+    (row) => row.field === formConstants.fieldTranslationKeys.sex
+  );
+
+  const dayError = errors.rows.find(
+    (row) => row.field === formConstants.fieldTranslationKeys.day
+  );
+  const monthError = errors.rows.find(
+    (row) => row.field === formConstants.fieldTranslationKeys.month
+  );
+  const yearError = errors.rows.find(
+    (row) => row.field === formConstants.fieldTranslationKeys.year
+  );
+
+  const dateErrors: FormError[] = [];
+  yearError && dateErrors.push(yearError);
+  monthError && dateErrors.push(monthError);
+  dayError && dateErrors.push(dayError);
 
   return (
     <div className="govie-grid-row">
@@ -198,7 +237,10 @@ export default async (
             {nameError && (
               <p id="input-field-error" className="govie-error-message">
                 <span className="govie-visually-hidden">Error:</span>
-                {errorT(nameError.messageKey)}
+                {errorT(nameError.messageKey, {
+                  field: errorT(`fields.${nameError.field}`),
+                  indArticleCheck: "",
+                })}
               </p>
             )}
             <input
@@ -214,11 +256,7 @@ export default async (
 
           <div
             className={`govie-form-group ${
-              ["dayOfBirth", "monthOfBirth", "yearOfBirth"].some((key) =>
-                errors.rows?.some((row) => row.field === key)
-              )
-                ? "govie-form-group--error"
-                : ""
+              Boolean(dateErrors.length) ? "govie-form-group--error" : ""
             }`}
           >
             <h1 className="govie-label-wrapper">
@@ -229,9 +267,12 @@ export default async (
                 {t("dateOfBirth")}
               </label>
             </h1>
-            {dateOfBirthError && (
+            {Boolean(dateErrors.length) && (
               <p className="govie-error-message">
-                {errorT(dateOfBirthError.messageKey)}
+                {errorT(dateErrors.at(0)?.messageKey, {
+                  field: errorT(`fields.${dateErrors.at(0)?.field}`),
+                  indArticleCheck: "",
+                })}
               </p>
             )}
 
@@ -318,7 +359,14 @@ export default async (
             {emailError && (
               <p id="input-field-error" className="govie-error-message">
                 <span className="govie-visually-hidden">Error:</span>
-                {errorT(emailError.messageKey)}
+                {errorT(emailError.messageKey, {
+                  field: errorT(`fields.${emailError.field}`),
+                  indArticleCheck:
+                    emailError.messageKey ===
+                    formConstants.errorTranslationKeys.empty
+                      ? "an"
+                      : "",
+                })}
               </p>
             )}
             <input
@@ -345,7 +393,10 @@ export default async (
             {phoneError && (
               <p id="input-field-error" className="govie-error-message">
                 <span className="govie-visually-hidden">Error:</span>
-                {errorT(phoneError.messageKey)}
+                {errorT(phoneError.messageKey, {
+                  field: errorT(`fields.${phoneError.field}`),
+                  indArticleCheck: "",
+                })}
               </p>
             )}
             <input
@@ -372,7 +423,10 @@ export default async (
             {sexError && (
               <p id="input-field-error" className="govie-error-message">
                 <span className="govie-visually-hidden">Error:</span>
-                {errorT(sexError.messageKey)}
+                {errorT(sexError.messageKey, {
+                  field: errorT(`fields.${sexError.field}`),
+                  indArticleCheck: "",
+                })}
               </p>
             )}
             <input
