@@ -262,9 +262,9 @@ export default async (props: NextPageProps) => {
             sex={data.sex}
             userName={data.userName}
             email={data.email}
-            dateOfBirth={dayjs(
-              `${data.yearOfBirth}-${data.monthOfBirth}-${data.dayOfBirth}`
-            ).format("DD/MM/YYYY")}
+            dayOfBirth={data.dayOfBirth}
+            monthOfBirth={data.monthOfBirth}
+            yearOfBirth={data.yearOfBirth}
             mobile={data.mobile}
             urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
             currentAddress={data.currentAddress}

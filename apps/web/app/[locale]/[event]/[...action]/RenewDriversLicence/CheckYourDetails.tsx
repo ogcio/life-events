@@ -2,6 +2,7 @@
  * This component will probably be a generic one since it's likely to be used in a lot
  * of journeys.
  */
+import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 
 export const ListRow = ({
@@ -29,7 +30,9 @@ type Props = {
   email: string;
   sex: string;
   mobile: string;
-  dateOfBirth: string;
+  yearOfBirth: string;
+  monthOfBirth: string;
+  dayOfBirth: string;
   urlBase: string;
   currentAddress: string;
   timeAtAddress: string;
@@ -39,6 +42,12 @@ export default (props: Props) => {
 
   const changeDetailsHref = `${props.urlBase}/change-details`;
   const changeAddressHref = `${props.urlBase}/new-address`;
+  const dateOfBirth =
+    props.dayOfBirth && props.monthOfBirth && props.yearOfBirth
+      ? dayjs(
+          `${props.yearOfBirth}-${props.monthOfBirth}-${props.dayOfBirth}`
+        ).format("DD/MM/YYYY")
+      : "";
   return (
     <>
       <div className="govie-grid-row">
@@ -56,7 +65,7 @@ export default (props: Props) => {
             />
             <ListRow
               change={{ key: t("change"), value: changeDetailsHref }}
-              item={{ key: t("dateOfBirth"), value: props.dateOfBirth }}
+              item={{ key: t("dateOfBirth"), value: dateOfBirth }}
             />
             <ListRow
               change={{ key: t("change"), value: changeAddressHref }}
