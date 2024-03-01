@@ -1,16 +1,26 @@
 import { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
 import ds from "design-system";
-import { hexToRgba } from "../../../../utils";
+import {
+  formConstants,
+  FormError,
+  getFormErrors,
+  hexToRgba,
+  insertFormErrors,
+  urlConstants,
+} from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
+import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 
-export default (props: {
+export default async (props: {
   step?: string;
   did?: string;
   userId: string;
   flow: string;
 }) => {
-  const t = useTranslations("ProofOfAddressForm");
+  const t = await getTranslations("ProofOfAddressForm");
+  const errorT = await getTranslations("formErrors");
   async function submitAction() {
     "use server";
     /**
@@ -26,9 +36,45 @@ export default (props: {
 
   async function finalSubmitAction(formData: FormData) {
     "use server";
-    const identityficationSelection = formData.get("identity-selection");
+    const identityficationSelection = formData
+      .get("identity-selection")
+      ?.toString();
 
-    // Let's store the proofRequest state
+    const poaFile = formData.get("poa-file") as File;
+
+    const formErrors: FormError[] = [];
+
+    if (!identityficationSelection) {
+      formErrors.push({
+        errorValue: "",
+        field: "identity-selection",
+        messageKey: formConstants.errors.emptySelection,
+      });
+    }
+
+    if (
+      identityficationSelection &&
+      identityficationSelection !== "noDocuments" &&
+      !poaFile.size
+    ) {
+      formErrors.push({
+        errorValue: identityficationSelection,
+        field: "identity-selection",
+        messageKey: formConstants.errors.noFile,
+      });
+    }
+
+    if (formErrors.length) {
+      await insertFormErrors(
+        formErrors,
+        props.userId,
+        urlConstants.slug.proofOfAddress,
+        props.flow
+      );
+
+      return revalidatePath("/");
+    }
+
     await pgpool.query(
       `
           UPDATE user_flow_data SET flow_data = jsonb_set(flow_data, '{proofOfAddressRequest}', $1)
@@ -39,94 +85,121 @@ export default (props: {
     redirect("/driving/renew-licence");
   }
   if (parseInt(props?.step ?? "") === 2) {
+    const errors = await getFormErrors(
+      props.userId,
+      urlConstants.slug.proofOfAddress,
+      props.flow
+    );
+
     return (
       <>
         <div className="govie-heading-l">{t("documentsTitle")}</div>
-        <p className="govie-body">{t("documentsDisclaimer")}</p>
         <form action={finalSubmitAction}>
-          <div className="govie-radios govie-radios--large govie-form-group">
-            <div className="govie-radios__item">
-              <input
-                id="utilityBill"
-                name="identity-selection"
-                type="radio"
-                value="utilityBill"
-                data-aria-controls="conditional-utilityBill"
-                className="govie-radios__input"
-              />
-              <label
-                className="govie-label--s govie-radios__label"
-                htmlFor="utilityBill"
-              >
-                {t("utilityBill")}
-              </label>
-            </div>
+          <div
+            className={`govie-form-group ${
+              Boolean(errors.rowCount) ? "govie-form-group--error" : ""
+            }`.trim()}
+          >
+            {Boolean(errors.rowCount) && (
+              <p id="changed-name-error" className="govie-error-message">
+                <span className="govie-visually-hidden">Error:</span>
+                {errorT(errors.rows.at(0)?.messageKey)}
+              </p>
+            )}
+            <p className="govie-body">{t("documentsDisclaimer")}</p>
+            <div className="govie-radios govie-radios--large govie-form-group">
+              <div className="govie-radios__item">
+                <input
+                  id="utilityBill"
+                  name="identity-selection"
+                  type="radio"
+                  value="utilityBill"
+                  data-aria-controls="conditional-utilityBill"
+                  className="govie-radios__input"
+                  defaultChecked={
+                    errors.rows.at(0)?.errorValue === "utilityBill"
+                  }
+                />
+                <label
+                  className="govie-label--s govie-radios__label"
+                  htmlFor="utilityBill"
+                >
+                  {t("utilityBill")}
+                </label>
+              </div>
 
-            <div className="govie-radios__item">
-              <input
-                id="bankStatement"
-                name="identity-selection"
-                type="radio"
-                value="bankStatement"
-                data-aria-controls="conditional-bankStatement"
-                className="govie-radios__input"
-              />
-              <label
-                className="govie-label--s govie-radios__label"
-                htmlFor="bankStatement"
-              >
-                {t("bankStatement")}
-              </label>
-            </div>
+              <div className="govie-radios__item">
+                <input
+                  id="bankStatement"
+                  name="identity-selection"
+                  type="radio"
+                  value="bankStatement"
+                  data-aria-controls="conditional-bankStatement"
+                  className="govie-radios__input"
+                  defaultChecked={
+                    errors.rows.at(0)?.errorValue === "bankStatement"
+                  }
+                />
+                <label
+                  className="govie-label--s govie-radios__label"
+                  htmlFor="bankStatement"
+                >
+                  {t("bankStatement")}
+                </label>
+              </div>
 
-            <div className="govie-radios__item">
-              <input
-                id="taxDocuments"
-                name="identity-selection"
-                type="radio"
-                value="taxDocuments"
-                data-aria-controls="conditional-taxDocuments"
-                className="govie-radios__input"
-              />
-              <label
-                className="govie-label--s govie-radios__label"
-                htmlFor="taxDocuments"
-              >
-                {t("taxDocuments")}
-              </label>
-            </div>
+              <div className="govie-radios__item">
+                <input
+                  id="taxDocuments"
+                  name="identity-selection"
+                  type="radio"
+                  value="taxDocuments"
+                  data-aria-controls="conditional-taxDocuments"
+                  className="govie-radios__input"
+                  defaultChecked={
+                    errors.rows.at(0)?.errorValue === "taxDocuments"
+                  }
+                />
+                <label
+                  className="govie-label--s govie-radios__label"
+                  htmlFor="taxDocuments"
+                >
+                  {t("taxDocuments")}
+                </label>
+              </div>
 
-            <div className="govie-form-group">
-              <label className="govie-body " htmlFor="example-file-upload">
-                Please upload here
-              </label>
-              <div id="example-file-upload-hint" className="govie-hint"></div>
-              <input
-                className="govie-file-upload"
-                id="example-file-upload"
-                name="example-file-upload"
-                type="file"
-                aria-describedby="example-file-upload-hint"
-                content="Choose file"
-              />
-            </div>
+              <div className="govie-form-group">
+                <label className="govie-body " htmlFor="example-file-upload">
+                  Please upload here
+                </label>
+                <div id="poa-file-hint" className="govie-hint"></div>
+                <input
+                  className="govie-file-upload"
+                  id="poa-file"
+                  name="poa-file"
+                  type="file"
+                  aria-describedby="poa-file-hint"
+                  content="Choose file"
+                />
+              </div>
 
-            <div className="govie-radios__divider">{t("or")}</div>
+              <div className="govie-radios__divider">{t("or")}</div>
 
-            <div className="govie-radios__item">
-              <input
-                id="noDocuments"
-                name="identity-selection"
-                type="radio"
-                value="noDocuments"
-                className="govie-radios__input"
-              />
-              <label
-                className="govie-label--s govie-radios__label"
-                htmlFor="noDocuments"
-              >
-                {t("noDocuments")}
-              </label>
+              <div className="govie-radios__item">
+                <input
+                  id="noDocuments"
+                  name="identity-selection"
+                  type="radio"
+                  value="noDocuments"
+                  className="govie-radios__input"
+                />
+                <label
+                  className="govie-label--s govie-radios__label"
+                  htmlFor="noDocuments"
+                >
+                  {t("noDocuments")}
+                </label>
+              </div>
             </div>
           </div>
           <button type="submit" className="govie-button">

@@ -1,16 +1,46 @@
-import { hexToRgba } from "../../../../utils";
+import {
+  formConstants,
+  FormError,
+  getFormErrors,
+  hexToRgba,
+  insertFormErrors,
+  urlConstants,
+} from "../../../../utils";
 import ds from "design-system";
 import { useTranslations } from "next-intl";
 import { NextPageProps } from "../types";
 import { redirect } from "next/navigation";
 import { pgpool } from "../../../../dbConnection";
 import { revalidatePath } from "next/cache";
-import { driversConstants } from "./constants";
+import { getTranslations } from "next-intl/server";
 
-function Form(props: { userId: string; flow: string }) {
-  const t = useTranslations("MedicalForm");
-  async function submitAction() {
+async function Form(props: { userId: string; flow: string }) {
+  const t = await getTranslations("MedicalForm");
+  const errorT = await getTranslations("formErrors");
+  async function submitAction(formData: FormData) {
     "use server";
+
+    const formErrors: FormError[] = [];
+    const medicalDocUpload = formData.get("medicalDocUpload") as File;
+
+    if (!medicalDocUpload.size) {
+      formErrors.push({
+        errorValue: "",
+        field: "medicalDocUpload",
+        messageKey: formConstants.errors.noFile,
+      });
+    }
+
+    if (formErrors.length) {
+      await insertFormErrors(
+        formErrors,
+        props.userId,
+        urlConstants.slug.medicalCertificate,
+        props.flow
+      );
+      return revalidatePath("/");
+    }
+
     await pgpool.query(
       `
         UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('medicalCertificate','placeholder')
@@ -18,13 +48,30 @@ function Form(props: { userId: string; flow: string }) {
     `,
       [props.userId, props.flow]
     );
-    revalidatePath("/" + driversConstants.slug.medicalCertificate);
+    revalidatePath("/" + urlConstants.slug.medicalCertificate);
   }
+
+  const errors = await getFormErrors(
+    props.userId,
+    urlConstants.slug.medicalCertificate,
+    props.flow
+  );
+
   return (
     <>
       <div className="govie-heading-l">{t("formTitle")}</div>
       <form action={submitAction}>
-        <div className="govie-form-group">
+        <div
+          className={`govie-form-group ${
+            Boolean(errors.rowCount) ? "govie-form-group--error" : ""
+          }`.trim()}
+        >
+          {Boolean(errors.rowCount) && (
+            <p id="changed-name-error" className="govie-error-message">
+              <span className="govie-visually-hidden">Error:</span>
+              {errorT(errors.rows.at(0)?.messageKey)}
+            </p>
+          )}
           <label className="govie-body " htmlFor="medicalDocUpload">
             {t("uploadLabel")}
           </label>
@@ -81,6 +128,7 @@ function Info() {
 
 export default (props: NextPageProps & { userId: string; flow: string }) => {
   return props.searchParams?.step ? (
+    // @ts-expect-error Async Server Component
     <Form flow={props.flow} userId={props.userId} />
   ) : (
     <Info />

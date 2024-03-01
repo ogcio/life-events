@@ -51,6 +51,16 @@ CREATE TABLE IF NOT EXISTS feature_flags(
     PRIMARY KEY(application, slug)
 );
 
+CREATE TABLE IF NOT EXISTS form_errors(
+    user_id UUID NOT NULL,
+    flow TEXT NOT NULL,
+    slug TEXT NOT NULL,
+    field TEXT NOT NULL,
+    error_value TEXT, 
+    error_message TEXT NOT NULL
+);
+
+
 CREATE TABLE templates (
     id UUID NOT NULL DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,

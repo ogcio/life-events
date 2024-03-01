@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { routeDefinitions } from "../../../../routeDefinitions";
+import { appConstants } from "../../../../constants";
 import { PgSessions } from "auth/sessions";
+import { urlConstants } from "../../../../utils";
 import ActionBreadcrumb from "../ActionBreadcrumb";
 import {
   emptyRenewDriversLicenceFlow,
@@ -12,7 +13,6 @@ import {
 import AddressForm from "./AddressForm";
 import ApplicationSuccess from "./ApplicationSuccess";
 import CheckYourDetails from "./CheckYourDetails";
-import { driversConstants } from "./constants";
 import DetailsSummary from "./DetailsSummary";
 import MedicalForm from "./MedicalForm";
 import PaymentPlaceholder from "./PaymentPlaceholder";
@@ -42,10 +42,10 @@ export function getNextSlug(data: RenewDriversLicenceFlow) {
       ) {
         return null;
       }
-      return driversConstants.slug.checkDetails;
+      return urlConstants.slug.checkDetails;
     },
     ({ confirmedApplication }) =>
-      !confirmedApplication ? driversConstants.slug.confirmApplication : null,
+      !confirmedApplication ? urlConstants.slug.confirmApplication : null,
     ({ dayOfBirth, monthOfBirth, yearOfBirth, medicalCertificate }) => {
       const birthDay = dayjs(
         new Date(
@@ -56,8 +56,9 @@ export function getNextSlug(data: RenewDriversLicenceFlow) {
       );
       const yearDiff = dayjs().diff(birthDay, "years", true);
 
-      return yearDiff >= 75 && !medicalCertificate
-        ? driversConstants.slug.medicalCertificate
+      return yearDiff >= appConstants.driverLicenceMedicalFormAgeThreshold &&
+        !medicalCertificate
+        ? urlConstants.slug.medicalCertificate
         : null;
     },
     ({ dayOfBirth, monthOfBirth, yearOfBirth }) => {
@@ -70,12 +71,12 @@ export function getNextSlug(data: RenewDriversLicenceFlow) {
       );
       const yearDiff = dayjs().diff(birthDay, "years", true);
 
-      return yearDiff >= 70 ? driversConstants.slug.applicationSuccess : null;
+      return yearDiff >= appConstants.driverLicencePaymentAgeThreshold
+        ? urlConstants.slug.applicationSuccess
+        : null;
     },
-    ({ paymentId }) =>
-      !paymentId ? driversConstants.slug.paymentSelection : null,
-    ({ paymentId }) =>
-      paymentId ? driversConstants.slug.paymentSuccess : null,
+    ({ paymentId }) => (!paymentId ? urlConstants.slug.paymentSelection : null),
+    ({ paymentId }) => (paymentId ? urlConstants.slug.paymentSuccess : null),
     () => "success",
   ];
 
@@ -158,7 +159,7 @@ export default async (props: NextPageProps) => {
   const baseActionHref = `/${props.params.locale}/driving/${actionSlug}/${nextSlug}`;
 
   switch (stepSlug) {
-    case driversConstants.slug.applicationSuccess:
+    case urlConstants.slug.applicationSuccess:
       return stepSlug === nextSlug ? (
         <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
           <ApplicationSuccess flow={renewDriversLicenceFlowKey} />
@@ -166,7 +167,7 @@ export default async (props: NextPageProps) => {
       ) : (
         redirect(nextSlug)
       );
-    case driversConstants.slug.medicalCertificate:
+    case urlConstants.slug.medicalCertificate:
       return stepSlug === nextSlug ? (
         <FormLayout
           action={{
@@ -186,7 +187,7 @@ export default async (props: NextPageProps) => {
       ) : (
         redirect(nextSlug)
       );
-    case driversConstants.slug.confirmApplication:
+    case urlConstants.slug.confirmApplication:
       return stepSlug === nextSlug ? (
         <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
           <DetailsSummary
@@ -207,7 +208,7 @@ export default async (props: NextPageProps) => {
       ) : (
         redirect(nextSlug)
       );
-    case driversConstants.slug.newAddress:
+    case urlConstants.slug.newAddress:
       return (
         <FormLayout
           action={{
@@ -225,7 +226,7 @@ export default async (props: NextPageProps) => {
           />
         </FormLayout>
       );
-    case driversConstants.slug.changeDetails:
+    case urlConstants.slug.changeDetails:
       return (
         <FormLayout
           action={{
@@ -235,6 +236,7 @@ export default async (props: NextPageProps) => {
           step={stepSlug}
           backHref={baseActionHref}
         >
+          {/* @ts-expect-error Async Server Component */}
           <SimpleDetailsForm
             userId={userId}
             email={data.email}
@@ -244,11 +246,12 @@ export default async (props: NextPageProps) => {
             yearOfBirth={data.yearOfBirth}
             sex={data.sex}
             mobile={data.mobile}
+            flow={renewDriversLicenceFlowKey}
             urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
           />
         </FormLayout>
       );
-    case driversConstants.slug.checkDetails:
+    case urlConstants.slug.checkDetails:
       return (
         <FormLayout
           action={{ slug: actionSlug }}
@@ -259,11 +262,9 @@ export default async (props: NextPageProps) => {
             sex={data.sex}
             userName={data.userName}
             email={data.email}
-            dateOfBirth={driversConstants.toDateString(
-              data.yearOfBirth,
-              data.monthOfBirth,
-              data.dayOfBirth
-            )}
+            dateOfBirth={dayjs(
+              `${data.yearOfBirth}-${data.monthOfBirth}-${data.dayOfBirth}`
+            ).format("DD/MM/YYYY")}
             mobile={data.mobile}
             urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
             currentAddress={data.currentAddress}
@@ -271,7 +272,7 @@ export default async (props: NextPageProps) => {
           />
         </FormLayout>
       );
-    case driversConstants.slug.proofOfAddress:
+    case urlConstants.slug.proofOfAddress:
       return (
         <FormLayout
           action={{
@@ -281,6 +282,7 @@ export default async (props: NextPageProps) => {
           step={stepSlug}
           backHref={baseActionHref}
         >
+          {/* @ts-expect-error Async Server Component */}
           <ProofOfAddress
             step={props.searchParams?.step}
             flow={renewDriversLicenceFlowKey}
@@ -289,7 +291,7 @@ export default async (props: NextPageProps) => {
         </FormLayout>
       );
 
-    case driversConstants.slug.paymentSelection:
+    case urlConstants.slug.paymentSelection:
       return nextSlug === stepSlug ? (
         <FormLayout
           action={{ slug: actionSlug }}
@@ -305,7 +307,7 @@ export default async (props: NextPageProps) => {
         redirect(nextSlug || "")
       );
 
-    case driversConstants.slug.paymentSuccess:
+    case urlConstants.slug.paymentSuccess:
       return nextSlug === stepSlug ? (
         <FormLayout action={{ slug: stepSlug }} step={stepSlug}>
           <PaymentSuccess
@@ -319,7 +321,7 @@ export default async (props: NextPageProps) => {
       );
 
     // This should never be hit, but if it does, it means it's a high chance of infinite redirects happened due to mistake.
-    case driversConstants.slug.renewLicence:
+    case urlConstants.slug.renewLicence:
       return (
         <>
           Handle missed case of infinite redirection. Error page with "go home"
@@ -328,5 +330,5 @@ export default async (props: NextPageProps) => {
       );
   }
 
-  return redirect(`${driversConstants.slug.renewLicence}/${nextSlug}`);
+  return redirect(`${urlConstants.slug.renewLicence}/${nextSlug}`);
 };

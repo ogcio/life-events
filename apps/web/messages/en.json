@@ -227,6 +227,15 @@
       "confirm": "Confirm"
     }
   },
+  "formErrors": {
+    "invalidEmail": "Invalid email",
+    "empty": "Field required",
+    "emptySelection": "No selection",
+    "invalidRangeMonth": "Invalid value for month",
+    "invalidRangeYear": "Invalid value for year",
+    "invalidRangeDay": "Invalid value for day",
+    "noFile": "No required file selected"
+  },
   "EmailTemplates": {
     "menu": {
       "templates": "Email templates",

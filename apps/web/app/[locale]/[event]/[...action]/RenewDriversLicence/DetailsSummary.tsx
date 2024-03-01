@@ -1,9 +1,9 @@
+import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
 import { pgpool } from "../../../../dbConnection";
 import { RenewDriversLicenceFlow } from "../types";
 import { ListRow } from "./CheckYourDetails";
-import { driversConstants } from "./constants";
 
 export default (
   props: Pick<
@@ -27,6 +27,7 @@ export default (
   const t = useTranslations("DetailsSummaryForm");
   async function submitAction() {
     "use server";
+
     await pgpool.query(
       `
         UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT)
@@ -59,11 +60,9 @@ export default (
               change={{ key: t("change"), value: changeDetailsHref }}
               item={{
                 key: t("dateOfBirth"),
-                value: driversConstants.toDateString(
-                  props.yearOfBirth,
-                  props.monthOfBirth,
-                  props.dayOfBirth
-                ),
+                value: dayjs(
+                  `${props.yearOfBirth}-${props.monthOfBirth}-${props.dayOfBirth}`
+                ).format("DD/MM/YYYY"),
               }}
             />
             <ListRow

@@ -3,13 +3,13 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
 import OpenEventStatusImage from "./OpenEventStatusImage";
-import { driversConstants } from "./[...action]/RenewDriversLicence/constants";
 import {
   getNextSlug,
   renewDriversLicenceFlowKey,
 } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { RenewDriversLicenceFlow } from "./[...action]/types";
 import { pgpool } from "../../dbConnection";
+import { urlConstants } from "../../utils";
 
 async function getEvents() {
   "use server";
@@ -61,8 +61,8 @@ async function getFlows() {
       descriptionKey += ".description.rejected";
     } else if (
       [
-        driversConstants.slug.applicationSuccess,
-        driversConstants.slug.paymentSuccess,
+        urlConstants.slug.applicationSuccess,
+        urlConstants.slug.paymentSuccess,
       ].includes(step)
     ) {
       successful = true;
@@ -79,7 +79,7 @@ async function getFlows() {
       titleKey,
       descriptionKey: descriptionKey,
       rejectedReaason: row.data.rejectReason,
-      slug: "driving/" + driversConstants.slug.renewLicence, // get from some key to slug map or object
+      slug: "driving/" + urlConstants.slug.renewLicence, // get from some key to slug map or object
     };
   });
 }
@@ -98,7 +98,7 @@ export default async () => {
         flowTitle,
         flowKey: event.flowKey,
         descriptionKey,
-        slug: "driving/" + driversConstants.slug.renewLicence,
+        slug: "driving/" + urlConstants.slug.renewLicence,
       };
     });
 

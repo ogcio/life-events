@@ -7,8 +7,6 @@ import { routeDefinitions } from "../../routeDefinitions";
 import { PgSessions } from "auth/sessions";
 
 import WithEventMenu from "./WithEventMenu";
-import { cookies } from "next/headers";
-import { redirect, RedirectType } from "next/navigation";
 
 type Props = {
   params: {
@@ -39,6 +37,7 @@ export default async (props: Props) => {
   }
 
   return (
+    // @ts-expect-error Async Server Component
     <WithEventMenu selectedEvent={props.params.event} userName={useName}>
       {children}
     </WithEventMenu>

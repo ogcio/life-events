@@ -1,5 +1,12 @@
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  getFormErrors,
+  insertFormErrors,
+  urlConstants,
+} from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
 
 type Props<TData> = {
@@ -9,22 +16,59 @@ type Props<TData> = {
   data: TData;
 };
 
-function SearchForm() {
-  const t = useTranslations("AddressForm");
+async function SearchForm<TData>(props: Props<TData>) {
+  const t = await getTranslations("AddressForm");
+  const errorT = await getTranslations("formErrors");
+  const errors = await getFormErrors(
+    props.userId,
+    urlConstants.slug.newAddress,
+    props.flow
+  );
+
   async function searchAction(formData: FormData) {
     "use server";
 
     const searchQuery = formData.get("currentAddress");
+
+    if (!searchQuery?.toString().length) {
+      await insertFormErrors(
+        [
+          {
+            messageKey: "empty",
+            errorValue: "",
+            field: "currentAddress",
+          },
+        ],
+        props.userId,
+        urlConstants.slug.newAddress,
+        props.flow
+      );
+      return revalidatePath("/");
+    }
+
     if (searchQuery) {
       redirect("?adr=" + searchQuery);
     }
   }
+
+  const addressError = errors.rows.at(0);
+
   return (
     <form action={searchAction}>
-      <div className="govie-form-group">
+      <div
+        className={`govie-form-group ${
+          addressError ? "govie-form-group--error" : ""
+        }`.trim()}
+      >
         <div className="govie-hint" id="input-field-hint">
           {t("searchHint")}
         </div>
+        {addressError && (
+          <p id="input-field-error" className="govie-error-message">
+            <span className="govie-visually-hidden">Error:</span>
+            {errorT(addressError.messageKey)}
+          </p>
+        )}
         <input
           type="text"
           id="currentAddress"
@@ -39,7 +83,7 @@ function SearchForm() {
 }
 
 async function SelectForm<TData>(props: Props<TData>) {
-  const t = useTranslations("AddressForm");
+  const t = await getTranslations("AddressForm");
   const selectName = "selected-addr";
   async function submitAction(formData: FormData) {
     "use server";
