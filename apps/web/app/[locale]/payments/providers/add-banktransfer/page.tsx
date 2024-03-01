@@ -27,9 +27,9 @@ export default async () => {
         "banktransfer",
         "connected",
         {
-          sort_code: sortCode,
-          account_number: accountNumber,
-          account_holder_name: accountHolderName,
+          sortCode,
+          accountNumber,
+          accountHolderName,
         },
       ]
     );

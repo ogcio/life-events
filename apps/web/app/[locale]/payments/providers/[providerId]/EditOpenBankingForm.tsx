@@ -20,9 +20,9 @@ export default async ({ provider }: Props) => {
     const accountNumber = formData.get("account_number");
     const accountHolderName = formData.get("account_holder_name");
     const providerData = {
-      sort_code: sortCode,
-      account_number: accountNumber,
-      account_holder_name: accountHolderName,
+      sortCode,
+      accountNumber,
+      accountHolderName,
     };
 
     await pgpool.query(
