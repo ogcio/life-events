@@ -11,6 +11,7 @@
     "auth": "*",
     "design-system": "*",
     "feature-flags": "*",
+    "messages": "*",
     "next": "latest",
     "next-intl": "^3.7.0",
     "pg": "^8.11.3",

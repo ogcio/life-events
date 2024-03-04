@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../dbConnection";
-import { Template } from "../../../../types/template";
+import { editTemplate, getTemplateById } from "messages";
 
 async function saveTemplate(formData) {
   "use server";
@@ -11,13 +10,10 @@ async function saveTemplate(formData) {
   const subject = formData.get("subject");
   const body = formData.get("body");
 
-  await pgpool.query(
-    "UPDATE templates SET name = $2, subject = $3, body = $4 WHERE id = $1",
-    [id, name, subject, body]
-  );
-
+  await editTemplate(id, name, subject, body);
   redirect("/templates");
 }
+
 export default async function Page({
   params,
   searchParams,
@@ -27,9 +23,7 @@ export default async function Page({
 }) {
   const t = await getTranslations("EmailTemplates");
   const id = searchParams.id;
-  const template = (
-    await pgpool.query<Template>(`SELECT * FROM templates WHERE id= $1`, [id])
-  ).rows[0];
+  const template = await getTemplateById(id);
 
   return (
     <main className="govie-main-wrapper" id="main-content" role="main">

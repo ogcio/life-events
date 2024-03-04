@@ -59,13 +59,6 @@ CREATE TABLE IF NOT EXISTS form_errors(
     error_message TEXT NOT NULL
 );
 
-CREATE TABLE templates (
-    id UUID NOT NULL DEFAULT gen_random_uuid(),
-    name TEXT NOT NULL,
-    subject TEXT NOT NULL,
-    body TEXT NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS payment_requests(
     payment_request_id UUID NOT NULL DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,

@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../dbConnection";
+import { addTemplate } from "messages";
 
 async function saveTemplate(formData) {
   "use server";
@@ -8,10 +8,7 @@ async function saveTemplate(formData) {
   const subject = formData.get("subject");
   const body = formData.get("body");
 
-  await pgpool.query(
-    "INSERT INTO templates (name, subject, body) VALUES ($1, $2, $3)",
-    [name, subject, body]
-  );
+  await addTemplate(name, subject, body);
 
   redirect("/templates");
 }

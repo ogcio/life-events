@@ -1,20 +1,49 @@
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
-import { pgpool } from "../../dbConnection";
-import { Template } from "../../../types/template";
+import {
+  deleteTemplate,
+  getTemplateById,
+  getTemplates,
+  sendFromTemplate,
+} from "messages";
 import Link from "next/link";
+import { findParameters } from "messages/templates/utils";
+import { getFeatureFlag } from "feature-flags/utils";
 
-async function deleteTemplate(formData: FormData) {
+async function deleteTemplateAction(formData: FormData) {
   "use server";
-  const id = formData.get("id");
-  await pgpool.query("DELETE FROM templates WHERE id = $1", [id]);
+  const id = formData.get("id") as string;
+  await deleteTemplate(id);
+  revalidatePath("/");
+}
+
+async function sendEmail(formData: FormData) {
+  "use server";
+  const id = formData.get("id") as string;
+
+  const template = await getTemplateById(id);
+  const params = findParameters(template.body);
+  const paramsObj = {};
+  params.forEach((param) => {
+    paramsObj[param] = param + " - TEST";
+  });
+
+  await sendFromTemplate(
+    {
+      from: "from@test.com",
+      to: "to@test.com",
+    },
+    id,
+    paramsObj
+  );
+
   revalidatePath("/");
 }
 
 export default async () => {
   const t = await getTranslations("EmailTemplates");
-  const templates = (await pgpool.query<Template>(`SELECT * FROM templates`))
-    .rows;
+  const templates = await getTemplates();
+  const testEmaileatureFlag = await getFeatureFlag("portal", "test_email");
 
   return (
     <table className="govie-table">
@@ -44,7 +73,7 @@ export default async () => {
 
             <td className="govie-table__cell">
               <div style={{ display: "flex", gap: "10px" }}>
-                <form action={deleteTemplate}>
+                <form action={deleteTemplateAction}>
                   <input name="id" type="hidden" value={template.id} />
                   <button
                     id="button"
@@ -67,6 +96,19 @@ export default async () => {
                     {t("list.actions.edit")}
                   </button>
                 </Link>
+                {testEmaileatureFlag?.is_enabled && (
+                  <form action={sendEmail}>
+                    <input name="id" type="hidden" value={template.id} />
+                    <button
+                      id="button"
+                      data-module="govie-button"
+                      className="govie-button govie-button--small govie-button--tertiary"
+                      type="submit"
+                    >
+                      Send test email
+                    </button>
+                  </form>
+                )}
               </div>
             </td>
           </tr>

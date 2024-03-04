@@ -23,7 +23,8 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - ./packages/messages/schema.sql:/docker-entrypoint-initdb.d/02_schema.sql
 
   mock-api:
     build:

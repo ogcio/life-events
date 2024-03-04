@@ -20,5 +20,5 @@ export type Response<TPayload = object> = {
 };
 
 export type SendEmail = {
-  (data: MailDataRequired | MailDataRequired[]): Promise<[Response, {}]>;
+  (data: MailDataRequired | MailDataRequired[]): Promise<[Response, {}]> | void;
 };
