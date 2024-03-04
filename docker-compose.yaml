@@ -77,6 +77,17 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.web.rule=Host(`${WEB_ENDPOINT:-web.localtest.me}`)'
       - 'traefik.http.routers.web.entrypoints=web'
+  localstack:
+    image: localstack/localstack:2.3.2
+    environment:
+      SERVICES: "s3,secretsmanager"
+      DATA_DIR: "/tmp/localstack/data"
+      FILES_S3_BUCKET: "life-events-files"
+      IMAGES_S3_BUCKET: "life-events-images"
+    volumes:
+      - './.localstack:/tmp/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - './init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh' # ready hook
 
 volumes:
   db:
