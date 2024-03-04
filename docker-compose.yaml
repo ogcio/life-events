@@ -89,6 +89,35 @@ services:
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh' # ready hook
 
+  payments:
+    build:
+      context: ./
+      dockerfile: ./apps/payments/Dockerfile.dev
+    image: payments
+    container_name: payments
+    volumes:
+      - ./apps/payments/app:/app/apps/payments/app
+      - ./apps/payments/messages:/app/apps/payments/messages
+    ports:
+      - 80
+    restart: always
+    env_file:
+      - ./.env
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgresql}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      LOGIN_URL: ${LOGIN_URL:-http://web.localtest.me/static/login/}
+      HOST_URL: ${HOST_URL:-http://payments.localtest.me/}
+      TL_AUTH_SERVER_URI: ${TL_AUTH_SERVER_URI:-https://auth.truelayer-sandbox.com}
+      TL_ENVIRONMENT_URI: ${TL_ENVIRONMENT_URI:-https://api.truelayer-sandbox.com}
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.payments.rule=Host(`${BACK_OFFICE_ENDPOINT:-payments.localtest.me}`)'
+      - 'traefik.http.routers.payments.entrypoints=web'
+
 volumes:
   db:
     driver: local

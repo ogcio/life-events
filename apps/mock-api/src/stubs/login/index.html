@@ -64,7 +64,7 @@
       class="icon-mygovid_logo"
     ></span>
 
-    <form method="POST" action="/en/api/auth">
+    <form id="login-form" method="POST" action="/en/api/auth">
       <label>
         <input
           type="checkbox"
@@ -186,6 +186,12 @@
 <script type="module">
   import { faker } from "https://esm.sh/@faker-js/faker";
   import * as jose from "https://cdnjs.cloudflare.com/ajax/libs/jose/5.2.2/index.js";
+
+  const returnUrl = new URLSearchParams(window.location.search).get("return_url");
+
+  if (returnUrl) {
+    document.querySelector("#login-form").action = returnUrl;
+  }
 
   const apiUsers = await (await fetch(location.protocol + '//' + location.host + "/static/login/api/users")).json();
 
