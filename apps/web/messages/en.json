@@ -223,5 +223,30 @@
         "delete": "Delete"
       }
     }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "searchHint": "Search...",
+    "list": {
+      "date": "Date",
+      "subject": "Subject",
+      "type": "Type",
+      "actions": "Actions"
+    },
+    "pagination": {
+      "itemsPerPage": "Items per page:",
+      "pageInfo": "Page {currentPage} of {pagesCount}"
+    },
+    "types": {
+      "action": "Action",
+      "message": "Message",
+      "payment": "Payment"
+    },
+    "actions": {
+      "renew": "Renew",
+      "order": "Order",
+      "fillIn": "Fill In",
+      "view": "View"
+    }
   }
 }

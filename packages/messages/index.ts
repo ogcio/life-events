@@ -5,4 +5,6 @@ import { send as twilioSend } from "./strategies/twilio/index";
 export const send = twilioSend;
 
 export * from "./templates";
+export * from "./notifications";
+
 export * from "./types";

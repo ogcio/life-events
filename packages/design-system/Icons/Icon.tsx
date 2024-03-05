@@ -16,7 +16,9 @@ type Props = {
     | "death"
     | "payments"
     | "providers"
-    | "logout";
+    | "logout"
+    | "notification"
+    | "search";
 };
 
 export default ({ className, color, icon, size }: Props) => {

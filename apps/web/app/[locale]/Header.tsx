@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ds from "design-system/";
+import NotificationsLink from "./notifications/NotificationsLink";
 
 export default () => {
   return (
@@ -92,9 +93,18 @@ export default () => {
           <div className="govie-!-font-size-27">
             <strong>PROTOTYPE</strong>
           </div>
-          <Link href="/logout" style={{ float: "right" }}>
-            <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={35} />
-          </Link>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <NotificationsLink />
+            <Link href="/logout" style={{ float: "right" }}>
+              <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={35} />
+            </Link>
+          </div>
         </div>
       </div>
     </header>

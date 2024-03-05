@@ -57,3 +57,13 @@
   mask-image: url("../assets/icons/providers.svg");
   -webkit-mask-image: url("../assets/icons/providers.svg");
 }
+
+.ds-icon-notification {
+  mask-image: url("../assets/icons/notification.svg");
+  -webkit-mask-image: url("../assets/icons/notification.svg");
+}
+
+.ds-icon-search {
+  mask-image: url("../assets/icons/search.svg");
+  -webkit-mask-image: url("../assets/icons/search.svg");
+}
