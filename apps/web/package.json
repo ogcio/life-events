@@ -7,8 +7,10 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "dayjs": "^1.11.10",
+    "@aws-sdk/client-s3": "^3.525.0",
+    "@aws-sdk/s3-request-presigner": "^3.525.0",
     "auth": "*",
+    "dayjs": "^1.11.10",
     "design-system": "*",
     "feature-flags": "*",
     "messages": "*",

@@ -10,20 +10,26 @@ import { pgpool } from "../../dbConnection";
 
 export default async (props: NextPageProps) => {
   const t = await getTranslations("Admin.EventsTable");
-  const userFlows = await pgpool.query(`
-    SELECT 
-        u.id, 
-        u.user_name, 
-        fd.flow,
-        fd.flow_data    
+  const userFlows = await pgpool.query<{
+    userId: string;
+    userName: string;
+    flow: string;
+    flowData: RenewDriversLicenceFlow;
+    proofOfAddressFileId?: string;
+  }>(`
+  SELECT 
+    u.id as "userId", 
+    u.user_name as "userName", 
+    fd.flow,
+    fd.flow_data as "flowData"
     FROM user_flow_data fd
-    JOIN users u on u.id = fd.user_id and u.is_public_servant = false
+    JOIN users u on u.id = fd.user_id AND u.is_public_servant = false
   `);
 
   if (props.searchParams && Object.keys(props.searchParams).length) {
     const item = userFlows.rows.find(
       (row) =>
-        row.id === props.searchParams?.uid &&
+        row.userId === props.searchParams?.uid &&
         props.searchParams?.evt === row.flow
     );
 
@@ -38,21 +44,6 @@ export default async (props: NextPageProps) => {
       );
     }
 
-    const {
-      userName,
-      currentAddress,
-      currentAddressVerified,
-      sex,
-      mobile,
-      email,
-      proofOfAddressRequest,
-      totalFeePaid,
-      dateOfPayment,
-      dayOfBirth,
-      monthOfBirth,
-      yearOfBirth,
-    }: RenewDriversLicenceFlow = item.flow_data;
-
     const searchParamsWithRejectionOpen = new URLSearchParams(
       props.searchParams
     );
@@ -63,26 +54,17 @@ export default async (props: NextPageProps) => {
           <RejectReasonForm
             flow={item.flow}
             params={props.params}
-            userId={item.id}
+            userId={item.userId}
             searchParams={props.searchParams}
           />
         )}
         <RenewLicenceUserDetails
-          currentAddress={currentAddress}
-          currentAddressVerified={Boolean(currentAddressVerified)}
-          dateOfPayment={dateOfPayment}
-          email={email}
           flow={item.flow}
-          hideFormButtons={Boolean(item.flow_data.successfulAt)}
-          mobile={mobile}
+          hideFormButtons={Boolean(item.flowData.successfulAt)}
           params={props.params}
-          proofOfAddress={proofOfAddressRequest}
-          sex={sex}
-          totalFeePaid={totalFeePaid}
-          userId={item.id}
-          userName={userName}
+          userId={item.userId}
           searchParams={props.searchParams}
-          birthDay={`${yearOfBirth}-${monthOfBirth}-${dayOfBirth}`}
+          flowData={item.flowData}
         />
 
         <Link className="govie-back-link" href="/admin">
@@ -127,9 +109,9 @@ export default async (props: NextPageProps) => {
         <tbody className="govie-table__body">
           {userFlows.rows.map((row) => {
             return (
-              <tr key={row.id} className="govie-table__row">
+              <tr key={row.userId} className="govie-table__row">
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {row.flow_data.userName}
+                  {row.flowData.userName}
                 </td>
 
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
@@ -137,7 +119,7 @@ export default async (props: NextPageProps) => {
                 </td>
 
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {status(row.flow_data)}
+                  {status(row.flowData)}
                 </td>
 
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
@@ -145,7 +127,7 @@ export default async (props: NextPageProps) => {
                     <div>
                       <Link
                         className="govie-link govie-!-margin-right-3"
-                        href={`?uid=${row.id}&evt=${row.flow}`}
+                        href={`?uid=${row.userId}&evt=${row.flow}`}
                       >
                         {t("view")}
                       </Link>

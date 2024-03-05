@@ -1,44 +1,33 @@
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { pgpool } from "../../dbConnection";
+import { awsFileBucket, s3ClientConfig } from "../../utils";
 import { ListRow } from "../[event]/[...action]/RenewDriversLicence/CheckYourDetails";
-import { NextPageProps } from "../[event]/[...action]/types";
+import {
+  NextPageProps,
+  RenewDriversLicenceFlow,
+} from "../[event]/[...action]/types";
 
 type Props = NextPageProps & {
-  userName: string;
-  flow: string;
-  sex: string;
-  currentAddress: string;
-  currentAddressVerified: boolean;
-  proofOfAddress: string;
-  mobile: string;
-  email: string;
+  flowData: RenewDriversLicenceFlow;
   hideFormButtons: boolean;
+  flow: string;
   userId: string;
-  totalFeePaid: string;
-  dateOfPayment: string;
-  birthDay: string;
 };
 
-export default ({
+export default async ({
   userId,
   hideFormButtons,
-  userName,
   flow,
-  sex,
-  currentAddress,
-  currentAddressVerified,
-  proofOfAddress,
-  email,
-  mobile,
-  dateOfPayment,
-  totalFeePaid,
   searchParams,
-  birthDay,
+  flowData,
 }: Props) => {
-  const t = useTranslations("Admin.RenewLicenceUserDetails");
+  const t = await getTranslations("Admin.RenewLicenceUserDetails");
   async function approveAction(formData: FormData) {
     "use server";
     const userId = formData.get("userId");
@@ -55,50 +44,82 @@ export default ({
     redirect("/admin");
   }
 
+  let proofOfAddressDownloadUrl: string | undefined;
+
+  // New link is generated on each render, but expires after 5 minutes. This might not be desirable but there has been no specifications
+  if (flowData.proofOfAddressFileId) {
+    const s3Client = new S3Client({
+      ...s3ClientConfig,
+      endpoint: "http://127.0.0.1:4566",
+    });
+
+    const command = new GetObjectCommand({
+      Bucket: awsFileBucket,
+      Key: `${userId}/${flowData.proofOfAddressFileId}`,
+    });
+    proofOfAddressDownloadUrl = await getSignedUrl(s3Client, command, {
+      expiresIn: 5 * 60,
+    });
+  }
   const searchParamsWithRejectionOpen = new URLSearchParams(searchParams);
   searchParamsWithRejectionOpen.append("open", "rejection");
-
   return (
     <>
       <div className="govie-heading-l">
         {t("title", { flow: t(flow).toLowerCase() })}
       </div>
-      <div className="govie-heading-m">{userName}</div>
+      <div className="govie-heading-m">{flowData.userName}</div>
       <div className="govie-grid-row">
         <div className="govie-grid-column-two-thirds-from-desktop">
           <dl className="govie-summary-list">
-            <ListRow item={{ key: t("name"), value: userName }} />
+            <ListRow item={{ key: t("name"), value: flowData.userName }} />
             <ListRow
               item={{
                 key: t("birthDay"),
-                value: dayjs(birthDay).format("DD/MM/YYYY"),
+                value: dayjs(
+                  `${flowData.yearOfBirth}-${flowData.monthOfBirth}-${flowData.dayOfBirth}`
+                ).format("DD/MM/YYYY"),
               }}
             />
-            <ListRow item={{ key: t("sex"), value: sex }} />
+            <ListRow item={{ key: t("sex"), value: flowData.sex }} />
             <ListRow
               item={{
                 key: t("address"),
-                value: currentAddress,
+                value: flowData.currentAddress,
               }}
             />
             <ListRow
               item={{
                 key: t("addressVerified"),
-                value: currentAddressVerified ? t("yes") : t("no"),
+                value: flowData.currentAddressVerified ? t("yes") : t("no"),
               }}
             />
             <ListRow
-              item={{ key: t("proofOfAddress"), value: proofOfAddress }}
+              item={{
+                key: t("proofOfAddress"),
+                value: proofOfAddressDownloadUrl ? (
+                  <a target="_blank" href={proofOfAddressDownloadUrl}>
+                    {t(flowData.proofOfAddressRequest)}
+                  </a>
+                ) : (
+                  t(flowData.proofOfAddressRequest)
+                ),
+              }}
             />
-            <ListRow item={{ key: t("mobile"), value: mobile }} />
-            <ListRow item={{ key: t("email"), value: email }} />
+
+            <ListRow item={{ key: t("mobile"), value: flowData.mobile }} />
+            <ListRow item={{ key: t("email"), value: flowData.email }} />
             <ListRow
               item={{
                 key: t("totalPaid"),
-                value: totalFeePaid ? `€${totalFeePaid}` : "",
+                value: flowData.totalFeePaid
+                  ? `€${flowData.totalFeePaid}`
+                  : "-",
               }}
             />
-            <ListRow item={{ key: t("payDate"), value: dateOfPayment }} />
+            <ListRow
+              item={{ key: t("payDate"), value: flowData.dateOfPayment }}
+            />
           </dl>
         </div>
       </div>

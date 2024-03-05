@@ -236,7 +236,6 @@ export default async (props: NextPageProps) => {
           step={stepSlug}
           backHref={baseActionHref}
         >
-          {/* @ts-expect-error Async Server Component */}
           <SimpleDetailsForm
             userId={userId}
             email={data.email}
@@ -282,7 +281,6 @@ export default async (props: NextPageProps) => {
           step={stepSlug}
           backHref={baseActionHref}
         >
-          {/* @ts-expect-error Async Server Component */}
           <ProofOfAddress
             step={props.searchParams?.step}
             flow={renewDriversLicenceFlowKey}

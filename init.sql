@@ -82,3 +82,13 @@ CREATE TABLE IF NOT EXISTS payment_transactions(
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     primary key(transaction_id)
 );
+
+CREATE TABLE IF NOT EXISTS file_meta(
+    file_id UUID NOT NULL DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    file_type TEXT NOT NULL, -- proofOfAddress, fishingLicenceAddress, medicalDocument eg.
+    file_name_i18key TEXT NOT NULL, -- let's double down on the locale
+    file_extension TEXT NOT NULL, -- txt, pdf, csv, xlsx eg.
+    upload_version INT DEFAULT 1, -- could be some composite serial
+    primary key(file_id)
+);

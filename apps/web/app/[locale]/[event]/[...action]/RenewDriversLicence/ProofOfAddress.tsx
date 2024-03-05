@@ -1,17 +1,24 @@
-import { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
 import ds from "design-system";
 import {
+  awsFileBucket,
   formConstants,
   FormError,
   getFormErrors,
   hexToRgba,
   insertFormErrors,
+  s3ClientConfig,
   urlConstants,
 } from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
+import { randomUUID } from "crypto";
 
 export default async (props: {
   step?: string;
@@ -64,6 +71,31 @@ export default async (props: {
       });
     }
 
+    const s3Client = new S3Client(s3ClientConfig);
+
+    const fileId = randomUUID();
+    const fileExtension = poaFile.name.split(".").at(-1);
+    const fileType = "proofOfAddress";
+
+    const awsObjectKey = `${props.userId}/${fileId}`;
+
+    try {
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: awsFileBucket,
+          Key: awsObjectKey,
+          Body: Buffer.from(await poaFile.arrayBuffer()),
+          ContentType: poaFile.type,
+        })
+      );
+    } catch (err) {
+      formErrors.push({
+        errorValue: "fileUploadFail",
+        field: "identity-selection",
+        messageKey: formConstants.errorTranslationKeys.fileUploadFail,
+      });
+    }
+
     if (formErrors.length) {
       await insertFormErrors(
         formErrors,
@@ -75,13 +107,77 @@ export default async (props: {
       return revalidatePath("/");
     }
 
-    await pgpool.query(
-      `
-          UPDATE user_flow_data SET flow_data = jsonb_set(flow_data, '{proofOfAddressRequest}', $1)
-          WHERE user_id = $2 AND flow = $3
+    const transaction = await pgpool.connect();
+    try {
+      await transaction.query("BEGIN");
+
+      // File meta
+      await transaction.query(
+        `
+        WITH cte AS (
+          SELECT upload_version FROM file_meta
+          WHERE 
+            file_type = 'proofOfAddress' 
+            AND user_id = $1
+          ORDER BY upload_version DESC
+          LIMIT 1
+        )
+        INSERT INTO file_meta(
+          user_id, 
+          file_id, 
+          file_type, 
+          file_name_i18key, 
+          file_extension, 
+          upload_version)
+          VALUES($1, $2, $3, $4, $5, (SELECT COALESCE((SELECT upload_version FROM cte) + 1, 1)))
       `,
-      [JSON.stringify(identityficationSelection), props.userId, props.flow]
-    );
+        [
+          props.userId,
+          fileId,
+          fileType,
+          identityficationSelection,
+          fileExtension,
+        ]
+      );
+
+      // Update flow state
+      await transaction.query(
+        `
+        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('proofOfAddressRequest', $1::TEXT, 'proofOfAddressFileId', $2::TEXT)
+        WHERE user_id = $3 AND flow = $4
+      `,
+        [identityficationSelection, fileId, props.userId, props.flow]
+      );
+
+      await transaction.query("COMMIT");
+    } catch (err) {
+      await transaction.query("ROLLBACK");
+      await s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: awsFileBucket,
+          Key: awsObjectKey,
+        })
+      );
+      formErrors.push({
+        errorValue: "internalServerError",
+        field: "internalServerError",
+        messageKey: "internalServerError",
+      });
+    } finally {
+      transaction.release();
+    }
+
+    if (formErrors.length) {
+      await insertFormErrors(
+        formErrors,
+        props.userId,
+        urlConstants.slug.proofOfAddress,
+        props.flow
+      );
+
+      return revalidatePath("/");
+    }
+
     redirect("/driving/renew-licence");
   }
   if (parseInt(props?.step ?? "") === 2) {

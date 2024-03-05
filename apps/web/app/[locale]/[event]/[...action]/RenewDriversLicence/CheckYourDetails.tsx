@@ -9,7 +9,7 @@ export const ListRow = ({
   item,
   change,
 }: {
-  item: { value: string; key: string };
+  item: { value: string | JSX.Element; key: string };
   change?: { value: string; key: string };
 }) => (
   <div className="govie-summary-list__row">

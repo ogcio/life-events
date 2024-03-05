@@ -36,7 +36,6 @@ export default async (props: Props) => {
   }
 
   return (
-    // @ts-expect-error Async Server Component
     <WithEventMenu selectedEvent={props.params.event} userName={useName}>
       {children}
     </WithEventMenu>

@@ -13,6 +13,7 @@ export const formConstants = {
     invalidField: "invalidField",
     emptySelection: "emptySelection",
     noFile: "noFile",
+    fileUploadFail:"fileUploadFail"
   },
   fieldTranslationKeys: {
     name: "name",
@@ -225,3 +226,14 @@ export function formatCurrency(amount: number) {
     currency: "EUR",
   }).format(amount / 100);
 }
+
+export const s3ClientConfig = {
+  region: "eu-west-1",
+  endpoint: `http://localstack:4566`,
+  forcePathStyle: true,
+  credentials: {
+    accessKeyId: "accessKeyId",
+    secretAccessKey: "accessKeyId",
+  },
+};
+export const awsFileBucket = "life-events-files"; // use env later

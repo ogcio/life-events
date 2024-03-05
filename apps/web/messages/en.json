@@ -138,7 +138,7 @@
   },
   "MedicalForm": {
     "infoTitle": "You are 75 or above",
-    "formTitle": "Please upload your Meidcal form",
+    "formTitle": "Please upload your Medical form",
     "body": "Please have your Medical form ready for upload.",
     "detailsSummary": "Unable to confirm online? See how you can confirm at your local authority",
     "detailsText": "This is the content for writing well for the web.",
@@ -162,7 +162,11 @@
       "payDate": "Pay date",
       "reject": "Reject",
       "approve": "Approve",
-      "birthDay": "Date of birth"
+      "birthDay": "Date of birth",
+      "utilityBill": "Utility bill",
+      "bankStatement": "Bank statement",
+      "taxDocuments": "Tax document",
+      "noDocuments": "No document"
     },
     "RejectReasonForm": {
       "title": "Reason for rejection",
@@ -187,6 +191,8 @@
     "invalidField": "Enter {indArticleCheck, select, an {an} other {a}} valid {field}",
     "emptySelection": "No selection",
     "noFile": "No required file selected",
+    "fileUploadFail":"Failed to upload file",
+    "internalServerError":"Server error",
     "fields": {
       "name": "name",
       "email": "email address",

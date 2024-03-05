@@ -10,6 +10,5 @@ export default async (props: NextPageProps) => {
     redirect("/", RedirectType.replace);
   }
 
-  // @ts-expect-error Async Server Component
   return <EventTable params={props.params} searchParams={props.searchParams} />;
 };

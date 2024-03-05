@@ -176,7 +176,6 @@ export default <TData,>(props: Props<TData>) => {
         </div>
         <p></p>
         <h2 className="govie-heading-m">{t("addressSearchTitle")}</h2>
-        {/* @ts-expect-error Async Server Component */}
         <Form
           addressSearchQuery={props.addressSearchQuery}
           flow={props.flow}

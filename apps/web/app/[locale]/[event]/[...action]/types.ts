@@ -18,7 +18,6 @@ export type RenewDriversLicenceFlow = {
   dayOfBirth: string;
   monthOfBirth: string;
   yearOfBirth: string;
-
   currentAddress: string;
   currentAddressVerified: string;
   timeAtAddress: string;
@@ -32,6 +31,7 @@ export type RenewDriversLicenceFlow = {
   successfulAt: string;
   rejectReason: string;
   medicalCertificate: string;
+  proofOfAddressFileId: string;
 };
 
 export function emptyRenewDriversLicenceFlow(): RenewDriversLicenceFlow {
@@ -54,5 +54,6 @@ export function emptyRenewDriversLicenceFlow(): RenewDriversLicenceFlow {
     successfulAt: "",
     rejectReason: "",
     medicalCertificate: "",
+    proofOfAddressFileId: "",
   };
 }

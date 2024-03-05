@@ -130,7 +130,6 @@ function Info() {
 
 export default (props: NextPageProps & { userId: string; flow: string }) => {
   return props.searchParams?.step ? (
-    // @ts-expect-error Async Server Component
     <Form flow={props.flow} userId={props.userId} />
   ) : (
     <Info />
