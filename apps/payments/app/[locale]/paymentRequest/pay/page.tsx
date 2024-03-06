@@ -28,15 +28,16 @@ type PaymentRequestDO = {
 type PaymentRequestDetails = Pick<
   PaymentRequestDO,
   "title" | "description" | "amount"
-> & { provider_name: string };
+> & { provider_name: string; provider_type: string };
 
 async function getPaymentRequestDetails(paymentId: string) {
   "use server";
 
   const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.description, pr.amount, pp.provider_name
+    `select pr.title, pr.description, pr.amount, pp.provider_name, pp.provider_type
       from payment_requests pr
-      join payment_providers pp on pr.provider_id = pp.provider_id
+      join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
+      join payment_providers pp on ppr.provider_id = pp.provider_id
       where pr.payment_request_id = $1`,
     [paymentId]
   );
@@ -45,7 +46,7 @@ async function getPaymentRequestDetails(paymentId: string) {
     return undefined;
   }
 
-  return res.rows[0];
+  return res.rows;
 }
 
 export default async function Page(props: Props) {
@@ -58,7 +59,7 @@ export default async function Page(props: Props) {
   }
 
   // Enforce being logged in
-  await PgSessions.get()
+  await PgSessions.get();
 
   const [details, t] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId),
@@ -80,25 +81,38 @@ export default async function Page(props: Props) {
         alignItems: "center",
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', width: '80%', gap: '2em' }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "80%",
+          gap: "2em",
+        }}
+      >
         <h1 className="govie-heading-l">{t("title")}</h1>
         <h2 className="govie-heading-m">
-          {t("toPay")}: {formatCurrency(details.amount)}
+          {t("toPay")}: {formatCurrency(details[0].amount)}
         </h2>
         <hr className="govie-section-break govie-section-break--visible"></hr>
-        <div style={{ margin: '1em 0'}}>
-          <div style={{ display: 'flex', gap: '1em', marginBottom: '1em' }}>
-            <h3 className='govie-heading-s' style={{ margin: 0 }}>{t('payByBank')}</h3>
+        <div style={{ margin: "1em 0" }}>
+          <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
+            <h3 className="govie-heading-s" style={{ margin: 0 }}>
+              {t("payByBank")}
+            </h3>
             <strong className="govie-tag govie-tag--green">Recommended</strong>
           </div>
-          <p className="govie-body">{t('payByBankDescription')}</p>
-          <Link href={`/paymentRequest/pay/bank?paymentId=${props.searchParams.paymentId}`}>
-            <button className='govie-button govie-button--primary'>{t('payNow')}</button>
+          <p className="govie-body">{t("payByBankDescription")}</p>
+          <Link
+            href={`/paymentRequest/pay/bank?paymentId=${props.searchParams.paymentId}`}
+          >
+            <button className="govie-button govie-button--primary">
+              {t("payNow")}
+            </button>
           </Link>
         </div>
         <hr className="govie-section-break govie-section-break--visible"></hr>
-        <div style={{ margin: '1em 0'}}>
-          <h3 className='govie-heading-s'>{t('payByCard')}</h3>
+        <div style={{ margin: "1em 0" }}>
+          <h3 className="govie-heading-s">{t("payByCard")}</h3>
         </div>
       </div>
     </div>

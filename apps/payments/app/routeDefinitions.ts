@@ -13,13 +13,13 @@ export const routeDefinitions = {
     create: {
       slug: "create",
       path() {
-        return `${routeDefinitions.paymentSetup.slug}/${routeDefinitions.paymentSetup.create.slug}`;
+        return `/${routeDefinitions.paymentSetup.slug}/${routeDefinitions.paymentSetup.create.slug}`;
       },
     },
     createComplete: {
       slug: "create",
       path(requestId: string) {
-        return `${routeDefinitions.paymentSetup.slug}/${routeDefinitions.paymentSetup.createComplete.slug}/${requestId}`;
+        return `/${routeDefinitions.paymentSetup.slug}/${routeDefinitions.paymentSetup.createComplete.slug}/${requestId}`;
       },
     },
   },

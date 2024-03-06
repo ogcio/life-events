@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
-import { getUserTransactionDetails } from "./db";
-import { formatCurrency } from "../../utils";
+import { getUserPaymentRequestDetails } from "../db";
+import { formatCurrency } from "../../../utils";
 
 export default async function () {
   const [t, { userId }] = await Promise.all([
@@ -10,7 +10,7 @@ export default async function () {
     PgSessions.get(),
   ]);
 
-  const transactions = await getUserTransactionDetails(userId);
+  const paymentRequests = await getUserPaymentRequestDetails(userId);
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
@@ -23,7 +23,7 @@ export default async function () {
         }}
       >
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Link href="paymentSetup/create">
+          <Link href="create">
             <button
               id="button"
               data-module="govie-button"
@@ -33,21 +33,16 @@ export default async function () {
             </button>
           </Link>
         </div>
-        <h2 className="govie-heading-m">{t("transactions")}</h2>
+
+        <h2 className="govie-heading-m">{t("paymentRequests")}</h2>
         <table className="govie-table">
           <thead className="govie-table__head">
             <tr className="govie-table__row">
               <th scope="col" className="govie-table__header">
-                {t("table.status")}
+                {t("table.title")}
               </th>
               <th scope="col" className="govie-table__header">
-                {t("table.date")}
-              </th>
-              <th scope="col" className="govie-table__header">
-                {t("table.payee")}
-              </th>
-              <th scope="col" className="govie-table__header">
-                {t("table.paymentTitle")}
+                {t("table.reference")}
               </th>
               <th scope="col" className="govie-table__header">
                 {t("table.amount")}
@@ -55,24 +50,16 @@ export default async function () {
             </tr>
           </thead>
           <tbody className="govie-table__body">
-            {transactions.map((trx) => (
+            {paymentRequests.map((req) => (
               <tr className="govie-table__row">
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  <strong className="govie-tag govie-tag--green govie-body-s">
-                    {trx.status}
-                  </strong>
+                  {req.title}
                 </td>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {new Date(trx.updated_at).toLocaleDateString()}
+                  {req.reference}
                 </td>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {trx.citizen_name}
-                </td>
-                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {trx.title}
-                </td>
-                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {formatCurrency(trx.amount)}
+                  {formatCurrency(req.amount)}
                 </td>
               </tr>
             ))}

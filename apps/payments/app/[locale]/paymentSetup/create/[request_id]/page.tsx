@@ -5,7 +5,7 @@ import { formatCurrency } from "../../../../utils";
 import Link from "next/link";
 import { getPaymentRequestDetails } from "../../db";
 
-export default async function (props: { params: { request_id: string; }; }) {
+export default async function (props: { params: { request_id: string } }) {
   const details = await getPaymentRequestDetails(props.params.request_id);
   const t = await getTranslations("PaymentSetup.CreatePayment");
 
@@ -18,47 +18,62 @@ export default async function (props: { params: { request_id: string; }; }) {
     process.env.HOST_URL ?? ""
   ).toString();
 
-
   return (
-    <div style={{ display: "flex", flexDirection: 'column', flex: 1 }}>
+    <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
       <h1 className="govie-heading-l">{t("title")}</h1>
       <dl className="govie-summary-list">
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.title")}</dt>
-          <dt className="govie-summary-list__value">{details.title}</dt>
+          <dt className="govie-summary-list__value">{details[0].title}</dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.description")}</dt>
-          <dt className="govie-summary-list__value">{details.description}</dt>
-        </div>
-        <div className="govie-summary-list__row">
-          <dt className="govie-summary-list__key">
-            {t("form.beneficiaryAccount")}
+          <dt className="govie-summary-list__value">
+            {details[0].description}
           </dt>
-          <dt className="govie-summary-list__value">{details.provider_name}</dt>
         </div>
+
+        {details.map(({ provider_name, provider_type }) => (
+          <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">
+              {t(`form.paymentProvider.${provider_type}`)}
+            </dt>
+            <dt className="govie-summary-list__value">{provider_name}</dt>
+          </div>
+        ))}
+
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.amount")}</dt>
           <dt className="govie-summary-list__value">
-            {formatCurrency(details.amount)}
+            {formatCurrency(details[0].amount)}
           </dt>
         </div>
       </dl>
-      <div style={{ display: 'flex', columnGap: '2em', alignItems: 'center', marginBottom: '4em' }}>
+      <div
+        style={{
+          display: "flex",
+          columnGap: "2em",
+          alignItems: "center",
+          marginBottom: "4em",
+        }}
+      >
         <div>
-          <label htmlFor='' className='govie-label'>{t('paymentLink')}</label>
+          <label htmlFor="" className="govie-label">
+            {t("paymentLink")}
+          </label>
           <a href={completePaymentLink} className="govie-link">
             {completePaymentLink}
           </a>
         </div>
-        <CopyLink link={completePaymentLink} buttonText={t('copyLink')} />
+        <CopyLink link={completePaymentLink} buttonText={t("copyLink")} />
       </div>
       <div>
         <Link href="/payments">
-          <button className='govie-button govie-button--secondary'>{t('goBack')}</button>
+          <button className="govie-button govie-button--secondary">
+            {t("goBack")}
+          </button>
         </Link>
       </div>
     </div>
   );
 }
-

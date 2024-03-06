@@ -64,12 +64,17 @@ CREATE TABLE IF NOT EXISTS payment_requests(
     user_id UUID NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
-    provider_id UUID NOT NULL,
     reference TEXT NOT NULL,
     amount NUMERIC NOT NULL,
     status TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     primary key(payment_request_id)
+);
+
+CREATE TABLE IF NOT EXISTS payment_requests_providers(
+    payment_request_id UUID NOT NULL,
+    provider_id UUID NOT NULL,
+    primary key(payment_request_id, provider_id)
 );
 
 CREATE TABLE IF NOT EXISTS payment_transactions(

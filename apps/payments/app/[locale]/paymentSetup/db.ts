@@ -5,7 +5,6 @@ type PaymentRequestDO = {
   user_id: string;
   title: string;
   description: string;
-  provider_id: string;
   reference: string;
   amount: number;
   status: string;
@@ -14,16 +13,17 @@ type PaymentRequestDO = {
 type PaymentRequestDetails = Pick<
   PaymentRequestDO,
   "title" | "description" | "amount" | "reference"
-> & { provider_name: string };
+> & { provider_name: string, provider_type: string };
 
 export async function getPaymentRequestDetails(
   requestId: string
-): Promise<PaymentRequestDetails | undefined> {
+): Promise<PaymentRequestDetails[] | undefined> {
   "use server";
   const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.description, pr.amount, pp.provider_name, pr.reference
+    `select pr.title, pr.description, pr.amount, pp.provider_name, pp.provider_type, pr.reference
       from payment_requests pr
-      join payment_providers pp on pr.provider_id = pp.provider_id
+      join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
+      join payment_providers pp on ppr.provider_id = pp.provider_id
       where pr.payment_request_id = $1`,
     [requestId]
   );
@@ -32,7 +32,7 @@ export async function getPaymentRequestDetails(
     return undefined;
   }
 
-  return res.rows[0];
+  return res.rows;
 }
 
 export async function getUserPaymentRequestDetails(
@@ -41,9 +41,8 @@ export async function getUserPaymentRequestDetails(
   "use server";
 
   const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.description, pr.amount, pp.provider_name, pr.reference
+    `select pr.title, pr.description, pr.amount, pr.reference
       from payment_requests pr
-      join payment_providers pp on pr.provider_id = pp.provider_id
       where pr.user_id = $1`,
     [userId]
   );

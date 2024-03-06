@@ -22,7 +22,8 @@ async function getPaymentDetails(paymentId: string) {
       u.govid_email,
       u.user_name
     from payment_requests pr
-    join payment_providers pp on pr.provider_id = pp.provider_id
+    join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
+    join payment_providers pp on ppr.provider_id = pp.provider_id
     join users u on pr.user_id = u.id
     where pr.payment_request_id = $1
       and pp.provider_type = 'openbanking'
@@ -37,7 +38,11 @@ async function getPaymentDetails(paymentId: string) {
   return createPaymentRequest(rows[0]);
 }
 
-async function createTransaction(paymentId: string, userId: string, tlPaymentId: string) {
+async function createTransaction(
+  paymentId: string,
+  userId: string,
+  tlPaymentId: string
+) {
   "use server";
   const res = await pgpool.query<{ transaction_id: number }>(
     `
@@ -59,13 +64,18 @@ export default async function Bank(params: {
 
   const { userId } = await PgSessions.get();
 
-  const paymentDetails = await getPaymentDetails(
+  const paymentDetails = await getPaymentDetails(params.searchParams.paymentId);
+
+  const transactionId = await createTransaction(
     params.searchParams.paymentId,
+    userId,
+    paymentDetails.id
   );
 
-  const transactionId = await createTransaction(params.searchParams.paymentId, userId, paymentDetails.id)
-
-  const returnUri = new URL("/en/paymentRequest/complete", process.env.HOST_URL);
+  const returnUri = new URL(
+    "/en/paymentRequest/complete",
+    process.env.HOST_URL
+  );
   const errorUri = new URL("/en/paymentRequest/error", process.env.HOST_URL);
   errorUri.searchParams.append("transactionId", transactionId.toString());
   return (

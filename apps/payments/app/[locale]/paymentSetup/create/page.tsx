@@ -4,15 +4,15 @@ import { RedirectType, redirect } from "next/navigation";
 import { pgpool } from "../../../dbConnection";
 import { routeDefinitions } from "../../../routeDefinitions";
 
-async function getRegisteredAccounts(userId: string) {
+async function getRegisteredAccounts(userId: string, providerType: string) {
   "use server";
 
   const accountsQueryResult = await pgpool.query<
     { provider_id: string; provider_name: string },
     string[]
   >(
-    `select provider_id, provider_name from payment_providers where user_id = $1 and provider_type = 'openbanking'`,
-    [userId]
+    `select provider_id, provider_name from payment_providers where user_id = $1 and provider_type = $2`,
+    [userId, providerType]
   );
 
   if (!accountsQueryResult.rowCount) {
@@ -28,37 +28,76 @@ async function createPayment(userId: string, formData: FormData) {
   const amountAsString = formData.get("amount")?.toString() ?? "";
   const amount = parseFloat(amountAsString) * 100;
 
+  const openBankingAccount = formData.get("openbanking-account")?.toString();
+  const bankTransferAccount = formData.get("banktransfer-account")?.toString();
+
+  if (!openBankingAccount && !bankTransferAccount) {
+    throw new Error("Failed to create payment");
+  }
+
   const data = {
     title: formData.get("title")?.toString(),
     description: formData.get("description")?.toString(),
-    account: formData.get("account")?.toString(),
     reference: formData.get("reference")?.toString(),
     amount,
   };
 
-  const res = await pgpool.query<{ payment_request_id: string }>(
-    `insert into payment_requests (user_id, title, description, provider_id, reference, amount, status)
-      values ($1, $2, $3, $4, $5, $6, $7)
+  const paymentRequestQueryResult = await pgpool.query<{
+    payment_request_id: string;
+  }>(
+    `insert into payment_requests (user_id, title, description, reference, amount, status)
+      values ($1, $2, $3, $4, $5, $6)
       returning payment_request_id`,
     [
       userId,
       data.title,
       data.description,
-      data.account,
       data.reference,
       data.amount,
       "pending",
     ]
   );
 
-  if (!res.rowCount) {
+  if (!paymentRequestQueryResult.rowCount) {
     // handle creation failure
     throw new Error("Failed to create payment");
   }
 
+  const paymentRequestId = paymentRequestQueryResult.rows[0].payment_request_id;
+
+  if (openBankingAccount) {
+    const paymentRequestProviderQueryResult = await pgpool.query<{
+      payment_request_id: string;
+    }>(
+      `insert into payment_requests_providers (provider_id, payment_request_id)
+      values ($1, $2)`,
+      [openBankingAccount, paymentRequestId]
+    );
+
+    if (!paymentRequestProviderQueryResult.rowCount) {
+      // handle creation failure
+      throw new Error("Failed to create payment");
+    }
+  }
+
+  if (bankTransferAccount) {
+    const paymentRequestProviderQueryResult = await pgpool.query<{
+      payment_request_id: string;
+    }>(
+      `insert into payment_requests_providers (provider_id, payment_request_id)
+      values ($1, $2)`,
+      [bankTransferAccount, paymentRequestId]
+    );
+
+    if (!paymentRequestProviderQueryResult.rowCount) {
+      // handle creation failure
+      throw new Error("Failed to create payment");
+    }
+  }
+
   redirect(
     routeDefinitions.paymentSetup.createComplete.path(
-      res.rows[0].payment_request_id
+      paymentRequestQueryResult.rows[0].payment_request_id
     ),
     RedirectType.replace
   );
@@ -69,7 +108,15 @@ export default async function Page() {
 
   const { userId } = await PgSessions.get();
 
-  const accounts = await getRegisteredAccounts(userId);
+  const openBankingAccounts = await getRegisteredAccounts(
+    userId,
+    "openbanking"
+  );
+
+  const manualBankTransferAccounts = await getRegisteredAccounts(
+    userId,
+    "banktransfer"
+  );
 
   const submitPayment = createPayment.bind(this, userId);
 
@@ -109,16 +156,33 @@ export default async function Page() {
             ></textarea>
           </div>
           <div className="govie-form-group">
-            <label htmlFor="beneficiary-account" className="govie-label--s">
-              {t("form.beneficiaryAccount")}
+            <label htmlFor="openbanking-account" className="govie-label--s">
+              {t("form.paymentProvider.openbanking")}
             </label>
             <select
-              id="beneficiary-account"
-              name="account"
+              id="openbanking-account"
+              name="openbanking-account"
               className="govie-select"
-              required
             >
-              {accounts.map((account) => (
+              <option value={""}>Disabled</option>
+              {openBankingAccounts.map((account) => (
+                <option key={account.provider_id} value={account.provider_id}>
+                  {account.provider_name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="govie-form-group">
+            <label htmlFor="banktransfer-account" className="govie-label--s">
+              {t("form.paymentProvider.banktransfer")}
+            </label>
+            <select
+              id="banktransfer-account"
+              name="banktransfer-account"
+              className="govie-select"
+            >
+              <option value={""}>Disabled</option>
+              {manualBankTransferAccounts.map((account) => (
                 <option key={account.provider_id} value={account.provider_id}>
                   {account.provider_name}
                 </option>

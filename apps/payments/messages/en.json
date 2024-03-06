@@ -2,6 +2,7 @@
   "PaymentSetup": {
     "menu": {
       "payments": "Payments",
+      "paymentRequests":"Payment requests",
       "providers": "Providers"
     },
     "Providers": {
@@ -90,6 +91,10 @@
         "title": "Title",
         "description": "Description",
         "beneficiaryAccount": "Beneficiary Account",
+        "paymentProvider": {
+          "openbanking": "OpenBanking Account",
+          "banktransfer": "Manual Bank Transfer Account"
+        },
         "reference": "Reference",
         "amount": "Amount",
         "currencySymbol": "€",
