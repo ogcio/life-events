@@ -111,14 +111,28 @@
     "payByBank": "Pay by bank app",
     "payByBankDescription": "Make a direct payment securely from your bank app - no card needed",
     "payByCard": "Credit/Debit card",
-    "payNow": "Pay now"
+    "payNow": "Pay now",
+    "manualBankTransfer": "Manual Bank Transfer",
+    "manualBankTransferDescription": "Make a manual bank transfer"
+  },
+  "PayManualBankTransfer": {
+    "title": "Pay with a Manual Bank Transfer",
+    "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat.",
+    "back": "Back",
+    "summary": {
+      "title": "Title",
+      "amount": "Total to pay",
+      "accountHolderName": "Name on the account",
+      "sortCode": "Sort code",
+      "accountNumber": "Account number"
+    }
   },
   "PaymentRequestComplete": {
     "title": "Your payment was successful",
     "yourRef": "Your reference number",
     "summary": {
       "title": "Payment for",
-      "amount": "Totla fee paid",
+      "amount": "Total fee paid",
       "date": "Date of transaction"
     },
     "back": "Back to My Portal"

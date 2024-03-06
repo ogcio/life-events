@@ -70,6 +70,14 @@ export default async function Page(props: Props) {
     return notFound;
   }
 
+  const hasOpenBanking = details.some(
+    ({ provider_type }) => provider_type === "openbanking"
+  );
+
+  const hasManualBanking = details.some(
+    ({ provider_type }) => provider_type === "banktransfer"
+  );
+
   return (
     <div
       style={{
@@ -94,23 +102,49 @@ export default async function Page(props: Props) {
           {t("toPay")}: {formatCurrency(details[0].amount)}
         </h2>
         <hr className="govie-section-break govie-section-break--visible"></hr>
-        <div style={{ margin: "1em 0" }}>
-          <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
-            <h3 className="govie-heading-s" style={{ margin: 0 }}>
-              {t("payByBank")}
-            </h3>
-            <strong className="govie-tag govie-tag--green">Recommended</strong>
-          </div>
-          <p className="govie-body">{t("payByBankDescription")}</p>
-          <Link
-            href={`/paymentRequest/pay/bank?paymentId=${props.searchParams.paymentId}`}
-          >
-            <button className="govie-button govie-button--primary">
-              {t("payNow")}
-            </button>
-          </Link>
-        </div>
-        <hr className="govie-section-break govie-section-break--visible"></hr>
+        {hasOpenBanking && (
+          <>
+            <div style={{ margin: "1em 0" }}>
+              <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
+                <h3 className="govie-heading-s" style={{ margin: 0 }}>
+                  {t("payByBank")}
+                </h3>
+                <strong className="govie-tag govie-tag--green">
+                  Recommended
+                </strong>
+              </div>
+              <p className="govie-body">{t("payByBankDescription")}</p>
+              <Link
+                href={`/paymentRequest/pay/bank?paymentId=${props.searchParams.paymentId}`}
+              >
+                <button className="govie-button govie-button--primary">
+                  {t("payNow")}
+                </button>
+              </Link>
+            </div>
+            <hr className="govie-section-break govie-section-break--visible"></hr>
+          </>
+        )}
+        {hasManualBanking && (
+          <>
+            <div style={{ margin: "1em 0" }}>
+              <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
+                <h3 className="govie-heading-s" style={{ margin: 0 }}>
+                  {t("manualBankTransfer")}
+                </h3>
+              </div>
+              <p className="govie-body">{t("manualBankTransferDescription")}</p>
+              <Link
+                href={`/paymentRequest/pay/manual?paymentId=${props.searchParams.paymentId}`}
+              >
+                <button className="govie-button govie-button--primary">
+                  {t("payNow")}
+                </button>
+              </Link>
+            </div>
+            <hr className="govie-section-break govie-section-break--visible"></hr>
+          </>
+        )}
         <div style={{ margin: "1em 0" }}>
           <h3 className="govie-heading-s">{t("payByCard")}</h3>
         </div>
