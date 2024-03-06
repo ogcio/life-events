@@ -218,7 +218,7 @@ export default async (props: NextPageProps) => {
           backHref={baseActionHref}
         >
           <AddressForm
-            addressSearchQuery={props.searchParams?.adr}
+            searchParams={props.searchParams}
             flow={renewDriversLicenceFlowKey}
             userId={userId}
             data={data}
