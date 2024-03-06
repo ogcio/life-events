@@ -7,11 +7,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { pgpool } from "../../dbConnection";
 import { awsFileBucket, s3ClientConfig } from "../../utils";
-import { ListRow } from "../[event]/[...action]/RenewDriversLicence/CheckYourDetails";
 import {
   NextPageProps,
   RenewDriversLicenceFlow,
 } from "../[event]/[...action]/types";
+import { ListRow } from "../[event]/[...action]/RenewDriversLicence/SummaryListRow";
 
 type Props = NextPageProps & {
   flowData: RenewDriversLicenceFlow;

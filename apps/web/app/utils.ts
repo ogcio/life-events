@@ -34,7 +34,6 @@ export const urlConstants = {
     confirmApplication: "confirm-application",
     newAddress: "new-address",
     changeDetails: "change-details",
-    checkDetails: "check-details",
     proofOfAddress: "proof-of-address",
     paymentSelection: "payment-selection",
     paymentSuccess: "payment-success",

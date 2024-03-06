@@ -12,7 +12,6 @@ import {
 } from "../types";
 import AddressForm from "./AddressForm";
 import ApplicationSuccess from "./ApplicationSuccess";
-import CheckYourDetails from "./CheckYourDetails";
 import DetailsSummary from "./DetailsSummary";
 import MedicalForm from "./MedicalForm";
 import PaymentPlaceholder from "./PaymentPlaceholder";
@@ -42,7 +41,7 @@ export function getNextSlug(data: RenewDriversLicenceFlow) {
       ) {
         return null;
       }
-      return urlConstants.slug.checkDetails;
+      return urlConstants.slug.confirmApplication;
     },
     ({ confirmedApplication }) =>
       !confirmedApplication ? urlConstants.slug.confirmApplication : null,
@@ -247,27 +246,6 @@ export default async (props: NextPageProps) => {
             mobile={data.mobile}
             flow={renewDriversLicenceFlowKey}
             urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
-          />
-        </FormLayout>
-      );
-    case urlConstants.slug.checkDetails:
-      return (
-        <FormLayout
-          action={{ slug: actionSlug }}
-          step={stepSlug}
-          backHref="/driving"
-        >
-          <CheckYourDetails
-            sex={data.sex}
-            userName={data.userName}
-            email={data.email}
-            dayOfBirth={data.dayOfBirth}
-            monthOfBirth={data.monthOfBirth}
-            yearOfBirth={data.yearOfBirth}
-            mobile={data.mobile}
-            urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
-            currentAddress={data.currentAddress}
-            timeAtAddress={data.timeAtAddress}
           />
         </FormLayout>
       );

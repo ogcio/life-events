@@ -27,7 +27,7 @@ export default async (
     | "userName"
   > & { userId: string; urlBase: string; flow: string }
 ) => {
-  const t = await getTranslations("CheckYourDetailsForm");
+  const t = await getTranslations("SimpleDetailsForm");
   const errorT = await getTranslations("formErrors");
 
   const errors = await getFormErrors(
@@ -440,7 +440,7 @@ export default async (
             />
           </div>
           <button type="submit" className="govie-button">
-            Continue
+            {t("submitText")}
           </button>
         </form>
       </div>

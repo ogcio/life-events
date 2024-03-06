@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
 import { pgpool } from "../../../../dbConnection";
 import { RenewDriversLicenceFlow } from "../types";
-import { ListRow } from "./CheckYourDetails";
+import { ListRow } from "./SummaryListRow";
 
 export default (
   props: Pick<
@@ -41,6 +41,12 @@ export default (
   const changeDetailsHref = "/driving/renew-licence/change-details";
   const changeAddressHref = "/driving/renew-licence/new-address";
   const changeProofOfAddressHref = "/driving/renew-licence/proof-of-address";
+  const dateOfBirth =
+    props.yearOfBirth && props.monthOfBirth && props.dayOfBirth
+      ? dayjs(
+          `${props.yearOfBirth}-${props.monthOfBirth}-${props.dayOfBirth}`
+        ).format("DD/MM/YYYY")
+      : "";
   return (
     <>
       <div className="govie-grid-row">
@@ -51,19 +57,6 @@ export default (
             <ListRow
               change={{ key: t("change"), value: changeDetailsHref }}
               item={{ key: t("userName"), value: props.userName }}
-            />
-            <ListRow
-              change={{ key: t("change"), value: changeDetailsHref }}
-              item={{ key: t("sex"), value: props.sex }}
-            />
-            <ListRow
-              change={{ key: t("change"), value: changeDetailsHref }}
-              item={{
-                key: t("dateOfBirth"),
-                value: dayjs(
-                  `${props.yearOfBirth}-${props.monthOfBirth}-${props.dayOfBirth}`
-                ).format("DD/MM/YYYY"),
-              }}
             />
             <ListRow
               change={{ key: t("change"), value: changeAddressHref }}
@@ -90,6 +83,18 @@ export default (
                 value: props.mobile,
               }}
             />
+
+            <ListRow
+              change={{ key: t("change"), value: changeDetailsHref }}
+              item={{ key: t("sex"), value: props.sex }}
+            />
+            <ListRow
+              change={{ key: t("change"), value: changeDetailsHref }}
+              item={{
+                key: t("dateOfBirth"),
+                value: dateOfBirth,
+              }}
+            />
           </dl>
 
           <div className="govie-heading-m">{t("applyingForTitle")}</div>
@@ -101,7 +106,11 @@ export default (
               }}
             />
             <ListRow
-              change={{ key: t("change"), value: changeProofOfAddressHref }}
+              change={
+                props.currentAddress
+                  ? { key: t("change"), value: changeProofOfAddressHref }
+                  : undefined
+              }
               item={{
                 key: t("proofOfAddress"),
                 value:
