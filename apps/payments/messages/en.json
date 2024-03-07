@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "notFound": "Payment request not found"
+  },
   "PaymentSetup": {
     "menu": {
       "payments": "Payments",
@@ -98,6 +101,7 @@
         "reference": "Reference",
         "amount": "Amount",
         "currencySymbol": "€",
+        "redirectUrl": "Redirect URL",
         "submit": "Continue"
       },
       "copyLink": "Copy link",

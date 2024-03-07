@@ -84,7 +84,6 @@
   "PaymentSuccessful": {
     "panelTitle": "Your payment was successful",
     "panelReferenceText": "Your reference number",
-    "panelReferenceNumber": "HDJ2123F*",
     "title": "What happens next?",
     "body": "Once approved your driving licence will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
     "summaryTitle": "Payment summary",
@@ -93,6 +92,10 @@
     "dateOfTransaction": "Date of transaction",
     "submitText": "Return to My Portal",
     "renewDriversLicence": "Driving licence renewal"
+  },
+  "PaymentError": {
+    "sorry": "Sorry, there was a problem",
+    "tryAgain": "Please return to My Portal and attempt the payment again"
   },
   "ApplicationSuccessful": {
     "panelTitle": "Your application was successful",

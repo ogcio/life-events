@@ -15,7 +15,6 @@ import ApplicationSuccess from "./ApplicationSuccess";
 import DetailsSummary from "./DetailsSummary";
 import MedicalForm from "./MedicalForm";
 import PaymentPlaceholder from "./PaymentPlaceholder";
-import PaymentSuccess from "./PaymentSuccess";
 import ProofOfAddress from "./ProofOfAddress";
 import SimpleDetailsForm from "./SimpleDetailsForm";
 import { pgpool } from "../../../../dbConnection";
@@ -119,7 +118,7 @@ export default async (props: NextPageProps) => {
 
   const flowQuery = pgpool.query<{ data: RenewDriversLicenceFlow }, [string]>(
     `
-    SELECT 
+    SELECT
         flow_data AS "data"
     FROM user_flow_data
     WHERE user_id=$1
@@ -277,19 +276,6 @@ export default async (props: NextPageProps) => {
           <PaymentPlaceholder
             flow={renewDriversLicenceFlowKey}
             userId={userId}
-          />
-        </FormLayout>
-      ) : (
-        redirect(nextSlug || "")
-      );
-
-    case urlConstants.slug.paymentSuccess:
-      return nextSlug === stepSlug ? (
-        <FormLayout action={{ slug: stepSlug }} step={stepSlug}>
-          <PaymentSuccess
-            dateOfPayment={data.dateOfPayment}
-            totalFeePaid={data.totalFeePaid}
-            flow={renewDriversLicenceFlowKey}
           />
         </FormLayout>
       ) : (

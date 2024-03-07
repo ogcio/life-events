@@ -16,6 +16,9 @@ export const routeDefinitions = {
       path() {
         return `${routeDefinitions.driving.slug}/${routeDefinitions.driving.renewLicense.slug}`;
       },
+      complete: {
+        slug: "complete",
+      },
     },
   },
   employment: { slug: "employment" },

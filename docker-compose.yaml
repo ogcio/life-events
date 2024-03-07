@@ -71,6 +71,7 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       LOGIN_URL: ${LOGIN_URL:-http://web.localtest.me/static/login/}
       HOST_URL: ${HOST_URL:-http://web.localtest.me/}
+      PAYMENT_HOST_URL: ${PAYMENT_HOST_URL:-http://payments.localtest.me/}
       TL_AUTH_SERVER_URI: ${TL_AUTH_SERVER_URI:-https://auth.truelayer-sandbox.com}
       TL_ENVIRONMENT_URI: ${TL_ENVIRONMENT_URI:-https://api.truelayer-sandbox.com}
       API_ENDPOINT: ${API_ENDPOINT:-http://mock-api}

@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS govid_sessions(
 );
 
 CREATE TABLE IF NOT EXISTS users(
-    id UUID NOT NULL DEFAULT gen_random_uuid(), -- might not need?
+    id UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE, -- might not need?
     govid_email TEXT NOT NULL, -- At least in testing/mocking phase, we want to use this for fake "logging in" since id wont be very exiting to use
     govid TEXT NOT NULL,
     user_name TEXT NOT NULL,
@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS payment_requests(
     description TEXT,
     reference TEXT NOT NULL,
     amount NUMERIC NOT NULL,
+    redirect_url TEXT NOT NULL,
     status TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     primary key(payment_request_id)
@@ -81,11 +82,14 @@ CREATE TABLE IF NOT EXISTS payment_transactions(
     transaction_id SERIAL NOT NULL,
     payment_request_id UUID NOT NULL,
     user_id UUID NOT NULL,
-    tl_payment_id TEXT NOT NULL,
+    ext_payment_id TEXT NOT NULL, -- The payment Id from TrueLayer/stripe etc
     status TEXT NOT NULL,
+    integration_reference TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    primary key(transaction_id)
+    primary key(transaction_id),
+    constraint fk_payment_request_id foreign key(payment_request_id) references payment_requests(payment_request_id),
+    constraint fk_user_id foreign key(user_id) references users(id)
 );
 
 CREATE TABLE IF NOT EXISTS file_meta(
