@@ -13,7 +13,7 @@ export const formConstants = {
     invalidField: "invalidField",
     emptySelection: "emptySelection",
     noFile: "noFile",
-    fileUploadFail:"fileUploadFail"
+    fileUploadFail: "fileUploadFail",
   },
   fieldTranslationKeys: {
     name: "name",
@@ -236,3 +236,8 @@ export const s3ClientConfig = {
   },
 };
 export const awsFileBucket = "life-events-files"; // use env later
+
+export const languages = {
+  EN: "EN",
+  GA: "GA",
+} as const;

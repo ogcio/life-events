@@ -1,62 +1,119 @@
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { addTemplate } from "messages";
+import { addEmailTemplate } from "messages";
+import { languages } from "../../../utils";
 
 async function saveTemplate(formData) {
   "use server";
-  const name = formData.get("name");
-  const subject = formData.get("subject");
-  const body = formData.get("body");
-
-  await addTemplate(name, subject, body);
+  await addEmailTemplate([
+    {
+      language: languages.EN,
+      name: formData.get("name_en"),
+      subject: formData.get("subject_en"),
+      body: formData.get("body_en"),
+    },
+    {
+      language: languages.GA,
+      name: formData.get("name_ga"),
+      subject: formData.get("subject_ga"),
+      body: formData.get("body_ga"),
+    },
+  ]);
 
   redirect("/templates");
 }
 export default async () => {
   const t = await getTranslations("EmailTemplates");
+  const tLanguages = await getTranslations("Languages");
 
   return (
     <main className="govie-main-wrapper " id="main-content" role="main">
       <form action={saveTemplate}>
         <h2 className="govie-heading-m">{t("form.addFormTitle")}</h2>
 
-        <div className="govie-form-group">
-          <div className="govie-hint" id="name-hint">
-            {t("form.name")}
+        <div style={{ display: "flex", gap: "20px" }}>
+          <div>
+            <h3 className="govie-heading-m">{tLanguages("english")}</h3>
+            <div className="govie-form-group">
+              <div className="govie-hint" id="name_en-hint">
+                {t("form.name")}
+              </div>
+              <input
+                type="text"
+                id="name_en"
+                name="name_en"
+                className="govie-input"
+                aria-describedby="name_en-hint"
+                required
+              />
+            </div>
+            <div className="govie-form-group">
+              <div className="govie-hint" id="subject_en-hint">
+                {t("form.subject")}
+              </div>
+              <input
+                type="text"
+                id="subject_en"
+                name="subject_en"
+                className="govie-input"
+                aria-describedby="subject_en-hint"
+                required
+              />
+            </div>
+            <div className="govie-form-group">
+              <div className="govie-hint" id="description_en-hint">
+                {t("form.body")}
+              </div>
+              <textarea
+                id="body_en"
+                name="body_en"
+                className="govie-textarea"
+                aria-describedby="body_en-hint"
+                rows={5}
+              ></textarea>
+            </div>
           </div>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            className="govie-input"
-            aria-describedby="name-hint"
-            required
-          />
-        </div>
-        <div className="govie-form-group">
-          <div className="govie-hint" id="subject-hint">
-            {t("form.subject")}
+          <div>
+            <h3 className="govie-heading-m">{tLanguages("irish")}</h3>
+            <div className="govie-form-group">
+              <div className="govie-hint" id="name_ga-hint">
+                {t("form.name")}
+              </div>
+              <input
+                type="text"
+                id="name_ga"
+                name="name_ga"
+                className="govie-input"
+                aria-describedby="name_ga-hint"
+                required
+              />
+            </div>
+            <div className="govie-form-group">
+              <div className="govie-hint" id="subject_ga-hint">
+                {t("form.subject")}
+              </div>
+              <input
+                type="text"
+                id="subject_ga"
+                name="subject_ga"
+                className="govie-input"
+                aria-describedby="subject_ga-hint"
+                required
+              />
+            </div>
+            <div className="govie-form-group">
+              <div className="govie-hint" id="description_ga-hint">
+                {t("form.body")}
+              </div>
+              <textarea
+                id="body_ga"
+                name="body_ga"
+                className="govie-textarea"
+                aria-describedby="body_ga-hint"
+                rows={5}
+              ></textarea>
+            </div>
           </div>
-          <input
-            type="text"
-            id="subject"
-            name="subject"
-            className="govie-input"
-            aria-describedby="subject-hint"
-            required
-          />
-        </div>
-        <div className="govie-form-group">
-          <div className="govie-hint" id="description-hint">
-            {t("form.body")}
-          </div>
-          <textarea
-            id="body"
-            name="body"
-            className="govie-textarea"
-            aria-describedby="body-hint"
-            rows={5}
-          ></textarea>
         </div>
 
         <button className="govie-button">{t("form.save")}</button>

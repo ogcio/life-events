@@ -250,5 +250,9 @@
       "fillIn": "Fill In",
       "view": "View"
     }
+  },
+  "Languages": {
+    "english": "English",
+    "irish": "Gaelic"
   }
 }
