@@ -98,8 +98,8 @@ export async function getRequestTransactionDetails(requestId: string) {
       pr.title,
       pr.amount,
       t.updated_at
-    from payment_requests pr
-    left join payment_transactions t on pr.payment_request_id = t.payment_request_id
+    from payment_transactions t
+    inner join payment_requests pr on pr.payment_request_id = t.payment_request_id
     left join users u on t.user_id = u.id
     where pr.payment_request_id = $1
     order by t.updated_at desc`,
