@@ -24,16 +24,14 @@ export default async function (props: { params: { request_id: string } }) {
       <dl className="govie-summary-list">
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.title")}</dt>
-          <dt className="govie-summary-list__value">{details[0].title}</dt>
+          <dt className="govie-summary-list__value">{details.title}</dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.description")}</dt>
-          <dt className="govie-summary-list__value">
-            {details[0].description}
-          </dt>
+          <dt className="govie-summary-list__value">{details.description}</dt>
         </div>
 
-        {details.map(({ provider_name, provider_type }) => (
+        {details.providers.map(({ provider_name, provider_type }) => (
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">
               {t(`form.paymentProvider.${provider_type}`)}
@@ -45,13 +43,11 @@ export default async function (props: { params: { request_id: string } }) {
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.amount")}</dt>
           <dt className="govie-summary-list__value">
-            {formatCurrency(details[0].amount)}
+            {formatCurrency(details.amount)}
           </dt>
         </div>
         <div className="govie-summary-list__row">
-          <dt className="govie-summary-list__key">
-            {t("form.redirectUrl")}
-          </dt>
+          <dt className="govie-summary-list__key">{t("form.redirectUrl")}</dt>
           <dt className="govie-summary-list__value">{details.redirect_url}</dt>
         </div>
       </dl>

@@ -66,7 +66,7 @@ export default async function () {
                   {new Date(trx.updated_at).toLocaleDateString()}
                 </td>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {trx.citizen_name}
+                  {trx.citizen_name || "-"}
                 </td>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                   {trx.title}

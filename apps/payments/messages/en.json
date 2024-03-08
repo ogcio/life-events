@@ -85,8 +85,28 @@
         "date": "Date",
         "title": "Title",
         "paymentTitle": "Description",
-        "beneficiaryAccount": "Beneficiary Account"
+        "beneficiaryAccount": "Beneficiary Account",
+        "actions": "Actions",
+        "assign": "Assign to user"
       }
+    },
+    "Request": {
+      "transactions": "Transactions",
+      "table": {
+        "status": "Status",
+        "reference": "Reference",
+        "payee": "Citizen Name",
+        "amount": "Amount",
+        "date": "Date",
+        "title": "Title",
+        "paymentTitle": "Description",
+        "beneficiaryAccount": "Beneficiary Account"
+      },
+      "assignTitle": "Assign to User",
+      "assignDescription": "Send this payment to a user",
+      "userPpsn": "User PPS Number",
+      "userPpsnHint": "The Personal Public Service Number of the user you would like to assign this payment to",
+      "confirm": "Confirm"
     },
     "CreatePayment": {
       "title": "Payment Setup Form",

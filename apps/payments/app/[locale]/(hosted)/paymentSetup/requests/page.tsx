@@ -42,10 +42,16 @@ export default async function () {
                 {t("table.title")}
               </th>
               <th scope="col" className="govie-table__header">
+                {t("table.beneficiaryAccount")}
+              </th>
+              <th scope="col" className="govie-table__header">
                 {t("table.reference")}
               </th>
               <th scope="col" className="govie-table__header">
                 {t("table.amount")}
+              </th>
+              <th scope="col" className="govie-table__header">
+                {t("table.actions")}
               </th>
             </tr>
           </thead>
@@ -56,10 +62,23 @@ export default async function () {
                   {req.title}
                 </td>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {req.providers
+                    .map(({ provider_name }) => provider_name)
+                    .join(", ")}
+                </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                   {req.reference}
                 </td>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                   {formatCurrency(req.amount)}
+                </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  <Link
+                    className="govie-link"
+                    href={`/paymentSetup/requests/${req.payment_request_id}`}
+                  >
+                    {t("table.assign")}
+                  </Link>
                 </td>
               </tr>
             ))}

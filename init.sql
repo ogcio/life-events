@@ -81,10 +81,11 @@ CREATE TABLE IF NOT EXISTS payment_requests_providers(
 CREATE TABLE IF NOT EXISTS payment_transactions(
     transaction_id SERIAL NOT NULL,
     payment_request_id UUID NOT NULL,
-    user_id UUID NOT NULL,
-    ext_payment_id TEXT NOT NULL, -- The payment Id from TrueLayer/stripe etc
+    user_id UUID,
+    user_ppsn TEXT, -- Used in order to send the payment request to the user through the messaging app.
+    ext_payment_id TEXT, -- The payment Id from TrueLayer/stripe etc
     status TEXT NOT NULL,
-    integration_reference TEXT NOT NULL,
+    integration_reference TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     primary key(transaction_id),
