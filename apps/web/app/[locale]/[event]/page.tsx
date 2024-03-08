@@ -17,8 +17,11 @@ type Props = {
 export default async (props: Props) => {
   let children: JSX.Element | null = null;
 
+  console.log("Hej vi vill titta om vi inte ska gora en liten redirect");
+
   const { firstName, lastName } = await PgSessions.get();
-  const useName = [firstName, lastName].join(" ");
+
+  const userName = [firstName, lastName].join(" ");
 
   switch (props.params.event) {
     case routeDefinitions.events.slug:
@@ -36,7 +39,7 @@ export default async (props: Props) => {
   }
 
   return (
-    <WithEventMenu selectedEvent={props.params.event} userName={useName}>
+    <WithEventMenu selectedEvent={props.params.event} userName={userName}>
       {children}
     </WithEventMenu>
   );

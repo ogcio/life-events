@@ -237,6 +237,30 @@ export const s3ClientConfig = {
 };
 export const awsFileBucket = "life-events-files"; // use env later
 
+/**
+ * Returns a string based on a list of rules.
+ *
+ * Currently intended to be used to return an url slug depending on whatever
+ * conditions desirable, enabling simple branching rules based on a state.
+ *
+ * Result is based on the order of the rules. If null or empty string is returned from the rule,
+ * next rule will be tested.
+ *
+ */
+export function getCurrentFlowStep<TFlowData>(
+  rules: ((data: TFlowData) => string | null)[],
+  state: TFlowData
+) {
+  let next: string | null = null;
+  for (const fn of rules) {
+    if (next) {
+      break;
+    }
+    next = fn(state);
+  }
+  return next ?? "";
+}
+
 export const languages = {
   EN: "EN",
   GA: "GA",

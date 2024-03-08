@@ -251,6 +251,15 @@
       "view": "View"
     }
   },
+  "UserConsentFlow": {
+    "title": "Welcome to your portal",
+    "disclaimer": "As part of our service, certain data associated with your account will be stored and saved to your profile to enhance your user experience and provide personalised features. We prioritise the security and privacy of your data, and you have the option to agree or disagree with this data storage. You can change this decision later.",
+    "agree": "I agree to save my data",
+    "disagree": "I disagree",
+    "submit": "Continue",
+    "detailsSummary": "How will DVA use my data?",
+    "detailsText": "Text."
+  },
   "Languages": {
     "english": "English",
     "irish": "Gaelic"

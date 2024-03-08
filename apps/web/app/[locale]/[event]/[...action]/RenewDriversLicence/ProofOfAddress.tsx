@@ -43,7 +43,7 @@ export default async (props: {
 
   async function finalSubmitAction(formData: FormData) {
     "use server";
-    const identityficationSelection = formData
+    const identitySelection = formData
       .get("identity-selection")
       ?.toString();
 
@@ -51,7 +51,7 @@ export default async (props: {
 
     const formErrors: FormError[] = [];
 
-    if (!identityficationSelection) {
+    if (!identitySelection) {
       formErrors.push({
         errorValue: "",
         field: "identity-selection",
@@ -60,12 +60,12 @@ export default async (props: {
     }
 
     if (
-      identityficationSelection &&
-      identityficationSelection !== "noDocuments" &&
+      identitySelection &&
+      identitySelection !== "noDocuments" &&
       !poaFile.size
     ) {
       formErrors.push({
-        errorValue: identityficationSelection,
+        errorValue: identitySelection,
         field: "identity-selection",
         messageKey: formConstants.errorTranslationKeys.noFile,
       });
@@ -135,7 +135,7 @@ export default async (props: {
           props.userId,
           fileId,
           fileType,
-          identityficationSelection,
+          identitySelection,
           fileExtension,
         ]
       );
@@ -146,7 +146,7 @@ export default async (props: {
         UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('proofOfAddressRequest', $1::TEXT, 'proofOfAddressFileId', $2::TEXT)
         WHERE user_id = $3 AND flow = $4
       `,
-        [identityficationSelection, fileId, props.userId, props.flow]
+        [identitySelection, fileId, props.userId, props.flow]
       );
 
       await transaction.query("COMMIT");

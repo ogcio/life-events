@@ -21,6 +21,12 @@ CREATE TABLE IF NOT EXISTS users(
     PRIMARY KEY(govid_email)
 );
 
+CREATE TABLE IF NOT EXISTS user_consents (
+    user_id UUID NOT NULl,
+    agreement TEXT NOT NULL, -- Can be as fine grained as we want, or just "store data". Can also be an enum or whatever.
+    is_consenting BOOLEAN NOT NULL
+);
+
 
 CREATE TABLE IF NOT EXISTS user_flow_data(
     user_id UUID NOT NULL,

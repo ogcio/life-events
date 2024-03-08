@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { appConstants } from "../../../../constants";
 import { PgSessions } from "auth/sessions";
-import { urlConstants } from "../../../../utils";
+import { urlConstants, getCurrentFlowStep } from "../../../../utils";
 import ActionBreadcrumb from "../ActionBreadcrumb";
 import {
   emptyRenewDriversLicenceFlow,
@@ -19,75 +19,62 @@ import ProofOfAddress from "./ProofOfAddress";
 import SimpleDetailsForm from "./SimpleDetailsForm";
 import { pgpool } from "../../../../dbConnection";
 
-// move
-type StepFn<TData> = (data: TData) => string | null;
-// enhance further by providing steps eg. doesn't have to be hard coded specifically for this event action.
-export function getNextSlug(data: RenewDriversLicenceFlow) {
-  const steps: StepFn<RenewDriversLicenceFlow>[] = [
-    (params) => {
-      if (
-        Boolean(
-          params.currentAddress &&
-            params.dayOfBirth &&
-            params.monthOfBirth &&
-            params.yearOfBirth &&
-            params.email &&
-            params.mobile &&
-            params.userName &&
-            params.sex &&
-            params.timeAtAddress
-        )
-      ) {
-        return null;
-      }
-      return urlConstants.slug.confirmApplication;
-    },
-    ({ confirmedApplication }) =>
-      !confirmedApplication ? urlConstants.slug.confirmApplication : null,
-    ({ dayOfBirth, monthOfBirth, yearOfBirth, medicalCertificate }) => {
-      const birthDay = dayjs(
-        new Date(
-          Number(yearOfBirth),
-          Number(monthOfBirth) - 1,
-          Number(dayOfBirth)
-        )
-      );
-      const yearDiff = dayjs().diff(birthDay, "years", true);
+export const renewDriverLicenceRules: Parameters<
+  typeof getCurrentFlowStep<RenewDriversLicenceFlow>
+>[0] = [
+  (params) => {
+    if (
+      Boolean(
+        params.currentAddress &&
+          params.dayOfBirth &&
+          params.monthOfBirth &&
+          params.yearOfBirth &&
+          params.email &&
+          params.mobile &&
+          params.userName &&
+          params.sex &&
+          params.timeAtAddress
+      )
+    ) {
+      return null;
+    }
+    return urlConstants.slug.confirmApplication;
+  },
+  ({ confirmedApplication }) =>
+    !confirmedApplication ? urlConstants.slug.confirmApplication : null,
+  ({ dayOfBirth, monthOfBirth, yearOfBirth, medicalCertificate }) => {
+    const birthDay = dayjs(
+      new Date(
+        Number(yearOfBirth),
+        Number(monthOfBirth) - 1,
+        Number(dayOfBirth)
+      )
+    );
+    const yearDiff = dayjs().diff(birthDay, "years", true);
 
-      return yearDiff >= appConstants.driverLicenceMedicalFormAgeThreshold &&
-        !medicalCertificate
-        ? urlConstants.slug.medicalCertificate
-        : null;
-    },
-    ({ dayOfBirth, monthOfBirth, yearOfBirth }) => {
-      const birthDay = dayjs(
-        new Date(
-          Number(yearOfBirth),
-          Number(monthOfBirth) - 1,
-          Number(dayOfBirth)
-        )
-      );
-      const yearDiff = dayjs().diff(birthDay, "years", true);
+    return yearDiff >= appConstants.driverLicenceMedicalFormAgeThreshold &&
+      !medicalCertificate
+      ? urlConstants.slug.medicalCertificate
+      : null;
+  },
+  ({ dayOfBirth, monthOfBirth, yearOfBirth }) => {
+    const birthDay = dayjs(
+      new Date(
+        Number(yearOfBirth),
+        Number(monthOfBirth) - 1,
+        Number(dayOfBirth)
+      )
+    );
+    const yearDiff = dayjs().diff(birthDay, "years", true);
 
-      return yearDiff >= appConstants.driverLicencePaymentAgeThreshold
-        ? urlConstants.slug.applicationSuccess
-        : null;
-    },
-    ({ paymentId }) => (!paymentId ? urlConstants.slug.paymentSelection : null),
-    ({ paymentId }) => (paymentId ? urlConstants.slug.paymentSuccess : null),
-    () => "success",
-  ];
-
-  return (
-    steps.reduce((element, fn, _, arr) => {
-      if (element) {
-        arr.length = 0;
-        return element;
-      }
-      return fn(data);
-    }, null) || ""
-  );
-}
+    return yearDiff >= appConstants.driverLicencePaymentAgeThreshold
+      ? urlConstants.slug.applicationSuccess
+      : null;
+  },
+  ({ paymentId }) => (!paymentId ? urlConstants.slug.paymentSelection : null),
+  ({ paymentId }) => (paymentId ? urlConstants.slug.paymentSuccess : null),
+  () => "success",
+];
 
 // move
 export const renewDriversLicenceFlowKey = "renewDriversLicence";
@@ -149,7 +136,7 @@ export default async (props: NextPageProps) => {
     Object.assign(data, flowData);
   }
 
-  const nextSlug = getNextSlug(data);
+  const nextSlug = getCurrentFlowStep(renewDriverLicenceRules, data);
 
   // Act
   const stepSlug = props.params.action?.at(1);

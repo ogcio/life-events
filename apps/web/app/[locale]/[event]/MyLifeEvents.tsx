@@ -1,15 +1,14 @@
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
 import OpenEventStatusImage from "./OpenEventStatusImage";
 import {
-  getNextSlug,
+  renewDriverLicenceRules,
   renewDriversLicenceFlowKey,
 } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { RenewDriversLicenceFlow } from "./[...action]/types";
 import { pgpool } from "../../dbConnection";
-import { urlConstants } from "../../utils";
+import { getCurrentFlowStep, urlConstants } from "../../utils";
 
 async function getEvents() {
   "use server";
@@ -49,7 +48,7 @@ async function getFlows() {
     let descriptionKey = row.flow;
     let titleKey = row.flow;
 
-    const step = getNextSlug(row.data);
+    const step = getCurrentFlowStep(renewDriverLicenceRules, row.data);
 
     let successful = false;
     if (row.data.successfulAt) {

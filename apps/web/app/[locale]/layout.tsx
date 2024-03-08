@@ -2,14 +2,26 @@ import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
 import Header from "./Header";
 import Footer from "./Footer";
+import { PgSessions } from "auth/sessions";
+import { RedirectType, redirect } from "next/navigation";
+import { headers } from "next/headers";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params: { locale },
 }: {
   children: React.ReactNode;
   params: { locale: string };
 }) {
+  const { isInitialized } = await PgSessions.get();
+
+  const path = headers().get("x-pathname")?.toString();
+  if (!isInitialized && !path?.endsWith("welcome")) {
+    const url = new URL(`${locale}/welcome`, process.env.HOST_URL);
+    url.searchParams.append("redirect_url", path ?? "/");
+    redirect(url.href, RedirectType.replace);
+  }
+
   return (
     <html lang={locale}>
       <body

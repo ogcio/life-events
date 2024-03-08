@@ -22,7 +22,11 @@ type Session = {
 
 export interface Sessions {
   get(): Promise<
-    SessionTokenDecoded & { userId: string; publicServant: boolean }
+    SessionTokenDecoded & {
+      userId: string;
+      publicServant: boolean;
+      isInitialized: boolean;
+    }
   >;
   set(session: Session): Promise<string>;
   delete(key: string): Promise<void>;
@@ -37,16 +41,23 @@ export const pgpool = new Pool({
 
 async function getPgSession(key: string) {
   const query = await pgpool.query<
-    { token: string; userId: string; publicServant: boolean },
+    {
+      token: string;
+      userId: string;
+      publicServant: boolean;
+      isInitialized: boolean;
+    },
     [string]
   >(
     `
       SELECT
         s.token,
         s.user_id AS "userId",
-        u.is_public_servant as "publicServant"
+        u.is_public_servant as "publicServant",
+        consent."isInitialized"
       FROM govid_sessions s
       JOIN users u on u.id = s.user_id
+      LEFT JOIN LATERAL (SELECT EXISTS (SELECT 1 FROM user_consents uc WHERE uc.user_id = u.id) AS "isInitialized") AS consent ON TRUE
       WHERE s.id=$1`,
     [key]
   );
@@ -55,8 +66,8 @@ async function getPgSession(key: string) {
     return undefined;
   }
 
-  const [{ token, userId, publicServant }] = query.rows;
-  return { token, userId, publicServant };
+  const [{ token, userId, publicServant, isInitialized }] = query.rows;
+  return { token, userId, publicServant, isInitialized };
 }
 
 export function decodeJwt(token: string) {
@@ -85,6 +96,7 @@ export const PgSessions: Sessions = {
       ...decodeJwt(session.token),
       userId: session.userId,
       publicServant: session.publicServant,
+      isInitialized: session.isInitialized,
     };
   },
   async set(session: Session) {

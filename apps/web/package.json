@@ -25,7 +25,6 @@
     "truelayer-signing": "^0.1.7"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.4.1",
     "@playwright/test": "^1.40.1",
     "@types/node": "20.10.4",
     "@types/pg": "^8.11.0",
