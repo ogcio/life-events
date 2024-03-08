@@ -1,57 +1,24 @@
 import { redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
 import Sqids from "sqids";
+import { useTranslations } from "next-intl";
 
-import { pgpool } from "../../../../dbConnection";
 import { formatCurrency } from "../../../../utils";
-import PaymentError from "./PaymentError";
 
 const sqids = new Sqids({
   minLength: 8,
   alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
 });
 
-export type PaymentSuccessProps = {
-  searchParams?: {
-    transactionId: string;
-    id: string;
-    pay: string;
-    status: string;
-  };
+type Props = {
+  paymentId: number;
+  pay: string;
+  dateOfPayment: string;
+  flow: string;
 };
 
-async function updateFlow(userId: string, flow: string, pay: string) {
-  "use server";
 
-  // Let's just assume everything is fantastic
-  await pgpool.query(
-    `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('paymentId', gen_random_uuid()::text, 'totalFeePaid', $1::text, 'dateOfPayment', now()::date::text)
-        WHERE user_id=$2 AND flow = $3
-    `,
-    [pay, userId, flow]
-  );
-}
-
-export default async function (props: PaymentSuccessProps) {
-  if (!props.searchParams) {
-    return redirect("/events");
-  }
-
-  const { transactionId, id, pay, status } = props.searchParams;
-
-  if (status !== "executed") {
-    // update the DB?
-    return <PaymentError />;
-  }
-
-  const [userId, flow] = id.split(":");
-
-  const [t] = await Promise.all([
-    getTranslations("PaymentSuccessful"),
-    updateFlow(userId, flow, pay),
-  ]);
-
+export default function ({ paymentId, flow, pay }: Props) {
+  const t = useTranslations("PaymentSuccessful");
   async function returnToPortalAction() {
     "use server";
     redirect("/events");
@@ -64,7 +31,7 @@ export default async function (props: PaymentSuccessProps) {
         <div className="govie-panel__body">
           {t("panelReferenceText")}
           <br />
-          <strong>{sqids.encode([parseInt(transactionId)])}</strong>
+          <strong>{sqids.encode([paymentId])}</strong>
         </div>
       </div>
       <div className="govie-grid-column-two-thirds-from-desktop">

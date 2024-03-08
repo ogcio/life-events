@@ -26,7 +26,8 @@ async function createPayment(userId: string, formData: FormData) {
   "use server";
 
   const amountAsString = formData.get("amount")?.toString() ?? "";
-  const amount = parseFloat(amountAsString) * 100;
+  // JS sucks at handling money
+  const amount = Math.round(parseFloat(amountAsString) * 100);
 
   const openBankingAccount = formData.get("openbanking-account")?.toString();
   const bankTransferAccount = formData.get("banktransfer-account")?.toString();

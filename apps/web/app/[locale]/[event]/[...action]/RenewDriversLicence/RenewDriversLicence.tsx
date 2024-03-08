@@ -18,6 +18,8 @@ import PaymentPlaceholder from "./PaymentPlaceholder";
 import ProofOfAddress from "./ProofOfAddress";
 import SimpleDetailsForm from "./SimpleDetailsForm";
 import { pgpool } from "../../../../dbConnection";
+import PaymentSuccess from "./PaymentSuccess";
+import PaymentError from "./PaymentError";
 
 export const renewDriverLicenceRules: Parameters<
   typeof getCurrentFlowStep<RenewDriversLicenceFlow>
@@ -72,7 +74,8 @@ export const renewDriverLicenceRules: Parameters<
       : null;
   },
   ({ paymentId }) => (!paymentId ? urlConstants.slug.paymentSelection : null),
-  ({ paymentId }) => (paymentId ? urlConstants.slug.paymentSuccess : null),
+  ({ paymentId, status }) => (paymentId && status === 'executed' ? urlConstants.slug.paymentSuccess : null),
+  ({ paymentId, status }) => (paymentId && status !== 'executed' ? urlConstants.slug.paymentError : null),
   () => "success",
 ];
 
@@ -264,6 +267,29 @@ export default async (props: NextPageProps) => {
             flow={renewDriversLicenceFlowKey}
             userId={userId}
           />
+        </FormLayout>
+      ) : (
+        redirect(nextSlug || "")
+      );
+
+    case urlConstants.slug.paymentSuccess:
+      return nextSlug === stepSlug ? (
+        <FormLayout action={{ slug: stepSlug }} step={stepSlug}>
+          <PaymentSuccess
+            paymentId={data.paymentId!}
+            dateOfPayment={data.dateOfPayment}
+            pay={data.totalFeePaid}
+            flow={renewDriversLicenceFlowKey}
+          />
+        </FormLayout>
+      ) : (
+        redirect(nextSlug || "")
+      );
+
+    case urlConstants.slug.paymentError:
+      return nextSlug === stepSlug ? (
+        <FormLayout action={{ slug: stepSlug }} step={stepSlug}>
+          <PaymentError />
         </FormLayout>
       ) : (
         redirect(nextSlug || "")

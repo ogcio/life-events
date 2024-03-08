@@ -23,7 +23,7 @@ export type RenewDriversLicenceFlow = {
   timeAtAddress: string;
   email: string;
   mobile: string;
-  paymentId: string;
+  paymentId: number | null;
   proofOfAddressRequest: string;
   totalFeePaid: string;
   dateOfPayment: string;
@@ -32,6 +32,7 @@ export type RenewDriversLicenceFlow = {
   rejectReason: string;
   medicalCertificate: string;
   proofOfAddressFileId: string;
+  status: string;
 };
 
 export function emptyRenewDriversLicenceFlow(): RenewDriversLicenceFlow {
@@ -46,7 +47,7 @@ export function emptyRenewDriversLicenceFlow(): RenewDriversLicenceFlow {
     timeAtAddress: "",
     email: "",
     mobile: "",
-    paymentId: "",
+    paymentId: null,
     proofOfAddressRequest: "",
     totalFeePaid: "",
     dateOfPayment: "",
@@ -55,5 +56,6 @@ export function emptyRenewDriversLicenceFlow(): RenewDriversLicenceFlow {
     rejectReason: "",
     medicalCertificate: "",
     proofOfAddressFileId: "",
+    status: "",
   };
 }

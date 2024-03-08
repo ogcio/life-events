@@ -37,6 +37,7 @@ export const urlConstants = {
     proofOfAddress: "proof-of-address",
     paymentSelection: "payment-selection",
     paymentSuccess: "payment-success",
+    paymentError: "payment-error",
     applicationSuccess: "application-success",
     medicalCertificate: "medical-certificate",
   },
