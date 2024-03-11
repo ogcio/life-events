@@ -10,10 +10,12 @@ Most building blocks and 3rd party services are mocked in this monorepo.
 Testing around RSC and RSA is still poorly supported. We use Playwright for e2e testing and Jest for unit testing. At the moment there isn't a solid integration testing library for async React components
 
 ## Setup
+
 This repo requires:
-    - NodeJS LTS
-    - Docker (Linux/OSX env)
-    - TrueLayer account - Follow the steps [below](#true-layer-setup) to create your console account and get your credentials
+
+- NodeJS LTS
+- Docker (Linux/OSX env)
+- TrueLayer account. Follow the steps [below](#true-layer-setup) to create your console account and get your credentials
 
 Once you've setup your TrueLayer console account, add the following URL to the 'Allowed redirect URIs' section of the settings page
 

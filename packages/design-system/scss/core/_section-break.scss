@@ -1,4 +1,4 @@
-@include govie-exports('govie/core/section-break') {
+@include govie-exports("govie/core/section-break") {
   %govie-section-break {
     margin: 0;
     border: 0;
@@ -11,8 +11,8 @@
   // Sizes
 
   %govie-section-break--xl {
-    @include govie-responsive-margin(8, 'top');
-    @include govie-responsive-margin(8, 'bottom');
+    @include govie-responsive-margin(8, "top");
+    @include govie-responsive-margin(8, "bottom");
   }
 
   .govie-section-break--xl {
@@ -20,8 +20,8 @@
   }
 
   %govie-section-break--l {
-    @include govie-responsive-margin(6, 'top');
-    @include govie-responsive-margin(6, 'bottom');
+    @include govie-responsive-margin(6, "top");
+    @include govie-responsive-margin(6, "bottom");
   }
 
   .govie-section-break--l {
@@ -29,8 +29,8 @@
   }
 
   %govie-section-break--m {
-    @include govie-responsive-margin(4, 'top');
-    @include govie-responsive-margin(4, 'bottom');
+    @include govie-responsive-margin(4, "top");
+    @include govie-responsive-margin(4, "bottom");
   }
 
   .govie-section-break--m {

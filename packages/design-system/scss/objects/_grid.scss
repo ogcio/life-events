@@ -1,6 +1,6 @@
-@import '../base';
+@import "../base";
 
-@include govie-exports('govie/objects/grid') {
+@include govie-exports("govie/objects/grid") {
   .govie-grid-row {
     @include govie-clearfix;
     margin-right: -($govie-gutter-half);

@@ -11,7 +11,7 @@ export default async ({ application }: { application: string }) => {
     const slug = formData.get("slug");
     await pgpool.query(
       `INSERT INTO feature_flags (application, slug, title, description, is_enabled) VALUES ($1, $2, $3, $4, $5)`,
-      [application, slug, title, description, isEnabled]
+      [application, slug, title, description, isEnabled],
     );
     revalidatePath("/");
   }

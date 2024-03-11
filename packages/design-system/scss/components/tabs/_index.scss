@@ -43,7 +43,6 @@
 
   // JavaScript enabled
   .js-enabled {
-
     @include govie-media-query($from: tablet) {
       .govie-tabs__list {
         @include govie-clearfix;

@@ -17,7 +17,8 @@
   // This adjustment will not work in browsers that do not support :not().
   // Users with these browsers will see the default size margin (5px larger).
 
-  .govie-label:not(.govie-label--m):not(.govie-label--l):not(.govie-label--xl) + .govie-hint {
+  .govie-label:not(.govie-label--m):not(.govie-label--l):not(.govie-label--xl)
+    + .govie-hint {
     margin-bottom: govie-spacing(2);
   }
 
@@ -31,7 +32,10 @@
   // This adjustment will not work in browsers that do not support :not().
   // Users with these browsers will see the default size margin (5px larger).
 
-  .govie-fieldset__legend:not(.govie-fieldset__legend--m):not(.govie-fieldset__legend--l):not(.govie-fieldset__legend--xl) + .govie-hint {
+  .govie-fieldset__legend:not(.govie-fieldset__legend--m):not(
+      .govie-fieldset__legend--l
+    ):not(.govie-fieldset__legend--xl)
+    + .govie-hint {
     margin-bottom: govie-spacing(2);
   }
 

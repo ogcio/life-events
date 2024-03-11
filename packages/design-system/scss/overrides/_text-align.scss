@@ -1,5 +1,5 @@
 // stylelint-disable declaration-no-important
-@include govie-exports('govie/overrides/text-align') {
+@include govie-exports("govie/overrides/text-align") {
   .govie-\!-text-align-left {
     text-align: left !important;
   }

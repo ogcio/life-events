@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('paymentId', $1::int, 'totalPayment', $2::int, 'status', $3::text, 'dateOfPayment', now()::date::text)
         WHERE user_id=$4 AND flow = $5
     `,
-    [transactionId, pay, status, userId, flow]
+    [transactionId, pay, status, userId, flow],
   );
 
   return redirect(
@@ -26,6 +26,6 @@ export async function GET(request: NextRequest) {
       status === "executed"
         ? driving.renewLicense.paymentSuccess.slug
         : driving.renewLicense.paymentError.slug
-    }`
+    }`,
   );
 }

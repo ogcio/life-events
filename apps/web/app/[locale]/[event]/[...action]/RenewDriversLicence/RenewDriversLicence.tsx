@@ -28,7 +28,7 @@ export const renewDriverLicenceRules: Parameters<
           params.mobile &&
           params.userName &&
           params.sex &&
-          params.timeAtAddress
+          params.timeAtAddress,
       )
     ) {
       return null;
@@ -44,8 +44,8 @@ export const renewDriverLicenceRules: Parameters<
       new Date(
         Number(yearOfBirth),
         Number(monthOfBirth) - 1,
-        Number(dayOfBirth)
-      )
+        Number(dayOfBirth),
+      ),
     );
     const yearDiff = dayjs().diff(birthDay, "years", true);
 
@@ -59,8 +59,8 @@ export const renewDriverLicenceRules: Parameters<
       new Date(
         Number(yearOfBirth),
         Number(monthOfBirth) - 1,
-        Number(dayOfBirth)
-      )
+        Number(dayOfBirth),
+      ),
     );
     const yearDiff = dayjs().diff(birthDay, "years", true);
 
@@ -89,7 +89,7 @@ function FormLayout(
     action: { slug: string; href?: string };
     step: string;
     backHref?: string;
-  }>
+  }>,
 ) {
   return (
     <>
@@ -118,7 +118,7 @@ export default async (props: web.NextPageProps) => {
     FROM user_flow_data
     WHERE user_id=$1
     AND flow='renewDriversLicence'`,
-    [userId]
+    [userId],
   );
 
   const infoMedQuery = Promise.resolve([]);

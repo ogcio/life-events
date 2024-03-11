@@ -5,9 +5,11 @@ export default function ClientLink(props: { label: string; href: string }) {
     <button
       className="govie-button govie-button--primary"
       onClick={(e) => {
-        e.preventDefault()
-        window.parent.location.href = props.href
+        e.preventDefault();
+        window.parent.location.href = props.href;
       }}
-    >{props.label}</button>
-  )
+    >
+      {props.label}
+    </button>
+  );
 }

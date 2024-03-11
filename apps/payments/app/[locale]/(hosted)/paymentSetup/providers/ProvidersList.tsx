@@ -35,7 +35,7 @@ async function getProviders() {
       FROM payment_providers
       WHERE user_id = $1
     `,
-    [userId]
+    [userId],
   );
 
   if (!providersQueryResult.rowCount) {

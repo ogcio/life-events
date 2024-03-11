@@ -1,4 +1,4 @@
-@include govie-exports('govie/utilities/visually-hidden') {
+@include govie-exports("govie/utilities/visually-hidden") {
   .govie-visually-hidden {
     @include govie-visually-hidden;
   }

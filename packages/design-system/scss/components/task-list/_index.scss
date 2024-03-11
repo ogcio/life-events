@@ -1,4 +1,4 @@
-@include govie-exports('govie/component/task-list') {
+@include govie-exports("govie/component/task-list") {
   // Based on https://github.com/alphagov/govuk-prototype-kit/blob/main/lib/assets/sass/patterns/_task-list.scss
   .govie-task-list {
     list-style-type: none;
@@ -26,7 +26,7 @@
 
   .govie-task-list__items {
     @include govie-font($size: 19);
-    @include govie-responsive-margin(9, 'bottom');
+    @include govie-responsive-margin(9, "bottom");
     list-style: none;
     padding-left: 0;
     @include govie-media-query($from: tablet) {

@@ -7,7 +7,7 @@ export default function () {
     redirect("/events");
   }
 
-  const t = useTranslations('PaymentError')
+  const t = useTranslations("PaymentError");
 
   return (
     <section style={{ width: "80%" }}>

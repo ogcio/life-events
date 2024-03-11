@@ -11,13 +11,21 @@
 
     // Respect 'display cutout' safe area (avoids notches and rounded corners)
     @supports (padding: unquote("max(calc(0px))")) {
-      $padding-safe-area-right: calc(#{govie-spacing(3)} + env(safe-area-inset-right));
-      $padding-safe-area-left: calc(#{govie-spacing(3)} + env(safe-area-inset-left));
+      $padding-safe-area-right: calc(
+        #{govie-spacing(3)} + env(safe-area-inset-right)
+      );
+      $padding-safe-area-left: calc(
+        #{govie-spacing(3)} + env(safe-area-inset-left)
+      );
 
       // Use max() to pick largest padding, default or with safe area
       // Escaped due to Sass max() vs. CSS native max()
-      padding-right: unquote("max(#{govie-spacing(3)}, #{$padding-safe-area-right})");
-      padding-left: unquote("max(#{govie-spacing(3)}, #{$padding-safe-area-left})");
+      padding-right: unquote(
+        "max(#{govie-spacing(3)}, #{$padding-safe-area-right})"
+      );
+      padding-left: unquote(
+        "max(#{govie-spacing(3)}, #{$padding-safe-area-left})"
+      );
     }
 
     &:focus {

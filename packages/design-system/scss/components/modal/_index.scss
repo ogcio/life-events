@@ -4,13 +4,13 @@
     display: -ms-flexbox;
     display: flex;
     -ms-flex-pack: center;
-        justify-content: center;
+    justify-content: center;
     width: 100%;
 
     .govie-modal--overlay {
       z-index: 10;
       position: fixed;
-      background-color: rgba(0,0,0,0.4);
+      background-color: rgba(0, 0, 0, 0.4);
       top: 0;
       bottom: 0;
       left: 0;
@@ -25,15 +25,15 @@
       min-width: 280px;
       max-width: 575px;
       box-shadow: -4px 0px 20px rgba(0, 0, 0, 0.1);
-      background-color: govie-colour('white');
+      background-color: govie-colour("white");
 
       .govie-modal--buttons {
         display: -ms-flexbox;
         display: flex;
         -ms-flex-align: center;
-            align-items: center;
+        align-items: center;
         -ms-flex-pack: justify;
-            justify-content: space-between;
+        justify-content: space-between;
         margin-top: govie-spacing(6);
         gap: govie-spacing(1);
 
@@ -41,7 +41,7 @@
           box-shadow: none;
           min-width: 45%;
           margin: 0;
-        }  
+        }
       }
 
       .govie-modal--close-button-container {

@@ -13,7 +13,7 @@
 /// @access public
 
 @function govie-image-url($filename) {
-  $use-custom-function: variable-exists('govie-image-url-function') and
+  $use-custom-function: variable-exists("govie-image-url-function") and
     $govie-image-url-function and function-exists($govie-image-url-function);
 
   @if $use-custom-function {

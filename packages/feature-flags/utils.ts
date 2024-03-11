@@ -4,7 +4,7 @@ import { FeatureFlag } from "./types/FeatureFlags";
 export async function getFeatureFlag(application: string, slug: string) {
   const result = await pgpool.query<FeatureFlag, [string, string]>(
     `SELECT * FROM feature_flags WHERE application = $1 AND slug = $2`,
-    [application, slug]
+    [application, slug],
   );
   return result.rows[0];
 }
@@ -12,7 +12,7 @@ export async function getFeatureFlag(application: string, slug: string) {
 export async function getFeatureFlags(application: string) {
   const result = await pgpool.query<FeatureFlag, [string]>(
     `SELECT * FROM feature_flags WHERE application = $1`,
-    [application]
+    [application],
   );
   return result.rows;
 }

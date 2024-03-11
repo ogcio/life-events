@@ -59,7 +59,7 @@ async function getPgSession(key: string) {
       JOIN users u on u.id = s.user_id
       LEFT JOIN LATERAL (SELECT EXISTS (SELECT 1 FROM user_consents uc WHERE uc.user_id = u.id) AS "isInitialized") AS consent ON TRUE
       WHERE s.id=$1`,
-    [key]
+    [key],
   );
 
   if (!query.rowCount) {
@@ -102,7 +102,7 @@ export const PgSessions: Sessions = {
   async set(session: Session) {
     const query = await pgpool.query<{ id: string }, string[]>(
       `INSERT INTO govid_sessions(token, user_id) VALUES($1, $2) RETURNING id`,
-      [session.token, session.userId]
+      [session.token, session.userId],
     );
 
     if (!query.rowCount) {

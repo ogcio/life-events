@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 
 const addresses = [...new Array(5000)].map(() =>
-  faker.location.streetAddress({ useFullAddress: true })
+  faker.location.streetAddress({ useFullAddress: true }),
 );
 
 export default async function (app) {

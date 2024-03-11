@@ -32,7 +32,7 @@ export default async function (req: Request) {
       RETURNING id, is_public_servant
     )
     SELECT * FROM get UNION SELECT * FROM insert_new`,
-    [email, "not needed atm", [firstName, lastName].join(" "), isPublicServant]
+    [email, "not needed atm", [firstName, lastName].join(" "), isPublicServant],
   );
 
   const [{ id, is_public_servant }] = q.rows;

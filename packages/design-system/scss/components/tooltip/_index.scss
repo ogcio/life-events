@@ -1,4 +1,4 @@
-@include govie-exports('govie/component/tooltip') {
+@include govie-exports("govie/component/tooltip") {
   .govie-tooltip {
     display: none;
   }
@@ -6,8 +6,8 @@
   .govie-tooltip-container {
     opacity: 0;
     text-align: center;
-    color: govie-colour('white');
-    background: govie-colour('black');
+    color: govie-colour("white");
+    background: govie-colour("black");
     position: absolute;
     z-index: 100;
     padding: 8px 16px;
@@ -33,8 +33,8 @@
       height: 0;
       border-left: 10px solid transparent;
       border-right: 10px solid transparent;
-      border-top: 10px solid govie-colour('black');
-      content: '';
+      border-top: 10px solid govie-colour("black");
+      content: "";
       position: absolute;
       left: 50%;
       bottom: -8px;
@@ -46,7 +46,7 @@
       bottom: auto;
       border-width: 10px;
       border-style: solid;
-      border-color: transparent transparent govie-colour('black') transparent;
+      border-color: transparent transparent govie-colour("black") transparent;
     }
 
     &.govie-tooltip-container--left:after {
@@ -57,7 +57,7 @@
       margin-top: -10px;
       border-width: 10px;
       border-style: solid;
-      border-color: transparent transparent transparent govie-colour('black');
+      border-color: transparent transparent transparent govie-colour("black");
     }
 
     &.govie-tooltip-container--right:after {
@@ -68,11 +68,11 @@
       margin-top: -10px;
       border-width: 10px;
       border-style: solid;
-      border-color: transparent govie-colour('black') transparent transparent;
+      border-color: transparent govie-colour("black") transparent transparent;
     }
   }
 
-  [data-module='govie-tooltip'] {
+  [data-module="govie-tooltip"] {
     display: inline-block;
     height: -webkit-fit-content;
     height: -moz-fit-content;

@@ -26,7 +26,7 @@ export default async (props: web.NextPageProps) => {
     const item = userFlows.rows.find(
       (row) =>
         row.userId === props.searchParams?.uid &&
-        props.searchParams?.evt === row.flow
+        props.searchParams?.evt === row.flow,
     );
 
     if (!item) {
@@ -41,7 +41,7 @@ export default async (props: web.NextPageProps) => {
     }
 
     const searchParamsWithRejectionOpen = new URLSearchParams(
-      props.searchParams
+      props.searchParams,
     );
     searchParamsWithRejectionOpen.append("open", "rejection");
     return (

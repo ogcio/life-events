@@ -4,7 +4,6 @@
 @import "../label/index";
 
 @include govie-exports("govie/component/radios") {
-
   $govie-touch-target-size: 44px;
   $govie-radios-size: 40px;
   $govie-small-radios-size: 24px;
@@ -74,7 +73,7 @@
     cursor: pointer;
     // remove 300ms pause on mobile
     -ms-touch-action: manipulation;
-        touch-action: manipulation;
+    touch-action: manipulation;
   }
 
   // ( ) Radio ring
@@ -152,7 +151,7 @@
 
   .govie-radios__input:disabled + .govie-radios__label,
   .govie-radios__input:disabled ~ .govie-hint {
-    opacity: .5;
+    opacity: 0.5;
   }
 
   // =========================================================
@@ -160,7 +159,7 @@
   // =========================================================
 
   .govie-radios--inline {
-    @include govie-media-query ($from: tablet) {
+    @include govie-media-query($from: tablet) {
       @include govie-clearfix;
 
       .govie-radios__item {
@@ -192,11 +191,13 @@
   // to be an even number in order to be centred under the 40px checkbox or radio.
   $conditional-border-width: $govie-border-width-narrow;
   // Calculate the amount of padding needed to keep the border centered against the radios.
-  $conditional-border-padding: ($govie-radios-size / 2) - ($conditional-border-width / 2);
+  $conditional-border-padding: ($govie-radios-size / 2) -
+    ($conditional-border-width / 2);
   // Move the border centered with the radios
   $conditional-margin-left: $conditional-border-padding;
   // Move the contents of the conditional inline with the label
-  $conditional-padding-left: $conditional-border-padding + $govie-radios-label-padding-left-right;
+  $conditional-padding-left: $conditional-border-padding +
+    $govie-radios-label-padding-left-right;
 
   .govie-radios__conditional {
     @include govie-responsive-margin(4, "bottom");
@@ -212,7 +213,6 @@
       margin-bottom: 0;
     }
   }
-
 
   // =====MEDIUM=====
   // ================
@@ -237,8 +237,7 @@
   }
 
   .govie-radios-medium__input {
-    $input-offset: (
-      $govie-touch-target-size - $govie-medium-radios-size) / 2;
+    $input-offset: ($govie-touch-target-size - $govie-medium-radios-size) / 2;
 
     cursor: pointer;
 
@@ -274,12 +273,11 @@
   .govie-radios-medium__label {
     display: inline-block;
     margin-bottom: 0;
-    padding: 5px $govie-radios-label-padding-left-right govie-spacing(1
-    );
-  cursor: pointer;
-  // remove 300ms pause on mobile
-  -ms-touch-action: manipulation;
-  touch-action: manipulation;
+    padding: 5px $govie-radios-label-padding-left-right govie-spacing(1);
+    cursor: pointer;
+    // remove 300ms pause on mobile
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
   }
 
   // ( ) Radio ring
@@ -325,7 +323,7 @@
   }
 
   // Focused state
-  .govie-radios-medium__input:focus+.govie-radios-medium__label:before {
+  .govie-radios-medium__input:focus + .govie-radios-medium__label:before {
     border-width: 4px;
 
     // When colours are overridden, the yellow box-shadow becomes invisible
@@ -337,8 +335,7 @@
 
     // When in an explicit forced-color mode, we can use the Highlight system
     // color for the outline to better match focus states of native controls
-    @media screen and (forced-colors: active),
-    (-ms-high-contrast: active) {
+    @media screen and (forced-colors: active), (-ms-high-contrast: active) {
       outline-color: Highlight;
     }
 
@@ -346,19 +343,19 @@
   }
 
   // Selected state
-  .govie-radios-medium__input:checked+.govie-radios-medium__label:after {
+  .govie-radios-medium__input:checked + .govie-radios-medium__label:after {
     opacity: 1;
   }
 
   // Disabled state
   .govie-radios-medium__input:disabled,
-  .govie-radios-medium__input:disabled+.govie-radios-medium__label {
+  .govie-radios-medium__input:disabled + .govie-radios-medium__label {
     cursor: default;
   }
 
-  .govie-radios-medium__input:disabled+.govie-medium-radios__label,
-  .govie-radios-medium__input:disabled~.govie-hint-medium {
-    opacity: .5;
+  .govie-radios-medium__input:disabled + .govie-medium-radios__label,
+  .govie-radios-medium__input:disabled ~ .govie-hint-medium {
+    opacity: 0.5;
   }
 
   // =========================================================
@@ -366,7 +363,7 @@
   // =========================================================
 
   .govie-radios--inline {
-    @include govie-media-query ($from: tablet) {
+    @include govie-media-query($from: tablet) {
       @include govie-clearfix;
 
       .govie-radios__item {
@@ -398,13 +395,13 @@
   // to be an even number in order to be centred under the 40px checkbox or radio.
   $conditional-border-width-medium: $govie-border-width-narrow;
   // Calculate the amount of padding needed to keep the border centered against the radios.
-  $conditional-border-padding-medium: (
-    $govie-medium-radios-size / 2) - ($conditional-border-width-medium / 2
-  );
+  $conditional-border-padding-medium: ($govie-medium-radios-size / 2) -
+    ($conditional-border-width-medium / 2);
   // Move the border centered with the radios
   $conditional-margin-left-medium: $conditional-border-padding-medium;
   // Move the contents of the conditional inline with the label
-  $conditional-padding-left-medium: $conditional-border-padding-medium + $govie-radios-label-padding-left-right;
+  $conditional-padding-left-medium: $conditional-border-padding-medium +
+    $govie-radios-label-padding-left-right;
 
   .govie-radios-medium__conditional {
     @include govie-responsive-margin(4, "bottom");
@@ -416,7 +413,7 @@
       display: none;
     }
 
-    &> :last-child {
+    & > :last-child {
       margin-bottom: 0;
     }
   }
@@ -428,7 +425,6 @@
   // =========================================================
 
   .govie-radios--small {
-
     $input-offset: ($govie-touch-target-size - $govie-small-radios-size) / 2;
     $label-offset: $govie-touch-target-size - $input-offset;
 
@@ -509,7 +505,8 @@
 
     // Align conditional reveals with small radios
     .govie-radios__conditional {
-      $margin-left: ($govie-small-radios-size / 2) - ($conditional-border-width / 2);
+      $margin-left: ($govie-small-radios-size / 2) -
+        ($conditional-border-width / 2);
       margin-left: $margin-left;
       padding-left: $label-offset - ($margin-left + $conditional-border-width);
       clear: both;
@@ -526,7 +523,9 @@
     // is so much larger than their visible size, and so we need to provide
     // feedback to the user as to which radio they will select when their
     // cursor is outside of the visible area.
-    .govie-radios__item:hover .govie-radios__input:not(:disabled) + .govie-radios__label:before {
+    .govie-radios__item:hover
+      .govie-radios__input:not(:disabled)
+      + .govie-radios__label:before {
       box-shadow: 0 0 0 $govie-hover-width $govie-hover-colour;
     }
 
@@ -535,10 +534,13 @@
     //
     // We use two box shadows, one that restores the original focus state [1]
     // and another that then applies the hover state [2].
-    .govie-radios__item:hover .govie-radios__input:focus + .govie-radios__label:before {
+    .govie-radios__item:hover
+      .govie-radios__input:focus
+      + .govie-radios__label:before {
       box-shadow:
-        0 0 0 $govie-radios-focus-width $govie-focus-colour, // 1
-        0 0 0 $govie-hover-width        $govie-hover-colour; // 2
+        0 0 0 $govie-radios-focus-width $govie-focus-colour,
+        // 1
+        0 0 0 $govie-hover-width $govie-hover-colour; // 2
     }
 
     // For devices that explicitly don't support hover, don't provide a hover
@@ -548,11 +550,15 @@
     // state in browsers that don't support `@media (hover)` (like Internet
     // Explorer) – so we have to 'undo' the hover state instead.
     @media (hover: none), (pointer: coarse) {
-      .govie-radios__item:hover .govie-radios__input:not(:disabled) + .govie-radios__label:before {
+      .govie-radios__item:hover
+        .govie-radios__input:not(:disabled)
+        + .govie-radios__label:before {
         box-shadow: initial;
       }
 
-      .govie-radios__item:hover .govie-radios__input:focus + .govie-radios__label:before {
+      .govie-radios__item:hover
+        .govie-radios__input:focus
+        + .govie-radios__label:before {
         box-shadow: 0 0 0 $govie-radios-focus-width $govie-focus-colour;
       }
     }

@@ -23,7 +23,7 @@ export default async ({
       UPDATE payment_providers SET status = $1
       WHERE provider_id = $2
   `,
-      [status, provider.id]
+      [status, provider.id],
     );
 
     redirect("./");

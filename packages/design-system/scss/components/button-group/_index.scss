@@ -15,7 +15,7 @@ $govie-button-group-button-hover-background-colour: govie-tint(
   60
 ) !default;
 
-@include govie-exports('govie/component/button-group') {
+@include govie-exports("govie/component/button-group") {
   .govie-conjoined-button-group {
     // Flexbox is used to center-align links on mobile, align everything along
     // the baseline on tablet and above, and to removes extra whitespace that
@@ -23,9 +23,9 @@ $govie-button-group-button-hover-background-colour: govie-tint(
     display: -ms-flexbox;
     display: flex;
     -ms-flex-direction: column;
-        flex-direction: column;
+    flex-direction: column;
     -ms-flex-align: center;
-        align-items: center;
+    align-items: center;
 
     .govie-button {
       margin: 0;
@@ -41,13 +41,13 @@ $govie-button-group-button-hover-background-colour: govie-tint(
       }
 
       &:hover {
-        background-color: govie-colour('light-grey');
+        background-color: govie-colour("light-grey");
       }
 
       &:focus {
         background-color: $govie-button-group-button-hover-background-colour;
         border-color: $govie-primary-button-background-colour;
-        color: govie-colour('black');
+        color: govie-colour("black");
 
         &:not(:active):not(:hover) {
           border-color: $govie-primary-button-background-colour;
@@ -74,14 +74,14 @@ $govie-button-group-button-hover-background-colour: govie-tint(
       &:active {
         top: 0;
         border-width: $govie-border-width-form-element;
-        color: govie-colour('black');
+        color: govie-colour("black");
         background-color: $govie-focus-colour;
-        border-color: govie-colour('black');
+        border-color: govie-colour("black");
       }
     }
 
     .govie-button--disabled,
-    .govie-button[disabled='disabled'],
+    .govie-button[disabled="disabled"],
     .govie-button[disabled] {
       opacity: (0.5);
 
@@ -107,11 +107,11 @@ $govie-button-group-button-hover-background-colour: govie-tint(
 
       -ms-flex-direction: row;
 
-          flex-direction: row;
+      flex-direction: row;
       -ms-flex-wrap: wrap;
-          flex-wrap: wrap;
+      flex-wrap: wrap;
       -ms-flex-align: baseline;
-          align-items: baseline;
+      align-items: baseline;
 
       .govie-button {
         &:first-of-type {

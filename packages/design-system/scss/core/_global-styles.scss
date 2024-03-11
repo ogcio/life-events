@@ -1,5 +1,5 @@
-@import 'links';
-@import 'typography';
+@import "links";
+@import "typography";
 
 @mixin govie-global-styles {
   a {
@@ -11,7 +11,7 @@
   }
 }
 
-@include govie-exports('govie/core/global-styles') {
+@include govie-exports("govie/core/global-styles") {
   @if $govie-global-styles == true {
     @include govie-global-styles;
   }

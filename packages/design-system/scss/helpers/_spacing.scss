@@ -32,7 +32,7 @@
 
 @function govie-spacing($spacing-point) {
   $actual-input-type: type-of($spacing-point);
-  @if $actual-input-type != 'number' {
+  @if $actual-input-type != "number" {
     @error "Expected a number (integer), but got a "
     + "#{$actual-input-type}.";
   }
@@ -73,12 +73,12 @@
 @mixin _govie-responsive-spacing(
   $responsive-spacing-point,
   $property,
-  $direction: 'all',
+  $direction: "all",
   $important: false,
   $adjustment: false
 ) {
   $actual-input-type: type-of($responsive-spacing-point);
-  @if $actual-input-type != 'number' {
+  @if $actual-input-type != "number" {
     @error "Expected a number (integer), but got a " + "#{$actual-input-type}.";
   }
 
@@ -95,7 +95,7 @@
     $responsive-spacing-point
   );
   $actual-map-type: type-of($scale-map);
-  @if $actual-map-type != 'map' {
+  @if $actual-map-type != "map" {
     @error "Expected a number (integer), but got a "
     + "#{$actual-map-type}. Make sure you are using a map to set the responsive spacing in `_settings/spacing.scss`)";
   }
@@ -151,13 +151,13 @@
 
 @mixin govie-responsive-margin(
   $responsive-spacing-point,
-  $direction: 'all',
+  $direction: "all",
   $important: false,
   $adjustment: false
 ) {
   @include _govie-responsive-spacing(
     $responsive-spacing-point,
-    'margin',
+    "margin",
     $direction,
     $important,
     $adjustment
@@ -188,13 +188,13 @@
 
 @mixin govie-responsive-padding(
   $responsive-spacing-point,
-  $direction: 'all',
+  $direction: "all",
   $important: false,
   $adjustment: false
 ) {
   @include _govie-responsive-spacing(
     $responsive-spacing-point,
-    'padding',
+    "padding",
     $direction,
     $important,
     $adjustment

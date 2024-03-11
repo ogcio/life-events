@@ -38,10 +38,10 @@ export default async function Page({
   const template = await getEmailTemplateById(id);
 
   const templateEN = template?.template_translations.find(
-    (translation) => translation.language === "EN"
+    (translation) => translation.language === "EN",
   );
   const templateGA = template?.template_translations.find(
-    (translation) => translation.language === "GA"
+    (translation) => translation.language === "GA",
   );
 
   if (!template || !templateEN || !templateGA) return null;

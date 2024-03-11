@@ -1,5 +1,5 @@
 // stylelint-disable declaration-no-important
-@include govie-exports('govie/overrides/display') {
+@include govie-exports("govie/overrides/display") {
   .govie-\!-display-inline {
     display: inline !important;
   }

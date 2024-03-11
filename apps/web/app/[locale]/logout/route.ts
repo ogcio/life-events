@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   const url = new URL(loginUrl);
   url.searchParams.append(
     "return_url",
-    new URL("/en/api/auth", process.env.HOST_URL).href
+    new URL("/en/api/auth", process.env.HOST_URL).href,
   );
 
   redirect(url.href, RedirectType.replace);

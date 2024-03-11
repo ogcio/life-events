@@ -33,7 +33,7 @@ async function getProvider(providerId: string): Promise<Provider> {
       FROM payment_providers
       WHERE provider_id = $1
     `,
-    [providerId]
+    [providerId],
   );
 
   if (!providersQueryResult.rowCount) {

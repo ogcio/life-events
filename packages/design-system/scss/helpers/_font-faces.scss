@@ -21,7 +21,8 @@
           font-family: "Lato";
           font-style: normal;
           font-weight: normal;
-          src: govie-font-url("lato-regular.woff2") format("woff2"),
+          src:
+            govie-font-url("lato-regular.woff2") format("woff2"),
             govie-font-url("lato-regular.woff") format("woff");
           font-display: fallback;
         }
@@ -30,7 +31,8 @@
           font-family: "Lato";
           font-style: normal;
           font-weight: bold;
-          src: govie-font-url("lato-bold.woff2") format("woff2"),
+          src:
+            govie-font-url("lato-bold.woff2") format("woff2"),
             govie-font-url("lato-bold.woff") format("woff");
           font-display: fallback;
         }

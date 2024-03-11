@@ -13,7 +13,7 @@ export const getEmailTemplates = async (language: string) => {
         INNER JOIN email_template_translations tt ON t.id = tt.template_id
         WHERE tt.language = $1
       `,
-      [language]
+      [language],
     )
   ).rows;
   return templates;
@@ -21,7 +21,7 @@ export const getEmailTemplates = async (language: string) => {
 
 export const editEmailTemplate = async (
   templateId: string,
-  translations: Omit<EmailTemplateTranslation, "templateId">[]
+  translations: Omit<EmailTemplateTranslation, "templateId">[],
 ) => {
   const transaction = await pgpool.connect();
   try {
@@ -40,7 +40,7 @@ export const editEmailTemplate = async (
           translation.subject,
           translation.body,
           translation.language,
-        ]
+        ],
       );
     }
 
@@ -54,7 +54,7 @@ export const editEmailTemplate = async (
 };
 
 export const addEmailTemplate = async (
-  translations: Omit<EmailTemplateTranslation, "templateId">[]
+  translations: Omit<EmailTemplateTranslation, "templateId">[],
 ) => {
   const transaction = await pgpool.connect();
   try {
@@ -77,7 +77,7 @@ export const addEmailTemplate = async (
           translation.name,
           translation.subject,
           translation.body,
-        ]
+        ],
       );
     }
 
@@ -98,7 +98,7 @@ export const getEmailTemplateById = async (id: string) => {
     FROM messages.email_template_translations tt
     WHERE tt.template_id = $1
   `,
-    [id]
+    [id],
   );
 
   return {
@@ -114,7 +114,7 @@ export const getEmailTemplateById = async (id: string) => {
 
 export const buildFromEmailTemplate = async (
   templateId: string,
-  params: Record<string, any>
+  params: Record<string, any>,
 ) => {
   //TODO: To reimplement after the final schema has been defined
 };
@@ -122,7 +122,7 @@ export const buildFromEmailTemplate = async (
 export const sendFromEmailTemplate = async (
   emailData: Omit<MailData, "subject">, //Taking the subject from the template
   templateId: string,
-  params: Record<string, any>
+  params: Record<string, any>,
 ) => {
   //TODO: To reimplement after the final schema has been defined
 };

@@ -33,7 +33,7 @@ export const validation = {
   dateErrors(
     year: { field: string; value?: number },
     month: { field: string; value?: number },
-    day: { field: string; value?: number }
+    day: { field: string; value?: number },
   ): Error[] {
     const formErrors: Error[] = [];
     if (!day?.value) {
@@ -78,7 +78,7 @@ export const validation = {
             errorValue: day.value.toString() || "",
             field: day.field,
             messageKey: errorTranslationKeys.invalidField,
-          }
+          },
         );
       }
 
@@ -126,16 +126,16 @@ export const validation = {
           },
         ]
       : !/[a-z0-9\._%+!$&*=^|~#%'`?{}/\-]+@([a-z0-9\-]+\.){1,}([a-z]{2,16})/.test(
-          value
-        )
-      ? [
-          {
-            field,
-            messageKey: errorTranslationKeys.invalidField,
-            errorValue: value || "",
-          },
-        ]
-      : [];
+            value,
+          )
+        ? [
+            {
+              field,
+              messageKey: errorTranslationKeys.invalidField,
+              errorValue: value || "",
+            },
+          ]
+        : [];
   },
 };
 
@@ -143,7 +143,7 @@ export async function insertErrors(
   formErrors: Error[],
   userId: string,
   slug: string,
-  flow: string
+  flow: string,
 ) {
   "use server";
   let i = 1;
@@ -165,7 +165,7 @@ export async function insertErrors(
       ...formErrors
         .map((error) => [error.field, error.messageKey, error.errorValue])
         .flat(),
-    ]
+    ],
   );
 }
 
@@ -175,7 +175,7 @@ export async function insertErrors(
 export async function getErrorsQuery(
   userId: string,
   slug: string,
-  flow: string
+  flow: string,
 ) {
   "use server";
 
@@ -188,6 +188,6 @@ export async function getErrorsQuery(
       WHERE user_id = $1 AND slug = $2 AND flow = $3
       RETURNING field, error_message AS "messageKey", error_value AS "errorValue"
     `,
-    [userId, slug, flow]
+    [userId, slug, flow],
   );
 }

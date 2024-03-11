@@ -31,7 +31,7 @@ export default async () => {
           accountNumber,
           accountHolderName,
         },
-      ]
+      ],
     );
 
     redirect("./");

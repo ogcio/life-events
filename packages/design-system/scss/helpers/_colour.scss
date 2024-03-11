@@ -1,4 +1,4 @@
-@import '../settings/colours-palette';
+@import "../settings/colours-palette";
 
 ////
 /// @group helpers/colour
@@ -46,5 +46,5 @@
 /// @access public
 
 @function govie-tint($colour, $percentage) {
-  @return mix(govie-colour('white'), $colour, $percentage * 1%);
+  @return mix(govie-colour("white"), $colour, $percentage * 1%);
 }

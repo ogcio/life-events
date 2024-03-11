@@ -1,22 +1,22 @@
 // The order we import settings in is important, as some settings files rely on
 // others
 
-@import 'assets';
+@import "assets";
 
-@import 'warnings';
-@import 'global-styles';
-@import 'ie8';
+@import "warnings";
+@import "global-styles";
+@import "ie8";
 
-@import 'media-queries';
+@import "media-queries";
 
-@import 'colours-palette';
-@import 'colours-applied';
+@import "colours-palette";
+@import "colours-applied";
 
-@import 'spacing';
-@import 'measurements';
+@import "spacing";
+@import "measurements";
 
-@import 'typography-font-families';
-@import 'typography-font';
-@import 'typography-responsive';
+@import "typography-font-families";
+@import "typography-font";
+@import "typography-responsive";
 
-@import 'links';
+@import "links";

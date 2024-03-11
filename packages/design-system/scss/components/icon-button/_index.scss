@@ -8,7 +8,7 @@
 /// @type Colour
 /// @access public
 
-$govie-icon-button-text-colour: govie-colour('black') !default;
+$govie-icon-button-text-colour: govie-colour("black") !default;
 
 /// IconButton component background colour
 ///
@@ -22,9 +22,9 @@ $govie-icon-button-background-colour: transparent !default;
 /// @type Colour
 /// @access public
 
-$govie-icon-button-hover-background-colour: govie-colour('mid-grey') !default;
+$govie-icon-button-hover-background-colour: govie-colour("mid-grey") !default;
 
-@include govie-exports('govie/component/icon-button') {
+@include govie-exports("govie/component/icon-button") {
   $button-shadow-size: $govie-border-width-form-element;
 
   .govie-icon-button {
@@ -77,7 +77,7 @@ $govie-icon-button-hover-background-colour: govie-colour('mid-grey') !default;
 
     &:active {
       border-color: transparent;
-      background-color: govie-colour('light-grey');
+      background-color: govie-colour("light-grey");
 
       // Bump the button down so it looks like its being pressed in
       top: $button-shadow-size;
@@ -120,7 +120,7 @@ $govie-icon-button-hover-background-colour: govie-colour('mid-grey') !default;
     // Use a pseudo element to expand the click target area to include the
     // button's shadow as well, in case users try to click it.
     &:before {
-      content: '';
+      content: "";
       display: block;
 
       position: absolute;
@@ -149,7 +149,7 @@ $govie-icon-button-hover-background-colour: govie-colour('mid-grey') !default;
   }
 
   .govie-icon-button--disabled,
-  .govie-icon-button[disabled='disabled'],
+  .govie-icon-button[disabled="disabled"],
   .govie-icon-button[disabled] {
     opacity: (0.5);
 

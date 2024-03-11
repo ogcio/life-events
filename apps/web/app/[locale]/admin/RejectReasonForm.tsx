@@ -23,7 +23,7 @@ export default (props: Props) => {
             UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('rejectReason', $1::TEXT)
             WHERE user_id=$2 AND flow = $3
         `,
-        [reason, userId, flow]
+        [reason, userId, flow],
       ));
     redirect("/admin");
   }

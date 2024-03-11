@@ -1,9 +1,9 @@
-@include govie-exports('govie/core/lists') {
+@include govie-exports("govie/core/lists") {
   %govie-list {
     @include govie-font($size: 19);
     @include govie-text-colour;
     margin-top: 0;
-    @include govie-responsive-margin(4, 'bottom');
+    @include govie-responsive-margin(4, "bottom");
     padding-left: 0;
     list-style-type: none;
 

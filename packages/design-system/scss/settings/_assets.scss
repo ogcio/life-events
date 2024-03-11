@@ -11,21 +11,21 @@
 /// @type String
 /// @access public
 
-$govie-assets-path: './assets/' !default;
+$govie-assets-path: "./assets/" !default;
 
 /// Path to the images folder, with trailing slash.
 ///
 /// @type String
 /// @access public
 
-$govie-images-path: '#{$govie-assets-path}images/' !default;
+$govie-images-path: "#{$govie-assets-path}images/" !default;
 
 /// Path to the fonts folder, with trailing slash.
 ///
 /// @type String
 /// @access public
 
-$govie-fonts-path: '#{$govie-assets-path}fonts/' !default;
+$govie-fonts-path: "#{$govie-assets-path}fonts/" !default;
 
 /// Custom image URL function
 ///

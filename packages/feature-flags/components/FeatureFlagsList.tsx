@@ -9,7 +9,7 @@ export default async ({ application }: { application: string }) => {
     const slug = formData.get("slug");
     await pgpool.query(
       "DELETE FROM feature_flags WHERE application = $1 AND slug = $2",
-      [application, slug]
+      [application, slug],
     );
     revalidatePath("/");
   }
@@ -18,7 +18,7 @@ export default async ({ application }: { application: string }) => {
     "use server";
     pgpool.query(
       "UPDATE feature_flags SET is_enabled = NOT is_enabled WHERE application = $1 AND slug = $2",
-      [application, formData.get("slug")]
+      [application, formData.get("slug")],
     );
     revalidatePath("/");
   }

@@ -1,5 +1,4 @@
 @include govie-exports("govie/component/footer") {
-
   $govie-footer-background: $govie-footer-surface-colour;
   $govie-footer-border: $govie-header-footer-border-colour;
   $govie-footer-text: $govie-text-colour;
@@ -38,11 +37,11 @@
     margin-right: -$govie-gutter-half;
     margin-left: -$govie-gutter-half;
     -ms-flex-wrap: wrap;
-        flex-wrap: wrap; // Support: Flexbox
+    flex-wrap: wrap; // Support: Flexbox
     -ms-flex-align: end;
-        align-items: flex-end; // Support: Flexbox
+    align-items: flex-end; // Support: Flexbox
     -ms-flex-pack: center;
-        justify-content: center; // Support: Flexbox
+    justify-content: center; // Support: Flexbox
   }
 
   .govie-footer__meta-item {
@@ -53,17 +52,17 @@
 
   .govie-footer__meta-item--grow {
     -ms-flex: 1;
-        flex: 1; // Support: Flexbox
-    @include govie-media-query ($until: tablet) {
+    flex: 1; // Support: Flexbox
+    @include govie-media-query($until: tablet) {
       -ms-flex-preferred-size: 320px;
-          flex-basis: 320px; // Support: Flexbox
+      flex-basis: 320px; // Support: Flexbox
     }
   }
 
   .govie-footer__licence-logo {
     display: inline-block;
     margin-right: govie-spacing(2);
-    @include govie-media-query ($until: desktop) {
+    @include govie-media-query($until: desktop) {
       margin-bottom: govie-spacing(3);
     }
     vertical-align: top;
@@ -88,7 +87,8 @@
     }
     background-repeat: no-repeat;
     background-position: 50% 0%;
-    background-size: $govie-footer-logo-image-width $govie-footer-logo-image-height;
+    background-size: $govie-footer-logo-image-width
+      $govie-footer-logo-image-height;
     text-align: center;
     white-space: nowrap;
   }
@@ -113,7 +113,7 @@
     margin-bottom: govie-spacing(6);
     padding-bottom: govie-spacing(4);
 
-    @include govie-media-query ($until: tablet) {
+    @include govie-media-query($until: tablet) {
       padding-bottom: govie-spacing(2);
     }
     border-bottom: 1px solid $govie-footer-border;
@@ -136,7 +136,7 @@
     padding: 0;
     list-style: none;
     -webkit-column-gap: $govie-gutter;
-            column-gap: $govie-gutter; // Support: Columns
+    column-gap: $govie-gutter; // Support: Columns
 
     // Disable thicker underlines on hover because of a bug in Chromium
     // affecting links within columns
@@ -146,15 +146,15 @@
     }
   }
 
-  @include govie-media-query ($from: desktop) {
+  @include govie-media-query($from: desktop) {
     .govie-footer__list--columns-2 {
       -webkit-column-count: 2;
-              column-count: 2; // Support: Columns
+      column-count: 2; // Support: Columns
     }
 
     .govie-footer__list--columns-3 {
       -webkit-column-count: 3;
-              column-count: 3; // Support: Columns
+      column-count: 3; // Support: Columns
     }
   }
 

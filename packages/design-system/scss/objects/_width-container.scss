@@ -1,4 +1,4 @@
-@import '../base';
+@import "../base";
 
 ////
 /// @group objects/layout
@@ -26,7 +26,7 @@
   margin-left: $govie-gutter-half;
 
   // Respect 'display cutout' safe area (avoids notches and rounded corners)
-  @supports (margin: unquote('max(calc(0px))')) {
+  @supports (margin: unquote("max(calc(0px))")) {
     $gutter-safe-area-right: calc(
       #{$govie-gutter-half} + env(safe-area-inset-right)
     );
@@ -37,10 +37,10 @@
     // Use max() to pick largest margin, default or with safe area
     // Escaped due to Sass max() vs. CSS native max()
     margin-right: unquote(
-      'max(#{$govie-gutter-half}, #{$gutter-safe-area-right})'
+      "max(#{$govie-gutter-half}, #{$gutter-safe-area-right})"
     );
     margin-left: unquote(
-      'max(#{$govie-gutter-half}, #{$gutter-safe-area-left})'
+      "max(#{$govie-gutter-half}, #{$gutter-safe-area-left})"
     );
   }
 
@@ -50,7 +50,7 @@
     margin-left: $govie-gutter;
 
     // Respect 'display cutout' safe area (avoids notches and rounded corners)
-    @supports (margin: unquote('max(calc(0px))')) {
+    @supports (margin: unquote("max(calc(0px))")) {
       $gutter-safe-area-right: calc(
         #{$govie-gutter-half} + env(safe-area-inset-right)
       );
@@ -61,23 +61,23 @@
       // Use max() to pick largest margin, default or with safe area
       // Escaped due to Sass max() vs. CSS native max()
       margin-right: unquote(
-        'max(#{$govie-gutter}, #{$gutter-safe-area-right})'
+        "max(#{$govie-gutter}, #{$gutter-safe-area-right})"
       );
-      margin-left: unquote('max(#{$govie-gutter}, #{$gutter-safe-area-left})');
+      margin-left: unquote("max(#{$govie-gutter}, #{$gutter-safe-area-left})");
     }
   }
 
   // As soon as the viewport is greater than the width of the page plus the
   // gutters, just centre the content instead of adding gutters.
   @include govie-media-query(
-    $and: '(min-width: #{($width + $govie-gutter * 2)})'
+    $and: "(min-width: #{($width + $govie-gutter * 2)})"
   ) {
     margin-right: auto;
     margin-left: auto;
 
     // Since a safe area may have previously been set above,
     // we need to duplicate this margin that centers the page.
-    @supports (margin: unquote('max(calc(0px))')) {
+    @supports (margin: unquote("max(calc(0px))")) {
       margin-right: auto;
       margin-left: auto;
     }
@@ -92,7 +92,7 @@
   }
 }
 
-@include govie-exports('govie/objects/width-container') {
+@include govie-exports("govie/objects/width-container") {
   .govie-width-container {
     @include govie-width-container;
   }

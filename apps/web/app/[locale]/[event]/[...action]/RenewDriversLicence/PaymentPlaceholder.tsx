@@ -29,7 +29,7 @@ export default async (props: { flow: string; userId: string }) => {
 
   const paymentsUrl = new URL(
     "/paymentRequest/pay",
-    process.env.PAYMENT_HOST_URL
+    process.env.PAYMENT_HOST_URL,
   );
   paymentsUrl.searchParams.set("paymentId", paymentRequestId);
   paymentsUrl.searchParams.set("id", `${props.userId}:${props.flow}`);

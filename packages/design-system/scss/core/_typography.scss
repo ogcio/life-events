@@ -1,4 +1,4 @@
-@include govie-exports('govie/core/typography') {
+@include govie-exports("govie/core/typography") {
   // Headings
 
   %govie-heading-xl {
@@ -8,7 +8,7 @@
     display: block;
 
     margin-top: 0;
-    @include govie-responsive-margin(8, 'bottom');
+    @include govie-responsive-margin(8, "bottom");
   }
 
   .govie-heading-xl {
@@ -22,7 +22,7 @@
     display: block;
 
     margin-top: 0;
-    @include govie-responsive-margin(6, 'bottom');
+    @include govie-responsive-margin(6, "bottom");
   }
 
   .govie-heading-l {
@@ -36,7 +36,7 @@
     display: block;
 
     margin-top: 0;
-    @include govie-responsive-margin(4, 'bottom');
+    @include govie-responsive-margin(4, "bottom");
   }
 
   .govie-heading-m {
@@ -50,7 +50,7 @@
     display: block;
 
     margin-top: 0;
-    @include govie-responsive-margin(4, 'bottom');
+    @include govie-responsive-margin(4, "bottom");
   }
 
   .govie-heading-s {
@@ -97,7 +97,7 @@
     @include govie-font($size: 24);
 
     margin-top: 0;
-    @include govie-responsive-margin(6, 'bottom');
+    @include govie-responsive-margin(6, "bottom");
   }
 
   .govie-body-l {
@@ -109,7 +109,7 @@
     @include govie-font($size: 19);
 
     margin-top: 0;
-    @include govie-responsive-margin(4, 'bottom');
+    @include govie-responsive-margin(4, "bottom");
   }
 
   .govie-body-m {
@@ -121,7 +121,7 @@
     @include govie-font($size: 16);
 
     margin-top: 0;
-    @include govie-responsive-margin(4, 'bottom');
+    @include govie-responsive-margin(4, "bottom");
   }
 
   .govie-body-s {
@@ -133,7 +133,7 @@
     @include govie-font($size: 14);
 
     margin-top: 0;
-    @include govie-responsive-margin(4, 'bottom');
+    @include govie-responsive-margin(4, "bottom");
   }
 
   .govie-body-xs {
@@ -167,7 +167,7 @@
   %govie-body-m + %govie-heading-l,
   %govie-body-s + %govie-heading-l,
   %govie-list + %govie-heading-l {
-    @include govie-responsive-padding(4, 'top');
+    @include govie-responsive-padding(4, "top");
   }
 
   %govie-body-m + %govie-heading-m,
@@ -191,7 +191,7 @@ h3 {
   margin-inline-start: 0;
   margin-inline-end: 0;
   font-weight: bold !important;
-  font-family: 'Lato', arial, sans-serif;
+  font-family: "Lato", arial, sans-serif;
 }
 
 h1 {

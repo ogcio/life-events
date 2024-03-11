@@ -21,7 +21,9 @@
   }
   color: $govie-focus-text-colour;
   background-color: $govie-focus-colour;
-  box-shadow: 0 -2px $govie-focus-colour, 0 4px $govie-focus-text-colour;
+  box-shadow:
+    0 -2px $govie-focus-colour,
+    0 4px $govie-focus-text-colour;
   // When link is focussed, hide the default underline since the
   // box shadow adds the "underline"
   text-decoration: none;

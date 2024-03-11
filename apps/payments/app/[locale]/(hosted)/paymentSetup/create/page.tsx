@@ -12,7 +12,7 @@ async function getRegisteredAccounts(userId: string, providerType: string) {
     string[]
   >(
     `select provider_id, provider_name from payment_providers where user_id = $1 and provider_type = $2`,
-    [userId, providerType]
+    [userId, providerType],
   );
 
   if (!accountsQueryResult.rowCount) {
@@ -47,8 +47,10 @@ async function createPayment(userId: string, formData: FormData) {
   const client = await pgpool.connect();
 
   try {
-    await client.query('BEGIN')
-    const paymentRequestQueryResult = await pgpool.query<{ payment_request_id: string }>(
+    await client.query("BEGIN");
+    const paymentRequestQueryResult = await pgpool.query<{
+      payment_request_id: string;
+    }>(
       `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status)
         values ($1, $2, $3, $4, $5, $6, $7)
         returning payment_request_id`,
@@ -60,7 +62,7 @@ async function createPayment(userId: string, formData: FormData) {
         data.amount,
         data.redirectUrl,
         "pending",
-      ]
+      ],
     );
 
     if (!paymentRequestQueryResult.rowCount) {
@@ -68,7 +70,8 @@ async function createPayment(userId: string, formData: FormData) {
       throw new Error("Failed to create payment");
     }
 
-    const paymentRequestId = paymentRequestQueryResult.rows[0].payment_request_id;
+    const paymentRequestId =
+      paymentRequestQueryResult.rows[0].payment_request_id;
 
     if (openBankingAccount) {
       const paymentRequestProviderQueryResult = await pgpool.query<{
@@ -76,7 +79,7 @@ async function createPayment(userId: string, formData: FormData) {
       }>(
         `insert into payment_requests_providers (provider_id, payment_request_id)
         values ($1, $2)`,
-        [openBankingAccount, paymentRequestId]
+        [openBankingAccount, paymentRequestId],
       );
 
       if (!paymentRequestProviderQueryResult.rowCount) {
@@ -91,7 +94,7 @@ async function createPayment(userId: string, formData: FormData) {
       }>(
         `insert into payment_requests_providers (provider_id, payment_request_id)
         values ($1, $2)`,
-        [bankTransferAccount, paymentRequestId]
+        [bankTransferAccount, paymentRequestId],
       );
 
       if (!paymentRequestProviderQueryResult.rowCount) {
@@ -99,15 +102,15 @@ async function createPayment(userId: string, formData: FormData) {
         throw new Error("Failed to create payment");
       }
     }
-    await client.query('COMMIT')
+    await client.query("COMMIT");
 
     redirect(
       `create/${paymentRequestQueryResult.rows[0].payment_request_id}`,
-      RedirectType.replace
+      RedirectType.replace,
     );
   } catch (err) {
-    await client.query('ROLLBACK')
-    throw err
+    await client.query("ROLLBACK");
+    throw err;
   }
 }
 
@@ -118,12 +121,12 @@ export default async function Page() {
 
   const openBankingAccounts = await getRegisteredAccounts(
     userId,
-    "openbanking"
+    "openbanking",
   );
 
   const manualBankTransferAccounts = await getRegisteredAccounts(
     userId,
-    "banktransfer"
+    "banktransfer",
   );
 
   const submitPayment = createPayment.bind(this, userId);

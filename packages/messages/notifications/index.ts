@@ -25,7 +25,7 @@ export const buildNotificationService = (userId: string) => {
     SELECT COUNT(*) FROM messages.notifications
     WHERE user_id = $1 AND read = FALSE;
   `,
-      [userId]
+      [userId],
     );
     return rows[0].count;
   };
@@ -37,7 +37,7 @@ export const buildNotificationService = (userId: string) => {
   SET read = TRUE
   WHERE id = $1 AND user_id = $2;
 `,
-      [notificationId, userId]
+      [notificationId, userId],
     );
 
   const createNotification = async ({
@@ -54,7 +54,7 @@ export const buildNotificationService = (userId: string) => {
         (subject, action, action_url, type, created_at, read, user_id)
         VALUES
         ($1, $2, $3, $4, $5, $6, $7)`,
-      [subject, action, actionUrl, type, createdAt, read, userId]
+      [subject, action, actionUrl, type, createdAt, read, userId],
     );
   };
 

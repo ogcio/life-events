@@ -34,7 +34,7 @@ async function getFlows() {
       FROM user_flow_data
       WHERE user_id = $1
   `,
-    [userId]
+    [userId],
   );
 
   if (!flowsQueryResult.rowCount) {

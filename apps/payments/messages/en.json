@@ -5,7 +5,7 @@
   "PaymentSetup": {
     "menu": {
       "payments": "Payments",
-      "paymentRequests":"Payment requests",
+      "paymentRequests": "Payment requests",
       "providers": "Providers"
     },
     "Providers": {

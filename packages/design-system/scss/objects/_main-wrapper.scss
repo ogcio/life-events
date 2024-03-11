@@ -1,4 +1,4 @@
-@import '../base';
+@import "../base";
 
 ////
 /// @group objects/layout
@@ -21,7 +21,7 @@
 //   </div>
 // </div>
 
-@include govie-exports('govie/objects/main-wrapper') {
+@include govie-exports("govie/objects/main-wrapper") {
   .govie-main-wrapper {
     // In IE11 the `main` element can be used, but is not recognized  –
     // meaning it's not defined in IE's default style sheet,
@@ -48,6 +48,6 @@
   // `govie-main-wrapper--l` modifier instead.
   .govie-main-wrapper--auto-spacing:first-child,
   .govie-main-wrapper--l {
-    @include govie-responsive-padding(8, 'top');
+    @include govie-responsive-padding(8, "top");
   }
 }

@@ -40,7 +40,7 @@ async function getPaymentRequestDetails(paymentId: string) {
       join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
       join payment_providers pp on ppr.provider_id = pp.provider_id
       where pr.payment_request_id = $1`,
-    [paymentId]
+    [paymentId],
   );
 
   if (!res.rowCount) {
@@ -50,11 +50,15 @@ async function getPaymentRequestDetails(paymentId: string) {
   return res.rows;
 }
 
-function getPaymentUrl(paymentId: string, type: string, integrationRef: string, ) {
-  const url = new URL(`/paymentRequest/${type}`, process.env.HOST_URL)
-  url.searchParams.set('paymentId', paymentId)
-  url.searchParams.set('integrationRef', integrationRef)
-  return url.href
+function getPaymentUrl(
+  paymentId: string,
+  type: string,
+  integrationRef: string,
+) {
+  const url = new URL(`/paymentRequest/${type}`, process.env.HOST_URL);
+  url.searchParams.set("paymentId", paymentId);
+  url.searchParams.set("integrationRef", integrationRef);
+  return url.href;
 }
 
 export default async function Page(props: Props) {
@@ -79,11 +83,11 @@ export default async function Page(props: Props) {
   }
 
   const hasOpenBanking = details.some(
-    ({ provider_type }) => provider_type === "openbanking"
+    ({ provider_type }) => provider_type === "openbanking",
   );
 
   const hasManualBanking = details.some(
-    ({ provider_type }) => provider_type === "banktransfer"
+    ({ provider_type }) => provider_type === "banktransfer",
   );
 
   return (
@@ -122,7 +126,14 @@ export default async function Page(props: Props) {
                 </strong>
               </div>
               <p className="govie-body">{t("payByBankDescription")}</p>
-              <ClientLink label={t('payNow')} href={getPaymentUrl(props.searchParams.paymentId, 'bankTransfer', props.searchParams.id)} />
+              <ClientLink
+                label={t("payNow")}
+                href={getPaymentUrl(
+                  props.searchParams.paymentId,
+                  "bankTransfer",
+                  props.searchParams.id,
+                )}
+              />
             </div>
             <hr className="govie-section-break govie-section-break--visible"></hr>
           </>
@@ -136,7 +147,14 @@ export default async function Page(props: Props) {
                 </h3>
               </div>
               <p className="govie-body">{t("manualBankTransferDescription")}</p>
-              <ClientLink label={t('payNow')} href={getPaymentUrl(props.searchParams.paymentId, 'manual', props.searchParams.id)} />
+              <ClientLink
+                label={t("payNow")}
+                href={getPaymentUrl(
+                  props.searchParams.paymentId,
+                  "manual",
+                  props.searchParams.id,
+                )}
+              />
             </div>
             <hr className="govie-section-break govie-section-break--visible"></hr>
           </>

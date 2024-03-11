@@ -1,6 +1,6 @@
-@import '../base';
+@import "../base";
 
-@include govie-exports('govie/objects/inline-button-group') {
+@include govie-exports("govie/objects/inline-button-group") {
   // Inline button groups can be used to group buttons and links together as a group.
   //
   // Within a button group:
@@ -21,7 +21,7 @@
 
     @include govie-responsive-margin(
       6,
-      'bottom',
+      "bottom",
       $adjustment: $vertical-gap * -1
     );
 
@@ -36,9 +36,9 @@
     display: -ms-flexbox;
     display: flex;
     -ms-flex-direction: column;
-        flex-direction: column;
+    flex-direction: column;
     -ms-flex-align: center;
-        align-items: center;
+    align-items: center;
 
     // Give links within the button group the same font-size and line-height
     // as buttons.
@@ -70,11 +70,11 @@
 
       -ms-flex-direction: row;
 
-          flex-direction: row;
+      flex-direction: row;
       -ms-flex-wrap: wrap;
-          flex-wrap: wrap;
+      flex-wrap: wrap;
       -ms-flex-align: baseline;
-          align-items: baseline;
+      align-items: baseline;
 
       .govie-button,
       .govie-link {

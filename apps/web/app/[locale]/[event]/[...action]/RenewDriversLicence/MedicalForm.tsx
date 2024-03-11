@@ -27,7 +27,7 @@ async function Form(props: { userId: string; flow: string }) {
         formErrors,
         props.userId,
         routes.driving.renewLicense.medicalCertificate.slug,
-        props.flow
+        props.flow,
       );
       return revalidatePath("/");
     }
@@ -37,7 +37,7 @@ async function Form(props: { userId: string; flow: string }) {
         UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('medicalCertificate','placeholder')
         WHERE user_id = $1 AND flow = $2
     `,
-      [props.userId, props.flow]
+      [props.userId, props.flow],
     );
     revalidatePath("/" + routes.driving.renewLicense.medicalCertificate.slug);
   }
@@ -45,7 +45,7 @@ async function Form(props: { userId: string; flow: string }) {
   const errors = await form.getErrorsQuery(
     props.userId,
     routes.driving.renewLicense.medicalCertificate.slug,
-    props.flow
+    props.flow,
   );
 
   return (
@@ -120,7 +120,7 @@ function Info() {
 }
 
 export default (
-  props: web.NextPageProps & { userId: string; flow: string }
+  props: web.NextPageProps & { userId: string; flow: string },
 ) => {
   return props.searchParams?.step ? (
     <Form flow={props.flow} userId={props.userId} />

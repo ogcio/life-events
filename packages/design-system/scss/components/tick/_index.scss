@@ -1,17 +1,18 @@
-@include govie-exports('govie/component/tick') {
-  .govie-tick[type='checkbox'] {
+@include govie-exports("govie/component/tick") {
+  .govie-tick[type="checkbox"] {
     display: none;
 
     ~ svg {
       cursor: pointer;
       path {
-        fill: govie-colour('mid-grey');
+        fill: govie-colour("mid-grey");
       }
     }
 
-    &:checked ~ svg, &[checked="true"] {
+    &:checked ~ svg,
+    &[checked="true"] {
       path {
-        fill: govie-colour('green');
+        fill: govie-colour("green");
       }
     }
   }

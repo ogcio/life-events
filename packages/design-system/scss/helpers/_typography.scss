@@ -2,7 +2,7 @@
 /// @group helpers/typography
 ////
 
-@import '../tools/px-to-rem';
+@import "../tools/px-to-rem";
 
 /// 'Common typography' helper
 ///
@@ -126,7 +126,7 @@
   $font-map: map-get($govie-typography-scale, $size);
 
   @each $breakpoint, $breakpoint-map in $font-map {
-    $font-size: map-get($breakpoint-map, 'font-size');
+    $font-size: map-get($breakpoint-map, "font-size");
     $font-size-rem: govie-px-to-rem($font-size);
 
     $line-height: _govie-line-height(
@@ -134,7 +134,7 @@
         if(
           $override-line-height,
           $override-line-height,
-          map-get($breakpoint-map, 'line-height')
+          map-get($breakpoint-map, "line-height")
         ),
       $font-size: $font-size,
     );
@@ -149,7 +149,7 @@
     @if not $breakpoint {
       font-size: $font-size;
       line-height: $line-height;
-    } @else if $breakpoint == 'print' {
+    } @else if $breakpoint == "print" {
       @include govie-media-query($media-type: print) {
         font-size: $font-size;
         line-height: $line-height;
@@ -184,12 +184,12 @@
 ) {
   @if $tabular {
     @include govie-typography-common;
-    -webkit-font-feature-settings: 'tnum' 1;
-            font-feature-settings: 'tnum' 1;
+    -webkit-font-feature-settings: "tnum" 1;
+    font-feature-settings: "tnum" 1;
 
     @supports (font-variant-numeric: tabular-nums) {
       -webkit-font-feature-settings: normal;
-              font-feature-settings: normal;
+      font-feature-settings: normal;
       font-variant-numeric: tabular-nums;
     }
   } @else {

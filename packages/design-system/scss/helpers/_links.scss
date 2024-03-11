@@ -55,9 +55,9 @@
     // Disable ink skipping on underlines on hover. Browsers haven't
     // standardised on this part of the spec yet, so set both properties
     -webkit-text-decoration-skip-ink: none;
-            text-decoration-skip-ink: none; // Chromium, Firefox
+    text-decoration-skip-ink: none; // Chromium, Firefox
     -webkit-text-decoration-skip: none;
-            text-decoration-skip: none; // Safari
+    text-decoration-skip: none; // Safari
   }
 }
 
@@ -273,14 +273,14 @@
 @mixin govie-link-style-inverse {
   &:link,
   &:visited {
-    color: govie-colour('white');
+    color: govie-colour("white");
   }
 
   // Force a colour change on hover to work around a bug in Safari
   // https://bugs.webkit.org/show_bug.cgi?id=224483
   &:hover,
   &:active {
-    color: rgba(govie-colour('white'), 0.99);
+    color: rgba(govie-colour("white"), 0.99);
   }
 
   &:focus {
@@ -367,7 +367,7 @@
     &[href^="https://"]
     {
       &:after {
-        content: ' (' attr(href) ')';
+        content: " (" attr(href) ")";
         font-size: 90%;
 
         // Because the URLs may be very long, ensure that they may be broken

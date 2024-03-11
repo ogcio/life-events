@@ -1,5 +1,4 @@
 @include govie-exports("govie/component/back-link") {
-
   // Size of chevron (excluding border)
   $chevron-size: 7px;
 
@@ -43,9 +42,9 @@
 
     -webkit-transform: rotate(225deg);
 
-        -ms-transform: rotate(225deg);
+    -ms-transform: rotate(225deg);
 
-            transform: rotate(225deg);
+    transform: rotate(225deg);
 
     border: solid;
     border-width: $chevron-border-width $chevron-border-width 0 0;

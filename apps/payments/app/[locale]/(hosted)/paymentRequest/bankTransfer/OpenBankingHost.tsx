@@ -41,7 +41,7 @@ export default function Page(props: Props) {
       onLoad: () => {
         status.current = "loaded";
       },
-    })
+    }),
   );
 
   useEffect(() => {

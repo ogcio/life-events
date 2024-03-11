@@ -15,7 +15,7 @@ export default async function (props: { params: { request_id: string } }) {
 
   const completePaymentLink = new URL(
     `/paymentRequest/pay?paymentId=${props.params.request_id}`,
-    process.env.HOST_URL ?? ""
+    process.env.HOST_URL ?? "",
   ).toString();
 
   return (

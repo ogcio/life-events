@@ -14,11 +14,11 @@ export function findParameters(text: string): string[] {
 
 export function buildMessage(
   template: string,
-  params: Record<string, any>
+  params: Record<string, any>,
 ): string {
   const requiredParams = findParameters(template);
   const missingParams = requiredParams.filter(
-    (param) => !params.hasOwnProperty(param)
+    (param) => !params.hasOwnProperty(param),
   );
 
   if (missingParams.length > 0) {

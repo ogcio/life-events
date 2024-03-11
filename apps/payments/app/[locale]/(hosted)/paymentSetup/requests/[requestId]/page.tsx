@@ -15,7 +15,7 @@ async function createTransaction(requestId: string, formData: FormData) {
     insert into payment_transactions (payment_request_id, user_ppsn, status, created_at, updated_at)
     values ($1, $2, 'assigned', now(), now());
     `,
-    [requestId, userId]
+    [requestId, userId],
   );
 
   // reload the page

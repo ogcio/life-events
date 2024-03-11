@@ -77,7 +77,7 @@ export function emptyRenewDriversLicence(): RenewDriversLicence {
  */
 export function getCurrentStep<TFlowData>(
   rules: ((data: TFlowData) => string | null)[],
-  state: TFlowData
+  state: TFlowData,
 ) {
   let next: string | null = null;
   for (const fn of rules) {

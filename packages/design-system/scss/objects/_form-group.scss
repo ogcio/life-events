@@ -1,9 +1,9 @@
-@import '../base';
+@import "../base";
 
-@include govie-exports('govie/objects/form-group') {
+@include govie-exports("govie/objects/form-group") {
   .govie-form-group {
     @include govie-clearfix;
-    @include govie-responsive-margin(6, 'bottom');
+    @include govie-responsive-margin(6, "bottom");
 
     .govie-form-group:last-of-type {
       margin-bottom: 0; // Remove margin from last item in nested groups

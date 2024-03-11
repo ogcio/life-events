@@ -1,8 +1,8 @@
-@include govie-exports('govie/component/header') {
+@include govie-exports("govie/component/header") {
   $govie-header-background: $govie-header-surface-colour;
   $govie-header-border-color: $govie-header-footer-border-colour;
   $govie-header-border-width: govie-spacing(2);
-  $govie-header-text: govie-colour('white');
+  $govie-header-text: govie-colour("white");
   $govie-header-link-active: #1d8feb;
   $govie-header-nav-item-border-color: #2e3133;
   $govie-header-link-underline-thickness: 3px;
@@ -10,7 +10,7 @@
   .govie-header {
     @include govie-font($size: 16);
 
-    border-bottom: govie-spacing(2) solid govie-colour('white');
+    border-bottom: govie-spacing(2) solid govie-colour("white");
     color: $govie-header-text;
     background: $govie-header-background;
   }
@@ -156,7 +156,7 @@
   }
 
   .govie-header__logo {
-    @include govie-responsive-margin(2, 'bottom');
+    @include govie-responsive-margin(2, "bottom");
     padding-right: govie-spacing(8);
 
     @include govie-media-query($from: desktop) {
@@ -184,13 +184,14 @@
     margin: 0;
     padding: 0;
     border: 0;
-    color: govie-colour('white');
+    color: govie-colour("white");
     background: none;
     cursor: pointer;
 
     &:hover {
-      -webkit-text-decoration: solid underline $govie-header-link-underline-thickness;
-              text-decoration: solid underline $govie-header-link-underline-thickness;
+      -webkit-text-decoration: solid underline
+        $govie-header-link-underline-thickness;
+      text-decoration: solid underline $govie-header-link-underline-thickness;
 
       @if $govie-link-underline-offset {
         text-underline-offset: $govie-link-underline-offset;
@@ -207,11 +208,11 @@
         $base: 10px,
         $display: inline-block
       );
-      content: '';
+      content: "";
       margin-left: govie-spacing(1);
     }
 
-    &[aria-expanded='true']:after {
+    &[aria-expanded="true"]:after {
       @include govie-shape-arrow(
         $direction: up,
         $base: 10px,
@@ -305,7 +306,7 @@
   @include govie-media-query($media-type: print) {
     .govie-header {
       border-bottom-width: 0;
-      color: govie-colour('black');
+      color: govie-colour("black");
       background: transparent;
     }
 
@@ -317,7 +318,7 @@
     .govie-header__link {
       &:link,
       &:visited {
-        color: govie-colour('black');
+        color: govie-colour("black");
       }
 
       // Do not append link href to GOV.UK link when printing (e.g. '(/)')

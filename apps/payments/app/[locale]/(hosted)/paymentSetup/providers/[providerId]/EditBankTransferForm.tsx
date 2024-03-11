@@ -31,7 +31,7 @@ export default async ({ provider }: Props) => {
         provider_data = $2
       WHERE provider_id = $3
     `,
-      [providerName, providerData, provider.id]
+      [providerName, providerData, provider.id],
     );
 
     redirect("./");

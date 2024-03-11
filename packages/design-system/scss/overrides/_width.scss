@@ -1,5 +1,5 @@
 // stylelint-disable declaration-no-important
-@include govie-exports('govie/overrides/width') {
+@include govie-exports("govie/overrides/width") {
   .govie-\!-width-full {
     width: 100% !important;
   }

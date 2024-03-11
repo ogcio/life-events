@@ -34,7 +34,7 @@ $govie-new-link-styles: true !default;
 /// @type Number
 /// @access public
 
-$govie-link-underline-thickness: unquote('max(1px, .0625rem)') !default;
+$govie-link-underline-thickness: unquote("max(1px, .0625rem)") !default;
 
 /// Offset of link underlines from text baseline
 ///
@@ -60,5 +60,5 @@ $govie-link-underline-offset: 0.1em !default;
 /// @access public
 
 $govie-link-hover-underline-thickness: unquote(
-  'max(3px, .1875rem, .12em)'
+  "max(3px, .1875rem, .12em)"
 ) !default;

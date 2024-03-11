@@ -32,7 +32,7 @@ export default async ({
             UPDATE user_flow_data set flow_data = flow_data || jsonb_build_object('successfulAt', now()::DATE::TEXT)
             WHERE user_id=$1 AND flow = $2
         `,
-      [userId, flow]
+      [userId, flow],
     );
 
     redirect("/admin");
@@ -71,7 +71,7 @@ export default async ({
               item={{
                 key: t("birthDay"),
                 value: dayjs(
-                  `${flowData.yearOfBirth}-${flowData.monthOfBirth}-${flowData.dayOfBirth}`
+                  `${flowData.yearOfBirth}-${flowData.monthOfBirth}-${flowData.dayOfBirth}`,
                 ).format("DD/MM/YYYY"),
               }}
             />

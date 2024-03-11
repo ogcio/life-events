@@ -1,6 +1,6 @@
 "use client";
 
-export default function CopyLink(props: { link: string, buttonText: string }) {
+export default function CopyLink(props: { link: string; buttonText: string }) {
   function copyLink() {
     navigator.clipboard.writeText(props.link);
   }
@@ -11,6 +11,12 @@ export default function CopyLink(props: { link: string, buttonText: string }) {
   }
 
   return (
-    <button className='govie-button' style={{ margin: '32px 0 0' }} onClick={copyLink}>{props.buttonText}</button>
-  )
+    <button
+      className="govie-button"
+      style={{ margin: "32px 0 0" }}
+      onClick={copyLink}
+    >
+      {props.buttonText}
+    </button>
+  );
 }

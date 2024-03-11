@@ -9,7 +9,7 @@
 /// @type Map
 /// @access private
 
-$_spacing-directions: ('top', 'right', 'bottom', 'left') !default;
+$_spacing-directions: ("top", "right", "bottom", "left") !default;
 
 /// Generate responsive spacing override classes
 ///
@@ -36,7 +36,7 @@ $_spacing-directions: ('top', 'right', 'bottom', 'left') !default;
   // override that affects all directions...
   @each $scale-point, $scale-map in $govie-spacing-responsive-scale {
     .govie-\!-#{$property}-#{$scale-point} {
-      @include _govie-responsive-spacing($scale-point, $property, 'all', true);
+      @include _govie-responsive-spacing($scale-point, $property, "all", true);
     }
 
     // ... and then an override for each individual direction
@@ -90,10 +90,10 @@ $_spacing-directions: ('top', 'right', 'bottom', 'left') !default;
   }
 }
 
-@include govie-exports('govie/overrides/spacing') {
-  @include _govie-generate-responsive-spacing-overrides('margin');
-  @include _govie-generate-responsive-spacing-overrides('padding');
+@include govie-exports("govie/overrides/spacing") {
+  @include _govie-generate-responsive-spacing-overrides("margin");
+  @include _govie-generate-responsive-spacing-overrides("padding");
 
-  @include _govie-generate-static-spacing-overrides('margin');
-  @include _govie-generate-static-spacing-overrides('padding');
+  @include _govie-generate-static-spacing-overrides("margin");
+  @include _govie-generate-static-spacing-overrides("padding");
 }

@@ -5,7 +5,7 @@ export const send: SendEmail = (data) => {
   if (typeof process.env.SENDGRID_API_KEY === "undefined") {
     return console.log(
       "Warning - SENDGRID_API_KEY env variable missing. Printing request: ",
-      data
+      data,
     );
   }
 

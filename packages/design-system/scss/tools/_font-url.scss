@@ -13,7 +13,7 @@
 /// @access public
 
 @function govie-font-url($filename) {
-  $use-custom-function: variable-exists('govie-font-url-function') and
+  $use-custom-function: variable-exists("govie-font-url-function") and
     $govie-font-url-function and function-exists($govie-font-url-function);
 
   @if $use-custom-function {

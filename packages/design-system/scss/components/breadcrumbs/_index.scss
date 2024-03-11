@@ -1,5 +1,4 @@
 @include govie-exports("govie/component/breadcrumbs") {
-
   // Size of chevron (excluding border)
   $chevron-size: 7px;
 
@@ -32,7 +31,6 @@
   }
 
   .govie-breadcrumbs__list-item {
-
     display: inline-block;
     position: relative;
 
@@ -56,7 +54,10 @@
 
       // Offset by the difference between the width of the non-rotated square
       // and its width when rotated
-      left: (($chevron-altitude-calculated * -2) + $chevron-size + $chevron-border-width);
+      left: (
+        ($chevron-altitude-calculated * -2) + $chevron-size +
+          $chevron-border-width
+      );
 
       width: $chevron-size;
       height: $chevron-size;
@@ -65,9 +66,9 @@
 
       -webkit-transform: rotate(45deg);
 
-          -ms-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
 
-              transform: rotate(45deg);
+      transform: rotate(45deg);
 
       border: solid;
       border-width: $chevron-border-width $chevron-border-width 0 0;

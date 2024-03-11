@@ -1,4 +1,4 @@
-import 'server-only'
+import "server-only";
 import * as tlSigning from "truelayer-signing";
 import { randomUUID } from "node:crypto";
 
@@ -69,7 +69,7 @@ export async function createPaymentRequest(paymentRequest) {
     kid: CERTIFICATE_ID,
     privateKeyPem: PRIVATE_KEY,
     // @ts-expect-error unable to use the correct ENUM due to TSconfig
-    method: 'POST',
+    method: "POST",
     path: "/v3/payments",
     body,
     headers: {
@@ -77,7 +77,7 @@ export async function createPaymentRequest(paymentRequest) {
     },
   });
 
-  const url = `${process.env.TL_ENVIRONMENT_URI}/v3/payments`
+  const url = `${process.env.TL_ENVIRONMENT_URI}/v3/payments`;
 
   const res = await fetch(url, {
     method: "POST",
@@ -91,8 +91,8 @@ export async function createPaymentRequest(paymentRequest) {
   });
 
   if (!res.ok) {
-    console.error('Error creating payment request', await res.text())
-    return
+    console.error("Error creating payment request", await res.text());
+    return;
   }
 
   const json = await res.json();

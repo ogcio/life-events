@@ -28,7 +28,7 @@ async function getPaymentDetails(paymentId: string) {
     where pr.payment_request_id = $1
       and pp.provider_type = 'openbanking'
     `,
-    [paymentId]
+    [paymentId],
   );
 
   if (!rows.length) {
@@ -42,7 +42,7 @@ async function createTransaction(
   paymentId: string,
   userId: string,
   extPaymentId: string,
-  tenantReference: string
+  tenantReference: string,
 ) {
   "use server";
   await pgpool.query<{ transaction_id: number }>(
@@ -50,17 +50,17 @@ async function createTransaction(
     insert into payment_transactions (payment_request_id, user_id, ext_payment_id, integration_reference, status, created_at, updated_at)
     values ($1, $2, $3, $4, 'pending', now(), now());
     `,
-    [paymentId, userId, extPaymentId, tenantReference]
+    [paymentId, userId, extPaymentId, tenantReference],
   );
 }
 
 export default async function Bank(props: {
-  params: { locale: string }
+  params: { locale: string };
   searchParams: { paymentId: string; integrationRef: string } | undefined;
 }) {
-  const t = await getTranslations('Common')
+  const t = await getTranslations("Common");
   if (!props.searchParams?.paymentId) {
-    return <h1>{t('notFound')}</h1>;
+    return <h1>{t("notFound")}</h1>;
   }
 
   const { userId } = await PgSessions.get();
@@ -71,12 +71,12 @@ export default async function Bank(props: {
     props.searchParams.paymentId,
     userId,
     paymentDetails.id,
-    props.searchParams.integrationRef
+    props.searchParams.integrationRef,
   );
 
   const returnUri = new URL(
     `/${props.params.locale}/paymentRequest/complete`,
-    process.env.HOST_URL
+    process.env.HOST_URL,
   );
   return (
     <div

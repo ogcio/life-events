@@ -13,7 +13,7 @@ export default async (
     | "mobile"
     | "sex"
     | "userName"
-  > & { userId: string; urlBase: string; flow: string }
+  > & { userId: string; urlBase: string; flow: string },
 ) => {
   const t = await getTranslations("SimpleDetailsForm");
   const errorT = await getTranslations("formErrors");
@@ -21,7 +21,7 @@ export default async (
   const errors = await form.getErrorsQuery(
     props.userId,
     routes.driving.renewLicense.changeDetails.slug,
-    props.flow
+    props.flow,
   );
 
   async function submitAction(formData: FormData) {
@@ -34,7 +34,7 @@ export default async (
     const dayOfBirth = parseInt(formData.get("dayOfBirth")?.toString() || "");
 
     const monthOfBirth = parseInt(
-      formData.get("monthOfBirth")?.toString() || ""
+      formData.get("monthOfBirth")?.toString() || "",
     );
     const yearOfBirth = parseInt(formData.get("yearOfBirth")?.toString() || "");
 
@@ -45,8 +45,8 @@ export default async (
           field: form.fieldTranslationKeys.month,
           value: monthOfBirth,
         },
-        { field: form.fieldTranslationKeys.day, value: dayOfBirth }
-      )
+        { field: form.fieldTranslationKeys.day, value: dayOfBirth },
+      ),
     );
 
     // Name
@@ -54,14 +54,14 @@ export default async (
     formErrors.push(
       ...form.validation.stringNotEmpty(
         form.fieldTranslationKeys.name,
-        userName
-      )
+        userName,
+      ),
     );
 
     // Email
     const email = formData.get("email")?.toString();
     formErrors.push(
-      ...form.validation.emailErrors(form.fieldTranslationKeys.email, email)
+      ...form.validation.emailErrors(form.fieldTranslationKeys.email, email),
     );
 
     // Phone
@@ -69,14 +69,14 @@ export default async (
     formErrors.push(
       ...form.validation.stringNotEmpty(
         form.fieldTranslationKeys.mobile,
-        phone
-      )
+        phone,
+      ),
     );
 
     // Sex
     const sex = formData.get("sex")?.toString();
     formErrors.push(
-      ...form.validation.stringNotEmpty(form.fieldTranslationKeys.sex, sex)
+      ...form.validation.stringNotEmpty(form.fieldTranslationKeys.sex, sex),
     );
 
     if (formErrors.length) {
@@ -84,7 +84,7 @@ export default async (
         formErrors,
         props.userId,
         routes.driving.renewLicense.changeDetails.slug,
-        props.flow
+        props.flow,
       );
 
       return revalidatePath("/");
@@ -140,7 +140,7 @@ export default async (
         SELECT flow_data as "currentData" FROM user_flow_data
         WHERE user_id = $1 AND flow = $2
     `,
-      [props.userId, "renewDriversLicence"]
+      [props.userId, "renewDriversLicence"],
     );
 
     let dataToUpdate: workflow.RenewDriversLicence;
@@ -163,7 +163,7 @@ export default async (
         DO UPDATE SET flow_data = $3
         WHERE user_flow_data.user_id=$1 AND user_flow_data.flow=$2
     `,
-      [props.userId, "renewDriversLicence", JSON.stringify(dataToUpdate)]
+      [props.userId, "renewDriversLicence", JSON.stringify(dataToUpdate)],
     );
 
     return redirect(props.urlBase);
@@ -173,26 +173,26 @@ export default async (
   //   ["dayOfBirth", "monthOfBirth", "yearOfBirth"].includes(row.field)
   // );
   const nameError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.name
+    (row) => row.field === form.fieldTranslationKeys.name,
   );
   const emailError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.email
+    (row) => row.field === form.fieldTranslationKeys.email,
   );
   const phoneError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.mobile
+    (row) => row.field === form.fieldTranslationKeys.mobile,
   );
   const sexError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.sex
+    (row) => row.field === form.fieldTranslationKeys.sex,
   );
 
   const dayError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.day
+    (row) => row.field === form.fieldTranslationKeys.day,
   );
   const monthError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.month
+    (row) => row.field === form.fieldTranslationKeys.month,
   );
   const yearError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.year
+    (row) => row.field === form.fieldTranslationKeys.year,
   );
 
   const dateErrors: form.Error[] = [];
@@ -345,8 +345,7 @@ export default async (
                 {errorT(emailError.messageKey, {
                   field: errorT(`fields.${emailError.field}`),
                   indArticleCheck:
-                    emailError.messageKey ===
-                    form.errorTranslationKeys.empty
+                    emailError.messageKey === form.errorTranslationKeys.empty
                       ? "an"
                       : "",
                 })}

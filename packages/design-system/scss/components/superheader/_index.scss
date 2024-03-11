@@ -17,7 +17,7 @@ $after-button-padding-left: govie-spacing(4);
     @include prefixed-transform($rotate: 45deg, $translateY: -35%);
     border-bottom: 2px solid $colour;
     border-right: 2px solid $colour;
-    content: '';
+    content: "";
     display: inline-block;
     height: 8px;
     margin: 0 10px 0 2px;
@@ -29,7 +29,7 @@ $after-button-padding-left: govie-spacing(4);
 @mixin make-selectable-area-bigger {
   background: none;
   bottom: 0;
-  content: '';
+  content: "";
   left: 0;
   position: absolute;
   right: 0;
@@ -42,7 +42,7 @@ $after-button-padding-left: govie-spacing(4);
   $width: false
 ) {
   background: none;
-  content: '';
+  content: "";
   height: $govie-pseudo-underline-height;
   left: $left;
   position: absolute;
@@ -77,7 +77,7 @@ $after-button-padding-left: govie-spacing(4);
 .govie-superheader {
   background: $govie-header-surface-colour;
   position: relative;
-  border-bottom: govie-spacing(2) solid govie-colour('white');
+  border-bottom: govie-spacing(2) solid govie-colour("white");
 
   .lte-ie8 & {
     height: $govie-bar-height;
@@ -184,7 +184,7 @@ $after-button-padding-left: govie-spacing(4);
       color: $govie-link-colour;
 
       .govie-superheader__navigation-item-link-inner {
-        border-color: govie-colour('mid-grey');
+        border-color: govie-colour("mid-grey");
       }
 
       &:hover {
@@ -207,14 +207,14 @@ $after-button-padding-left: govie-spacing(4);
     height: govie-spacing(4);
 
     &:before {
-      @include chevron(govie-colour('white'), true);
+      @include chevron(govie-colour("white"), true);
     }
 
     &:hover {
-      color: govie-colour('mid-grey');
+      color: govie-colour("mid-grey");
 
       &:after {
-        background: govie-colour('mid-grey');
+        background: govie-colour("mid-grey");
       }
     }
 
@@ -242,14 +242,14 @@ $after-button-padding-left: govie-spacing(4);
       }
 
       & {
-        color: govie-colour('white');
+        color: govie-colour("white");
       }
 
       &:hover {
-        color: govie-colour('mid-grey');
+        color: govie-colour("mid-grey");
 
         &:after {
-          background: govie-colour('mid-grey');
+          background: govie-colour("mid-grey");
         }
       }
 
@@ -295,8 +295,8 @@ $after-button-padding-left: govie-spacing(4);
 }
 
 .govie-superheader__navigation-item-link-inner {
-  background-color: govie-colour('black');
-  border-left: 1px solid govie-colour('mid-grey');
+  background-color: govie-colour("black");
+  border-left: 1px solid govie-colour("mid-grey");
   padding: govie-spacing(1) $after-link-padding;
 }
 
@@ -313,7 +313,7 @@ $after-button-padding-left: govie-spacing(4);
     background: $govie-header-footer-border-colour;
 
     &:hover {
-      background: govie-colour('black');
+      background: govie-colour("black");
 
       &:before {
         left: 0;
@@ -339,7 +339,7 @@ $after-button-padding-left: govie-spacing(4);
       background: $govie-link-colour;
 
       &:hover {
-        background: govie-colour('black');
+        background: govie-colour("black");
       }
     }
 
@@ -392,7 +392,7 @@ $after-button-padding-left: govie-spacing(4);
   }
 
   &:hover {
-    color: govie-colour('white');
+    color: govie-colour("white");
 
     &::after {
       background: $govie-header-footer-border-colour;
@@ -405,7 +405,7 @@ $after-button-padding-left: govie-spacing(4);
   background: $govie-header-surface-colour;
   border: 0;
   box-sizing: border-box;
-  color: govie-colour('white');
+  color: govie-colour("white");
   cursor: pointer;
   height: $govie-bar-height;
   padding: 0;
@@ -428,11 +428,11 @@ $after-button-padding-left: govie-spacing(4);
   @include focus-not-focus-visible {
     background: none;
     box-shadow: none;
-    color: govie-colour('white');
+    color: govie-colour("white");
 
     .govie-superheader__navigation-top-toggle-button-inner {
       &:before {
-        @include chevron(govie-colour('white'), true);
+        @include chevron(govie-colour("white"), true);
       }
     }
   }
@@ -463,7 +463,7 @@ $after-button-padding-left: govie-spacing(4);
 
 .govie-superheader__navigation-top-toggle-button-inner {
   display: inline-block;
-  border-left: 1px solid govie-colour('mid-grey');
+  border-left: 1px solid govie-colour("mid-grey");
   margin: 0;
   padding: govie-spacing(1) govie-spacing(4);
 
@@ -472,16 +472,16 @@ $after-button-padding-left: govie-spacing(4);
   }
 
   &:before {
-    @include chevron(govie-colour('white'));
+    @include chevron(govie-colour("white"));
   }
 }
 
 // Styles for search toggle button.
 .govie-superheader__search-toggle-button {
-  @include govie-font($size: 19, $weight: 'bold', $line-height: 20px);
+  @include govie-font($size: 19, $weight: "bold", $line-height: 20px);
   background: none;
   border: 0;
-  color: govie-colour('white');
+  color: govie-colour("white");
   cursor: pointer;
   height: $govie-bar-height;
   padding: govie-spacing(3);
@@ -493,7 +493,7 @@ $after-button-padding-left: govie-spacing(4);
     z-index: 11;
 
     path {
-      fill: govie-colour('white');
+      fill: govie-colour("white");
     }
   }
 
@@ -516,7 +516,7 @@ $after-button-padding-left: govie-spacing(4);
 
       @include govie-media-query($from: 360px) {
         &:before {
-          @include chevron(govie-colour('black'), true);
+          @include chevron(govie-colour("black"), true);
         }
       }
     }
@@ -524,7 +524,7 @@ $after-button-padding-left: govie-spacing(4);
 }
 
 .govie-superheader__navigation-top-toggle-close-icon {
-  color: govie-colour('white');
+  color: govie-colour("white");
   display: none;
 
   .govie-superheader__open-button & {
@@ -532,7 +532,7 @@ $after-button-padding-left: govie-spacing(4);
   }
 
   path {
-    fill: govie-colour('white');
+    fill: govie-colour("white");
   }
 }
 
@@ -547,7 +547,7 @@ $after-button-padding-left: govie-spacing(4);
   }
 
   background: $govie-footer-surface-colour;
-  border-bottom: 1px govie-colour('mid-grey') solid;
+  border-bottom: 1px govie-colour("mid-grey") solid;
   padding-top: govie-spacing(6);
 
   @include govie-media-query($from: desktop) {
@@ -559,7 +559,7 @@ $after-button-padding-left: govie-spacing(4);
 .govie-superheader__navigation-language-dropdown-menu {
   position: absolute;
 
-  background: govie-colour('white');
+  background: govie-colour("white");
   margin-top: govie-spacing(9);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
@@ -575,7 +575,7 @@ $after-button-padding-left: govie-spacing(4);
       padding: 12px 10px;
 
       &:hover {
-        background-color: govie-colour('light-grey');
+        background-color: govie-colour("light-grey");
         cursor: pointer;
       }
     }
@@ -593,7 +593,7 @@ $after-button-padding-left: govie-spacing(4);
   .govie-superheader__navigation-language-title {
     @include govie-link-common;
     @include govie-link-style-no-visited-state;
-    @include govie-font($size: 27, $weight: 'bold');
+    @include govie-font($size: 27, $weight: "bold");
     background: transparent;
     border: none;
     padding-left: 0;
@@ -601,7 +601,7 @@ $after-button-padding-left: govie-spacing(4);
 
     span {
       &::after {
-        @include chevron(govie-colour('black'));
+        @include chevron(govie-colour("black"));
         margin-left: govie-spacing(2);
       }
     }
@@ -670,14 +670,14 @@ $after-button-padding-left: govie-spacing(4);
 
 .govie-superheader__navigation-second-items--topics {
   @include govie-media-query($from: desktop) {
-    @include columns($items: 16, $columns: 2, $selector: 'li', $flow: column);
+    @include columns($items: 16, $columns: 2, $selector: "li", $flow: column);
   }
 }
 
 .govie-superheader__navigation-second-item-link {
   font-size: 16px;
   font-size: govie-px-to-rem(16px);
-  color: govie-colour('black') !important;
+  color: govie-colour("black") !important;
 
   &:after {
     @include make-selectable-area-bigger;
@@ -726,7 +726,7 @@ $after-button-padding-left: govie-spacing(4);
   font-size: 16px;
   font-size: govie-px-to-rem(16px);
   padding: 0;
-  color: govie-colour('black') !important;
+  color: govie-colour("black") !important;
 
   &:after {
     @include make-selectable-area-bigger;
@@ -747,9 +747,9 @@ $after-button-padding-left: govie-spacing(4);
 }
 
 .govie-superheader__column-header {
-  @include govie-font($size: 27, $weight: 'bold');
+  @include govie-font($size: 27, $weight: "bold");
   padding-bottom: govie-spacing(4);
-  border-bottom: 1px solid govie-colour('mid-grey');
+  border-bottom: 1px solid govie-colour("mid-grey");
 }
 
 @include govie-media-query($media-type: print) {
@@ -767,7 +767,7 @@ $after-button-padding-left: govie-spacing(4);
     @include govie-font($size: 19, $line-height: 50px);
   }
 
-  .govie-superheader-search__input[type='search'] {
+  .govie-superheader-search__input[type="search"] {
     height: $govie-large-search-input-size;
   }
 
@@ -804,7 +804,7 @@ $after-button-padding-left: govie-spacing(4);
     padding-left: govie-spacing(3);
     z-index: 1;
     color: $govie-secondary-text-colour;
-    background: govie-colour('white');
+    background: govie-colour("white");
   }
 
   // match label colour with the label component colour
@@ -829,7 +829,7 @@ $after-button-padding-left: govie-spacing(4);
   }
 }
 
-.govie-superheader-search__input[type='search'] {
+.govie-superheader-search__input[type="search"] {
   // overly specific to prevent some overrides from outside
   @include govie-font($size: 19, $line-height: 1.47);
   margin: 0;
@@ -837,7 +837,7 @@ $after-button-padding-left: govie-spacing(4);
   height: govie-em(40, 16);
   padding: govie-em(6, 16);
   border: $govie-border-width-form-element solid $govie-input-border-colour;
-  background: govie-colour('white');
+  background: govie-colour("white");
   border-radius: 0; // otherwise iphones apply an automatic border radius
   box-sizing: border-box;
   -webkit-appearance: none;
@@ -896,7 +896,7 @@ $after-button-padding-left: govie-spacing(4);
     // Also, `outline` cannot be utilised
     // here as it is already used for the yellow focus state.
     box-shadow: inset 0 0 0 $govie-border-width-form-element * 2
-      govie-colour('black');
+      govie-colour("black");
 
     @include govie-if-ie8 {
       // IE8 doesn't support `box-shadow` so double the border with
@@ -913,7 +913,7 @@ $after-button-padding-left: govie-spacing(4);
 .govie-superheader-search__item-wrapper {
   display: table;
   width: 100%;
-  background: govie-colour('white');
+  background: govie-colour("white");
 }
 
 // general class applied to search input and button wrapper
@@ -930,10 +930,10 @@ $after-button-padding-left: govie-spacing(4);
 .govie-superheader-search--on-white {
   .govie-superheader-search__submit {
     background-color: $govie-header-footer-border-colour;
-    color: govie-colour('white');
+    color: govie-colour("white");
   }
 
-  .govie-superheader-search__input[type='search'] {
+  .govie-superheader-search__input[type="search"] {
     border-right-width: 0;
 
     // add the border once focused
@@ -945,10 +945,10 @@ $after-button-padding-left: govie-spacing(4);
 
 .govie-superheader-search--no-border {
   .govie-superheader-search__label {
-    color: govie-colour('white');
+    color: govie-colour("white");
   }
 
-  .govie-superheader-search__input[type='search'] {
+  .govie-superheader-search__input[type="search"] {
     border: 0;
   }
 
@@ -964,7 +964,7 @@ $after-button-padding-left: govie-spacing(4);
 }
 
 .govie-superheader-search--large-on-mobile {
-  @include govie-media-query($until: 'tablet') {
+  @include govie-media-query($until: "tablet") {
     @include large-mode;
   }
 }

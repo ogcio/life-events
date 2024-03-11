@@ -1,6 +1,6 @@
-@import '../base';
+@import "../base";
 
-@include govie-exports('govie/objects/template') {
+@include govie-exports("govie/objects/template") {
   // Applied to the <html> element
   .govie-template {
     // Set the overall page background colour to the same colour as used by the
@@ -10,8 +10,8 @@
     // Prevent automatic text sizing, as we already cater for small devices and
     // would like the browser to stay on 100% text zoom by default.
     -webkit-text-size-adjust: 100%;
-       -moz-text-size-adjust: 100%;
-            text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 
     // Force the scrollbar to always display in IE, to prevent horizontal page
     // jumps as content height changes (e.g. autocomplete results open).

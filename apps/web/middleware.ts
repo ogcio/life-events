@@ -5,7 +5,7 @@ const locales = ["en", "ga"];
 
 export default function (request: NextRequest) {
   const nextResponse = createMiddleware({ locales, defaultLocale: "en" })(
-    request
+    request,
   );
 
   nextResponse.headers.append("x-pathname", request.nextUrl.pathname);

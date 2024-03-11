@@ -23,7 +23,7 @@ async function SearchForm<TData>(props: FormProps<TData>) {
   const errors = await form.getErrorsQuery(
     props.userId,
     routes.driving.renewLicense.newAddress.slug,
-    props.flow
+    props.flow,
   );
 
   async function searchAction(formData: FormData) {
@@ -42,7 +42,7 @@ async function SearchForm<TData>(props: FormProps<TData>) {
         ],
         props.userId,
         routes.driving.renewLicense.newAddress.slug,
-        props.flow
+        props.flow,
       );
       return revalidatePath("/");
     }
@@ -115,7 +115,7 @@ async function SelectForm<TData>(props: FormProps<TData>) {
           timeAtAddress: "5 months",
         }),
         selectedAddress,
-      ]
+      ],
     );
 
     redirect("/driving/renew-licence/proof-of-address");
@@ -124,7 +124,7 @@ async function SelectForm<TData>(props: FormProps<TData>) {
   const urlParams = new URLSearchParams({ q: props.addressQuery });
 
   const addressResponse = await fetch(
-    `${process.env.API_ENDPOINT}/static/addresses/api?${urlParams}`
+    `${process.env.API_ENDPOINT}/static/addresses/api?${urlParams}`,
   );
   const addresses = await addressResponse.json();
 
@@ -158,7 +158,7 @@ async function ManualAddressForm<TData>(props: FormProps<TData>) {
   const errors = await form.getErrorsQuery(
     props.userId,
     routes.driving.renewLicense.newAddress.slug,
-    props.flow
+    props.flow,
   );
 
   async function submitAction(formData: FormData) {
@@ -206,7 +206,7 @@ async function ManualAddressForm<TData>(props: FormProps<TData>) {
         errors,
         props.userId,
         routes.driving.renewLicense.newAddress.slug,
-        props.flow
+        props.flow,
       );
       return revalidatePath("/");
     }
@@ -229,23 +229,23 @@ async function ManualAddressForm<TData>(props: FormProps<TData>) {
           timeAtAddress: "5 months",
         }),
         fullAddressString,
-      ]
+      ],
     );
 
     redirect("/driving/renew-licence/proof-of-address");
   }
 
   const addressError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.address
+    (row) => row.field === form.fieldTranslationKeys.address,
   );
   const townError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.town
+    (row) => row.field === form.fieldTranslationKeys.town,
   );
   const countyError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.county
+    (row) => row.field === form.fieldTranslationKeys.county,
   );
   const eireError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.eirecode
+    (row) => row.field === form.fieldTranslationKeys.eirecode,
   );
 
   return (
@@ -358,8 +358,8 @@ export default <TData,>(props: Props<TData>) => {
   let Form = isManualForm
     ? ManualAddressForm
     : searchParams.get(searchParamKeys.address)
-    ? SelectForm
-    : SearchForm;
+      ? SelectForm
+      : SearchForm;
 
   return (
     <div className="govie-grid-row">

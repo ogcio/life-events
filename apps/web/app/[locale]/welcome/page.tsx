@@ -23,7 +23,7 @@ export default async (props: web.NextPageProps) => {
     `
     SELECT 1 FROM user_consents WHERE user_id = $1
   `,
-    [userId]
+    [userId],
   );
 
   const step = workflow.getCurrentStep<ConsentState>(rules, {
@@ -38,7 +38,7 @@ export default async (props: web.NextPageProps) => {
       INSERT INTO user_consents(user_id, agreement, is_consenting)
       VALUES($1, $2, $3)
     `,
-      [userId, agreements.storeUserData, decision === "agree"]
+      [userId, agreements.storeUserData, decision === "agree"],
     );
 
     revalidatePath("/");
@@ -47,7 +47,7 @@ export default async (props: web.NextPageProps) => {
   if (step !== "welcome") {
     return redirect(
       props.searchParams?.redirect_url ?? "/",
-      RedirectType.replace
+      RedirectType.replace,
     );
   }
 

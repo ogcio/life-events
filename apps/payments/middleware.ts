@@ -1,5 +1,5 @@
 import createMiddleware from "next-intl/middleware";
-import type { NextRequest } from 'next/server'
+import type { NextRequest } from "next/server";
 const locales = ["en", "ga"];
 
 export default createMiddleware({ locales, defaultLocale: "en" });

@@ -15,7 +15,9 @@
     min-width: 11.5em;
     max-width: 100%;
     height: 40px;
-    padding: govie-spacing(1); // was 5px 4px 4px - size of it should be adjusted to match other form elements
+    padding: govie-spacing(
+      1
+    ); // was 5px 4px 4px - size of it should be adjusted to match other form elements
     border: $govie-border-width-form-element solid $govie-input-border-colour;
 
     // Default user agent colours for selects can have low contrast,

@@ -36,7 +36,7 @@ await fastify.register(fastifyPostgres, {
   port: fastify.config.POSTGRES_PORT,
   user: fastify.config.POSTGRES_USER,
   password: fastify.config.POSTGRES_PASSWORD,
-  database: fastify.config.POSTGRES_DB ?? 'postgres',
+  database: fastify.config.POSTGRES_DB ?? "postgres",
 });
 
 fastify.get("/", async function handler() {
@@ -57,7 +57,6 @@ fastify.register(import("@fastify/autoload"), {
     prefix: "/static",
   },
 });
-
 
 try {
   await fastify.listen({ host: "0.0.0.0", port: 80 });

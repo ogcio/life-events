@@ -22,7 +22,7 @@ export default (
     flow: string;
     userId: string;
     onSubmit?: (formData?: FormData) => Promise<void>;
-  }
+  },
 ) => {
   const t = useTranslations("DetailsSummaryForm");
   async function submitAction() {
@@ -33,7 +33,7 @@ export default (
         UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT)
         WHERE user_id = $1 AND flow = $2
     `,
-      [props.userId, props.flow]
+      [props.userId, props.flow],
     );
     revalidatePath("/confirm-application");
   }
@@ -44,7 +44,7 @@ export default (
   const dateOfBirth =
     props.yearOfBirth && props.monthOfBirth && props.dayOfBirth
       ? dayjs(
-          `${props.yearOfBirth}-${props.monthOfBirth}-${props.dayOfBirth}`
+          `${props.yearOfBirth}-${props.monthOfBirth}-${props.dayOfBirth}`,
         ).format("DD/MM/YYYY")
       : "";
   return (

@@ -74,7 +74,7 @@ export default async (props: {
           Key: awsObjectKey,
           Body: Buffer.from(await poaFile.arrayBuffer()),
           ContentType: poaFile.type,
-        })
+        }),
       );
     } catch (err) {
       formErrors.push({
@@ -89,7 +89,7 @@ export default async (props: {
         formErrors,
         props.userId,
         routes.driving.renewLicense.proofOfAddress.slug,
-        props.flow
+        props.flow,
       );
 
       return revalidatePath("/");
@@ -119,7 +119,7 @@ export default async (props: {
           upload_version)
           VALUES($1, $2, $3, $4, $5, (SELECT COALESCE((SELECT upload_version FROM cte) + 1, 1)))
       `,
-        [props.userId, fileId, fileType, identitySelection, fileExtension]
+        [props.userId, fileId, fileType, identitySelection, fileExtension],
       );
 
       // Update flow state
@@ -128,7 +128,7 @@ export default async (props: {
         UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('proofOfAddressRequest', $1::TEXT, 'proofOfAddressFileId', $2::TEXT)
         WHERE user_id = $3 AND flow = $4
       `,
-        [identitySelection, fileId, props.userId, props.flow]
+        [identitySelection, fileId, props.userId, props.flow],
       );
 
       await transaction.query("COMMIT");
@@ -138,7 +138,7 @@ export default async (props: {
         new DeleteObjectCommand({
           Bucket: aws.fileBucketName,
           Key: awsObjectKey,
-        })
+        }),
       );
       formErrors.push({
         errorValue: "internalServerError",
@@ -154,7 +154,7 @@ export default async (props: {
         formErrors,
         props.userId,
         routes.driving.renewLicense.proofOfAddress.slug,
-        props.flow
+        props.flow,
       );
 
       return revalidatePath("/");
@@ -166,7 +166,7 @@ export default async (props: {
     const errors = await form.getErrorsQuery(
       props.userId,
       routes.driving.renewLicense.proofOfAddress.slug,
-      props.flow
+      props.flow,
     );
 
     return (

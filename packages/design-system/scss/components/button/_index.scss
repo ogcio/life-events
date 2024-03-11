@@ -8,7 +8,7 @@
 /// @type Colour
 /// @access public
 
-$govie-button-text-colour: govie-colour('black') !default;
+$govie-button-text-colour: govie-colour("black") !default;
 
 /// Button component background colour
 ///
@@ -22,7 +22,7 @@ $govie-button-background-colour: transparent !default;
 /// @type Colour
 /// @access public
 
-$govie-button-hover-background-colour: govie-colour('light-grey') !default;
+$govie-button-hover-background-colour: govie-colour("light-grey") !default;
 
 /// Primary button component background colour
 ///
@@ -43,14 +43,14 @@ $govie-primary-button-hover-background-colour: #002e28 !default;
 /// @type Colour
 /// @access public
 
-$govie-primary-button-text-colour: govie-colour('white') !default;
+$govie-primary-button-text-colour: govie-colour("white") !default;
 
 /// Secondary button component background colour
 ///
 /// @type Colour
 /// @access public
 
-$govie-secondary-button-background-colour: govie-colour('light-grey') !default;
+$govie-secondary-button-background-colour: govie-colour("light-grey") !default;
 
 /// Secondary button component hover background colour
 ///
@@ -58,7 +58,7 @@ $govie-secondary-button-background-colour: govie-colour('light-grey') !default;
 /// @access public
 
 $govie-secondary-button-hover-background-colour: govie-colour(
-  'mid-grey'
+  "mid-grey"
 ) !default;
 
 /// Secondary button component text colour
@@ -66,14 +66,14 @@ $govie-secondary-button-hover-background-colour: govie-colour(
 /// @type Colour
 /// @access public
 
-$govie-secondary-button-text-colour: govie-colour('black') !default;
+$govie-secondary-button-text-colour: govie-colour("black") !default;
 
 /// Tertiary button component background colour
 ///
 /// @type Colour
 /// @access public
 
-$govie-tertiary-button-background-colour: govie-colour('red') !default;
+$govie-tertiary-button-background-colour: govie-colour("red") !default;
 
 /// Tertiary button component hover background colour
 ///
@@ -81,7 +81,7 @@ $govie-tertiary-button-background-colour: govie-colour('red') !default;
 /// @access public
 
 $govie-tertiary-button-hover-background-colour: govie-colour(
-  'dark-red'
+  "dark-red"
 ) !default;
 
 /// Tertiary button component text colour
@@ -89,9 +89,9 @@ $govie-tertiary-button-hover-background-colour: govie-colour(
 /// @type Colour
 /// @access public
 
-$govie-tertiary-button-text-colour: govie-colour('black') !default;
+$govie-tertiary-button-text-colour: govie-colour("black") !default;
 
-@include govie-exports('govie/component/button') {
+@include govie-exports("govie/component/button") {
   // Because the shadow (s0) is visually 'part of' the button, we need to reduce
   // the height of the button to compensate by adjusting its padding (s1) and
   // increase the bottom margin to include it (s2).
@@ -111,7 +111,7 @@ $govie-tertiary-button-text-colour: govie-colour('black') !default;
 
     @include govie-responsive-margin(
       6,
-      'bottom',
+      "bottom",
       $adjustment: $button-shadow-size
     ); // s2
 
@@ -122,7 +122,7 @@ $govie-tertiary-button-text-colour: govie-colour('black') !default;
     border-radius: 4px;
     color: $govie-primary-button-text-colour;
     background-color: $govie-primary-button-background-colour;
-    box-shadow: 0 $button-shadow-size 0 govie-colour('black');
+    box-shadow: 0 $button-shadow-size 0 govie-colour("black");
     text-align: center;
     vertical-align: top;
     cursor: pointer;
@@ -211,7 +211,7 @@ $govie-tertiary-button-text-colour: govie-colour('black') !default;
     // Use a pseudo element to expand the click target area to include the
     // button's shadow as well, in case users try to click it.
     &:before {
-      content: '';
+      content: "";
       display: block;
 
       position: absolute;
@@ -240,7 +240,7 @@ $govie-tertiary-button-text-colour: govie-colour('black') !default;
   }
 
   .govie-button--disabled,
-  .govie-button[disabled='disabled'],
+  .govie-button[disabled="disabled"],
   .govie-button[disabled] {
     opacity: (0.5);
 
@@ -321,7 +321,7 @@ $govie-tertiary-button-text-colour: govie-colour('black') !default;
 
   .govie-button--secondary {
     background-color: $govie-secondary-button-background-colour;
-    box-shadow: 0px 1px 0px govie-colour('black');
+    box-shadow: 0px 1px 0px govie-colour("black");
 
     &,
     &:link,
@@ -392,20 +392,20 @@ $govie-tertiary-button-text-colour: govie-colour('black') !default;
   .govie-button--icon {
     min-height: auto;
     -ms-flex-pack: center;
-        justify-content: center;
+    justify-content: center;
     display: -ms-inline-flexbox;
     display: inline-flex;
     -ms-flex-align: center;
-        align-items: center;
+    align-items: center;
   }
 
   .govie-button__icon-right,
   .govie-button__icon-left {
     vertical-align: middle;
     -ms-flex-negative: 0;
-        flex-shrink: 0;
+    flex-shrink: 0;
     -ms-flex-item-align: center;
-        align-self: center;
+    align-self: center;
     // Work around SVGs not inheriting color from parent in forced color mode
     // (https://github.com/w3c/csswg-drafts/issues/6310)
     forced-color-adjust: auto;

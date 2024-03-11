@@ -60,7 +60,7 @@ export const formValidation = {
   dateErrors(
     year: { field: string; value?: number },
     month: { field: string; value?: number },
-    day: { field: string; value?: number }
+    day: { field: string; value?: number },
   ): FormError[] {
     const formErrors: FormError[] = [];
     if (!day?.value) {
@@ -105,7 +105,7 @@ export const formValidation = {
             errorValue: day.value.toString() || "",
             field: day.field,
             messageKey: formConstants.errorTranslationKeys.invalidField,
-          }
+          },
         );
       }
 
@@ -153,16 +153,16 @@ export const formValidation = {
           },
         ]
       : !/[a-z0-9\._%+!$&*=^|~#%'`?{}/\-]+@([a-z0-9\-]+\.){1,}([a-z]{2,16})/.test(
-          value
-        )
-      ? [
-          {
-            field,
-            messageKey: formConstants.errorTranslationKeys.invalidField,
-            errorValue: value || "",
-          },
-        ]
-      : [];
+            value,
+          )
+        ? [
+            {
+              field,
+              messageKey: formConstants.errorTranslationKeys.invalidField,
+              errorValue: value || "",
+            },
+          ]
+        : [];
   },
 };
 
@@ -170,7 +170,7 @@ export async function insertFormErrors(
   formErrors: FormError[],
   userId: string,
   slug: string,
-  flow: string
+  flow: string,
 ) {
   "use server";
   let i = 1;
@@ -192,7 +192,7 @@ export async function insertFormErrors(
       ...formErrors
         .map((error) => [error.field, error.messageKey, error.errorValue])
         .flat(),
-    ]
+    ],
   );
 }
 
@@ -202,7 +202,7 @@ export async function insertFormErrors(
 export async function getFormErrors(
   userId: string,
   slug: string,
-  flow: string
+  flow: string,
 ) {
   "use server";
 
@@ -215,7 +215,7 @@ export async function getFormErrors(
     WHERE user_id = $1 AND slug = $2 AND flow = $3
     RETURNING field, error_message AS "messageKey", error_value AS "errorValue"
   `,
-    [userId, slug, flow]
+    [userId, slug, flow],
   );
 }
 

@@ -28,7 +28,7 @@ async function getPaymentDetails(paymentId: string) {
     where pr.payment_request_id = $1
       and pp.provider_type = 'banktransfer'
     `,
-    [paymentId]
+    [paymentId],
   );
 
   if (!rows.length) {

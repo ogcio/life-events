@@ -1,4 +1,4 @@
-@include govie-exports('govie/core/links') {
+@include govie-exports("govie/core/links") {
   %govie-link {
     @include govie-link-common;
     @include govie-link-style-default;
