@@ -42,6 +42,12 @@ export const routeDefinitions = {
       path() {
         return `${routeDefinitions.paymentRequest.slug}/${routeDefinitions.paymentRequest.error.slug}`;
       },
-    }
-  }
+    },
+  },
+  featureFlags: {
+    slug: "featureFlags",
+    path() {
+      return `/${routeDefinitions.featureFlags.slug}`;
+    },
+  },
 };
