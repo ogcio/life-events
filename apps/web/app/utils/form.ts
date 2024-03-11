@@ -24,6 +24,9 @@ export const fieldTranslationKeys = {
   sex: "sex",
   address: "address",
   medical: "medical",
+  town: "town",
+  eirecode: "eirecode",
+  county: "county",
 };
 
 export const validation = {

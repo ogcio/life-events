@@ -63,7 +63,10 @@
     "selectHint": "Choose yor address from the drop-down list",
     "continueWithAddress": "Continue with this address",
     "notListedTextLink": "Address not listed - Enter manually",
-    "manualAddressHeading": "Write your full address"
+    "firstLineOfAddress": "Address",
+    "town": "Town",
+    "county": "County",
+    "eirecode": "Eirecode"
   },
   "ProofOfAddressForm": {
     "infoTitle": "You'll now need to upload proof of address",
@@ -198,7 +201,10 @@
       "mobile": "mobile phone number",
       "sex": "sex",
       "address": "address",
-      "medical": "medical document"
+      "medical": "medical document",
+      "town": "town",
+      "eirecode": "eirecode",
+      "county": "county"
     }
   },
   "EmailTemplates": {

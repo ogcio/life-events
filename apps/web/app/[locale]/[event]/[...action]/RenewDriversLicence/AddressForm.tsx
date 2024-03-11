@@ -160,19 +160,50 @@ async function ManualAddressForm<TData>(props: FormProps<TData>) {
     routes.driving.renewLicense.newAddress.slug,
     props.flow
   );
+
   async function submitAction(formData: FormData) {
     "use server";
-    const address = formData.get("currentAddress");
+    const errors: form.Error[] = [];
+    const firstAddress = formData.get("addressFirst");
+    const town = formData.get("town");
+    const county = formData.get("county");
+    const eirecode = formData.get("eirecode");
 
-    if (!address?.toString().length) {
+    if (!firstAddress?.toString().length) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.address,
+      });
+    }
+
+    if (!town?.toString()) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.town,
+      });
+    }
+
+    if (!county?.toString()) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.county,
+      });
+    }
+
+    if (!eirecode?.toString()) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.eirecode,
+      });
+    }
+
+    if (errors.length) {
       await form.insertErrors(
-        [
-          {
-            messageKey: form.errorTranslationKeys.empty,
-            errorValue: "",
-            field: form.fieldTranslationKeys.address,
-          },
-        ],
+        errors,
         props.userId,
         routes.driving.renewLicense.newAddress.slug,
         props.flow
@@ -180,6 +211,7 @@ async function ManualAddressForm<TData>(props: FormProps<TData>) {
       return revalidatePath("/");
     }
 
+    const fullAddressString = `${firstAddress} ${town} ${county} ${eirecode}`;
     await postgres.pgpool.query(
       `
         INSERT INTO user_flow_data (flow, user_id, flow_data) 
@@ -193,45 +225,127 @@ async function ManualAddressForm<TData>(props: FormProps<TData>) {
         props.userId,
         JSON.stringify({
           ...props.data,
-          currentAddress: address,
+          currentAddress: fullAddressString,
           timeAtAddress: "5 months",
         }),
-        address,
+        fullAddressString,
       ]
     );
 
     redirect("/driving/renew-licence/proof-of-address");
   }
 
-  const addressError = errors.rows.at(0);
+  const addressError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.address
+  );
+  const townError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.town
+  );
+  const countyError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.county
+  );
+  const eireError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.eirecode
+  );
 
   return (
     <form action={submitAction}>
-      <div
-        className={`govie-form-group ${
-          addressError ? "govie-form-group--error" : ""
-        }`.trim()}
-      >
-        <div className="govie-hint" id="input-field-hint">
-          {t("manualAddressHeading")}
+      <fieldset className="govie-fieldset">
+        <div
+          className={`govie-form-group ${
+            addressError ? "govie-form-group--error" : ""
+          }`.trim()}
+        >
+          {addressError && (
+            <p id="input-field-error" className="govie-error-message">
+              <span className="govie-visually-hidden">Error:</span>
+              {errorT(addressError.messageKey, {
+                field: errorT("fields.address"),
+                indArticleCheck: "an",
+              })}
+            </p>
+          )}
+          <label htmlFor="addressFirst" className="govie-label--s">
+            {t("firstLineOfAddress")}
+          </label>
+          <input
+            type="text"
+            id="addressFirst"
+            name="addressFirst"
+            className="govie-input"
+          />
         </div>
-        {addressError && (
-          <p id="input-field-error" className="govie-error-message">
-            <span className="govie-visually-hidden">Error:</span>
-            {errorT(addressError.messageKey, {
-              field: errorT("fields.address"),
-              indArticleCheck: "an",
-            })}
-          </p>
-        )}
-        <input
-          type="text"
-          id="currentAddress"
-          name="currentAddress"
-          className="govie-input"
-          aria-describedby="input-field-hint"
-        />
-      </div>
+
+        <div
+          className={`govie-form-group ${
+            townError ? "govie-form-group--error" : ""
+          }`.trim()}
+        >
+          {townError && (
+            <p id="input-field-error" className="govie-error-message">
+              <span className="govie-visually-hidden">Error:</span>
+              {errorT(townError.messageKey, {
+                field: errorT("fields.town"),
+                indArticleCheck: "",
+              })}
+            </p>
+          )}
+          <label htmlFor="town" className="govie-label--s">
+            {t("town")}
+          </label>
+          <input type="text" id="town" name="town" className="govie-input" />
+        </div>
+
+        <div
+          className={`govie-form-group ${
+            countyError ? "govie-form-group--error" : ""
+          }`.trim()}
+        >
+          {countyError && (
+            <p id="input-field-error" className="govie-error-message">
+              <span className="govie-visually-hidden">Error:</span>
+              {errorT(countyError.messageKey, {
+                field: errorT("fields.county"),
+                indArticleCheck: "",
+              })}
+            </p>
+          )}
+          <label htmlFor="county" className="govie-label--s">
+            {t("county")}
+          </label>
+          <input
+            type="text"
+            id="county"
+            name="county"
+            className="govie-input"
+          />
+        </div>
+
+        <div
+          className={`govie-form-group ${
+            eireError ? "govie-form-group--error" : ""
+          }`.trim()}
+        >
+          {eireError && (
+            <p id="input-field-error" className="govie-error-message">
+              <span className="govie-visually-hidden">Error:</span>
+              {errorT(eireError.messageKey, {
+                field: errorT("fields.eirecode"),
+                indArticleCheck: "an",
+              })}
+            </p>
+          )}
+          <label htmlFor="eirecode" className="govie-label--s">
+            {t("eirecode")}
+          </label>
+          <input
+            type="text"
+            id="eirecode"
+            name="eirecode"
+            className="govie-input"
+          />
+        </div>
+      </fieldset>
       <button className="govie-button">{t("continueWithAddress")}</button>
     </form>
   );
