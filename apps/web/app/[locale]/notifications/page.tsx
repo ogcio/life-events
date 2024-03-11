@@ -5,8 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import dayjs from "dayjs";
 import ds from "design-system";
-import { hexToRgba } from "../../utils";
-import { NextPageProps } from "../[event]/[...action]/types";
+import { web } from "../../utils";
 
 async function markAsRead(formData: FormData) {
   "use server";
@@ -47,7 +46,7 @@ async function seedNotifications(userId: string) {
   revalidatePath("/");
 }
 
-export default async (props: NextPageProps) => {
+export default async (props: web.NextPageProps) => {
   const t = await getTranslations("Notifications");
   const { userId } = await PgSessions.get();
   const notificationService = buildNotificationService(userId);
@@ -113,7 +112,7 @@ export default async (props: NextPageProps) => {
               key={notification.id}
               style={{
                 backgroundColor: !notification.read
-                  ? hexToRgba(ds.colours.ogcio.gold, 10)
+                  ? ds.hexToRgba(ds.colours.ogcio.gold, 10)
                   : undefined,
               }}
             >

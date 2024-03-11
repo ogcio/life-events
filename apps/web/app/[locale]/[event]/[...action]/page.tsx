@@ -1,11 +1,9 @@
-import { routeDefinitions } from "../../../routeDefinitions";
-
+import { routes, web } from "../../../utils";
 import RenewDriversLicence from "./RenewDriversLicence/RenewDriversLicence";
-import { NextPageProps } from "./types";
 
-export default function ActionPage(props: NextPageProps) {
+export default function ActionPage(props: web.NextPageProps) {
   switch (props.params.action.at(0)) {
-    case routeDefinitions.driving.renewLicense.slug:
+    case routes.driving.renewLicense.slug:
       return (
         <RenewDriversLicence
           params={props.params}

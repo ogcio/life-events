@@ -1,5 +1,5 @@
+import { routes } from "../../utils";
 import LifeEventsMenu from "./LifeEventsMenu";
-import { routeDefinitions } from "../../routeDefinitions";
 import { getFeatureFlag } from "feature-flags/utils";
 
 /**
@@ -10,6 +10,7 @@ import { getFeatureFlag } from "feature-flags/utils";
  * about the action and thus unable to determine wether to show the menu or not.
  */
 
+// Note: it is very likely this component is getting removed. /Ludwig 8th march 2024
 export default async function WithEventMenu({
   children,
   selectedEvent,
@@ -39,7 +40,7 @@ export default async function WithEventMenu({
                   {
                     key: "events",
                     icon: "events",
-                    url: "/" + routeDefinitions.events.slug,
+                    url: "/" + routes.events.slug,
                     label: "Events",
                   },
                 ]
@@ -47,7 +48,7 @@ export default async function WithEventMenu({
             {
               key: "about-me",
               icon: "about",
-              url: "/" + routeDefinitions.aboutMe.slug,
+              url: "/" + routes.aboutMe.slug,
               label: "About me",
             },
 
@@ -56,7 +57,7 @@ export default async function WithEventMenu({
             {
               key: "driving",
               icon: "driving",
-              url: "/" + routeDefinitions.driving.slug,
+              url: "/" + routes.driving.slug,
               label: "Driving",
             },
             {

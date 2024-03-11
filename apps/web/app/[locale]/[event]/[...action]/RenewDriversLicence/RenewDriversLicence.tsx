@@ -1,15 +1,9 @@
 import dayjs from "dayjs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { appConstants } from "../../../../constants";
 import { PgSessions } from "auth/sessions";
-import { urlConstants, getCurrentFlowStep } from "../../../../utils";
+import { routes, workflow, postgres, web } from "../../../../utils";
 import ActionBreadcrumb from "../ActionBreadcrumb";
-import {
-  emptyRenewDriversLicenceFlow,
-  NextPageProps,
-  RenewDriversLicenceFlow,
-} from "../types";
 import AddressForm from "./AddressForm";
 import ApplicationSuccess from "./ApplicationSuccess";
 import DetailsSummary from "./DetailsSummary";
@@ -17,12 +11,11 @@ import MedicalForm from "./MedicalForm";
 import PaymentPlaceholder from "./PaymentPlaceholder";
 import ProofOfAddress from "./ProofOfAddress";
 import SimpleDetailsForm from "./SimpleDetailsForm";
-import { pgpool } from "../../../../dbConnection";
 import PaymentSuccess from "./PaymentSuccess";
 import PaymentError from "./PaymentError";
 
 export const renewDriverLicenceRules: Parameters<
-  typeof getCurrentFlowStep<RenewDriversLicenceFlow>
+  typeof workflow.getCurrentStep<workflow.RenewDriversLicence>
 >[0] = [
   (params) => {
     if (
@@ -40,10 +33,12 @@ export const renewDriverLicenceRules: Parameters<
     ) {
       return null;
     }
-    return urlConstants.slug.confirmApplication;
+    return routes.driving.renewLicense.confirmApplication.slug;
   },
   ({ confirmedApplication }) =>
-    !confirmedApplication ? urlConstants.slug.confirmApplication : null,
+    !confirmedApplication
+      ? routes.driving.renewLicense.confirmApplication.slug
+      : null,
   ({ dayOfBirth, monthOfBirth, yearOfBirth, medicalCertificate }) => {
     const birthDay = dayjs(
       new Date(
@@ -54,9 +49,9 @@ export const renewDriverLicenceRules: Parameters<
     );
     const yearDiff = dayjs().diff(birthDay, "years", true);
 
-    return yearDiff >= appConstants.driverLicenceMedicalFormAgeThreshold &&
+    return yearDiff >= web.drivers.licenceMedicalFormAgeThreshold &&
       !medicalCertificate
-      ? urlConstants.slug.medicalCertificate
+      ? routes.driving.renewLicense.medicalCertificate.slug
       : null;
   },
   ({ dayOfBirth, monthOfBirth, yearOfBirth }) => {
@@ -69,13 +64,20 @@ export const renewDriverLicenceRules: Parameters<
     );
     const yearDiff = dayjs().diff(birthDay, "years", true);
 
-    return yearDiff >= appConstants.driverLicencePaymentAgeThreshold
-      ? urlConstants.slug.applicationSuccess
+    return yearDiff >= web.drivers.licencePaymentAgeThreshold
+      ? routes.driving.renewLicense.applicationSuccess.slug
       : null;
   },
-  ({ paymentId }) => (!paymentId ? urlConstants.slug.paymentSelection : null),
-  ({ paymentId, status }) => (paymentId && status === 'executed' ? urlConstants.slug.paymentSuccess : null),
-  ({ paymentId, status }) => (paymentId && status !== 'executed' ? urlConstants.slug.paymentError : null),
+  ({ paymentId }) =>
+    !paymentId ? routes.driving.renewLicense.paymentSelection.slug : null,
+  ({ paymentId, status }) =>
+    paymentId && status === "executed"
+      ? routes.driving.renewLicense.paymentSuccess.slug
+      : null,
+  ({ paymentId, status }) =>
+    paymentId && status !== "executed"
+      ? routes.driving.renewLicense.paymentError.slug
+      : null,
   () => "success",
 ];
 
@@ -102,11 +104,14 @@ function FormLayout(
   );
 }
 
-export default async (props: NextPageProps) => {
+export default async (props: web.NextPageProps) => {
   // Session details
   const { userId, email, firstName, lastName } = await PgSessions.get();
 
-  const flowQuery = pgpool.query<{ data: RenewDriversLicenceFlow }, [string]>(
+  const flowQuery = postgres.pgpool.query<
+    { data: workflow.RenewDriversLicence },
+    [string]
+  >(
     `
     SELECT
         flow_data AS "data"
@@ -123,7 +128,7 @@ export default async (props: NextPageProps) => {
     infoMedQuery,
   ]);
 
-  const data: RenewDriversLicenceFlow = emptyRenewDriversLicenceFlow();
+  const data = workflow.emptyRenewDriversLicence();
 
   // Set data from session?
   data.userName = [firstName, lastName].join(" ");
@@ -139,7 +144,7 @@ export default async (props: NextPageProps) => {
     Object.assign(data, flowData);
   }
 
-  const nextSlug = getCurrentFlowStep(renewDriverLicenceRules, data);
+  const nextSlug = workflow.getCurrentStep(renewDriverLicenceRules, data);
 
   // Act
   const stepSlug = props.params.action?.at(1);
@@ -147,7 +152,7 @@ export default async (props: NextPageProps) => {
   const baseActionHref = `/${props.params.locale}/driving/${actionSlug}/${nextSlug}`;
 
   switch (stepSlug) {
-    case urlConstants.slug.applicationSuccess:
+    case routes.driving.renewLicense.applicationSuccess.slug:
       return stepSlug === nextSlug ? (
         <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
           <ApplicationSuccess flow={renewDriversLicenceFlowKey} />
@@ -155,7 +160,7 @@ export default async (props: NextPageProps) => {
       ) : (
         redirect(nextSlug)
       );
-    case urlConstants.slug.medicalCertificate:
+    case routes.driving.renewLicense.medicalCertificate.slug:
       return stepSlug === nextSlug ? (
         <FormLayout
           action={{
@@ -175,7 +180,7 @@ export default async (props: NextPageProps) => {
       ) : (
         redirect(nextSlug)
       );
-    case urlConstants.slug.confirmApplication:
+    case routes.driving.renewLicense.confirmApplication.slug:
       return stepSlug === nextSlug ? (
         <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
           <DetailsSummary
@@ -196,7 +201,7 @@ export default async (props: NextPageProps) => {
       ) : (
         redirect(nextSlug)
       );
-    case urlConstants.slug.newAddress:
+    case routes.driving.renewLicense.newAddress.slug:
       return (
         <FormLayout
           action={{
@@ -214,7 +219,7 @@ export default async (props: NextPageProps) => {
           />
         </FormLayout>
       );
-    case urlConstants.slug.changeDetails:
+    case routes.driving.renewLicense.changeDetails.slug:
       return (
         <FormLayout
           action={{
@@ -238,7 +243,7 @@ export default async (props: NextPageProps) => {
           />
         </FormLayout>
       );
-    case urlConstants.slug.proofOfAddress:
+    case routes.driving.renewLicense.proofOfAddress.slug:
       return (
         <FormLayout
           action={{
@@ -255,8 +260,7 @@ export default async (props: NextPageProps) => {
           />
         </FormLayout>
       );
-
-    case urlConstants.slug.paymentSelection:
+    case routes.driving.renewLicense.paymentSelection.slug:
       return nextSlug === stepSlug ? (
         <FormLayout
           action={{ slug: actionSlug }}
@@ -272,13 +276,13 @@ export default async (props: NextPageProps) => {
         redirect(nextSlug || "")
       );
 
-    case urlConstants.slug.paymentSuccess:
+    case routes.driving.renewLicense.paymentSuccess.slug:
       return nextSlug === stepSlug ? (
         <FormLayout action={{ slug: stepSlug }} step={stepSlug}>
           <PaymentSuccess
             paymentId={data.paymentId!}
             dateOfPayment={data.dateOfPayment}
-            pay={data.totalFeePaid}
+            pay={data.totalPayment}
             flow={renewDriversLicenceFlowKey}
           />
         </FormLayout>
@@ -286,7 +290,7 @@ export default async (props: NextPageProps) => {
         redirect(nextSlug || "")
       );
 
-    case urlConstants.slug.paymentError:
+    case routes.driving.renewLicense.paymentError.slug:
       return nextSlug === stepSlug ? (
         <FormLayout action={{ slug: stepSlug }} step={stepSlug}>
           <PaymentError />
@@ -296,7 +300,7 @@ export default async (props: NextPageProps) => {
       );
 
     // This should never be hit, but if it does, it means it's a high chance of infinite redirects happened due to mistake.
-    case urlConstants.slug.renewLicence:
+    case routes.driving.renewLicense.slug:
       return (
         <>
           Handle missed case of infinite redirection. Error page with "go home"
@@ -305,5 +309,5 @@ export default async (props: NextPageProps) => {
       );
   }
 
-  return redirect(`${urlConstants.slug.renewLicence}/${nextSlug}`);
+  return redirect(`${routes.driving.renewLicense.slug}/${nextSlug}`);
 };

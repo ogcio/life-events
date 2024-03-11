@@ -1,13 +1,13 @@
 import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
-import { pgpool } from "../../../../dbConnection";
-import { RenewDriversLicenceFlow } from "../types";
+
 import { ListRow } from "./SummaryListRow";
+import { workflow, postgres } from "../../../../utils";
 
 export default (
   props: Pick<
-    RenewDriversLicenceFlow,
+    workflow.RenewDriversLicence,
     | "currentAddress"
     | "dayOfBirth"
     | "userName"
@@ -28,7 +28,7 @@ export default (
   async function submitAction() {
     "use server";
 
-    await pgpool.query(
+    await postgres.pgpool.query(
       `
         UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT)
         WHERE user_id = $1 AND flow = $2

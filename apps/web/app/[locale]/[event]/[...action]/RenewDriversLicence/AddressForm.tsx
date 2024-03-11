@@ -2,13 +2,7 @@ import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import {
-  formConstants,
-  getFormErrors,
-  insertFormErrors,
-  urlConstants,
-} from "../../../../utils";
-import { pgpool } from "../../../../dbConnection";
+import { routes, postgres, form } from "../../../../utils";
 import Link from "next/link";
 
 type Props<TData> = {
@@ -23,13 +17,12 @@ type FormProps<TData> = Omit<Props<TData>, "searchParams"> & {
 };
 
 const searchParamKeys = { address: "adr", formType: "t" };
-
 async function SearchForm<TData>(props: FormProps<TData>) {
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("formErrors");
-  const errors = await getFormErrors(
+  const errors = await form.getErrorsQuery(
     props.userId,
-    urlConstants.slug.newAddress,
+    routes.driving.renewLicense.newAddress.slug,
     props.flow
   );
 
@@ -39,16 +32,16 @@ async function SearchForm<TData>(props: FormProps<TData>) {
     const searchQuery = formData.get("currentAddress");
 
     if (!searchQuery?.toString().length) {
-      await insertFormErrors(
+      await form.insertErrors(
         [
           {
-            messageKey: formConstants.errorTranslationKeys.empty,
+            messageKey: form.errorTranslationKeys.empty,
             errorValue: "",
-            field: formConstants.fieldTranslationKeys.address,
+            field: form.fieldTranslationKeys.address,
           },
         ],
         props.userId,
-        urlConstants.slug.newAddress,
+        routes.driving.renewLicense.newAddress.slug,
         props.flow
       );
       return revalidatePath("/");
@@ -105,7 +98,7 @@ async function SelectForm<TData>(props: FormProps<TData>) {
     }
 
     // Store this in our currently added address (might wanna do this at the "verified" step)
-    await pgpool.query(
+    await postgres.pgpool.query(
       `
         INSERT INTO user_flow_data (flow, user_id, flow_data) 
         VALUES($1, $2, $3)
@@ -162,9 +155,9 @@ async function SelectForm<TData>(props: FormProps<TData>) {
 async function ManualAddressForm<TData>(props: FormProps<TData>) {
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("formErrors");
-  const errors = await getFormErrors(
+  const errors = await form.getErrorsQuery(
     props.userId,
-    urlConstants.slug.newAddress,
+    routes.driving.renewLicense.newAddress.slug,
     props.flow
   );
   async function submitAction(formData: FormData) {
@@ -172,22 +165,22 @@ async function ManualAddressForm<TData>(props: FormProps<TData>) {
     const address = formData.get("currentAddress");
 
     if (!address?.toString().length) {
-      await insertFormErrors(
+      await form.insertErrors(
         [
           {
-            messageKey: formConstants.errorTranslationKeys.empty,
+            messageKey: form.errorTranslationKeys.empty,
             errorValue: "",
-            field: formConstants.fieldTranslationKeys.address,
+            field: form.fieldTranslationKeys.address,
           },
         ],
         props.userId,
-        urlConstants.slug.newAddress,
+        routes.driving.renewLicense.newAddress.slug,
         props.flow
       );
       return revalidatePath("/");
     }
 
-    await pgpool.query(
+    await postgres.pgpool.query(
       `
         INSERT INTO user_flow_data (flow, user_id, flow_data) 
         VALUES($1, $2, $3)

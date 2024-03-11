@@ -1,20 +1,16 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import {
-  NextPageProps,
-  RenewDriversLicenceFlow,
-} from "../[event]/[...action]/types";
 import RejectReasonForm from "./RejectReasonForm";
 import RenewLicenceUserDetails from "./RenewLicenceUserDetails";
-import { pgpool } from "../../dbConnection";
+import { postgres, web, workflow } from "../../utils";
 
-export default async (props: NextPageProps) => {
+export default async (props: web.NextPageProps) => {
   const t = await getTranslations("Admin.EventsTable");
-  const userFlows = await pgpool.query<{
+  const userFlows = await postgres.pgpool.query<{
     userId: string;
     userName: string;
     flow: string;
-    flowData: RenewDriversLicenceFlow;
+    flowData: workflow.RenewDriversLicence;
     proofOfAddressFileId?: string;
   }>(`
   SELECT 
@@ -74,7 +70,7 @@ export default async (props: NextPageProps) => {
     );
   }
 
-  const status = (flowData: RenewDriversLicenceFlow) => {
+  const status = (flowData: workflow.RenewDriversLicence) => {
     if (flowData.successfulAt) {
       return "Approved";
     }

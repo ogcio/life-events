@@ -1,20 +1,14 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import dayjs from "dayjs";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../dbConnection";
-import { awsFileBucket, s3ClientConfig } from "../../utils";
-import {
-  NextPageProps,
-  RenewDriversLicenceFlow,
-} from "../[event]/[...action]/types";
 import { ListRow } from "../[event]/[...action]/RenewDriversLicence/SummaryListRow";
+import { aws, postgres, web, workflow } from "../../utils";
 
-type Props = NextPageProps & {
-  flowData: RenewDriversLicenceFlow;
+type Props = web.NextPageProps & {
+  flowData: workflow.RenewDriversLicence;
   hideFormButtons: boolean;
   flow: string;
   userId: string;
@@ -33,7 +27,7 @@ export default async ({
     const userId = formData.get("userId");
     const flow = formData.get("flow");
 
-    await pgpool.query(
+    await postgres.pgpool.query(
       `
             UPDATE user_flow_data set flow_data = flow_data || jsonb_build_object('successfulAt', now()::DATE::TEXT)
             WHERE user_id=$1 AND flow = $2
@@ -49,12 +43,12 @@ export default async ({
   // New link is generated on each render, but expires after 5 minutes. This might not be desirable but there has been no specifications
   if (flowData.proofOfAddressFileId) {
     const s3Client = new S3Client({
-      ...s3ClientConfig,
-      endpoint: "http://127.0.0.1:4566",
+      ...aws.s3ClientConfig,
+      endpoint: process.env.S3_CLIENT_ENDPOINT,
     });
 
     const command = new GetObjectCommand({
-      Bucket: awsFileBucket,
+      Bucket: aws.fileBucketName,
       Key: `${userId}/${flowData.proofOfAddressFileId}`,
     });
     proofOfAddressDownloadUrl = await getSignedUrl(s3Client, command, {
@@ -112,8 +106,8 @@ export default async ({
             <ListRow
               item={{
                 key: t("totalPaid"),
-                value: flowData.totalFeePaid
-                  ? `€${flowData.totalFeePaid}`
+                value: flowData.totalPayment
+                  ? `€${flowData.totalPayment}`
                   : "-",
               }}
             />

@@ -1,12 +1,11 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-import AboutMe from "./AboutMe";
-import Driving from "./Driving";
 import MyLifeEvents from "./MyLifeEvents";
-import { routeDefinitions } from "../../routeDefinitions";
+
 import { PgSessions } from "auth/sessions";
 
 import WithEventMenu from "./WithEventMenu";
+import { routes } from "../../utils";
 
 type Props = {
   params: {
@@ -17,25 +16,17 @@ type Props = {
 export default async (props: Props) => {
   let children: JSX.Element | null = null;
 
-  console.log("Hej vi vill titta om vi inte ska gora en liten redirect");
-
   const { firstName, lastName } = await PgSessions.get();
 
   const userName = [firstName, lastName].join(" ");
 
   switch (props.params.event) {
-    case routeDefinitions.events.slug:
+    case routes.events.slug:
       children = <MyLifeEvents />;
-      break;
-    case routeDefinitions.aboutMe.slug:
-      children = <AboutMe />;
-      break;
-    case routeDefinitions.driving.slug:
-      children = <Driving />;
       break;
 
     default:
-      children = <div>TODO: Not found component</div>;
+      children = <h1>Not implemented</h1>;
   }
 
   return (

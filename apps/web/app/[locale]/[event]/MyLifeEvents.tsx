@@ -6,9 +6,7 @@ import {
   renewDriverLicenceRules,
   renewDriversLicenceFlowKey,
 } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
-import { RenewDriversLicenceFlow } from "./[...action]/types";
-import { pgpool } from "../../dbConnection";
-import { getCurrentFlowStep, urlConstants } from "../../utils";
+import { postgres, routes, workflow } from "../../utils";
 
 async function getEvents() {
   "use server";
@@ -25,8 +23,8 @@ async function getFlows() {
   const { userId } = await PgSessions.get();
 
   // union the other flow types when we have them and add some type guard to figure out the pre/mid/post states
-  const flowsQueryResult = await pgpool.query<
-    { flow: string; data: RenewDriversLicenceFlow },
+  const flowsQueryResult = await postgres.pgpool.query<
+    { flow: string; data: workflow.RenewDriversLicence },
     string[]
   >(
     `
@@ -48,7 +46,7 @@ async function getFlows() {
     let descriptionKey = row.flow;
     let titleKey = row.flow;
 
-    const step = getCurrentFlowStep(renewDriverLicenceRules, row.data);
+    const step = workflow.getCurrentStep(renewDriverLicenceRules, row.data);
 
     let successful = false;
     if (row.data.successfulAt) {
@@ -60,8 +58,8 @@ async function getFlows() {
       descriptionKey += ".description.rejected";
     } else if (
       [
-        urlConstants.slug.applicationSuccess,
-        urlConstants.slug.paymentSuccess,
+        routes.driving.renewLicense.applicationSuccess.slug,
+        routes.driving.renewLicense.paymentSuccess.slug,
       ].includes(step)
     ) {
       successful = true;
@@ -78,7 +76,7 @@ async function getFlows() {
       titleKey,
       descriptionKey: descriptionKey,
       rejectedReaason: row.data.rejectReason,
-      slug: "driving/" + urlConstants.slug.renewLicence, // get from some key to slug map or object
+      slug: routes.driving.renewLicense.path(), // get from some key to slug map or object
     };
   });
 }
@@ -97,7 +95,7 @@ export default async () => {
         flowTitle,
         flowKey: event.flowKey,
         descriptionKey,
-        slug: "driving/" + urlConstants.slug.renewLicence,
+        slug: routes.driving.renewLicense.path(),
       };
     });
 

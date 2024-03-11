@@ -1,7 +1,5 @@
 import Link from "next/link";
-
 import ds from "design-system";
-import { hexToRgba } from "../../utils";
 
 const Icon = ds.Icon;
 
@@ -18,8 +16,7 @@ type Props = {
 };
 
 export default (props: Props) => {
-  // Should be from a utils function
-  const tintGold = hexToRgba(ds.colours.ogcio.gold, 15);
+  const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 
   return (
     <ol className="govie-list govie-list--spaced" style={{ width: "200px" }}>

@@ -1,8 +1,6 @@
-import { cookies } from "next/headers";
-import { redirect, RedirectType } from "next/navigation";
-import { routeDefinitions } from "../../routeDefinitions";
 import { PgSessions } from "auth/sessions";
 import LifeEventsMenu from "../[event]/LifeEventsMenu";
+import { routes } from "../../utils";
 
 export default async () => {
   const { firstName, lastName } = await PgSessions.get();
@@ -16,13 +14,13 @@ export default async () => {
         {
           key: "events",
           icon: "events",
-          url: "/" + routeDefinitions.events.slug,
+          url: "/" + routes.events.slug,
           label: "Events",
         },
         {
           key: "driving",
           icon: "driving",
-          url: "/" + routeDefinitions.driving.slug,
+          url: "/" + routes.driving.slug,
           label: "Driving",
         },
       ]}

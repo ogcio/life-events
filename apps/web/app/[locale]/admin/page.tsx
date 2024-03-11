@@ -1,9 +1,9 @@
 import { RedirectType, redirect } from "next/navigation";
 import { PgSessions } from "auth/sessions";
-import { NextPageProps } from "../[event]/[...action]/types";
 import EventTable from "./EventTable";
+import { web } from "../../utils";
 
-export default async (props: NextPageProps) => {
+export default async (props: web.NextPageProps) => {
   const { publicServant } = await PgSessions.get();
 
   if (!publicServant) {

@@ -3,3 +3,5 @@ dist
 *.pem
 .env
 **/.localstack/*
+.yalc
+yalc.*

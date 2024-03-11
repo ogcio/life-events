@@ -1,16 +1,6 @@
 import { redirect } from "next/navigation";
 import ds from "design-system";
-import {
-  awsFileBucket,
-  formConstants,
-  FormError,
-  getFormErrors,
-  hexToRgba,
-  insertFormErrors,
-  s3ClientConfig,
-  urlConstants,
-} from "../../../../utils";
-import { pgpool } from "../../../../dbConnection";
+import { form, aws, routes, postgres } from "../../../../utils";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import {
@@ -43,19 +33,17 @@ export default async (props: {
 
   async function finalSubmitAction(formData: FormData) {
     "use server";
-    const identitySelection = formData
-      .get("identity-selection")
-      ?.toString();
+    const identitySelection = formData.get("identity-selection")?.toString();
 
     const poaFile = formData.get("poa-file") as File;
 
-    const formErrors: FormError[] = [];
+    const formErrors: form.Error[] = [];
 
     if (!identitySelection) {
       formErrors.push({
         errorValue: "",
         field: "identity-selection",
-        messageKey: formConstants.errorTranslationKeys.emptySelection,
+        messageKey: form.errorTranslationKeys.emptySelection,
       });
     }
 
@@ -67,11 +55,11 @@ export default async (props: {
       formErrors.push({
         errorValue: identitySelection,
         field: "identity-selection",
-        messageKey: formConstants.errorTranslationKeys.noFile,
+        messageKey: form.errorTranslationKeys.noFile,
       });
     }
 
-    const s3Client = new S3Client(s3ClientConfig);
+    const s3Client = new S3Client(aws.s3ClientConfig);
 
     const fileId = randomUUID();
     const fileExtension = poaFile.name.split(".").at(-1);
@@ -82,7 +70,7 @@ export default async (props: {
     try {
       await s3Client.send(
         new PutObjectCommand({
-          Bucket: awsFileBucket,
+          Bucket: aws.fileBucketName,
           Key: awsObjectKey,
           Body: Buffer.from(await poaFile.arrayBuffer()),
           ContentType: poaFile.type,
@@ -92,22 +80,22 @@ export default async (props: {
       formErrors.push({
         errorValue: "fileUploadFail",
         field: "identity-selection",
-        messageKey: formConstants.errorTranslationKeys.fileUploadFail,
+        messageKey: form.errorTranslationKeys.fileUploadFail,
       });
     }
 
     if (formErrors.length) {
-      await insertFormErrors(
+      await form.insertErrors(
         formErrors,
         props.userId,
-        urlConstants.slug.proofOfAddress,
+        routes.driving.renewLicense.proofOfAddress.slug,
         props.flow
       );
 
       return revalidatePath("/");
     }
 
-    const transaction = await pgpool.connect();
+    const transaction = await postgres.pgpool.connect();
     try {
       await transaction.query("BEGIN");
 
@@ -131,13 +119,7 @@ export default async (props: {
           upload_version)
           VALUES($1, $2, $3, $4, $5, (SELECT COALESCE((SELECT upload_version FROM cte) + 1, 1)))
       `,
-        [
-          props.userId,
-          fileId,
-          fileType,
-          identitySelection,
-          fileExtension,
-        ]
+        [props.userId, fileId, fileType, identitySelection, fileExtension]
       );
 
       // Update flow state
@@ -154,7 +136,7 @@ export default async (props: {
       await transaction.query("ROLLBACK");
       await s3Client.send(
         new DeleteObjectCommand({
-          Bucket: awsFileBucket,
+          Bucket: aws.fileBucketName,
           Key: awsObjectKey,
         })
       );
@@ -168,10 +150,10 @@ export default async (props: {
     }
 
     if (formErrors.length) {
-      await insertFormErrors(
+      await form.insertErrors(
         formErrors,
         props.userId,
-        urlConstants.slug.proofOfAddress,
+        routes.driving.renewLicense.proofOfAddress.slug,
         props.flow
       );
 
@@ -181,9 +163,9 @@ export default async (props: {
     redirect("/driving/renew-licence");
   }
   if (parseInt(props?.step ?? "") === 2) {
-    const errors = await getFormErrors(
+    const errors = await form.getErrorsQuery(
       props.userId,
-      urlConstants.slug.proofOfAddress,
+      routes.driving.renewLicense.proofOfAddress.slug,
       props.flow
     );
 
@@ -309,11 +291,11 @@ export default async (props: {
   return (
     <div
       className="govie-notification-banner"
-      style={{ backgroundColor: hexToRgba(ds.colours.ogcio.blue, 5) }}
+      style={{ backgroundColor: ds.hexToRgba(ds.colours.ogcio.blue, 5) }}
     >
       <div
         className="govie-notification-banner__content"
-        style={{ backgroundColor: hexToRgba(ds.colours.ogcio.blue, 5) }}
+        style={{ backgroundColor: ds.hexToRgba(ds.colours.ogcio.blue, 5) }}
       >
         <div className="govie-heading-m">{t("infoTitle")}</div>
         <p className="govie-body">

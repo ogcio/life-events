@@ -1,4 +1,3 @@
-import { hexToRgba } from "../../utils";
 import ds from "design-system";
 import "./OpenEventStatusImage.css";
 
@@ -18,7 +17,7 @@ export default (props: Props) => {
         height: "70px",
         minHeight: "70px",
         minWidth: "70px",
-        background: hexToRgba(ds.colours.ogcio.gold, 15),
+        background: ds.hexToRgba(ds.colours.ogcio.gold, 15),
         margin: "5px",
         position: "relative",
       }}

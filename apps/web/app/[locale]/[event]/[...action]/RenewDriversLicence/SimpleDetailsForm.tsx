@@ -1,23 +1,11 @@
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../../dbConnection";
-import {
-  formConstants,
-  FormError,
-  formValidation,
-  getFormErrors,
-  insertFormErrors,
-  urlConstants,
-} from "../../../../utils";
-import {
-  emptyRenewDriversLicenceFlow,
-  RenewDriversLicenceFlow,
-} from "../types";
+import { form, routes, postgres, workflow } from "../../../../utils";
 
 export default async (
   props: Pick<
-    RenewDriversLicenceFlow,
+    workflow.RenewDriversLicence,
     | "dayOfBirth"
     | "monthOfBirth"
     | "yearOfBirth"
@@ -30,16 +18,16 @@ export default async (
   const t = await getTranslations("SimpleDetailsForm");
   const errorT = await getTranslations("formErrors");
 
-  const errors = await getFormErrors(
+  const errors = await form.getErrorsQuery(
     props.userId,
-    urlConstants.slug.changeDetails,
+    routes.driving.renewLicense.changeDetails.slug,
     props.flow
   );
 
   async function submitAction(formData: FormData) {
     "use server";
 
-    const formErrors: FormError[] = [];
+    const formErrors: form.Error[] = [];
 
     // Validations
     // Date of birth
@@ -51,21 +39,21 @@ export default async (
     const yearOfBirth = parseInt(formData.get("yearOfBirth")?.toString() || "");
 
     formErrors.push(
-      ...formValidation.dateErrors(
-        { field: formConstants.fieldTranslationKeys.year, value: yearOfBirth },
+      ...form.validation.dateErrors(
+        { field: form.fieldTranslationKeys.year, value: yearOfBirth },
         {
-          field: formConstants.fieldTranslationKeys.month,
+          field: form.fieldTranslationKeys.month,
           value: monthOfBirth,
         },
-        { field: formConstants.fieldTranslationKeys.day, value: dayOfBirth }
+        { field: form.fieldTranslationKeys.day, value: dayOfBirth }
       )
     );
 
     // Name
     const userName = formData.get("userName")?.toString();
     formErrors.push(
-      ...formValidation.stringNotEmpty(
-        formConstants.fieldTranslationKeys.name,
+      ...form.validation.stringNotEmpty(
+        form.fieldTranslationKeys.name,
         userName
       )
     );
@@ -73,17 +61,14 @@ export default async (
     // Email
     const email = formData.get("email")?.toString();
     formErrors.push(
-      ...formValidation.emailErrors(
-        formConstants.fieldTranslationKeys.email,
-        email
-      )
+      ...form.validation.emailErrors(form.fieldTranslationKeys.email, email)
     );
 
     // Phone
     const phone = formData.get("mobile")?.toString();
     formErrors.push(
-      ...formValidation.stringNotEmpty(
-        formConstants.fieldTranslationKeys.mobile,
+      ...form.validation.stringNotEmpty(
+        form.fieldTranslationKeys.mobile,
         phone
       )
     );
@@ -91,17 +76,14 @@ export default async (
     // Sex
     const sex = formData.get("sex")?.toString();
     formErrors.push(
-      ...formValidation.stringNotEmpty(
-        formConstants.fieldTranslationKeys.sex,
-        sex
-      )
+      ...form.validation.stringNotEmpty(form.fieldTranslationKeys.sex, sex)
     );
 
     if (formErrors.length) {
-      await insertFormErrors(
+      await form.insertErrors(
         formErrors,
         props.userId,
-        urlConstants.slug.changeDetails,
+        routes.driving.renewLicense.changeDetails.slug,
         props.flow
       );
 
@@ -109,7 +91,7 @@ export default async (
     }
 
     const data: Pick<
-      RenewDriversLicenceFlow,
+      workflow.RenewDriversLicence,
       | "dayOfBirth"
       | "monthOfBirth"
       | "yearOfBirth"
@@ -151,8 +133,8 @@ export default async (
       iterResult = formIterator.next();
     }
 
-    const currentDataResults = await pgpool.query<{
-      currentData: RenewDriversLicenceFlow;
+    const currentDataResults = await postgres.pgpool.query<{
+      currentData: workflow.RenewDriversLicence;
     }>(
       `
         SELECT flow_data as "currentData" FROM user_flow_data
@@ -161,18 +143,19 @@ export default async (
       [props.userId, "renewDriversLicence"]
     );
 
-    let dataToUpdate: RenewDriversLicenceFlow;
+    let dataToUpdate: workflow.RenewDriversLicence;
     if (currentDataResults.rowCount) {
       const [{ currentData }] = currentDataResults.rows;
       Object.assign(currentData, data);
       dataToUpdate = currentData;
     } else {
-      const base: RenewDriversLicenceFlow = emptyRenewDriversLicenceFlow();
+      const base: workflow.RenewDriversLicence =
+        workflow.emptyRenewDriversLicence();
       Object.assign(base, data);
       dataToUpdate = base;
     }
 
-    await pgpool.query(
+    await postgres.pgpool.query(
       `
         INSERT INTO user_flow_data (user_id, flow, flow_data)
         VALUES ($1, $2, $3)
@@ -190,29 +173,29 @@ export default async (
   //   ["dayOfBirth", "monthOfBirth", "yearOfBirth"].includes(row.field)
   // );
   const nameError = errors.rows.find(
-    (row) => row.field === formConstants.fieldTranslationKeys.name
+    (row) => row.field === form.fieldTranslationKeys.name
   );
   const emailError = errors.rows.find(
-    (row) => row.field === formConstants.fieldTranslationKeys.email
+    (row) => row.field === form.fieldTranslationKeys.email
   );
   const phoneError = errors.rows.find(
-    (row) => row.field === formConstants.fieldTranslationKeys.mobile
+    (row) => row.field === form.fieldTranslationKeys.mobile
   );
   const sexError = errors.rows.find(
-    (row) => row.field === formConstants.fieldTranslationKeys.sex
+    (row) => row.field === form.fieldTranslationKeys.sex
   );
 
   const dayError = errors.rows.find(
-    (row) => row.field === formConstants.fieldTranslationKeys.day
+    (row) => row.field === form.fieldTranslationKeys.day
   );
   const monthError = errors.rows.find(
-    (row) => row.field === formConstants.fieldTranslationKeys.month
+    (row) => row.field === form.fieldTranslationKeys.month
   );
   const yearError = errors.rows.find(
-    (row) => row.field === formConstants.fieldTranslationKeys.year
+    (row) => row.field === form.fieldTranslationKeys.year
   );
 
-  const dateErrors: FormError[] = [];
+  const dateErrors: form.Error[] = [];
   yearError && dateErrors.push(yearError);
   monthError && dateErrors.push(monthError);
   dayError && dateErrors.push(dayError);
@@ -363,7 +346,7 @@ export default async (
                   field: errorT(`fields.${emailError.field}`),
                   indArticleCheck:
                     emailError.messageKey ===
-                    formConstants.errorTranslationKeys.empty
+                    form.errorTranslationKeys.empty
                       ? "an"
                       : "",
                 })}

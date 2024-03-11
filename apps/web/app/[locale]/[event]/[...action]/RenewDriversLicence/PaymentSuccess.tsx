@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import Sqids from "sqids";
 import { useTranslations } from "next-intl";
-
-import { formatCurrency } from "../../../../utils";
+import { web } from "../../../../utils";
 
 const sqids = new Sqids({
   minLength: 8,
@@ -15,7 +14,6 @@ type Props = {
   dateOfPayment: string;
   flow: string;
 };
-
 
 export default function ({ paymentId, flow, pay }: Props) {
   const t = useTranslations("PaymentSuccessful");
@@ -46,7 +44,7 @@ export default function ({ paymentId, flow, pay }: Props) {
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("totalFeePaid")}</dt>
             <dd className="govie-summary-list__value">
-              {formatCurrency(parseInt(pay))}
+              {web.formatCurrency(parseInt(pay))}
             </dd>
           </div>
           <div className="govie-summary-list__row">

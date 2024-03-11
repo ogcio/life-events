@@ -1,16 +1,7 @@
-import {
-  formConstants,
-  FormError,
-  getFormErrors,
-  hexToRgba,
-  insertFormErrors,
-  urlConstants,
-} from "../../../../utils";
+import { form, postgres, routes, web } from "../../../../utils";
 import ds from "design-system";
 import { useTranslations } from "next-intl";
-import { NextPageProps } from "../types";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../../dbConnection";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 
@@ -20,40 +11,40 @@ async function Form(props: { userId: string; flow: string }) {
   async function submitAction(formData: FormData) {
     "use server";
 
-    const formErrors: FormError[] = [];
+    const formErrors: form.Error[] = [];
     const medicalDocUpload = formData.get("medicalDocUpload") as File;
 
     if (!medicalDocUpload.size) {
       formErrors.push({
         errorValue: "",
-        field: formConstants.fieldTranslationKeys.medical,
-        messageKey: formConstants.errorTranslationKeys.noFile,
+        field: form.fieldTranslationKeys.medical,
+        messageKey: form.errorTranslationKeys.noFile,
       });
     }
 
     if (formErrors.length) {
-      await insertFormErrors(
+      await form.insertErrors(
         formErrors,
         props.userId,
-        urlConstants.slug.medicalCertificate,
+        routes.driving.renewLicense.medicalCertificate.slug,
         props.flow
       );
       return revalidatePath("/");
     }
 
-    await pgpool.query(
+    await postgres.pgpool.query(
       `
         UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('medicalCertificate','placeholder')
         WHERE user_id = $1 AND flow = $2
     `,
       [props.userId, props.flow]
     );
-    revalidatePath("/" + urlConstants.slug.medicalCertificate);
+    revalidatePath("/" + routes.driving.renewLicense.medicalCertificate.slug);
   }
 
-  const errors = await getFormErrors(
+  const errors = await form.getErrorsQuery(
     props.userId,
-    urlConstants.slug.medicalCertificate,
+    routes.driving.renewLicense.medicalCertificate.slug,
     props.flow
   );
 
@@ -101,11 +92,11 @@ function Info() {
   return (
     <div
       className="govie-notification-banner"
-      style={{ backgroundColor: hexToRgba(ds.colours.ogcio.blue, 5) }}
+      style={{ backgroundColor: ds.hexToRgba(ds.colours.ogcio.blue, 5) }}
     >
       <div
         className="govie-notification-banner__content"
-        style={{ backgroundColor: hexToRgba(ds.colours.ogcio.blue, 5) }}
+        style={{ backgroundColor: ds.hexToRgba(ds.colours.ogcio.blue, 5) }}
       >
         <div className="govie-heading-m">{t("infoTitle")}</div>
         <p className="govie-body">{t("body")}</p>
@@ -128,7 +119,9 @@ function Info() {
   );
 }
 
-export default (props: NextPageProps & { userId: string; flow: string }) => {
+export default (
+  props: web.NextPageProps & { userId: string; flow: string }
+) => {
   return props.searchParams?.step ? (
     <Form flow={props.flow} userId={props.userId} />
   ) : (

@@ -1,13 +1,13 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../dbConnection";
-import { NextPageProps } from "../[event]/[...action]/types";
+import { postgres, web } from "../../utils";
 
-type Props = NextPageProps & {
+type Props = web.NextPageProps & {
   flow: string;
   userId: string;
 };
+
 export default (props: Props) => {
   const t = useTranslations("Admin.RejectReasonForm");
   async function rejectAction(formData: FormData) {
@@ -18,7 +18,7 @@ export default (props: Props) => {
     const flow = formData.get("flow");
 
     reason &&
-      (await pgpool.query(
+      (await postgres.pgpool.query(
         `
             UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('rejectReason', $1::TEXT)
             WHERE user_id=$2 AND flow = $3

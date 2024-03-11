@@ -1,5 +1,5 @@
 import { redirect, RedirectType } from "next/navigation";
-import { routeDefinitions } from "../routeDefinitions";
+import { routes } from "../utils";
 
 type Props = {
   params: {
@@ -8,6 +8,6 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const path = `${props.params.locale}/${routeDefinitions.events.slug}`;
+  const path = `${props.params.locale}/${routes.events.slug}`;
   redirect(path, RedirectType.replace);
 };
