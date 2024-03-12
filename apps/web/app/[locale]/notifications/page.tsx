@@ -14,7 +14,7 @@ async function markAsRead(formData: FormData) {
   const userId = formData.get("userId") as string;
   const actionUrl = formData.get("actionUrl") as string;
   const notificationService = buildNotificationService(userId);
-  await notificationService.markNotioficationAsRead(notificationId);
+  await notificationService.markNotificationAsRead(notificationId);
 
   redirect(actionUrl);
 }

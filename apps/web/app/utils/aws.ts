@@ -1,6 +1,6 @@
 export const s3ClientConfig = {
   region: "eu-west-1",
-  endpoint: `http://localstack:4566`,
+  endpoint: process.env.S3_ENDPOINT,
   forcePathStyle: true,
   credentials: {
     accessKeyId: "accessKeyId",

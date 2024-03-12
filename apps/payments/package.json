@@ -1,10 +1,19 @@
 {
+  "name": "payments",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 80",
+    "dev": "nodemon",
     "build": "next build",
     "start": "next start",
     "test:e2e": "playwright test"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "../../packages/auth/**/*",
+      "../../packages/feature-flags/**/*"
+    ],
+    "ext": "ts,tsx, json",
+    "exec": "next dev -p 3001"
   },
   "dependencies": {
     "dayjs": "^1.11.10",

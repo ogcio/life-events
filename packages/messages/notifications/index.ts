@@ -30,7 +30,7 @@ export const buildNotificationService = (userId: string) => {
     return rows[0].count;
   };
 
-  const markNotioficationAsRead = (notificationId: string) =>
+  const markNotificationAsRead = (notificationId: string) =>
     pgpool.query(
       `
   UPDATE messages.notifications
@@ -61,7 +61,7 @@ export const buildNotificationService = (userId: string) => {
   return {
     getUnreadNotificationsCount,
     getNotifications,
-    markNotioficationAsRead,
+    markNotificationAsRead,
     createNotification,
   };
 };

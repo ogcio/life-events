@@ -13,8 +13,8 @@ echo '{
       "AllowedHeaders": ["*"],
       "AllowedMethods": ["GET", "POST", "PUT", "HEAD", "DELETE"],
       "AllowedOrigins": [
-        "http://mock-api",
-        "http://web",
+        "http://localhost:8000",
+        "http://localhost:3000",
         "https://app.localstack.cloud",
         "http://app.localstack.cloud"
       ],
@@ -25,4 +25,4 @@ echo '{
 
 awslocal s3api put-bucket-cors --bucket "$IMAGES_S3_BUCKET" --cors-configuration file://cors-config.json
 
-set +x 
+set +x

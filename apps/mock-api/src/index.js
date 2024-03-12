@@ -29,7 +29,7 @@ const fastify = Fastify({
   logger: true,
 });
 
-await fastify.register(fastifyEnv, { schema: envSchema });
+await fastify.register(fastifyEnv, { schema: envSchema, dotenv: true });
 
 await fastify.register(fastifyPostgres, {
   host: fastify.config.POSTGRES_HOST,
@@ -59,7 +59,7 @@ fastify.register(import("@fastify/autoload"), {
 });
 
 try {
-  await fastify.listen({ host: "0.0.0.0", port: 80 });
+  await fastify.listen({ host: "0.0.0.0", port: 8000 });
 } catch (err) {
   fastify.log.error(err);
   process.exit(1);

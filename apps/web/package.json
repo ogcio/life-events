@@ -1,10 +1,20 @@
 {
+  "name": "web",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 80",
+    "dev": "nodemon",
     "build": "next build",
     "start": "next start",
     "test:e2e": "playwright test"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "../../packages/auth/src/**/*",
+      "../../packages/feature-flags/src/**/*",
+      "../../packages/messages/src/**/*"
+    ],
+    "ext": "ts,tsx,json",
+    "exec": "next dev -p 3000"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.525.0",

@@ -1,19 +1,5 @@
 version: '3.8'
 services:
-  traefik:
-    image: 'traefik:v2.4'
-    container_name: traefik
-    command:
-      - '--api.insecure=true'
-      - '--providers.docker=true'
-      - '--providers.docker.exposedbydefault=false'
-      - '--entrypoints.web.address=:80'
-    ports:
-      - '80:80'
-      - '8080:8080'
-    volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock:ro'
-
   postgresql:
     image: postgres:15.2-alpine
     restart: always
@@ -26,62 +12,10 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/01_init.sql
       - ./packages/messages/schema.sql:/docker-entrypoint-initdb.d/02_schema.sql
 
-  mock-api:
-    build:
-      context: ./
-      dockerfile: ./apps/mock-api/Dockerfile.dev
-    image: mock-api
-    container_name: mock-api
-    volumes:
-      - ./apps/mock-api/src:/app/apps/mock-api/src
-    ports:
-      - 80
-    restart: always
-    environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_HOST: ${POSTGRES_HOST:-postgresql}
-      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.api-static.rule=Host(`${API_ENDPOINT:-web.localtest.me}`) && PathPrefix(`/static`)'
-      - 'traefik.http.routers.api-static.entrypoints=web'
-
-  web:
-    build:
-      context: ./
-      dockerfile: ./apps/web/Dockerfile.dev
-    image: web
-    container_name: web
-    volumes:
-      - ./apps/web/app:/app/apps/web/app
-      - ./apps/web/messages:/app/apps/web/messages
-    ports:
-      - 80
-    restart: always
-    env_file:
-      - ./.env
-    environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_HOST: ${POSTGRES_HOST:-postgresql}
-      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-      LOGIN_URL: ${LOGIN_URL:-http://web.localtest.me/static/login/}
-      HOST_URL: ${HOST_URL:-http://web.localtest.me/}
-      PAYMENT_HOST_URL: ${PAYMENT_HOST_URL:-http://payments.localtest.me/}
-      TL_AUTH_SERVER_URI: ${TL_AUTH_SERVER_URI:-https://auth.truelayer-sandbox.com}
-      TL_ENVIRONMENT_URI: ${TL_ENVIRONMENT_URI:-https://api.truelayer-sandbox.com}
-      API_ENDPOINT: ${API_ENDPOINT:-http://mock-api}
-      S3_CLIENT_ENDPOINT: ${S3_CLIENT_ENDPOINT:-http://web.localtest.me:4566}
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.web.rule=Host(`${WEB_ENDPOINT:-web.localtest.me}`)'
-      - 'traefik.http.routers.web.entrypoints=web'
   localstack:
     image: localstack/localstack:2.3.2
+    ports:
+      - 4566:4566
     environment:
       SERVICES: "s3,secretsmanager"
       DATA_DIR: "/tmp/localstack/data"
@@ -91,36 +25,6 @@ services:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh' # ready hook
-    ports:
-      - 4566:4566
-  payments:
-    build:
-      context: ./
-      dockerfile: ./apps/payments/Dockerfile.dev
-    image: payments
-    container_name: payments
-    volumes:
-      - ./apps/payments/app:/app/apps/payments/app
-      - ./apps/payments/messages:/app/apps/payments/messages
-    ports:
-      - 80
-    restart: always
-    env_file:
-      - ./.env
-    environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_HOST: ${POSTGRES_HOST:-postgresql}
-      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-      LOGIN_URL: ${LOGIN_URL:-http://web.localtest.me/static/login/}
-      HOST_URL: ${HOST_URL:-http://payments.localtest.me/}
-      TL_AUTH_SERVER_URI: ${TL_AUTH_SERVER_URI:-https://auth.truelayer-sandbox.com}
-      TL_ENVIRONMENT_URI: ${TL_ENVIRONMENT_URI:-https://api.truelayer-sandbox.com}
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.payments.rule=Host(`${BACK_OFFICE_ENDPOINT:-payments.localtest.me}`)'
-      - 'traefik.http.routers.payments.entrypoints=web'
 
 volumes:
   db:

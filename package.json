@@ -1,17 +1,26 @@
 {
-  "name": "starterkit",
+  "name": "ogcio",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
-    "start": "docker-compose down &&  DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans -d",
+    "build:ds": "npm run build --workspace=design-system",
+    "start:services": "concurrently --kill-others \"npm run dev --workspace=mock-api\" \"npm run dev --workspace=web\" \"npm run dev --workspace=payments\"",
+    "start:docker": "docker-compose down &&  DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans -d",
+    "start": "npm run start:docker && npm run start:services",
     "reset-docker": "docker-compose down && docker system prune -a -f && docker builder prune -f && docker image prune -f",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "Unlicense"
+  "license": "Unlicense",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.0"
+  }
 }
