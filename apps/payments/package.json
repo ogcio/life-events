@@ -5,7 +5,8 @@
     "dev": "nodemon",
     "build": "next build",
     "start": "next start",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "migrate": "db-migrate up"
   },
   "nodemonConfig": {
     "watch": [
@@ -16,8 +17,8 @@
     "exec": "next dev -p 3001"
   },
   "dependencies": {
-    "dayjs": "^1.11.10",
     "auth": "*",
+    "dayjs": "^1.11.10",
     "design-system": "*",
     "feature-flags": "*",
     "next": "latest",
@@ -36,6 +37,8 @@
     "@types/node": "20.10.4",
     "@types/pg": "^8.11.0",
     "@types/react": "18.2.45",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
     "typescript": "5.3.3"
   }
 }

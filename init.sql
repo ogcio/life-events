@@ -1,10 +1,16 @@
 -- Main
--- CREATE DATABASE my_database;
+CREATE DATABASE life_events;
+CREATE DATABASE messaging;
+CREATE DATABASE payments;
+CREATE DATABASE shared;
 
 -- Setup Extensions
 CREATE EXTENSION "uuid-ossp";
 CREATE EXTENSION "pgcrypto";
 
+\connect shared
+
+-- TODO: Setup migrations also for shared database
 CREATE TABLE IF NOT EXISTS govid_sessions(
     id UUID NOT NULL DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL,
@@ -21,31 +27,6 @@ CREATE TABLE IF NOT EXISTS users(
     PRIMARY KEY(govid_email)
 );
 
-CREATE TABLE IF NOT EXISTS user_consents (
-    user_id UUID NOT NULl,
-    agreement TEXT NOT NULL, -- Can be as fine grained as we want, or just "store data". Can also be an enum or whatever.
-    is_consenting BOOLEAN NOT NULL
-);
-
-
-CREATE TABLE IF NOT EXISTS user_flow_data(
-    user_id UUID NOT NULL,
-    flow TEXT NOT NULL,
-    flow_data JSONB NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    primary key(flow, user_id)
-);
-
-CREATE TABLE IF NOT EXISTS payment_providers(
-    user_id UUID NOT NULL,
-    provider_id UUID NOT NULL DEFAULT gen_random_uuid(),
-    provider_name TEXT NOT NULL,
-    provider_type TEXT NOT NULL,
-    status TEXT NOT NULL,
-    provider_data JSONB NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    primary key(provider_id)
-);
 
 CREATE TABLE IF NOT EXISTS feature_flags(
     application TEXT NOT NULL,
@@ -54,57 +35,4 @@ CREATE TABLE IF NOT EXISTS feature_flags(
     description TEXT,
     is_enabled BOOLEAN NOT NULL DEFAULT false,
     PRIMARY KEY(application, slug)
-);
-
-CREATE TABLE IF NOT EXISTS form_errors(
-    user_id UUID NOT NULL,
-    flow TEXT NOT NULL,
-    slug TEXT NOT NULL,
-    field TEXT NOT NULL,
-    error_value TEXT,
-    error_message TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS payment_requests(
-    payment_request_id UUID NOT NULL DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL,
-    title TEXT NOT NULL,
-    description TEXT,
-    reference TEXT NOT NULL,
-    amount NUMERIC NOT NULL,
-    redirect_url TEXT NOT NULL,
-    status TEXT NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    primary key(payment_request_id)
-);
-
-CREATE TABLE IF NOT EXISTS payment_requests_providers(
-    payment_request_id UUID NOT NULL,
-    provider_id UUID NOT NULL,
-    primary key(payment_request_id, provider_id)
-);
-
-CREATE TABLE IF NOT EXISTS payment_transactions(
-    transaction_id SERIAL NOT NULL,
-    payment_request_id UUID NOT NULL,
-    user_id UUID,
-    user_ppsn TEXT, -- Used in order to send the payment request to the user through the messaging app.
-    ext_payment_id TEXT, -- The payment Id from TrueLayer/stripe etc
-    status TEXT NOT NULL,
-    integration_reference TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    primary key(transaction_id),
-    constraint fk_payment_request_id foreign key(payment_request_id) references payment_requests(payment_request_id),
-    constraint fk_user_id foreign key(user_id) references users(id)
-);
-
-CREATE TABLE IF NOT EXISTS file_meta(
-    file_id UUID NOT NULL DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL,
-    file_type TEXT NOT NULL, -- proofOfAddress, fishingLicenceAddress, medicalDocument eg.
-    file_name_i18key TEXT NOT NULL, -- let's double down on the locale
-    file_extension TEXT NOT NULL, -- txt, pdf, csv, xlsx eg.
-    upload_version INT DEFAULT 1, -- could be some composite serial
-    primary key(file_id)
 );

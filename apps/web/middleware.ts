@@ -1,4 +1,3 @@
-import { PgSessions } from "auth/sessions";
 import createMiddleware from "next-intl/middleware";
 import type { NextRequest } from "next/server";
 const locales = ["en", "ga"];

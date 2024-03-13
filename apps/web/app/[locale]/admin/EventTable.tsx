@@ -3,33 +3,31 @@ import Link from "next/link";
 import RejectReasonForm from "./RejectReasonForm";
 import RenewLicenceUserDetails from "./RenewLicenceUserDetails";
 import { postgres, web, workflow } from "../../utils";
+import { getUserInfoById } from "auth/sessions";
 
 export default async (props: web.NextPageProps) => {
   const t = await getTranslations("Admin.EventsTable");
   const userFlows = await postgres.pgpool.query<{
     userId: string;
-    userName: string;
     flow: string;
     flowData: workflow.RenewDriversLicence;
     proofOfAddressFileId?: string;
   }>(`
   SELECT 
-    u.id as "userId", 
-    u.user_name as "userName", 
+    fd.user_id as "userId", 
     fd.flow,
     fd.flow_data as "flowData"
     FROM user_flow_data fd
-    JOIN users u on u.id = fd.user_id AND u.is_public_servant = false
   `);
 
   if (props.searchParams && Object.keys(props.searchParams).length) {
-    const item = userFlows.rows.find(
+    const baseItem = userFlows.rows.find(
       (row) =>
         row.userId === props.searchParams?.uid &&
         props.searchParams?.evt === row.flow,
     );
 
-    if (!item) {
+    if (!baseItem) {
       return (
         <>
           <h1>{t("eventNotFound")}</h1>
@@ -39,6 +37,9 @@ export default async (props: web.NextPageProps) => {
         </>
       );
     }
+
+    const user = await getUserInfoById(baseItem.userId);
+    const item = { ...baseItem, userName: user?.user_name };
 
     const searchParamsWithRejectionOpen = new URLSearchParams(
       props.searchParams,

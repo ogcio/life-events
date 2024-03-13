@@ -1,4 +1,4 @@
-import { PgSessions } from "auth/sessions";
+import { PgSessions, getUserInfoById } from "auth/sessions";
 
 import OpenBankingHost from "./OpenBankingHost";
 import { pgpool } from "../../../../dbConnection";
@@ -6,10 +6,9 @@ import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 
 async function getPaymentDetails(paymentId: string) {
-  "use server";
-  const { rows } = await pgpool.query(
+  const { rows: paymentRows } = await pgpool.query(
     `
-    select
+    SELECT
       pr.payment_request_id,
       pr.user_id,
       pr.title,
@@ -18,24 +17,30 @@ async function getPaymentDetails(paymentId: string) {
       pr.amount,
       pp.provider_id,
       pp.provider_name,
-      pp.provider_data,
-      u.govid_email,
-      u.user_name
-    from payment_requests pr
-    join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-    join payment_providers pp on ppr.provider_id = pp.provider_id
-    join users u on pr.user_id = u.id
-    where pr.payment_request_id = $1
-      and pp.provider_type = 'openbanking'
+      pp.provider_data
+    FROM payment_requests pr
+    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id
+    JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
+    WHERE pr.payment_request_id = $1
+      AND pp.provider_type = 'openbanking'
     `,
     [paymentId],
   );
 
-  if (!rows.length) {
-    return undefined;
-  }
+  if (!paymentRows.length) return undefined;
 
-  return createPaymentRequest(rows[0]);
+  const userInfo = await getUserInfoById(paymentRows[0].user_id);
+
+  if (!userInfo) return undefined;
+
+  // Merge the payment details with user details
+  const paymentDetails = {
+    ...paymentRows[0],
+    govid_email: userInfo.govid_email,
+    user_name: userInfo.user_name,
+  };
+
+  return createPaymentRequest(paymentDetails);
 }
 
 async function createTransaction(

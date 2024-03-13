@@ -16,12 +16,14 @@ const envSchema = {
     POSTGRES_USER: { type: "string" },
     POSTGRES_PASSWORD: { type: "string" },
     POSTGRES_DB: { type: "string" },
+    POSTGRES_DB_NAME_SHARED: { type: "string" },
   },
   required: [
     "POSTGRES_HOST",
     "POSTGRES_PORT",
     "POSTGRES_USER",
     "POSTGRES_PASSWORD",
+    "POSTGRES_DB_NAME_SHARED",
   ],
 };
 
@@ -36,7 +38,7 @@ await fastify.register(fastifyPostgres, {
   port: fastify.config.POSTGRES_PORT,
   user: fastify.config.POSTGRES_USER,
   password: fastify.config.POSTGRES_PASSWORD,
-  database: fastify.config.POSTGRES_DB ?? "postgres",
+  database: fastify.config.POSTGRES_DB_NAME_SHARED,
 });
 
 fastify.get("/", async function handler() {

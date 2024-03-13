@@ -4,12 +4,12 @@ import { pgpool } from "../../../../dbConnection";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
 import Link from "next/link";
+import { getUserInfoById } from "auth/sessions";
 
 async function getPaymentDetails(paymentId: string) {
-  "use server";
-  const { rows } = await pgpool.query(
+  const { rows: paymentRows } = await pgpool.query(
     `
-    select
+    SELECT
       pr.payment_request_id,
       pr.user_id,
       pr.title,
@@ -18,24 +18,27 @@ async function getPaymentDetails(paymentId: string) {
       pr.amount,
       pp.provider_id,
       pp.provider_name,
-      pp.provider_data,
-      u.govid_email,
-      u.user_name
-    from payment_requests pr
-    join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-    join payment_providers pp on ppr.provider_id = pp.provider_id
-    join users u on pr.user_id = u.id
-    where pr.payment_request_id = $1
-      and pp.provider_type = 'banktransfer'
+      pp.provider_data
+    FROM payment_requests pr
+    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id
+    JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
+    WHERE pr.payment_request_id = $1
+      AND pp.provider_type = 'banktransfer'
     `,
     [paymentId],
   );
 
-  if (!rows.length) {
-    return undefined;
-  }
+  if (!paymentRows.length) return undefined;
 
-  return rows[0];
+  const userInfo = await getUserInfoById(paymentRows[0].user_id);
+
+  if (!userInfo) return undefined;
+
+  return {
+    ...paymentRows[0],
+    govid_email: userInfo.govid_email,
+    user_name: userInfo.user_name,
+  };
 }
 
 export default async function Bank(params: {

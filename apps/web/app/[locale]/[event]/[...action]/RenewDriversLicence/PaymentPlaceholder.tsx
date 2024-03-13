@@ -2,22 +2,10 @@ import { postgres } from "../../../../utils";
 import PaymentError from "./PaymentError";
 
 async function findPaymentRequest() {
-  "use server";
-  // Helper to find payment request in dev
-  // should be removed in production
-  const res = await postgres.pgpool.query(`
-    select payment_request_id
-    from payment_requests
-    where title ilike '%driving%'
-      OR (
-        title IS NOT NULL AND NOT EXISTS (select 1 from payment_requests where title ilike '%driving%')
-        )
-    limit 1
-  `);
+  const response = await fetch("http://localhost:3001/api/findPaymentRequest");
+  const data = await response.json();
 
-  if (res.rowCount) {
-    return res.rows[0].payment_request_id;
-  }
+  return data.paymentRequestId;
 }
 
 export default async (props: { flow: string; userId: string }) => {

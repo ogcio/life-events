@@ -13,9 +13,10 @@
     "build:ds": "npm run build --workspace=design-system",
     "start:services": "concurrently --kill-others \"npm run dev --workspace=mock-api\" \"npm run dev --workspace=web\" \"npm run dev --workspace=payments\"",
     "start:docker": "docker-compose down &&  DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans -d",
-    "start": "npm run start:docker && npm run start:services",
+    "start": "npm run start:docker && concurrently \"npm run start:services\" \"sleep 5 && npm run migrate\"",
     "reset-docker": "docker-compose down && docker system prune -a -f && docker builder prune -f && docker image prune -f",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate": "npm run migrate --workspace=web && npm run migrate --workspace=payments"
   },
   "author": "",
   "license": "Unlicense",

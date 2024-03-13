@@ -1,3 +1,4 @@
+import { getUserInfoById } from "auth/sessions";
 import { pgpool } from "../../../dbConnection";
 
 type PaymentRequestDO = {
@@ -71,26 +72,32 @@ type TransactionDetails = {
   amount: number;
   updated_at: string;
 };
-
 export async function getUserTransactionDetails(userId: string) {
-  "use server";
+  const userInfo = await getUserInfoById(userId);
+  if (!userInfo) return [];
 
-  const res = await pgpool.query<TransactionDetails>(
-    `Select
-      t.status,
-      u.user_name as citizen_name,
-      pr.title,
-      pr.amount,
-      t.updated_at
-    from payment_transactions t
-    left join payment_requests pr on pr.payment_request_id = t.payment_request_id
-    left join users u on t.user_id = u.id
-    where pr.user_id = $1
-    order by t.updated_at desc`,
+  const res = await pgpool.query(
+    `
+  SELECT
+    t.status,
+    t.user_id,
+    pr.title,
+    pr.amount,
+    t.updated_at
+  FROM payment_transactions t
+  LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+  WHERE pr.user_id = $1
+  ORDER BY t.updated_at DESC
+`,
     [userId],
   );
+  const transactions = res.rows;
 
-  return res.rows;
+  for (let transaction of transactions) {
+    transaction.citizen_name = userInfo.user_name;
+  }
+
+  return transactions;
 }
 
 export async function getRequestTransactionDetails(requestId: string) {
@@ -99,13 +106,11 @@ export async function getRequestTransactionDetails(requestId: string) {
   const res = await pgpool.query<TransactionDetails>(
     `Select
       t.status,
-      u.user_name as citizen_name,
       pr.title,
       pr.amount,
       t.updated_at
     from payment_transactions t
     inner join payment_requests pr on pr.payment_request_id = t.payment_request_id
-    left join users u on t.user_id = u.id
     where pr.payment_request_id = $1
     order by t.updated_at desc`,
     [requestId],

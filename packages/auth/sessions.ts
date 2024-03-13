@@ -25,7 +25,6 @@ export interface Sessions {
     SessionTokenDecoded & {
       userId: string;
       publicServant: boolean;
-      isInitialized: boolean;
     }
   >;
   set(session: Session): Promise<string>;
@@ -37,6 +36,7 @@ export const pgpool = new Pool({
   port: Number(process.env.POSTGRES_PORT),
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB_NAME_SHARED,
 });
 
 async function getPgSession(key: string) {
@@ -45,7 +45,6 @@ async function getPgSession(key: string) {
       token: string;
       userId: string;
       publicServant: boolean;
-      isInitialized: boolean;
     },
     [string]
   >(
@@ -53,11 +52,9 @@ async function getPgSession(key: string) {
       SELECT
         s.token,
         s.user_id AS "userId",
-        u.is_public_servant as "publicServant",
-        consent."isInitialized"
+        u.is_public_servant as "publicServant"
       FROM govid_sessions s
       JOIN users u on u.id = s.user_id
-      LEFT JOIN LATERAL (SELECT EXISTS (SELECT 1 FROM user_consents uc WHERE uc.user_id = u.id) AS "isInitialized") AS consent ON TRUE
       WHERE s.id=$1`,
     [key],
   );
@@ -66,8 +63,8 @@ async function getPgSession(key: string) {
     return undefined;
   }
 
-  const [{ token, userId, publicServant, isInitialized }] = query.rows;
-  return { token, userId, publicServant, isInitialized };
+  const [{ token, userId, publicServant }] = query.rows;
+  return { token, userId, publicServant };
 }
 
 export function decodeJwt(token: string) {
@@ -96,7 +93,6 @@ export const PgSessions: Sessions = {
       ...decodeJwt(session.token),
       userId: session.userId,
       publicServant: session.publicServant,
-      isInitialized: session.isInitialized,
     };
   },
   async set(session: Session) {
@@ -116,3 +112,16 @@ export const PgSessions: Sessions = {
     await pgpool.query("DELETE FROM govid_sessions WHERE id=$1", [key]);
   },
 };
+
+export async function getUserInfoById(userId: string) {
+  const res = await pgpool.query<{
+    id: string;
+    govid_email: string;
+    govid: string;
+    user_name: string;
+    is_public_servant: boolean;
+  }>(`SELECT * FROM users WHERE id = $1`, [userId]);
+
+  if (res.rows.length === 0) return null;
+  return res.rows[0];
+}
