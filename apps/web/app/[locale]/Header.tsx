@@ -1,8 +1,15 @@
 import Link from "next/link";
 import ds from "design-system/";
 import NotificationsLink from "./notifications/NotificationsLink";
-
+import UserIcon from "./UserIcon";
+import { useTranslations } from "next-intl";
+import { headers } from "next/headers";
+import "./Header.css";
 export default () => {
+  const t = useTranslations("Header");
+  const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
+  const path = pathSlice.slice(2)?.join("/") || "";
+
   return (
     <header role="banner" data-module="govie-header" className="govie-header">
       <div
@@ -91,18 +98,47 @@ export default () => {
           }}
         >
           <div className="govie-!-font-size-27">
-            <strong>PROTOTYPE</strong>
+            <strong>{t("myLifeEvents")}</strong>
           </div>
           <div
             style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              gap: "20px",
+              marginTop: "3px",
             }}
           >
+            <Link
+              className={`govie-link govie-link--inverse govie-link--no-underline ${
+                pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
+              }`.trim()}
+              href={new URL("/en/" + path, process.env.HOST_URL).href}
+            >
+              English
+            </Link>
+            <div
+              style={{
+                height: "14px",
+                width: "1px",
+                borderLeft: `1px solid ${ds.colours.ogcio.white}`,
+              }}
+            />
+
+            <Link
+              className={`govie-link govie-link--inverse govie-link--no-underline  ${
+                pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
+              }`.trim()}
+              href={new URL("/ga/" + path, process.env.HOST_URL).href}
+            >
+              Gealic
+            </Link>
+
             <NotificationsLink />
-            <Link href="/logout" style={{ float: "right" }}>
-              <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={35} />
+            <UserIcon />
+
+            <Link href="/logout" style={{ display: "flex" }}>
+              <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
             </Link>
           </div>
         </div>

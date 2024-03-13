@@ -269,5 +269,12 @@
   "Languages": {
     "english": "English",
     "irish": "Gaelic"
+  },
+  "Header": {
+    "myLifeEvents": "My life events"
+  },
+  "FeedbackBanner": {
+    "tag": "prototype",
+    "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
   }
 }

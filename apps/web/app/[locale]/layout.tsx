@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import { PgSessions } from "auth/sessions";
 import { RedirectType, redirect } from "next/navigation";
 import { headers } from "next/headers";
+import FeedbackBanner from "./FeedbackBanner";
 
 export default async function RootLayout({
   children,
@@ -39,6 +40,7 @@ export default async function RootLayout({
           className="govie-width-container"
           style={{ maxWidth: "1440px", width: "100%" }}
         >
+          <FeedbackBanner />
           <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
             {children}
           </div>

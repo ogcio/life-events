@@ -11,10 +11,7 @@ export default async () => {
 
   return (
     <>
-      <Link
-        href="/notifications"
-        style={{ position: "relative", float: "right" }}
-      >
+      <Link href="/notifications" style={{ display: "flex" }}>
         {unreadNotificationsCount && unreadNotificationsCount > 0 && (
           <div
             style={{
@@ -36,7 +33,7 @@ export default async () => {
             {unreadNotificationsCount}
           </div>
         )}
-        <ds.Icon icon="notification" color={ds.colours.ogcio.white} size={24} />
+        <ds.Icon icon="notification" color={ds.colours.ogcio.white} size={20} />
       </Link>
     </>
   );
