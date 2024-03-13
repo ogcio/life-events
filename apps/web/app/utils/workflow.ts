@@ -65,6 +65,10 @@ export function emptyRenewDriversLicence(): RenewDriversLicence {
 
 // ===== utils =====
 
+type FlowState = {
+  key: string | null;
+  isStepValid: boolean;
+};
 /**
  * Returns a string based on a list of rules.
  *
@@ -76,15 +80,15 @@ export function emptyRenewDriversLicence(): RenewDriversLicence {
  *
  */
 export function getCurrentStep<TFlowData>(
-  rules: ((data: TFlowData) => string | null)[],
+  rules: ((data: TFlowData) => FlowState)[],
   state: TFlowData,
 ) {
-  let next: string | null = null;
+  let next: FlowState = { key: null, isStepValid: false };
   for (const fn of rules) {
-    if (next) {
+    if (next.key) {
       break;
     }
     next = fn(state);
   }
-  return next ?? "";
+  return next;
 }

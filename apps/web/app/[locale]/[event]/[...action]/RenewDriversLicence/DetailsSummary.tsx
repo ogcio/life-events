@@ -22,6 +22,7 @@ export default (
     flow: string;
     userId: string;
     onSubmit?: (formData?: FormData) => Promise<void>;
+    dataValid: boolean;
   },
 ) => {
   const t = useTranslations("DetailsSummaryForm");
@@ -132,7 +133,9 @@ export default (
           </details>
 
           <form action={props.onSubmit || submitAction}>
-            <button className="govie-button">{t("submitText")}</button>
+            <button disabled={!props.dataValid} className="govie-button">
+              {t("submitText")}
+            </button>
           </form>
         </div>
       </div>

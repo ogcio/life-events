@@ -46,7 +46,10 @@ async function getFlows() {
     let descriptionKey = row.flow;
     let titleKey = row.flow;
 
-    const step = workflow.getCurrentStep(renewDriverLicenceRules, row.data);
+    const { key: step } = workflow.getCurrentStep(
+      renewDriverLicenceRules,
+      row.data,
+    );
 
     let successful = false;
     if (row.data.successfulAt) {
@@ -60,7 +63,7 @@ async function getFlows() {
       [
         routes.driving.renewLicense.applicationSuccess.slug,
         routes.driving.renewLicense.paymentSuccess.slug,
-      ].includes(step)
+      ].includes(step || "")
     ) {
       successful = true;
       descriptionKey += ".description.mid";

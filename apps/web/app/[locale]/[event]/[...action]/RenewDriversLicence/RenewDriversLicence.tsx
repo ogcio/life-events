@@ -31,14 +31,20 @@ export const renewDriverLicenceRules: Parameters<
           params.timeAtAddress,
       )
     ) {
-      return null;
+      return { key: null, isStepValid: true };
     }
-    return routes.driving.renewLicense.confirmApplication.slug;
+    return {
+      key: routes.driving.renewLicense.confirmApplication.slug,
+      isStepValid: false,
+    };
   },
   ({ confirmedApplication }) =>
     !confirmedApplication
-      ? routes.driving.renewLicense.confirmApplication.slug
-      : null,
+      ? {
+          key: routes.driving.renewLicense.confirmApplication.slug,
+          isStepValid: true,
+        }
+      : { key: null, isStepValid: true },
   ({ dayOfBirth, monthOfBirth, yearOfBirth, medicalCertificate }) => {
     const birthDay = dayjs(
       new Date(
@@ -51,8 +57,11 @@ export const renewDriverLicenceRules: Parameters<
 
     return yearDiff >= web.drivers.licenceMedicalFormAgeThreshold &&
       !medicalCertificate
-      ? routes.driving.renewLicense.medicalCertificate.slug
-      : null;
+      ? {
+          key: routes.driving.renewLicense.medicalCertificate.slug,
+          isStepValid: true,
+        }
+      : { key: null, isStepValid: true };
   },
   ({ dayOfBirth, monthOfBirth, yearOfBirth }) => {
     const birthDay = dayjs(
@@ -65,20 +74,34 @@ export const renewDriverLicenceRules: Parameters<
     const yearDiff = dayjs().diff(birthDay, "years", true);
 
     return yearDiff >= web.drivers.licencePaymentAgeThreshold
-      ? routes.driving.renewLicense.applicationSuccess.slug
-      : null;
+      ? {
+          key: routes.driving.renewLicense.applicationSuccess.slug,
+          isStepValid: true,
+        }
+      : { key: null, isStepValid: false };
   },
   ({ paymentId }) =>
-    !paymentId ? routes.driving.renewLicense.paymentSelection.slug : null,
+    !paymentId
+      ? {
+          key: routes.driving.renewLicense.paymentSelection.slug,
+          isStepValid: true,
+        }
+      : { key: null, isStepValid: true },
   ({ paymentId, status }) =>
     paymentId && status === "executed"
-      ? routes.driving.renewLicense.paymentSuccess.slug
-      : null,
+      ? {
+          key: routes.driving.renewLicense.paymentSuccess.slug,
+          isStepValid: true,
+        }
+      : { key: null, isStepValid: true },
   ({ paymentId, status }) =>
     paymentId && status !== "executed"
-      ? routes.driving.renewLicense.paymentError.slug
-      : null,
-  () => "success",
+      ? {
+          key: routes.driving.renewLicense.paymentError.slug,
+          isStepValid: true,
+        }
+      : { key: null, isStepValid: true },
+  () => ({ key: "success", isStepValid: true }),
 ];
 
 // move
@@ -144,7 +167,10 @@ export default async (props: web.NextPageProps) => {
     Object.assign(data, flowData);
   }
 
-  const nextSlug = workflow.getCurrentStep(renewDriverLicenceRules, data);
+  const { key: nextSlug, isStepValid } = workflow.getCurrentStep(
+    renewDriverLicenceRules,
+    data,
+  );
 
   // Act
   const stepSlug = props.params.action?.at(1);
@@ -158,7 +184,7 @@ export default async (props: web.NextPageProps) => {
           <ApplicationSuccess flow={renewDriversLicenceFlowKey} />
         </FormLayout>
       ) : (
-        redirect(nextSlug)
+        redirect(nextSlug || "")
       );
     case routes.driving.renewLicense.medicalCertificate.slug:
       return stepSlug === nextSlug ? (
@@ -178,7 +204,7 @@ export default async (props: web.NextPageProps) => {
           />
         </FormLayout>
       ) : (
-        redirect(nextSlug)
+        redirect(nextSlug || "")
       );
     case routes.driving.renewLicense.confirmApplication.slug:
       return stepSlug === nextSlug ? (
@@ -196,10 +222,11 @@ export default async (props: web.NextPageProps) => {
             yearOfBirth={data.yearOfBirth}
             flow={renewDriversLicenceFlowKey}
             proofOfAddressRequest={data.proofOfAddressRequest}
+            dataValid={isStepValid}
           />
         </FormLayout>
       ) : (
-        redirect(nextSlug)
+        redirect(nextSlug || "")
       );
     case routes.driving.renewLicense.newAddress.slug:
       return (

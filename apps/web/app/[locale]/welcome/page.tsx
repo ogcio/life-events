@@ -12,7 +12,10 @@ type ConsentState = {
   isInitialized: boolean;
 };
 const rules: Parameters<typeof workflow.getCurrentStep<ConsentState>>[0] = [
-  ({ isInitialized }) => (!isInitialized ? "welcome" : null),
+  ({ isInitialized }) =>
+    !isInitialized
+      ? { key: "welcome", isStepValid: true }
+      : { key: null, isStepValid: true },
 ];
 
 export default async (props: web.NextPageProps) => {
@@ -26,7 +29,7 @@ export default async (props: web.NextPageProps) => {
     [userId],
   );
 
-  const step = workflow.getCurrentStep<ConsentState>(rules, {
+  const { key: step } = workflow.getCurrentStep<ConsentState>(rules, {
     isInitialized: Boolean(consentsResult.rowCount),
   });
 
