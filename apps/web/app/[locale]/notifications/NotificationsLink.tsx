@@ -11,7 +11,10 @@ export default async () => {
 
   return (
     <>
-      <Link href="/notifications" style={{ display: "flex" }}>
+      <Link
+        href="/notifications"
+        style={{ display: "flex", position: "relative" }}
+      >
         {unreadNotificationsCount && unreadNotificationsCount > 0 && (
           <div
             style={{
@@ -21,8 +24,8 @@ export default async () => {
               background: ds.colours.ogcio.red,
               color: ds.colours.ogcio.white,
               borderRadius: "50%",
-              width: "24px",
-              height: "24px",
+              width: "18px",
+              height: "18px",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",

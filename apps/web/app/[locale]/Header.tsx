@@ -109,31 +109,32 @@ export default () => {
               marginTop: "3px",
             }}
           >
-            <Link
-              className={`govie-link govie-link--inverse govie-link--no-underline ${
-                pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
-              }`.trim()}
-              href={new URL("/en/" + path, process.env.HOST_URL).href}
-            >
-              English
-            </Link>
-            <div
-              style={{
-                height: "14px",
-                width: "1px",
-                borderLeft: `1px solid ${ds.colours.ogcio.white}`,
-              }}
-            />
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Link
+                className={`govie-link govie-link--inverse govie-link--no-underline ${
+                  pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
+                }`.trim()}
+                href={new URL("/en/" + path, process.env.HOST_URL).href}
+              >
+                English
+              </Link>
+              <div
+                style={{
+                  height: "14px",
+                  width: "1px",
+                  borderLeft: `1px solid ${ds.colours.ogcio.white}`,
+                }}
+              />
 
-            <Link
-              className={`govie-link govie-link--inverse govie-link--no-underline  ${
-                pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
-              }`.trim()}
-              href={new URL("/ga/" + path, process.env.HOST_URL).href}
-            >
-              Gealic
-            </Link>
-
+              <Link
+                className={`govie-link govie-link--inverse govie-link--no-underline  ${
+                  pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
+                }`.trim()}
+                href={new URL("/ga/" + path, process.env.HOST_URL).href}
+              >
+                Gealic
+              </Link>
+            </div>
             <NotificationsLink />
             <UserIcon />
 
