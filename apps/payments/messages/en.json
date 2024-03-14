@@ -122,6 +122,7 @@
         "amount": "Amount",
         "currencySymbol": "€",
         "redirectUrl": "Redirect URL",
+        "allowAmountOverride": "Allow amount override from url",
         "submit": "Continue"
       },
       "copyLink": "Copy link",

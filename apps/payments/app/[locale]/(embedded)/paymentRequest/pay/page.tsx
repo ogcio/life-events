@@ -10,6 +10,7 @@ type Props = {
     | {
         paymentId: string;
         id: string;
+        amount?: string;
       }
     | undefined;
 };
@@ -24,18 +25,20 @@ type PaymentRequestDO = {
   reference: string;
   amount: number;
   status: string;
+  redirect_url: string;
+  allowAmountOverride: boolean;
 };
 
 type PaymentRequestDetails = Pick<
   PaymentRequestDO,
-  "title" | "description" | "amount"
+  "title" | "description" | "amount" | "allowAmountOverride"
 > & { provider_name: string; provider_type: string };
 
 async function getPaymentRequestDetails(paymentId: string) {
   "use server";
 
   const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.description, pr.amount, pp.provider_name, pp.provider_type
+    `select pr.title, pr.description, pr.amount, pp.provider_name, pp.provider_type, pr.allow_amount_override as "allowAmountOverride"
       from payment_requests pr
       join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
       join payment_providers pp on ppr.provider_id = pp.provider_id
@@ -54,10 +57,14 @@ function getPaymentUrl(
   paymentId: string,
   type: string,
   integrationRef: string,
+  amount?: string,
 ) {
   const url = new URL(`/paymentRequest/${type}`, process.env.HOST_URL);
   url.searchParams.set("paymentId", paymentId);
   url.searchParams.set("integrationRef", integrationRef);
+  if (amount) {
+    url.searchParams.set("amount", amount);
+  }
   return url.href;
 }
 
@@ -90,6 +97,14 @@ export default async function Page(props: Props) {
     ({ provider_type }) => provider_type === "banktransfer",
   );
 
+  const baseAmount = details[0].amount;
+  const canOverrideAmount = details[0].allowAmountOverride;
+  const urlAmount = props.searchParams.amount;
+  let realAmount = baseAmount;
+  if (urlAmount && canOverrideAmount) {
+    realAmount = parseFloat(urlAmount);
+  }
+
   return (
     <div
       style={{
@@ -111,7 +126,7 @@ export default async function Page(props: Props) {
       >
         <h1 className="govie-heading-l">{t("title")}</h1>
         <h2 className="govie-heading-m">
-          {t("toPay")}: {formatCurrency(details[0].amount)}
+          {t("toPay")}: {formatCurrency(realAmount)}
         </h2>
         <hr className="govie-section-break govie-section-break--visible"></hr>
         {hasOpenBanking && (
@@ -132,6 +147,7 @@ export default async function Page(props: Props) {
                   props.searchParams.paymentId,
                   "bankTransfer",
                   props.searchParams.id,
+                  urlAmount,
                 )}
               />
             </div>
@@ -153,6 +169,7 @@ export default async function Page(props: Props) {
                   props.searchParams.paymentId,
                   "manual",
                   props.searchParams.id,
+                  urlAmount,
                 )}
               />
             </div>

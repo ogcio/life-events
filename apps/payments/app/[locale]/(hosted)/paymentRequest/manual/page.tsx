@@ -6,7 +6,7 @@ import { formatCurrency } from "../../../../utils";
 import Link from "next/link";
 import { getUserInfoById } from "auth/sessions";
 
-async function getPaymentDetails(paymentId: string) {
+async function getPaymentDetails(paymentId: string, amount?: number) {
   const { rows: paymentRows } = await pgpool.query(
     `
     SELECT
@@ -18,7 +18,8 @@ async function getPaymentDetails(paymentId: string) {
       pr.amount,
       pp.provider_id,
       pp.provider_name,
-      pp.provider_data
+      pp.provider_data,
+      pr.allow_amount_override
     FROM payment_requests pr
     JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id
     JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
@@ -36,13 +37,17 @@ async function getPaymentDetails(paymentId: string) {
 
   return {
     ...paymentRows[0],
+    amount:
+      paymentRows[0].allow_amount_override && amount
+        ? amount
+        : paymentRows[0].amount,
     govid_email: userInfo.govid_email,
     user_name: userInfo.user_name,
   };
 }
 
 export default async function Bank(params: {
-  searchParams: { paymentId: string } | undefined;
+  searchParams: { paymentId: string; amount?: string } | undefined;
 }) {
   if (!params.searchParams?.paymentId) {
     redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
@@ -50,7 +55,13 @@ export default async function Bank(params: {
 
   const t = await getTranslations("PayManualBankTransfer");
 
-  const paymentDetails = await getPaymentDetails(params.searchParams.paymentId);
+  const amount = params.searchParams.amount
+    ? parseFloat(params.searchParams.amount)
+    : undefined;
+  const paymentDetails = await getPaymentDetails(
+    params.searchParams.paymentId,
+    amount,
+  );
 
   return (
     <div

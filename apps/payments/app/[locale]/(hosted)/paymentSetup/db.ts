@@ -10,6 +10,7 @@ type PaymentRequestDO = {
   amount: number;
   status: string;
   redirect_url: string;
+  allowAmountOverride: boolean;
 };
 
 type PaymentRequestDetails = Pick<
@@ -20,6 +21,7 @@ type PaymentRequestDetails = Pick<
   | "amount"
   | "reference"
   | "redirect_url"
+  | "allowAmountOverride"
 > & { providers: { provider_name: string; provider_type: string }[] };
 
 export async function getPaymentRequestDetails(
@@ -27,7 +29,7 @@ export async function getPaymentRequestDetails(
 ): Promise<PaymentRequestDetails | undefined> {
   "use server";
   const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.payment_request_id, pr.description, pr.amount, json_agg(pp) as providers, pr.reference, pr.redirect_url
+    `select pr.title, pr.payment_request_id, pr.description, pr.amount, json_agg(pp) as providers, pr.reference, pr.redirect_url, pr.allow_amount_override as "allowAmountOverride"
       from payment_requests pr
       join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
       join payment_providers pp on ppr.provider_id = pp.provider_id
@@ -82,7 +84,7 @@ export async function getUserTransactionDetails(userId: string) {
     t.status,
     t.user_id,
     pr.title,
-    pr.amount,
+    t.amount,
     t.updated_at
   FROM payment_transactions t
   LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id

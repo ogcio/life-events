@@ -4,17 +4,19 @@ import CopyLink from "./CopyBtn";
 import { formatCurrency } from "../../../../../utils";
 import Link from "next/link";
 import { getPaymentRequestDetails } from "../../db";
+import { PgSessions } from "auth/sessions";
 
 export default async function (props: { params: { request_id: string } }) {
   const details = await getPaymentRequestDetails(props.params.request_id);
+  const { userId } = await PgSessions.get();
   const t = await getTranslations("PaymentSetup.CreatePayment");
-
   if (!details) {
     return <h1 className="govie-heading-l">Payment request not found</h1>;
   }
 
+  const integrationReference = `${userId}:${props.params.request_id}`;
   const completePaymentLink = new URL(
-    `/paymentRequest/pay?paymentId=${props.params.request_id}`,
+    `/paymentRequest/pay?paymentId=${props.params.request_id}&id=${integrationReference}`,
     process.env.HOST_URL ?? "",
   ).toString();
 
@@ -49,6 +51,14 @@ export default async function (props: { params: { request_id: string } }) {
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.redirectUrl")}</dt>
           <dt className="govie-summary-list__value">{details.redirect_url}</dt>
+        </div>
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">
+            {t("form.allowAmountOverride")}
+          </dt>
+          <dt className="govie-summary-list__value">
+            {JSON.stringify(details.allowAmountOverride)}
+          </dt>
         </div>
       </dl>
       <div
