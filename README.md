@@ -26,13 +26,14 @@ http://web.localtest.me/en/paymentRequest/complete
 - Clone the repo
 - if you have nvm installed run `nvm use`, otherwise ensure you're running Node LTS
 - Copy `.env.sample` to `.env` and update the variables for all apps
-- run `npm build:ds` to build the design system.
+- run `npm run build:ds` to build the design system.
 - run `npm start` to start the supporting docker services and run our services in 'dev' mode. If the docker services are already running you can just run `npm run start:services`
 
 Service URLs
 
 - web (Life events portal) - `localhost:3000`
 - payments - `localhost:3001`
+- messages - `localhost:3002`
 - mock-api - `localhost:8000`
 
 ## Localisation
