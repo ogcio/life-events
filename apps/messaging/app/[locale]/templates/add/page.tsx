@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { addEmailTemplate } from "messages";
-import { languages } from "../../../utils";
+import { languages } from "../../../utils/messaging";
 
 async function saveTemplate(formData) {
   "use server";
