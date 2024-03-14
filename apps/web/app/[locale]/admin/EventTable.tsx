@@ -19,7 +19,7 @@ export default async (props: web.NextPageProps) => {
     fd.flow_data as "flowData"
     FROM user_flow_data fd
   `);
-
+  
   if (props.searchParams && Object.keys(props.searchParams).length) {
     const baseItem = userFlows.rows.find(
       (row) =>

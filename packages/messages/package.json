@@ -4,15 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate": "db-migrate up"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "20.10.4",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2"
   },
   "dependencies": {
-    "@sendgrid/mail": "^8.1.1"
+    "@sendgrid/mail": "^8.1.1",
+    "pg": "^8.11.3"
   }
 }

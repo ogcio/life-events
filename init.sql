@@ -27,7 +27,6 @@ CREATE TABLE IF NOT EXISTS users(
     PRIMARY KEY(govid_email)
 );
 
-
 CREATE TABLE IF NOT EXISTS feature_flags(
     application TEXT NOT NULL,
     slug TEXT NOT NULL,

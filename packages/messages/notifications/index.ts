@@ -5,7 +5,7 @@ export const buildNotificationService = (userId: string) => {
   const getNotifications = async (subjectSearch?: string) => {
     let query = `
       SELECT *, created_at AS "createdAt", action_url AS "actionUrl"
-      FROM messages.notifications
+      FROM notifications
       WHERE user_id = $1
     `;
 
@@ -22,7 +22,7 @@ export const buildNotificationService = (userId: string) => {
   const getUnreadNotificationsCount = async () => {
     const { rows } = await pgpool.query(
       `
-    SELECT COUNT(*) FROM messages.notifications
+    SELECT COUNT(*) FROM notifications
     WHERE user_id = $1 AND read = FALSE;
   `,
       [userId],
@@ -33,7 +33,7 @@ export const buildNotificationService = (userId: string) => {
   const markNotificationAsRead = (notificationId: string) =>
     pgpool.query(
       `
-  UPDATE messages.notifications
+  UPDATE notifications
   SET read = TRUE
   WHERE id = $1 AND user_id = $2;
 `,
@@ -50,7 +50,7 @@ export const buildNotificationService = (userId: string) => {
   }) => {
     return pgpool.query(
       `
-        INSERT INTO messages.notifications
+        INSERT INTO notifications
         (subject, action, action_url, type, created_at, read, user_id)
         VALUES
         ($1, $2, $3, $4, $5, $6, $7)`,

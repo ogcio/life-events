@@ -10,7 +10,7 @@ pr:
 parameters:
   - name: services
     type: object
-    default: ["web", "mock-api", "payments"]
+    default: ["web", "mock-api", "payments", "messaging"]
 
   - name: destroy
     type: boolean

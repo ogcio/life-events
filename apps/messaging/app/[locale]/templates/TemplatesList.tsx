@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { deleteEmailTemplate, getEmailTemplates } from "messages";
 import Link from "next/link";
-import { languages } from "../../utils";
+import { languages } from "../../utils/messaging";
 
 async function deleteEmailTemplateAction(formData: FormData) {
   "use server";

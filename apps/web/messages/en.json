@@ -207,31 +207,6 @@
       "county": "county"
     }
   },
-  "EmailTemplates": {
-    "menu": {
-      "templates": "Email templates",
-      "addTemplate": "Add new template"
-    },
-    "title": "Email Templates",
-
-    "form": {
-      "addFormTitle": "Add new template",
-      "editFormTitle": "Edit this template",
-      "name": "Template name",
-      "subject": "Subject",
-      "body": "Body",
-      "save": "Save"
-    },
-    "list": {
-      "name": "Template name",
-      "subject": "Subject",
-      "actions": {
-        "label": "Actions",
-        "edit": "Edit",
-        "delete": "Delete"
-      }
-    }
-  },
   "Notifications": {
     "title": "Notifications",
     "searchHint": "Search...",
