@@ -5,7 +5,7 @@
     "user": { "ENV": "POSTGRES_USER" },
     "password": { "ENV": "POSTGRES_PASSWORD" },
     "host": { "ENV": "POSTGRES_HOST" },
-    "database": { "ENV": "POSTGRES_DB_NAME" },
+    "database": { "ENV": "POSTGRES_DB_NAME_MESSAGING" },
     "port": { "ENV": "POSTGRES_PORT" },
     "schema": "public"
   }
