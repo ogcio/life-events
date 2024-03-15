@@ -50,6 +50,17 @@ export default (props: {
               item={{ key: t("userName"), value: data.userName }}
             />
             <ListRow
+              change={{ key: t("change"), value: changeDetailsHref }}
+              item={{ key: t("sex"), value: data.sex }}
+            />
+            <ListRow
+              change={{ key: t("change"), value: changeDetailsHref }}
+              item={{
+                key: t("dateOfBirth"),
+                value: dateOfBirth,
+              }}
+            />
+            <ListRow
               change={{ key: t("change"), value: changeAddressHref }}
               item={{ key: t("currentAddress"), value: data.currentAddress }}
             />
@@ -72,18 +83,6 @@ export default (props: {
               item={{
                 key: t("mobileNumber"),
                 value: data.mobile,
-              }}
-            />
-
-            <ListRow
-              change={{ key: t("change"), value: changeDetailsHref }}
-              item={{ key: t("sex"), value: data.sex }}
-            />
-            <ListRow
-              change={{ key: t("change"), value: changeDetailsHref }}
-              item={{
-                key: t("dateOfBirth"),
-                value: dateOfBirth,
               }}
             />
           </dl>
