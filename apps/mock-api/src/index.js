@@ -41,7 +41,7 @@ await fastify.register(fastifyPostgres, {
   database: fastify.config.POSTGRES_DB_NAME_SHARED,
 });
 
-fastify.get("/", async function handler() {
+fastify.get("/health", async function handler() {
   return { ping: "pong" };
 });
 
