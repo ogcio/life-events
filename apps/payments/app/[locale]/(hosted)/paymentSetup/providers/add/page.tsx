@@ -23,6 +23,11 @@ export default async () => {
         description={t("banktransferDescription")}
         href={"add-banktransfer"}
       />
+      <ProviderTypeCard
+        title={t("stripe")}
+        description={t("stripeDescription")}
+        href={"add-stripe"}
+      />
     </div>
   );
 };

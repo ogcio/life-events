@@ -1,4 +1,4 @@
-export type ProviderType = "openbanking" | "banktransfer";
+export type ProviderType = "openbanking" | "banktransfer" | "stripe";
 export type ProviderStatus = "connected" | "disconnected";
 
 export type OpenBankingData = {
@@ -13,7 +13,12 @@ export type BankTransferData = {
   accountHolderName: string;
 };
 
-export type ProviderData = OpenBankingData | BankTransferData;
+export type StripeData = {
+  livePublishableKey: string;
+  liveSecretKey: string;
+};
+
+export type ProviderData = OpenBankingData | BankTransferData | StripeData;
 
 export type Provider = {
   id: string;
