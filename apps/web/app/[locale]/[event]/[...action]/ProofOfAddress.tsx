@@ -61,29 +61,36 @@ export default async (props: {
       });
     }
 
-    const s3Client = new S3Client(aws.s3ClientConfig);
+    let fileId = "";
+    let fileExtension = "";
+    let fileType = "";
+    let s3Client: S3Client | undefined;
+    let awsObjectKey = "";
+    if (identitySelection !== "noDocuments" && poaFile) {
+      s3Client = new S3Client(aws.s3ClientConfig);
 
-    const fileId = randomUUID();
-    const fileExtension = poaFile.name.split(".").at(-1);
-    const fileType = "proofOfAddress";
+      fileId = randomUUID();
+      fileExtension = poaFile.name.split(".").at(-1) || "";
+      fileType = "proofOfAddress";
 
-    const awsObjectKey = `${props.userId}/${fileId}`;
+      awsObjectKey = `${props.userId}/${fileId}`;
 
-    try {
-      await s3Client.send(
-        new PutObjectCommand({
-          Bucket: aws.fileBucketName,
-          Key: awsObjectKey,
-          Body: Buffer.from(await poaFile.arrayBuffer()),
-          ContentType: poaFile.type,
-        }),
-      );
-    } catch (err) {
-      formErrors.push({
-        errorValue: "fileUploadFail",
-        field: "identity-selection",
-        messageKey: form.errorTranslationKeys.fileUploadFail,
-      });
+      try {
+        await s3Client.send(
+          new PutObjectCommand({
+            Bucket: aws.fileBucketName,
+            Key: awsObjectKey,
+            Body: Buffer.from(await poaFile.arrayBuffer()),
+            ContentType: poaFile.type,
+          }),
+        );
+      } catch (err) {
+        formErrors.push({
+          errorValue: "fileUploadFail",
+          field: "identity-selection",
+          messageKey: form.errorTranslationKeys.fileUploadFail,
+        });
+      }
     }
 
     if (formErrors.length) {
@@ -96,33 +103,35 @@ export default async (props: {
     try {
       await transaction.query("BEGIN");
 
-      // File meta
-      await transaction.query(
-        `
-        WITH cte AS (
-          SELECT upload_version FROM file_meta
-          WHERE 
+      if (fileId) {
+        // File meta
+        await transaction.query(
+          `
+          WITH cte AS (
+            SELECT upload_version FROM file_meta
+            WHERE 
             file_type = 'proofOfAddress' 
             AND user_id = $1
-          ORDER BY upload_version DESC
-          LIMIT 1
-        )
-        INSERT INTO file_meta(
-          user_id, 
-          file_id, 
-          file_type, 
-          file_name_i18key, 
-          file_extension, 
-          upload_version)
-          VALUES($1, $2, $3, $4, $5, (SELECT COALESCE((SELECT upload_version FROM cte) + 1, 1)))
-      `,
-        [props.userId, fileId, fileType, identitySelection, fileExtension],
-      );
+            ORDER BY upload_version DESC
+            LIMIT 1
+            )
+            INSERT INTO file_meta(
+              user_id, 
+              file_id, 
+              file_type, 
+              file_name_i18key, 
+              file_extension, 
+              upload_version)
+              VALUES($1, $2, $3, $4, $5, (SELECT COALESCE((SELECT upload_version FROM cte) + 1, 1)))
+              `,
+          [props.userId, fileId, fileType, identitySelection, fileExtension],
+        );
+      }
 
       // Update flow state
       await transaction.query(
         `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('proofOfAddressRequest', $1::TEXT, 'proofOfAddressFileId', $2::TEXT)
+        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('proofOfAddressRequest', $1::TEXT, 'proofOfAddressFileId', $2::TEXT), updated_at = now()
         WHERE user_id = $3 AND flow = $4
       `,
         [identitySelection, fileId, props.userId, props.flow],
@@ -131,12 +140,15 @@ export default async (props: {
       await transaction.query("COMMIT");
     } catch (err) {
       await transaction.query("ROLLBACK");
-      await s3Client.send(
-        new DeleteObjectCommand({
-          Bucket: aws.fileBucketName,
-          Key: awsObjectKey,
-        }),
-      );
+      if (s3Client && awsObjectKey) {
+        await s3Client.send(
+          new DeleteObjectCommand({
+            Bucket: aws.fileBucketName,
+            Key: awsObjectKey,
+          }),
+        );
+      }
+
       formErrors.push({
         errorValue: "internalServerError",
         field: "internalServerError",
