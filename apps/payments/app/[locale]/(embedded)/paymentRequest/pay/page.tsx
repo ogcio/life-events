@@ -4,6 +4,7 @@ import { formatCurrency } from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
 import { PgSessions } from "auth/sessions";
 import ClientLink from "./ClientLink";
+import { useMemo } from "react";
 
 type Props = {
   searchParams:
@@ -67,15 +68,24 @@ function getPaymentUrl(
   }
   return url.href;
 }
+const NotFound = async () => {
+  const t = await getTranslations("Common");
+  return <h1 className="govie-heading-l">{t("notFound")}</h1>;
+};
 
 export default async function Page(props: Props) {
-  const notFound = (
-    <h1 className="govie-heading-l">Payment request not found</h1>
-  );
+  if (!props.searchParams?.paymentId || !props.searchParams?.id)
+    return <NotFound />;
 
-  if (!props.searchParams?.paymentId || !props.searchParams?.id) {
-    return notFound;
-  }
+  const stripePaymentLink = useMemo(
+    () =>
+      getPaymentUrl(
+        props.searchParams!.paymentId,
+        "card",
+        props.searchParams!.id,
+      ),
+    [props.searchParams],
+  );
 
   // Enforce being logged in
   await PgSessions.get();
@@ -85,9 +95,7 @@ export default async function Page(props: Props) {
     getTranslations("PayPaymentRequest"),
   ]);
 
-  if (!details) {
-    return notFound;
-  }
+  if (!details) return <NotFound />;
 
   const hasOpenBanking = details.some(
     ({ provider_type }) => provider_type === "openbanking",
@@ -183,14 +191,7 @@ export default async function Page(props: Props) {
         <div style={{ margin: "1em 0" }}>
           <h3 className="govie-heading-s">{t("payByCard")}</h3>
           {hasStripe && (
-            <ClientLink
-              label={t("payNow")}
-              href={getPaymentUrl(
-                props.searchParams.paymentId,
-                "card",
-                props.searchParams.id,
-              )}
-            />
+            <ClientLink label={t("payNow")} href={stripePaymentLink} />
           )}
         </div>
       </div>
