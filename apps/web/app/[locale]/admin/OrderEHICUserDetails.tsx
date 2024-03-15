@@ -8,7 +8,7 @@ import { ListRow } from "../[event]/[...action]/SummaryListRow";
 import { aws, postgres, web, workflow } from "../../utils";
 
 type Props = web.NextPageProps & {
-  flowData: workflow.RenewDriversLicence;
+  flowData: workflow.OrderEHIC;
   hideFormButtons: boolean;
   flow: string;
   userId: string;
@@ -21,7 +21,7 @@ export default async ({
   searchParams,
   flowData,
 }: Props) => {
-  const t = await getTranslations("Admin.RenewLicenceUserDetails");
+  const t = await getTranslations("Admin.OrderEHICUserDetails");
   async function approveAction(formData: FormData) {
     "use server";
     const userId = formData.get("userId");
@@ -57,16 +57,16 @@ export default async ({
   }
   const searchParamsWithRejectionOpen = new URLSearchParams(searchParams);
   searchParamsWithRejectionOpen.append("open", "rejection");
+
   return (
     <>
-      <div className="govie-heading-l">
-        {t("title", { flow: t(flow).toLowerCase() })}
-      </div>
+      <div className="govie-heading-l">{t("title")}</div>
       <div className="govie-heading-m">{flowData.userName}</div>
       <div className="govie-grid-row">
         <div className="govie-grid-column-two-thirds-from-desktop">
           <dl className="govie-summary-list">
             <ListRow item={{ key: t("name"), value: flowData.userName }} />
+            <ListRow item={{ key: t("sex"), value: flowData.sex }} />
             <ListRow
               item={{
                 key: t("birthDay"),
@@ -75,13 +75,13 @@ export default async ({
                 ).format("DD/MM/YYYY"),
               }}
             />
-            <ListRow item={{ key: t("sex"), value: flowData.sex }} />
             <ListRow
               item={{
                 key: t("address"),
                 value: flowData.currentAddress,
               }}
             />
+            <ListRow item={{ key: t("PPSN"), value: flowData.PPSN }} />
             <ListRow
               item={{
                 key: t("addressVerified"),
@@ -101,18 +101,17 @@ export default async ({
               }}
             />
 
-            <ListRow item={{ key: t("mobile"), value: flowData.mobile }} />
-            <ListRow item={{ key: t("email"), value: flowData.email }} />
             <ListRow
               item={{
-                key: t("totalPaid"),
-                value: flowData.totalPayment
-                  ? `€${flowData.totalPayment}`
-                  : "-",
+                key: t("localHealthOffice"),
+                value: flowData.localHealthOffice,
               }}
             />
             <ListRow
-              item={{ key: t("payDate"), value: flowData.dateOfPayment }}
+              item={{
+                key: t("dispatchAddress"),
+                value: flowData.dispatchAddress,
+              }}
             />
           </dl>
         </div>

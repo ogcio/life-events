@@ -1,18 +1,18 @@
 import dayjs from "dayjs";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PgSessions } from "auth/sessions";
 import { routes, workflow, postgres, web } from "../../../../utils";
-import ActionBreadcrumb from "../ActionBreadcrumb";
-import AddressForm from "./AddressForm";
+import AddressForm from "../AddressForm";
 import ApplicationSuccess from "./ApplicationSuccess";
 import DetailsSummary from "./DetailsSummary";
 import MedicalForm from "./MedicalForm";
 import PaymentPlaceholder from "./PaymentPlaceholder";
-import ProofOfAddress from "./ProofOfAddress";
+import ProofOfAddress from "../ProofOfAddress";
 import SimpleDetailsForm from "./SimpleDetailsForm";
 import PaymentSuccess from "./PaymentSuccess";
 import PaymentError from "./PaymentError";
+import { flowKeys } from "../../../../utils/workflow";
+import FormLayout from "../FormLayout";
 
 export const renewDriverLicenceRules: Parameters<
   typeof workflow.getCurrentStep<workflow.RenewDriversLicence>
@@ -34,14 +34,14 @@ export const renewDriverLicenceRules: Parameters<
       return { key: null, isStepValid: true };
     }
     return {
-      key: routes.driving.renewLicense.confirmApplication.slug,
+      key: routes.driving.renewDriversLicence.confirmApplication.slug,
       isStepValid: false,
     };
   },
   ({ confirmedApplication }) =>
     !confirmedApplication
       ? {
-          key: routes.driving.renewLicense.confirmApplication.slug,
+          key: routes.driving.renewDriversLicence.confirmApplication.slug,
           isStepValid: true,
         }
       : { key: null, isStepValid: true },
@@ -58,7 +58,7 @@ export const renewDriverLicenceRules: Parameters<
     return yearDiff >= web.drivers.licenceMedicalFormAgeThreshold &&
       !medicalCertificate
       ? {
-          key: routes.driving.renewLicense.medicalCertificate.slug,
+          key: routes.driving.renewDriversLicence.medicalCertificate.slug,
           isStepValid: true,
         }
       : { key: null, isStepValid: true };
@@ -75,7 +75,7 @@ export const renewDriverLicenceRules: Parameters<
 
     return yearDiff >= web.drivers.licencePaymentAgeThreshold
       ? {
-          key: routes.driving.renewLicense.applicationSuccess.slug,
+          key: routes.driving.renewDriversLicence.applicationSuccess.slug,
           isStepValid: true,
         }
       : { key: null, isStepValid: false };
@@ -83,49 +83,26 @@ export const renewDriverLicenceRules: Parameters<
   ({ paymentId }) =>
     !paymentId
       ? {
-          key: routes.driving.renewLicense.paymentSelection.slug,
+          key: routes.driving.renewDriversLicence.paymentSelection.slug,
           isStepValid: true,
         }
       : { key: null, isStepValid: true },
   ({ paymentId, status }) =>
     paymentId && status === "executed"
       ? {
-          key: routes.driving.renewLicense.paymentSuccess.slug,
+          key: routes.driving.renewDriversLicence.paymentSuccess.slug,
           isStepValid: true,
         }
       : { key: null, isStepValid: true },
   ({ paymentId, status }) =>
     paymentId && status !== "executed"
       ? {
-          key: routes.driving.renewLicense.paymentError.slug,
+          key: routes.driving.renewDriversLicence.paymentError.slug,
           isStepValid: true,
         }
       : { key: null, isStepValid: true },
   () => ({ key: "success", isStepValid: true }),
 ];
-
-// move
-export const renewDriversLicenceFlowKey = "renewDriversLicence";
-
-function FormLayout(
-  props: React.PropsWithChildren<{
-    action: { slug: string; href?: string };
-    step: string;
-    backHref?: string;
-  }>,
-) {
-  return (
-    <>
-      <ActionBreadcrumb action={props.action} step={props.step} />
-      {props.children}
-      {props.backHref && (
-        <Link href={props.backHref} className="govie-back-link">
-          Back
-        </Link>
-      )}
-    </>
-  );
-}
 
 export default async (props: web.NextPageProps) => {
   // Session details
@@ -161,7 +138,7 @@ export default async (props: web.NextPageProps) => {
     // map appropriately when we know more of this api
   }
 
-  // Whatever data we keep in the flow state, always takes presidence
+  // Whatever data we keep in the flow state, always takes precedence
   if (flowResult.rowCount) {
     const [{ data: flowData }] = flowResult.rows;
     Object.assign(data, flowData);
@@ -178,15 +155,15 @@ export default async (props: web.NextPageProps) => {
   const baseActionHref = `/${props.params.locale}/driving/${actionSlug}/${nextSlug}`;
 
   switch (stepSlug) {
-    case routes.driving.renewLicense.applicationSuccess.slug:
+    case routes.driving.renewDriversLicence.applicationSuccess.slug:
       return stepSlug === nextSlug ? (
         <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
-          <ApplicationSuccess flow={renewDriversLicenceFlowKey} />
+          <ApplicationSuccess flow={flowKeys.renewDriversLicence} />
         </FormLayout>
       ) : (
         redirect(nextSlug || "")
       );
-    case routes.driving.renewLicense.medicalCertificate.slug:
+    case routes.driving.renewDriversLicence.medicalCertificate.slug:
       return stepSlug === nextSlug ? (
         <FormLayout
           action={{
@@ -197,7 +174,7 @@ export default async (props: web.NextPageProps) => {
           backHref={baseActionHref}
         >
           <MedicalForm
-            flow={renewDriversLicenceFlowKey}
+            flow={flowKeys.renewDriversLicence}
             userId={userId}
             params={props.params}
             searchParams={props.searchParams}
@@ -206,7 +183,7 @@ export default async (props: web.NextPageProps) => {
       ) : (
         redirect(nextSlug || "")
       );
-    case routes.driving.renewLicense.confirmApplication.slug:
+    case routes.driving.renewDriversLicence.confirmApplication.slug:
       return stepSlug === nextSlug ? (
         <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
           <DetailsSummary
@@ -220,7 +197,7 @@ export default async (props: web.NextPageProps) => {
             monthOfBirth={data.monthOfBirth}
             timeAtAddress={data.timeAtAddress}
             yearOfBirth={data.yearOfBirth}
-            flow={renewDriversLicenceFlowKey}
+            flow={flowKeys.renewDriversLicence}
             proofOfAddressRequest={data.proofOfAddressRequest}
             dataValid={isStepValid}
           />
@@ -228,7 +205,7 @@ export default async (props: web.NextPageProps) => {
       ) : (
         redirect(nextSlug || "")
       );
-    case routes.driving.renewLicense.newAddress.slug:
+    case routes.driving.renewDriversLicence.newAddress.slug:
       return (
         <FormLayout
           action={{
@@ -239,14 +216,21 @@ export default async (props: web.NextPageProps) => {
           backHref={baseActionHref}
         >
           <AddressForm
+            field={"currentAddress"}
             searchParams={props.searchParams}
-            flow={renewDriversLicenceFlowKey}
+            flow={flowKeys.renewDriversLicence}
             userId={userId}
             data={data}
+            slug={routes.driving.renewDriversLicence.newAddress.slug}
+            category={workflow.categories.driving}
+            onSubmitRedirectSlug={
+              routes.driving.renewDriversLicence.proofOfAddress.slug
+            }
+            showWarning={true}
           />
         </FormLayout>
       );
-    case routes.driving.renewLicense.changeDetails.slug:
+    case routes.driving.renewDriversLicence.changeDetails.slug:
       return (
         <FormLayout
           action={{
@@ -265,12 +249,12 @@ export default async (props: web.NextPageProps) => {
             yearOfBirth={data.yearOfBirth}
             sex={data.sex}
             mobile={data.mobile}
-            flow={renewDriversLicenceFlowKey}
+            flow={flowKeys.renewDriversLicence}
             urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
           />
         </FormLayout>
       );
-    case routes.driving.renewLicense.proofOfAddress.slug:
+    case routes.driving.renewDriversLicence.proofOfAddress.slug:
       return (
         <FormLayout
           action={{
@@ -282,12 +266,14 @@ export default async (props: web.NextPageProps) => {
         >
           <ProofOfAddress
             step={props.searchParams?.step}
-            flow={renewDriversLicenceFlowKey}
+            flow={flowKeys.renewDriversLicence}
             userId={userId}
+            slug={routes.driving.renewDriversLicence.proofOfAddress.slug}
+            onSubmitRedirectSlug={baseActionHref}
           />
         </FormLayout>
       );
-    case routes.driving.renewLicense.paymentSelection.slug:
+    case routes.driving.renewDriversLicence.paymentSelection.slug:
       return nextSlug === stepSlug ? (
         <FormLayout
           action={{ slug: actionSlug }}
@@ -295,7 +281,7 @@ export default async (props: web.NextPageProps) => {
           backHref={baseActionHref}
         >
           <PaymentPlaceholder
-            flow={renewDriversLicenceFlowKey}
+            flow={flowKeys.renewDriversLicence}
             userId={userId}
           />
         </FormLayout>
@@ -303,21 +289,21 @@ export default async (props: web.NextPageProps) => {
         redirect(nextSlug || "")
       );
 
-    case routes.driving.renewLicense.paymentSuccess.slug:
+    case routes.driving.renewDriversLicence.paymentSuccess.slug:
       return nextSlug === stepSlug ? (
         <FormLayout action={{ slug: stepSlug }} step={stepSlug}>
           <PaymentSuccess
             paymentId={data.paymentId!}
             dateOfPayment={data.dateOfPayment}
             pay={data.totalPayment}
-            flow={renewDriversLicenceFlowKey}
+            flow={flowKeys.renewDriversLicence}
           />
         </FormLayout>
       ) : (
         redirect(nextSlug || "")
       );
 
-    case routes.driving.renewLicense.paymentError.slug:
+    case routes.driving.renewDriversLicence.paymentError.slug:
       return nextSlug === stepSlug ? (
         <FormLayout action={{ slug: stepSlug }} step={stepSlug}>
           <PaymentError />
@@ -327,7 +313,7 @@ export default async (props: web.NextPageProps) => {
       );
 
     // This should never be hit, but if it does, it means it's a high chance of infinite redirects happened due to mistake.
-    case routes.driving.renewLicense.slug:
+    case routes.driving.renewDriversLicence.slug:
       return (
         <>
           Handle missed case of infinite redirection. Error page with "go home"
@@ -336,5 +322,5 @@ export default async (props: web.NextPageProps) => {
       );
   }
 
-  return redirect(`${routes.driving.renewLicense.slug}/${nextSlug}`);
+  return redirect(`${routes.driving.renewDriversLicence.slug}/${nextSlug}`);
 };

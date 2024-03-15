@@ -24,7 +24,7 @@ export default (props: Props) => {
       </div>
       <div className="govie-grid-column-two-thirds-from-desktop">
         <div className="govie-heading-l">{t("title")}</div>
-        <p className="govie-body">{t("renewDriversLicenceBody")}</p>
+        <p className="govie-body">{t("orderEHICBody")}</p>
         <div className="govie-heading-m">{t("summaryTitle")}</div>
         <dl className="govie-summary-list">
           <div className="govie-summary-list__row">

@@ -9,6 +9,7 @@ import {
   parseProvider,
 } from "../types";
 import EditBankTransferForm from "./EditBankTransferForm";
+import EditStripeForm from "./EditStripeForm";
 
 async function getProvider(providerId: string): Promise<Provider> {
   "use server";
@@ -58,6 +59,10 @@ export default async ({ params: { providerId } }: Props) => {
 
   if (provider.type === "banktransfer") {
     return <EditBankTransferForm provider={provider} />;
+  }
+
+  if (provider.type === "stripe") {
+    return <EditStripeForm provider={provider} />;
   }
 
   redirect("/paymentsetup/providers");

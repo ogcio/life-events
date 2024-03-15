@@ -2,8 +2,8 @@ import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
 
-import { ListRow } from "./SummaryListRow";
-import { workflow, postgres } from "../../../../utils";
+import { ListRow } from "../SummaryListRow";
+import { workflow, postgres, routes } from "../../../../utils";
 
 export default (
   props: Pick<
@@ -39,9 +39,11 @@ export default (
     revalidatePath("/confirm-application");
   }
 
-  const changeDetailsHref = "/driving/renew-licence/change-details";
-  const changeAddressHref = "/driving/renew-licence/new-address";
-  const changeProofOfAddressHref = "/driving/renew-licence/proof-of-address";
+  const changeDetailsHref =
+    routes.driving.renewDriversLicence.changeDetails.slug;
+  const changeAddressHref = routes.driving.renewDriversLicence.newAddress.slug;
+  const changeProofOfAddressHref =
+    routes.driving.renewDriversLicence.proofOfAddress.slug;
   const dateOfBirth =
     props.yearOfBirth && props.monthOfBirth && props.dayOfBirth
       ? dayjs(

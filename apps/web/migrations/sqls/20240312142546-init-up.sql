@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS user_consents (
 
 CREATE TABLE IF NOT EXISTS user_flow_data(
     user_id UUID NOT NULL,
+    category TEXT NOT NULL,
     flow TEXT NOT NULL,
     flow_data JSONB NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

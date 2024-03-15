@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { routes, postgres, form } from "../../../../utils";
+import { postgres, form } from "../../../utils";
 import Link from "next/link";
 
 type Props<TData> = {
@@ -10,10 +10,22 @@ type Props<TData> = {
   flow: string;
   searchParams?: Record<string, string>;
   data: TData;
+  slug: string;
+  category: string;
+  onSubmitRedirectSlug: string;
+  showWarning: boolean;
+  field: string;
+  title?: string;
 };
 
-type FormProps<TData> = Omit<Props<TData>, "searchParams"> & {
+type FormProps<TData> = Omit<
+  Props<TData>,
+  "searchParams" | "showWarning" | "title"
+> & {
   addressQuery: string;
+  slug: string;
+  category: string;
+  onSubmitRedirectSlug: string;
 };
 
 const searchParamKeys = { address: "adr", formType: "t" };
@@ -22,14 +34,14 @@ async function SearchForm<TData>(props: FormProps<TData>) {
   const errorT = await getTranslations("formErrors");
   const errors = await form.getErrorsQuery(
     props.userId,
-    routes.driving.renewLicense.newAddress.slug,
+    props.slug,
     props.flow,
   );
 
   async function searchAction(formData: FormData) {
     "use server";
 
-    const searchQuery = formData.get("currentAddress");
+    const searchQuery = formData.get(props.field);
 
     if (!searchQuery?.toString().length) {
       await form.insertErrors(
@@ -41,7 +53,7 @@ async function SearchForm<TData>(props: FormProps<TData>) {
           },
         ],
         props.userId,
-        routes.driving.renewLicense.newAddress.slug,
+        props.slug,
         props.flow,
       );
       return revalidatePath("/");
@@ -75,8 +87,8 @@ async function SearchForm<TData>(props: FormProps<TData>) {
         )}
         <input
           type="text"
-          id="currentAddress"
-          name="currentAddress"
+          id={`${props.field}`}
+          name={`${props.field}`}
           className="govie-input"
           aria-describedby="input-field-hint"
         />
@@ -100,10 +112,10 @@ async function SelectForm<TData>(props: FormProps<TData>) {
     // Store this in our currently added address (might wanna do this at the "verified" step)
     await postgres.pgpool.query(
       `
-        INSERT INTO user_flow_data (flow, user_id, flow_data) 
-        VALUES($1, $2, $3)
+        INSERT INTO user_flow_data (flow, user_id, flow_data, category) 
+        VALUES($1, $2, $3, $4)
         ON CONFLICT (flow, user_id) DO
-        UPDATE SET flow_data = user_flow_data.flow_data || jsonb_build_object('currentAddress',$4::TEXT, 'timeAtAddress','10 years')
+        UPDATE SET flow_data = user_flow_data.flow_data || jsonb_build_object($5::TEXT, $6::TEXT, 'timeAtAddress','10 years')
         WHERE user_flow_data.user_id = $2 AND user_flow_data.flow = $1
     `,
       [
@@ -111,14 +123,16 @@ async function SelectForm<TData>(props: FormProps<TData>) {
         props.userId,
         JSON.stringify({
           ...props.data,
-          currentAddress: selectedAddress,
+          [props.field]: selectedAddress,
           timeAtAddress: "5 months",
         }),
+        props.category,
+        props.field,
         selectedAddress,
       ],
     );
 
-    redirect("/driving/renew-licence/proof-of-address");
+    redirect(props.onSubmitRedirectSlug);
   }
 
   const urlParams = new URLSearchParams({ q: props.addressQuery });
@@ -157,7 +171,7 @@ async function ManualAddressForm<TData>(props: FormProps<TData>) {
   const errorT = await getTranslations("formErrors");
   const errors = await form.getErrorsQuery(
     props.userId,
-    routes.driving.renewLicense.newAddress.slug,
+    props.slug,
     props.flow,
   );
 
@@ -202,22 +216,18 @@ async function ManualAddressForm<TData>(props: FormProps<TData>) {
     }
 
     if (errors.length) {
-      await form.insertErrors(
-        errors,
-        props.userId,
-        routes.driving.renewLicense.newAddress.slug,
-        props.flow,
-      );
+      await form.insertErrors(errors, props.userId, props.slug, props.flow);
       return revalidatePath("/");
     }
 
     const fullAddressString = `${firstAddress} ${town} ${county} ${eirecode}`;
+
     await postgres.pgpool.query(
       `
-        INSERT INTO user_flow_data (flow, user_id, flow_data) 
-        VALUES($1, $2, $3)
+        INSERT INTO user_flow_data (flow, user_id, flow_data, category) 
+        VALUES($1, $2, $3, $4)
         ON CONFLICT (flow, user_id) DO
-        UPDATE SET flow_data = user_flow_data.flow_data || jsonb_build_object('currentAddress',$4::TEXT, 'timeAtAddress','10 years')
+        UPDATE SET flow_data = user_flow_data.flow_data || jsonb_build_object($5::TEXT, $6::TEXT, 'timeAtAddress','10 years')
         WHERE user_flow_data.user_id = $2 AND user_flow_data.flow = $1
     `,
       [
@@ -225,14 +235,16 @@ async function ManualAddressForm<TData>(props: FormProps<TData>) {
         props.userId,
         JSON.stringify({
           ...props.data,
-          currentAddress: fullAddressString,
+          [props.field]: fullAddressString,
           timeAtAddress: "5 months",
         }),
+        props.category,
+        props.field,
         fullAddressString,
       ],
     );
 
-    redirect("/driving/renew-licence/proof-of-address");
+    redirect(props.onSubmitRedirectSlug);
   }
 
   const addressError = errors.rows.find(
@@ -364,8 +376,8 @@ export default <TData,>(props: Props<TData>) => {
   return (
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds">
-        <h1 className="govie-heading-l">{t("title")}</h1>
-        {!isManualForm && (
+        <h1 className="govie-heading-l">{props.title || t("new-address")}</h1>
+        {!isManualForm && props.showWarning && (
           <>
             <div className="govie-warning-text">
               <span className="govie-warning-text__icon" aria-hidden="true">
@@ -387,6 +399,10 @@ export default <TData,>(props: Props<TData>) => {
           flow={props.flow}
           userId={props.userId}
           data={props.data}
+          slug={props.slug}
+          category={props.category}
+          onSubmitRedirectSlug={props.onSubmitRedirectSlug}
+          field={props.field}
         />
       </div>
     </div>

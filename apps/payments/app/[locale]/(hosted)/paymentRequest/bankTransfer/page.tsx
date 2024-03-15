@@ -5,7 +5,7 @@ import { pgpool } from "../../../../dbConnection";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 
-async function getPaymentDetails(paymentId: string) {
+async function getPaymentDetails(paymentId: string, amount?: number) {
   const { rows: paymentRows } = await pgpool.query(
     `
     SELECT
@@ -17,7 +17,8 @@ async function getPaymentDetails(paymentId: string) {
       pr.amount,
       pp.provider_id,
       pp.provider_name,
-      pp.provider_data
+      pp.provider_data,
+      pr.allow_amount_override
     FROM payment_requests pr
     JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id
     JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
@@ -36,11 +37,19 @@ async function getPaymentDetails(paymentId: string) {
   // Merge the payment details with user details
   const paymentDetails = {
     ...paymentRows[0],
+    amount:
+      paymentRows[0].allow_amount_override && amount
+        ? amount
+        : paymentRows[0].amount,
     govid_email: userInfo.govid_email,
     user_name: userInfo.user_name,
   };
 
-  return createPaymentRequest(paymentDetails);
+  const paymentRequest = await createPaymentRequest(paymentDetails);
+  return {
+    paymentDetails,
+    paymentRequest,
+  };
 }
 
 async function createTransaction(
@@ -48,20 +57,23 @@ async function createTransaction(
   userId: string,
   extPaymentId: string,
   tenantReference: string,
+  amount: number,
 ) {
   "use server";
   await pgpool.query<{ transaction_id: number }>(
     `
-    insert into payment_transactions (payment_request_id, user_id, ext_payment_id, integration_reference, status, created_at, updated_at)
-    values ($1, $2, $3, $4, 'pending', now(), now());
+    insert into payment_transactions (payment_request_id, user_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at)
+    values ($1, $2, $3, $4, $5, 'pending', now(), now());
     `,
-    [paymentId, userId, extPaymentId, tenantReference],
+    [paymentId, userId, extPaymentId, tenantReference, amount],
   );
 }
 
 export default async function Bank(props: {
   params: { locale: string };
-  searchParams: { paymentId: string; integrationRef: string } | undefined;
+  searchParams:
+    | { paymentId: string; integrationRef: string; amount?: string }
+    | undefined;
 }) {
   const t = await getTranslations("Common");
   if (!props.searchParams?.paymentId) {
@@ -70,13 +82,21 @@ export default async function Bank(props: {
 
   const { userId } = await PgSessions.get();
 
-  const paymentDetails = await getPaymentDetails(props.searchParams.paymentId);
+  const amount = props.searchParams.amount
+    ? parseFloat(props.searchParams.amount)
+    : undefined;
+
+  const details = await getPaymentDetails(props.searchParams.paymentId, amount);
+  if (!details) return <h1>{t("notFound")}</h1>;
+
+  const { paymentDetails, paymentRequest } = details;
 
   await createTransaction(
     props.searchParams.paymentId,
     userId,
-    paymentDetails.id,
+    paymentRequest.id,
     props.searchParams.integrationRef,
+    paymentDetails.amount,
   );
 
   const returnUri = new URL(
@@ -93,8 +113,8 @@ export default async function Bank(props: {
       }}
     >
       <OpenBankingHost
-        resourceToken={paymentDetails.resource_token}
-        paymentId={paymentDetails.id}
+        resourceToken={paymentRequest.resource_token}
+        paymentId={paymentRequest.id}
         returnUri={returnUri.toString()}
       />
     </div>

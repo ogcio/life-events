@@ -16,12 +16,21 @@
     "start": "npm run start:docker && concurrently \"npm run start:services\" \"sleep 5 && npm run migrate\"",
     "reset-docker": "docker-compose down && docker system prune -a -f && docker builder prune -f && docker image prune -f",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky",
     "migrate": "npm run migrate --workspace=web && npm run migrate --workspace=payments && npm run migrate --workspace=messages"
   },
   "author": "",
   "license": "Unlicense",
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "nodemon": "^3.1.0"
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,css,scss}": [
+      "prettier --write"
+    ]
   }
 }

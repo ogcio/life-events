@@ -27,6 +27,7 @@ export const fieldTranslationKeys = {
   town: "town",
   eirecode: "eirecode",
   county: "county",
+  PPSN: "PPSN",
 };
 
 export const validation = {

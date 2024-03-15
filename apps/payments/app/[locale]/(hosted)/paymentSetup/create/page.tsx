@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { RedirectType, redirect } from "next/navigation";
 import { pgpool } from "../../../../dbConnection";
-import { routeDefinitions } from "../../../../routeDefinitions";
 
 async function getRegisteredAccounts(userId: string, providerType: string) {
   "use server";
@@ -42,6 +41,7 @@ async function createPayment(userId: string, formData: FormData) {
     reference: formData.get("reference")?.toString(),
     amount,
     redirectUrl: formData.get("redirect-url")?.toString(),
+    allowAmountOverride: formData.get("allowAmountOverride") === "on",
   };
 
   const client = await pgpool.connect();
@@ -51,8 +51,8 @@ async function createPayment(userId: string, formData: FormData) {
     const paymentRequestQueryResult = await pgpool.query<{
       payment_request_id: string;
     }>(
-      `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status)
-        values ($1, $2, $3, $4, $5, $6, $7)
+      `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override)
+        values ($1, $2, $3, $4, $5, $6, $7, $8)
         returning payment_request_id`,
       [
         userId,
@@ -62,6 +62,7 @@ async function createPayment(userId: string, formData: FormData) {
         data.amount,
         data.redirectUrl,
         "pending",
+        data.allowAmountOverride,
       ],
     );
 
@@ -243,6 +244,22 @@ export default async function Page() {
               className="govie-input"
               required
             />
+          </div>
+          <div className="govie-form-group">
+            <div className="govie-checkboxes__item">
+              <input
+                className="govie-checkboxes__input"
+                id="allow-override-hint"
+                name="allowAmountOverride"
+                type="checkbox"
+              />
+              <label
+                className="govie-label--s govie-checkboxes__label"
+                htmlFor="allow-override-hint"
+              >
+                {t("form.allowAmountOverride")}
+              </label>
+            </div>
           </div>
           <input
             type="submit"

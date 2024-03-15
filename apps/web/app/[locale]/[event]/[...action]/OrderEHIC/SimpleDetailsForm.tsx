@@ -4,25 +4,20 @@ import { redirect } from "next/navigation";
 import { form, routes, postgres, workflow } from "../../../../utils";
 import { flowKeys } from "../../../../utils/workflow";
 
-export default async (
-  props: Pick<
-    workflow.RenewDriversLicence,
-    | "dayOfBirth"
-    | "monthOfBirth"
-    | "yearOfBirth"
-    | "email"
-    | "mobile"
-    | "sex"
-    | "userName"
-  > & { userId: string; urlBase: string; flow: string },
-) => {
+export default async (props: {
+  data: workflow.OrderEHIC;
+  userId: string;
+  urlBase: string;
+  flow: string;
+}) => {
+  const { data, userId, urlBase, flow } = props;
   const t = await getTranslations("SimpleDetailsForm");
   const errorT = await getTranslations("formErrors");
 
   const errors = await form.getErrorsQuery(
-    props.userId,
-    routes.driving.renewDriversLicence.changeDetails.slug,
-    props.flow,
+    userId,
+    routes.health.orderEHIC.changeDetails.slug,
+    flow,
   );
 
   async function submitAction(formData: FormData) {
@@ -59,19 +54,10 @@ export default async (
       ),
     );
 
-    // Email
-    const email = formData.get("email")?.toString();
+    //PPSN
+    const PPSN = formData.get("PPSN")?.toString();
     formErrors.push(
-      ...form.validation.emailErrors(form.fieldTranslationKeys.email, email),
-    );
-
-    // Phone
-    const phone = formData.get("mobile")?.toString();
-    formErrors.push(
-      ...form.validation.stringNotEmpty(
-        form.fieldTranslationKeys.mobile,
-        phone,
-      ),
+      ...form.validation.stringNotEmpty(form.fieldTranslationKeys.PPSN, PPSN),
     );
 
     // Sex
@@ -83,31 +69,29 @@ export default async (
     if (formErrors.length) {
       await form.insertErrors(
         formErrors,
-        props.userId,
-        routes.driving.renewDriversLicence.changeDetails.slug,
-        props.flow,
+        userId,
+        routes.health.orderEHIC.changeDetails.slug,
+        flow,
       );
 
       return revalidatePath("/");
     }
 
     const data: Pick<
-      workflow.RenewDriversLicence,
+      workflow.OrderEHIC,
       | "dayOfBirth"
       | "monthOfBirth"
       | "yearOfBirth"
-      | "email"
-      | "mobile"
       | "sex"
       | "userName"
+      | "PPSN"
     > = {
       dayOfBirth: "",
-      email: "",
-      mobile: "",
       monthOfBirth: "",
       sex: "",
       userName: "",
       yearOfBirth: "",
+      PPSN: "",
     };
 
     const formIterator = formData.entries();
@@ -119,13 +103,12 @@ export default async (
       if (
         [
           "dateOfBirth",
-          "email",
-          "mobile",
           "sex",
           "userName",
           "dayOfBirth",
           "monthOfBirth",
           "yearOfBirth",
+          "PPSN",
         ].includes(key)
       ) {
         data[key] = value;
@@ -135,23 +118,22 @@ export default async (
     }
 
     const currentDataResults = await postgres.pgpool.query<{
-      currentData: workflow.RenewDriversLicence;
+      currentData: workflow.OrderEHIC;
     }>(
       `
         SELECT flow_data as "currentData" FROM user_flow_data
         WHERE user_id = $1 AND flow = $2
     `,
-      [props.userId, flowKeys.renewDriversLicence],
+      [userId, flowKeys.orderEHIC],
     );
 
-    let dataToUpdate: workflow.RenewDriversLicence;
+    let dataToUpdate: workflow.OrderEHIC;
     if (currentDataResults.rowCount) {
       const [{ currentData }] = currentDataResults.rows;
       Object.assign(currentData, data);
       dataToUpdate = currentData;
     } else {
-      const base: workflow.RenewDriversLicence =
-        workflow.emptyRenewDriversLicence();
+      const base: workflow.OrderEHIC = workflow.emptyOrderEHIC();
       Object.assign(base, data);
       dataToUpdate = base;
     }
@@ -165,28 +147,24 @@ export default async (
         WHERE user_flow_data.user_id=$1 AND user_flow_data.flow=$2
     `,
       [
-        props.userId,
-        flowKeys.renewDriversLicence,
+        userId,
+        flowKeys.orderEHIC,
         JSON.stringify(dataToUpdate),
-        workflow.categories.driving,
+        workflow.categories.health,
       ],
     );
 
-    return redirect(props.urlBase);
+    return redirect(urlBase);
   }
 
-  // const dateOfBirthError = errors.rows.find((row) =>
-  //   ["dayOfBirth", "monthOfBirth", "yearOfBirth"].includes(row.field)
-  // );
   const nameError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.name,
   );
-  const emailError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.email,
+
+  const PPSNError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.PPSN,
   );
-  const phoneError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.mobile,
-  );
+
   const sexError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.sex,
   );
@@ -239,7 +217,37 @@ export default async (
               className={`govie-input ${
                 nameError ? "govie-input--error" : ""
               }`.trim()}
-              defaultValue={nameError ? nameError.errorValue : props.userName}
+              defaultValue={nameError ? nameError.errorValue : data.userName}
+            />
+          </div>
+
+          <div
+            className={`govie-form-group ${
+              PPSNError ? "govie-form-group--error" : ""
+            }`.trim()}
+          >
+            <h1 className="govie-label-wrapper">
+              <label htmlFor="PPSN" className="govie-label--s govie-label--l">
+                {t("PPSN")}
+              </label>
+            </h1>
+            {PPSNError && (
+              <p id="input-field-error" className="govie-error-message">
+                <span className="govie-visually-hidden">Error:</span>
+                {errorT(PPSNError.messageKey, {
+                  field: errorT(`fields.${PPSNError.field}`),
+                  indArticleCheck: "",
+                })}
+              </p>
+            )}
+            <input
+              type="text"
+              id="PPSN"
+              name="PPSN"
+              className={`govie-input ${
+                PPSNError ? "govie-input--error" : ""
+              }`.trim()}
+              defaultValue={PPSNError ? PPSNError.errorValue : data.PPSN}
             />
           </div>
 
@@ -283,7 +291,7 @@ export default async (
                     type="text"
                     inputMode="numeric"
                     defaultValue={
-                      dayError ? dayError.errorValue : props.dayOfBirth
+                      dayError ? dayError.errorValue : data.dayOfBirth
                     }
                   />
                 </div>
@@ -305,7 +313,7 @@ export default async (
                     type="text"
                     inputMode="numeric"
                     defaultValue={
-                      monthError ? monthError.errorValue : props.monthOfBirth
+                      monthError ? monthError.errorValue : data.monthOfBirth
                     }
                   />
                 </div>
@@ -327,75 +335,12 @@ export default async (
                     type="text"
                     inputMode="numeric"
                     defaultValue={
-                      yearError ? yearError.errorValue : props.yearOfBirth
+                      yearError ? yearError.errorValue : data.yearOfBirth
                     }
                   />
                 </div>
               </div>
             </div>
-          </div>
-
-          <div
-            className={`govie-form-group ${
-              emailError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <h1 className="govie-label-wrapper">
-              <label htmlFor="email" className="govie-label--s govie-label--l">
-                {t("emailAddress")}
-              </label>
-            </h1>
-            {emailError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(emailError.messageKey, {
-                  field: errorT(`fields.${emailError.field}`),
-                  indArticleCheck:
-                    emailError.messageKey === form.errorTranslationKeys.empty
-                      ? "an"
-                      : "",
-                })}
-              </p>
-            )}
-            <input
-              type="text"
-              id="email"
-              name="email"
-              className={`govie-input ${
-                emailError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={emailError ? emailError.errorValue : props.email}
-            />
-          </div>
-
-          <div
-            className={`govie-form-group ${
-              phoneError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <h1 className="govie-label-wrapper">
-              <label htmlFor="mobile" className="govie-label--s govie-label--l">
-                {t("mobileNumber")}
-              </label>
-            </h1>
-            {phoneError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(phoneError.messageKey, {
-                  field: errorT(`fields.${phoneError.field}`),
-                  indArticleCheck: "",
-                })}
-              </p>
-            )}
-            <input
-              type="text"
-              id="mobile"
-              name="mobile"
-              className={`govie-input ${
-                phoneError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={phoneError ? phoneError.errorValue : props.mobile}
-            />
           </div>
 
           <div
@@ -424,7 +369,7 @@ export default async (
               className={`govie-input ${
                 sexError ? "govie-input--error" : ""
               }`.trim()}
-              defaultValue={sexError ? sexError.errorValue : props.sex}
+              defaultValue={sexError ? sexError.errorValue : data.sex}
             />
           </div>
           <button type="submit" className="govie-button">
