@@ -270,18 +270,6 @@ export default async function Page() {
             </div>
           </div>
           <div className="govie-form-group">
-            <label htmlFor="redirect-url" className="govie-label--s">
-              {t("form.redirectUrl")}
-            </label>
-            <input
-              type="url"
-              id="reference"
-              name="redirect-url"
-              className="govie-input"
-              required
-            />
-          </div>
-          <div className="govie-form-group">
             <div className="govie-checkboxes__item">
               <input
                 className="govie-checkboxes__input"
@@ -297,6 +285,19 @@ export default async function Page() {
               </label>
             </div>
           </div>
+          <div className="govie-form-group">
+            <label htmlFor="redirect-url" className="govie-label--s">
+              {t("form.redirectUrl")}
+            </label>
+            <input
+              type="url"
+              id="reference"
+              name="redirect-url"
+              className="govie-input"
+              required
+            />
+          </div>
+
           <input
             type="submit"
             value={t("form.submit")}

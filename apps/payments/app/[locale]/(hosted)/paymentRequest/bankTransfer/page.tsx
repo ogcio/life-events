@@ -104,19 +104,10 @@ export default async function Bank(props: {
     process.env.HOST_URL,
   );
   return (
-    <div
-      style={{
-        display: "flex",
-        marginTop: "1.3rem",
-        gap: "2rem",
-        alignItems: "center",
-      }}
-    >
-      <OpenBankingHost
-        resourceToken={paymentRequest.resource_token}
-        paymentId={paymentRequest.id}
-        returnUri={returnUri.toString()}
-      />
-    </div>
+    <OpenBankingHost
+      resourceToken={paymentRequest.resource_token}
+      paymentId={paymentRequest.id}
+      returnUri={returnUri.toString()}
+    />
   );
 }
