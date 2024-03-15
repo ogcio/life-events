@@ -115,7 +115,7 @@ async function SelectForm<TData>(props: FormProps<TData>) {
         INSERT INTO user_flow_data (flow, user_id, flow_data, category) 
         VALUES($1, $2, $3, $4)
         ON CONFLICT (flow, user_id) DO
-        UPDATE SET flow_data = user_flow_data.flow_data || jsonb_build_object($5::TEXT, $6::TEXT, 'timeAtAddress','10 years')
+        UPDATE SET flow_data = user_flow_data.flow_data || jsonb_build_object($5::TEXT, $6::TEXT, 'timeAtAddress','10 years'), updated_at = now()
         WHERE user_flow_data.user_id = $2 AND user_flow_data.flow = $1
     `,
       [

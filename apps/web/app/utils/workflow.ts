@@ -11,6 +11,7 @@ import { postgres } from ".";
 // ===== Base =====
 type Base = {
   rejectReason: string;
+  rejectedAt: string;
   successfulAt: string;
 };
 
@@ -63,6 +64,7 @@ export function emptyRenewDriversLicence(): RenewDriversLicence {
     medicalCertificate: "",
     proofOfAddressFileId: "",
     status: "",
+    rejectedAt: "",
   };
 }
 

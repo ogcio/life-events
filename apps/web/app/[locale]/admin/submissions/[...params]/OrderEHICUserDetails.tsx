@@ -4,23 +4,17 @@ import dayjs from "dayjs";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ListRow } from "../[event]/[...action]/SummaryListRow";
-import { aws, postgres, web, workflow } from "../../utils";
+import { ListRow } from "../../../[event]/[...action]/SummaryListRow";
+import { aws, postgres, web, workflow } from "../../../../utils";
+import { headers } from "next/headers";
 
-type Props = web.NextPageProps & {
+type Props = {
   flowData: workflow.OrderEHIC;
-  hideFormButtons: boolean;
   flow: string;
   userId: string;
 };
 
-export default async ({
-  userId,
-  hideFormButtons,
-  flow,
-  searchParams,
-  flowData,
-}: Props) => {
+export default async ({ userId, flow, flowData }: Props) => {
   const t = await getTranslations("Admin.OrderEHICUserDetails");
   async function approveAction(formData: FormData) {
     "use server";
@@ -55,8 +49,6 @@ export default async ({
       expiresIn: 5 * 60,
     });
   }
-  const searchParamsWithRejectionOpen = new URLSearchParams(searchParams);
-  searchParamsWithRejectionOpen.append("open", "rejection");
 
   return (
     <>
@@ -95,8 +87,10 @@ export default async ({
                   <a target="_blank" href={proofOfAddressDownloadUrl}>
                     {t(flowData.proofOfAddressRequest)}
                   </a>
-                ) : (
+                ) : flowData.proofOfAddressRequest ? (
                   t(flowData.proofOfAddressRequest)
+                ) : (
+                  ""
                 ),
               }}
             />
@@ -116,24 +110,28 @@ export default async ({
           </dl>
         </div>
       </div>
-      {hideFormButtons ? null : (
-        <form
-          action={approveAction}
-          style={{ display: "flex", alignItems: "baseline", gap: "20px" }}
+
+      <form
+        action={approveAction}
+        style={{ display: "flex", alignItems: "baseline", gap: "20px" }}
+      >
+        <input type="hidden" name="userId" defaultValue={userId} />
+        <input type="hidden" name="flow" defaultValue={flow} />
+        <Link
+          className="govie-link"
+          href={
+            new URL(
+              `${headers().get("x-pathname")}/reject`,
+              process.env.HOST_URL,
+            ).href
+          }
         >
-          <input type="hidden" name="userId" defaultValue={userId} />
-          <input type="hidden" name="flow" defaultValue={flow} />
-          <Link
-            className="govie-link"
-            href={"?" + searchParamsWithRejectionOpen.toString()}
-          >
-            {t("reject")}
-          </Link>
-          <button type="submit" className="govie-button govie-button--medium">
-            {t("approve")}
-          </button>
-        </form>
-      )}
+          {t("reject")}
+        </Link>
+        <button type="submit" className="govie-button govie-button--medium">
+          {t("approve")}
+        </button>
+      </form>
     </>
   );
 };

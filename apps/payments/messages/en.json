@@ -73,6 +73,17 @@
       "accountNumberHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
       "confirm": "Confirm"
     },
+    "AddStripe": {
+      "title": "Add Stripe payment provider",
+      "editTitle": "Edit Stripe payment provider",
+      "name": "Name",
+      "nameHint": "Give a name to this payment provider to help you recognize it",
+      "livePublishableKey": "Live Publishable Key",
+      "livePublishableKeyHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "liveSecretKey": "Live Secret Key",
+      "liveSecretKeyHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "confirm": "Confirm"
+    },
     "Payments": {
       "createPayment": "Create payment",
       "transactions": "Transactions",
@@ -116,7 +127,8 @@
         "beneficiaryAccount": "Beneficiary Account",
         "paymentProvider": {
           "openbanking": "OpenBanking Account",
-          "banktransfer": "Manual Bank Transfer Account"
+          "banktransfer": "Manual Bank Transfer Account",
+          "stripe": "Stripe Account"
         },
         "reference": "Reference",
         "amount": "Amount",

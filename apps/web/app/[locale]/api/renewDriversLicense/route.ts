@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
   await pgpool.query(
     `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('paymentId', $1::int, 'totalPayment', $2::int, 'status', $3::text, 'dateOfPayment', now()::date::text)
+        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('paymentId', $1::int, 'totalPayment', $2::int, 'status', $3::text, 'dateOfPayment', now()::date::text), updated_at = now()
         WHERE user_id=$4 AND flow = $5
     `,
     [transactionId, pay, status, userId, flow],
