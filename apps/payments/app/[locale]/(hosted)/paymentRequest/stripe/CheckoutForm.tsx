@@ -6,6 +6,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { StripePaymentElementOptions } from "@stripe/stripe-js";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 type CheckoutFormProps = {
   returnUri: string;
@@ -18,6 +19,7 @@ const paymentElementOptions: StripePaymentElementOptions = {
 export default function CheckoutForm({ returnUri }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
   const t = useTranslations();
 
   // TODO: add loading spinner
@@ -40,7 +42,9 @@ export default function CheckoutForm({ returnUri }: CheckoutFormProps) {
       setErrorMessage(error.message);
     } else {
       setErrorMessage("unexpectedError");
-      // TODO: redirect to error page
+      const url = new URL(returnUri);
+      url.searchParams.append("error", "error");
+      router.push(url.href);
     }
 
     setIsLoading(false);
