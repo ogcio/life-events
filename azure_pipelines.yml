@@ -1,5 +1,7 @@
 trigger:
-  - main
+  - dev
+  - uat
+  - sta
   - feat/add-pipeline
 
 pr:
