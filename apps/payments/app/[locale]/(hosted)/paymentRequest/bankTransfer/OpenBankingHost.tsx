@@ -2,6 +2,7 @@
 import { Payment } from "truelayer-embedded-payment-page";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import ds from "design-system/";
 
 type Props = {
   paymentId: string;
@@ -19,6 +20,15 @@ export default function Page(props: Props) {
       payment_id: props.paymentId,
       resource_token: props.resourceToken,
       return_uri: props.returnUri,
+      appearance: {
+        default_color: ds.colours.ogcio.darkTurquoise,
+        spinner: {
+          color: ds.colours.ogcio.darkTurquoise,
+        },
+        illustration: {
+          color: ds.colours.ogcio.darkTurquoise,
+        },
+      },
       onDone: () => {
         payment.unmount();
         status.current = "done";
