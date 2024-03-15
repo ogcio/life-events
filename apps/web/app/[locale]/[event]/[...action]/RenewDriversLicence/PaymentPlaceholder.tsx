@@ -9,7 +9,12 @@ async function findPaymentRequest() {
 }
 
 export default async (props: { flow: string; userId: string }) => {
-  const paymentRequestId = await findPaymentRequest();
+  let paymentRequestId: any;
+  try {
+    paymentRequestId = await findPaymentRequest();
+  } catch (err) {
+    console.log(err);
+  }
 
   if (!paymentRequestId) {
     return <PaymentError />;
