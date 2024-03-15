@@ -127,7 +127,8 @@
         "beneficiaryAccount": "Beneficiary Account",
         "paymentProvider": {
           "openbanking": "OpenBanking Account",
-          "banktransfer": "Manual Bank Transfer Account"
+          "banktransfer": "Manual Bank Transfer Account",
+          "stripe": "Stripe Account"
         },
         "reference": "Reference",
         "amount": "Amount",

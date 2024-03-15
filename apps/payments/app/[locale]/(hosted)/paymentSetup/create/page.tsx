@@ -30,8 +30,9 @@ async function createPayment(userId: string, formData: FormData) {
 
   const openBankingAccount = formData.get("openbanking-account")?.toString();
   const bankTransferAccount = formData.get("banktransfer-account")?.toString();
+  const stripeAccount = formData.get("stripe-account")?.toString();
 
-  if (!openBankingAccount && !bankTransferAccount) {
+  if (!openBankingAccount && !bankTransferAccount && !stripeAccount) {
     throw new Error("Failed to create payment");
   }
 
@@ -103,6 +104,21 @@ async function createPayment(userId: string, formData: FormData) {
         throw new Error("Failed to create payment");
       }
     }
+
+    if (stripeAccount) {
+      const paymentRequestProviderQueryResult = await pgpool.query<{
+        payment_request_id: string;
+      }>(
+        `insert into payment_requests_providers (provider_id, payment_request_id)
+        values ($1, $2)`,
+        [stripeAccount, paymentRequestId],
+      );
+
+      if (!paymentRequestProviderQueryResult.rowCount) {
+        throw new Error("Failed to create payment");
+      }
+    }
+
     await client.query("COMMIT");
 
     redirect(
@@ -124,6 +140,8 @@ export default async function Page() {
     userId,
     "openbanking",
   );
+
+  const stripeAccounts = await getRegisteredAccounts(userId, "stripe");
 
   const manualBankTransferAccounts = await getRegisteredAccounts(
     userId,
@@ -184,6 +202,24 @@ export default async function Page() {
               ))}
             </select>
           </div>
+          <div className="govie-form-group">
+            <label htmlFor="stripe-account" className="govie-label--s">
+              {t("form.paymentProvider.stripe")}
+            </label>
+            <select
+              id="stripe-account"
+              name="stripe-account"
+              className="govie-select"
+            >
+              <option value={""}>Disabled</option>
+              {stripeAccounts.map((account) => (
+                <option key={account.provider_id} value={account.provider_id}>
+                  {account.provider_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="govie-form-group">
             <label htmlFor="banktransfer-account" className="govie-label--s">
               {t("form.paymentProvider.banktransfer")}
