@@ -2,16 +2,16 @@ import dayjs from "dayjs";
 import { notFound, redirect } from "next/navigation";
 import { PgSessions } from "auth/sessions";
 import { routes, workflow, postgres, web } from "../../../../utils";
-import AddressForm from "../AddressForm";
+import AddressForm from "../shared/AddressForm";
 import ApplicationSuccess from "./ApplicationSuccess";
 import DetailsSummary from "./DetailsSummary";
 import MedicalForm from "./MedicalForm";
 import PaymentPlaceholder from "./PaymentPlaceholder";
-import ProofOfAddress from "../ProofOfAddress";
+import ProofOfAddress from "../shared/ProofOfAddress";
 import SimpleDetailsForm from "./SimpleDetailsForm";
 import PaymentSuccess from "./PaymentSuccess";
 import PaymentError from "./PaymentError";
-import FormLayout from "../FormLayout";
+import FormLayout from "../shared/FormLayout";
 import ServerErrorPage from "../../../ServerErrorPage";
 
 export const renewDriverLicenceRules: Parameters<
@@ -338,11 +338,6 @@ const ApplicationSuccessStep: React.FC<FormProps> = ({
   );
 };
 
-const ErrorPage = () => {
-  //Handle missed case of infinite redirection
-  return <ServerErrorPage error={new Error("TEST")} />;
-};
-
 const FormComponentsMap = {
   [routes.driving.renewDriversLicence.confirmApplication.slug]:
     ConfirmApplicationStep,
@@ -357,7 +352,6 @@ const FormComponentsMap = {
   [routes.driving.renewDriversLicence.paymentError.slug]: PaymentErrorStep,
   [routes.driving.renewDriversLicence.applicationSuccess.slug]:
     ApplicationSuccessStep,
-  [routes.driving.renewDriversLicence.slug]: ErrorPage,
 };
 
 export default async (props: web.NextPageProps) => {

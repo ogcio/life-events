@@ -6,7 +6,7 @@ import { ListRow } from "../shared/SummaryListRow";
 import { workflow, postgres, routes } from "../../../../utils";
 
 export default (props: {
-  data: workflow.OrderEHIC;
+  data: workflow.OrderBirthCertificate;
   flow: string;
   userId: string;
   onSubmit?: (formData?: FormData) => Promise<void>;
@@ -19,19 +19,19 @@ export default (props: {
 
     await postgres.pgpool.query(
       `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT)
+        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT), updated_at = now()
         WHERE user_id = $1 AND flow = $2
     `,
       [userId, flow],
     );
-    revalidatePath(routes.health.orderEHIC.checkDetails.slug);
+    revalidatePath("/confirm-application");
   }
 
-  const changeDetailsHref = routes.health.orderEHIC.changeDetails.slug;
-  const changeAddressHref = routes.health.orderEHIC.newAddress.slug;
-  const dispatchAddressHref = routes.health.orderEHIC.dispatchAddress.slug;
-  const selectLocalHealthOfficeHref =
-    routes.health.orderEHIC.selectLocalHealthOffice.slug;
+  const changeDetailsHref =
+    routes.health.orderBirthCertificate.changeDetails.slug;
+  const changeAddressHref = routes.health.orderBirthCertificate.newAddress.slug;
+  const changeProofOfAddressHref =
+    routes.health.orderBirthCertificate.proofOfAddress.slug;
   const dateOfBirth =
     data.yearOfBirth && data.monthOfBirth && data.dayOfBirth
       ? dayjs(
@@ -42,13 +42,39 @@ export default (props: {
     <>
       <div className="govie-grid-row">
         <div className="govie-grid-column-two-thirds-from-desktop">
-          <div className="govie-heading-l">{t("check-details")}</div>
+          <div className="govie-heading-l">{t("title")}</div>
           <div className="govie-heading-m">{t("formTitle")}</div>
           <dl className="govie-summary-list">
             <ListRow
               change={{ key: t("change"), value: changeDetailsHref }}
               item={{ key: t("userName"), value: data.userName }}
             />
+            <ListRow
+              change={{ key: t("change"), value: changeAddressHref }}
+              item={{ key: t("currentAddress"), value: data.currentAddress }}
+            />
+            <ListRow
+              change={{ key: t("change"), value: changeAddressHref }}
+              item={{
+                key: t("timeAtCurrentAddress"),
+                value: data.timeAtAddress,
+              }}
+            />
+            <ListRow
+              change={{ key: t("change"), value: changeDetailsHref }}
+              item={{
+                key: t("emailAddress"),
+                value: data.email,
+              }}
+            />
+            <ListRow
+              change={{ key: t("change"), value: changeDetailsHref }}
+              item={{
+                key: t("mobileNumber"),
+                value: data.mobile,
+              }}
+            />
+
             <ListRow
               change={{ key: t("change"), value: changeDetailsHref }}
               item={{ key: t("sex"), value: data.sex }}
@@ -59,25 +85,6 @@ export default (props: {
                 key: t("dateOfBirth"),
                 value: dateOfBirth,
               }}
-            />
-            <ListRow
-              change={{ key: t("change"), value: changeDetailsHref }}
-              item={{ key: t("PPSN"), value: data.PPSN }}
-            />
-            <ListRow
-              change={{ key: t("change"), value: changeAddressHref }}
-              item={{ key: t("homeAddress"), value: data.currentAddress }}
-            />
-            <ListRow
-              change={{ key: t("change"), value: selectLocalHealthOfficeHref }}
-              item={{
-                key: t("localHealthOffice"),
-                value: data.localHealthOffice,
-              }}
-            />
-            <ListRow
-              change={{ key: t("change"), value: dispatchAddressHref }}
-              item={{ key: t("dispatchAddress"), value: data.dispatchAddress }}
             />
           </dl>
 

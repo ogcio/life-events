@@ -21,7 +21,8 @@
     "order-ehic": "Order an EHIC",
     "check-details": "Check your details", 
     "select-health-office": "Select your local health office",
-    "dispatch-address": "Enter a dispatch address"
+    "dispatch-address": "Enter a dispatch address", 
+    "order-birth-certificate": "Order a copy of my birth certificate"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -132,7 +133,9 @@
     "renewDriversLicenceBody": "Once approved your driving licence will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
     "purpose": "Application for",
     "orderEHIC": "EHIC", 
-    "orderEHICBody": "Once approved your EHIC will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days."
+    "orderEHICBody": "Once approved your EHIC will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
+    "orderBirthCertificate": "Birth certificate copy",
+    "orderBirthCertificateBody": "Once approved your birth certificate will be sent to you by post and you should receive it within 7 days."
   },
   "RenewDriversLicence": {
     "title": "Renew your driving licence"
@@ -164,6 +167,22 @@
         "mid": "Your application for an EHIC is being processed",
         "post": "Your EHIC is now available",
         "rejected": "Your application for an EHIC is rejected"
+      },
+      "description": {
+        "base": "Lorem ipsum dolor sit amet",
+        "pre": "Lorem ipsum dolor sit amet",
+        "mid": "Lorem ipsum dolor sit amet",
+        "post": "Lorem ipsum dolor sit amet",
+        "rejected": "{rejectedReason}"
+      }
+    }, 
+    "orderBirthCertificate": {
+      "title": {
+        "base": "Order a copy of my birth certificate",
+        "pre": "Continue your application for a copy of your birth certificate",
+        "mid": "Your application for a copy of your birth certificate is being processed",
+        "post": "The copy of your birth certificate is now available",
+        "rejected": "Your application for a copy of your birth certificate is rejected"
       },
       "description": {
         "base": "Lorem ipsum dolor sit amet",
@@ -230,6 +249,26 @@
       "PPSN": "PPSN",
       "dispatchAddress": "Dispatch address"
     },
+    "OrderBirthCertificateUserDetails": {
+      "title": "Review birth certificate application",
+      "orderBirthCertificate": "Birth certificate copy",
+      "name": "Name",
+      "sex": "Sex",
+      "address": "Address",
+      "addressVerified": "Address verified",
+      "yes": "Yes",
+      "no": "No",
+      "proofOfAddress": "Proof of address",
+      "mobile": "Mobile",
+      "email": "Email",
+      "reject": "Reject",
+      "approve": "Approve",
+      "birthDay": "Date of birth",
+      "utilityBill": "Utility bill",
+      "bankStatement": "Bank statement",
+      "taxDocuments": "Tax document",
+      "noDocuments": "No document"
+    },
     "RejectReasonForm": {
       "title": "Reason for rejection",
       "inputLabel": "Provide the reason for the user to see",
@@ -246,7 +285,8 @@
       "view": "View",
       "back": "Back",
       "eventNotFound": "Event not found",
-      "orderEHIC": "Application for an EHIC"
+      "orderEHIC": "Application for an EHIC", 
+      "orderBirthCertificate": "Application for a copy of the birth certificate"
     },
     "StatusMenu": {
       "all": "All",

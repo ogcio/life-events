@@ -5,10 +5,12 @@ import OpenEventStatusImage from "./OpenEventStatusImage";
 import { renewDriverLicenceRules } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { postgres, routes, workflow } from "../../utils";
 import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
+import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/OrderBirthCertificate";
 
 const eventRules = {
   [workflow.keys.orderEHIC]: orderEHICRules,
   [workflow.keys.renewDriversLicence]: renewDriverLicenceRules,
+  [workflow.keys.orderBirthCertificate]: orderBirthCertificateRules,
 };
 
 async function getEvents() {
@@ -20,6 +22,10 @@ async function getEvents() {
     },
     {
       flowKey: workflow.keys.orderEHIC,
+      category: workflow.categories.health,
+    },
+    {
+      flowKey: workflow.keys.orderBirthCertificate,
       category: workflow.categories.health,
     },
   ]);
