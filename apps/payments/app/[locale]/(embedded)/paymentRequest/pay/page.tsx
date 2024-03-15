@@ -77,16 +77,6 @@ export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return <NotFound />;
 
-  const stripePaymentLink = useMemo(
-    () =>
-      getPaymentUrl(
-        props.searchParams!.paymentId,
-        "card",
-        props.searchParams!.id,
-      ),
-    [props.searchParams],
-  );
-
   // Enforce being logged in
   await PgSessions.get();
 
@@ -191,7 +181,15 @@ export default async function Page(props: Props) {
         <div style={{ margin: "1em 0" }}>
           <h3 className="govie-heading-s">{t("payByCard")}</h3>
           {hasStripe && (
-            <ClientLink label={t("payNow")} href={stripePaymentLink} />
+            <ClientLink
+              label={t("payNow")}
+              href={getPaymentUrl(
+                props.searchParams!.paymentId,
+                "stripe",
+                props.searchParams!.id,
+                urlAmount,
+              )}
+            />
           )}
         </div>
       </div>
