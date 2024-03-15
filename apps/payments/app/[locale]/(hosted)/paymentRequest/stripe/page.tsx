@@ -78,6 +78,7 @@ export default async function Card(props: {
   await createTransaction(
     props.searchParams.paymentId,
     userId,
+    // TODO: fix: this is not an external payment id
     paymentDetails.id,
     props.searchParams.integrationRef,
   );
