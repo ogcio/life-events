@@ -4,13 +4,70 @@ import RejectReasonForm from "./RejectReasonForm";
 import RenewLicenceUserDetails from "./RenewLicenceUserDetails";
 import { postgres, web, workflow } from "../../utils";
 import { getUserInfoById } from "auth/sessions";
+import { flowKeys } from "../../utils/workflow";
+import OrderEHICUserDetails from "./OrderEHICUserDetails";
+import { notFound } from "next/navigation";
+
+const isOrderEHICData = (
+  flow: string,
+  flowData: workflow.Workflow,
+): flowData is workflow.OrderEHIC => flow === flowKeys.orderEHIC;
+const isRenewDriversLicenceData = (
+  flow: string,
+  flowData: workflow.Workflow,
+): flowData is workflow.RenewDriversLicence =>
+  flow === flowKeys.renewDriversLicence;
+
+type FormItem = {
+  userName: string | undefined;
+  userId: string;
+  flow: string;
+  flowData: workflow.Workflow;
+  proofOfAddressFileId?: string | undefined;
+};
+
+function getUserDetailsForm(
+  evt: string,
+  item: FormItem,
+  params: web.NextPageProps["params"],
+  searchParams: web.NextPageProps["searchParams"],
+) {
+  if (evt === flowKeys.orderEHIC && isOrderEHICData(item.flow, item.flowData)) {
+    return (
+      <OrderEHICUserDetails
+        flow={item.flow}
+        hideFormButtons={Boolean(item.flowData.successfulAt)}
+        params={params}
+        userId={item.userId}
+        searchParams={searchParams}
+        flowData={item.flowData}
+      />
+    );
+  }
+  if (
+    evt === flowKeys.renewDriversLicence &&
+    isRenewDriversLicenceData(item.flow, item.flowData)
+  ) {
+    return (
+      <RenewLicenceUserDetails
+        flow={item.flow}
+        hideFormButtons={Boolean(item.flowData.successfulAt)}
+        params={params}
+        userId={item.userId}
+        searchParams={searchParams}
+        flowData={item.flowData}
+      />
+    );
+  }
+  throw notFound();
+}
 
 export default async (props: web.NextPageProps) => {
   const t = await getTranslations("Admin.EventsTable");
   const userFlows = await postgres.pgpool.query<{
     userId: string;
     flow: string;
-    flowData: workflow.RenewDriversLicence;
+    flowData: workflow.Workflow;
     proofOfAddressFileId?: string;
   }>(`
   SELECT 
@@ -19,7 +76,7 @@ export default async (props: web.NextPageProps) => {
     fd.flow_data as "flowData"
     FROM user_flow_data fd
   `);
-  
+
   if (props.searchParams && Object.keys(props.searchParams).length) {
     const baseItem = userFlows.rows.find(
       (row) =>
@@ -45,6 +102,7 @@ export default async (props: web.NextPageProps) => {
       props.searchParams,
     );
     searchParamsWithRejectionOpen.append("open", "rejection");
+
     return (
       <>
         {props.searchParams.open === "rejection" && (
@@ -55,15 +113,12 @@ export default async (props: web.NextPageProps) => {
             searchParams={props.searchParams}
           />
         )}
-        <RenewLicenceUserDetails
-          flow={item.flow}
-          hideFormButtons={Boolean(item.flowData.successfulAt)}
-          params={props.params}
-          userId={item.userId}
-          searchParams={props.searchParams}
-          flowData={item.flowData}
-        />
-
+        {getUserDetailsForm(
+          props.searchParams.evt,
+          item,
+          props.params,
+          props.searchParams,
+        )}
         <Link className="govie-back-link" href="/admin">
           {t("back")}
         </Link>
@@ -71,7 +126,7 @@ export default async (props: web.NextPageProps) => {
     );
   }
 
-  const status = (flowData: workflow.RenewDriversLicence) => {
+  const status = (flowData: workflow.Workflow) => {
     if (flowData.successfulAt) {
       return "Approved";
     }

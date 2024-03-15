@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import ds from "design-system";
-import { form, aws, routes, postgres } from "../../../../utils";
+import { form, aws, routes, postgres } from "../../../utils";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import {
@@ -15,6 +15,8 @@ export default async (props: {
   did?: string;
   userId: string;
   flow: string;
+  slug: string;
+  onSubmitRedirectSlug: string;
 }) => {
   const t = await getTranslations("ProofOfAddressForm");
   const errorT = await getTranslations("formErrors");
@@ -23,7 +25,7 @@ export default async (props: {
     /**
      * This step is a bit unclear.
      *
-     * Do we need a record for each new address we add for each single drivers licence renewal
+     * Do we need a record for each new address we add for each single new action
      * or should it be it's own flow. Can you have multiple flows for addresses?
      * Nobody is going to add multiple addresses at the same probably?
      */
@@ -85,12 +87,7 @@ export default async (props: {
     }
 
     if (formErrors.length) {
-      await form.insertErrors(
-        formErrors,
-        props.userId,
-        routes.driving.renewLicense.proofOfAddress.slug,
-        props.flow,
-      );
+      await form.insertErrors(formErrors, props.userId, props.slug, props.flow);
 
       return revalidatePath("/");
     }
@@ -150,22 +147,17 @@ export default async (props: {
     }
 
     if (formErrors.length) {
-      await form.insertErrors(
-        formErrors,
-        props.userId,
-        routes.driving.renewLicense.proofOfAddress.slug,
-        props.flow,
-      );
+      await form.insertErrors(formErrors, props.userId, props.slug, props.flow);
 
       return revalidatePath("/");
     }
 
-    redirect("/driving/renew-licence");
+    redirect(props.onSubmitRedirectSlug);
   }
   if (parseInt(props?.step ?? "") === 2) {
     const errors = await form.getErrorsQuery(
       props.userId,
-      routes.driving.renewLicense.proofOfAddress.slug,
+      props.slug,
       props.flow,
     );
 

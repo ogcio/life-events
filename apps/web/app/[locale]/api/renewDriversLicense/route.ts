@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
   return redirect(
     `/driving/renew-licence/${
       status === "executed"
-        ? driving.renewLicense.paymentSuccess.slug
-        : driving.renewLicense.paymentError.slug
+        ? driving.renewDriversLicence.paymentSuccess.slug
+        : driving.renewDriversLicence.paymentError.slug
     }`,
   );
 }

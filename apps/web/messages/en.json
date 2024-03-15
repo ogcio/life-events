@@ -2,6 +2,11 @@
   "Index": {
     "title": "Homepage"
   },
+  "NotFound": {
+    "title": "Not Found",
+    "description": " Sorry, the requested resource could not be found",
+    "return-home": "Return Home" 
+  },
   "BreadcrumbsBySlug": {
     "home": "Home",
     "renew-licence": "Renew your driving licence",
@@ -12,7 +17,11 @@
     "payment-selection": "Payment selection",
     "payment-success": "Payment successful",
     "application-success": "Application successful",
-    "medical-certificate": "Medical form upload"
+    "medical-certificate": "Medical form upload",
+    "order-ehic": "Order an EHIC",
+    "check-details": "Check your details", 
+    "select-health-office": "Select your local health office",
+    "dispatch-address": "Enter a dispatch address"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -21,10 +30,12 @@
     "emailAddress": "Email address",
     "mobileNumber": "Mobile number",
     "sex": "Sex",
-    "submitText": "Confirm and continue"
+    "submitText": "Confirm and continue",
+    "PPSN": "PPSN"
   },
   "DetailsSummaryForm": {
     "title": "Confirm your application",
+    "check-details": "Check your details",
     "formTitle": "Personal details",
     "userName": "Name",
     "dateOfBirth": "Date of Birth",
@@ -45,7 +56,11 @@
     "bankStatement": "Bank statement",
     "utilityBill": "Utility bill",
     "taxDocuments": "Tax document",
-    "noDocuments": "No document"
+    "noDocuments": "No document", 
+    "homeAddress": "Home address", 
+    "PPSN": "PPSN", 
+    "localHealthOffice": "Local Health Office", 
+    "dispatchAddress": "Dispatch address"
   },
   "ChangeSimpleDetailsForm": {
     "day": "Day",
@@ -54,19 +69,25 @@
     "continue": "Continue"
   },
   "AddressForm": {
-    "title": "Enter your new address",
+    "new-address": "Enter your new address",
+    "dispatch-address": "Enter a dispatch address",
     "warningText": "Enter your details exactly as they appear on your identity document.",
     "warning": "Warning",
     "addressSearchTitle": "Address search",
     "searchHint": "Enter an Eircode or street (for example, F91 DK74 or Ballincar Heights)",
     "findAddress": "Find address",
-    "selectHint": "Choose yor address from the drop-down list",
+    "selectHint": "Choose your address from the drop-down list",
     "continueWithAddress": "Continue with this address",
     "notListedTextLink": "Address not listed - Enter manually",
     "firstLineOfAddress": "Address",
     "town": "Town",
     "county": "County",
     "eirecode": "Eirecode"
+  },
+  "LocalHealthOfficeForm":{
+    "selectHealthOffice": "Select your Local Health Office",
+    "selectHint": "Select your local Health Office from the list below",
+    "continueWithHealthOffice": "Continue with this Health Office"
   },
   "ProofOfAddressForm": {
     "infoTitle": "You'll now need to upload proof of address",
@@ -105,11 +126,13 @@
     "panelReferenceText": "Your reference number",
     "panelReferenceNumber": "HDJ2123F*",
     "title": "What happens next?",
-    "body": "Once approved your driving licence will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
     "summaryTitle": "Application summary",
     "submitText": "Return to My Portal",
     "renewDriversLicence": "Driving licence renewal",
-    "purpose": "Application for"
+    "renewDriversLicenceBody": "Once approved your driving licence will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
+    "purpose": "Application for",
+    "orderEHIC": "EHIC", 
+    "orderEHICBody": "Once approved your EHIC will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days."
   },
   "RenewDriversLicence": {
     "title": "Renew your driving licence"
@@ -131,6 +154,22 @@
         "pre": "Expires on {date}",
         "mid": "We will notify you again when your new licence is available in your Digital Wallet",
         "post": "It is now available in your digital wallet and will be posted to you",
+        "rejected": "{rejectedReason}"
+      }
+    },
+    "orderEHIC": {
+      "title": {
+        "base": "Order an EHIC",
+        "pre": "Continue your application for an EHIC",
+        "mid": "Your application for an EHIC is being processed",
+        "post": "Your EHIC is now available",
+        "rejected": "Your application for an EHIC is rejected"
+      },
+      "description": {
+        "base": "Lorem ipsum dolor sit amet",
+        "pre": "Lorem ipsum dolor sit amet",
+        "mid": "Lorem ipsum dolor sit amet",
+        "post": "Lorem ipsum dolor sit amet",
         "rejected": "{rejectedReason}"
       }
     }
@@ -167,6 +206,27 @@
       "taxDocuments": "Tax document",
       "noDocuments": "No document"
     },
+    "OrderEHICUserDetails": {
+      "title": "Review EHIC application",
+      "orderEHIC": "EHIC",
+      "name": "Name",
+      "sex": "Sex",
+      "address": "Address",
+      "addressVerified": "Address verified",
+      "yes": "Yes",
+      "no": "No",
+      "proofOfAddress": "Proof of address",
+      "reject": "Reject",
+      "approve": "Approve",
+      "birthDay": "Date of birth",
+      "utilityBill": "Utility bill",
+      "bankStatement": "Bank statement",
+      "taxDocuments": "Tax document",
+      "noDocuments": "No document",
+      "localHealthOffice": "Local Health Office", 
+      "PPSN": "PPSN",
+      "dispatchAddress": "Dispatch address"
+    },
     "RejectReasonForm": {
       "title": "Reason for rejection",
       "inputLabel": "Provide the reason for the user to see",
@@ -182,7 +242,8 @@
       "actionColumn": "Action",
       "view": "View",
       "back": "Back",
-      "eventNotFound": "Event not found"
+      "eventNotFound": "Event not found",
+      "orderEHIC": "Application for an EHIC"
     }
   },
   "formErrors": {
@@ -204,7 +265,8 @@
       "medical": "medical document",
       "town": "town",
       "eirecode": "eirecode",
-      "county": "county"
+      "county": "county",
+      "PPSN": "PPSN"
     }
   },
   "Notifications": {

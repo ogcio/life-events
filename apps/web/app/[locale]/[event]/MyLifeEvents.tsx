@@ -2,19 +2,72 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
 import OpenEventStatusImage from "./OpenEventStatusImage";
-import {
-  renewDriverLicenceRules,
-  renewDriversLicenceFlowKey,
-} from "./[...action]/RenewDriversLicence/RenewDriversLicence";
+import { renewDriverLicenceRules } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { postgres, routes, workflow } from "../../utils";
+import { flowKeys } from "../../utils/workflow";
+import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
+
+const eventRules = {
+  [flowKeys.orderEHIC]: orderEHICRules,
+  [flowKeys.renewDriversLicence]: renewDriverLicenceRules,
+};
 
 async function getEvents() {
   "use server";
   return Promise.resolve([
     {
-      flowKey: renewDriversLicenceFlowKey,
+      flowKey: flowKeys.renewDriversLicence,
+      category: workflow.categories.driving,
+    },
+    {
+      flowKey: flowKeys.orderEHIC,
+      category: workflow.categories.health,
     },
   ]);
+}
+
+function eventFlowMapper(row: {
+  flow: string;
+  category: string;
+  data: workflow.Workflow;
+}) {
+  const flowKey = row.flow;
+  let descriptionKey = row.flow;
+  let titleKey = row.flow;
+
+  const { key: step } = workflow.getCurrentStep(eventRules[row.flow], row.data);
+
+  let successful = false;
+  if (row.data.successfulAt) {
+    successful = true;
+    descriptionKey += ".description.post";
+    titleKey += ".title.post";
+  } else if (row.data.rejectReason) {
+    titleKey += ".title.rejected";
+    descriptionKey += ".description.rejected";
+  } else if (
+    [
+      routes.category[row.category][row.flow].applicationSuccess.slug,
+      routes.category[row.category][row.flow].paymentSuccess?.slug,
+    ].includes(step || "")
+  ) {
+    successful = true;
+    descriptionKey += ".description.mid";
+    titleKey += ".title.mid";
+  } else {
+    descriptionKey += ".description.pre";
+    titleKey += ".title.pre";
+  }
+
+  return {
+    successful,
+    flowKey,
+    titleKey,
+    descriptionKey: descriptionKey,
+    rejectedReaason: row.data.rejectReason,
+    category: row.category,
+    slug: routes.category[row.category][row.flow].path(),
+  };
 }
 
 async function getFlows() {
@@ -24,12 +77,13 @@ async function getFlows() {
 
   // union the other flow types when we have them and add some type guard to figure out the pre/mid/post states
   const flowsQueryResult = await postgres.pgpool.query<
-    { flow: string; data: workflow.RenewDriversLicence },
+    { flow: string; category: string; data: workflow.Workflow },
     string[]
   >(
     `
       SELECT
         flow,
+        category,
         flow_data as "data"
       FROM user_flow_data
       WHERE user_id = $1
@@ -41,47 +95,7 @@ async function getFlows() {
     return [];
   }
 
-  return flowsQueryResult.rows.map((row) => {
-    // do some type guarding here, assume that we're dealing with renew drivers licence
-    let descriptionKey = row.flow;
-    let titleKey = row.flow;
-
-    const { key: step } = workflow.getCurrentStep(
-      renewDriverLicenceRules,
-      row.data,
-    );
-
-    let successful = false;
-    if (row.data.successfulAt) {
-      successful = true;
-      descriptionKey += ".description.post";
-      titleKey += ".title.post";
-    } else if (row.data.rejectReason) {
-      titleKey += ".title.rejected";
-      descriptionKey += ".description.rejected";
-    } else if (
-      [
-        routes.driving.renewLicense.applicationSuccess.slug,
-        routes.driving.renewLicense.paymentSuccess.slug,
-      ].includes(step || "")
-    ) {
-      successful = true;
-      descriptionKey += ".description.mid";
-      titleKey += ".title.mid";
-    } else {
-      descriptionKey += ".description.pre";
-      titleKey += ".title.pre";
-    }
-
-    return {
-      successful,
-      flowKey: row.flow,
-      titleKey,
-      descriptionKey: descriptionKey,
-      rejectedReaason: row.data.rejectReason,
-      slug: routes.driving.renewLicense.path(), // get from some key to slug map or object
-    };
-  });
+  return flowsQueryResult.rows.map(eventFlowMapper);
 }
 
 export default async () => {
@@ -98,7 +112,7 @@ export default async () => {
         flowTitle,
         flowKey: event.flowKey,
         descriptionKey,
-        slug: routes.driving.renewLicense.path(),
+        slug: routes.category[event.category][event.flowKey].path(),
       };
     });
 

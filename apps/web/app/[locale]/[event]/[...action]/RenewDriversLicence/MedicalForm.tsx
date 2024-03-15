@@ -26,7 +26,7 @@ async function Form(props: { userId: string; flow: string }) {
       await form.insertErrors(
         formErrors,
         props.userId,
-        routes.driving.renewLicense.medicalCertificate.slug,
+        routes.driving.renewDriversLicence.medicalCertificate.slug,
         props.flow,
       );
       return revalidatePath("/");
@@ -39,12 +39,14 @@ async function Form(props: { userId: string; flow: string }) {
     `,
       [props.userId, props.flow],
     );
-    revalidatePath("/" + routes.driving.renewLicense.medicalCertificate.slug);
+    revalidatePath(
+      "/" + routes.driving.renewDriversLicence.medicalCertificate.slug,
+    );
   }
 
   const errors = await form.getErrorsQuery(
     props.userId,
-    routes.driving.renewLicense.medicalCertificate.slug,
+    routes.driving.renewDriversLicence.medicalCertificate.slug,
     props.flow,
   );
 

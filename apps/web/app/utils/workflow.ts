@@ -5,6 +5,9 @@
  * must derive from either Workflow types.
  */
 
+import { PgSessions } from "auth/sessions";
+import { postgres } from ".";
+
 // ===== Base =====
 type Base = {
   rejectReason: string;
@@ -63,6 +66,63 @@ export function emptyRenewDriversLicence(): RenewDriversLicence {
   };
 }
 
+export type OrderEHIC = Base & {
+  userName: string;
+  sex: string;
+  dayOfBirth: string;
+  monthOfBirth: string;
+  yearOfBirth: string;
+  PPSN: string;
+  currentAddress: string;
+  currentAddressVerified: string;
+  email: string;
+  proofOfAddressRequest: string;
+  confirmedApplication: string;
+  rejectReason: string;
+  proofOfAddressFileId: string;
+  status: string;
+  localHealthOffice: string;
+  dispatchAddress: string;
+};
+
+export function emptyOrderEHIC(): OrderEHIC {
+  return {
+    userName: "",
+    sex: "",
+    dayOfBirth: "",
+    monthOfBirth: "",
+    yearOfBirth: "",
+    PPSN: "",
+    currentAddress: "",
+    currentAddressVerified: "",
+    email: "",
+    proofOfAddressRequest: "",
+    confirmedApplication: "",
+    successfulAt: "",
+    rejectReason: "",
+    proofOfAddressFileId: "",
+    status: "",
+    localHealthOffice: "",
+    dispatchAddress: "",
+  };
+}
+
+export type Workflow = RenewDriversLicence | OrderEHIC;
+
+// ===== flow keys =====
+
+export const flowKeys = {
+  renewDriversLicence: "renewDriversLicence",
+  orderEHIC: "orderEHIC",
+};
+
+// ===== categories =====
+
+export const categories = {
+  driving: "driving",
+  health: "health",
+};
+
 // ===== utils =====
 
 type FlowState = {
@@ -91,4 +151,36 @@ export function getCurrentStep<TFlowData>(
     next = fn(state);
   }
   return next;
+}
+
+export async function getFlowData<T extends Workflow>(
+  flowKey: string,
+  defaultData: T,
+) {
+  // Session details
+  const { userId, email, firstName, lastName } = await PgSessions.get();
+
+  const flowQuery = postgres.pgpool.query<{ data: Workflow }, [string, string]>(
+    `
+    SELECT
+        flow_data AS "data"
+    FROM user_flow_data
+    WHERE user_id=$1
+    AND flow=$2`,
+    [userId, flowKey],
+  );
+
+  const flowResult = await flowQuery;
+
+  const data = defaultData;
+
+  data.userName = [firstName, lastName].join(" ");
+  data.email = email;
+
+  if (flowResult.rowCount) {
+    const [{ data: flowData }] = flowResult.rows;
+    Object.assign(data, flowData);
+  }
+
+  return data;
 }
