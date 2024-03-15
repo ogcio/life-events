@@ -4,19 +4,18 @@ import RejectReasonForm from "./RejectReasonForm";
 import RenewLicenceUserDetails from "./RenewLicenceUserDetails";
 import { postgres, web, workflow } from "../../utils";
 import { getUserInfoById } from "auth/sessions";
-import { flowKeys } from "../../utils/workflow";
 import OrderEHICUserDetails from "./OrderEHICUserDetails";
 import { notFound } from "next/navigation";
 
 const isOrderEHICData = (
   flow: string,
   flowData: workflow.Workflow,
-): flowData is workflow.OrderEHIC => flow === flowKeys.orderEHIC;
+): flowData is workflow.OrderEHIC => flow === workflow.keys.orderEHIC;
 const isRenewDriversLicenceData = (
   flow: string,
   flowData: workflow.Workflow,
 ): flowData is workflow.RenewDriversLicence =>
-  flow === flowKeys.renewDriversLicence;
+  flow === workflow.keys.renewDriversLicence;
 
 type FormItem = {
   userName: string | undefined;
@@ -32,7 +31,10 @@ function getUserDetailsForm(
   params: web.NextPageProps["params"],
   searchParams: web.NextPageProps["searchParams"],
 ) {
-  if (evt === flowKeys.orderEHIC && isOrderEHICData(item.flow, item.flowData)) {
+  if (
+    evt === workflow.keys.orderEHIC &&
+    isOrderEHICData(item.flow, item.flowData)
+  ) {
     return (
       <OrderEHICUserDetails
         flow={item.flow}
@@ -45,7 +47,7 @@ function getUserDetailsForm(
     );
   }
   if (
-    evt === flowKeys.renewDriversLicence &&
+    evt === workflow.keys.renewDriversLicence &&
     isRenewDriversLicenceData(item.flow, item.flowData)
   ) {
     return (

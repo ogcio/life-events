@@ -1,6 +1,5 @@
 import { notFound, redirect } from "next/navigation";
 import { web, workflow, routes } from "../../../../utils";
-import { flowKeys, getFlowData } from "../../../../utils/workflow";
 import { PgSessions } from "auth/sessions";
 import FormLayout from "../FormLayout";
 import SimpleDetailsForm from "./SimpleDetailsForm";
@@ -78,7 +77,7 @@ const CheckDetailsStep: React.FC<FormProps> = ({
       >
         <DetailsSummary
           data={data}
-          flow={flowKeys.orderEHIC}
+          flow={workflow.keys.orderEHIC}
           userId={userId}
           dataValid={isStepValid}
         />
@@ -105,7 +104,7 @@ const ChangeDetailsStep: React.FC<FormProps> = ({
     >
       <SimpleDetailsForm
         data={data}
-        flow={flowKeys.orderEHIC}
+        flow={workflow.keys.orderEHIC}
         urlBase={urlBase}
         userId={userId}
       />
@@ -133,7 +132,7 @@ const NewAddressStep: React.FC<FormProps> = ({
       <AddressForm
         field={"currentAddress"}
         searchParams={searchParams}
-        flow={flowKeys.orderEHIC}
+        flow={workflow.keys.orderEHIC}
         userId={userId}
         data={data}
         slug={routes.health.orderEHIC.newAddress.slug}
@@ -163,7 +162,7 @@ const ProofOfAddressStep: React.FC<FormProps> = ({
     >
       <ProofOfAddress
         step={searchParams?.step}
-        flow={flowKeys.orderEHIC}
+        flow={workflow.keys.orderEHIC}
         userId={userId}
         slug={routes.health.orderEHIC.proofOfAddress.slug}
         onSubmitRedirectSlug={baseActionHref}
@@ -194,7 +193,7 @@ const DispatchAddressStep: React.FC<FormProps> = ({
         title={t("dispatch-address")}
         field={"dispatchAddress"}
         searchParams={searchParams}
-        flow={flowKeys.orderEHIC}
+        flow={workflow.keys.orderEHIC}
         userId={userId}
         data={data}
         slug={routes.health.orderEHIC.dispatchAddress.slug}
@@ -237,7 +236,7 @@ const ApplicationSuccessStep: React.FC<FormProps> = ({
 }) => {
   return (
     <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
-      <ApplicationSuccess flow={flowKeys.orderEHIC} />
+      <ApplicationSuccess flow={workflow.keys.orderEHIC} />
     </FormLayout>
   );
 };
@@ -255,7 +254,10 @@ const FormComponentsMap = {
 
 export default async (props: web.NextPageProps) => {
   const { userId } = await PgSessions.get();
-  const data = await getFlowData(flowKeys.orderEHIC, workflow.emptyOrderEHIC());
+  const data = await workflow.getFlowData(
+    workflow.keys.orderEHIC,
+    workflow.emptyOrderEHIC(),
+  );
 
   const { key: nextSlug, isStepValid } = workflow.getCurrentStep(
     orderEHICRules,

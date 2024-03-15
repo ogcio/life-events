@@ -109,9 +109,9 @@ export function emptyOrderEHIC(): OrderEHIC {
 
 export type Workflow = RenewDriversLicence | OrderEHIC;
 
-// ===== flow keys =====
+// ===== workflow keys =====
 
-export const flowKeys = {
+export const keys = {
   renewDriversLicence: "renewDriversLicence",
   orderEHIC: "orderEHIC",
 };

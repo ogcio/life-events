@@ -11,7 +11,6 @@ import ProofOfAddress from "../ProofOfAddress";
 import SimpleDetailsForm from "./SimpleDetailsForm";
 import PaymentSuccess from "./PaymentSuccess";
 import PaymentError from "./PaymentError";
-import { flowKeys } from "../../../../utils/workflow";
 import FormLayout from "../FormLayout";
 
 export const renewDriverLicenceRules: Parameters<
@@ -158,7 +157,7 @@ export default async (props: web.NextPageProps) => {
     case routes.driving.renewDriversLicence.applicationSuccess.slug:
       return stepSlug === nextSlug ? (
         <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
-          <ApplicationSuccess flow={flowKeys.renewDriversLicence} />
+          <ApplicationSuccess flow={workflow.keys.renewDriversLicence} />
         </FormLayout>
       ) : (
         redirect(nextSlug || "")
@@ -174,7 +173,7 @@ export default async (props: web.NextPageProps) => {
           backHref={baseActionHref}
         >
           <MedicalForm
-            flow={flowKeys.renewDriversLicence}
+            flow={workflow.keys.renewDriversLicence}
             userId={userId}
             params={props.params}
             searchParams={props.searchParams}
@@ -197,7 +196,7 @@ export default async (props: web.NextPageProps) => {
             monthOfBirth={data.monthOfBirth}
             timeAtAddress={data.timeAtAddress}
             yearOfBirth={data.yearOfBirth}
-            flow={flowKeys.renewDriversLicence}
+            flow={workflow.keys.renewDriversLicence}
             proofOfAddressRequest={data.proofOfAddressRequest}
             dataValid={isStepValid}
           />
@@ -218,7 +217,7 @@ export default async (props: web.NextPageProps) => {
           <AddressForm
             field={"currentAddress"}
             searchParams={props.searchParams}
-            flow={flowKeys.renewDriversLicence}
+            flow={workflow.keys.renewDriversLicence}
             userId={userId}
             data={data}
             slug={routes.driving.renewDriversLicence.newAddress.slug}
@@ -249,7 +248,7 @@ export default async (props: web.NextPageProps) => {
             yearOfBirth={data.yearOfBirth}
             sex={data.sex}
             mobile={data.mobile}
-            flow={flowKeys.renewDriversLicence}
+            flow={workflow.keys.renewDriversLicence}
             urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
           />
         </FormLayout>
@@ -266,7 +265,7 @@ export default async (props: web.NextPageProps) => {
         >
           <ProofOfAddress
             step={props.searchParams?.step}
-            flow={flowKeys.renewDriversLicence}
+            flow={workflow.keys.renewDriversLicence}
             userId={userId}
             slug={routes.driving.renewDriversLicence.proofOfAddress.slug}
             onSubmitRedirectSlug={baseActionHref}
@@ -281,7 +280,7 @@ export default async (props: web.NextPageProps) => {
           backHref={baseActionHref}
         >
           <PaymentPlaceholder
-            flow={flowKeys.renewDriversLicence}
+            flow={workflow.keys.renewDriversLicence}
             userId={userId}
           />
         </FormLayout>
@@ -296,7 +295,7 @@ export default async (props: web.NextPageProps) => {
             paymentId={data.paymentId!}
             dateOfPayment={data.dateOfPayment}
             pay={data.totalPayment}
-            flow={flowKeys.renewDriversLicence}
+            flow={workflow.keys.renewDriversLicence}
           />
         </FormLayout>
       ) : (
