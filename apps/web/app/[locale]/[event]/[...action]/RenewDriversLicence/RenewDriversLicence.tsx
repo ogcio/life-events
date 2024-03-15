@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { notFound, redirect } from "next/navigation";
 import { PgSessions } from "auth/sessions";
-import { routes, workflow, postgres, web } from "../../../../utils";
+import { routes, workflow, web } from "../../../../utils";
 import AddressForm from "../shared/AddressForm";
 import ApplicationSuccess from "./ApplicationSuccess";
 import DetailsSummary from "./DetailsSummary";
@@ -12,7 +12,6 @@ import SimpleDetailsForm from "./SimpleDetailsForm";
 import PaymentSuccess from "./PaymentSuccess";
 import PaymentError from "./PaymentError";
 import FormLayout from "../shared/FormLayout";
-import ServerErrorPage from "../../../ServerErrorPage";
 
 export const renewDriverLicenceRules: Parameters<
   typeof workflow.getCurrentStep<workflow.RenewDriversLicence>
