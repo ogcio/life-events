@@ -63,6 +63,7 @@ stages:
             buildContext: '$(Build.SourcesDirectory)'
         - task: Docker@0
           displayName: 'Run a Docker command'
+          condition: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranch']) }}
           inputs:
             action: 'Run a Docker command'
             customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_${{ serviceName }}_$(Build.BuildId).tar life-events-${{ serviceName }}:$(Build.BuildId)'
