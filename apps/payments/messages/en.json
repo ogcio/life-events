@@ -1,6 +1,8 @@
 {
   "Common": {
-    "notFound": "Payment request not found"
+    "notFound": "Payment request not found",
+    "edit": "Edit",
+    "save": "Save"
   },
   "PaymentSetup": {
     "menu": {
