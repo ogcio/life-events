@@ -177,20 +177,39 @@ export default async function Page(props: Props) {
             <hr className="govie-section-break govie-section-break--visible"></hr>
           </>
         )}
-        <div style={{ margin: "1em 0" }}>
-          <h3 className="govie-heading-s">{t("payByCard")}</h3>
-          {hasStripe && (
+        {hasStripe && (
+          <>
+            <div style={{ margin: "1em 0" }}>
+              <h3 className="govie-heading-s">
+                {t("payByCard")} - Custom flow
+              </h3>
+              <ClientLink
+                label={t("payNow")}
+                href={getPaymentUrl(
+                  props.searchParams!.paymentId,
+                  "stripe",
+                  props.searchParams!.id,
+                  urlAmount,
+                )}
+              />
+            </div>
+            <hr className="govie-section-break govie-section-break--visible"></hr>
+          </>
+        )}
+        {hasStripe && (
+          <div style={{ margin: "1em 0" }}>
+            <h3 className="govie-heading-s">{t("payByCard")} - HPP flow</h3>
             <ClientLink
               label={t("payNow")}
               href={getPaymentUrl(
                 props.searchParams!.paymentId,
-                "stripe",
+                "stripeHPP",
                 props.searchParams!.id,
                 urlAmount,
               )}
             />
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
