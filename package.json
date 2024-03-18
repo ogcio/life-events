@@ -20,7 +20,7 @@
     "migrate": "npm run migrate --workspace=web && npm run migrate --workspace=payments && npm run migrate --workspace=messages"
   },
   "author": "",
-  "license": "Unlicense",
+  "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2",
     "husky": "^9.0.11",

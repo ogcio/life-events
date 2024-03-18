@@ -184,6 +184,9 @@
     "uploadLabel": "Please upload here"
   },
   "Admin": {
+    "Submissions": {
+      "title": "Submissions"
+    },
     "RenewLicenceUserDetails": {
       "title": "Review {flow} application",
       "renewDriversLicence": "Driving licence renewal",
@@ -236,14 +239,20 @@
     "EventsTable": {
       "title": "Life events",
       "renewDriversLicence": "Driving licence renewal",
-      "nameColumn": "Name",
-      "typeColumn": "Event type",
+      "dateColumn": "Date",
+      "typeColumn": "Submission",
       "statusColumn": "Status",
       "actionColumn": "Action",
       "view": "View",
       "back": "Back",
       "eventNotFound": "Event not found",
       "orderEHIC": "Application for an EHIC"
+    },
+    "StatusMenu": {
+      "all": "All",
+      "pending": "Pending",
+      "approved": "Approved",
+      "closed": "Closed"
     }
   },
   "formErrors": {

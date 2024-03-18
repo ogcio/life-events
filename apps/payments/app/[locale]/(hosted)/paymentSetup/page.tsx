@@ -47,7 +47,7 @@ export default async function () {
                 {t("table.payee")}
               </th>
               <th scope="col" className="govie-table__header">
-                {t("table.paymentTitle")}
+                {t("table.title")}
               </th>
               <th scope="col" className="govie-table__header">
                 {t("table.amount")}

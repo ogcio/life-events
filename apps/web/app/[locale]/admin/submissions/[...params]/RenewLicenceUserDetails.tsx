@@ -4,23 +4,17 @@ import dayjs from "dayjs";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ListRow } from "../[event]/[...action]/SummaryListRow";
-import { aws, postgres, web, workflow } from "../../utils";
+import { headers } from "next/headers";
+import { aws, postgres, web, workflow } from "../../../../utils";
+import { ListRow } from "../../../[event]/[...action]/SummaryListRow";
 
-type Props = web.NextPageProps & {
+type Props = {
   flowData: workflow.RenewDriversLicence;
-  hideFormButtons: boolean;
   flow: string;
   userId: string;
 };
 
-export default async ({
-  userId,
-  hideFormButtons,
-  flow,
-  searchParams,
-  flowData,
-}: Props) => {
+export default async ({ userId, flow, flowData }: Props) => {
   const t = await getTranslations("Admin.RenewLicenceUserDetails");
   async function approveAction(formData: FormData) {
     "use server";
@@ -29,7 +23,7 @@ export default async ({
 
     await postgres.pgpool.query(
       `
-            UPDATE user_flow_data set flow_data = flow_data || jsonb_build_object('successfulAt', now()::DATE::TEXT)
+            UPDATE user_flow_data set flow_data = flow_data || jsonb_build_object('successfulAt', now()::DATE::TEXT), updated_at = now()
             WHERE user_id=$1 AND flow = $2
         `,
       [userId, flow],
@@ -44,7 +38,7 @@ export default async ({
   if (flowData.proofOfAddressFileId) {
     const s3Client = new S3Client({
       ...aws.s3ClientConfig,
-      endpoint: process.env.S3_CLIENT_ENDPOINT,
+      endpoint: process.env.S3_ENDPOINT,
     });
 
     const command = new GetObjectCommand({
@@ -55,8 +49,7 @@ export default async ({
       expiresIn: 5 * 60,
     });
   }
-  const searchParamsWithRejectionOpen = new URLSearchParams(searchParams);
-  searchParamsWithRejectionOpen.append("open", "rejection");
+
   return (
     <>
       <div className="govie-heading-l">
@@ -70,9 +63,11 @@ export default async ({
             <ListRow
               item={{
                 key: t("birthDay"),
-                value: dayjs(
-                  `${flowData.yearOfBirth}-${flowData.monthOfBirth}-${flowData.dayOfBirth}`,
-                ).format("DD/MM/YYYY"),
+                value: flowData.yearOfBirth
+                  ? "-"
+                  : dayjs(
+                      `${flowData.yearOfBirth}-${flowData.monthOfBirth}-${flowData.dayOfBirth}`,
+                    ).format("DD/MM/YYYY"),
               }}
             />
             <ListRow item={{ key: t("sex"), value: flowData.sex }} />
@@ -117,24 +112,28 @@ export default async ({
           </dl>
         </div>
       </div>
-      {hideFormButtons ? null : (
-        <form
-          action={approveAction}
-          style={{ display: "flex", alignItems: "baseline", gap: "20px" }}
+
+      <form
+        action={approveAction}
+        style={{ display: "flex", alignItems: "baseline", gap: "20px" }}
+      >
+        <input type="hidden" name="userId" defaultValue={userId} />
+        <input type="hidden" name="flow" defaultValue={flow} />
+        <Link
+          className="govie-link"
+          href={
+            new URL(
+              `${headers().get("x-pathname")}/reject`,
+              process.env.HOST_URL,
+            ).href
+          }
         >
-          <input type="hidden" name="userId" defaultValue={userId} />
-          <input type="hidden" name="flow" defaultValue={flow} />
-          <Link
-            className="govie-link"
-            href={"?" + searchParamsWithRejectionOpen.toString()}
-          >
-            {t("reject")}
-          </Link>
-          <button type="submit" className="govie-button govie-button--medium">
-            {t("approve")}
-          </button>
-        </form>
-      )}
+          {t("reject")}
+        </Link>
+        <button type="submit" className="govie-button govie-button--medium">
+          {t("approve")}
+        </button>
+      </form>
     </>
   );
 };

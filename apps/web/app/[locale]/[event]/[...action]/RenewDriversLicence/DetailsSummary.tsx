@@ -31,7 +31,7 @@ export default (
 
     await postgres.pgpool.query(
       `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT)
+        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT), updated_at = now()
         WHERE user_id = $1 AND flow = $2
     `,
       [props.userId, props.flow],
@@ -105,7 +105,7 @@ export default (
             <ListRow
               item={{
                 key: t("type"),
-                value: t(props.flow),
+                value: t(props.flow as Parameters<typeof t>[0]),
               }}
             />
             <ListRow
@@ -117,7 +117,8 @@ export default (
               item={{
                 key: t("proofOfAddress"),
                 value:
-                  props.proofOfAddressRequest && t(props.proofOfAddressRequest),
+                  props.proofOfAddressRequest &&
+                  t(props.proofOfAddressRequest as Parameters<typeof t>[0]),
               }}
             />
           </dl>
