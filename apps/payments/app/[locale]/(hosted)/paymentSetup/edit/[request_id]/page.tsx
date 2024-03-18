@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { getPaymentRequestDetails } from "../../db";
 import { PgSessions } from "auth/sessions";
 import { pgpool } from "../../../../../dbConnection";
+import { redirect } from "next/navigation";
 
 async function getRegisteredAccounts(userId: string, providerType: string) {
   "use server";
@@ -21,11 +22,61 @@ async function getRegisteredAccounts(userId: string, providerType: string) {
   return accountsQueryResult.rows;
 }
 
-async function editPayment(userId: string, formData: FormData) {
+async function editPayment(
+  userId: string,
+  paymentRequestId: string,
+  formData: FormData,
+) {
   "use server";
-  console.log(userId, formData);
 
-  //TODO: Implement
+  const amountAsString = formData.get("amount")?.toString() ?? "";
+  // JS sucks at handling money
+  const amount = Math.round(parseFloat(amountAsString) * 100);
+
+  const openBankingAccount = formData.get("openbanking-account")?.toString();
+  const bankTransferAccount = formData.get("banktransfer-account")?.toString();
+  const stripeAccount = formData.get("stripe-account")?.toString();
+
+  if (!openBankingAccount && !bankTransferAccount && !stripeAccount) {
+    throw new Error("Failed to create payment");
+  }
+  const data = {
+    title: formData.get("title")?.toString(),
+    description: formData.get("description")?.toString(),
+    reference: formData.get("reference")?.toString(),
+    amount,
+    redirectUrl: formData.get("redirect-url")?.toString(),
+    allowAmountOverride: formData.get("allowAmountOverride") === "on",
+  };
+
+  const client = await pgpool.connect();
+
+  try {
+    await client.query("BEGIN");
+    const result = await client.query(
+      `update payment_requests 
+    set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6 
+    where payment_request_id = $7 and user_id = $8`,
+      [
+        data.title,
+        data.description,
+        data.reference,
+        data.amount,
+        data.redirectUrl,
+        data.allowAmountOverride,
+        paymentRequestId,
+        userId,
+      ],
+    );
+    // Here it stops for whatever reason...
+    console.log(result);
+
+    redirect(`/paymentSetup/requests/${paymentRequestId}`);
+  } catch (e) {
+    await client.query("ROLLBACK");
+    console.log(e);
+  }
+
   return;
 }
 
@@ -39,26 +90,25 @@ export default async function (props: { params: { request_id: string } }) {
     return <h1 className="govie-heading-l">Payment request not found</h1>;
   }
 
-  const openBankingAccounts = await getRegisteredAccounts(
-    userId,
-    "openbanking",
-  );
-  const stripeAccounts = await getRegisteredAccounts(userId, "stripe");
-  const manualBankTransferAccounts = await getRegisteredAccounts(
-    userId,
-    "banktransfer",
-  );
+  const [openBankingAccounts, stripeAccounts, manualBankTransferAccounts] =
+    await Promise.all([
+      getRegisteredAccounts(userId, "openbanking"),
+      getRegisteredAccounts(userId, "stripe"),
+      getRegisteredAccounts(userId, "banktransfer"),
+    ]);
 
-  const submitPayment = editPayment.bind(this, userId);
+  const submitPayment = editPayment.bind(
+    this,
+    userId,
+    details.payment_request_id,
+  );
 
   const stripeProvider = details.providers.find(
     (provider) => provider.provider_type === "stripe",
   );
-
   const openBankingProvider = details.providers.find(
     (provider) => provider.provider_type === "openbanking",
   );
-
   const bankTransferProvider = details.providers.find(
     (provider) => provider.provider_type === "banktransfer",
   );
