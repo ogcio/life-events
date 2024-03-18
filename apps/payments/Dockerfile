@@ -21,7 +21,8 @@ COPY ./packages/auth/ /app/packages/auth/
 # hack for some reason deps aren't being installed properly
 RUN npm i @rollup/rollup-linux-x64-musl
 RUN npm run build --workspace=packages/design-system
+RUN npm run build --workspace=apps/payments
 
-EXPOSE 80
+EXPOSE 3001
 
-CMD [ "npm", "--prefix", "apps/payments",  "run", "dev" ]
+CMD [ "npm", "--prefix", "apps/payments",  "start" ]

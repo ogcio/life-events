@@ -106,6 +106,7 @@ export function emptyOrderEHIC(): OrderEHIC {
     status: "",
     localHealthOffice: "",
     dispatchAddress: "",
+    rejectedAt: "",
   };
 }
 

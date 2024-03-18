@@ -23,7 +23,8 @@ COPY ./packages/messages/ /app/packages/messages/
 # hack for some reason deps aren't being installed properly
 RUN npm i @rollup/rollup-linux-x64-musl
 RUN npm run build --workspace=packages/design-system
+RUN npm run build --workspace=apps/web
 
-EXPOSE 80
+EXPOSE 3000
 
-CMD [ "npm", "--prefix", "apps/web",  "run", "dev" ]
+CMD [ "npm", "--prefix", "apps/web",  "start" ]
