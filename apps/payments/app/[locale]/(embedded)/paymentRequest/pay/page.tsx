@@ -4,7 +4,6 @@ import { formatCurrency } from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
 import { PgSessions } from "auth/sessions";
 import ClientLink from "./ClientLink";
-import { useMemo } from "react";
 
 type Props = {
   searchParams:

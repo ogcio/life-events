@@ -7,20 +7,25 @@ import {
 } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
+import ds from "design-system/";
 
 type Props = {
   clientSecret?: string;
   returnUri: string;
 };
 
-const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "";
+const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+if (!PUBLISHABLE_KEY) {
+  throw Error("Missing env var NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY");
+}
 
 const stripePromise = loadStripe(PUBLISHABLE_KEY);
 
 const appearance: Appearance = {
   theme: "stripe",
   variables: {
-    colorPrimary: "#004d4",
+    colorPrimary: ds.colours.ogcio.darkGrey,
   },
 };
 
