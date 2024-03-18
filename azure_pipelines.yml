@@ -82,9 +82,13 @@ stages:
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
-      condition: and(succeeded('Build_${{ replace(serviceName, '-', '_') }}'), containsValue(pipeline.parameters.envBranches, variables['build.sourceBranch']))
-      jobs:  
+      jobs:
+      - job: A1 
+        steps:
+        - ${{ each branchName in parameters.envBranches }}:
+          - script: echo ${{ branchName }}
       - job: Push
+        condition: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranch']) }}
         displayName: Push - ${{ serviceName }}
         pool:
           vmImage: 'ubuntu-latest'
