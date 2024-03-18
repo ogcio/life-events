@@ -68,25 +68,10 @@ stages:
             customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_${{ serviceName }}_$(Build.BuildId).tar life-events-${{ serviceName }}:$(Build.BuildId)'
         - publish:  $(Build.ArtifactStagingDirectory)
           artifact: 'docker-${{ serviceName }}-$(Build.BuildId)'
-    - stage: Test_Branch_Name_${{ replace(serviceName, '-', '_') }}
-      displayName: Test the branch name
-      jobs:
-      - job: A1 
-        steps:
-        - ${{ each branchName in parameters.envBranches }}:
-          - script: echo ${{ branchName }}
-      - job: B1
-        condition: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranch']) }}
-        steps:
-        - script: echo "Matching branch found"
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
       jobs:
-      - job: A1 
-        steps:
-        - ${{ each branchName in parameters.envBranches }}:
-          - script: echo ${{ branchName }}
       - job: Push
         condition: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranch']) }}
         displayName: Push - ${{ serviceName }}
