@@ -71,7 +71,7 @@ stages:
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
-      condition: and(succeeded('Build_${{ replace(serviceName, '-', '_') }}'), containsValue(parameters.envBranches, variables['build.sourceBranch']))
+      condition: and(succeeded('Build_${{ replace(serviceName, '-', '_') }}'), containsValue(pipeline.parameters.envBranches, variables['build.sourceBranch']))
       jobs:  
       - job: Push
         displayName: Push - ${{ serviceName }}
