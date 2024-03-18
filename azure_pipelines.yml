@@ -2,7 +2,7 @@ trigger:
   - dev
   - uat
   - sta
-  - feat/add-pipeline
+  - feat/improve-pipeline
 
 pr:
   branches:
@@ -20,7 +20,11 @@ parameters:
   
   - name: envBranches
     type: object
-    default: ["dev", "uat", "sta", "feat/add-pipeline"]
+    default: 
+      - refs/heads/dev
+      - refs/heads/sta
+      - refs/heads/uat
+      - refs/heads/feat/improve-pipeline
 
 variables:
   - template: pipeline-variables/dev.yml
