@@ -16,8 +16,8 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_account_publishable_key
 3. Make sure your desired payment methods are enable in the [dashboard](https://dashboard.stripe.com/test/settings/payment_methods)
 
 
-## Testing Google Pay and Paypal locally
-To use Google Pay or Paypal you need to register and verify an HTTPS domain, even for testing.
+## Testing Google Pay and PayPal locally
+To use Google Pay or PayPal you need to register and verify an HTTPS domain, even for testing.
 
 - Use [ngrok](https://ngrok.com/) or a similar tool get an HTTPS domain. If you're using ngrok you can follow [this guide](https://ngrok.com/docs/getting-started/) to create a static domain and a tunnel.
 - Register your fixed domain on your Stripe [dashboard](https://dashboard.stripe.com/settings/payment_method_domains?enabled=true) as explained [here](https://docs.stripe.com/payments/payment-methods/pmd-registration?dashboard-or-api=dashboard#register-your-domain)
