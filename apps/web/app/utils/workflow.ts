@@ -138,6 +138,7 @@ export function emptyOrderBirthCertificate(): OrderBirthCertificate {
     yearOfBirth: "",
     PPSN: "",
     currentAddress: "",
+    timeAtAddress: "",
     currentAddressVerified: "",
     email: "",
     mobile: "",
@@ -174,6 +175,7 @@ type FlowState = {
   key: string | null;
   isStepValid: boolean;
 };
+
 /**
  * Returns a string based on a list of rules.
  *
