@@ -5,7 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "node --import=tsx --test ./test/*.ts",
-    "start": "node --import tsx index.ts "
+    "start": "node --import tsx index.ts",
+    "dev": "nodemon"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "../../packages/auth/src/**/*",
+      "../../packages/feature-flags/src/**/*",
+      "../../packages/messages/src/**/*",
+      "./**/*"
+    ],
+    "ext": "ts,json",
+    "exec": "node --import tsx index.ts"
   },
   "type": "module",
   "author": "",
