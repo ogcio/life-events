@@ -6,7 +6,6 @@ import {
   RawServerBase,
   RawServerDefault,
 } from "fastify";
-import Pool from "pg";
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -17,6 +16,6 @@ declare module "fastify" {
       RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
     Logger = FastifyLoggerInstance,
   > {
-    pgpool: Pool;
+    // We will add here new types as soon as we add them to the app
   }
 }
