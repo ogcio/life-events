@@ -23,7 +23,8 @@ async function getPaymentDetails(
       pp.provider_id,
       pp.provider_name,
       pp.provider_data,
-      pr.allow_amount_override
+      pr.allow_amount_override as "allowAmountOverride",
+      pr.allow_custom_amount as "allowCustomAmount"
     FROM payment_requests pr
     JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id
     JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
@@ -39,15 +40,17 @@ async function getPaymentDetails(
 
   if (!userInfo) return undefined;
 
+  const realAmount = getRealAmount({
+    amount: paymentRows[0].amount,
+    customAmount,
+    amountOverride: amount,
+    allowAmountOverride: paymentRows[0].allowAmountOverride,
+    allowCustomOverride: paymentRows[0].allowCustomAmount,
+  });
+
   const paymentDetails = {
     ...paymentRows[0],
-    amount: getRealAmount({
-      amount: paymentRows[0].amount,
-      customAmount,
-      amountOverride: amount,
-      allowAmountOverride: paymentRows[0].allowAmountOverride,
-      allowCustomOverride: paymentRows[0].allowCustomAmount,
-    }),
+    amount: realAmount,
     govid_email: userInfo.govid_email,
     user_name: userInfo.user_name,
   };
