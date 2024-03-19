@@ -89,6 +89,7 @@ export default async function ({
             name="openbanking-account"
             className="govie-select"
             defaultValue={openBankingProvider?.provider_id}
+            disabled={!!openBankingProvider?.provider_id}
           >
             <option value={""}>Disabled</option>
             {openBankingAccounts.map((account) => (
@@ -107,6 +108,7 @@ export default async function ({
             name="stripe-account"
             className="govie-select"
             defaultValue={stripeProvider?.provider_id}
+            disabled={!!stripeProvider?.provider_id}
           >
             <option value={""}>Disabled</option>
             {stripeAccounts.map((account) => (
@@ -126,6 +128,7 @@ export default async function ({
             name="banktransfer-account"
             className="govie-select"
             defaultValue={bankTransferProvider?.provider_id}
+            disabled={!!bankTransferProvider?.provider_id}
           >
             <option value={""}>Disabled</option>
             {manualBankTransferAccounts.map((account) => (
