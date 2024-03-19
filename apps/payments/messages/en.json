@@ -166,6 +166,14 @@
       "accountNumber": "Account number"
     }
   },
+  "PayStripe": {
+    "payNow": "Pay now",
+    "unexpectedError": "An unexpected error occurred.",
+    "paymentSucceded": "Payment succeeded!",
+    "paymentProcessing": "Your payment is processing.",
+    "paymentRequiresPaymentMmethod": "Your payment was not successful, please try again.",
+    "somethingWrong": "Something went wrong."
+  },
   "PaymentRequestComplete": {
     "title": "Your payment was successful",
     "yourRef": "Your reference number",

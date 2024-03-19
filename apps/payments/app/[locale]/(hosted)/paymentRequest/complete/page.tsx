@@ -1,13 +1,14 @@
 import { getTranslations } from "next-intl/server";
 import { pgpool } from "../../../../dbConnection";
 import { RedirectType, redirect } from "next/navigation";
+import { getPaymentIntent } from "../../../../integration/stripe";
 
 type Props = {
   searchParams:
     | {
-        error: string | undefined;
-        payment_id: string;
-        returnUrl: string;
+        error?: string | undefined;
+        payment_id?: string;
+        payment_intent?: string;
       }
     | undefined;
 };
@@ -56,10 +57,8 @@ async function getRequestDetails(requestId: string) {
 
 export default async function Page(props: Props) {
   const t = await getTranslations("Common");
-  if (!props.searchParams?.payment_id) {
-    return <h1>{t("notFound")}</h1>;
-  }
 
+  let extPaymentId = props.searchParams?.payment_id ?? "";
   let status = "executed";
 
   if (props.searchParams?.error) {
@@ -67,10 +66,20 @@ export default async function Page(props: Props) {
       props.searchParams.error === "tl_hpp_abandoned" ? "abandoned" : "error";
   }
 
-  const transactionDetail = await updateTransaction(
-    props.searchParams.payment_id,
-    status,
-  );
+  if (!extPaymentId) {
+    if (props.searchParams?.payment_intent) {
+      const paymentIntent = await getPaymentIntent(
+        props.searchParams!.payment_intent,
+      );
+      extPaymentId = paymentIntent.id;
+
+      status = paymentIntent.status;
+    } else {
+      return <h1 className="govie-heading-l">{t("notFound")}</h1>;
+    }
+  }
+
+  const transactionDetail = await updateTransaction(extPaymentId, status);
   const requestDetail = await getRequestDetails(
     transactionDetail.payment_request_id,
   );

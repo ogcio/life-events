@@ -2,7 +2,7 @@ trigger:
   - dev
   - uat
   - sta
-  - feat/add-pipeline
+  - feat/improve-pipeline
 
 pr:
   branches:
@@ -17,6 +17,10 @@ parameters:
   - name: destroy
     type: boolean
     default: false
+  
+  - name: envBranches
+    type: object
+    default: ["refs/heads/dev", "refs/heads/sta", "refs/heads/uat", "refs/heads/feat/improve-pipeline"]
 
 variables:
   - template: pipeline-variables/dev.yml
@@ -67,9 +71,9 @@ stages:
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
-      condition: and(succeeded('Build_${{ replace(serviceName, '-', '_') }}'), or(eq(variables['build.sourceBranch'], 'refs/heads/main'), eq(variables['build.sourceBranch'], 'refs/heads/feat/add-pipeline')))
-      jobs:  
+      jobs:
       - job: Push
+        condition: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranch']) }}
         displayName: Push - ${{ serviceName }}
         pool:
           vmImage: 'ubuntu-latest'
