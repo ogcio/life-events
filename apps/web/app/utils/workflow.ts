@@ -85,6 +85,7 @@ export type OrderEHIC = Base & {
   status: string;
   localHealthOffice: string;
   dispatchAddress: string;
+  submittedAt: string;
 };
 
 export function emptyOrderEHIC(): OrderEHIC {
@@ -107,6 +108,7 @@ export function emptyOrderEHIC(): OrderEHIC {
     status: "",
     localHealthOffice: "",
     dispatchAddress: "",
+    submittedAt: "",
   };
 }
 
@@ -127,6 +129,7 @@ export type OrderBirthCertificate = Base & {
   rejectReason: string;
   proofOfAddressFileId: string;
   status: string;
+  submittedAt: string;
 };
 
 export function emptyOrderBirthCertificate(): OrderBirthCertificate {
@@ -149,6 +152,7 @@ export function emptyOrderBirthCertificate(): OrderBirthCertificate {
     rejectReason: "",
     proofOfAddressFileId: "",
     status: "",
+    submittedAt: "",
   };
 }
 
@@ -162,6 +166,7 @@ export type NotifyDeath = Base & {
   yearOfDeath: string;
   confirmedNotification: boolean;
   servicesToInform: string[];
+  submittedAt: string;
 };
 
 export function emptyNotifyDeath(): NotifyDeath {
@@ -178,6 +183,7 @@ export function emptyNotifyDeath(): NotifyDeath {
     successfulAt: "",
     rejectedAt: "",
     rejectReason: "",
+    submittedAt: "",
   };
 }
 

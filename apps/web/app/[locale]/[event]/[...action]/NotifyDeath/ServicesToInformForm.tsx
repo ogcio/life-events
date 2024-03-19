@@ -35,7 +35,7 @@ export default async (props: {
 
     await postgres.pgpool.query(
       `
-            UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('servicesToInform', $3::jsonb), updated_at = now()
+            UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('servicesToInform', $3::jsonb, 'submittedAt', now()), updated_at = now()
             WHERE user_id = $1 AND flow = $2
         `,
       [props.userId, props.flow, JSON.stringify(servicesToInform)],
@@ -56,7 +56,7 @@ export default async (props: {
   const services = await servicesResponse.json();
 
   const options = services.map((service: string, index: number) => (
-    <div className="govie-checkboxes__item">
+    <div className="govie-checkboxes__item" key={service}>
       <input
         className="govie-checkboxes__input"
         id={`servicesToInform-${index}`}

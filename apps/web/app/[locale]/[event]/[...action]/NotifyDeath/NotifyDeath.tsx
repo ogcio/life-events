@@ -7,6 +7,7 @@ import AuthorityCheckForm from "./AuthorityCheckForm";
 import DetailsForm from "./DetailsForm";
 import ConfirmNotificationForm from "./ConfirmNotificationForm";
 import ServicesToInformForm from "./ServicesToInformForm";
+import NotificationSuccess from "./NotificationSuccess";
 
 export const notifyDeathRules: Parameters<
   typeof workflow.getCurrentStep<workflow.NotifyDeath>
@@ -73,7 +74,7 @@ export const notifyDeathRules: Parameters<
   ({ servicesToInform }) =>
     servicesToInform?.length
       ? {
-          key: null,
+          key: routes.death.notifyDeath.notificationSuccess.slug,
           isStepValid: true,
         }
       : {
@@ -86,13 +87,13 @@ type FormProps = {
   stepSlug: string;
   actionSlug: string;
   data: workflow.NotifyDeath;
-  urlBase: string;
   userId: string;
-  baseActionHref: string;
   nextSlug: string | null;
   isStepValid: boolean;
+  params: web.NextPageProps["params"];
   searchParams: web.NextPageProps["searchParams"];
   flow: string;
+  eventsPageHref: string;
 };
 
 const RequiredInformationStep: React.FC<FormProps> = ({
@@ -100,17 +101,19 @@ const RequiredInformationStep: React.FC<FormProps> = ({
   actionSlug,
   userId,
   flow,
+  eventsPageHref,
+  params,
 }) => {
   return (
     <FormLayout
       action={{ slug: actionSlug }}
       step={stepSlug}
-      backHref={`/${routes.events.slug}`}
+      backHref={eventsPageHref}
     >
       <RequiredInformationForm
         userId={userId}
         flow={flow}
-        onSubmitRedirectSlug={`/${routes.death.notifyDeath.authorityCheck.path()}`}
+        onSubmitRedirectSlug={`/${params.locale}/${routes.death.notifyDeath.authorityCheck.path()}`}
       />
     </FormLayout>
   );
@@ -119,21 +122,22 @@ const RequiredInformationStep: React.FC<FormProps> = ({
 const AuthorityCheckStep: React.FC<FormProps> = ({
   actionSlug,
   stepSlug,
-  baseActionHref,
   userId,
   flow,
+  eventsPageHref,
+  params,
 }) => {
   return (
     <FormLayout
       action={{ slug: actionSlug }}
-      backHref={baseActionHref}
+      backHref={eventsPageHref}
       step={stepSlug}
     >
       <AuthorityCheckForm
         userId={userId}
         flow={flow}
         slug={routes.death.notifyDeath.authorityCheck.slug}
-        onSubmitRedirectSlug={`/${routes.death.notifyDeath.details.path()}`}
+        onSubmitRedirectSlug={`/${params.locale}/${routes.death.notifyDeath.details.path()}`}
       />
     </FormLayout>
   );
@@ -142,22 +146,23 @@ const AuthorityCheckStep: React.FC<FormProps> = ({
 const DetailsStep: React.FC<FormProps> = ({
   actionSlug,
   stepSlug,
-  baseActionHref,
   userId,
   flow,
   data,
+  eventsPageHref,
+  params,
 }) => {
   return (
     <FormLayout
       action={{ slug: actionSlug }}
-      backHref={baseActionHref}
+      backHref={eventsPageHref}
       step={stepSlug}
     >
       <DetailsForm
         userId={userId}
         flow={flow}
         slug={routes.death.notifyDeath.details.slug}
-        onSubmitRedirectSlug={`/${routes.death.notifyDeath.confirmNotification.path()}`}
+        onSubmitRedirectSlug={`/${params.locale}/${routes.death.notifyDeath.confirmNotification.path()}`}
         data={data}
       />
     </FormLayout>
@@ -170,14 +175,20 @@ const ConfirmNotificationStep: React.FC<FormProps> = ({
   userId,
   flow,
   data,
+  eventsPageHref,
+  params,
 }) => {
   return (
-    <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
+    <FormLayout
+      action={{ slug: actionSlug }}
+      backHref={eventsPageHref}
+      step={stepSlug}
+    >
       <ConfirmNotificationForm
         userId={userId}
         flow={flow}
         data={data}
-        onSubmitRedirectSlug={`/${routes.death.notifyDeath.servicesToInform.path()}`}
+        onSubmitRedirectSlug={`/${params.locale}/${routes.death.notifyDeath.servicesToInform.path()}`}
       />
     </FormLayout>
   );
@@ -188,14 +199,20 @@ const ServicesToInformStep: React.FC<FormProps> = ({
   stepSlug,
   userId,
   flow,
+  eventsPageHref,
+  params,
 }) => {
   return (
-    <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
+    <FormLayout
+      action={{ slug: actionSlug }}
+      backHref={eventsPageHref}
+      step={stepSlug}
+    >
       <ServicesToInformForm
         userId={userId}
         flow={flow}
         slug={routes.death.notifyDeath.details.slug}
-        onSubmitRedirectSlug={`/${routes.death.notifyDeath.notificationSuccess.path()}`}
+        onSubmitRedirectSlug={`/${params.locale}/${routes.death.notifyDeath.notificationSuccess.path()}`}
       />
     </FormLayout>
   );
@@ -204,10 +221,17 @@ const ServicesToInformStep: React.FC<FormProps> = ({
 const NotificationSuccessStep: React.FC<FormProps> = ({
   actionSlug,
   stepSlug,
+  flow,
+  data,
+  eventsPageHref,
 }) => {
   return (
     <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
-      <p>NOTIFICATION SUCCESS</p>
+      <NotificationSuccess
+        flow={flow}
+        data={data}
+        onSubmitRedirectSlug={eventsPageHref}
+      />
     </FormLayout>
   );
 };
@@ -235,8 +259,6 @@ export default async (props: web.NextPageProps) => {
   const stepSlug = props.params.action?.at(1);
   const actionSlug = props.params.action?.at(0);
 
-  const baseActionHref = `/${props.params.locale}/${routes.death.slug}/${actionSlug}/${nextSlug}`;
-
   if (!actionSlug) {
     throw notFound();
   }
@@ -253,9 +275,9 @@ export default async (props: web.NextPageProps) => {
         actionSlug={actionSlug}
         nextSlug={nextSlug}
         data={data}
-        urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
+        eventsPageHref={`/${props.params.locale}/${routes.events.slug}`}
         userId={userId}
-        baseActionHref={baseActionHref}
+        params={props.params}
         searchParams={props.searchParams}
         isStepValid={isStepValid}
         flow={workflow.keys.notifyDeath}

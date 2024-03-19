@@ -58,6 +58,7 @@ function eventFlowMapper(row: {
     descriptionKey += ".description.rejected";
   } else if (
     [
+      routes.category[row.category][row.flow].notificationSuccess?.slug,
       routes.category[row.category][row.flow].applicationSuccess?.slug,
       routes.category[row.category][row.flow].paymentSuccess?.slug,
     ].includes(step || "")

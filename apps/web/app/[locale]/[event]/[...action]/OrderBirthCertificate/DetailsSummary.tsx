@@ -19,7 +19,7 @@ export default (props: {
 
     await postgres.pgpool.query(
       `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT), updated_at = now()
+        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT, 'submittedAt', now()), updated_at = now()
         WHERE user_id = $1 AND flow = $2
     `,
       [userId, flow],

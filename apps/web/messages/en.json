@@ -28,7 +28,8 @@
     "authority": "Do you have authority to continue?",
     "enter-details": "Enter the following details",
     "confirm-notification": "Confirm your notification",
-    "services-list-to-inform": "List of services to inform"
+    "services-list-to-inform": "List of services to inform",
+    "notification-success": "Notification submitted"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -175,12 +176,24 @@
     "sorry": "Sorry, there was a problem",
     "tryAgain": "Please return to My Portal and attempt the payment again"
   },
+  "NotificationSuccessForm": {
+    "panelTitle": "Your notification was submitted",
+    "panelReferenceText": "Your reference number",
+    "panelReferenceNumber": "HDJ2123F*",
+    "title": "What happens next?",
+    "submitText": "Return to My Portal",
+    "summaryTitle": "Summary",
+    "purpose": "Application for",
+    "notifyDeath": "Notify death to government departments",
+    "notifyDeathBody": "We will review and validate the details you submitted and be in touch.",
+    "date": "Date of application"
+  },
   "ApplicationSuccessful": {
     "panelTitle": "Your application was successful",
     "panelReferenceText": "Your reference number",
     "panelReferenceNumber": "HDJ2123F*",
     "title": "What happens next?",
-    "summaryTitle": "Application summary",
+    "summaryTitle": "Summary",
     "submitText": "Return to My Portal",
     "renewDriversLicence": "Driving licence renewal",
     "renewDriversLicenceBody": "Once approved your driving licence will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
@@ -188,7 +201,8 @@
     "orderEHIC": "EHIC",
     "orderEHICBody": "Once approved your EHIC will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
     "orderBirthCertificate": "Birth certificate copy",
-    "orderBirthCertificateBody": "Once approved your birth certificate will be sent to you by post and you should receive it within 7 days."
+    "orderBirthCertificateBody": "Once approved your birth certificate will be sent to you by post and you should receive it within 7 days.",
+    "date": "Date of application"
   },
   "RenewDriversLicence": {
     "title": "Renew your driving licence"

@@ -57,7 +57,9 @@ type FormProps = {
   baseActionHref: string;
   nextSlug: string | null;
   isStepValid: boolean;
+  params: web.NextPageProps["params"];
   searchParams: web.NextPageProps["searchParams"];
+  eventsPageHref: string;
 };
 
 const CheckDetailsStep: React.FC<FormProps> = ({
@@ -178,6 +180,7 @@ const DispatchAddressStep: React.FC<FormProps> = ({
   searchParams,
   userId,
   data,
+  params,
 }) => {
   const t = useTranslations("AddressForm");
   return (
@@ -198,7 +201,7 @@ const DispatchAddressStep: React.FC<FormProps> = ({
         data={data}
         slug={routes.health.orderEHIC.dispatchAddress.slug}
         category={workflow.categories.health}
-        onSubmitRedirectSlug={`/${routes.health.orderEHIC.path()}`}
+        onSubmitRedirectSlug={`/${params.locale}/${routes.health.orderEHIC.path()}`}
         showWarning={false}
       />
     </FormLayout>
@@ -211,6 +214,7 @@ const SelectLocalHealthOfficeStep: React.FC<FormProps> = ({
   stepSlug,
   userId,
   data,
+  params,
 }) => {
   return (
     <FormLayout
@@ -224,7 +228,7 @@ const SelectLocalHealthOfficeStep: React.FC<FormProps> = ({
       <LocalHealthOfficeForm
         userId={userId}
         data={data}
-        onSubmitRedirectSlug={`/${routes.health.orderEHIC.path()}`}
+        onSubmitRedirectSlug={`/${params.locale}/${routes.health.orderEHIC.path()}`}
       />
     </FormLayout>
   );
@@ -233,10 +237,16 @@ const SelectLocalHealthOfficeStep: React.FC<FormProps> = ({
 const ApplicationSuccessStep: React.FC<FormProps> = ({
   actionSlug,
   stepSlug,
+  data,
+  eventsPageHref,
 }) => {
   return (
     <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
-      <ApplicationSuccess flow={workflow.keys.orderEHIC} />
+      <ApplicationSuccess
+        flow={workflow.keys.orderEHIC}
+        data={data}
+        onSubmitRedirectSlug={eventsPageHref}
+      />
     </FormLayout>
   );
 };
@@ -284,9 +294,11 @@ export default async (props: web.NextPageProps) => {
         actionSlug={actionSlug}
         nextSlug={nextSlug}
         data={data}
+        eventsPageHref={`/${props.params.locale}/${routes.events.slug}`}
         urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
         userId={userId}
         baseActionHref={baseActionHref}
+        params={props.params}
         searchParams={props.searchParams}
         isStepValid={isStepValid}
       />
