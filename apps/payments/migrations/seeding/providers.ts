@@ -28,7 +28,7 @@ export const seedProviders = (pool, userId) => {
       JSON.stringify({
         sortCode: "123456",
         accountNumber: "12345678",
-        accountHolderName: "Lorem Ipsum (OB)",
+        accountHolderName: "Lorem Ipsum",
       }),
     ],
   );
