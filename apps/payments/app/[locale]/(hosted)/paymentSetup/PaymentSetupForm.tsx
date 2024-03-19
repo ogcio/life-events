@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { pgpool } from "../../../dbConnection";
+import { PaymentRequestDetails } from "./db";
 
 async function getRegisteredAccounts(userId: string, providerType: string) {
   "use server";
@@ -20,13 +21,13 @@ async function getRegisteredAccounts(userId: string, providerType: string) {
 }
 
 type PaymentSetupFormProps = {
-  requestId?: string;
+  details?: PaymentRequestDetails;
   userId: string;
   action: (formData: FormData) => void;
 };
 
 export default async function ({
-  requestId,
+  details,
   userId,
   action,
 }: PaymentSetupFormProps) {
@@ -39,6 +40,16 @@ export default async function ({
       getRegisteredAccounts(userId, "stripe"),
       getRegisteredAccounts(userId, "banktransfer"),
     ]);
+
+  const stripeProvider = details?.providers.find(
+    (provider) => provider.provider_type === "stripe",
+  );
+  const openBankingProvider = details?.providers.find(
+    (provider) => provider.provider_type === "openbanking",
+  );
+  const bankTransferProvider = details?.providers.find(
+    (provider) => provider.provider_type === "banktransfer",
+  );
 
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
@@ -54,6 +65,7 @@ export default async function ({
             name="title"
             className="govie-input"
             required
+            defaultValue={details?.title}
           />
         </div>
         <div className="govie-form-group">
@@ -65,6 +77,7 @@ export default async function ({
             name="description"
             className="govie-textarea"
             rows={5}
+            defaultValue={details?.description}
           ></textarea>
         </div>
         <div className="govie-form-group">
@@ -75,6 +88,7 @@ export default async function ({
             id="openbanking-account"
             name="openbanking-account"
             className="govie-select"
+            defaultValue={openBankingProvider?.provider_id}
           >
             <option value={""}>Disabled</option>
             {openBankingAccounts.map((account) => (
@@ -92,6 +106,7 @@ export default async function ({
             id="stripe-account"
             name="stripe-account"
             className="govie-select"
+            defaultValue={stripeProvider?.provider_id}
           >
             <option value={""}>Disabled</option>
             {stripeAccounts.map((account) => (
@@ -110,6 +125,7 @@ export default async function ({
             id="banktransfer-account"
             name="banktransfer-account"
             className="govie-select"
+            defaultValue={bankTransferProvider?.provider_id}
           >
             <option value={""}>Disabled</option>
             {manualBankTransferAccounts.map((account) => (
@@ -129,6 +145,7 @@ export default async function ({
             name="reference"
             className="govie-input"
             required
+            defaultValue={details?.reference}
           />
         </div>
         <div className="govie-form-group">
@@ -148,6 +165,9 @@ export default async function ({
               max="10000.00"
               step="0.01"
               required
+              defaultValue={
+                details?.amount ? (details?.amount / 100).toFixed(2) : undefined
+              }
             />
           </div>
         </div>
@@ -158,6 +178,7 @@ export default async function ({
               id="allow-override-hint"
               name="allowAmountOverride"
               type="checkbox"
+              defaultChecked={details?.allowAmountOverride}
             />
             <label
               className="govie-label--s govie-checkboxes__label"
@@ -177,6 +198,7 @@ export default async function ({
             name="redirect-url"
             className="govie-input"
             required
+            defaultValue={details?.redirect_url}
           />
         </div>
 

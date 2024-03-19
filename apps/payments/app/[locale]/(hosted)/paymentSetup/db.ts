@@ -13,7 +13,7 @@ type PaymentRequestDO = {
   allowAmountOverride: boolean;
 };
 
-type PaymentRequestDetails = Pick<
+export type PaymentRequestDetails = Pick<
   PaymentRequestDO,
   | "payment_request_id"
   | "title"
