@@ -18,8 +18,5 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     pgpool: Pool;
-    config: {
-      DB_CONNECTION_STRING: string;
-    };
   }
 }
