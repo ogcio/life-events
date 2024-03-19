@@ -359,7 +359,8 @@
       "referenceNumber": "12 digit reference number",
       "deceasedSurname": "Surname of the person who has died",
       "dateOfDeath": "Date of death",
-      "servicesToInform": "Services to inform"
+      "servicesToInform": "Services to inform",
+      "notifyDeath": "Death notification"
     },
     "RejectReasonForm": {
       "title": "Reason for rejection",
