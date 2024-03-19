@@ -67,15 +67,14 @@ function getPaymentUrl(
   }
   return url.href;
 }
+const NotFound = async () => {
+  const t = await getTranslations("Common");
+  return <h1 className="govie-heading-l">{t("notFound")}</h1>;
+};
 
 export default async function Page(props: Props) {
-  const notFound = (
-    <h1 className="govie-heading-l">Payment request not found</h1>
-  );
-
-  if (!props.searchParams?.paymentId || !props.searchParams?.id) {
-    return notFound;
-  }
+  if (!props.searchParams?.paymentId || !props.searchParams?.id)
+    return <NotFound />;
 
   // Enforce being logged in
   await PgSessions.get();
@@ -85,9 +84,7 @@ export default async function Page(props: Props) {
     getTranslations("PayPaymentRequest"),
   ]);
 
-  if (!details) {
-    return notFound;
-  }
+  if (!details) return <NotFound />;
 
   const hasOpenBanking = details.some(
     ({ provider_type }) => provider_type === "openbanking",
@@ -95,6 +92,10 @@ export default async function Page(props: Props) {
 
   const hasManualBanking = details.some(
     ({ provider_type }) => provider_type === "banktransfer",
+  );
+
+  const hasStripe = details.some(
+    ({ provider_type }) => provider_type === "stripe",
   );
 
   const baseAmount = details[0].amount;
@@ -178,6 +179,17 @@ export default async function Page(props: Props) {
         )}
         <div style={{ margin: "1em 0" }}>
           <h3 className="govie-heading-s">{t("payByCard")}</h3>
+          {hasStripe && (
+            <ClientLink
+              label={t("payNow")}
+              href={getPaymentUrl(
+                props.searchParams!.paymentId,
+                "stripe",
+                props.searchParams!.id,
+                urlAmount,
+              )}
+            />
+          )}
         </div>
       </div>
     </div>

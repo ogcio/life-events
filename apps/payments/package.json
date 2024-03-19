@@ -18,6 +18,8 @@
     "exec": "next dev -p 3001"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^2.6.2",
+    "@stripe/stripe-js": "^3.0.10",
     "auth": "*",
     "dayjs": "^1.11.10",
     "design-system": "*",
@@ -30,6 +32,7 @@
     "react-dom": "^18.2.0",
     "server-only": "^0.0.1",
     "sqids": "^0.3.0",
+    "stripe": "^14.21.0",
     "truelayer-embedded-payment-page": "^0.2.22",
     "truelayer-signing": "^0.1.7"
   },

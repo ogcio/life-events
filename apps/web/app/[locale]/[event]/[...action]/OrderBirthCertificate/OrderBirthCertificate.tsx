@@ -6,12 +6,10 @@ import SimpleDetailsForm from "./SimpleDetailsForm";
 import DetailsSummary from "./DetailsSummary";
 import AddressForm from "../shared/AddressForm";
 import ProofOfAddress from "../shared/ProofOfAddress";
-import { useTranslations } from "next-intl";
-import LocalHealthOfficeForm from "./LocalHealthOfficeForm";
 import ApplicationSuccess from "./ApplicationSuccess";
 
-export const orderEHICRules: Parameters<
-  typeof workflow.getCurrentStep<workflow.OrderEHIC>
+export const orderBirthCertificateRules: Parameters<
+  typeof workflow.getCurrentStep<workflow.OrderBirthCertificate>
 >[0] = [
   // Rule 1: Check if all personal details are populated
   (params) => {
@@ -23,15 +21,15 @@ export const orderEHICRules: Parameters<
           params.yearOfBirth &&
           params.userName &&
           params.sex &&
-          params.PPSN &&
-          params.localHealthOffice &&
-          params.dispatchAddress,
+          params.email &&
+          params.mobile &&
+          params.timeAtAddress,
       )
     ) {
       return { key: null, isStepValid: true };
     }
     return {
-      key: routes.health.orderEHIC.checkDetails.slug,
+      key: routes.health.orderBirthCertificate.checkDetails.slug,
       isStepValid: false,
     };
   },
@@ -39,11 +37,11 @@ export const orderEHICRules: Parameters<
   ({ confirmedApplication }) =>
     !confirmedApplication
       ? {
-          key: routes.health.orderEHIC.checkDetails.slug,
+          key: routes.health.orderBirthCertificate.checkDetails.slug,
           isStepValid: true,
         }
       : {
-          key: routes.health.orderEHIC.applicationSuccess.slug,
+          key: routes.health.orderBirthCertificate.applicationSuccess.slug,
           isStepValid: true,
         },
 ];
@@ -51,7 +49,7 @@ export const orderEHICRules: Parameters<
 type FormProps = {
   stepSlug: string;
   actionSlug: string;
-  data: workflow.OrderEHIC;
+  data: workflow.OrderBirthCertificate;
   urlBase: string;
   userId: string;
   baseActionHref: string;
@@ -68,7 +66,7 @@ const CheckDetailsStep: React.FC<FormProps> = ({
   userId,
   isStepValid,
 }) => {
-  if (nextSlug === routes.health.orderEHIC.checkDetails.slug) {
+  if (nextSlug === routes.health.orderBirthCertificate.checkDetails.slug) {
     return (
       <FormLayout
         action={{ slug: actionSlug }}
@@ -77,7 +75,7 @@ const CheckDetailsStep: React.FC<FormProps> = ({
       >
         <DetailsSummary
           data={data}
-          flow={workflow.keys.orderEHIC}
+          flow={workflow.keys.orderBirthCertificate}
           userId={userId}
           dataValid={isStepValid}
         />
@@ -104,7 +102,7 @@ const ChangeDetailsStep: React.FC<FormProps> = ({
     >
       <SimpleDetailsForm
         data={data}
-        flow={workflow.keys.orderEHIC}
+        flow={workflow.keys.orderBirthCertificate}
         urlBase={urlBase}
         userId={userId}
       />
@@ -132,12 +130,14 @@ const NewAddressStep: React.FC<FormProps> = ({
       <AddressForm
         field={"currentAddress"}
         searchParams={searchParams}
-        flow={workflow.keys.orderEHIC}
+        flow={workflow.keys.orderBirthCertificate}
         userId={userId}
         data={data}
-        slug={routes.health.orderEHIC.newAddress.slug}
+        slug={routes.health.orderBirthCertificate.newAddress.slug}
         category={workflow.categories.health}
-        onSubmitRedirectSlug={routes.health.orderEHIC.proofOfAddress.slug}
+        onSubmitRedirectSlug={
+          routes.health.orderBirthCertificate.proofOfAddress.slug
+        }
         showWarning={true}
       />
     </FormLayout>
@@ -162,69 +162,10 @@ const ProofOfAddressStep: React.FC<FormProps> = ({
     >
       <ProofOfAddress
         step={searchParams?.step}
-        flow={workflow.keys.orderEHIC}
+        flow={workflow.keys.orderBirthCertificate}
         userId={userId}
-        slug={routes.health.orderEHIC.proofOfAddress.slug}
+        slug={routes.health.orderBirthCertificate.proofOfAddress.slug}
         onSubmitRedirectSlug={baseActionHref}
-      />
-    </FormLayout>
-  );
-};
-
-const DispatchAddressStep: React.FC<FormProps> = ({
-  actionSlug,
-  baseActionHref,
-  stepSlug,
-  searchParams,
-  userId,
-  data,
-}) => {
-  const t = useTranslations("AddressForm");
-  return (
-    <FormLayout
-      action={{
-        slug: actionSlug,
-        href: baseActionHref,
-      }}
-      step={stepSlug}
-      backHref={baseActionHref}
-    >
-      <AddressForm
-        title={t("dispatch-address")}
-        field={"dispatchAddress"}
-        searchParams={searchParams}
-        flow={workflow.keys.orderEHIC}
-        userId={userId}
-        data={data}
-        slug={routes.health.orderEHIC.dispatchAddress.slug}
-        category={workflow.categories.health}
-        onSubmitRedirectSlug={`/${routes.health.orderEHIC.path()}`}
-        showWarning={false}
-      />
-    </FormLayout>
-  );
-};
-
-const SelectLocalHealthOfficeStep: React.FC<FormProps> = ({
-  actionSlug,
-  baseActionHref,
-  stepSlug,
-  userId,
-  data,
-}) => {
-  return (
-    <FormLayout
-      action={{
-        slug: actionSlug,
-        href: baseActionHref,
-      }}
-      step={stepSlug}
-      backHref={baseActionHref}
-    >
-      <LocalHealthOfficeForm
-        userId={userId}
-        data={data}
-        onSubmitRedirectSlug={`/${routes.health.orderEHIC.path()}`}
       />
     </FormLayout>
   );
@@ -236,31 +177,29 @@ const ApplicationSuccessStep: React.FC<FormProps> = ({
 }) => {
   return (
     <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
-      <ApplicationSuccess flow={workflow.keys.orderEHIC} />
+      <ApplicationSuccess flow={workflow.keys.orderBirthCertificate} />
     </FormLayout>
   );
 };
 
 const FormComponentsMap = {
-  [routes.health.orderEHIC.checkDetails.slug]: CheckDetailsStep,
-  [routes.health.orderEHIC.changeDetails.slug]: ChangeDetailsStep,
-  [routes.health.orderEHIC.newAddress.slug]: NewAddressStep,
-  [routes.health.orderEHIC.proofOfAddress.slug]: ProofOfAddressStep,
-  [routes.health.orderEHIC.dispatchAddress.slug]: DispatchAddressStep,
-  [routes.health.orderEHIC.selectLocalHealthOffice.slug]:
-    SelectLocalHealthOfficeStep,
-  [routes.health.orderEHIC.applicationSuccess.slug]: ApplicationSuccessStep,
+  [routes.health.orderBirthCertificate.checkDetails.slug]: CheckDetailsStep,
+  [routes.health.orderBirthCertificate.changeDetails.slug]: ChangeDetailsStep,
+  [routes.health.orderBirthCertificate.newAddress.slug]: NewAddressStep,
+  [routes.health.orderBirthCertificate.proofOfAddress.slug]: ProofOfAddressStep,
+  [routes.health.orderBirthCertificate.applicationSuccess.slug]:
+    ApplicationSuccessStep,
 };
 
 export default async (props: web.NextPageProps) => {
   const { userId } = await PgSessions.get();
   const data = await workflow.getFlowData(
-    workflow.keys.orderEHIC,
-    workflow.emptyOrderEHIC(),
+    workflow.keys.orderBirthCertificate,
+    workflow.emptyOrderBirthCertificate(),
   );
 
   const { key: nextSlug, isStepValid } = workflow.getCurrentStep(
-    orderEHICRules,
+    orderBirthCertificateRules,
     data,
   );
 
@@ -293,5 +232,5 @@ export default async (props: web.NextPageProps) => {
     );
   }
 
-  return redirect(`${routes.health.orderEHIC.slug}/${nextSlug}`);
+  return redirect(`${routes.health.orderBirthCertificate.slug}/${nextSlug}`);
 };
