@@ -11,6 +11,7 @@ type Props = {
         paymentId: string;
         id: string;
         amount?: string;
+        customAmount?: string;
       }
     | undefined;
 };
@@ -27,18 +28,24 @@ type PaymentRequestDO = {
   status: string;
   redirect_url: string;
   allowAmountOverride: boolean;
+  allowCustomAmount: boolean;
 };
 
 type PaymentRequestDetails = Pick<
   PaymentRequestDO,
-  "title" | "description" | "amount" | "allowAmountOverride"
+  | "title"
+  | "description"
+  | "amount"
+  | "allowAmountOverride"
+  | "allowCustomAmount"
 > & { provider_name: string; provider_type: string };
 
 async function getPaymentRequestDetails(paymentId: string) {
   "use server";
 
   const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.description, pr.amount, pp.provider_name, pp.provider_type, pr.allow_amount_override as "allowAmountOverride"
+    `select pr.title, pr.description, pr.amount, pp.provider_name, pp.provider_type, 
+      pr.allow_amount_override as "allowAmountOverride", pr.allow_custom_amount as "allowCustomAmount"
       from payment_requests pr
       join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
       join payment_providers pp on ppr.provider_id = pp.provider_id
@@ -100,10 +107,17 @@ export default async function Page(props: Props) {
 
   const baseAmount = details[0].amount;
   const canOverrideAmount = details[0].allowAmountOverride;
+  const allowCustomAmount = details[0].allowCustomAmount;
+
   const urlAmount = props.searchParams.amount;
+  const customAmount = props.searchParams.customAmount;
   let realAmount = baseAmount;
   if (urlAmount && canOverrideAmount) {
     realAmount = parseFloat(urlAmount);
+  }
+  // We need to choose the priority of the rules
+  if (customAmount && allowCustomAmount) {
+    realAmount = parseFloat(customAmount);
   }
 
   return (
