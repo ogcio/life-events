@@ -24,10 +24,6 @@ export async function build(opts?: FastifyServerOptions) {
     database: process.env.POSTGRES_DB_NAME,
   });
 
-  app.get("/", async (request, reply) => {
-    return { hello: "world" };
-  });
-
   app.setErrorHandler((error, request, reply) => {
     app.log.error(error);
     reply
