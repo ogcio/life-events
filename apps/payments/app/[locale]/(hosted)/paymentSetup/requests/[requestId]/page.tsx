@@ -8,6 +8,7 @@ import { formatCurrency } from "../../../../../utils";
 import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import dayjs from "dayjs";
+import Link from "next/link";
 
 async function createTransaction(requestId: string, formData: FormData) {
   "use server";
@@ -29,6 +30,7 @@ const RequestDetails = async ({ requestId }: { requestId: string }) => {
   const details = await getPaymentRequestDetails(requestId);
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tSetup = await getTranslations("PaymentSetup");
+  const tCommon = await getTranslations("Common");
 
   if (!details) {
     return <h1 className="govie-heading-l">Payment request not found</h1>;
@@ -36,7 +38,22 @@ const RequestDetails = async ({ requestId }: { requestId: string }) => {
 
   return (
     <>
-      <h2 className="govie-heading-m">{tSetup("details")}</h2>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "1rem",
+        }}
+      >
+        <h2 className="govie-heading-m">{tSetup("details")}</h2>
+        <Link href={`/paymentSetup/edit/${requestId}`}>
+          <button className="govie-button govie-button--primary">
+            {tCommon("edit")}
+          </button>
+        </Link>
+      </div>
+
       <dl className="govie-summary-list">
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.title")}</dt>

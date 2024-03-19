@@ -13,7 +13,7 @@ type PaymentRequestDO = {
   allowAmountOverride: boolean;
 };
 
-type PaymentRequestDetails = Pick<
+export type PaymentRequestDetails = Pick<
   PaymentRequestDO,
   | "payment_request_id"
   | "title"
@@ -22,7 +22,13 @@ type PaymentRequestDetails = Pick<
   | "reference"
   | "redirect_url"
   | "allowAmountOverride"
-> & { providers: { provider_name: string; provider_type: string }[] };
+> & {
+  providers: {
+    provider_name: string;
+    provider_type: string;
+    provider_id: string;
+  }[];
+};
 
 export async function getPaymentRequestDetails(
   requestId: string,
