@@ -151,7 +151,27 @@ export const driving = {
     },
   },
 };
-export const employment = { slug: "employment" };
+export const employment = {
+  slug: "employment",
+  applyJobseekersAllowance: {
+    slug: "apply-jobseekers-allowance",
+    path() {
+      return `${employment.slug}/${employment.applyJobseekersAllowance.slug}`;
+    },
+    introduction: {
+      slug: "introduction",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.introduction.slug}`;
+      },
+    },
+    benefitsEntitlements: {
+      slug: "benefits-entitlements",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.benefitsEntitlements.slug}`;
+      },
+    },
+  },
+};
 export const business = { slug: "business" };
 export const housing = { slug: "housing" };
 export const death = {
@@ -204,4 +224,5 @@ export const category = {
   health,
   driving,
   death,
+  employment,
 };

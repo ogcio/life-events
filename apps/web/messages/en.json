@@ -29,7 +29,9 @@
     "enter-details": "Enter the following details",
     "confirm-notification": "Confirm your notification",
     "services-list-to-inform": "List of services to inform",
-    "notification-success": "Notification submitted"
+    "notification-success": "Notification submitted",
+    "apply-jobseekers-allowance": "Apply for Jobseekers Allowance",
+    "introduction": "Introduction"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -163,6 +165,21 @@
     "title": "List of services we can inform",
     "confirm": "Confirm and submit notification"
   },
+  "ApplyJobseekersAllowanceIntro": {
+    "title": "Introduction",
+    "firstSubtitle": "Jobseeker's Allowance",
+    "paragraph1": "Jobseeker's Allowance is a means-tested payment made to people who are unemployed and",
+    "firstPoint": "who do not qualify for Jobseeker's Benefit or Jobseeker's Benefit for the Self-Employed",
+    "secondPoint": "whose entitlement to Jobseeker's Benefit or Jobseeker's Benefit for the Self-Employed has expired",
+    "thirdPoint": "who do qualify for Jobseeker's Benefit or Jobseeker's Benefit for the Self-Employed but choose to claim optional Jobseeker's Allowance instead.",
+    "paragraph2": "Whether you qualify for Jobseeker's Allowance depends on your income and whether you are habitually resident in Ireland. In other words, you live here and have close links to Ireland.",
+    "secondSubtitle": "Jobseeker's Benefit",
+    "paragraph3": "Jobseeker's Benefit is a weekly payment from the Department of Social Protection (DSP) to people who are out of work and are covered by social insurance (PRSI). If you don't qualify for Jobseeker's Benefit you may qualify for Jobseeker's Allowance.",
+    "thirdSubtitle": "Benefit payment for 65 year olds",
+    "paragraph4": "Jobseeker's Benefit (Self-Employed) gives income support to self-employed people who are no longer engaged in self-employment.",
+    "paragraph5": "If you are 65 and have left employment or self-employment, you may qualify for the Benefit Payment for 65 Year Olds until you turn 66.",
+    "continue": "Check for benefits eligibility"
+  },
   "PaymentSuccessful": {
     "panelTitle": "Your payment was successful",
     "panelReferenceText": "Your reference number",
@@ -277,6 +294,22 @@
         "post": "The details you submitted will be logged and shared with the relevant services",
         "rejected": "{rejectedReason}"
       }
+    },
+    "applyJobseekersAllowance": {
+      "title": {
+        "base": "Apply for Jobseekers Allowance",
+        "pre": "Continue with your request for Jobseekers Allowance",
+        "mid": "Your Jobseekers Allowance is being processed",
+        "post": "Your Jobseekers Allowance is approved",
+        "rejected": "Your Jobseekers Allowance is rejected"
+      },
+      "description": {
+        "base": "A line of text to support this statement",
+        "pre": "A line of text to support this statement",
+        "mid": "You will be informed here once the application has been complete",
+        "post": "Your allowance will begin on 1.2.24. Please update us if your employment changes",
+        "rejected": "{rejectedReason}"
+      }
     }
   },
   "MedicalForm": {
@@ -382,8 +415,7 @@
       "back": "Back",
       "eventNotFound": "Event not found",
       "orderEHIC": "Application for an EHIC",
-      "orderBirthCertificate": "Application for a copy of the birth certificate",
-      "notifyDeath": "Death notification"
+      "orderBirthCertificate": "Application for a copy of the birth certificate"
     },
     "StatusMenu": {
       "all": "All",

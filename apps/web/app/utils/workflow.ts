@@ -157,6 +157,7 @@ export function emptyOrderBirthCertificate(): OrderBirthCertificate {
 }
 
 export type NotifyDeath = Base & {
+  userName: string;
   hasRequiredInformation: boolean;
   hasAuthority: boolean;
   referenceNumber: string;
@@ -171,6 +172,7 @@ export type NotifyDeath = Base & {
 
 export function emptyNotifyDeath(): NotifyDeath {
   return {
+    userName: "",
     hasRequiredInformation: false,
     hasAuthority: false,
     referenceNumber: "",
@@ -187,11 +189,33 @@ export function emptyNotifyDeath(): NotifyDeath {
   };
 }
 
+export type ApplyJobseekersAllowance = Base & {
+  userName: string;
+  hasReadIntro: boolean;
+  hasCheckedBenefits: boolean;
+  hasRequirements: boolean;
+  submittedAt: string;
+};
+
+export function emptyApplyJobseekersAllowance(): ApplyJobseekersAllowance {
+  return {
+    userName: "",
+    hasReadIntro: false,
+    hasCheckedBenefits: false,
+    hasRequirements: false,
+    successfulAt: "",
+    rejectedAt: "",
+    rejectReason: "",
+    submittedAt: "",
+  };
+}
+
 export type Workflow =
   | RenewDriversLicence
   | OrderEHIC
   | OrderBirthCertificate
-  | NotifyDeath;
+  | NotifyDeath
+  | ApplyJobseekersAllowance;
 
 // ===== workflow keys =====
 
@@ -200,6 +224,7 @@ export const keys = {
   orderEHIC: "orderEHIC",
   orderBirthCertificate: "orderBirthCertificate",
   notifyDeath: "notifyDeath",
+  applyJobseekersAllowance: "applyJobseekersAllowance",
 };
 
 // ===== categories =====
@@ -208,6 +233,7 @@ export const categories = {
   driving: "driving",
   health: "health",
   death: "death",
+  employment: "employment",
 };
 
 // ===== utils =====
