@@ -44,6 +44,7 @@ async function createPayment(userId: string, formData: FormData) {
     amount,
     redirectUrl: formData.get("redirect-url")?.toString(),
     allowAmountOverride: formData.get("allowAmountOverride") === "on",
+    allowCustomAmount: formData.get("allowCustomAmount") === "on",
   };
 
   const client = await pgpool.connect();
@@ -53,8 +54,8 @@ async function createPayment(userId: string, formData: FormData) {
     const paymentRequestQueryResult = await pgpool.query<{
       payment_request_id: string;
     }>(
-      `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override)
-        values ($1, $2, $3, $4, $5, $6, $7, $8)
+      `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override, allow_custom_amount)
+        values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         returning payment_request_id`,
       [
         userId,
@@ -65,6 +66,7 @@ async function createPayment(userId: string, formData: FormData) {
         data.redirectUrl,
         "pending",
         data.allowAmountOverride,
+        data.allowCustomAmount,
       ],
     );
 
