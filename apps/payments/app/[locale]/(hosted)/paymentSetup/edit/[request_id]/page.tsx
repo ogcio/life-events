@@ -53,10 +53,10 @@ async function editPayment(
 
   try {
     await client.query("BEGIN");
-    const result = await client.query(
+    await client.query(
       `update payment_requests 
     set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6 
-    where payment_request_id = $7 and user_id = $8`,
+    where payment_request_id = $7`,
       [
         data.title,
         data.description,
@@ -65,19 +65,14 @@ async function editPayment(
         data.redirectUrl,
         data.allowAmountOverride,
         paymentRequestId,
-        userId,
       ],
     );
-    // Here it stops for whatever reason...
-    console.log(result);
-
-    redirect(`/paymentSetup/requests/${paymentRequestId}`);
+    await client.query("COMMIT");
   } catch (e) {
     await client.query("ROLLBACK");
-    console.log(e);
+    throw e;
   }
-
-  return;
+  redirect(`/paymentSetup/requests/${paymentRequestId}`);
 }
 
 export default async function (props: { params: { request_id: string } }) {
