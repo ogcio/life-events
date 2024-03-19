@@ -1,9 +1,8 @@
-import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
 
 import { ListRow } from "../shared/SummaryListRow";
-import { workflow, postgres, routes } from "../../../../utils";
+import { workflow, postgres, routes, web } from "../../../../utils";
 
 export default (props: {
   data: workflow.OrderBirthCertificate;
@@ -19,7 +18,7 @@ export default (props: {
 
     await postgres.pgpool.query(
       `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT), updated_at = now()
+        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT, 'submittedAt', now()), updated_at = now()
         WHERE user_id = $1 AND flow = $2
     `,
       [userId, flow],
@@ -34,9 +33,9 @@ export default (props: {
     routes.health.orderBirthCertificate.proofOfAddress.slug;
   const dateOfBirth =
     data.yearOfBirth && data.monthOfBirth && data.dayOfBirth
-      ? dayjs(
+      ? web.formatDate(
           `${data.yearOfBirth}-${data.monthOfBirth}-${data.dayOfBirth}`,
-        ).format("DD/MM/YYYY")
+        )
       : "";
   return (
     <>

@@ -154,9 +154,54 @@ export const driving = {
 export const employment = { slug: "employment" };
 export const business = { slug: "business" };
 export const housing = { slug: "housing" };
-export const death = { slug: "death" };
+export const death = {
+  slug: "death",
+  notifyDeath: {
+    slug: "notify-death",
+    path() {
+      return `${death.slug}/${death.notifyDeath.slug}`;
+    },
+    requiredInformation: {
+      slug: "required-information",
+      path() {
+        return `${death.slug}/${death.notifyDeath.slug}/${death.notifyDeath.requiredInformation.slug}`;
+      },
+    },
+    authorityCheck: {
+      slug: "authority",
+      path() {
+        return `${death.slug}/${death.notifyDeath.slug}/${death.notifyDeath.authorityCheck.slug}`;
+      },
+    },
+    details: {
+      slug: "enter-details",
+      path() {
+        return `${death.slug}/${death.notifyDeath.slug}/${death.notifyDeath.details.slug}`;
+      },
+    },
+    confirmNotification: {
+      slug: "confirm-notification",
+      path() {
+        return `${death.slug}/${death.notifyDeath.slug}/${death.notifyDeath.confirmNotification.slug}`;
+      },
+    },
+    servicesToInform: {
+      slug: "services-list-to-inform",
+      path() {
+        return `${death.slug}/${death.notifyDeath.slug}/${death.notifyDeath.servicesToInform.slug}`;
+      },
+    },
+    notificationSuccess: {
+      slug: "notification-success",
+      path() {
+        return `${death.slug}/${death.notifyDeath.slug}/${death.notifyDeath.notificationSuccess.slug}`;
+      },
+    },
+  },
+};
 
 export const category = {
   health,
   driving,
+  death,
 };

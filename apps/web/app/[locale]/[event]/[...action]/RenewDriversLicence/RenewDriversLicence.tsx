@@ -114,6 +114,7 @@ type FormProps = {
   isStepValid: boolean;
   params: web.NextPageProps["params"];
   searchParams: web.NextPageProps["searchParams"];
+  eventsPageHref: string;
 };
 
 const MedicalCertificateStep: React.FC<FormProps> = ({
@@ -124,6 +125,7 @@ const MedicalCertificateStep: React.FC<FormProps> = ({
   userId,
   params,
   searchParams,
+  eventsPageHref,
 }) => {
   return stepSlug === nextSlug ? (
     <FormLayout
@@ -132,7 +134,7 @@ const MedicalCertificateStep: React.FC<FormProps> = ({
         href: baseActionHref,
       }}
       step={stepSlug}
-      backHref={baseActionHref}
+      backHref={eventsPageHref}
     >
       <MedicalForm
         flow={workflow.keys.renewDriversLicence}
@@ -327,10 +329,14 @@ const ApplicationSuccessStep: React.FC<FormProps> = ({
   actionSlug,
   stepSlug,
   nextSlug,
+  eventsPageHref,
 }) => {
   return stepSlug === nextSlug ? (
     <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
-      <ApplicationSuccess flow={workflow.keys.renewDriversLicence} />
+      <ApplicationSuccess
+        flow={workflow.keys.renewDriversLicence}
+        onSubmitRedirectSlug={eventsPageHref}
+      />
     </FormLayout>
   ) : (
     redirect(nextSlug || "")
@@ -387,6 +393,7 @@ export default async (props: web.NextPageProps) => {
         actionSlug={actionSlug}
         nextSlug={nextSlug}
         data={data}
+        eventsPageHref={`/${props.params.locale}/${routes.events.slug}`}
         urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
         userId={userId}
         baseActionHref={baseActionHref}

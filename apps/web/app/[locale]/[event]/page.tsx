@@ -6,6 +6,7 @@ import { PgSessions } from "auth/sessions";
 
 import WithEventMenu from "./WithEventMenu";
 import { routes } from "../../utils";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: {
@@ -19,14 +20,13 @@ export default async (props: Props) => {
   const { firstName, lastName } = await PgSessions.get();
 
   const userName = [firstName, lastName].join(" ");
-
   switch (props.params.event) {
     case routes.events.slug:
       children = <MyLifeEvents />;
       break;
 
     default:
-      children = <h1>Not implemented</h1>;
+      children = notFound();
   }
 
   return (

@@ -1,8 +1,11 @@
 import { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
+import { web, workflow } from "../../../../utils";
 
 type Props = {
   flow: string;
+  data: workflow.OrderEHIC;
+  onSubmitRedirectSlug: string;
 };
 
 export default (props: Props) => {
@@ -10,7 +13,7 @@ export default (props: Props) => {
 
   async function returnToPortalAction() {
     "use server";
-    redirect("/events");
+    redirect(props.onSubmitRedirectSlug);
   }
   return (
     <>
@@ -30,6 +33,12 @@ export default (props: Props) => {
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("purpose")}</dt>
             <dd className="govie-summary-list__value">{t(props.flow)}</dd>
+          </div>
+          <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">{t("date")}</dt>
+            <dd className="govie-summary-list__value">
+              {web.formatDate(props.data.submittedAt)}
+            </dd>
           </div>
         </dl>
         <form action={returnToPortalAction}>

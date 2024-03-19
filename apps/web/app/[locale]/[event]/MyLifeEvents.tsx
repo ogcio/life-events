@@ -6,11 +6,13 @@ import { renewDriverLicenceRules } from "./[...action]/RenewDriversLicence/Renew
 import { postgres, routes, workflow } from "../../utils";
 import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
 import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/OrderBirthCertificate";
+import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 
 const eventRules = {
   [workflow.keys.orderEHIC]: orderEHICRules,
   [workflow.keys.renewDriversLicence]: renewDriverLicenceRules,
   [workflow.keys.orderBirthCertificate]: orderBirthCertificateRules,
+  [workflow.keys.notifyDeath]: notifyDeathRules,
 };
 
 async function getEvents() {
@@ -27,6 +29,10 @@ async function getEvents() {
     {
       flowKey: workflow.keys.orderBirthCertificate,
       category: workflow.categories.health,
+    },
+    {
+      flowKey: workflow.keys.notifyDeath,
+      category: workflow.categories.death,
     },
   ]);
 }
@@ -52,7 +58,8 @@ function eventFlowMapper(row: {
     descriptionKey += ".description.rejected";
   } else if (
     [
-      routes.category[row.category][row.flow].applicationSuccess.slug,
+      routes.category[row.category][row.flow].notificationSuccess?.slug,
+      routes.category[row.category][row.flow].applicationSuccess?.slug,
       routes.category[row.category][row.flow].paymentSuccess?.slug,
     ].includes(step || "")
   ) {
