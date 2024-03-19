@@ -352,6 +352,15 @@
       "taxDocuments": "Tax document",
       "noDocuments": "No document"
     },
+    "NotifyDeathDetails": {
+      "title": "Review death notification",
+      "reject": "Reject",
+      "approve": "Approve",
+      "referenceNumber": "12 digit reference number",
+      "deceasedSurname": "Surname of the person who has died",
+      "dateOfDeath": "Date of death",
+      "servicesToInform": "Services to inform"
+    },
     "RejectReasonForm": {
       "title": "Reason for rejection",
       "inputLabel": "Provide the reason for the user to see",
@@ -369,7 +378,8 @@
       "back": "Back",
       "eventNotFound": "Event not found",
       "orderEHIC": "Application for an EHIC",
-      "orderBirthCertificate": "Application for a copy of the birth certificate"
+      "orderBirthCertificate": "Application for a copy of the birth certificate",
+      "notifyDeath": "Death notification"
     },
     "StatusMenu": {
       "all": "All",
