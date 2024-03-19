@@ -6,7 +6,8 @@
     "build": "next build",
     "start": "next start",
     "test:e2e": "playwright test",
-    "migrate": "db-migrate up"
+    "migrate": "db-migrate up",
+    "seed": "node --import tsx ./migrations/seeding/index.ts"
   },
   "nodemonConfig": {
     "watch": [
@@ -17,9 +18,12 @@
     "exec": "next dev -p 3001"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^2.6.2",
+    "@stripe/stripe-js": "^3.0.10",
     "auth": "*",
     "dayjs": "^1.11.10",
     "design-system": "*",
+    "dotenv": "^16.4.5",
     "feature-flags": "*",
     "next": "latest",
     "next-intl": "^3.7.0",
@@ -28,6 +32,7 @@
     "react-dom": "^18.2.0",
     "server-only": "^0.0.1",
     "sqids": "^0.3.0",
+    "stripe": "^14.21.0",
     "truelayer-embedded-payment-page": "^0.2.22",
     "truelayer-signing": "^0.1.7"
   },
@@ -39,6 +44,7 @@
     "@types/react": "18.2.45",
     "db-migrate": "^0.11.14",
     "db-migrate-pg": "^1.5.2",
+    "tsx": "^4.7.1",
     "typescript": "5.3.3"
   }
 }

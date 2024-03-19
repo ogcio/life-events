@@ -216,32 +216,32 @@
     "orderEHIC": {
       "title": {
         "base": "Order an EHIC",
-        "pre": "Continue your application for an EHIC",
-        "mid": "Your application for an EHIC is being processed",
+        "pre": "Continue your EHIC application",
+        "mid": "Your EHIC is now being processed",
         "post": "Your EHIC is now available",
         "rejected": "Your application for an EHIC is rejected"
       },
       "description": {
-        "base": "Lorem ipsum dolor sit amet",
-        "pre": "Lorem ipsum dolor sit amet",
-        "mid": "Lorem ipsum dolor sit amet",
-        "post": "Lorem ipsum dolor sit amet",
+        "base": "A line of text to support this statement",
+        "pre": "Get necessary state healthcare in all EU countries",
+        "mid": "We will notify you again when your card is available in your Digital Wallet",
+        "post": "It is now available in your digital wallet and will be posted to you",
         "rejected": "{rejectedReason}"
       }
     },
     "orderBirthCertificate": {
       "title": {
         "base": "Order a copy of my birth certificate",
-        "pre": "Continue your application for a copy of your birth certificate",
-        "mid": "Your application for a copy of your birth certificate is being processed",
-        "post": "The copy of your birth certificate is now available",
+        "pre": "Continue with your request for a copy of your birth certificate",
+        "mid": "Your birth certificate request is being processed",
+        "post": "Your birth certificate is on its way",
         "rejected": "Your application for a copy of your birth certificate is rejected"
       },
       "description": {
-        "base": "Lorem ipsum dolor sit amet",
-        "pre": "Lorem ipsum dolor sit amet",
-        "mid": "Lorem ipsum dolor sit amet",
-        "post": "Lorem ipsum dolor sit amet",
+        "base": "A line of text to support this statement",
+        "pre": "A line of text to support this statement",
+        "mid": "We will notify you again when completed and has been posted to you",
+        "post": "Your certificate has now been posted to you. Please allow up to 7 working days to receive",
         "rejected": "{rejectedReason}"
       }
     },

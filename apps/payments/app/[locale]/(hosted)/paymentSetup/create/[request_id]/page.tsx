@@ -80,7 +80,7 @@ export default async function (props: { params: { request_id: string } }) {
         <CopyLink link={completePaymentLink} buttonText={t("copyLink")} />
       </div>
       <div>
-        <Link href="/payments">
+        <Link href="/paymentSetup">
           <button className="govie-button govie-button--secondary">
             {t("goBack")}
           </button>

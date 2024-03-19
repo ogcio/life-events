@@ -10,7 +10,7 @@ type Props = {
 };
 
 export default async ({ provider }: Props) => {
-  const t = await getTranslations("PaymentSetup.AddBankTransfer");
+  const t = await getTranslations("PaymentSetup.AddOpenbanking");
 
   async function updateProvider(formData: FormData) {
     "use server";

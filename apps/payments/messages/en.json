@@ -8,6 +8,7 @@
       "paymentRequests": "Payment requests",
       "providers": "Providers"
     },
+    "details": "Payment details",
     "Providers": {
       "title": "Your payments integrations",
       "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
@@ -98,7 +99,8 @@
         "paymentTitle": "Description",
         "beneficiaryAccount": "Beneficiary Account",
         "actions": "Actions",
-        "assign": "Assign to user"
+        "assign": "Assign to user",
+        "details": "Details"
       }
     },
     "Request": {
@@ -163,6 +165,14 @@
       "sortCode": "Sort code",
       "accountNumber": "Account number"
     }
+  },
+  "PayStripe": {
+    "payNow": "Pay now",
+    "unexpectedError": "An unexpected error occurred.",
+    "paymentSucceded": "Payment succeeded!",
+    "paymentProcessing": "Your payment is processing.",
+    "paymentRequiresPaymentMmethod": "Your payment was not successful, please try again.",
+    "somethingWrong": "Something went wrong."
   },
   "PaymentRequestComplete": {
     "title": "Your payment was successful",

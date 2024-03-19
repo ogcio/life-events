@@ -77,7 +77,7 @@ export default async function () {
                     className="govie-link"
                     href={`/paymentSetup/requests/${req.payment_request_id}`}
                   >
-                    {t("table.assign")}
+                    {t("table.details")}
                   </Link>
                 </td>
               </tr>
