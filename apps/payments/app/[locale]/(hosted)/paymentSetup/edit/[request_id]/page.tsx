@@ -23,6 +23,7 @@ async function editPayment(
     amount,
     redirectUrl: formData.get("redirect-url")?.toString(),
     allowAmountOverride: formData.get("allowAmountOverride") === "on",
+    allowCustomAmount: formData.get("allowCustomAmount") === "on",
   };
 
   const client = await pgpool.connect();
@@ -31,8 +32,8 @@ async function editPayment(
     await client.query("BEGIN");
     await client.query(
       `update payment_requests 
-    set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6 
-    where payment_request_id = $7`,
+    set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 
+    where payment_request_id = $8`,
       [
         data.title,
         data.description,
@@ -40,6 +41,7 @@ async function editPayment(
         data.amount,
         data.redirectUrl,
         data.allowAmountOverride,
+        data.allowCustomAmount,
         paymentRequestId,
       ],
     );

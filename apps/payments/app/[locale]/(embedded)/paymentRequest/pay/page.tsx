@@ -34,8 +34,11 @@ export const getRealAmount = ({
   allowAmountOverride,
   allowCustomOverride,
 }: {
+  // Default amount required from the database
   amount: number;
+  // Custom amount choosen by the user (if applicable)
   customAmount?: number;
+  // Amount override from the URL (if applicable)
   amountOverride?: number;
   allowAmountOverride: boolean;
   allowCustomOverride: boolean;

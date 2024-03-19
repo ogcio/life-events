@@ -4,6 +4,7 @@ import OpenBankingHost from "./OpenBankingHost";
 import { pgpool } from "../../../../dbConnection";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
+import { getRealAmount } from "../../../(embedded)/paymentRequest/pay/page";
 
 async function getPaymentDetails(
   paymentId: string,
@@ -40,10 +41,13 @@ async function getPaymentDetails(
 
   const paymentDetails = {
     ...paymentRows[0],
-    amount:
-      paymentRows[0].allow_amount_override && amount
-        ? amount
-        : paymentRows[0].amount,
+    amount: getRealAmount({
+      amount: paymentRows[0].amount,
+      customAmount,
+      amountOverride: amount,
+      allowAmountOverride: paymentRows[0].allowAmountOverride,
+      allowCustomOverride: paymentRows[0].allowCustomAmount,
+    }),
     govid_email: userInfo.govid_email,
     user_name: userInfo.user_name,
   };
@@ -75,7 +79,12 @@ async function createTransaction(
 export default async function Bank(props: {
   params: { locale: string };
   searchParams:
-    | { paymentId: string; integrationRef: string; amount?: string }
+    | {
+        paymentId: string;
+        integrationRef: string;
+        amount?: string;
+        customAmount?: string;
+      }
     | undefined;
 }) {
   const t = await getTranslations("Common");
@@ -89,7 +98,15 @@ export default async function Bank(props: {
     ? parseFloat(props.searchParams.amount)
     : undefined;
 
-  const details = await getPaymentDetails(props.searchParams.paymentId, amount);
+  const customAmount = props.searchParams.customAmount
+    ? parseFloat(props.searchParams.customAmount)
+    : undefined;
+
+  const details = await getPaymentDetails(
+    props.searchParams.paymentId,
+    amount,
+    customAmount,
+  );
   if (!details) return <h1>{t("notFound")}</h1>;
 
   const { paymentDetails, paymentRequest } = details;

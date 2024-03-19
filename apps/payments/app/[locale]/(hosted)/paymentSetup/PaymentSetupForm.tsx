@@ -195,14 +195,14 @@ export default async function ({
           <div className="govie-checkboxes__item">
             <input
               className="govie-checkboxes__input"
-              id="allow-override-hint"
+              id="allow-custom-hint"
               name="allowCustomAmount"
               type="checkbox"
               defaultChecked={details?.allowCustomAmount}
             />
             <label
               className="govie-label--s govie-checkboxes__label"
-              htmlFor="allow-override-hint"
+              htmlFor="allow-custom-hint"
             >
               {t("form.allowCustomAmount")}
             </label>

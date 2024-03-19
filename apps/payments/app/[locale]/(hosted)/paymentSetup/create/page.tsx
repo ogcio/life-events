@@ -123,7 +123,7 @@ async function createPayment(userId: string, formData: FormData) {
     await client.query("COMMIT");
 
     redirect(
-      `create/${paymentRequestQueryResult.rows[0].payment_request_id}`,
+      `./requests/${paymentRequestQueryResult.rows[0].payment_request_id}`,
       RedirectType.replace,
     );
   } catch (err) {
