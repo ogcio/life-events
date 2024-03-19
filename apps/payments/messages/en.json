@@ -2,7 +2,8 @@
   "Common": {
     "notFound": "Payment request not found",
     "edit": "Edit",
-    "save": "Save"
+    "save": "Save",
+    "currencySymbol": "€"
   },
   "PaymentSetup": {
     "menu": {
@@ -154,7 +155,9 @@
     "payByCard": "Credit/Debit card",
     "payNow": "Pay now",
     "manualBankTransfer": "Manual Bank Transfer",
-    "manualBankTransferDescription": "Make a manual bank transfer"
+    "manualBankTransferDescription": "Make a manual bank transfer",
+    "selectCustomAmount": "Pay a custom amount",
+    "changeAmount": "Change amount"
   },
   "PayManualBankTransfer": {
     "title": "Pay with a Manual Bank Transfer",

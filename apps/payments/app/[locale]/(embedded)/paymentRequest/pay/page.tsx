@@ -4,6 +4,8 @@ import { formatCurrency } from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
 import { PgSessions } from "auth/sessions";
 import ClientLink from "./ClientLink";
+import { PaymentRequestDO } from "../../../../../types/common";
+import { redirect } from "next/navigation";
 
 type Props = {
   searchParams:
@@ -14,21 +16,6 @@ type Props = {
         customAmount?: string;
       }
     | undefined;
-};
-
-// Need a common place for these types
-type PaymentRequestDO = {
-  payment_request_id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  provider_id: string;
-  reference: string;
-  amount: number;
-  status: string;
-  redirect_url: string;
-  allowAmountOverride: boolean;
-  allowCustomAmount: boolean;
 };
 
 type PaymentRequestDetails = Pick<
@@ -60,17 +47,37 @@ async function getPaymentRequestDetails(paymentId: string) {
   return res.rows;
 }
 
+async function selectCustomAmount(
+  requestId: string,
+  userId: string,
+  formData: FormData,
+) {
+  "use server";
+  const amountAsString = formData.get("customAmount")?.toString() ?? "";
+  const customAmount = Math.round(parseFloat(amountAsString) * 100);
+
+  const integrationReference = `${userId}:${requestId}`;
+
+  redirect(
+    `./pay?paymentId=${requestId}&id=${integrationReference}&customAmount=${customAmount}`,
+  );
+}
+
 function getPaymentUrl(
   paymentId: string,
   type: string,
   integrationRef: string,
   amount?: string,
+  customAmount?: string,
 ) {
   const url = new URL(`/paymentRequest/${type}`, process.env.HOST_URL);
   url.searchParams.set("paymentId", paymentId);
   url.searchParams.set("integrationRef", integrationRef);
   if (amount) {
     url.searchParams.set("amount", amount);
+  }
+  if (customAmount) {
+    url.searchParams.set("customAmount", customAmount);
   }
   return url.href;
 }
@@ -84,11 +91,12 @@ export default async function Page(props: Props) {
     return <NotFound />;
 
   // Enforce being logged in
-  await PgSessions.get();
+  const { userId } = await PgSessions.get();
 
-  const [details, t] = await Promise.all([
+  const [details, t, tCommon] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId),
     getTranslations("PayPaymentRequest"),
+    getTranslations("Common"),
   ]);
 
   if (!details) return <NotFound />;
@@ -120,6 +128,12 @@ export default async function Page(props: Props) {
     realAmount = parseFloat(customAmount);
   }
 
+  const selectAmountAction = selectCustomAmount.bind(
+    this,
+    props.searchParams?.paymentId,
+    userId,
+  );
+
   return (
     <div
       style={{
@@ -143,6 +157,39 @@ export default async function Page(props: Props) {
         <h2 className="govie-heading-m">
           {t("toPay")}: {formatCurrency(realAmount)}
         </h2>
+        <div className="govie-form-group">
+          <label htmlFor="amount" className="govie-label--s">
+            {t("selectCustomAmount")}
+          </label>
+
+          <form style={{ maxWidth: "500px" }} action={selectAmountAction}>
+            <div className="govie-input__wrapper">
+              <div aria-hidden="true" className="govie-input__prefix">
+                {tCommon("currencySymbol")}
+              </div>
+              <input
+                type="number"
+                id="customAmount"
+                name="customAmount"
+                className="govie-input"
+                min="0.00"
+                max="10000.00"
+                step="0.01"
+                required
+                defaultValue={
+                  customAmount && allowCustomAmount
+                    ? parseFloat(customAmount) / 100
+                    : undefined
+                }
+              />
+            </div>
+            <input
+              type="submit"
+              value={t("changeAmount")}
+              className="govie-button"
+            />
+          </form>
+        </div>
         <hr className="govie-section-break govie-section-break--visible"></hr>
         {hasOpenBanking && (
           <>

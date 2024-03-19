@@ -1,17 +1,6 @@
 import { getUserInfoById } from "auth/sessions";
 import { pgpool } from "../../../dbConnection";
-
-type PaymentRequestDO = {
-  payment_request_id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  reference: string;
-  amount: number;
-  status: string;
-  redirect_url: string;
-  allowAmountOverride: boolean;
-};
+import { PaymentRequestDO } from "../../../../types/common";
 
 export type PaymentRequestDetails = Pick<
   PaymentRequestDO,
