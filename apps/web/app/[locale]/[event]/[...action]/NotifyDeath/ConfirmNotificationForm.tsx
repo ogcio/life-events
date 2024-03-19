@@ -1,7 +1,6 @@
-import dayjs from "dayjs";
 import { getTranslations } from "next-intl/server";
 import { ListRow } from "../shared/SummaryListRow";
-import { postgres, routes, workflow } from "../../../../utils";
+import { postgres, routes, web, workflow } from "../../../../utils";
 import { redirect } from "next/navigation";
 
 export default async (props: {
@@ -29,9 +28,9 @@ export default async (props: {
   const changeDetailsHref = routes.death.notifyDeath.details.slug;
   const dateOfDeath =
     data.yearOfDeath && data.monthOfDeath && data.dayOfDeath
-      ? dayjs(
+      ? web.formatDate(
           `${data.yearOfDeath}-${data.monthOfDeath}-${data.dayOfDeath}`,
-        ).format("DD/MM/YYYY")
+        )
       : "";
 
   return (

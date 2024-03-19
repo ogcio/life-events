@@ -51,7 +51,7 @@ export default async (props: {
   );
 
   const servicesResponse = await fetch(
-    `${process.env.API_ENDPOINT}/static/services/api`,
+    `${process.env.API_ENDPOINT}/static/government-services/api`,
   );
   const services = await servicesResponse.json();
 

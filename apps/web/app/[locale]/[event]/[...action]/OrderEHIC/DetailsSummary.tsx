@@ -1,9 +1,8 @@
-import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
 
 import { ListRow } from "../shared/SummaryListRow";
-import { workflow, postgres, routes } from "../../../../utils";
+import { workflow, postgres, routes, web } from "../../../../utils";
 
 export default (props: {
   data: workflow.OrderEHIC;
@@ -34,9 +33,9 @@ export default (props: {
     routes.health.orderEHIC.selectLocalHealthOffice.slug;
   const dateOfBirth =
     data.yearOfBirth && data.monthOfBirth && data.dayOfBirth
-      ? dayjs(
+      ? web.formatDate(
           `${data.yearOfBirth}-${data.monthOfBirth}-${data.dayOfBirth}`,
-        ).format("DD/MM/YYYY")
+        )
       : "";
   return (
     <>

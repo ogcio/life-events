@@ -55,7 +55,7 @@ export default async (props: {
             <p className="govie-heading-s" style={{ marginBottom: "5px" }}>
               {t("firstRequirementTitle")}
             </p>
-            <p style={{ fontSize: "16px", marginTop: 0 }}>
+            <p className="govie-body-s" style={{ marginTop: 0 }}>
               {t.rich("firstRequirementDescription", {
                 span: (chunks) => (
                   <span style={{ display: "block" }}>{chunks}</span>
@@ -70,7 +70,7 @@ export default async (props: {
             <p className="govie-heading-s" style={{ marginBottom: "5px" }}>
               {t("thirdRequirementTitle")}
             </p>
-            <p style={{ fontSize: "16px", marginTop: 0 }}>
+            <p className="govie-body-s" style={{ marginTop: 0 }}>
               {t("thirdRequirementDescription")}
             </p>
           </li>

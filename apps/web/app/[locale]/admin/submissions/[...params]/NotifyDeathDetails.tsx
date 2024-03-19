@@ -1,9 +1,8 @@
-import dayjs from "dayjs";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { postgres, workflow } from "../../../../utils";
+import { postgres, web, workflow } from "../../../../utils";
 import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
 
 type Props = {
@@ -55,9 +54,9 @@ export default async ({ userId, flow, flowData }: Props) => {
                 key: t("dateOfDeath"),
                 value: !flowData.yearOfDeath
                   ? "-"
-                  : dayjs(
+                  : web.formatDate(
                       `${flowData.yearOfDeath}-${flowData.monthOfDeath}-${flowData.dayOfDeath}`,
-                    ).format("DD/MM/YYYY"),
+                    ),
               }}
             />
             <div className="govie-summary-list__row">

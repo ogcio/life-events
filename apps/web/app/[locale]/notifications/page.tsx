@@ -117,7 +117,7 @@ export default async (props: web.NextPageProps) => {
               }}
             >
               <th className="govie-table__header" scope="row">
-                {dayjs(notification.createdAt).format("DD/MM/YYYY")}
+                {web.formatDate(notification.createdAt)}
               </th>
               <th className="govie-table__header" scope="row">
                 {notification.subject}

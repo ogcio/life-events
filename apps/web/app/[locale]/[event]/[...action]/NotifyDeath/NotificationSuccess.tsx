@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { redirect } from "next/navigation";
-import { workflow } from "../../../../utils";
+import { workflow, web } from "../../../../utils";
 
 type Props = {
   flow: string;
@@ -39,7 +39,7 @@ export default (props: Props) => {
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("date")}</dt>
             <dd className="govie-summary-list__value">
-              {dayjs(props.data.submittedAt).format("DD/MM/YYYY")}
+              {web.formatDate(props.data.submittedAt)}
             </dd>
           </div>
         </dl>

@@ -133,6 +133,9 @@
     "secondInputTitle": "Surname of the person who has died",
     "thirdInputTitle": "Date of death",
     "thirdInputDescription": "For example, 21 7 2020",
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
     "continue": "Continue"
   },
   "AuthorityCheckForm": {

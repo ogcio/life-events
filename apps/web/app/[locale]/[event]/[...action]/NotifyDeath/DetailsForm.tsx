@@ -274,7 +274,7 @@ export default async (props: {
                     className="govie-label--s govie-date-input__label"
                     htmlFor="dayOfDeath"
                   >
-                    Day
+                    {t("day")}
                   </label>
                   <input
                     className={`govie-input govie-date-input__input govie-input--width-2 ${
@@ -296,7 +296,7 @@ export default async (props: {
                     className="govie-label--s govie-date-input__label"
                     htmlFor="monthOfDeath"
                   >
-                    Month
+                    {t("month")}
                   </label>
                   <input
                     className={`govie-input govie-date-input__input govie-input--width-2 ${
@@ -320,7 +320,7 @@ export default async (props: {
                     className="govie-label--s govie-date-input__label"
                     htmlFor="yearOfDeath"
                   >
-                    Year
+                    {t("year")}
                   </label>
                   <input
                     className={`govie-input govie-date-input__input govie-input--width-4 ${

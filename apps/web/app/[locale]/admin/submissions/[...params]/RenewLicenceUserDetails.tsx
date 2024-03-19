@@ -65,9 +65,9 @@ export default async ({ userId, flow, flowData }: Props) => {
                 key: t("birthDay"),
                 value: !flowData.yearOfBirth
                   ? "-"
-                  : dayjs(
+                  : web.formatDate(
                       `${flowData.yearOfBirth}-${flowData.monthOfBirth}-${flowData.dayOfBirth}`,
-                    ).format("DD/MM/YYYY"),
+                    ),
               }}
             />
             <ListRow item={{ key: t("sex"), value: flowData.sex }} />

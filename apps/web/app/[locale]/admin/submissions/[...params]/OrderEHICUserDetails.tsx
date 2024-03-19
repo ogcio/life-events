@@ -1,6 +1,5 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import dayjs from "dayjs";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -64,9 +63,9 @@ export default async ({ userId, flow, flowData }: Props) => {
                 key: t("birthDay"),
                 value: !flowData.yearOfBirth
                   ? "-"
-                  : dayjs(
+                  : web.formatDate(
                       `${flowData.yearOfBirth}-${flowData.monthOfBirth}-${flowData.dayOfBirth}`,
-                    ).format("DD/MM/YYYY"),
+                    ),
               }}
             />
             <ListRow
