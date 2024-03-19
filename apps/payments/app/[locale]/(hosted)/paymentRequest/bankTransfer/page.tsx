@@ -5,7 +5,11 @@ import { pgpool } from "../../../../dbConnection";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 
-async function getPaymentDetails(paymentId: string, amount?: number) {
+async function getPaymentDetails(
+  paymentId: string,
+  amount?: number,
+  customAmount?: number,
+) {
   const { rows: paymentRows } = await pgpool.query(
     `
     SELECT
@@ -34,7 +38,6 @@ async function getPaymentDetails(paymentId: string, amount?: number) {
 
   if (!userInfo) return undefined;
 
-  // Merge the payment details with user details
   const paymentDetails = {
     ...paymentRows[0],
     amount:

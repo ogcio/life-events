@@ -27,6 +27,25 @@ type PaymentRequestDetails = Pick<
   | "allowCustomAmount"
 > & { provider_name: string; provider_type: string };
 
+export const getRealAmount = ({
+  amount,
+  customAmount,
+  amountOverride,
+  allowAmountOverride,
+  allowCustomOverride,
+}: {
+  amount: number;
+  customAmount?: number;
+  amountOverride?: number;
+  allowAmountOverride: boolean;
+  allowCustomOverride: boolean;
+}) => {
+  if (allowAmountOverride && amountOverride) return amountOverride;
+  if (allowCustomOverride && customAmount) return customAmount;
+
+  return amount;
+};
+
 async function getPaymentRequestDetails(paymentId: string) {
   "use server";
 
@@ -67,17 +86,17 @@ function getPaymentUrl(
   paymentId: string,
   type: string,
   integrationRef: string,
-  amount?: string,
-  customAmount?: string,
+  amount?: number,
+  customAmount?: number,
 ) {
   const url = new URL(`/paymentRequest/${type}`, process.env.HOST_URL);
   url.searchParams.set("paymentId", paymentId);
   url.searchParams.set("integrationRef", integrationRef);
   if (amount) {
-    url.searchParams.set("amount", amount);
+    url.searchParams.set("amount", amount.toString());
   }
   if (customAmount) {
-    url.searchParams.set("customAmount", customAmount);
+    url.searchParams.set("customAmount", customAmount.toString());
   }
   return url.href;
 }
@@ -113,20 +132,22 @@ export default async function Page(props: Props) {
     ({ provider_type }) => provider_type === "stripe",
   );
 
-  const baseAmount = details[0].amount;
-  const canOverrideAmount = details[0].allowAmountOverride;
   const allowCustomAmount = details[0].allowCustomAmount;
 
-  const urlAmount = props.searchParams.amount;
-  const customAmount = props.searchParams.customAmount;
-  let realAmount = baseAmount;
-  if (urlAmount && canOverrideAmount) {
-    realAmount = parseFloat(urlAmount);
-  }
-  // We need to choose the priority of the rules
-  if (customAmount && allowCustomAmount) {
-    realAmount = parseFloat(customAmount);
-  }
+  const urlAmount = props.searchParams.amount
+    ? parseFloat(props.searchParams.amount)
+    : undefined;
+  const customAmount = props.searchParams.customAmount
+    ? parseFloat(props.searchParams.customAmount)
+    : undefined;
+
+  const realAmount = getRealAmount({
+    amount: details[0].amount,
+    customAmount,
+    amountOverride: urlAmount,
+    allowAmountOverride: details[0].allowAmountOverride,
+    allowCustomOverride: details[0].allowCustomAmount,
+  });
 
   const selectAmountAction = selectCustomAmount.bind(
     this,
@@ -178,7 +199,7 @@ export default async function Page(props: Props) {
                 required
                 defaultValue={
                   customAmount && allowCustomAmount
-                    ? parseFloat(customAmount) / 100
+                    ? customAmount / 100
                     : undefined
                 }
               />
@@ -210,6 +231,7 @@ export default async function Page(props: Props) {
                   "bankTransfer",
                   props.searchParams.id,
                   urlAmount,
+                  customAmount,
                 )}
               />
             </div>
@@ -232,6 +254,7 @@ export default async function Page(props: Props) {
                   "manual",
                   props.searchParams.id,
                   urlAmount,
+                  customAmount,
                 )}
               />
             </div>
@@ -248,6 +271,7 @@ export default async function Page(props: Props) {
                 "stripe",
                 props.searchParams!.id,
                 urlAmount,
+                customAmount,
               )}
             />
           )}
