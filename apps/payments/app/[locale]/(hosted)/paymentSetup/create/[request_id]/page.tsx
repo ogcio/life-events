@@ -10,6 +10,8 @@ export default async function (props: { params: { request_id: string } }) {
   const details = await getPaymentRequestDetails(props.params.request_id);
   const { userId } = await PgSessions.get();
   const t = await getTranslations("PaymentSetup.CreatePayment");
+  const tCommon = await getTranslations("Common");
+
   if (!details) {
     return <h1 className="govie-heading-l">Payment request not found</h1>;
   }
@@ -22,7 +24,20 @@ export default async function (props: { params: { request_id: string } }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-      <h1 className="govie-heading-l">{t("title")}</h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <h1 className="govie-heading-l">{t("title")}</h1>
+        <Link href={`/paymentSetup/edit/${props.params.request_id}`}>
+          <button className="govie-button govie-button--primary">
+            {tCommon("edit")}
+          </button>
+        </Link>
+      </div>
+
       <dl className="govie-summary-list">
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.title")}</dt>

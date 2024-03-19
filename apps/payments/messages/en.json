@@ -1,6 +1,8 @@
 {
   "Common": {
-    "notFound": "Payment request not found"
+    "notFound": "Payment request not found",
+    "edit": "Edit",
+    "save": "Save"
   },
   "PaymentSetup": {
     "menu": {
@@ -8,6 +10,7 @@
       "paymentRequests": "Payment requests",
       "providers": "Providers"
     },
+    "details": "Payment details",
     "Providers": {
       "title": "Your payments integrations",
       "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
@@ -98,7 +101,8 @@
         "paymentTitle": "Description",
         "beneficiaryAccount": "Beneficiary Account",
         "actions": "Actions",
-        "assign": "Assign to user"
+        "assign": "Assign to user",
+        "details": "Details"
       }
     },
     "Request": {
