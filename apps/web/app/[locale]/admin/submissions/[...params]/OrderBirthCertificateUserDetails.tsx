@@ -4,18 +4,18 @@ import dayjs from "dayjs";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
-import { aws, postgres, web, workflow } from "../../../../utils";
 import { headers } from "next/headers";
+import { aws, postgres, web, workflow } from "../../../../utils";
+import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
 
 type Props = {
-  flowData: workflow.OrderEHIC;
+  flowData: workflow.OrderBirthCertificate;
   flow: string;
   userId: string;
 };
 
 export default async ({ userId, flow, flowData }: Props) => {
-  const t = await getTranslations("Admin.OrderEHICUserDetails");
+  const t = await getTranslations("Admin.OrderBirthCertificateUserDetails");
   async function approveAction(formData: FormData) {
     "use server";
     const userId = formData.get("userId");
@@ -23,7 +23,7 @@ export default async ({ userId, flow, flowData }: Props) => {
 
     await postgres.pgpool.query(
       `
-            UPDATE user_flow_data set flow_data = flow_data || jsonb_build_object('successfulAt', now()::DATE::TEXT)
+            UPDATE user_flow_data set flow_data = flow_data || jsonb_build_object('successfulAt', now()::DATE::TEXT), updated_at = now()
             WHERE user_id=$1 AND flow = $2
         `,
       [userId, flow],
@@ -38,7 +38,7 @@ export default async ({ userId, flow, flowData }: Props) => {
   if (flowData.proofOfAddressFileId) {
     const s3Client = new S3Client({
       ...aws.s3ClientConfig,
-      endpoint: process.env.S3_CLIENT_ENDPOINT,
+      endpoint: process.env.S3_ENDPOINT,
     });
 
     const command = new GetObjectCommand({
@@ -52,13 +52,14 @@ export default async ({ userId, flow, flowData }: Props) => {
 
   return (
     <>
-      <div className="govie-heading-l">{t("title")}</div>
+      <div className="govie-heading-l">
+        {t("title", { flow: t(flow).toLowerCase() })}
+      </div>
       <div className="govie-heading-m">{flowData.userName}</div>
       <div className="govie-grid-row">
         <div className="govie-grid-column-two-thirds-from-desktop">
           <dl className="govie-summary-list">
             <ListRow item={{ key: t("name"), value: flowData.userName }} />
-            <ListRow item={{ key: t("sex"), value: flowData.sex }} />
             <ListRow
               item={{
                 key: t("birthDay"),
@@ -69,13 +70,13 @@ export default async ({ userId, flow, flowData }: Props) => {
                     ).format("DD/MM/YYYY"),
               }}
             />
+            <ListRow item={{ key: t("sex"), value: flowData.sex }} />
             <ListRow
               item={{
                 key: t("address"),
                 value: flowData.currentAddress,
               }}
             />
-            <ListRow item={{ key: t("PPSN"), value: flowData.PPSN }} />
             <ListRow
               item={{
                 key: t("addressVerified"),
@@ -89,26 +90,14 @@ export default async ({ userId, flow, flowData }: Props) => {
                   <a target="_blank" href={proofOfAddressDownloadUrl}>
                     {t(flowData.proofOfAddressRequest)}
                   </a>
-                ) : flowData.proofOfAddressRequest ? (
-                  t(flowData.proofOfAddressRequest)
                 ) : (
-                  ""
+                  t(flowData.proofOfAddressRequest)
                 ),
               }}
             />
 
-            <ListRow
-              item={{
-                key: t("localHealthOffice"),
-                value: flowData.localHealthOffice,
-              }}
-            />
-            <ListRow
-              item={{
-                key: t("dispatchAddress"),
-                value: flowData.dispatchAddress,
-              }}
-            />
+            <ListRow item={{ key: t("mobile"), value: flowData.mobile }} />
+            <ListRow item={{ key: t("email"), value: flowData.email }} />
           </dl>
         </div>
       </div>

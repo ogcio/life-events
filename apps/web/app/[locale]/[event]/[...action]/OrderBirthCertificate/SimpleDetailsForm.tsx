@@ -3,24 +3,19 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { form, routes, postgres, workflow } from "../../../../utils";
 
-export default async (
-  props: Pick<
-    workflow.RenewDriversLicence,
-    | "dayOfBirth"
-    | "monthOfBirth"
-    | "yearOfBirth"
-    | "email"
-    | "mobile"
-    | "sex"
-    | "userName"
-  > & { userId: string; urlBase: string; flow: string },
-) => {
+export default async (props: {
+  data: workflow.OrderBirthCertificate;
+  userId: string;
+  urlBase: string;
+  flow: string;
+}) => {
+  const { data, userId, urlBase, flow } = props;
   const t = await getTranslations("SimpleDetailsForm");
   const errorT = await getTranslations("formErrors");
 
   const errors = await form.getErrorsQuery(
     props.userId,
-    routes.driving.renewDriversLicence.changeDetails.slug,
+    routes.health.orderBirthCertificate.changeDetails.slug,
     props.flow,
   );
 
@@ -82,16 +77,16 @@ export default async (
     if (formErrors.length) {
       await form.insertErrors(
         formErrors,
-        props.userId,
-        routes.driving.renewDriversLicence.changeDetails.slug,
-        props.flow,
+        userId,
+        routes.health.orderBirthCertificate.changeDetails.slug,
+        flow,
       );
 
       return revalidatePath("/");
     }
 
     const data: Pick<
-      workflow.RenewDriversLicence,
+      workflow.OrderBirthCertificate,
       | "dayOfBirth"
       | "monthOfBirth"
       | "yearOfBirth"
@@ -134,23 +129,23 @@ export default async (
     }
 
     const currentDataResults = await postgres.pgpool.query<{
-      currentData: workflow.RenewDriversLicence;
+      currentData: workflow.OrderBirthCertificate;
     }>(
       `
         SELECT flow_data as "currentData" FROM user_flow_data
         WHERE user_id = $1 AND flow = $2
     `,
-      [props.userId, workflow.keys.renewDriversLicence],
+      [userId, workflow.keys.orderBirthCertificate],
     );
 
-    let dataToUpdate: workflow.RenewDriversLicence;
+    let dataToUpdate: workflow.OrderBirthCertificate;
     if (currentDataResults.rowCount) {
       const [{ currentData }] = currentDataResults.rows;
       Object.assign(currentData, data);
       dataToUpdate = currentData;
     } else {
-      const base: workflow.RenewDriversLicence =
-        workflow.emptyRenewDriversLicence();
+      const base: workflow.OrderBirthCertificate =
+        workflow.emptyOrderBirthCertificate();
       Object.assign(base, data);
       dataToUpdate = base;
     }
@@ -164,14 +159,14 @@ export default async (
         WHERE user_flow_data.user_id=$1 AND user_flow_data.flow=$2
     `,
       [
-        props.userId,
-        workflow.keys.renewDriversLicence,
+        userId,
+        workflow.keys.orderBirthCertificate,
         JSON.stringify(dataToUpdate),
-        workflow.categories.driving,
+        workflow.categories.health,
       ],
     );
 
-    return redirect(props.urlBase);
+    return redirect(urlBase);
   }
 
   // const dateOfBirthError = errors.rows.find((row) =>
@@ -238,7 +233,7 @@ export default async (
               className={`govie-input ${
                 nameError ? "govie-input--error" : ""
               }`.trim()}
-              defaultValue={nameError ? nameError.errorValue : props.userName}
+              defaultValue={nameError ? nameError.errorValue : data.userName}
             />
           </div>
 
@@ -282,7 +277,7 @@ export default async (
                     type="text"
                     inputMode="numeric"
                     defaultValue={
-                      dayError ? dayError.errorValue : props.dayOfBirth
+                      dayError ? dayError.errorValue : data.dayOfBirth
                     }
                   />
                 </div>
@@ -304,7 +299,7 @@ export default async (
                     type="text"
                     inputMode="numeric"
                     defaultValue={
-                      monthError ? monthError.errorValue : props.monthOfBirth
+                      monthError ? monthError.errorValue : data.monthOfBirth
                     }
                   />
                 </div>
@@ -326,7 +321,7 @@ export default async (
                     type="text"
                     inputMode="numeric"
                     defaultValue={
-                      yearError ? yearError.errorValue : props.yearOfBirth
+                      yearError ? yearError.errorValue : data.yearOfBirth
                     }
                   />
                 </div>
@@ -363,7 +358,7 @@ export default async (
               className={`govie-input ${
                 emailError ? "govie-input--error" : ""
               }`.trim()}
-              defaultValue={emailError ? emailError.errorValue : props.email}
+              defaultValue={emailError ? emailError.errorValue : data.email}
             />
           </div>
 
@@ -393,7 +388,7 @@ export default async (
               className={`govie-input ${
                 phoneError ? "govie-input--error" : ""
               }`.trim()}
-              defaultValue={phoneError ? phoneError.errorValue : props.mobile}
+              defaultValue={phoneError ? phoneError.errorValue : data.mobile}
             />
           </div>
 
@@ -423,7 +418,7 @@ export default async (
               className={`govie-input ${
                 sexError ? "govie-input--error" : ""
               }`.trim()}
-              defaultValue={sexError ? sexError.errorValue : props.sex}
+              defaultValue={sexError ? sexError.errorValue : data.sex}
             />
           </div>
           <button type="submit" className="govie-button">

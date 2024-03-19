@@ -2,10 +2,12 @@ import { notFound } from "next/navigation";
 import { routes, web } from "../../../utils";
 import OrderEHIC from "./OrderEHIC/OrderEHIC";
 import RenewDriversLicence from "./RenewDriversLicence/RenewDriversLicence";
+import OrderBirthCertificate from "./OrderBirthCertificate/OrderBirthCertificate";
 
 const componentsMap = {
   [routes.driving.renewDriversLicence.slug]: RenewDriversLicence,
   [routes.health.orderEHIC.slug]: OrderEHIC,
+  [routes.health.orderBirthCertificate.slug]: OrderBirthCertificate,
 };
 
 export default function ActionPage(props: web.NextPageProps) {
