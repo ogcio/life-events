@@ -4,23 +4,28 @@ import { PgSessions } from "auth/sessions";
 import OpenEventStatusImage from "./OpenEventStatusImage";
 import { renewDriverLicenceRules } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { postgres, routes, workflow } from "../../utils";
-import { flowKeys } from "../../utils/workflow";
 import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
+import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/OrderBirthCertificate";
 
 const eventRules = {
-  [flowKeys.orderEHIC]: orderEHICRules,
-  [flowKeys.renewDriversLicence]: renewDriverLicenceRules,
+  [workflow.keys.orderEHIC]: orderEHICRules,
+  [workflow.keys.renewDriversLicence]: renewDriverLicenceRules,
+  [workflow.keys.orderBirthCertificate]: orderBirthCertificateRules,
 };
 
 async function getEvents() {
   "use server";
   return Promise.resolve([
     {
-      flowKey: flowKeys.renewDriversLicence,
+      flowKey: workflow.keys.renewDriversLicence,
       category: workflow.categories.driving,
     },
     {
-      flowKey: flowKeys.orderEHIC,
+      flowKey: workflow.keys.orderEHIC,
+      category: workflow.categories.health,
+    },
+    {
+      flowKey: workflow.keys.orderBirthCertificate,
       category: workflow.categories.health,
     },
   ]);
