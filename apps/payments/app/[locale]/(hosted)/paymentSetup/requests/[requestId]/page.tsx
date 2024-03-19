@@ -1,6 +1,9 @@
 import React from "react";
 import { getTranslations } from "next-intl/server";
-import { getRequestTransactionDetails } from "../../db";
+import {
+  getPaymentRequestDetails,
+  getRequestTransactionDetails,
+} from "../../db";
 import { formatCurrency } from "../../../../../utils";
 import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
@@ -22,6 +25,60 @@ async function createTransaction(requestId: string, formData: FormData) {
   redirect(requestId);
 }
 
+const RequestDetails = async ({ requestId }: { requestId: string }) => {
+  const details = await getPaymentRequestDetails(requestId);
+  const t = await getTranslations("PaymentSetup.CreatePayment");
+  const tSetup = await getTranslations("PaymentSetup");
+
+  if (!details) {
+    return <h1 className="govie-heading-l">Payment request not found</h1>;
+  }
+
+  return (
+    <>
+      <h2 className="govie-heading-m">{tSetup("details")}</h2>
+      <dl className="govie-summary-list">
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("form.title")}</dt>
+          <dt className="govie-summary-list__value">{details.title}</dt>
+        </div>
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("form.description")}</dt>
+          <dt className="govie-summary-list__value">{details.description}</dt>
+        </div>
+
+        {details.providers.map(({ provider_name, provider_type }) => (
+          <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">
+              {t(`form.paymentProvider.${provider_type}`)}
+            </dt>
+            <dt className="govie-summary-list__value">{provider_name}</dt>
+          </div>
+        ))}
+
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("form.amount")}</dt>
+          <dt className="govie-summary-list__value">
+            {formatCurrency(details.amount)}
+          </dt>
+        </div>
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("form.redirectUrl")}</dt>
+          <dt className="govie-summary-list__value">{details.redirect_url}</dt>
+        </div>
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">
+            {t("form.allowAmountOverride")}
+          </dt>
+          <dt className="govie-summary-list__value">
+            {JSON.stringify(details.allowAmountOverride)}
+          </dt>
+        </div>
+      </dl>
+    </>
+  );
+};
+
 export default async function ({ params: { requestId } }) {
   const t = await getTranslations("PaymentSetup.Request");
 
@@ -30,6 +87,7 @@ export default async function ({ params: { requestId } }) {
 
   return (
     <div>
+      <RequestDetails requestId={requestId} />
       <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
         <section
           style={{
