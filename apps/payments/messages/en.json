@@ -140,6 +140,7 @@
         "currencySymbol": "€",
         "redirectUrl": "Redirect URL",
         "allowAmountOverride": "Allow amount override from url",
+        "allowCustomAmount": "Allow the user to pay a custom amount",
         "submit": "Continue"
       },
       "copyLink": "Copy link",

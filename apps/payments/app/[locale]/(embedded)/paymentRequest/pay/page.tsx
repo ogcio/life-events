@@ -178,39 +178,42 @@ export default async function Page(props: Props) {
         <h2 className="govie-heading-m">
           {t("toPay")}: {formatCurrency(realAmount)}
         </h2>
-        <div className="govie-form-group">
-          <label htmlFor="amount" className="govie-label--s">
-            {t("selectCustomAmount")}
-          </label>
+        {allowCustomAmount && (
+          <div className="govie-form-group">
+            <label htmlFor="amount" className="govie-label--s">
+              {t("selectCustomAmount")}
+            </label>
 
-          <form style={{ maxWidth: "500px" }} action={selectAmountAction}>
-            <div className="govie-input__wrapper">
-              <div aria-hidden="true" className="govie-input__prefix">
-                {tCommon("currencySymbol")}
+            <form style={{ maxWidth: "500px" }} action={selectAmountAction}>
+              <div className="govie-input__wrapper">
+                <div aria-hidden="true" className="govie-input__prefix">
+                  {tCommon("currencySymbol")}
+                </div>
+                <input
+                  type="number"
+                  id="customAmount"
+                  name="customAmount"
+                  className="govie-input"
+                  min="0.00"
+                  max="10000.00"
+                  step="0.01"
+                  required
+                  defaultValue={
+                    customAmount && allowCustomAmount
+                      ? customAmount / 100
+                      : undefined
+                  }
+                />
               </div>
               <input
-                type="number"
-                id="customAmount"
-                name="customAmount"
-                className="govie-input"
-                min="0.00"
-                max="10000.00"
-                step="0.01"
-                required
-                defaultValue={
-                  customAmount && allowCustomAmount
-                    ? customAmount / 100
-                    : undefined
-                }
+                type="submit"
+                value={t("changeAmount")}
+                className="govie-button"
               />
-            </div>
-            <input
-              type="submit"
-              value={t("changeAmount")}
-              className="govie-button"
-            />
-          </form>
-        </div>
+            </form>
+          </div>
+        )}
+
         <hr className="govie-section-break govie-section-break--visible"></hr>
         {hasOpenBanking && (
           <>
@@ -258,12 +261,11 @@ export default async function Page(props: Props) {
                 )}
               />
             </div>
-            <hr className="govie-section-break govie-section-break--visible"></hr>
           </>
         )}
-        <div style={{ margin: "1em 0" }}>
-          <h3 className="govie-heading-s">{t("payByCard")}</h3>
-          {hasStripe && (
+        {hasStripe && (
+          <div style={{ margin: "1em 0" }}>
+            <h3 className="govie-heading-s">{t("payByCard")}</h3>
             <ClientLink
               label={t("payNow")}
               href={getPaymentUrl(
@@ -274,8 +276,8 @@ export default async function Page(props: Props) {
                 customAmount,
               )}
             />
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
