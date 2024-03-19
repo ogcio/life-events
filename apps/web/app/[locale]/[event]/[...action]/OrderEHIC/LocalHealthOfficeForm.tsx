@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { postgres, workflow } from "../../../../utils";
 import { redirect } from "next/navigation";
+import { categories, flowKeys } from "../../../../utils/workflow";
 
 type FormProps = {
   userId: string;
@@ -38,14 +39,14 @@ export default async (props: FormProps) => {
             WHERE user_flow_data.user_id = $2 AND user_flow_data.flow = $1
         `,
       [
-        workflow.keys.orderEHIC,
+        flowKeys.orderEHIC,
         props.userId,
         JSON.stringify({
           ...props.data,
           localHealthOffice: selectedHealthOffice,
           timeAtAddress: "5 months",
         }),
-        workflow.categories.health,
+        categories.health,
         selectedHealthOffice,
       ],
     );

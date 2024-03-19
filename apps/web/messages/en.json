@@ -21,8 +21,7 @@
     "order-ehic": "Order an EHIC",
     "check-details": "Check your details", 
     "select-health-office": "Select your local health office",
-    "dispatch-address": "Enter a dispatch address", 
-    "order-birth-certificate": "Order a copy of my birth certificate"
+    "dispatch-address": "Enter a dispatch address"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -133,9 +132,7 @@
     "renewDriversLicenceBody": "Once approved your driving licence will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
     "purpose": "Application for",
     "orderEHIC": "EHIC", 
-    "orderEHICBody": "Once approved your EHIC will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
-    "orderBirthCertificate": "Birth certificate copy",
-    "orderBirthCertificateBody": "Once approved your birth certificate will be sent to you by post and you should receive it within 7 days."
+    "orderEHICBody": "Once approved your EHIC will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days."
   },
   "RenewDriversLicence": {
     "title": "Renew your driving licence"
@@ -163,32 +160,16 @@
     "orderEHIC": {
       "title": {
         "base": "Order an EHIC",
-        "pre": "Continue your EHIC application",
-        "mid": "Your EHIC is now being processed",
+        "pre": "Continue your application for an EHIC",
+        "mid": "Your application for an EHIC is being processed",
         "post": "Your EHIC is now available",
         "rejected": "Your application for an EHIC is rejected"
       },
       "description": {
-        "base": "A line of text to support this statement",
-        "pre": "Get necessary state healthcare in all EU countries",
-        "mid": "We will notify you again when your card is available in your Digital Wallet",
-        "post": "It is now available in your digital wallet and will be posted to you",
-        "rejected": "{rejectedReason}"
-      }
-    }, 
-    "orderBirthCertificate": {
-      "title": {
-        "base": "Order a copy of my birth certificate",
-        "pre": "Continue with your request for a copy of your birth certificate",
-        "mid": "Your birth certificate request is being processed",
-        "post": "Your birth certificate is on its way",
-        "rejected": "Your application for a copy of your birth certificate is rejected"
-      },
-      "description": {
-        "base": "A line of text to support this statement",
-        "pre": "A line of text to support this statement",
-        "mid": "We will notify you again when completed and has been posted to you",
-        "post": "Your certificate has now been posted to you. Please allow up to 7 working days to receive",
+        "base": "Lorem ipsum dolor sit amet",
+        "pre": "Lorem ipsum dolor sit amet",
+        "mid": "Lorem ipsum dolor sit amet",
+        "post": "Lorem ipsum dolor sit amet",
         "rejected": "{rejectedReason}"
       }
     }
@@ -249,26 +230,6 @@
       "PPSN": "PPSN",
       "dispatchAddress": "Dispatch address"
     },
-    "OrderBirthCertificateUserDetails": {
-      "title": "Review birth certificate application",
-      "orderBirthCertificate": "Birth certificate copy",
-      "name": "Name",
-      "sex": "Sex",
-      "address": "Address",
-      "addressVerified": "Address verified",
-      "yes": "Yes",
-      "no": "No",
-      "proofOfAddress": "Proof of address",
-      "mobile": "Mobile",
-      "email": "Email",
-      "reject": "Reject",
-      "approve": "Approve",
-      "birthDay": "Date of birth",
-      "utilityBill": "Utility bill",
-      "bankStatement": "Bank statement",
-      "taxDocuments": "Tax document",
-      "noDocuments": "No document"
-    },
     "RejectReasonForm": {
       "title": "Reason for rejection",
       "inputLabel": "Provide the reason for the user to see",
@@ -285,8 +246,7 @@
       "view": "View",
       "back": "Back",
       "eventNotFound": "Event not found",
-      "orderEHIC": "Application for an EHIC", 
-      "orderBirthCertificate": "Application for a copy of the birth certificate"
+      "orderEHIC": "Application for an EHIC"
     },
     "StatusMenu": {
       "all": "All",

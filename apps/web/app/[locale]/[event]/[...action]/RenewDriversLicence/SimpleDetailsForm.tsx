@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { form, routes, postgres, workflow } from "../../../../utils";
+import { flowKeys } from "../../../../utils/workflow";
 
 export default async (
   props: Pick<
@@ -140,7 +141,7 @@ export default async (
         SELECT flow_data as "currentData" FROM user_flow_data
         WHERE user_id = $1 AND flow = $2
     `,
-      [props.userId, workflow.keys.renewDriversLicence],
+      [props.userId, flowKeys.renewDriversLicence],
     );
 
     let dataToUpdate: workflow.RenewDriversLicence;
@@ -165,7 +166,7 @@ export default async (
     `,
       [
         props.userId,
-        workflow.keys.renewDriversLicence,
+        flowKeys.renewDriversLicence,
         JSON.stringify(dataToUpdate),
         workflow.categories.driving,
       ],

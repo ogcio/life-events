@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { form, routes, postgres, workflow } from "../../../../utils";
+import { flowKeys } from "../../../../utils/workflow";
 
 export default async (props: {
   data: workflow.OrderEHIC;
@@ -123,7 +124,7 @@ export default async (props: {
         SELECT flow_data as "currentData" FROM user_flow_data
         WHERE user_id = $1 AND flow = $2
     `,
-      [userId, workflow.keys.orderEHIC],
+      [userId, flowKeys.orderEHIC],
     );
 
     let dataToUpdate: workflow.OrderEHIC;
@@ -147,7 +148,7 @@ export default async (props: {
     `,
       [
         userId,
-        workflow.keys.orderEHIC,
+        flowKeys.orderEHIC,
         JSON.stringify(dataToUpdate),
         workflow.categories.health,
       ],

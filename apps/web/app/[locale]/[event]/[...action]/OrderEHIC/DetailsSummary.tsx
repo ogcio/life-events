@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
 
-import { ListRow } from "../shared/SummaryListRow";
+import { ListRow } from "../SummaryListRow";
 import { workflow, postgres, routes } from "../../../../utils";
 
 export default (props: {
@@ -12,7 +12,7 @@ export default (props: {
   onSubmit?: (formData?: FormData) => Promise<void>;
   dataValid: boolean;
 }) => {
-  const { data, flow, userId, onSubmit, dataValid } = props;
+  const { data, flow, userId, onSubmit } = props;
   const t = useTranslations("DetailsSummaryForm");
   async function submitAction() {
     "use server";
@@ -94,7 +94,7 @@ export default (props: {
           </details>
 
           <form action={onSubmit || submitAction}>
-            <button disabled={!dataValid} className="govie-button">
+            <button disabled={!props.dataValid} className="govie-button">
               {t("submitText")}
             </button>
           </form>

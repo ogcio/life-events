@@ -6,7 +6,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { aws, postgres, web, workflow } from "../../../../utils";
-import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
+import { ListRow } from "../../../[event]/[...action]/SummaryListRow";
 
 type Props = {
   flowData: workflow.RenewDriversLicence;
@@ -63,7 +63,7 @@ export default async ({ userId, flow, flowData }: Props) => {
             <ListRow
               item={{
                 key: t("birthDay"),
-                value: !flowData.yearOfBirth
+                value: flowData.yearOfBirth
                   ? "-"
                   : dayjs(
                       `${flowData.yearOfBirth}-${flowData.monthOfBirth}-${flowData.dayOfBirth}`,

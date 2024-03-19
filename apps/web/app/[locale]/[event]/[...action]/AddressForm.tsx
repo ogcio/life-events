@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { postgres, form } from "../../../../utils";
+import { postgres, form } from "../../../utils";
 import Link from "next/link";
 
 type Props<TData> = {

@@ -101,7 +101,6 @@ export function emptyOrderEHIC(): OrderEHIC {
     proofOfAddressRequest: "",
     confirmedApplication: "",
     successfulAt: "",
-    rejectedAt: "",
     rejectReason: "",
     proofOfAddressFileId: "",
     status: "",
@@ -110,56 +109,13 @@ export function emptyOrderEHIC(): OrderEHIC {
   };
 }
 
-export type OrderBirthCertificate = Base & {
-  userName: string;
-  sex: string;
-  dayOfBirth: string;
-  monthOfBirth: string;
-  yearOfBirth: string;
-  PPSN: string;
-  currentAddress: string;
-  currentAddressVerified: string;
-  timeAtAddress: string;
-  email: string;
-  mobile: string;
-  proofOfAddressRequest: string;
-  confirmedApplication: string;
-  rejectReason: string;
-  proofOfAddressFileId: string;
-  status: string;
-};
+export type Workflow = RenewDriversLicence | OrderEHIC;
 
-export function emptyOrderBirthCertificate(): OrderBirthCertificate {
-  return {
-    userName: "",
-    sex: "",
-    dayOfBirth: "",
-    monthOfBirth: "",
-    yearOfBirth: "",
-    PPSN: "",
-    currentAddress: "",
-    timeAtAddress: "",
-    currentAddressVerified: "",
-    email: "",
-    mobile: "",
-    proofOfAddressRequest: "",
-    confirmedApplication: "",
-    successfulAt: "",
-    rejectedAt: "",
-    rejectReason: "",
-    proofOfAddressFileId: "",
-    status: "",
-  };
-}
+// ===== flow keys =====
 
-export type Workflow = RenewDriversLicence | OrderEHIC | OrderBirthCertificate;
-
-// ===== workflow keys =====
-
-export const keys = {
+export const flowKeys = {
   renewDriversLicence: "renewDriversLicence",
   orderEHIC: "orderEHIC",
-  orderBirthCertificate: "orderBirthCertificate",
 };
 
 // ===== categories =====
@@ -175,7 +131,6 @@ type FlowState = {
   key: string | null;
   isStepValid: boolean;
 };
-
 /**
  * Returns a string based on a list of rules.
  *

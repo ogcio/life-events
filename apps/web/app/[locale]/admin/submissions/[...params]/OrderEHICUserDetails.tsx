@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
+import { ListRow } from "../../../[event]/[...action]/SummaryListRow";
 import { aws, postgres, web, workflow } from "../../../../utils";
 import { headers } from "next/headers";
 
@@ -62,11 +62,9 @@ export default async ({ userId, flow, flowData }: Props) => {
             <ListRow
               item={{
                 key: t("birthDay"),
-                value: !flowData.yearOfBirth
-                  ? "-"
-                  : dayjs(
-                      `${flowData.yearOfBirth}-${flowData.monthOfBirth}-${flowData.dayOfBirth}`,
-                    ).format("DD/MM/YYYY"),
+                value: dayjs(
+                  `${flowData.yearOfBirth}-${flowData.monthOfBirth}-${flowData.dayOfBirth}`,
+                ).format("DD/MM/YYYY"),
               }}
             />
             <ListRow

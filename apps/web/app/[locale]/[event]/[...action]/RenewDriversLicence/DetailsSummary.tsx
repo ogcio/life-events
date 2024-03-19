@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
 
-import { ListRow } from "../shared/SummaryListRow";
+import { ListRow } from "../SummaryListRow";
 import { workflow, postgres, routes } from "../../../../utils";
 
 export default (

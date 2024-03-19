@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import ds from "design-system";
-import { form, aws, routes, postgres } from "../../../../utils";
+import { form, aws, routes, postgres } from "../../../utils";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import {

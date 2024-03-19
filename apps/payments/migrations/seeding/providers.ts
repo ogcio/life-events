@@ -33,20 +33,5 @@ export const seedProviders = (pool, userId) => {
     ],
   );
 
-  const stripe = pool.query(
-    `INSERT INTO payment_providers(user_id, provider_name, provider_type, status, provider_data) 
-     VALUES($1, $2, $3, $4, $5)`,
-    [
-      userId,
-      "Stripe provider",
-      "stripe",
-      "connected",
-      JSON.stringify({
-        livePublishableKey: "foo",
-        liveSecretKey: "bar",
-      }),
-    ],
-  );
-
-  return Promise.all([manualBankTransfer, openBanking, stripe]);
+  return Promise.all([manualBankTransfer, openBanking]);
 };

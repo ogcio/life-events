@@ -52,42 +52,6 @@ export const health = {
       },
     },
   },
-  orderBirthCertificate: {
-    slug: "order-birth-certificate",
-    path() {
-      return `${health.slug}/${health.orderBirthCertificate.slug}`;
-    },
-    checkDetails: {
-      slug: "check-details",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.checkDetails.slug}`;
-      },
-    },
-    changeDetails: {
-      slug: "change-details",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.changeDetails.slug}`;
-      },
-    },
-    newAddress: {
-      slug: "new-address",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.newAddress.slug}`;
-      },
-    },
-    proofOfAddress: {
-      slug: "proof-of-address",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.proofOfAddress.slug}`;
-      },
-    },
-    applicationSuccess: {
-      slug: "application-success",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.applicationSuccess.slug}`;
-      },
-    },
-  },
 };
 
 export const driving = {
