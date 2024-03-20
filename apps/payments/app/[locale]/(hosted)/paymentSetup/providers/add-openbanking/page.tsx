@@ -3,6 +3,14 @@ import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
 import { pgpool } from "../../../../../dbConnection";
 import OpenBankingFields from "./OpenBankingFields";
+import axios from "axios";
+import { ProvidersApi } from "../../../../../../client";
+
+const buildAxiosInstance = (userId) => {
+  const instance = axios.create({});
+  instance.defaults.headers.common["x-user-id"] = userId;
+  return instance;
+};
 
 export default async () => {
   const t = await getTranslations("PaymentSetup.AddOpenbanking");
@@ -11,28 +19,21 @@ export default async () => {
 
   async function handleSubmit(formData: FormData) {
     "use server";
-    const providerName = formData.get("provider_name");
-    const sortCode = formData.get("sort_code");
-    const accountNumber = formData.get("account_number");
-    const accountHolderName = formData.get("account_holder_name");
 
-    await pgpool.query(
-      `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5)
-    `,
-      [
-        userId,
-        providerName,
-        "openbanking",
-        "connected",
-        {
-          sortCode,
-          accountNumber,
-          accountHolderName,
-        },
-      ],
+    const providersApi = new ProvidersApi(
+      undefined, //Eventually we will add here the token for the user
+      "http://localhost:8080",
+      buildAxiosInstance(userId), //This will not be required anymore
     );
+    await providersApi.apiV1ProvidersPost({
+      name: formData.get("provider_name") as string,
+      type: "openbanking",
+      providerData: {
+        sortCode: formData.get("sort_code") as string,
+        accountNumber: formData.get("account_number") as string,
+        accountHolderName: formData.get("account_holder_name") as string,
+      },
+    });
 
     redirect("./");
   }
