@@ -1,6 +1,6 @@
-import { useTranslations } from "next-intl";
 import { postgres, workflow } from "../../../../utils";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 type FormProps = {
   userId: string;
@@ -9,7 +9,7 @@ type FormProps = {
 };
 
 export default async (props: FormProps) => {
-  const t = useTranslations("LocalHealthOfficeForm");
+  const t = await getTranslations("LocalHealthOfficeForm");
   const selectName = "selected-health-office";
 
   const healthOfficesResponse = await fetch(
