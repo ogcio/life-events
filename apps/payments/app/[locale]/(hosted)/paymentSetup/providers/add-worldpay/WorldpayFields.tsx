@@ -3,9 +3,14 @@ import { getTranslations } from "next-intl/server";
 type Props = {
   providerName?: string;
   merchantCode?: string;
+  installationId?: string;
 };
 
-export default async ({ providerName = "", merchantCode = "" }: Props) => {
+export default async ({
+  providerName = "",
+  merchantCode = "",
+  installationId = "",
+}: Props) => {
   const t = await getTranslations("PaymentSetup.AddWorldpay");
 
   return (
@@ -46,7 +51,7 @@ export default async ({ providerName = "", merchantCode = "" }: Props) => {
           id="installation_id"
           name="installation_id"
           className="govie-input"
-          defaultValue={merchantCode}
+          defaultValue={installationId}
         />
       </div>
     </div>
