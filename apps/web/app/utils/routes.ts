@@ -170,6 +170,12 @@ export const employment = {
         return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.benefitsEntitlements.slug}`;
       },
     },
+    apply: {
+      slug: "apply-jobseekers-allowance",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.apply.slug}`;
+      },
+    },
   },
 };
 export const business = { slug: "business" };

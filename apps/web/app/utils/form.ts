@@ -14,6 +14,7 @@ export const errorTranslationKeys = {
   noFile: "noFile",
   fileUploadFail: "fileUploadFail",
   noAuthority: "noAuthority",
+  noRequirements: "noRequirements",
 };
 export const fieldTranslationKeys = {
   name: "name",

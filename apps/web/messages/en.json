@@ -30,7 +30,7 @@
     "confirm-notification": "Confirm your notification",
     "services-list-to-inform": "List of services to inform",
     "notification-success": "Notification submitted",
-    "apply-jobseekers-allowance": "Apply for Jobseekers Allowance",
+    "apply-jobseekers-allowance": "Apply for Jobseeker's Allowance",
     "introduction": "Introduction",
     "benefits-entitlements": "Your benefits entitlements"
   },
@@ -186,6 +186,26 @@
     "paragraph1": "Your Jobseekers Benefit entitlement has expired.",
     "paragraph2": "You may still apply for Jobseekers allowance",
     "continue": "Apply for Jobseekers Allowance"
+  },
+  "ApplyJobseekersAllowanceRequirements": {
+    "title": "Apply for Jobseeker's Allowance",
+    "firstSubtitle": "To qualify for Jobseeker's Allowance, you must:",
+    "secondSubtitle": "The above statements are true",
+    "requirements": {
+      "0": "Be over 18 and under 66 years of age",
+      "1": "Satisfy a means test",
+      "2": "be habitually resident in Ireland",
+      "3": "Be capable of work",
+      "4": "Be available for full-time work",
+      "5": "Be genuinely seeking work",
+      "6": "Be fully or partly unemployed (at least 4 days out of work in every 7)"
+    },
+    "note": "Note: If you are self-employed, the last condition does not apply.",
+    "firstParagraph": "You can work for up to 3 days a week and may still get Jobseeker's Allowance for the other days. If you are getting Jobseeker's Allowance, you can use a benefit of work estimator to see how taking up part-time work would affect the amount you would get.",
+    "secondParagraph": "The Reckoner works out the total amount you would get if you take up part-time work (including any Working Family Payment payable for the family) and compares this to what you are getting in jobseeker's payments (including Rent Supplement).",
+    "agree": "I agree",
+    "disagree": "I disagree",
+    "continue": "Continue"
   },
   "PaymentSuccessful": {
     "panelTitle": "Your payment was successful",
@@ -439,6 +459,7 @@
     "fileUploadFail": "Failed to upload file",
     "internalServerError": "Server error",
     "noAuthority": "You must have authority to continue",
+    "noRequirements": "You must meet the requirements above to continue",
     "fields": {
       "name": "name",
       "email": "email address",

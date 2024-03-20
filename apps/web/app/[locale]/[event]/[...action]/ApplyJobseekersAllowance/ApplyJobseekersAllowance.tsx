@@ -4,6 +4,7 @@ import FormLayout from "../shared/FormLayout";
 import Introduction from "./Introduction";
 import { PgSessions } from "auth/sessions";
 import BenefitsEntitlements from "./BenefitsEntitlements";
+import Requirements from "./Requirements";
 
 export const applyJobseekersAllowanceRules: Parameters<
   typeof workflow.getCurrentStep<workflow.ApplyJobseekersAllowance>
@@ -26,6 +27,17 @@ export const applyJobseekersAllowanceRules: Parameters<
       ? {
           key: routes.employment.applyJobseekersAllowance.benefitsEntitlements
             .slug,
+          isStepValid: false,
+        }
+      : {
+          key: null,
+          isStepValid: true,
+        };
+  },
+  ({ hasRequirements }) => {
+    return !hasRequirements
+      ? {
+          key: routes.employment.applyJobseekersAllowance.apply.slug,
           isStepValid: false,
         }
       : {
@@ -90,11 +102,33 @@ const BenefitsEntitlementsStep: React.FC<FormProps> = ({
   );
 };
 
+const RequirementsStep: React.FC<FormProps> = ({
+  stepSlug,
+  nextSlug,
+  actionSlug,
+  userId,
+  flow,
+  eventsPageHref,
+}) => {
+  return stepSlug === nextSlug ? (
+    <FormLayout
+      action={{ slug: actionSlug }}
+      step={stepSlug}
+      backHref={eventsPageHref}
+    >
+      <Requirements userId={userId} flow={flow} slug={stepSlug} />
+    </FormLayout>
+  ) : (
+    redirect(nextSlug || "")
+  );
+};
+
 const FormComponentsMap = {
   [routes.employment.applyJobseekersAllowance.introduction.slug]:
     IntroductionStep,
   [routes.employment.applyJobseekersAllowance.benefitsEntitlements.slug]:
     BenefitsEntitlementsStep,
+  [routes.employment.applyJobseekersAllowance.apply.slug]: RequirementsStep,
 };
 
 export default async (props: web.NextPageProps) => {
@@ -107,10 +141,10 @@ export default async (props: web.NextPageProps) => {
     applyJobseekersAllowanceRules,
     data,
   );
-  console.log("== NEXT SLUG HERE ==", nextSlug);
+
   const stepSlug = props.params.action?.at(1);
   const actionSlug = props.params.action?.at(0);
-  console.log("== WORKFLOW DATA ===", data);
+
   if (!actionSlug) {
     throw notFound();
   }
@@ -132,7 +166,7 @@ export default async (props: web.NextPageProps) => {
         params={props.params}
         searchParams={props.searchParams}
         isStepValid={isStepValid}
-        flow={workflow.keys.notifyDeath}
+        flow={workflow.keys.applyJobseekersAllowance}
       />
     );
   }
