@@ -1,4 +1,8 @@
-export type ProviderType = "openbanking" | "banktransfer" | "stripe";
+export type ProviderType =
+  | "openbanking"
+  | "banktransfer"
+  | "stripe"
+  | "worldpay";
 export type ProviderStatus = "connected" | "disconnected";
 
 export type OpenBankingData = {
@@ -18,7 +22,16 @@ export type StripeData = {
   liveSecretKey: string;
 };
 
-export type ProviderData = OpenBankingData | BankTransferData | StripeData;
+export type WorldpayData = {
+  merchantCode: string;
+  installationId: string;
+};
+
+export type ProviderData =
+  | OpenBankingData
+  | BankTransferData
+  | StripeData
+  | WorldpayData;
 
 export type Provider = {
   id: string;
