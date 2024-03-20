@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
-import { formatCurrency } from "../../../../utils";
+import { formatCurrency, stringToAmount } from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
 import { PgSessions } from "auth/sessions";
 import ClientLink from "./ClientLink";
@@ -75,9 +75,9 @@ async function selectCustomAmount(
   formData: FormData,
 ) {
   "use server";
-  const amountAsString = formData.get("customAmount")?.toString() ?? "";
-  const customAmount = Math.round(parseFloat(amountAsString) * 100);
-
+  const customAmount = stringToAmount(
+    formData.get("customAmount")?.toString() as string,
+  );
   const integrationReference = `${userId}:${requestId}`;
 
   redirect(
