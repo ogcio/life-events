@@ -1,15 +1,14 @@
 import { getTranslations } from "next-intl/server";
 import { ListRow } from "../shared/SummaryListRow";
 import { postgres, routes, web, workflow } from "../../../../utils";
-import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export default async (props: {
   userId: string;
   flow: string;
   data: workflow.NotifyDeath;
-  onSubmitRedirectSlug: string;
 }) => {
-  const { data, userId, flow, onSubmitRedirectSlug } = props;
+  const { data, userId, flow } = props;
   const t = await getTranslations("NotifyDeathConfirmNotificationForm");
 
   async function submitAction() {
@@ -22,7 +21,7 @@ export default async (props: {
       `,
       [userId, flow],
     );
-    redirect(onSubmitRedirectSlug);
+    revalidatePath("/");
   }
 
   const changeDetailsHref = routes.death.notifyDeath.details.slug;

@@ -1,13 +1,11 @@
 import { getTranslations } from "next-intl/server";
-import { postgres, routes, workflow, form } from "../../../../utils";
+import { postgres, form } from "../../../../utils";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export default async (props: {
   userId: string;
   flow: string;
   slug: string;
-  onSubmitRedirectSlug: string;
 }) => {
   const t = await getTranslations("AuthorityCheckForm");
   const errorT = await getTranslations("formErrors");
@@ -49,7 +47,7 @@ export default async (props: {
         `,
         [props.userId, props.flow],
       );
-      redirect(props.onSubmitRedirectSlug);
+      revalidatePath("/");
     }
   }
 
