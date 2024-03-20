@@ -32,8 +32,14 @@ async function createPayment(userId: string, formData: FormData) {
   const openBankingAccount = formData.get("openbanking-account")?.toString();
   const bankTransferAccount = formData.get("banktransfer-account")?.toString();
   const stripeAccount = formData.get("stripe-account")?.toString();
+  const worldpayAccount = formData.get("worldpay-account")?.toString();
 
-  if (!openBankingAccount && !bankTransferAccount && !stripeAccount) {
+  if (
+    !openBankingAccount &&
+    !bankTransferAccount &&
+    !stripeAccount &&
+    !worldpayAccount
+  ) {
     throw new Error("Failed to create payment");
   }
 
@@ -120,6 +126,20 @@ async function createPayment(userId: string, formData: FormData) {
       }
     }
 
+    if (worldpayAccount) {
+      const paymentRequestProviderQueryResult = await pgpool.query<{
+        payment_request_id: string;
+      }>(
+        `insert into payment_requests_providers (provider_id, payment_request_id)
+        values ($1, $2)`,
+        [worldpayAccount, paymentRequestId],
+      );
+
+      if (!paymentRequestProviderQueryResult.rowCount) {
+        throw new Error("Failed to create payment");
+      }
+    }
+
     await client.query("COMMIT");
 
     redirect(
@@ -133,21 +153,7 @@ async function createPayment(userId: string, formData: FormData) {
 }
 
 export default async function Page() {
-  const t = await getTranslations("PaymentSetup.CreatePayment");
-
   const { userId } = await PgSessions.get();
-
-  const openBankingAccounts = await getRegisteredAccounts(
-    userId,
-    "openbanking",
-  );
-
-  const stripeAccounts = await getRegisteredAccounts(userId, "stripe");
-
-  const manualBankTransferAccounts = await getRegisteredAccounts(
-    userId,
-    "banktransfer",
-  );
 
   const submitPayment = createPayment.bind(this, userId);
 

@@ -1,8 +1,10 @@
-export type ProviderType =
-  | "openbanking"
-  | "banktransfer"
-  | "stripe"
-  | "worldpay";
+export const providerTypes = [
+  "openbanking",
+  "banktransfer",
+  "stripe",
+  "worldpay",
+] as const;
+export type ProviderType = (typeof providerTypes)[number];
 export type ProviderStatus = "connected" | "disconnected";
 
 export type OpenBankingData = {
