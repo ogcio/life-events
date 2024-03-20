@@ -1,13 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { postgres, routes, workflow } from "../../../../utils";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-export default async (props: {
-  userId: string;
-  flow: string;
-  slug: string;
-}) => {
+export default async (props: { userId: string; flow: string }) => {
   const t = await getTranslations("ApplyJobseekersAllowanceIntro");
 
   async function submitAction() {
@@ -34,7 +29,7 @@ export default async (props: {
       ],
     );
 
-    revalidatePath(props.slug);
+    revalidatePath("/");
   }
 
   return (

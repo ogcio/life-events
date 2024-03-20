@@ -31,7 +31,8 @@
     "services-list-to-inform": "List of services to inform",
     "notification-success": "Notification submitted",
     "apply-jobseekers-allowance": "Apply for Jobseekers Allowance",
-    "introduction": "Introduction"
+    "introduction": "Introduction",
+    "benefits-entitlements": "Your benefits entitlements"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -179,6 +180,12 @@
     "paragraph4": "Jobseeker's Benefit (Self-Employed) gives income support to self-employed people who are no longer engaged in self-employment.",
     "paragraph5": "If you are 65 and have left employment or self-employment, you may qualify for the Benefit Payment for 65 Year Olds until you turn 66.",
     "continue": "Check for benefits eligibility"
+  },
+  "ApplyJobseekersAllowanceBenefitsEntitlements": {
+    "title": "Your benefits entitlements",
+    "paragraph1": "Your Jobseekers Benefit entitlement has expired.",
+    "paragraph2": "You may still apply for Jobseekers allowance",
+    "continue": "Apply for Jobseekers Allowance"
   },
   "PaymentSuccessful": {
     "panelTitle": "Your payment was successful",

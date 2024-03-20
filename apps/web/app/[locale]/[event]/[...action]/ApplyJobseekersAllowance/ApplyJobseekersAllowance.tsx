@@ -3,6 +3,7 @@ import { routes, web, workflow } from "../../../../utils";
 import FormLayout from "../shared/FormLayout";
 import Introduction from "./Introduction";
 import { PgSessions } from "auth/sessions";
+import BenefitsEntitlements from "./BenefitsEntitlements";
 
 export const applyJobseekersAllowanceRules: Parameters<
   typeof workflow.getCurrentStep<workflow.ApplyJobseekersAllowance>
@@ -54,7 +55,6 @@ const IntroductionStep: React.FC<FormProps> = ({
   userId,
   flow,
   eventsPageHref,
-  params,
 }) => {
   return stepSlug === nextSlug ? (
     <FormLayout
@@ -62,7 +62,7 @@ const IntroductionStep: React.FC<FormProps> = ({
       step={stepSlug}
       backHref={eventsPageHref}
     >
-      <Introduction userId={userId} flow={flow} slug={`/${stepSlug}`} />
+      <Introduction userId={userId} flow={flow} />
     </FormLayout>
   ) : (
     redirect(nextSlug || "")
@@ -76,7 +76,6 @@ const BenefitsEntitlementsStep: React.FC<FormProps> = ({
   userId,
   flow,
   eventsPageHref,
-  params,
 }) => {
   return stepSlug === nextSlug ? (
     <FormLayout
@@ -84,7 +83,7 @@ const BenefitsEntitlementsStep: React.FC<FormProps> = ({
       step={stepSlug}
       backHref={eventsPageHref}
     >
-      <p>benefits</p>
+      <BenefitsEntitlements userId={userId} flow={flow} />
     </FormLayout>
   ) : (
     redirect(nextSlug || "")
