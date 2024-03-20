@@ -9,7 +9,7 @@ async function getRegisteredAccounts(userId: string, providerType: string) {
     { provider_id: string; provider_name: string },
     string[]
   >(
-    `select provider_id, provider_name from payment_providers where user_id = $1 and provider_type = $2`,
+    `select provider_id, provider_name from payment_providers where user_id = $1 and provider_type = $2 and status = 'connected'`,
     [userId, providerType],
   );
 
