@@ -29,7 +29,7 @@ export default async ({
         />
       </div>
       <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="account_number">
+        <label className="govie-label--s" htmlFor="live_publishable_key">
           {t("livePublishableKey")}{" "}
         </label>
         <div className="govie-hint">{t("livePublishableKeyHint")}</div>
@@ -42,7 +42,7 @@ export default async ({
         />
       </div>
       <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="account_number">
+        <label className="govie-label--s" htmlFor="live_secret_key">
           {t("liveSecretKey")}{" "}
         </label>
         <div className="govie-hint">{t("liveSecretKeyHint")}</div>
