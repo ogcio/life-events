@@ -1,14 +1,12 @@
 import { getTranslations } from "next-intl/server";
 import { form, postgres, routes, workflow } from "../../../../utils";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export default async (props: {
   userId: string;
   flow: string;
   slug: string;
   data: workflow.NotifyDeath;
-  onSubmitRedirectSlug: string;
 }) => {
   const t = await getTranslations("NotifyDeathDetailsForm");
   const errorT = await getTranslations("formErrors");
@@ -142,7 +140,7 @@ export default async (props: {
       ],
     );
 
-    return redirect(props.onSubmitRedirectSlug);
+    return revalidatePath("/");
   }
 
   const referenceNumberError = errors.rows.find(
