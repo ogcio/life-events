@@ -46,14 +46,15 @@ async function createTransaction(
   userId: string,
   extPaymentId: string,
   tenantReference: string,
+  amount: number,
 ) {
   "use server";
   await pgpool.query<{ transaction_id: number }>(
     `
-      insert into payment_transactions (payment_request_id, user_id, ext_payment_id, integration_reference, status, created_at, updated_at)
-      values ($1, $2, $3, $4, 'pending', now(), now());
+      insert into payment_transactions (payment_request_id, user_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at)
+      values ($1, $2, $3, $4, $5, 'pending', now(), now());
       `,
-    [paymentId, userId, extPaymentId, tenantReference],
+    [paymentId, userId, extPaymentId, tenantReference, amount],
   );
 }
 
@@ -81,6 +82,7 @@ export default async function Card(props: {
     userId,
     paymentIntentId,
     props.searchParams.integrationRef,
+    paymentDetails.amount,
   );
 
   const returnUri = new URL(
