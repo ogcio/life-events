@@ -140,14 +140,14 @@ const AuthorityCheckStep: React.FC<FormProps> = ({
 
 const DetailsStep: React.FC<FormProps> = ({
   actionSlug,
-  nextSlug,
   stepSlug,
   userId,
   flow,
   data,
   eventsPageHref,
+  params,
 }) => {
-  return stepSlug === nextSlug ? (
+  return (
     <FormLayout
       action={{ slug: actionSlug }}
       backHref={eventsPageHref}
@@ -158,10 +158,9 @@ const DetailsStep: React.FC<FormProps> = ({
         flow={flow}
         slug={routes.death.notifyDeath.details.slug}
         data={data}
+        onSubmitRedirectSlug={`/${params.locale}/${routes.death.notifyDeath.confirmNotification.path()}`}
       />
     </FormLayout>
-  ) : (
-    redirect(nextSlug || "")
   );
 };
 

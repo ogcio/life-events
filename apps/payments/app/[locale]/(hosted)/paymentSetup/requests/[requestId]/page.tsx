@@ -9,6 +9,8 @@ import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import dayjs from "dayjs";
 import Link from "next/link";
+import CopyLink from "./CopyBtn";
+import { PgSessions } from "auth/sessions";
 
 async function createTransaction(requestId: string, formData: FormData) {
   "use server";
@@ -26,7 +28,7 @@ async function createTransaction(requestId: string, formData: FormData) {
   redirect(requestId);
 }
 
-const RequestDetails = async ({ requestId }: { requestId: string }) => {
+export const RequestDetails = async ({ requestId }: { requestId: string }) => {
   const details = await getPaymentRequestDetails(requestId);
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tSetup = await getTranslations("PaymentSetup");
@@ -91,6 +93,14 @@ const RequestDetails = async ({ requestId }: { requestId: string }) => {
             {JSON.stringify(details.allowAmountOverride)}
           </dt>
         </div>
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">
+            {t("form.allowCustomAmount")}
+          </dt>
+          <dt className="govie-summary-list__value">
+            {JSON.stringify(details.allowCustomAmount)}
+          </dt>
+        </div>
       </dl>
     </>
   );
@@ -98,13 +108,45 @@ const RequestDetails = async ({ requestId }: { requestId: string }) => {
 
 export default async function ({ params: { requestId } }) {
   const t = await getTranslations("PaymentSetup.Request");
+  const tCreatePayment = await getTranslations("PaymentSetup.CreatePayment");
+
+  const { userId } = await PgSessions.get();
 
   const transactions = await getRequestTransactionDetails(requestId);
   const handleSubmit = createTransaction.bind(this, requestId);
 
+  const integrationReference = `${userId}:${requestId}`;
+  const completePaymentLink = new URL(
+    `/paymentRequest/pay?paymentId=${requestId}&id=${integrationReference}`,
+    process.env.HOST_URL ?? "",
+  ).toString();
+
   return (
     <div>
       <RequestDetails requestId={requestId} />
+
+      <div
+        style={{
+          display: "flex",
+          columnGap: "2em",
+          alignItems: "center",
+          marginBottom: "4em",
+        }}
+      >
+        <div>
+          <label htmlFor="" className="govie-label">
+            {tCreatePayment("paymentLink")}
+          </label>
+          <a href={completePaymentLink} className="govie-link">
+            {completePaymentLink}
+          </a>
+        </div>
+        <CopyLink
+          link={completePaymentLink}
+          buttonText={tCreatePayment("copyLink")}
+        />
+      </div>
+
       <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
         <section
           style={{
