@@ -4,6 +4,7 @@ import { PgSessions } from "auth/sessions";
 import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import PaymentSetupForm from "../../PaymentSetupForm";
+import { stringToAmount } from "../../../../../utils";
 
 async function editPayment(
   userId: string,
@@ -12,9 +13,7 @@ async function editPayment(
 ) {
   "use server";
 
-  const amountAsString = formData.get("amount")?.toString() ?? "";
-  // JS sucks at handling money
-  const amount = Math.round(parseFloat(amountAsString) * 100);
+  const amount = stringToAmount(formData.get("amount")?.toString() as string);
 
   const data = {
     title: formData.get("title")?.toString(),
@@ -33,7 +32,7 @@ async function editPayment(
     await client.query(
       `update payment_requests 
     set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 
-    where payment_request_id = $8`,
+    where payment_request_id = $8 and user_id = $9`,
       [
         data.title,
         data.description,
@@ -43,6 +42,7 @@ async function editPayment(
         data.allowAmountOverride,
         data.allowCustomAmount,
         paymentRequestId,
+        userId,
       ],
     );
     await client.query("COMMIT");

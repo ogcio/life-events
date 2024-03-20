@@ -4,3 +4,7 @@ export function formatCurrency(amount: number) {
     currency: "EUR",
   }).format(amount / 100);
 }
+
+export function stringToAmount(amount: string) {
+  return Math.round(parseFloat(amount) * 100);
+}

@@ -3,6 +3,7 @@ import { PgSessions } from "auth/sessions";
 import { RedirectType, redirect } from "next/navigation";
 import { pgpool } from "../../../../dbConnection";
 import PaymentSetupForm from "../PaymentSetupForm";
+import { stringToAmount } from "../../../../utils";
 
 async function getRegisteredAccounts(userId: string, providerType: string) {
   "use server";
@@ -25,9 +26,7 @@ async function getRegisteredAccounts(userId: string, providerType: string) {
 async function createPayment(userId: string, formData: FormData) {
   "use server";
 
-  const amountAsString = formData.get("amount")?.toString() ?? "";
-  // JS sucks at handling money
-  const amount = Math.round(parseFloat(amountAsString) * 100);
+  const amount = stringToAmount(formData.get("amount")?.toString() as string);
 
   const openBankingAccount = formData.get("openbanking-account")?.toString();
   const bankTransferAccount = formData.get("banktransfer-account")?.toString();
