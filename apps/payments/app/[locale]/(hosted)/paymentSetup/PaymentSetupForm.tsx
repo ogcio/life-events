@@ -192,6 +192,23 @@ export default async function ({
           </div>
         </div>
         <div className="govie-form-group">
+          <div className="govie-checkboxes__item">
+            <input
+              className="govie-checkboxes__input"
+              id="allow-custom-hint"
+              name="allowCustomAmount"
+              type="checkbox"
+              defaultChecked={details?.allowCustomAmount}
+            />
+            <label
+              className="govie-label--s govie-checkboxes__label"
+              htmlFor="allow-custom-hint"
+            >
+              {t("form.allowCustomAmount")}
+            </label>
+          </div>
+        </div>
+        <div className="govie-form-group">
           <label htmlFor="redirect-url" className="govie-label--s">
             {t("form.redirectUrl")}
           </label>
