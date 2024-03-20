@@ -23,7 +23,7 @@ export default (props: {
     `,
       [userId, flow],
     );
-    revalidatePath("/confirm-application");
+    revalidatePath("/");
   }
 
   const changeDetailsHref =

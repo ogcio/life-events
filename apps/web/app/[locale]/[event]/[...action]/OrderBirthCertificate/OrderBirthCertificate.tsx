@@ -68,24 +68,22 @@ const CheckDetailsStep: React.FC<FormProps> = ({
   isStepValid,
   eventsPageHref,
 }) => {
-  if (nextSlug === routes.health.orderBirthCertificate.checkDetails.slug) {
-    return (
-      <FormLayout
-        action={{ slug: actionSlug }}
-        step={stepSlug}
-        backHref={eventsPageHref}
-      >
-        <DetailsSummary
-          data={data}
-          flow={workflow.keys.orderBirthCertificate}
-          userId={userId}
-          dataValid={isStepValid}
-        />
-      </FormLayout>
-    );
-  } else {
-    return redirect(nextSlug || "");
-  }
+  return stepSlug === nextSlug ? (
+    <FormLayout
+      action={{ slug: actionSlug }}
+      step={stepSlug}
+      backHref={eventsPageHref}
+    >
+      <DetailsSummary
+        data={data}
+        flow={workflow.keys.orderBirthCertificate}
+        userId={userId}
+        dataValid={isStepValid}
+      />
+    </FormLayout>
+  ) : (
+    redirect(nextSlug || "")
+  );
 };
 
 const ChangeDetailsStep: React.FC<FormProps> = ({
