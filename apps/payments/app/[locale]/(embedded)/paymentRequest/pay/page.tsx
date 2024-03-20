@@ -188,25 +188,27 @@ export default async function Page(props: Props) {
             </label>
 
             <form style={{ maxWidth: "500px" }} action={selectAmountAction}>
-              <div className="govie-input__wrapper">
-                <div aria-hidden="true" className="govie-input__prefix">
-                  {tCommon("currencySymbol")}
+              <div style={{ margin: "1em 0px" }}>
+                <div className="govie-input__wrapper">
+                  <div aria-hidden="true" className="govie-input__prefix">
+                    {tCommon("currencySymbol")}
+                  </div>
+                  <input
+                    type="number"
+                    id="customAmount"
+                    name="customAmount"
+                    className="govie-input"
+                    min="0.00"
+                    max="10000.00"
+                    step="0.01"
+                    required
+                    defaultValue={
+                      customAmount && allowCustomAmount
+                        ? customAmount / 100
+                        : undefined
+                    }
+                  />
                 </div>
-                <input
-                  type="number"
-                  id="customAmount"
-                  name="customAmount"
-                  className="govie-input"
-                  min="0.00"
-                  max="10000.00"
-                  step="0.01"
-                  required
-                  defaultValue={
-                    customAmount && allowCustomAmount
-                      ? customAmount / 100
-                      : undefined
-                  }
-                />
               </div>
               <input
                 type="submit"
