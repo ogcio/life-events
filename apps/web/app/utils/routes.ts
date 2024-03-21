@@ -200,6 +200,24 @@ export const employment = {
         return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.changeDetails.slug}`;
       },
     },
+    newAddress: {
+      slug: "new-address",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.newAddress.slug}`;
+      },
+    },
+    proofOfAddress: {
+      slug: "proof-of-address",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.proofOfAddress.slug}`;
+      },
+    },
+    applicationSuccess: {
+      slug: "application-success",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.applicationSuccess.slug}`;
+      },
+    },
   },
 };
 export const business = { slug: "business" };

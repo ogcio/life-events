@@ -9,6 +9,9 @@ import Rates from "./Rates";
 import Questions from "./Questions";
 import ConfirmDetails from "./ConfirmDetails";
 import SimpleDetailsForm from "./SimpleDetailsForm";
+import AddressForm from "../shared/AddressForm";
+import ProofOfAddress from "../shared/ProofOfAddress";
+import ApplicationSuccess from "./ApplicationSuccess";
 
 export const applyJobseekersAllowanceRules: Parameters<
   typeof workflow.getCurrentStep<workflow.ApplyJobseekersAllowance>
@@ -74,15 +77,29 @@ export const applyJobseekersAllowanceRules: Parameters<
           isStepValid: true,
         };
   },
+  //Rule 5: Check if all personal details are populated
+  (params) =>
+    Boolean(
+      params.currentAddress &&
+        params.email &&
+        params.userName &&
+        params.contactNumber,
+    )
+      ? { key: null, isStepValid: true }
+      : {
+          key: routes.employment.applyJobseekersAllowance.confirmDetails.slug,
+          isStepValid: false,
+        },
   //Rule 5: Check if user has confirmed personal details
   ({ hasConfirmedDetails }) => {
     return !hasConfirmedDetails
       ? {
           key: routes.employment.applyJobseekersAllowance.confirmDetails.slug,
-          isStepValid: false,
+          isStepValid: true,
         }
       : {
-          key: null,
+          key: routes.employment.applyJobseekersAllowance.applicationSuccess
+            .slug,
           isStepValid: true,
         };
   },
@@ -261,6 +278,86 @@ const ChangeDetailsStep: React.FC<FormProps> = ({
   );
 };
 
+const NewAddressStep: React.FC<FormProps> = ({
+  stepSlug,
+  actionSlug,
+  data,
+  searchParams,
+  userId,
+  baseActionHref,
+  flow,
+}) => {
+  return (
+    <FormLayout
+      action={{
+        slug: actionSlug,
+        href: baseActionHref,
+      }}
+      step={stepSlug}
+      backHref={baseActionHref}
+    >
+      <AddressForm
+        field={"currentAddress"}
+        searchParams={searchParams}
+        flow={flow}
+        userId={userId}
+        data={data}
+        slug={routes.employment.applyJobseekersAllowance.newAddress.slug}
+        category={workflow.categories.employment}
+        onSubmitRedirectSlug={
+          routes.employment.applyJobseekersAllowance.proofOfAddress.slug
+        }
+        showWarning={true}
+      />
+    </FormLayout>
+  );
+};
+
+const ProofOfAddressStep: React.FC<FormProps> = ({
+  actionSlug,
+  baseActionHref,
+  stepSlug,
+  searchParams,
+  userId,
+  flow,
+}) => {
+  return (
+    <FormLayout
+      action={{
+        slug: actionSlug,
+        href: baseActionHref,
+      }}
+      step={stepSlug}
+      backHref={baseActionHref}
+    >
+      <ProofOfAddress
+        step={searchParams?.step}
+        flow={flow}
+        userId={userId}
+        slug={routes.employment.applyJobseekersAllowance.proofOfAddress.slug}
+        onSubmitRedirectSlug={baseActionHref}
+      />
+    </FormLayout>
+  );
+};
+
+const ApplicationSuccessStep: React.FC<FormProps> = ({
+  actionSlug,
+  stepSlug,
+  eventsPageHref,
+  data,
+}) => {
+  return (
+    <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
+      <ApplicationSuccess
+        flow={workflow.keys.applyJobseekersAllowance}
+        data={data}
+        onSubmitRedirectSlug={eventsPageHref}
+      />
+    </FormLayout>
+  );
+};
+
 const FormComponentsMap = {
   [routes.employment.applyJobseekersAllowance.introduction.slug]:
     IntroductionStep,
@@ -273,6 +370,11 @@ const FormComponentsMap = {
     ConfirmDetailsStep,
   [routes.employment.applyJobseekersAllowance.changeDetails.slug]:
     ChangeDetailsStep,
+  [routes.employment.applyJobseekersAllowance.newAddress.slug]: NewAddressStep,
+  [routes.employment.applyJobseekersAllowance.proofOfAddress.slug]:
+    ProofOfAddressStep,
+  [routes.employment.applyJobseekersAllowance.applicationSuccess.slug]:
+    ApplicationSuccessStep,
 };
 
 export default async (props: web.NextPageProps) => {

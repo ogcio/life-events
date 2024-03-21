@@ -304,6 +304,8 @@
     "orderEHICBody": "Once approved your EHIC will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
     "orderBirthCertificate": "Birth certificate copy",
     "orderBirthCertificateBody": "Once approved your birth certificate will be sent to you by post and you should receive it within 7 days.",
+    "applyJobseekersAllowance": "Jobseeker's Allowance",
+    "applyJobseekersAllowanceBody": "Someone from the Department of Social Protection will contact you using the details you provided.",
     "date": "Date of application"
   },
   "RenewDriversLicence": {
