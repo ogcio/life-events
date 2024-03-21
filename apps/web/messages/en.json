@@ -482,6 +482,16 @@
       "servicesToInform": "Services to inform",
       "notifyDeath": "Death notification"
     },
+    "ApplyJobseekersAllowanceDetails": {
+      "title": "Review Jobseeker's Allowance application",
+      "reject": "Reject",
+      "approve": "Approve",
+      "userName": "Name",
+      "email": "Email",
+      "contactNumber": "Contact number",
+      "currentAddress": "Current address",
+      "applyJobseekersAllowance": "Jobseeker's Allowance"
+    },
     "RejectReasonForm": {
       "title": "Reason for rejection",
       "inputLabel": "Provide the reason for the user to see",
@@ -499,7 +509,9 @@
       "back": "Back",
       "eventNotFound": "Event not found",
       "orderEHIC": "Application for an EHIC",
-      "orderBirthCertificate": "Application for a copy of the birth certificate"
+      "orderBirthCertificate": "Application for a copy of the birth certificate",
+      "notifyDeath": "Death notification",
+      "applyJobseekersAllowance": "Application for Jobseeker's Allowance"
     },
     "StatusMenu": {
       "all": "All",
