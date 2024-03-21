@@ -191,22 +191,30 @@ export function emptyNotifyDeath(): NotifyDeath {
 
 export type ApplyJobseekersAllowance = Base & {
   userName: string;
+  email: string;
+  contactNumber: string;
+  currentAddress: string;
   hasReadIntro: boolean;
   hasCheckedBenefits: boolean;
   hasRequirements: boolean;
   hasReadRates: boolean;
   hasAcceptedQuestions: boolean;
+  hasConfirmedDetails: boolean;
   submittedAt: string;
 };
 
 export function emptyApplyJobseekersAllowance(): ApplyJobseekersAllowance {
   return {
     userName: "",
+    email: "",
+    contactNumber: "",
+    currentAddress: "",
     hasReadIntro: false,
     hasCheckedBenefits: false,
     hasRequirements: false,
     hasReadRates: false,
     hasAcceptedQuestions: false,
+    hasConfirmedDetails: false,
     successfulAt: "",
     rejectedAt: "",
     rejectReason: "",

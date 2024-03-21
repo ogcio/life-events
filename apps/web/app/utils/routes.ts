@@ -188,6 +188,18 @@ export const employment = {
         return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.questions.slug}`;
       },
     },
+    confirmDetails: {
+      slug: "confirm-details",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.confirmDetails.slug}`;
+      },
+    },
+    changeDetails: {
+      slug: "change-details",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.changeDetails.slug}`;
+      },
+    },
   },
 };
 export const business = { slug: "business" };

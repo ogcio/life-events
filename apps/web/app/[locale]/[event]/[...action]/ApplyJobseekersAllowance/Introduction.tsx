@@ -2,14 +2,18 @@ import { getTranslations } from "next-intl/server";
 import { postgres, routes, workflow } from "../../../../utils";
 import { revalidatePath } from "next/cache";
 
-export default async (props: { userId: string; flow: string }) => {
+export default async (props: {
+  userId: string;
+  flow: string;
+  data: workflow.ApplyJobseekersAllowance;
+}) => {
   const t = await getTranslations("ApplyJobseekersAllowanceIntro");
 
   async function submitAction() {
     "use server";
 
     const dataToUpdate: workflow.ApplyJobseekersAllowance = {
-      ...workflow.emptyApplyJobseekersAllowance(),
+      ...props.data,
       hasReadIntro: true,
     };
 

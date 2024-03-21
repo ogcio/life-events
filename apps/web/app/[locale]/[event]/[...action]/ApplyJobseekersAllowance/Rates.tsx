@@ -2,11 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { postgres, form } from "../../../../utils";
 
-export default async (props: {
-  userId: string;
-  flow: string;
-  slug: string;
-}) => {
+export default async (props: { userId: string; flow: string }) => {
   const t = await getTranslations("ApplyJobseekersAllowanceRates");
   const ratesT = await getTranslations("ApplyJobseekersAllowanceRates.rates");
 

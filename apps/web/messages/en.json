@@ -34,7 +34,8 @@
     "introduction": "Introduction",
     "benefits-entitlements": "Your benefits entitlements",
     "rates": "What may I receive?",
-    "what-asked-about": "What will  you be asked about?"
+    "what-asked-about": "What will  you be asked about?",
+    "confirm-details": "Confirm your contact details"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -44,7 +45,9 @@
     "mobileNumber": "Mobile number",
     "sex": "Sex",
     "submitText": "Confirm and continue",
-    "PPSN": "PPSN"
+    "PPSN": "PPSN",
+    "email": "Email",
+    "contactNumber": "Contact number"
   },
   "DetailsSummaryForm": {
     "title": "Confirm your application",
@@ -248,6 +251,16 @@
       "5": "Questions about any income, savings or investments you or your partner may have."
     },
     "continue": "Accept and Continue"
+  },
+  "ApplyJobseekersAllowanceConfirmDetails": {
+    "title": "Confirm your contact details",
+    "subTitle": "Personal details",
+    "name": "Name",
+    "currentAddress": "Current address",
+    "email": "Email address",
+    "contactNumber": "Daytime contact number",
+    "change": "Change",
+    "continue": "Confirm and submit application"
   },
   "PaymentSuccessful": {
     "panelTitle": "Your payment was successful",
@@ -517,7 +530,8 @@
       "county": "county",
       "PPSN": "PPSN",
       "referenceNumber": "12 digit reference number",
-      "deceasedSurname": "surname"
+      "deceasedSurname": "surname",
+      "contactNumber": "contact number"
     }
   },
   "Notifications": {

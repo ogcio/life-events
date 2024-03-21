@@ -7,6 +7,8 @@ import BenefitsEntitlements from "./BenefitsEntitlements";
 import Requirements from "./Requirements";
 import Rates from "./Rates";
 import Questions from "./Questions";
+import ConfirmDetails from "./ConfirmDetails";
+import SimpleDetailsForm from "./SimpleDetailsForm";
 
 export const applyJobseekersAllowanceRules: Parameters<
   typeof workflow.getCurrentStep<workflow.ApplyJobseekersAllowance>
@@ -72,6 +74,18 @@ export const applyJobseekersAllowanceRules: Parameters<
           isStepValid: true,
         };
   },
+  //Rule 5: Check if user has confirmed personal details
+  ({ hasConfirmedDetails }) => {
+    return !hasConfirmedDetails
+      ? {
+          key: routes.employment.applyJobseekersAllowance.confirmDetails.slug,
+          isStepValid: false,
+        }
+      : {
+          key: null,
+          isStepValid: true,
+        };
+  },
 ];
 
 type FormProps = {
@@ -85,6 +99,7 @@ type FormProps = {
   searchParams: web.NextPageProps["searchParams"];
   flow: string;
   eventsPageHref: string;
+  baseActionHref: string;
 };
 
 const IntroductionStep: React.FC<FormProps> = ({
@@ -94,6 +109,7 @@ const IntroductionStep: React.FC<FormProps> = ({
   userId,
   flow,
   eventsPageHref,
+  data,
 }) => {
   return stepSlug === nextSlug ? (
     <FormLayout
@@ -101,7 +117,7 @@ const IntroductionStep: React.FC<FormProps> = ({
       step={stepSlug}
       backHref={eventsPageHref}
     >
-      <Introduction userId={userId} flow={flow} />
+      <Introduction userId={userId} flow={flow} data={data} />
     </FormLayout>
   ) : (
     redirect(nextSlug || "")
@@ -164,7 +180,7 @@ const RatesStep: React.FC<FormProps> = ({
       step={stepSlug}
       backHref={eventsPageHref}
     >
-      <Rates userId={userId} flow={flow} slug={stepSlug} />
+      <Rates userId={userId} flow={flow} />
     </FormLayout>
   ) : (
     redirect(nextSlug || "")
@@ -185,10 +201,63 @@ const QuestionsStep: React.FC<FormProps> = ({
       step={stepSlug}
       backHref={eventsPageHref}
     >
-      <Questions userId={userId} flow={flow} slug={stepSlug} />
+      <Questions userId={userId} flow={flow} />
     </FormLayout>
   ) : (
     redirect(nextSlug || "")
+  );
+};
+
+const ConfirmDetailsStep: React.FC<FormProps> = ({
+  stepSlug,
+  nextSlug,
+  actionSlug,
+  userId,
+  flow,
+  eventsPageHref,
+  data,
+  isStepValid,
+}) => {
+  return stepSlug === nextSlug ? (
+    <FormLayout
+      action={{ slug: actionSlug }}
+      step={stepSlug}
+      backHref={eventsPageHref}
+    >
+      <ConfirmDetails
+        userId={userId}
+        flow={flow}
+        data={data}
+        dataValid={isStepValid}
+      />
+    </FormLayout>
+  ) : (
+    redirect(nextSlug || "")
+  );
+};
+
+const ChangeDetailsStep: React.FC<FormProps> = ({
+  stepSlug,
+  actionSlug,
+  data,
+  userId,
+  baseActionHref,
+  flow,
+  params,
+}) => {
+  return (
+    <FormLayout
+      action={{ slug: actionSlug, href: baseActionHref }}
+      step={stepSlug}
+      backHref={baseActionHref}
+    >
+      <SimpleDetailsForm
+        data={data}
+        flow={flow}
+        onSubmitRedirectSlug={`/${params.locale}/${routes.employment.applyJobseekersAllowance.confirmDetails.path()}`}
+        userId={userId}
+      />
+    </FormLayout>
   );
 };
 
@@ -200,6 +269,10 @@ const FormComponentsMap = {
   [routes.employment.applyJobseekersAllowance.apply.slug]: RequirementsStep,
   [routes.employment.applyJobseekersAllowance.rates.slug]: RatesStep,
   [routes.employment.applyJobseekersAllowance.questions.slug]: QuestionsStep,
+  [routes.employment.applyJobseekersAllowance.confirmDetails.slug]:
+    ConfirmDetailsStep,
+  [routes.employment.applyJobseekersAllowance.changeDetails.slug]:
+    ChangeDetailsStep,
 };
 
 export default async (props: web.NextPageProps) => {
@@ -215,6 +288,7 @@ export default async (props: web.NextPageProps) => {
 
   const stepSlug = props.params.action?.at(1);
   const actionSlug = props.params.action?.at(0);
+  const baseActionHref = `/${props.params.locale}/${props.params.event}/${actionSlug}/${nextSlug}`;
 
   if (!actionSlug) {
     throw notFound();
@@ -238,6 +312,7 @@ export default async (props: web.NextPageProps) => {
         searchParams={props.searchParams}
         isStepValid={isStepValid}
         flow={workflow.keys.applyJobseekersAllowance}
+        baseActionHref={baseActionHref}
       />
     );
   }

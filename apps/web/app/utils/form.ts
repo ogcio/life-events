@@ -19,6 +19,7 @@ export const errorTranslationKeys = {
 export const fieldTranslationKeys = {
   name: "name",
   email: "email",
+  contactNumber: "contactNumber",
   day: "day",
   month: "month",
   year: "year",

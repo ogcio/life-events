@@ -93,10 +93,7 @@ export default async (props: {
               data-module="govie-radios"
               className="govie-radios govie-radios--large govie-radios--inline"
             >
-              <div
-                className="govie-radios__item"
-                style={{ marginBottom: "30px", paddingLeft: 0 }}
-              >
+              <div className="govie-radios__item" style={{ paddingLeft: 0 }}>
                 <div className="govie-radios__item">
                   <input
                     id="hasRequirements-agree"
