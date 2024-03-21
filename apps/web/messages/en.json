@@ -32,7 +32,9 @@
     "notification-success": "Notification submitted",
     "apply-jobseekers-allowance": "Apply for Jobseeker's Allowance",
     "introduction": "Introduction",
-    "benefits-entitlements": "Your benefits entitlements"
+    "benefits-entitlements": "Your benefits entitlements",
+    "rates": "What may I receive?",
+    "what-asked-about": "What will  you be asked about?"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -206,6 +208,46 @@
     "agree": "I agree",
     "disagree": "I disagree",
     "continue": "Continue"
+  },
+  "ApplyJobseekersAllowanceRates": {
+    "title": "What may I receive?",
+    "firstParagraph": "Your rate of payment will depend on your income and the outcome of the means assessment. If you have no means, are aged 25 or over, and you are single, you will get the full weekly payment of €232.",
+    "secondParagraph": "An increase is payable for each child dependant if you are getting an increase for a qualified adult. If you do not qualify for an increase for a qualified adult, you may get a half-rate increase for a qualified child dependant.",
+    "subtitle": "The current rates are as follows:",
+    "rates": {
+      "0": "<bold>Jobseeker's Allowance Rates</bold>",
+      "1": "<bold>Rate</bold>",
+      "2": "Full personal payment (25 or over)",
+      "3": "€232.00",
+      "4": "Personal Rate 18 to 24",
+      "5": "€141.70",
+      "6": "Extra payment for <bold>qualified adult</bold>",
+      "7": "€154.00",
+      "8": "Extra payment for <bold>qualified adult (18 to 24)</bold>",
+      "9": "€141.70",
+      "10": "Extra payment for <bold>qualified child under 12</bold>",
+      "11": "€46.00 (full-rate)",
+      "12": "",
+      "13": "€23.00 (half-rate)",
+      "14": "Extra payment for <bold>qualified child 12 and over</bold>",
+      "15": "€54.00 (Full rate)",
+      "16": "",
+      "17": "€27.00 (half rate)"
+    },
+    "message": "Go to <profile>my profile</profile>",
+    "continue": "Continue"
+  },
+  "ApplyJobseekersAllowanceQuestions": {
+    "title": "What will you be asked about?",
+    "questions": {
+      "0": "Your details",
+      "1": "Questions about you, your address, any children and your relationship status.",
+      "2": "Employment and training information",
+      "3": "Questions about your employment history and training or education.",
+      "4": "Your financial information",
+      "5": "Questions about any income, savings or investments you or your partner may have."
+    },
+    "continue": "Accept and Continue"
   },
   "PaymentSuccessful": {
     "panelTitle": "Your payment was successful",

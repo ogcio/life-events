@@ -194,6 +194,8 @@ export type ApplyJobseekersAllowance = Base & {
   hasReadIntro: boolean;
   hasCheckedBenefits: boolean;
   hasRequirements: boolean;
+  hasReadRates: boolean;
+  hasAcceptedQuestions: boolean;
   submittedAt: string;
 };
 
@@ -203,6 +205,8 @@ export function emptyApplyJobseekersAllowance(): ApplyJobseekersAllowance {
     hasReadIntro: false,
     hasCheckedBenefits: false,
     hasRequirements: false,
+    hasReadRates: false,
+    hasAcceptedQuestions: false,
     successfulAt: "",
     rejectedAt: "",
     rejectReason: "",

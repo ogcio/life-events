@@ -176,6 +176,18 @@ export const employment = {
         return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.apply.slug}`;
       },
     },
+    rates: {
+      slug: "rates",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.rates.slug}`;
+      },
+    },
+    questions: {
+      slug: "what-asked-about",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.questions.slug}`;
+      },
+    },
   },
 };
 export const business = { slug: "business" };

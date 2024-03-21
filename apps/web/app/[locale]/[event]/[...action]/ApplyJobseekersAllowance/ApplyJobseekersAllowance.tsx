@@ -5,6 +5,8 @@ import Introduction from "./Introduction";
 import { PgSessions } from "auth/sessions";
 import BenefitsEntitlements from "./BenefitsEntitlements";
 import Requirements from "./Requirements";
+import Rates from "./Rates";
+import Questions from "./Questions";
 
 export const applyJobseekersAllowanceRules: Parameters<
   typeof workflow.getCurrentStep<workflow.ApplyJobseekersAllowance>
@@ -21,7 +23,7 @@ export const applyJobseekersAllowanceRules: Parameters<
           isStepValid: true,
         };
   },
-  //   // Rule 2: Check the benefits entitlements
+  // Rule 2: Check the user benefits entitlements
   ({ hasCheckedBenefits }) => {
     return !hasCheckedBenefits
       ? {
@@ -34,10 +36,35 @@ export const applyJobseekersAllowanceRules: Parameters<
           isStepValid: true,
         };
   },
+  // Rule 3: Check if user meets allowance requirements
   ({ hasRequirements }) => {
     return !hasRequirements
       ? {
           key: routes.employment.applyJobseekersAllowance.apply.slug,
+          isStepValid: false,
+        }
+      : {
+          key: null,
+          isStepValid: true,
+        };
+  },
+  //Rule 4: Check if user has read about rates
+  ({ hasReadRates }) => {
+    return !hasReadRates
+      ? {
+          key: routes.employment.applyJobseekersAllowance.rates.slug,
+          isStepValid: false,
+        }
+      : {
+          key: null,
+          isStepValid: true,
+        };
+  },
+  //Rule 4: Check if user has accepted questions
+  ({ hasAcceptedQuestions }) => {
+    return !hasAcceptedQuestions
+      ? {
+          key: routes.employment.applyJobseekersAllowance.questions.slug,
           isStepValid: false,
         }
       : {
@@ -123,12 +150,56 @@ const RequirementsStep: React.FC<FormProps> = ({
   );
 };
 
+const RatesStep: React.FC<FormProps> = ({
+  stepSlug,
+  nextSlug,
+  actionSlug,
+  userId,
+  flow,
+  eventsPageHref,
+}) => {
+  return stepSlug === nextSlug ? (
+    <FormLayout
+      action={{ slug: actionSlug }}
+      step={stepSlug}
+      backHref={eventsPageHref}
+    >
+      <Rates userId={userId} flow={flow} slug={stepSlug} />
+    </FormLayout>
+  ) : (
+    redirect(nextSlug || "")
+  );
+};
+
+const QuestionsStep: React.FC<FormProps> = ({
+  stepSlug,
+  nextSlug,
+  actionSlug,
+  userId,
+  flow,
+  eventsPageHref,
+}) => {
+  return stepSlug === nextSlug ? (
+    <FormLayout
+      action={{ slug: actionSlug }}
+      step={stepSlug}
+      backHref={eventsPageHref}
+    >
+      <Questions userId={userId} flow={flow} slug={stepSlug} />
+    </FormLayout>
+  ) : (
+    redirect(nextSlug || "")
+  );
+};
+
 const FormComponentsMap = {
   [routes.employment.applyJobseekersAllowance.introduction.slug]:
     IntroductionStep,
   [routes.employment.applyJobseekersAllowance.benefitsEntitlements.slug]:
     BenefitsEntitlementsStep,
   [routes.employment.applyJobseekersAllowance.apply.slug]: RequirementsStep,
+  [routes.employment.applyJobseekersAllowance.rates.slug]: RatesStep,
+  [routes.employment.applyJobseekersAllowance.questions.slug]: QuestionsStep,
 };
 
 export default async (props: web.NextPageProps) => {
