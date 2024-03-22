@@ -1,9 +1,8 @@
-import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
 
-import { ListRow } from "../SummaryListRow";
-import { workflow, postgres, routes } from "../../../../utils";
+import { ListRow } from "../shared/SummaryListRow";
+import { workflow, postgres, routes, web } from "../../../../utils";
 
 export default (props: {
   data: workflow.OrderEHIC;
@@ -12,19 +11,19 @@ export default (props: {
   onSubmit?: (formData?: FormData) => Promise<void>;
   dataValid: boolean;
 }) => {
-  const { data, flow, userId, onSubmit } = props;
+  const { data, flow, userId, onSubmit, dataValid } = props;
   const t = useTranslations("DetailsSummaryForm");
   async function submitAction() {
     "use server";
 
     await postgres.pgpool.query(
       `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT)
+        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT, 'submittedAt', now())
         WHERE user_id = $1 AND flow = $2
     `,
       [userId, flow],
     );
-    revalidatePath(routes.health.orderEHIC.checkDetails.slug);
+    revalidatePath("/");
   }
 
   const changeDetailsHref = routes.health.orderEHIC.changeDetails.slug;
@@ -34,9 +33,9 @@ export default (props: {
     routes.health.orderEHIC.selectLocalHealthOffice.slug;
   const dateOfBirth =
     data.yearOfBirth && data.monthOfBirth && data.dayOfBirth
-      ? dayjs(
+      ? web.formatDate(
           `${data.yearOfBirth}-${data.monthOfBirth}-${data.dayOfBirth}`,
-        ).format("DD/MM/YYYY")
+        )
       : "";
   return (
     <>
@@ -94,7 +93,7 @@ export default (props: {
           </details>
 
           <form action={onSubmit || submitAction}>
-            <button disabled={!props.dataValid} className="govie-button">
+            <button disabled={!dataValid} className="govie-button">
               {t("submitText")}
             </button>
           </form>

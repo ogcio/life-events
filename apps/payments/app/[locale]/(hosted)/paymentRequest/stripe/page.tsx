@@ -5,7 +5,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { createPaymentIntent } from "../../../../integration/stripe";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 
-async function getPaymentDetails(paymentId: string) {
+async function getPaymentDetails(paymentId: string, amount?: string) {
   "use server";
   const { rows } = await pgpool.query(
     `
@@ -18,7 +18,8 @@ async function getPaymentDetails(paymentId: string) {
       pr.amount,
       pp.provider_id,
       pp.provider_name,
-      pp.provider_data
+      pp.provider_data,
+      pr.allow_amount_override
     from payment_requests pr
     join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
     join payment_providers pp on ppr.provider_id = pp.provider_id
@@ -36,6 +37,10 @@ async function getPaymentDetails(paymentId: string) {
 
   return {
     ...rows[0],
+    amount:
+      rows[0].allow_amount_override && amount
+        ? parseFloat(amount)
+        : rows[0].amount,
     govid_email: userInfo.govid_email,
     user_name: userInfo.user_name,
   };
@@ -46,20 +51,23 @@ async function createTransaction(
   userId: string,
   extPaymentId: string,
   tenantReference: string,
+  amount: number,
 ) {
   "use server";
   await pgpool.query<{ transaction_id: number }>(
     `
-      insert into payment_transactions (payment_request_id, user_id, ext_payment_id, integration_reference, status, created_at, updated_at)
-      values ($1, $2, $3, $4, 'pending', now(), now());
+      insert into payment_transactions (payment_request_id, user_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at)
+      values ($1, $2, $3, $4, $5, 'pending', now(), now());
       `,
-    [paymentId, userId, extPaymentId, tenantReference],
+    [paymentId, userId, extPaymentId, tenantReference, amount],
   );
 }
 
 export default async function Card(props: {
   params: { locale: string };
-  searchParams: { paymentId: string; integrationRef: string } | undefined;
+  searchParams:
+    | { paymentId: string; integrationRef: string; amount?: string }
+    | undefined;
 }) {
   const messages = await getMessages({ locale: props.params.locale });
   const stripeMessages =
@@ -71,7 +79,10 @@ export default async function Card(props: {
   }
   const { userId } = await PgSessions.get();
 
-  const paymentDetails = await getPaymentDetails(props.searchParams.paymentId);
+  const paymentDetails = await getPaymentDetails(
+    props.searchParams.paymentId,
+    props.searchParams.amount,
+  );
 
   const { client_secret, id: paymentIntentId } =
     await createPaymentIntent(paymentDetails);
@@ -81,6 +92,7 @@ export default async function Card(props: {
     userId,
     paymentIntentId,
     props.searchParams.integrationRef,
+    paymentDetails.amount,
   );
 
   const returnUri = new URL(
@@ -98,7 +110,10 @@ export default async function Card(props: {
       }}
     >
       <NextIntlClientProvider messages={stripeMessages}>
-        <StripeHost clientSecret={client_secret} returnUri={returnUri} />
+        <StripeHost
+          clientSecret={client_secret as string | undefined}
+          returnUri={returnUri}
+        />
       </NextIntlClientProvider>
     </div>
   );

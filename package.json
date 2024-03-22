@@ -16,7 +16,7 @@
     "start": "npm run start:docker && concurrently \"npm run start:services\" \"sleep 5 && npm run migrate\"",
     "reset-docker": "docker-compose down && docker system prune -a -f && docker builder prune -f && docker image prune -f",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky",
+    "prepare": "(command -v husky && husky) || true",
     "migrate": "npm run migrate --workspace=web && npm run migrate --workspace=payments && npm run migrate --workspace=messages"
   },
   "author": "",

@@ -25,7 +25,16 @@ const stripePromise = loadStripe(PUBLISHABLE_KEY);
 const appearance: Appearance = {
   theme: "stripe",
   variables: {
-    colorPrimary: ds.colours.ogcio.darkGrey,
+    colorPrimary: ds.colours.ogcio.green,
+    fontFamily: "Lato, arial, sans-serif",
+    colorBackground: ds.colours.ogcio.white,
+    colorText: ds.colours.ogcio.black,
+    colorDanger: ds.colours.ogcio.darkRed,
+    colorWarning: ds.colours.ogcio.darkYellow,
+    spacingUnit: "4px",
+    borderRadius: "4px",
+    fontLineHeight: "1.3",
+    iconColor: ds.colours.ogcio.green,
   },
 };
 

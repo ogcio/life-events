@@ -13,6 +13,7 @@ export const errorTranslationKeys = {
   emptySelection: "emptySelection",
   noFile: "noFile",
   fileUploadFail: "fileUploadFail",
+  noAuthority: "noAuthority",
 };
 export const fieldTranslationKeys = {
   name: "name",
@@ -28,6 +29,8 @@ export const fieldTranslationKeys = {
   eirecode: "eirecode",
   county: "county",
   PPSN: "PPSN",
+  referenceNumber: "referenceNumber",
+  deceasedSurname: "deceasedSurname",
 };
 
 export const validation = {
