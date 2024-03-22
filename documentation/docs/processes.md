@@ -9,8 +9,6 @@ In this document, you will find everything about how we work, the process we fol
 
 ## Git and Github
 
-Here's a draft for your software development project's Git and GitHub processes documentation in Markdown format. This template includes sections for branching, commit messages, and review processes. Feel free to customize it according to your project's specific guidelines and practices.
-
 ### Project Git and GitHub Processes
 
 This document outlines the Git and GitHub processes we follow to maintain an efficient, transparent, and streamlined workflow in our software development project. Please adhere to these guidelines for branching, committing, and conducting reviews.
