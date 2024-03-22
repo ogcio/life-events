@@ -28,6 +28,30 @@ async function createTransaction(requestId: string, formData: FormData) {
   redirect(requestId);
 }
 
+async function deletePaymentRequest(requestId: string) {
+  "use server";
+
+  await pgpool.query(
+    `
+    delete from payment_requests where payment_request_id = $1
+    `,
+    [requestId],
+  );
+
+  redirect("/paymentSetup/requests");
+}
+
+async function hasTransactions(requestId: string) {
+  const { rows } = await pgpool.query<{ transaction_id: number }>(
+    `
+    select transaction_id from payment_transactions where payment_request_id = $1
+    `,
+    [requestId],
+  );
+
+  return rows.length > 0;
+}
+
 export const RequestDetails = async ({ requestId }: { requestId: string }) => {
   const details = await getPaymentRequestDetails(requestId);
   const t = await getTranslations("PaymentSetup.CreatePayment");
@@ -37,6 +61,10 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
   if (!details) {
     return <h1 className="govie-heading-l">Payment request not found</h1>;
   }
+
+  const deletePR = deletePaymentRequest.bind(this, details.payment_request_id);
+  // Cannot delete the payment request if we already have transactions
+  const disableDeleteButton = await hasTransactions(requestId);
 
   return (
     <>
@@ -49,11 +77,27 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
         }}
       >
         <h2 className="govie-heading-m">{tSetup("details")}</h2>
-        <Link href={`/paymentSetup/edit/${requestId}`}>
-          <button className="govie-button govie-button--primary">
-            {tCommon("edit")}
-          </button>
-        </Link>
+        <div
+          style={{
+            display: "flex",
+            gap: "1rem",
+          }}
+        >
+          <Link href={`/paymentSetup/edit/${requestId}`}>
+            <button className="govie-button govie-button--primary">
+              {tCommon("edit")}
+            </button>
+          </Link>
+          <form action={deletePR}>
+            <button
+              className="govie-button govie-button--tertiary"
+              // I'd like to add a tooltip here to explain why the button is disabled, but tooltips are not working for me
+              disabled={disableDeleteButton}
+            >
+              {tCommon("delete")}
+            </button>
+          </form>
+        </div>
       </div>
 
       <dl className="govie-summary-list">

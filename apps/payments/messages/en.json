@@ -3,7 +3,8 @@
     "notFound": "Payment request not found",
     "edit": "Edit",
     "save": "Save",
-    "currencySymbol": "€"
+    "currencySymbol": "€",
+    "delete": "Delete"
   },
   "PaymentSetup": {
     "menu": {
