@@ -150,8 +150,6 @@ export default async function (props: { params: { request_id: string } }) {
     details.payment_request_id,
   );
 
-  console.log(JSON.stringify(details, null, 2));
-
   return (
     <PaymentSetupForm
       userId={userId}
