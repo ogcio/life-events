@@ -5,3 +5,6 @@ dist
 **/.localstack/*
 .yalc
 yalc.*
+
+playwright
+test-results
