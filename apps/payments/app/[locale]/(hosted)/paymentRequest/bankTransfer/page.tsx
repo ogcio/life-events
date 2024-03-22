@@ -26,7 +26,7 @@ async function getPaymentDetails(
       pr.allow_amount_override as "allowAmountOverride",
       pr.allow_custom_amount as "allowCustomAmount"
     FROM payment_requests pr
-    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id
+    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
     JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
     WHERE pr.payment_request_id = $1
       AND pp.provider_type = 'openbanking'
