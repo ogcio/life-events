@@ -51,6 +51,8 @@ async function editPayment(
   } catch (e) {
     await client.query("ROLLBACK");
     throw e;
+  } finally {
+    client.release();
   }
   redirect(`/paymentSetup/requests/${paymentRequestId}`);
 }
