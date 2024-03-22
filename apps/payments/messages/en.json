@@ -123,7 +123,12 @@
       "assignDescription": "Send this payment to a user",
       "userPpsn": "User PPS Number",
       "userPpsnHint": "The Personal Public Service Number of the user you would like to assign this payment to",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "actions": {
+        "delete": {
+          "cannotDelete": "Cannot delete payment request since there are existing transactions"
+        }
+      }
     },
     "CreatePayment": {
       "title": "Payment Setup Form",

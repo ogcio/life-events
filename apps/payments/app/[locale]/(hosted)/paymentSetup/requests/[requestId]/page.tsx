@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import CopyLink from "./CopyBtn";
 import { PgSessions } from "auth/sessions";
+import Tooltip from "../../../../../components/Tooltip";
 
 async function createTransaction(requestId: string, formData: FormData) {
   "use server";
@@ -88,15 +89,22 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
               {tCommon("edit")}
             </button>
           </Link>
-          <form action={deletePR}>
-            <button
-              className="govie-button govie-button--tertiary"
-              // I'd like to add a tooltip here to explain why the button is disabled, but tooltips are not working for me
-              disabled={disableDeleteButton}
+          {disableDeleteButton ? (
+            <Tooltip
+              text={tSetup("Request.actions.delete.cannotDelete")}
+              width="300px"
             >
-              {tCommon("delete")}
-            </button>
-          </form>
+              <button className="govie-button govie-button--tertiary" disabled>
+                {tCommon("delete")}
+              </button>
+            </Tooltip>
+          ) : (
+            <form action={deletePR}>
+              <button className="govie-button govie-button--tertiary">
+                {tCommon("delete")}
+              </button>
+            </form>
+          )}
         </div>
       </div>
 
