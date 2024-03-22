@@ -68,6 +68,7 @@ stages:
             action: 'Run a Docker command'
             customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_${{ serviceName }}_$(Build.BuildId).tar life-events-${{ serviceName }}:$(Build.BuildId)'
         - publish:  $(Build.ArtifactStagingDirectory)
+          condition: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranch']) }}
           artifact: 'docker-${{ serviceName }}-$(Build.BuildId)'
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
