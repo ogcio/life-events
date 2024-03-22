@@ -17,7 +17,6 @@ export type PaymentRequestDetails = Pick<
     provider_name: string;
     provider_type: string;
     provider_id: string;
-    enabled: boolean;
   }[];
 };
 
@@ -30,13 +29,13 @@ export async function getPaymentRequestDetails(
         pr.payment_request_id,
         pr.description,
         pr.amount,
-        json_agg(to_jsonb(pp) || jsonb_build_object('enabled', ppr.enabled)) AS providers,
+        json_agg(pp) as providers,
         pr.reference,
         pr.redirect_url,
         pr.allow_amount_override AS "allowAmountOverride",
         pr.allow_custom_amount AS "allowCustomAmount"
     FROM payment_requests pr
-    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id
+    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
     JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
     WHERE pr.payment_request_id = $1
     GROUP BY pr.payment_request_id
