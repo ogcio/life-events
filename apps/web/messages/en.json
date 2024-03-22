@@ -214,6 +214,8 @@
     "back": "back"
   },
   "MyLifeEvents": {
+    "lifeEvents": "My Life Events",
+    "openEvents": "Open Events",
     "renewDriversLicence": {
       "title": {
         "base": "Renew your drivers licence",
@@ -278,6 +280,31 @@
         "rejected": "{rejectedReason}"
       }
     }
+  },
+  "AboutMe": {
+    "title": "About me",
+    "comingSoon": "Coming soon"
+  },
+  "Birth": {
+    "title": "Birth"
+  },
+  "Health": {
+    "title": "Health"
+  },
+  "Driving": {
+    "title": "Driving"
+  },
+  "Employment": {
+    "title": "Employment"
+  },
+  "StartingABusiness": {
+    "title": "Starting a business"
+  },
+  "Housing": {
+    "title": "Housing"
+  },
+  "Death": {
+    "title": "Death"
   },
   "MedicalForm": {
     "infoTitle": "You are 75 or above",

@@ -24,7 +24,10 @@ export default (props: Props) => {
         key="userinfo"
         style={{
           background: tintGold,
-          padding: "0.5rem 1rem 0.5rem 1rem",
+          display: "flex",
+          alignItems: "center",
+          paddingLeft: "12px",
+          height: "65px",
         }}
       >
         <label className="govie-label--s govie-!-font-size-16">
