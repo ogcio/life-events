@@ -1,12 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 import { web, workflow, routes } from "../../../../utils";
-import { flowKeys, getFlowData } from "../../../../utils/workflow";
 import { PgSessions } from "auth/sessions";
-import FormLayout from "../FormLayout";
+import FormLayout from "../shared/FormLayout";
 import SimpleDetailsForm from "./SimpleDetailsForm";
 import DetailsSummary from "./DetailsSummary";
-import AddressForm from "../AddressForm";
-import ProofOfAddress from "../ProofOfAddress";
+import AddressForm from "../shared/AddressForm";
+import ProofOfAddress from "../shared/ProofOfAddress";
 import { useTranslations } from "next-intl";
 import LocalHealthOfficeForm from "./LocalHealthOfficeForm";
 import ApplicationSuccess from "./ApplicationSuccess";
@@ -58,7 +57,9 @@ type FormProps = {
   baseActionHref: string;
   nextSlug: string | null;
   isStepValid: boolean;
+  params: web.NextPageProps["params"];
   searchParams: web.NextPageProps["searchParams"];
+  eventsPageHref: string;
 };
 
 const CheckDetailsStep: React.FC<FormProps> = ({
@@ -69,24 +70,22 @@ const CheckDetailsStep: React.FC<FormProps> = ({
   userId,
   isStepValid,
 }) => {
-  if (nextSlug === routes.health.orderEHIC.checkDetails.slug) {
-    return (
-      <FormLayout
-        action={{ slug: actionSlug }}
-        step={stepSlug}
-        backHref={"/events"}
-      >
-        <DetailsSummary
-          data={data}
-          flow={flowKeys.orderEHIC}
-          userId={userId}
-          dataValid={isStepValid}
-        />
-      </FormLayout>
-    );
-  } else {
-    return redirect(nextSlug || "");
-  }
+  return stepSlug === nextSlug ? (
+    <FormLayout
+      action={{ slug: actionSlug }}
+      step={stepSlug}
+      backHref={"/events"}
+    >
+      <DetailsSummary
+        data={data}
+        flow={workflow.keys.orderEHIC}
+        userId={userId}
+        dataValid={isStepValid}
+      />
+    </FormLayout>
+  ) : (
+    redirect(nextSlug || "")
+  );
 };
 
 const ChangeDetailsStep: React.FC<FormProps> = ({
@@ -105,7 +104,7 @@ const ChangeDetailsStep: React.FC<FormProps> = ({
     >
       <SimpleDetailsForm
         data={data}
-        flow={flowKeys.orderEHIC}
+        flow={workflow.keys.orderEHIC}
         urlBase={urlBase}
         userId={userId}
       />
@@ -133,7 +132,7 @@ const NewAddressStep: React.FC<FormProps> = ({
       <AddressForm
         field={"currentAddress"}
         searchParams={searchParams}
-        flow={flowKeys.orderEHIC}
+        flow={workflow.keys.orderEHIC}
         userId={userId}
         data={data}
         slug={routes.health.orderEHIC.newAddress.slug}
@@ -163,7 +162,7 @@ const ProofOfAddressStep: React.FC<FormProps> = ({
     >
       <ProofOfAddress
         step={searchParams?.step}
-        flow={flowKeys.orderEHIC}
+        flow={workflow.keys.orderEHIC}
         userId={userId}
         slug={routes.health.orderEHIC.proofOfAddress.slug}
         onSubmitRedirectSlug={baseActionHref}
@@ -179,6 +178,7 @@ const DispatchAddressStep: React.FC<FormProps> = ({
   searchParams,
   userId,
   data,
+  params,
 }) => {
   const t = useTranslations("AddressForm");
   return (
@@ -194,12 +194,12 @@ const DispatchAddressStep: React.FC<FormProps> = ({
         title={t("dispatch-address")}
         field={"dispatchAddress"}
         searchParams={searchParams}
-        flow={flowKeys.orderEHIC}
+        flow={workflow.keys.orderEHIC}
         userId={userId}
         data={data}
         slug={routes.health.orderEHIC.dispatchAddress.slug}
         category={workflow.categories.health}
-        onSubmitRedirectSlug={`/${routes.health.orderEHIC.path()}`}
+        onSubmitRedirectSlug={`/${params.locale}/${routes.health.orderEHIC.path()}`}
         showWarning={false}
       />
     </FormLayout>
@@ -212,6 +212,7 @@ const SelectLocalHealthOfficeStep: React.FC<FormProps> = ({
   stepSlug,
   userId,
   data,
+  params,
 }) => {
   return (
     <FormLayout
@@ -225,7 +226,7 @@ const SelectLocalHealthOfficeStep: React.FC<FormProps> = ({
       <LocalHealthOfficeForm
         userId={userId}
         data={data}
-        onSubmitRedirectSlug={`/${routes.health.orderEHIC.path()}`}
+        onSubmitRedirectSlug={`/${params.locale}/${routes.health.orderEHIC.path()}`}
       />
     </FormLayout>
   );
@@ -234,10 +235,16 @@ const SelectLocalHealthOfficeStep: React.FC<FormProps> = ({
 const ApplicationSuccessStep: React.FC<FormProps> = ({
   actionSlug,
   stepSlug,
+  data,
+  eventsPageHref,
 }) => {
   return (
     <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
-      <ApplicationSuccess flow={flowKeys.orderEHIC} />
+      <ApplicationSuccess
+        flow={workflow.keys.orderEHIC}
+        data={data}
+        onSubmitRedirectSlug={eventsPageHref}
+      />
     </FormLayout>
   );
 };
@@ -255,7 +262,10 @@ const FormComponentsMap = {
 
 export default async (props: web.NextPageProps) => {
   const { userId } = await PgSessions.get();
-  const data = await getFlowData(flowKeys.orderEHIC, workflow.emptyOrderEHIC());
+  const data = await workflow.getFlowData(
+    workflow.keys.orderEHIC,
+    workflow.emptyOrderEHIC(),
+  );
 
   const { key: nextSlug, isStepValid } = workflow.getCurrentStep(
     orderEHICRules,
@@ -282,9 +292,11 @@ export default async (props: web.NextPageProps) => {
         actionSlug={actionSlug}
         nextSlug={nextSlug}
         data={data}
+        eventsPageHref={`/${props.params.locale}/${routes.events.slug}`}
         urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
         userId={userId}
         baseActionHref={baseActionHref}
+        params={props.params}
         searchParams={props.searchParams}
         isStepValid={isStepValid}
       />

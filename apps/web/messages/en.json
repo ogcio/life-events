@@ -5,7 +5,7 @@
   "NotFound": {
     "title": "Not Found",
     "description": " Sorry, the requested resource could not be found",
-    "return-home": "Return Home" 
+    "return-home": "Return Home"
   },
   "BreadcrumbsBySlug": {
     "home": "Home",
@@ -19,9 +19,17 @@
     "application-success": "Application successful",
     "medical-certificate": "Medical form upload",
     "order-ehic": "Order an EHIC",
-    "check-details": "Check your details", 
+    "check-details": "Check your details",
     "select-health-office": "Select your local health office",
-    "dispatch-address": "Enter a dispatch address"
+    "dispatch-address": "Enter a dispatch address",
+    "order-birth-certificate": "Order a copy of my birth certificate",
+    "notify-death": "Notify a death to government departments",
+    "required-information": "Required information",
+    "authority": "Do you have authority to continue?",
+    "enter-details": "Enter the following details",
+    "confirm-notification": "Confirm your notification",
+    "services-list-to-inform": "List of services to inform",
+    "notification-success": "Notification submitted"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -56,10 +64,10 @@
     "bankStatement": "Bank statement",
     "utilityBill": "Utility bill",
     "taxDocuments": "Tax document",
-    "noDocuments": "No document", 
-    "homeAddress": "Home address", 
-    "PPSN": "PPSN", 
-    "localHealthOffice": "Local Health Office", 
+    "noDocuments": "No document",
+    "homeAddress": "Home address",
+    "PPSN": "PPSN",
+    "localHealthOffice": "Local Health Office",
     "dispatchAddress": "Dispatch address"
   },
   "ChangeSimpleDetailsForm": {
@@ -84,7 +92,7 @@
     "county": "County",
     "eirecode": "Eirecode"
   },
-  "LocalHealthOfficeForm":{
+  "LocalHealthOfficeForm": {
     "selectHealthOffice": "Select your Local Health Office",
     "selectHint": "Select your local Health Office from the list below",
     "continueWithHealthOffice": "Continue with this Health Office"
@@ -105,6 +113,56 @@
     "or": "or",
     "noDocuments": "I do not have any of these documents"
   },
+  "NotifyDeathRequiredInfoForm": {
+    "infoTitle": "You will need the following to proceed:",
+    "firstRequirementTitle": "12 digit reference number",
+    "firstRequirementDescription": "The registrar gave you this when the death was registered. <span>It is 12 digits and a mix of numbers and letters. For example. AB 123 C 456 DE 7</span>",
+    "secondRequirementTitle": "Surname of the person who's died",
+    "thirdRequirementTitle": "Date of death",
+    "thirdRequirementDescription": "For example 21/7/2020",
+    "detailsSummary": "Unable to confirm online? See how you can confirm at your local authority",
+    "detailsText": "This is the content for writing well for the web.",
+    "continue": "Continue"
+  },
+  "NotifyDeathDetailsForm": {
+    "title": "Enter the following details",
+    "warningText": "Enter the details exactly as they appear on the death certificate",
+    "warning": "Warning",
+    "firstInputTitle": "12 digit reference number",
+    "firstInputDescription": "The registrar gave you this when the death was registered. It is 12 digits and a mix of numbers and letters. For example. AB 123 C 456 DE 7",
+    "secondInputTitle": "Surname of the person who has died",
+    "thirdInputTitle": "Date of death",
+    "thirdInputDescription": "For example, 21 7 2020",
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
+    "continue": "Continue"
+  },
+  "AuthorityCheckForm": {
+    "title": "Do you have authority to continue?",
+    "yes": "Yes",
+    "no": "No",
+    "detailsSummary": "How do I know if I have authority?",
+    "detailsText": "This is the content for writing well for the web.",
+    "continue": "Continue"
+  },
+  "NotifyDeathConfirmNotificationForm": {
+    "title": "Confirm your notification",
+    "applyingForTitle": "Applying for:",
+    "type": "Type",
+    "notifyDeath": "Notify death to government departments",
+    "detailsSummary": "How will DVA use my data?",
+    "detailsText": "This is the content for writing well for the web.",
+    "referenceNumber": "12 digit reference number",
+    "deceasedSurname": "Surname of the person who has died",
+    "dateOfDeath": "Date of death",
+    "change": "Change",
+    "confirm": "Confirm"
+  },
+  "ServicesToInformForm": {
+    "title": "List of services we can inform",
+    "confirm": "Confirm and submit notification"
+  },
   "PaymentSuccessful": {
     "panelTitle": "Your payment was successful",
     "panelReferenceText": "Your reference number",
@@ -121,18 +179,33 @@
     "sorry": "Sorry, there was a problem",
     "tryAgain": "Please return to My Portal and attempt the payment again"
   },
+  "NotificationSuccessForm": {
+    "panelTitle": "Your notification was submitted",
+    "panelReferenceText": "Your reference number",
+    "panelReferenceNumber": "HDJ2123F*",
+    "title": "What happens next?",
+    "submitText": "Return to My Portal",
+    "summaryTitle": "Summary",
+    "purpose": "Application for",
+    "notifyDeath": "Notify death to government departments",
+    "notifyDeathBody": "We will review and validate the details you submitted and be in touch.",
+    "date": "Date of application"
+  },
   "ApplicationSuccessful": {
     "panelTitle": "Your application was successful",
     "panelReferenceText": "Your reference number",
     "panelReferenceNumber": "HDJ2123F*",
     "title": "What happens next?",
-    "summaryTitle": "Application summary",
+    "summaryTitle": "Summary",
     "submitText": "Return to My Portal",
     "renewDriversLicence": "Driving licence renewal",
     "renewDriversLicenceBody": "Once approved your driving licence will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
     "purpose": "Application for",
-    "orderEHIC": "EHIC", 
-    "orderEHICBody": "Once approved your EHIC will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days."
+    "orderEHIC": "EHIC",
+    "orderEHICBody": "Once approved your EHIC will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
+    "orderBirthCertificate": "Birth certificate copy",
+    "orderBirthCertificateBody": "Once approved your birth certificate will be sent to you by post and you should receive it within 7 days.",
+    "date": "Date of application"
   },
   "RenewDriversLicence": {
     "title": "Renew your driving licence"
@@ -160,16 +233,48 @@
     "orderEHIC": {
       "title": {
         "base": "Order an EHIC",
-        "pre": "Continue your application for an EHIC",
-        "mid": "Your application for an EHIC is being processed",
+        "pre": "Continue your EHIC application",
+        "mid": "Your EHIC is now being processed",
         "post": "Your EHIC is now available",
         "rejected": "Your application for an EHIC is rejected"
       },
       "description": {
-        "base": "Lorem ipsum dolor sit amet",
-        "pre": "Lorem ipsum dolor sit amet",
-        "mid": "Lorem ipsum dolor sit amet",
-        "post": "Lorem ipsum dolor sit amet",
+        "base": "A line of text to support this statement",
+        "pre": "Get necessary state healthcare in all EU countries",
+        "mid": "We will notify you again when your card is available in your Digital Wallet",
+        "post": "It is now available in your digital wallet and will be posted to you",
+        "rejected": "{rejectedReason}"
+      }
+    },
+    "orderBirthCertificate": {
+      "title": {
+        "base": "Order a copy of my birth certificate",
+        "pre": "Continue with your request for a copy of your birth certificate",
+        "mid": "Your birth certificate request is being processed",
+        "post": "Your birth certificate is on its way",
+        "rejected": "Your application for a copy of your birth certificate is rejected"
+      },
+      "description": {
+        "base": "A line of text to support this statement",
+        "pre": "A line of text to support this statement",
+        "mid": "We will notify you again when completed and has been posted to you",
+        "post": "Your certificate has now been posted to you. Please allow up to 7 working days to receive",
+        "rejected": "{rejectedReason}"
+      }
+    },
+    "notifyDeath": {
+      "title": {
+        "base": "Notify a death to government departments",
+        "pre": "Continue with reporting a death",
+        "mid": "Report a Death notification is being processed",
+        "post": "Report a Death notification is complete",
+        "rejected": "Your notification of a death is rejected"
+      },
+      "description": {
+        "base": "A line of text to support this statement",
+        "pre": "A line of text to support this statement",
+        "mid": "We will advise when this notification has been completed and updated",
+        "post": "The details you submitted will be logged and shared with the relevant services",
         "rejected": "{rejectedReason}"
       }
     }
@@ -226,9 +331,39 @@
       "bankStatement": "Bank statement",
       "taxDocuments": "Tax document",
       "noDocuments": "No document",
-      "localHealthOffice": "Local Health Office", 
+      "localHealthOffice": "Local Health Office",
       "PPSN": "PPSN",
       "dispatchAddress": "Dispatch address"
+    },
+    "OrderBirthCertificateUserDetails": {
+      "title": "Review birth certificate application",
+      "orderBirthCertificate": "Birth certificate copy",
+      "name": "Name",
+      "sex": "Sex",
+      "address": "Address",
+      "addressVerified": "Address verified",
+      "yes": "Yes",
+      "no": "No",
+      "proofOfAddress": "Proof of address",
+      "mobile": "Mobile",
+      "email": "Email",
+      "reject": "Reject",
+      "approve": "Approve",
+      "birthDay": "Date of birth",
+      "utilityBill": "Utility bill",
+      "bankStatement": "Bank statement",
+      "taxDocuments": "Tax document",
+      "noDocuments": "No document"
+    },
+    "NotifyDeathDetails": {
+      "title": "Review death notification",
+      "reject": "Reject",
+      "approve": "Approve",
+      "referenceNumber": "12 digit reference number",
+      "deceasedSurname": "Surname of the person who has died",
+      "dateOfDeath": "Date of death",
+      "servicesToInform": "Services to inform",
+      "notifyDeath": "Death notification"
     },
     "RejectReasonForm": {
       "title": "Reason for rejection",
@@ -246,7 +381,9 @@
       "view": "View",
       "back": "Back",
       "eventNotFound": "Event not found",
-      "orderEHIC": "Application for an EHIC"
+      "orderEHIC": "Application for an EHIC",
+      "orderBirthCertificate": "Application for a copy of the birth certificate",
+      "notifyDeath": "Death notification"
     },
     "StatusMenu": {
       "all": "All",
@@ -262,6 +399,7 @@
     "noFile": "No required file selected",
     "fileUploadFail": "Failed to upload file",
     "internalServerError": "Server error",
+    "noAuthority": "You must have authority to continue",
     "fields": {
       "name": "name",
       "email": "email address",
@@ -275,7 +413,9 @@
       "town": "town",
       "eirecode": "eirecode",
       "county": "county",
-      "PPSN": "PPSN"
+      "PPSN": "PPSN",
+      "referenceNumber": "12 digit reference number",
+      "deceasedSurname": "surname"
     }
   },
   "Notifications": {

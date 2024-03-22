@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { postgres, web, workflow } from "../../../utils";
-import dayjs from "dayjs";
 
 export default async (props: web.NextPageProps) => {
   const t = await getTranslations("Admin.EventsTable");
@@ -78,7 +77,7 @@ export default async (props: web.NextPageProps) => {
           return (
             <tr key={row.userId} className="govie-table__row">
               <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {dayjs(row.updatedAt).format("DD/MM/YYYY")}
+                {web.formatDate(row.updatedAt)}
               </td>
 
               <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">

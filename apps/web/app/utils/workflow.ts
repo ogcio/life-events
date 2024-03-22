@@ -85,6 +85,7 @@ export type OrderEHIC = Base & {
   status: string;
   localHealthOffice: string;
   dispatchAddress: string;
+  submittedAt: string;
 };
 
 export function emptyOrderEHIC(): OrderEHIC {
@@ -101,22 +102,104 @@ export function emptyOrderEHIC(): OrderEHIC {
     proofOfAddressRequest: "",
     confirmedApplication: "",
     successfulAt: "",
+    rejectedAt: "",
     rejectReason: "",
     proofOfAddressFileId: "",
     status: "",
     localHealthOffice: "",
     dispatchAddress: "",
-    rejectedAt: "",
+    submittedAt: "",
   };
 }
 
-export type Workflow = RenewDriversLicence | OrderEHIC;
+export type OrderBirthCertificate = Base & {
+  userName: string;
+  sex: string;
+  dayOfBirth: string;
+  monthOfBirth: string;
+  yearOfBirth: string;
+  PPSN: string;
+  currentAddress: string;
+  currentAddressVerified: string;
+  timeAtAddress: string;
+  email: string;
+  mobile: string;
+  proofOfAddressRequest: string;
+  confirmedApplication: string;
+  rejectReason: string;
+  proofOfAddressFileId: string;
+  status: string;
+  submittedAt: string;
+};
 
-// ===== flow keys =====
+export function emptyOrderBirthCertificate(): OrderBirthCertificate {
+  return {
+    userName: "",
+    sex: "",
+    dayOfBirth: "",
+    monthOfBirth: "",
+    yearOfBirth: "",
+    PPSN: "",
+    currentAddress: "",
+    timeAtAddress: "",
+    currentAddressVerified: "",
+    email: "",
+    mobile: "",
+    proofOfAddressRequest: "",
+    confirmedApplication: "",
+    successfulAt: "",
+    rejectedAt: "",
+    rejectReason: "",
+    proofOfAddressFileId: "",
+    status: "",
+    submittedAt: "",
+  };
+}
 
-export const flowKeys = {
+export type NotifyDeath = Base & {
+  hasRequiredInformation: boolean;
+  hasAuthority: boolean;
+  referenceNumber: string;
+  deceasedSurname: string;
+  dayOfDeath: string;
+  monthOfDeath: string;
+  yearOfDeath: string;
+  confirmedNotification: boolean;
+  servicesToInform: string[];
+  submittedAt: string;
+};
+
+export function emptyNotifyDeath(): NotifyDeath {
+  return {
+    hasRequiredInformation: false,
+    hasAuthority: false,
+    referenceNumber: "",
+    deceasedSurname: "",
+    dayOfDeath: "",
+    monthOfDeath: "",
+    yearOfDeath: "",
+    confirmedNotification: false,
+    servicesToInform: [],
+    successfulAt: "",
+    rejectedAt: "",
+    rejectReason: "",
+    submittedAt: "",
+  };
+}
+
+export type Workflow =
+  | RenewDriversLicence
+  | OrderEHIC
+  | OrderBirthCertificate
+  | NotifyDeath;
+
+// ===== workflow keys =====
+
+export const keys = {
   renewDriversLicence: "renewDriversLicence",
   orderEHIC: "orderEHIC",
+  orderBirthCertificate: "orderBirthCertificate",
+  notifyDeath: "notifyDeath",
 };
 
 // ===== categories =====
@@ -124,6 +207,7 @@ export const flowKeys = {
 export const categories = {
   driving: "driving",
   health: "health",
+  death: "death",
 };
 
 // ===== utils =====
@@ -132,6 +216,7 @@ type FlowState = {
   key: string | null;
   isStepValid: boolean;
 };
+
 /**
  * Returns a string based on a list of rules.
  *
@@ -177,8 +262,13 @@ export async function getFlowData<T extends Workflow>(
 
   const data = defaultData;
 
-  data.userName = [firstName, lastName].join(" ");
-  data.email = email;
+  if ("userName" in data) {
+    data.userName = [firstName, lastName].join(" ");
+  }
+
+  if ("email" in data) {
+    data.email = email;
+  }
 
   if (flowResult.rowCount) {
     const [{ data: flowData }] = flowResult.rows;
