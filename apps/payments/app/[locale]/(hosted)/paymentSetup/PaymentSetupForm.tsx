@@ -86,7 +86,6 @@ export default async function ({
                 name={`${providerType}-account`}
                 className="govie-select"
                 defaultValue={provider?.provider_id}
-                // disabled={!!details}
               >
                 <option value={""}>Disabled</option>
                 {providerAccounts[index].map((account) => (
