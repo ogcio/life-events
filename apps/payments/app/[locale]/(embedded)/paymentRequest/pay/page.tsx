@@ -1,6 +1,10 @@
 import { getTranslations } from "next-intl/server";
 
-import { formatCurrency, stringToAmount } from "../../../../utils";
+import {
+  formatCurrency,
+  getRealAmount,
+  stringToAmount,
+} from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
 import { PgSessions } from "auth/sessions";
 import ClientLink from "./ClientLink";
@@ -26,28 +30,6 @@ type PaymentRequestDetails = Pick<
   | "allowAmountOverride"
   | "allowCustomAmount"
 > & { provider_name: string; provider_type: string };
-
-export const getRealAmount = ({
-  amount,
-  customAmount,
-  amountOverride,
-  allowAmountOverride,
-  allowCustomOverride,
-}: {
-  // Default amount required from the database
-  amount: number;
-  // Custom amount choosen by the user (if applicable)
-  customAmount?: number;
-  // Amount override from the URL (if applicable)
-  amountOverride?: number;
-  allowAmountOverride: boolean;
-  allowCustomOverride: boolean;
-}) => {
-  if (allowAmountOverride && amountOverride) return amountOverride;
-  if (allowCustomOverride && customAmount) return customAmount;
-
-  return amount;
-};
 
 async function getPaymentRequestDetails(paymentId: string) {
   "use server";

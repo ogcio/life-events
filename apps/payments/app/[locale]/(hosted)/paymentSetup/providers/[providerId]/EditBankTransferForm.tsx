@@ -2,11 +2,11 @@ import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import BankTransferFields from "../add-banktransfer/BankTransferFields";
 import EditProviderForm from "./EditProviderForm";
-import type { Provider } from "../types";
+import type { BankTransferProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 
 type Props = {
-  provider: Provider;
+  provider: BankTransferProvider;
 };
 
 export default async ({ provider }: Props) => {
