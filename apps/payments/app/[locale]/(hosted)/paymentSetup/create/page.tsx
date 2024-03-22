@@ -130,6 +130,8 @@ async function createPayment(userId: string, formData: FormData) {
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
+  } finally {
+    client.release();
   }
 }
 
