@@ -4,7 +4,17 @@ import { MailData, EmailTemplateTranslation } from "..";
 export const deleteEmailTemplate = (id: string) =>
   pgpool.query("DELETE FROM email_templates WHERE id = $1", [id]);
 
-export const getEmailTemplates = async (language: string) => {
+export const getEmailTemplates = async (
+  language: string,
+): Promise<
+  {
+    id: string;
+    language: string;
+    name: string;
+    subject: string;
+    body: string;
+  }[]
+> => {
   const templates = (
     await pgpool.query(
       `

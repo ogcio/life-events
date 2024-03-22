@@ -6,6 +6,7 @@ import { renewDriverLicenceRules } from "./[...action]/RenewDriversLicence/Renew
 import { postgres, routes, workflow } from "../../utils";
 import { flowKeys } from "../../utils/workflow";
 import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
+import { api } from "messages";
 
 const eventRules = {
   [flowKeys.orderEHIC]: orderEHICRules,
@@ -14,6 +15,7 @@ const eventRules = {
 
 async function getEvents() {
   "use server";
+
   return Promise.resolve([
     {
       flowKey: flowKeys.renewDriversLicence,
@@ -102,26 +104,62 @@ export default async () => {
   const t = await getTranslations("MyLifeEvents");
   const [flow, events] = await Promise.all([getFlows(), getEvents()]);
 
-  const eventsToRender = events
-    .filter((event) => !flow.some((f) => f.flowKey === event.flowKey))
-    .map((event) => {
-      // do some mapping for flow key
-      const flowTitle = event.flowKey + ".title.base";
-      const descriptionKey = event.flowKey + ".description.base";
-      return {
-        flowTitle,
-        flowKey: event.flowKey,
-        descriptionKey,
-        slug: routes.category[event.category][event.flowKey].path(),
-      };
-    });
+  const { email } = await PgSessions.get();
+  const messageEvents = await api.getMessages(email, {
+    page: 1,
+    search: "",
+    size: 10,
+  });
+
+  // const eventsToRender = events
+  //   .filter((event) => !flow.some((f) => f.flowKey === event.flowKey))
+  //   .map((event) => {
+  //     // do some mapping for flow key
+  //     const flowTitle = event.flowKey + ".title.base";
+  //     const descriptionKey = event.flowKey + ".description.base";
+  //     return {
+  //       flowTitle,
+  //       flowKey: event.flowKey,
+  //       descriptionKey,
+  //       slug: routes.category[event.category][event.flowKey].path(),
+  //     };
+  //   });
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
+      <code>Mail: {email}</code>
       <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
         <div className="govie-heading-l">My Life Events</div>
         <ul className="govie-list">
-          {eventsToRender.map((evt) => (
+          {messageEvents.map((msg) => (
+            <li
+              key={msg.subject}
+              style={{
+                margin: "1rem",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-around",
+                gap: "1rem",
+              }}
+            >
+              <Link
+                className="govie-link"
+                href={
+                  new URL(
+                    `messages/${msg.messageId}`,
+                    process.env.MESSAGES_HOST_URL,
+                  ).href
+                }
+              >
+                {msg.subject}
+              </Link>
+              <p className="govie-body" style={{ margin: "unset" }}>
+                {msg.content}
+              </p>
+              <hr className="govie-section-break govie-section-break--visible" />
+            </li>
+          ))}
+          {/* {eventsToRender.map((evt) => (
             <li
               key={`le_${evt.flowKey}`}
               style={{
@@ -140,7 +178,7 @@ export default async () => {
               </p>
               <hr className="govie-section-break govie-section-break--visible" />
             </li>
-          ))}
+          ))} */}
         </ul>
       </section>
       <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>

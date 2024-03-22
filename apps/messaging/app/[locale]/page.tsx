@@ -1,5 +1,8 @@
+import { useTranslations } from "next-intl";
+import SideMenu from "./SideMenu";
+import { routes } from "../utils";
+
 import { redirect, RedirectType } from "next/navigation";
-import { routeDefinitions } from "../routeDefinitions";
 
 type Props = {
   params: {
@@ -7,7 +10,5 @@ type Props = {
   };
 };
 
-export default (props: Props) => {
-  const path = `${props.params.locale}/${routeDefinitions.templates.slug}`;
-  redirect(path, RedirectType.replace);
-};
+export default ({ children }: React.PropsWithChildren) =>
+  redirect("/send-a-message", RedirectType.replace);

@@ -2,16 +2,18 @@ import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
 import Header from "./Header";
 import Footer from "./Footer";
+import FeedbackBanner from "./FeedbackBanner";
+import { useTranslations } from "next-intl";
 
 export default function RootLayout({
   children,
-  params: { locale },
+  params,
 }: {
   children: React.ReactNode;
   params: { locale: string };
 }) {
   return (
-    <html lang={locale}>
+    <html lang={params.locale}>
       <body
         style={{
           margin: "unset",
@@ -27,6 +29,7 @@ export default function RootLayout({
           className="govie-width-container"
           style={{ maxWidth: "1440px", width: "100%" }}
         >
+          <FeedbackBanner />
           <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
             {children}
           </div>

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { ListRow } from "../SummaryListRow";
 import { workflow, postgres, routes } from "../../../../utils";
+import { api } from "messages";
 
 export default (
   props: Pick<
@@ -36,6 +37,7 @@ export default (
     `,
       [props.userId, props.flow],
     );
+
     revalidatePath("/confirm-application");
   }
 

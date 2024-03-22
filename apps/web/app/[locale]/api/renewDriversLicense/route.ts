@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 import { redirect } from "next/navigation";
 import { pgpool } from "../../../utils/postgres";
 import { driving } from "../../../utils/routes";
+import { api } from "messages";
+import { PgSessions } from "auth/sessions";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -19,6 +21,18 @@ export async function GET(request: NextRequest) {
         WHERE user_id=$4 AND flow = $5
     `,
     [transactionId, pay, status, userId, flow],
+  );
+
+  const { email } = await PgSessions.get();
+
+  await api.pushMessageByTemplate(
+    "7e89fc5a-23e0-4800-80af-2767c4b45092",
+    {
+      pay: pay || "0",
+      date: new Date().toDateString(),
+      ref: transactionId || "failed",
+    },
+    [email],
   );
 
   return redirect(

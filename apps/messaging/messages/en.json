@@ -1,4 +1,10 @@
 {
+  "SideMenu": {
+    "sendMessage": "Send a message",
+    "messages": "Messages",
+    "settings": "Settings",
+    "emailTemplate": "Email templates"
+  },
   "EmailTemplates": {
     "menu": {
       "templates": "Email templates",
@@ -23,5 +29,24 @@
         "delete": "Delete"
       }
     }
+  },
+  "FeedbackBanner": {
+    "tag": "prototype",
+    "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
+  },
+  "Header": {
+    "myLifeEvents": "My life events"
+  },
+  "SendAnEmail": {
+    "title": "Send an email"
+  },
+  "Messages": {
+    "searchPlaceholder": "Search Messages",
+    "header": "Messages",
+    "date": "Date",
+    "type": "Type",
+    "status": "Status",
+    "subject": "Subject",
+    "action": "Action"
   }
 }

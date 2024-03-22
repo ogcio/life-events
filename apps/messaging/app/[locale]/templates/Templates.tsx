@@ -36,6 +36,21 @@ export default async () => {
           {t("menu.addTemplate")}
         </Link>
       </li>
+      <li tabIndex={0}>
+        <Link
+          className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
+          href={"/test"}
+          style={{
+            margin: "unset",
+            paddingLeft: "12px",
+            width: "100%",
+            display: "flex",
+            justifyContent: "flex-start",
+          }}
+        >
+          Skicka bror
+        </Link>
+      </li>
     </ol>
   );
 };
