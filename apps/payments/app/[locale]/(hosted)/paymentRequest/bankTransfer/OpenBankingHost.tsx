@@ -21,7 +21,7 @@ export default function Page(props: Props) {
       resource_token: props.resourceToken,
       return_uri: props.returnUri,
       appearance: {
-        default_color: "#004d44",
+        default_color: ds.colours.ogcio.primaryButton,
         spinner: {
           color: ds.colours.ogcio.green,
         },
