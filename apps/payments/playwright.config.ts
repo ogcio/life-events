@@ -21,14 +21,14 @@ export default defineConfig({
       name: "setup auth",
       testMatch: "auth.ts",
     },
-    // {
-    //   name: "Desktop Chrome",
-    //   use: {
-    //     ...devices["Desktop Chrome"],
-    //     storageState: 'e2e/.auth/user.json',
-    //   },
-    //   dependencies: ['setup auth'],
-    // },
+    {
+      name: "Desktop Chrome",
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/user.json",
+      },
+      dependencies: ["setup auth"],
+    },
     // {
     //   name: 'Desktop Firefox',
     //   use: {
