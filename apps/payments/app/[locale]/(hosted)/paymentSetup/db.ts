@@ -111,15 +111,16 @@ export async function getRequestTransactionDetails(requestId: string) {
   "use server";
 
   const res = await pgpool.query<TransactionDetails>(
-    `Select
+    `SELECT
       t.status,
       pr.title,
-      pr.amount,
+      pt.amount,
       t.updated_at
-    from payment_transactions t
-    inner join payment_requests pr on pr.payment_request_id = t.payment_request_id
-    where pr.payment_request_id = $1
-    order by t.updated_at desc`,
+    FROM payment_transactions t
+    INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+    INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
+    WHERE pr.payment_request_id = $1
+    ORDER BY t.updated_at DESC`,
     [requestId],
   );
 
