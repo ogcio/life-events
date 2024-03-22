@@ -100,29 +100,24 @@ async function editPayment(
     await updateProvider(
       client,
       paymentRequestId,
-      providers.find(
-        (provider) =>
-          provider.provider_type === "openbanking" && provider.enabled,
-      )?.provider_id,
+      providers.find((provider) => provider.provider_type === "openbanking")
+        ?.provider_id,
       formData.get("openbanking-account")?.toString(),
     );
 
     await updateProvider(
       client,
       paymentRequestId,
-      providers.find(
-        (provider) =>
-          provider.provider_type === "banktransfer" && provider.enabled,
-      )?.provider_id,
+      providers.find((provider) => provider.provider_type === "banktransfer")
+        ?.provider_id,
       formData.get("banktransfer-account")?.toString(),
     );
 
     await updateProvider(
       client,
       paymentRequestId,
-      providers.find(
-        (provider) => provider.provider_type === "stripe" && provider.enabled,
-      )?.provider_id,
+      providers.find((provider) => provider.provider_type === "stripe")
+        ?.provider_id,
       formData.get("stripe-account")?.toString(),
     );
 

@@ -71,7 +71,7 @@ export default async function ({
         </div>
         {providerTypes.map((providerType, index) => {
           const provider = details?.providers.find(
-            (p) => p.provider_type === providerType && p.enabled,
+            (p) => p.provider_type === providerType,
           );
           return (
             <div className="govie-form-group">
