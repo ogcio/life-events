@@ -8,19 +8,19 @@ import { stringToAmount } from "../../../../../utils";
 const updateProvider = async (
   client,
   paymentRequestId,
-  currentProvider,
+  currentProviderId,
   newProviderId,
 ) => {
   // If I deleted the provider, disable it
-  if (currentProvider && !newProviderId) {
+  if (currentProviderId && !newProviderId) {
     await client.query(
       `update payment_requests_providers set enabled = false where payment_request_id = $1 and provider_id = $2`,
-      [paymentRequestId, currentProvider.provider_id],
+      [paymentRequestId, currentProviderId],
     );
   }
 
   //If I selected a provider (manual, stripe, openbanking) and before there was nothing, create it
-  if (newProviderId && !currentProvider) {
+  if (newProviderId && !currentProviderId) {
     await client.query(
       `
           INSERT INTO payment_requests_providers (provider_id, payment_request_id, enabled) 
@@ -33,13 +33,13 @@ const updateProvider = async (
 
   // If I changed the provider, update it
   if (
-    currentProvider &&
+    currentProviderId &&
     newProviderId &&
-    currentProvider.provider_id !== newProviderId
+    currentProviderId !== newProviderId
   ) {
     await client.query(
       `update payment_requests_providers set enabled = false where payment_request_id = $1 and provider_id = $2`,
-      [paymentRequestId, currentProvider.provider_id],
+      [paymentRequestId, currentProviderId],
     );
     await client.query(
       `
@@ -103,7 +103,7 @@ async function editPayment(
       providers.find(
         (provider) =>
           provider.provider_type === "openbanking" && provider.enabled,
-      ),
+      )?.provider_id,
       formData.get("openbanking-account")?.toString(),
     );
 
@@ -113,7 +113,7 @@ async function editPayment(
       providers.find(
         (provider) =>
           provider.provider_type === "banktransfer" && provider.enabled,
-      ),
+      )?.provider_id,
       formData.get("banktransfer-account")?.toString(),
     );
 
@@ -122,7 +122,7 @@ async function editPayment(
       paymentRequestId,
       providers.find(
         (provider) => provider.provider_type === "stripe" && provider.enabled,
-      ),
+      )?.provider_id,
       formData.get("stripe-account")?.toString(),
     );
 
