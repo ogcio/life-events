@@ -10,18 +10,23 @@ export default async (props: { params: { messageId: string } }) => {
     throw notFound();
   }
 
-  const href = message.link.includes("http")
-    ? message.link
-    : `https://${message.link}`;
+  let href = "";
+  if (message.link) {
+    href = message.link.includes("http")
+      ? message.link
+      : `https://${message.link}`;
+  }
 
   return (
     <>
       <h1 className="govie-heading-l">{message.subject}</h1>
       <p className="govie-body">{message.content}</p>
 
-      <a className="govie-link" href={href}>
-        Go to event
-      </a>
+      {Boolean(href) && (
+        <a className="govie-link" href={href}>
+          Go to event
+        </a>
+      )}
     </>
   );
 };

@@ -121,6 +121,7 @@ export default async () => {
     page: 1,
     search: "",
     size: 10,
+    type: "event",
   });
 
   // const eventsToRender = events
@@ -196,7 +197,7 @@ export default async () => {
       <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
         <div className="govie-heading-l">Open Events</div>
         <ul className="govie-list">
-          {flow.map((evt) => (
+          {/* {flow.map((evt) => (
             <li
               key={`o_${evt.flowKey}`}
               style={{
@@ -223,7 +224,7 @@ export default async () => {
                 </p>
               </div>
             </li>
-          ))}
+          ))} */}
         </ul>
       </section>
     </div>

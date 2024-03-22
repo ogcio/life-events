@@ -23,6 +23,7 @@ DROP TABLE notifications;
     content text,
     action_url text,
     is_unseen boolean default true,
+    message_type text not null,
     created_at timestamptz default now()
   );
 

@@ -105,7 +105,7 @@ export const getEmailTemplateById = async (id: string) => {
   const translationsRes = await pgpool.query(
     `
     SELECT tt.language, tt.name, tt.subject, tt.body
-    FROM messages.email_template_translations tt
+    FROM email_template_translations tt
     WHERE tt.template_id = $1
   `,
     [id],

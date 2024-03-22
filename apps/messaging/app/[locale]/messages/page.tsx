@@ -82,7 +82,9 @@ export default async (props: { searchParams: any }) => {
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
-              ></th>
+              >
+                {msg.type}
+              </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"

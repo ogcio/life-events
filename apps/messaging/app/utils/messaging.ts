@@ -3,6 +3,7 @@ import { routes } from ".";
 import { getTranslations } from "next-intl/server";
 import { ComponentProps } from "react";
 import ds from "design-system";
+import { api } from "messages";
 
 export const languages = {
   EN: "EN",
@@ -50,38 +51,6 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
   return options;
 };
 
-// export type MessageState = {
-//   messageId?: string;
-//   submittedMetaAt: string; // First step of meta selection such as type, transportation eg.
-//   sibmittedEmailAt: string;
-//   confirmedEmailAt: string;
-//   transportation: "email"[];
-//   content: string;
-//   subject: string;
-//   abstract?: string; // Not entirely sure if this is needed
-//   type: "message" | "event" | "newsletter";
-//   links: { url: string; label: string }[];
-//   schedule: "";
-//   emailRecipients: string[];
-//   confirmedEmailRecipientsAt: string;
-//   confirmedScheduleAt: string;
-// };
-
-// export const emptyMessageState = (): MessageState => ({
-//   content: "",
-//   emailRecipients: [],
-//   links: [],
-//   schedule: "",
-//   subject: "",
-//   transportation: [],
-//   type: "event",
-//   submittedMetaAt: "",
-//   sibmittedEmailAt: "",
-//   confirmedEmailAt: "",
-//   confirmedEmailRecipientsAt: "",
-//   confirmedScheduleAt: "",
-// });
-
 /**
  * Taken from the life event portal app. I think this concept could be centralised.
  */
@@ -102,3 +71,11 @@ export function getCurrentStep<TFlowData>(
   }
   return next;
 }
+
+export type ApiMessageState = Parameters<typeof api.upsertMessageState>[0];
+export type MessageCreateProps = {
+  state: ApiMessageState;
+  userId: string;
+  stateId?: string;
+  disabledSubmit?: boolean;
+};

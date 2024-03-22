@@ -5,9 +5,12 @@ import { driving } from "../../../utils/routes";
 import { api } from "messages";
 import { PgSessions } from "auth/sessions";
 
+export async function POST() {
+  console.log("hoho");
+}
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-
   const transactionId = searchParams.get("transactionId");
   const id = searchParams.get("id") ?? "";
   const pay = searchParams.get("pay");
@@ -24,15 +27,27 @@ export async function GET(request: NextRequest) {
   );
 
   const { email } = await PgSessions.get();
+  const paymentTemplateIdPlaceholder = "44b212d7-a033-42f5-99d6-104aa31c8726";
 
+  const driverLicenceSuccessTemplateIdPlaceholder =
+    "430b3404-ef65-4c54-8374-417b24247cad";
   await api.pushMessageByTemplate(
-    "7e89fc5a-23e0-4800-80af-2767c4b45092",
+    paymentTemplateIdPlaceholder,
     {
-      pay: pay || "0",
+      pay: pay ? (+pay / 100).toString() : "0",
       date: new Date().toDateString(),
       ref: transactionId || "failed",
+      reason: "Drivers licence renewal",
     },
     [email],
+    "message",
+  );
+
+  await api.pushMessageByTemplate(
+    driverLicenceSuccessTemplateIdPlaceholder,
+    { event: "Drivers licence renewal" },
+    [email],
+    "message",
   );
 
   return redirect(

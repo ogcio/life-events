@@ -17,18 +17,21 @@ type MessageState = {
   content: string;
   subject: string;
   abstract?: string; // Not entirely sure if this is needed
-  type: "";
   links: { url: string; label: string }[];
   schedule: "";
   emailRecipients: string[];
   confirmedEmailRecipientsAt: string;
   confirmedScheduleAt: string;
+  messageType: string;
 };
+
+type MessageType = "message" | "event";
 export const api = {
   async pushMessage({
     data,
     sender,
     transports,
+    type,
   }: {
     data: {
       recipients: string[]; // we (right now) always use email as identifyer
@@ -39,6 +42,7 @@ export const api = {
     };
     sender: { email: string };
     transports: "email"[];
+    type: MessageType;
   }): Promise<void> {
     "use server";
     const promises: Promise<any>[] = [];
@@ -54,16 +58,17 @@ export const api = {
       data.content, //data.abstract || "null", // The little description eg.
       data.content,
       data.actionUrl || null,
+      type,
     ];
 
-    let i = 5;
+    let i = vals.length + 1;
     while (data.recipients.length) {
       const email = data.recipients.shift();
       if (!email) {
         break;
       }
 
-      args.push(`($1, $2, $3, $4, $${i})`);
+      args.push(`($1, $2, $3, $4, $5, $${i})`);
       vals.push(email);
       i += 1;
     }
@@ -75,6 +80,7 @@ export const api = {
         abstract, 
         content, 
         action_url,
+        message_type,
         for_email)
     VALUES ${args.join(",")}`,
       vals,
@@ -82,17 +88,17 @@ export const api = {
 
     promises.push(eventQuery);
 
-    if (transports.includes("email")) {
-      promises.push(
-        send({
-          from: "ludwig.thurfjell@nearform.com",
-          subject: data.subject,
-          text: data.content,
-          to: "ludwig.thurfjell@nearform.com",
-          html: `<a href={${data.actionUrl}} className="govie-button">Bruder</button>`,
-        }),
-      );
-    }
+    // if (transports.includes("email")) {
+    //   promises.push(
+    //     send({
+    //       from: "ludwig.thurfjell@nearform.com",
+    //       subject: data.subject,
+    //       text: data.content,
+    //       to: "ludwig.thurfjell@nearform.com",
+    //       html: `<a href={${data.actionUrl}} className="govie-button">Bruder</button>`,
+    //     }),
+    //   );
+    // }
 
     await Promise.all(promises);
   },
@@ -100,6 +106,7 @@ export const api = {
     templateId: string,
     interpolations: Record<string, string>,
     recipients: string[],
+    type: MessageType,
   ) {
     const pgclient = await pgpool.connect();
     try {
@@ -142,8 +149,9 @@ export const api = {
         recipients[0], // We cheat for now
         chosenTemplateTranslations.subject,
         chosenTemplateTranslations.body,
+        type,
       ];
-      let i = 4;
+      let i = args.length + 1;
       for (const key of Object.keys(interpolations)) {
         intrplvalues.push(
           `((SELECT message_id FROM msg_insert), $${i}, $${i + 1})`,
@@ -155,8 +163,8 @@ export const api = {
       await pgpool.query(
         `
       WITH msg_insert AS(
-        INSERT INTO messages(for_email, subject, content)
-        VALUES($1,$2,$3)
+        INSERT INTO messages(for_email, subject, content, message_type)
+        VALUES($1,$2,$3,$4)
         RETURNING message_id
       )
       INSERT INTO message_interpolation_accessors(message_id, key_accessor, value_accessor)
@@ -174,7 +182,7 @@ export const api = {
   },
   async getMessages(
     email: string,
-    filter: { page: number; size: number; search: string },
+    filter: { page: number; size: number; search: string; type?: MessageType },
   ) {
     if (!filter.page) {
       filter.page = 1;
@@ -191,7 +199,8 @@ export const api = {
       content, 
       action_url as "link", 
       created_at::DATE::TEXT as "createdAt",
-      a.interpolations
+      a.interpolations,
+      message_type as "type"
     FROM messages m
     JOIN LATERAL(
       SELECT
@@ -205,10 +214,18 @@ export const api = {
     let nextArgIndex = 2;
     if (filter.search) {
       query += `
-        AND subject ILIKE $2
+        AND subject ILIKE $${nextArgIndex}
       `;
       args.push(`%${filter.search}%`);
-      nextArgIndex = 3;
+      nextArgIndex += 1;
+    }
+
+    if (filter.type) {
+      query += `
+        AND message_type = $${nextArgIndex}
+      `;
+      args.push(filter.type);
+      nextArgIndex += 1;
     }
 
     query += `
@@ -223,14 +240,19 @@ export const api = {
         link: string;
         createdAt: string;
         interpolations: { key: string; value: string }[];
+        type: MessageType;
       }>(query, args)
       .then((res) => res.rows);
 
     for (const message of messages) {
-      console.log(message);
       if (message.interpolations) {
         for (const interpolation of message.interpolations) {
           message.content = message.content.replaceAll(
+            `{{${interpolation.key}}}`,
+            interpolation.value,
+          );
+
+          message.subject = message.subject.replaceAll(
             `{{${interpolation.key}}}`,
             interpolation.value,
           );
@@ -247,7 +269,7 @@ export const api = {
         SELECT 
           count (*) 
         FROM messages 
-        WHERE is_unseen AND for_email=lower($1)
+        WHERE is_unseen AND lower(for_email)=lower($1)
     `,
         [email],
       )
@@ -267,18 +289,45 @@ export const api = {
     SELECT 
       subject, 
       content, 
-      action_url as "link" 
-    FROM messages
+      action_url as "link",
+      message_type as "type",
+      a.interpolations
+    FROM messages m
+    JOIN LATERAL(
+      SELECT
+        jsonb_agg(jsonb_build_object('key', key_accessor, 'value', value_accessor)) as "interpolations"
+        from message_interpolation_accessors a 
+    where a.message_id = m.message_id
+    ) a on true
     WHERE message_id = $1`;
     const args = [messageId];
 
-    return pgpool
+    const message = await pgpool
       .query<{
         subject: string;
         content: string;
         link: string;
+        type: MessageType;
+        interpolations: { key: string; value: string }[];
       }>(query, args)
       .then((res) => res.rows.at(0));
+
+    if (message?.interpolations) {
+      for (const interpolation of message.interpolations) {
+        message.content = message.content.replaceAll(
+          `{{${interpolation.key}}}`,
+          interpolation.value,
+        );
+
+        message.subject = message.subject.replaceAll(
+          `{{${interpolation.key}}}`,
+          interpolation.value,
+        );
+      }
+    }
+
+    console.log({ message });
+    return message;
   },
   /**
    * Note this needs to be restricted access to different admin role configurations
@@ -340,7 +389,7 @@ export const api = {
                 subject: "",
                 submittedMetaAt: "",
                 transportation: [],
-                type: "",
+                messageType: "",
               },
             };
       });

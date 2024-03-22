@@ -55,6 +55,8 @@ async function getPaymentDetails(
     user_name: userInfo.user_name,
   };
 
+  console.log({ paymentDetails });
+
   const paymentRequest = await createPaymentRequest(paymentDetails);
   return {
     paymentDetails,
