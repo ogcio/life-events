@@ -266,6 +266,7 @@ export default async function Page(props: Props) {
                 )}
               />
             </div>
+            <hr className="govie-section-break govie-section-break--visible"></hr>
           </>
         )}
         {hasStripe && (
