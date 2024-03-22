@@ -74,7 +74,8 @@ Currently, this is not validated with precommit hooks, you can use the commit me
 
 1. Reviewers should provide constructive feedback and approve changes only when they meet project standards.
 2. Address feedback and make necessary adjustments. Re-request reviews if needed.
-3. Once approved, the pull request can be merged by the PR author or any other developer
+3. A conversation is considered resolved once comment has been discussed and changes has been committed if necessary. Both the comment author and the PR creator can resolve a conversation. Ideally we want all the conversations to be resolved before approving a PR.
+4. Once approved, the pull request can be merged by the PR author or any other developer
 
 ### Merging Guidelines
 
