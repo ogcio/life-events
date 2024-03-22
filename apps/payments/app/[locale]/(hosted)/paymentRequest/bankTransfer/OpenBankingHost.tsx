@@ -21,12 +21,12 @@ export default function Page(props: Props) {
       resource_token: props.resourceToken,
       return_uri: props.returnUri,
       appearance: {
-        default_color: ds.colours.ogcio.darkTurquoise,
+        default_color: "#004d44",
         spinner: {
-          color: ds.colours.ogcio.darkTurquoise,
+          color: ds.colours.ogcio.green,
         },
         illustration: {
-          color: ds.colours.ogcio.darkTurquoise,
+          color: ds.colours.ogcio.green,
         },
       },
       onDone: () => {
