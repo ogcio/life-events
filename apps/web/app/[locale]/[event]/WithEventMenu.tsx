@@ -52,8 +52,18 @@ export default async function WithEventMenu({
               label: "About me",
             },
 
-            { key: "birth", icon: "birth", url: "/birth", label: "Birth" },
-            { key: "health", icon: "health", url: "/health", label: "Health" },
+            {
+              key: "birth",
+              icon: "birth",
+              url: "/" + routes.birth.slug,
+              label: "Birth",
+            },
+            {
+              key: "health",
+              icon: "health",
+              url: "/" + routes.health.slug,
+              label: "Health",
+            },
             {
               key: "driving",
               icon: "driving",
@@ -63,22 +73,27 @@ export default async function WithEventMenu({
             {
               key: "employment",
               icon: "employment",
-              url: "/employment",
+              url: "/" + routes.employment.slug,
               label: "Employment",
             },
             {
               key: "business",
               icon: "business",
-              url: "/business",
+              url: "/" + routes.business.slug,
               label: "Starting a business",
             },
             {
               key: "housing",
               icon: "housing",
-              url: "/housing",
+              url: "/" + routes.housing.slug,
               label: "Housing",
             },
-            { key: "death", icon: "death", url: "/death", label: "Death" },
+            {
+              key: "death",
+              icon: "death",
+              url: "/" + routes.death.slug,
+              label: "Death",
+            },
           ]}
         />
       </div>
