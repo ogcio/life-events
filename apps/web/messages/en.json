@@ -286,7 +286,23 @@
     "comingSoon": "Coming soon"
   },
   "Birth": {
-    "title": "Birth"
+    "title": "Birth",
+    "orderBirthCertificate": {
+      "title": "Order a copy of my birth certificate",
+      "description": "A line of text to support this statement"
+    },
+    "correctBirthCertificate": {
+      "title": "Correct a birth registration",
+      "description": "Coming soon"
+    },
+    "overseasBirthCertificate": {
+      "title": "Overseas birth certificate",
+      "description": "Coming soon"
+    },
+    "addFatherNameBirthCertificate": {
+      "title": "Adding a father name to a certificate",
+      "description": "Coming soon"
+    }
   },
   "Health": {
     "title": "Health"

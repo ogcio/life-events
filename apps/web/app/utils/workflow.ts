@@ -200,6 +200,9 @@ export const keys = {
   orderEHIC: "orderEHIC",
   orderBirthCertificate: "orderBirthCertificate",
   notifyDeath: "notifyDeath",
+  correctBirthCertificate: "correctBirthCertificate",
+  overseasBirthCertificate: "overseasBirthCertificate",
+  addFatherNameBirthCertificate: "addFatherNameBirthCertificate",
 };
 
 // ===== categories =====
@@ -208,6 +211,7 @@ export const categories = {
   driving: "driving",
   health: "health",
   death: "death",
+  birth: "birth",
 };
 
 // ===== utils =====
