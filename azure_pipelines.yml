@@ -53,7 +53,7 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
         - task: Docker@2
-          displayName: Docker build
+          displayName:  Build base image
           inputs:
             command: build
             repository: base-deps
@@ -61,12 +61,27 @@ stages:
             dockerfile: ./Dockerfile
             buildContext: '$(Build.SourcesDirectory)'
         - task: Docker@0
-          displayName: 'Docker save'
+          displayName: 'Docker save base'
           inputs:
             action: 'Run a Docker command'
-            customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_base_$(Build.BuildId).tar base-deps:$(Build.BuildId)'
+            customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_base_$(Build.BuildId).tar base-deps:latest'
         - publish:  $(Build.ArtifactStagingDirectory)
           artifact: 'docker-base-$(Build.BuildId)'
+        - task: Docker@2
+          displayName:  Build design system image
+          inputs:
+            command: build
+            repository: design-system-container
+            tags: 'latest'
+            dockerfile: packages/design-system/Dockerfile
+            buildContext: '$(Build.SourcesDirectory)'
+        - task: Docker@0
+          displayName: 'Docker save design-system'
+          inputs:
+            action: 'Run a Docker command'
+            customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_design_system_$(Build.BuildId).tar design-system-container:latest'
+        - publish:  $(Build.ArtifactStagingDirectory)
+          artifact: 'docker-design-system-$(Build.BuildId)'
   - ${{ each serviceName in parameters.services }}:
     - stage: Build_${{ replace(serviceName, '-', '_') }}
       displayName: Build ${{ serviceName }}
@@ -82,10 +97,17 @@ stages:
         - download: current
           artifact: 'docker-base-$(Build.BuildId)'
         - task: Docker@0
-          displayName: 'Retrieve docker image from artifacts'
+          displayName: 'Retrieve base docker image from artifacts'
           inputs:
             action: 'Run a Docker command'
             customCommand: 'load -i $(Pipeline.Workspace)/docker-base-$(Build.BuildId)/image_base_$(Build.BuildId).tar'
+        - download: current
+          artifact: 'docker-design-system-$(Build.BuildId)'
+        - task: Docker@0
+          displayName: 'Retrieve base docker image from artifacts'
+          inputs:
+            action: 'Run a Docker command'
+            customCommand: 'load -i $(Pipeline.Workspace)/docker-design-system-$(Build.BuildId)/image_design_system_$(Build.BuildId).tar'
         - task: Docker@2
           displayName: Build - ${{ serviceName }}
           inputs:
