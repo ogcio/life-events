@@ -1,10 +1,8 @@
-import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
 
-import { ListRow } from "../SummaryListRow";
-import { workflow, postgres, routes } from "../../../../utils";
-import { api } from "messages";
+import { ListRow } from "../shared/SummaryListRow";
+import { workflow, postgres, routes, web } from "../../../../utils";
 
 export default (
   props: Pick<
@@ -48,9 +46,9 @@ export default (
     routes.driving.renewDriversLicence.proofOfAddress.slug;
   const dateOfBirth =
     props.yearOfBirth && props.monthOfBirth && props.dayOfBirth
-      ? dayjs(
+      ? web.formatDate(
           `${props.yearOfBirth}-${props.monthOfBirth}-${props.dayOfBirth}`,
-        ).format("DD/MM/YYYY")
+        )
       : "";
   return (
     <>

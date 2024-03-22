@@ -17,7 +17,7 @@ export default ({ action, step }: Props) => {
       <span className="govie-breadcrumbs__link">{t(action.slug)}</span>
     );
   return (
-    <div className="govie-breadcrumbs">
+    <div className="govie-breadcrumbs" style={{ marginBottom: "30px" }}>
       <ol className="govie-breadcrumbs__list">
         <li className="govie-breadcrumbs__list-item">
           <Link className="govie-breadcrumbs__link" href="/">

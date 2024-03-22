@@ -1,6 +1,9 @@
 {
   "Common": {
-    "notFound": "Payment request not found"
+    "notFound": "Payment request not found",
+    "edit": "Edit",
+    "save": "Save",
+    "currencySymbol": "€"
   },
   "PaymentSetup": {
     "menu": {
@@ -8,6 +11,7 @@
       "paymentRequests": "Payment requests",
       "providers": "Providers"
     },
+    "details": "Payment details",
     "Providers": {
       "title": "Your payments integrations",
       "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
@@ -98,7 +102,8 @@
         "paymentTitle": "Description",
         "beneficiaryAccount": "Beneficiary Account",
         "actions": "Actions",
-        "assign": "Assign to user"
+        "assign": "Assign to user",
+        "details": "Details"
       }
     },
     "Request": {
@@ -135,6 +140,7 @@
         "currencySymbol": "€",
         "redirectUrl": "Redirect URL",
         "allowAmountOverride": "Allow amount override from url",
+        "allowCustomAmount": "Allow the user to pay a custom amount",
         "submit": "Continue"
       },
       "copyLink": "Copy link",
@@ -150,7 +156,9 @@
     "payByCard": "Credit/Debit card",
     "payNow": "Pay now",
     "manualBankTransfer": "Manual Bank Transfer",
-    "manualBankTransferDescription": "Make a manual bank transfer"
+    "manualBankTransferDescription": "Make a manual bank transfer",
+    "selectCustomAmount": "Pay a custom amount",
+    "changeAmount": "Change amount"
   },
   "PayManualBankTransfer": {
     "title": "Pay with a Manual Bank Transfer",
@@ -163,6 +171,14 @@
       "sortCode": "Sort code",
       "accountNumber": "Account number"
     }
+  },
+  "PayStripe": {
+    "payNow": "Pay now",
+    "unexpectedError": "An unexpected error occurred.",
+    "paymentSucceded": "Payment succeeded!",
+    "paymentProcessing": "Your payment is processing.",
+    "paymentRequiresPaymentMmethod": "Your payment was not successful, please try again.",
+    "somethingWrong": "Something went wrong."
   },
   "PaymentRequestComplete": {
     "title": "Your payment was successful",

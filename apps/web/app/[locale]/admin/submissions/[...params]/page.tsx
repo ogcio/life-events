@@ -1,21 +1,33 @@
 import { notFound } from "next/navigation";
 import { workflow } from "../../../../utils";
 import { pgpool } from "../../../../utils/postgres";
-import { flowKeys } from "../../../../utils/workflow";
 import OrderEHICUserDetails from "./OrderEHICUserDetails";
 import RejectReasonForm from "./RejectReasonForm";
 import RenewLicenceUserDetails from "./RenewLicenceUserDetails";
+import OrderBirthCertificateUserDetails from "./OrderBirthCertificateUserDetails";
+import NotifyDeathDetails from "./NotifyDeathDetails";
 
 const isOrderEHICData = (
   flow: string,
   flowData: workflow.Workflow,
-): flowData is workflow.OrderEHIC => flow === flowKeys.orderEHIC;
+): flowData is workflow.OrderEHIC => flow === workflow.keys.orderEHIC;
 
 const isRenewDriversLicenceData = (
   flow: string,
   flowData: workflow.Workflow,
 ): flowData is workflow.RenewDriversLicence =>
-  flow === flowKeys.renewDriversLicence;
+  flow === workflow.keys.renewDriversLicence;
+
+const isOrderBirthCertificateData = (
+  flow: string,
+  flowData: workflow.Workflow,
+): flowData is workflow.OrderBirthCertificate =>
+  flow === workflow.keys.orderBirthCertificate;
+
+const isNotifyDeatheData = (
+  flow: string,
+  flowData: workflow.Workflow,
+): flowData is workflow.NotifyDeath => flow === workflow.keys.notifyDeath;
 
 export default async (props: { params: { params: string[] } }) => {
   const [flow, userId, action] = props.params.params;
@@ -57,7 +69,7 @@ export default async (props: { params: { params: string[] } }) => {
   }
 
   if (
-    flow === flowKeys.renewDriversLicence &&
+    flow === workflow.keys.renewDriversLicence &&
     isRenewDriversLicenceData(flow, data)
   ) {
     return (
@@ -65,8 +77,25 @@ export default async (props: { params: { params: string[] } }) => {
     );
   }
 
-  if (flow === flowKeys.orderEHIC && isOrderEHICData(flow, data)) {
+  if (flow === workflow.keys.orderEHIC && isOrderEHICData(flow, data)) {
     return <OrderEHICUserDetails flow={flow} flowData={data} userId={userId} />;
+  }
+
+  if (
+    flow === workflow.keys.orderBirthCertificate &&
+    isOrderBirthCertificateData(flow, data)
+  ) {
+    return (
+      <OrderBirthCertificateUserDetails
+        flow={flow}
+        flowData={data}
+        userId={userId}
+      />
+    );
+  }
+
+  if (flow === workflow.keys.notifyDeath && isNotifyDeatheData(flow, data)) {
+    return <NotifyDeathDetails flow={flow} flowData={data} userId={userId} />;
   }
 
   throw notFound();

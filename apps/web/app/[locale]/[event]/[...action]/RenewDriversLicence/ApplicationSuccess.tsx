@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 type Props = {
   flow: string;
+  onSubmitRedirectSlug: string;
 };
 
 export default (props: Props) => {
@@ -10,7 +11,7 @@ export default (props: Props) => {
 
   async function returnToPortalAction() {
     "use server";
-    redirect("/events");
+    redirect(props.onSubmitRedirectSlug);
   }
   return (
     <>

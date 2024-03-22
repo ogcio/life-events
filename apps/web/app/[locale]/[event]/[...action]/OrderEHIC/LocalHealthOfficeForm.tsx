@@ -1,7 +1,6 @@
-import { useTranslations } from "next-intl";
 import { postgres, workflow } from "../../../../utils";
 import { redirect } from "next/navigation";
-import { categories, flowKeys } from "../../../../utils/workflow";
+import { getTranslations } from "next-intl/server";
 
 type FormProps = {
   userId: string;
@@ -10,7 +9,7 @@ type FormProps = {
 };
 
 export default async (props: FormProps) => {
-  const t = useTranslations("LocalHealthOfficeForm");
+  const t = await getTranslations("LocalHealthOfficeForm");
   const selectName = "selected-health-office";
 
   const healthOfficesResponse = await fetch(
@@ -39,14 +38,14 @@ export default async (props: FormProps) => {
             WHERE user_flow_data.user_id = $2 AND user_flow_data.flow = $1
         `,
       [
-        flowKeys.orderEHIC,
+        workflow.keys.orderEHIC,
         props.userId,
         JSON.stringify({
           ...props.data,
           localHealthOffice: selectedHealthOffice,
           timeAtAddress: "5 months",
         }),
-        categories.health,
+        workflow.categories.health,
         selectedHealthOffice,
       ],
     );

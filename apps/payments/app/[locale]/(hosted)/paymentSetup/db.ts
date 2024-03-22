@@ -1,19 +1,8 @@
 import { getUserInfoById } from "auth/sessions";
 import { pgpool } from "../../../dbConnection";
+import { PaymentRequestDO } from "../../../../types/common";
 
-type PaymentRequestDO = {
-  payment_request_id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  reference: string;
-  amount: number;
-  status: string;
-  redirect_url: string;
-  allowAmountOverride: boolean;
-};
-
-type PaymentRequestDetails = Pick<
+export type PaymentRequestDetails = Pick<
   PaymentRequestDO,
   | "payment_request_id"
   | "title"
@@ -22,14 +11,22 @@ type PaymentRequestDetails = Pick<
   | "reference"
   | "redirect_url"
   | "allowAmountOverride"
-> & { providers: { provider_name: string; provider_type: string }[] };
+  | "allowCustomAmount"
+> & {
+  providers: {
+    provider_name: string;
+    provider_type: string;
+    provider_id: string;
+  }[];
+};
 
 export async function getPaymentRequestDetails(
   requestId: string,
 ): Promise<PaymentRequestDetails | undefined> {
   "use server";
   const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.payment_request_id, pr.description, pr.amount, json_agg(pp) as providers, pr.reference, pr.redirect_url, pr.allow_amount_override as "allowAmountOverride"
+    `select pr.title, pr.payment_request_id, pr.description, pr.amount, json_agg(pp) as providers, 
+      pr.reference, pr.redirect_url, pr.allow_amount_override as "allowAmountOverride", pr.allow_custom_amount as "allowCustomAmount"
       from payment_requests pr
       join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
       join payment_providers pp on ppr.provider_id = pp.provider_id
