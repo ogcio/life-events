@@ -1,10 +1,56 @@
-import { getTranslations } from "next-intl/server";
 import { getPaymentRequestDetails } from "../../db";
 import { PgSessions } from "auth/sessions";
 import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import PaymentSetupForm from "../../PaymentSetupForm";
 import { stringToAmount } from "../../../../../utils";
+
+const updateProvider = async (
+  client,
+  paymentRequestId,
+  currentProvider,
+  newProviderId,
+) => {
+  // If I deleted the provider, disable it
+  if (currentProvider && !newProviderId) {
+    await client.query(
+      `update payment_requests_providers set enabled = false where payment_request_id = $1 and provider_id = $2`,
+      [paymentRequestId, currentProvider.provider_id],
+    );
+  }
+
+  //If I selected a provider (manual, stripe, openbanking) and before there was nothing, create it
+  if (newProviderId && !currentProvider) {
+    await client.query(
+      `
+          INSERT INTO payment_requests_providers (provider_id, payment_request_id, enabled) 
+          VALUES ($1, $2, true)
+          ON CONFLICT (provider_id, payment_request_id) 
+          DO UPDATE SET enabled = EXCLUDED.enabled`,
+      [newProviderId, paymentRequestId],
+    );
+  }
+
+  // If I changed the provider, update it
+  if (
+    currentProvider &&
+    newProviderId &&
+    currentProvider.provider_id !== newProviderId
+  ) {
+    await client.query(
+      `update payment_requests_providers set enabled = false where payment_request_id = $1 and provider_id = $2`,
+      [paymentRequestId, currentProvider.provider_id],
+    );
+    await client.query(
+      `
+          INSERT INTO payment_requests_providers (provider_id, payment_request_id, enabled) 
+          VALUES ($1, $2, true)
+          ON CONFLICT (provider_id, payment_request_id) 
+          DO UPDATE SET enabled = EXCLUDED.enabled`,
+      [newProviderId, paymentRequestId],
+    );
+  }
+};
 
 async function editPayment(
   userId: string,
@@ -45,6 +91,41 @@ async function editPayment(
         userId,
       ],
     );
+
+    const details = await getPaymentRequestDetails(paymentRequestId);
+    if (!details) throw new Error("Payment request not found");
+
+    const { providers } = details;
+
+    await updateProvider(
+      client,
+      paymentRequestId,
+      providers.find(
+        (provider) =>
+          provider.provider_type === "openbanking" && provider.enabled,
+      ),
+      formData.get("openbanking-account")?.toString(),
+    );
+
+    await updateProvider(
+      client,
+      paymentRequestId,
+      providers.find(
+        (provider) =>
+          provider.provider_type === "banktransfer" && provider.enabled,
+      ),
+      formData.get("banktransfer-account")?.toString(),
+    );
+
+    await updateProvider(
+      client,
+      paymentRequestId,
+      providers.find(
+        (provider) => provider.provider_type === "stripe" && provider.enabled,
+      ),
+      formData.get("stripe-account")?.toString(),
+    );
+
     await client.query("COMMIT");
 
     //TODO: Add the possibility to update providers in the edit
@@ -68,6 +149,8 @@ export default async function (props: { params: { request_id: string } }) {
     userId,
     details.payment_request_id,
   );
+
+  console.log(JSON.stringify(details, null, 2));
 
   return (
     <PaymentSetupForm

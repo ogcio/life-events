@@ -17,6 +17,7 @@ export type PaymentRequestDetails = Pick<
     provider_name: string;
     provider_type: string;
     provider_id: string;
+    enabled: boolean;
   }[];
 };
 
@@ -25,13 +26,21 @@ export async function getPaymentRequestDetails(
 ): Promise<PaymentRequestDetails | undefined> {
   "use server";
   const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.payment_request_id, pr.description, pr.amount, json_agg(pp) as providers, 
-      pr.reference, pr.redirect_url, pr.allow_amount_override as "allowAmountOverride", pr.allow_custom_amount as "allowCustomAmount"
-      from payment_requests pr
-      join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-      join payment_providers pp on ppr.provider_id = pp.provider_id
-      where pr.payment_request_id = $1
-      group by pr.payment_request_id`,
+    `SELECT pr.title,
+        pr.payment_request_id,
+        pr.description,
+        pr.amount,
+        json_agg(to_jsonb(pp) || jsonb_build_object('enabled', ppr.enabled)) AS providers,
+        pr.reference,
+        pr.redirect_url,
+        pr.allow_amount_override AS "allowAmountOverride",
+        pr.allow_custom_amount AS "allowCustomAmount"
+    FROM payment_requests pr
+    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id
+    JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
+    WHERE pr.payment_request_id = $1
+    GROUP BY pr.payment_request_id
+`,
     [requestId],
   );
 

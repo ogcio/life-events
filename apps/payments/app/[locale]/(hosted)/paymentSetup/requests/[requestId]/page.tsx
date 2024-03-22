@@ -118,14 +118,16 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
           <dt className="govie-summary-list__value">{details.description}</dt>
         </div>
 
-        {details.providers.map(({ provider_name, provider_type }) => (
-          <div className="govie-summary-list__row">
-            <dt className="govie-summary-list__key">
-              {t(`form.paymentProvider.${provider_type}`)}
-            </dt>
-            <dt className="govie-summary-list__value">{provider_name}</dt>
-          </div>
-        ))}
+        {details.providers
+          .filter((p) => p.enabled)
+          .map(({ provider_name, provider_type }) => (
+            <div className="govie-summary-list__row">
+              <dt className="govie-summary-list__key">
+                {t(`form.paymentProvider.${provider_type}`)}
+              </dt>
+              <dt className="govie-summary-list__value">{provider_name}</dt>
+            </div>
+          ))}
 
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.amount")}</dt>

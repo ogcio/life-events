@@ -81,8 +81,8 @@ async function createPayment(userId: string, formData: FormData) {
       const paymentRequestProviderQueryResult = await pgpool.query<{
         payment_request_id: string;
       }>(
-        `insert into payment_requests_providers (provider_id, payment_request_id)
-        values ($1, $2)`,
+        `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
+        values ($1, $2 , true)`,
         [openBankingAccount, paymentRequestId],
       );
 
@@ -96,8 +96,8 @@ async function createPayment(userId: string, formData: FormData) {
       const paymentRequestProviderQueryResult = await pgpool.query<{
         payment_request_id: string;
       }>(
-        `insert into payment_requests_providers (provider_id, payment_request_id)
-        values ($1, $2)`,
+        `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
+        values ($1, $2, true)`,
         [bankTransferAccount, paymentRequestId],
       );
 
@@ -111,8 +111,8 @@ async function createPayment(userId: string, formData: FormData) {
       const paymentRequestProviderQueryResult = await pgpool.query<{
         payment_request_id: string;
       }>(
-        `insert into payment_requests_providers (provider_id, payment_request_id)
-        values ($1, $2)`,
+        `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
+        values ($1, $2, true)`,
         [stripeAccount, paymentRequestId],
       );
 
@@ -137,19 +137,6 @@ export default async function Page() {
   const t = await getTranslations("PaymentSetup.CreatePayment");
 
   const { userId } = await PgSessions.get();
-
-  const openBankingAccounts = await getRegisteredAccounts(
-    userId,
-    "openbanking",
-  );
-
-  const stripeAccounts = await getRegisteredAccounts(userId, "stripe");
-
-  const manualBankTransferAccounts = await getRegisteredAccounts(
-    userId,
-    "banktransfer",
-  );
-
   const submitPayment = createPayment.bind(this, userId);
 
   return <PaymentSetupForm userId={userId} action={submitPayment} />;

@@ -71,7 +71,7 @@ export default async function ({
         </div>
         {providerTypes.map((providerType, index) => {
           const provider = details?.providers.find(
-            (p) => p.provider_type === providerType,
+            (p) => p.provider_type === providerType && p.enabled,
           );
           return (
             <div className="govie-form-group">
@@ -86,7 +86,7 @@ export default async function ({
                 name={`${providerType}-account`}
                 className="govie-select"
                 defaultValue={provider?.provider_id}
-                disabled={!!details}
+                // disabled={!!details}
               >
                 <option value={""}>Disabled</option>
                 {providerAccounts[index].map((account) => (
