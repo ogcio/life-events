@@ -14,10 +14,6 @@ parameters:
     type: object
     default: ["web", "mock-api", "payments", "messaging"]
 
-  - name: destroy
-    type: boolean
-    default: false
-  
   - name: envBranches
     type: object
     default: ["refs/heads/dev", "refs/heads/sta", "refs/heads/uat", "refs/heads/feat/improve-pipeline"]
