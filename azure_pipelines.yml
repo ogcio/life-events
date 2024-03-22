@@ -57,6 +57,7 @@ stages:
           inputs:
             command: build
             repository: base-deps
+            tags: 'latest'
             dockerfile: ./Dockerfile
             buildContext: '$(Build.SourcesDirectory)'
         - task: Docker@0
