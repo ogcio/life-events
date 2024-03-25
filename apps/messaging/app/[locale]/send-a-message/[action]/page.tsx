@@ -1,10 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { api } from "messages";
 import { ApiMessageState, getCurrentStep } from "../../../utils/messaging";
-
 import { PgSessions } from "auth/sessions";
-import { revalidatePath } from "next/cache";
-import dayjs from "dayjs";
 import ComposeMessageMeta from "./ComposeMessageMeta";
 import EmailForm from "./EmailForm";
 import EmailPreview from "./EmailPreview";
@@ -20,9 +17,6 @@ const rules: Parameters<typeof getCurrentStep<ApiMessageState>>[0] = [
 
   // All transportation steps
   (state) => {
-    // if (!state.transportation.length) {
-    //   return next;
-    // }
     for (const transportation of state.transportations) {
       if (transportation === "email") {
         // Completed email details form?
@@ -47,7 +41,7 @@ const rules: Parameters<typeof getCurrentStep<ApiMessageState>>[0] = [
         }
       }
 
-      // if asd == sms ... eg
+      // if transportation == sms ... eg
     }
 
     return next;

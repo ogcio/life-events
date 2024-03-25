@@ -100,5 +100,12 @@
       "body": "A copy of this message will appear in your sent messages.",
       "submitText": "Send another message"
     }
+  },
+  "formErrors": {
+    "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
+    "fields": {
+      "subject": "subject",
+      "message": "message"
+    }
   }
 }

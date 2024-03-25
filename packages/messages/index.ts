@@ -318,7 +318,6 @@ export const api = {
       }
     }
 
-    console.log({ message });
     return message;
   },
   /**
@@ -411,6 +410,12 @@ export const api = {
   },
 };
 
+// Anything temporary goes in here
+type FormError = {
+  messageKey: string;
+  field: string;
+  errorValue: string;
+};
 export const temporaryMockUtils = {
   async autoPaymentTemplateId() {
     const client = await pgpool.connect();
@@ -494,5 +499,43 @@ export const temporaryMockUtils = {
       client.release();
     }
     return templateId;
+  },
+
+  async getErrors(userId: string, stateId: string) {
+    return pgpool
+      .query<{ field: string; messageKey: string; errorValue: string }>(
+        `
+      DELETE FROM form_errors
+      WHERE user_id = $1 AND state_id = $2
+      RETURNING 
+        field, 
+        error_message AS "messageKey", 
+        error_value AS "errorValue"
+    `,
+        [userId, stateId],
+      )
+      .then((res) => res.rows);
+  },
+  async createErrors(errors: FormError[], userId: string, stateId: string) {
+    let i = 3;
+    const values: string[] = [];
+    for (const _ of errors) {
+      values.push(`($1, $2, $${i}, $${i + 1}, $${i + 2})`);
+      i += 3;
+    }
+
+    await pgpool.query(
+      `
+      INSERT INTO form_errors (user_id, state_id, field, error_message, error_value)
+      VALUES ${values.join(", ")}
+    `,
+      [
+        userId,
+        stateId,
+        ...errors
+          .map((error) => [error.field, error.messageKey, error.errorValue])
+          .flat(),
+      ],
+    );
   },
 };
