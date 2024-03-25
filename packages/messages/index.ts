@@ -13,7 +13,7 @@ type MessageState = {
   submittedMetaAt: string; // First step of meta selection such as type, transportation eg.
   submittedEmailAt: string;
   confirmedEmailAt: string;
-  transportation: string[];
+  transportations: string[];
   content: string;
   subject: string;
   abstract?: string; // Not entirely sure if this is needed
@@ -89,15 +89,7 @@ export const api = {
     promises.push(eventQuery);
 
     // if (transports.includes("email")) {
-    //   promises.push(
-    //     send({
-    //       from: "ludwig.thurfjell@nearform.com",
-    //       subject: data.subject,
-    //       text: data.content,
-    //       to: "ludwig.thurfjell@nearform.com",
-    //       html: `<a href={${data.actionUrl}} className="govie-button">Bruder</button>`,
-    //     }),
-    //   );
+    // push
     // }
 
     await Promise.all(promises);
@@ -388,7 +380,7 @@ export const api = {
                 submittedEmailAt: "",
                 subject: "",
                 submittedMetaAt: "",
-                transportation: [],
+                transportations: [],
                 messageType: "",
               },
             };
@@ -416,5 +408,91 @@ export const api = {
     `,
       )
       .then((res) => res.rows);
+  },
+};
+
+export const temporaryMockUtils = {
+  async autoPaymentTemplateId() {
+    const client = await pgpool.connect();
+    let templateId: string | undefined;
+    try {
+      templateId = await client
+        .query<{
+          templateId: string;
+        }>(
+          `select template_id as "templateId" from email_template_translations where name='workflow_payment_success'`,
+        )
+        .then((res) => res.rows.at(0)?.templateId);
+      if (!templateId) {
+        templateId = await client
+          .query<{
+            templateId: string;
+          }>(
+            `
+          with tmpl as(
+            insert into email_templates(id)values(default)returning id
+          )
+          insert into email_template_translations(template_id,name,language, subject, body)
+          values((select id from tmpl), 'workflow_payment_success', 'EN', 'You did a payment', 'You have paid €{{pay}} for {{reason}}, at {{date}}. Transaction ID: {{ref}}.')
+          returning template_id as "templateId"
+        `,
+          )
+          .then((res) => res.rows.at(0)?.templateId);
+      }
+
+      if (!templateId) {
+        throw new Error("couldn't seed payment template");
+      }
+
+      client.query("COMMIT");
+    } catch (err) {
+      console.log("autoPaymentTemplateId", err);
+      client.query("ROLLBACK");
+    } finally {
+      client.release();
+    }
+    return templateId;
+  },
+
+  async autoSuccessfulTemplateId() {
+    const client = await pgpool.connect();
+    let templateId: string | undefined;
+    try {
+      templateId = await client
+        .query<{
+          templateId: string;
+        }>(
+          `select template_id as "templateId" from email_template_translations where name='workflow_mid_success'`,
+        )
+        .then((res) => res.rows.at(0)?.templateId);
+      if (!templateId) {
+        templateId = await client
+          .query<{
+            templateId: string;
+          }>(
+            `
+          with tmpl as(
+            insert into email_templates(id)values(default)returning id
+          )
+          insert into email_template_translations(template_id,name,language, subject, body)
+          values((select id from tmpl), 'workflow_mid_success', 'EN', '{{event}} completed', 'You have successfully applied for {{event}} at {{date}}')
+          returning template_id as "templateId"
+        `,
+          )
+          .then((res) => res.rows.at(0)?.templateId);
+      }
+
+      if (!templateId) {
+        throw new Error("couldn't seed payment template");
+      }
+
+      client.query("COMMIT");
+    } catch (err) {
+      console.log("autoSuccessfulTemplateId", err);
+      client.query("ROLLBACK");
+    } finally {
+      client.release();
+    }
+    return templateId;
   },
 };

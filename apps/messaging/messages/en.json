@@ -48,5 +48,57 @@
     "status": "Status",
     "subject": "Subject",
     "action": "Action"
+  },
+  "sendAMessage": {
+    "ComposeMessageMeta": {
+      "title": "Send a message",
+      "chooseTransportation": "Choose transportation",
+      "email": "Email",
+      "sms": "SMS",
+      "postalService": "Postal service",
+      "chooseMessageType": "Choose message type",
+      "message": "Message",
+      "event": "Event",
+      "submitText": "Continue"
+    },
+    "EmailForm": {
+      "title": "Send a message",
+      "subject": "Subject",
+      "message": "Message",
+      "link": "Link",
+      "submitText": "Continue to preview",
+      "backLink": "Back"
+    },
+    "EmailPreview": {
+      "submitText": "Continue to recipients",
+      "backLink": "Back to edit"
+    },
+    "EmailRecipients": {
+      "title": "Add recipients",
+      "addRecipient": "Add recipient",
+      "addRecipientHint": "Added recipients will be added below",
+      "add": "Add",
+      "submitText": "Continue to schedule",
+      "backLink": "Back to message"
+    },
+    "ScheduleForm": {
+      "title": "Schedule message",
+      "schedule": "Schedule",
+      "scheduleHint": "When would you like this sent?",
+      "sendNow": "Send now",
+      "sendLater": "Send later",
+      "day": "Day",
+      "month": "Month",
+      "year": "Year",
+      "hour": "HH",
+      "minute": "MM",
+      "submitText": "Send message",
+      "backLink": "Back to recipients"
+    },
+    "SuccessForm": {
+      "title": "Your message has been sent",
+      "body": "A copy of this message will appear in your sent messages.",
+      "submitText": "Send another message"
+    }
   }
 }

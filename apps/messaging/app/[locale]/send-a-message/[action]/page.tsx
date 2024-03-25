@@ -12,11 +12,6 @@ import EmailRecipients from "./EmailRecipients";
 import ScheduleForm from "./ScheduleForm";
 import SuccessForm from "./SuccessForm";
 
-/**
- * 1 sort out all meta. Which transports do we want, what type (event, message, newsletter), saved info?
- * 2 sort out which transportation (none is ok)
- * 3
- */
 const next = { key: null, isStepValid: true };
 const rules: Parameters<typeof getCurrentStep<ApiMessageState>>[0] = [
   // First meta selection step
@@ -25,11 +20,11 @@ const rules: Parameters<typeof getCurrentStep<ApiMessageState>>[0] = [
 
   // All transportation steps
   (state) => {
-    if (!state.transportation.length) {
-      return next;
-    }
-    for (const asd of state.transportation) {
-      if (asd === "email") {
+    // if (!state.transportation.length) {
+    //   return next;
+    // }
+    for (const transportation of state.transportations) {
+      if (transportation === "email") {
         // Completed email details form?
         if (!state.submittedEmailAt) {
           return {
@@ -68,7 +63,7 @@ const rules: Parameters<typeof getCurrentStep<ApiMessageState>>[0] = [
   () => ({ key: "success", isStepValid: true }),
 ];
 
-const handler = (url: string, key: string) => (Cmp: JSX.Element) => {
+const urlStateHandler = (url: string, key: string) => (Cmp: JSX.Element) => {
   if (url === key) {
     return Cmp;
   }
@@ -83,7 +78,7 @@ export default async (props: {
   const urlAction = props.params.action;
   const { state, id: stateId } = await api.getMessageState(userId);
   const step = getCurrentStep<ApiMessageState>(rules, state);
-  const maybe = handler(urlAction, step.key || "");
+  const maybe = urlStateHandler(urlAction, step.key || "");
   switch (step.key) {
     case "meta":
       return maybe(

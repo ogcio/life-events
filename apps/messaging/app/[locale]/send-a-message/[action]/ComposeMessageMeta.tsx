@@ -2,18 +2,21 @@ import dayjs from "dayjs";
 import { api } from "messages";
 import { revalidatePath } from "next/cache";
 import { MessageCreateProps } from "../../../utils/messaging";
+import { useTranslations } from "next-intl";
 
 export default (props: MessageCreateProps) => {
+  const t = useTranslations("sendAMessage.ComposeMessageMeta");
   async function submit(formData: FormData) {
     "use server";
 
-    const transportation: string[] = [];
-    if (Boolean(formData.get("email"))) {
-      transportation.push("email");
-    }
+    const transportations: string[] = [];
+
+    // Let's omit the choice until we have a more fine grained specification what happens if you just want to send a message within the message block
+    // if (Boolean(formData.get("email"))) {
+    transportations.push("email");
+    // }
 
     const messageType = formData.get("messageType")?.toString();
-    console.log(messageType);
     if (!messageType) {
       return;
     }
@@ -21,7 +24,7 @@ export default (props: MessageCreateProps) => {
     await api.upsertMessageState(
       Object.assign({}, props.state, {
         submittedMetaAt: dayjs().toISOString(),
-        transportation,
+        transportations,
         messageType,
       }),
       props.userId,
@@ -33,16 +36,14 @@ export default (props: MessageCreateProps) => {
 
   return (
     <form action={submit}>
-      <h1 className="govie-heading-l">Send a message</h1>
+      <h1 className="govie-heading-l">{t("title")}</h1>
+
       <hr />
 
       {/* Select transportation checkboxes */}
       <div className="govie-form-group">
-        <h3 className="govie-heading-s">Choose transportation</h3>
-        <div className="govie-hint govie-!-font-size-16">
-          All messages will securely persist in the messaging system regardless
-          of additional transportations. (DO WE WANT A DISCLAIMER LIKE THIS?)
-        </div>
+        <h3 className="govie-heading-s">{t("chooseTransportation")}</h3>
+
         <fieldset className="govie-fieldset">
           <div
             className="govie-checkboxes govie-checkboxes--small"
@@ -55,15 +56,13 @@ export default (props: MessageCreateProps) => {
                 name="email"
                 type="checkbox"
                 value="email"
-                defaultChecked={props.state.transportation.some(
-                  (t) => t === "email",
-                )}
+                defaultChecked={true}
               />
               <label
                 className="govie-label--s govie-checkboxes__label"
                 htmlFor="email"
               >
-                Email
+                {t("email")}
               </label>
             </div>
             <div className="govie-checkboxes__item">
@@ -79,7 +78,7 @@ export default (props: MessageCreateProps) => {
                 className="govie-label--s govie-checkboxes__label"
                 htmlFor="organisation-2"
               >
-                SMS
+                {t("sms")}
               </label>
             </div>
             <div className="govie-checkboxes__item">
@@ -95,7 +94,7 @@ export default (props: MessageCreateProps) => {
                 className="govie-label--s govie-checkboxes__label"
                 htmlFor="postal"
               >
-                Postal service
+                {t("postalService")}
               </label>
             </div>
           </div>
@@ -105,7 +104,7 @@ export default (props: MessageCreateProps) => {
       <hr />
 
       <div className="govie-form-group ">
-        <h3 className="govie-heading-s">Choose message type</h3>
+        <h3 className="govie-heading-s">{t("chooseMessageType")}</h3>
 
         <div className="govie-radios govie-radios--small ">
           <div className="govie-radios__item">
@@ -121,7 +120,7 @@ export default (props: MessageCreateProps) => {
               className="govie-label--s govie-radios__label"
               htmlFor="messageType"
             >
-              Message
+              {t("message")}
             </label>
           </div>
           <div className="govie-radios__item">
@@ -136,14 +135,14 @@ export default (props: MessageCreateProps) => {
               className="govie-label--s govie-radios__label"
               htmlFor="messageType"
             >
-              Event
+              {t("event")}
             </label>
           </div>
         </div>
       </div>
 
       <button className="govie-button" type="submit">
-        Continue
+        {t("submitText")}
       </button>
     </form>
   );

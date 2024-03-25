@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { redirect } from "next/navigation";
 import { pgpool } from "../../../utils/postgres";
 import { driving } from "../../../utils/routes";
-import { api } from "messages";
+import { api, temporaryMockUtils } from "messages";
 import { PgSessions } from "auth/sessions";
 
 export async function POST() {
@@ -27,28 +27,35 @@ export async function GET(request: NextRequest) {
   );
 
   const { email } = await PgSessions.get();
-  const paymentTemplateIdPlaceholder = "44b212d7-a033-42f5-99d6-104aa31c8726";
+  const paymentTemplateIdPlaceholder =
+    await temporaryMockUtils.autoPaymentTemplateId();
 
-  const driverLicenceSuccessTemplateIdPlaceholder =
-    "430b3404-ef65-4c54-8374-417b24247cad";
-  await api.pushMessageByTemplate(
-    paymentTemplateIdPlaceholder,
-    {
-      pay: pay ? (+pay / 100).toString() : "0",
-      date: new Date().toDateString(),
-      ref: transactionId || "failed",
-      reason: "Drivers licence renewal",
-    },
-    [email],
-    "message",
-  );
+  // This is for demonstrational purposes.
+  if (paymentTemplateIdPlaceholder) {
+    await api.pushMessageByTemplate(
+      paymentTemplateIdPlaceholder,
+      {
+        pay: pay ? (+pay / 100).toString() : "0",
+        date: new Date().toDateString(),
+        ref: transactionId || "failed",
+        reason: "Drivers licence renewal",
+      },
+      [email],
+      "message",
+    );
+  }
 
-  await api.pushMessageByTemplate(
-    driverLicenceSuccessTemplateIdPlaceholder,
-    { event: "Drivers licence renewal" },
-    [email],
-    "message",
-  );
+  const eventSuccessTemplateIdPlaceholder =
+    await temporaryMockUtils.autoSuccessfulTemplateId();
+
+  if (eventSuccessTemplateIdPlaceholder) {
+    await api.pushMessageByTemplate(
+      eventSuccessTemplateIdPlaceholder,
+      { event: "Drivers licence renewal", date: new Date().toDateString() },
+      [email],
+      "message",
+    );
+  }
 
   return redirect(
     `/driving/renew-licence/${

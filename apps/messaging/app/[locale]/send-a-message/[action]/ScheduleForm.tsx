@@ -3,8 +3,10 @@ import { MessageCreateProps } from "../../../utils/messaging";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
+import { useTranslations } from "next-intl";
 
 export default (props: MessageCreateProps) => {
+  const t = useTranslations("sendAMessage.ScheduleForm");
   async function submit() {
     "use server";
     await api.upsertMessageState(
@@ -25,7 +27,7 @@ export default (props: MessageCreateProps) => {
     await api.pushMessage({
       data,
       sender: { email: "whatever" },
-      transports: props.state.transportation as "email"[], // real pro typescripting
+      transports: props.state.transportations as "email"[], // real pro typescripting
       type: props.state.messageType as "message" | "event",
     });
 
@@ -38,6 +40,7 @@ export default (props: MessageCreateProps) => {
     const next = Object.assign({}, props.state, {
       confirmedEmailRecipientsAt: "",
     });
+    console.log(next);
     await api.upsertMessageState(next, props.userId, props.stateId);
     revalidatePath("/");
   }
@@ -45,8 +48,12 @@ export default (props: MessageCreateProps) => {
   return (
     <>
       <form action={submit}>
-        <h1 className="govie-heading-l">Schedule message</h1>
-        <p>Only immediately is actually available..</p>
+        <h1 className="govie-heading-l">{t("title")}</h1>
+
+        <h3 className="govie-heading-s">{t("schedule")}</h3>
+        <div id="changed-name-hint" className="govie-hint">
+          {t("scheduleHint")}
+        </div>
 
         <div className="govie-form-group" style={{ margin: "unset" }}>
           <div className="govie-radios govie-radios--small ">
@@ -63,7 +70,7 @@ export default (props: MessageCreateProps) => {
                 className="govie-label--s govie-radios__label"
                 htmlFor="changed-name-0"
               >
-                Send now
+                {t("sendNow")}
               </label>
             </div>
           </div>
@@ -85,18 +92,127 @@ export default (props: MessageCreateProps) => {
                 className="govie-label--s govie-radios__label"
                 htmlFor="changed-name-0"
               >
-                Send later
+                {t("sendLater")}
               </label>
             </div>
           </div>
         </div>
+        <div className="govie-form-group" style={{ color: "gray" }}>
+          <fieldset
+            className="govie-fieldset"
+            role="group"
+            aria-describedby="schedule-date-hint"
+          >
+            <div className="govie-date-input" id="schedule-date">
+              <div className="govie-date-input__item">
+                <div className="govie-form-group">
+                  <label
+                    className="govie-label--s govie-date-input__label"
+                    htmlFor="schedule-date-day"
+                  >
+                    {t("day")}
+                  </label>
+                  <input
+                    style={{ border: "2px solid gray" }}
+                    className="govie-input govie-date-input__input govie-input--width-2"
+                    id="schedule-date-day"
+                    name="schedule-date-day"
+                    type="text"
+                    inputMode="numeric"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div className="govie-date-input__item">
+                <div className="govie-form-group">
+                  <label
+                    className="govie-label--s govie-date-input__label"
+                    htmlFor="schedule-date-month"
+                  >
+                    {t("month")}
+                  </label>
+                  <input
+                    style={{ border: "2px solid gray" }}
+                    className="govie-input govie-date-input__input govie-input--width-2"
+                    id="schedule-date-month"
+                    name="schedule-date-month"
+                    type="text"
+                    inputMode="numeric"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div className="govie-date-input__item">
+                <div className="govie-form-group">
+                  <label
+                    className="govie-label--s govie-date-input__label"
+                    htmlFor="schedule-date-year"
+                  >
+                    {t("year")}
+                  </label>
+                  <input
+                    style={{ border: "2px solid gray" }}
+                    className="govie-input govie-date-input__input govie-input--width-4"
+                    id="schedule-date-year"
+                    name="schedule-date-year"
+                    type="text"
+                    inputMode="numeric"
+                    disabled
+                  />
+                </div>
+              </div>
+
+              <div
+                className="govie-date-input__item"
+                style={{ paddingLeft: "20px" }}
+              >
+                <div className="govie-form-group">
+                  <label
+                    className="govie-label--s govie-date-input__label"
+                    htmlFor="schedule-date-day"
+                  >
+                    {t("hour")}
+                  </label>
+                  <input
+                    style={{ border: "2px solid gray" }}
+                    className="govie-input govie-date-input__input govie-input--width-2"
+                    id="schedule-date-day"
+                    name="schedule-date-day"
+                    type="text"
+                    inputMode="numeric"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div className="govie-date-input__item">
+                <div className="govie-form-group">
+                  <label
+                    className="govie-label--s govie-date-input__label"
+                    htmlFor="schedule-date-day"
+                  >
+                    {t("minute")}
+                  </label>
+                  <input
+                    style={{ border: "2px solid gray" }}
+                    className="govie-input govie-date-input__input govie-input--width-2"
+                    id="schedule-date-day"
+                    name="schedule-date-day"
+                    type="text"
+                    inputMode="numeric"
+                    disabled
+                  />
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
 
         <button type="submit" className="govie-button">
-          Send message
+          {t("submitText")}
         </button>
       </form>
       <form action={goBack}>
-        <BackButton>Back to recipients</BackButton>
+        <BackButton>{t("backLink")}</BackButton>
       </form>
     </>
   );

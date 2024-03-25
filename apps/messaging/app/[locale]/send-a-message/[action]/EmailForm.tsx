@@ -3,8 +3,10 @@ import { ApiMessageState, MessageCreateProps } from "../../../utils/messaging";
 import { api } from "messages";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
+import { useTranslations } from "next-intl";
 
 export default (props: MessageCreateProps) => {
+  const t = useTranslations("sendAMessage.EmailForm");
   async function submit(formData: FormData) {
     "use server";
 
@@ -12,12 +14,13 @@ export default (props: MessageCreateProps) => {
     const content = formData.get("message")?.toString();
     const link = formData.get("link")?.toString();
 
-    if (!subject || !content || !link) {
+    if (!subject || !content) {
       return;
     }
 
+    const links = link ? [{ url: link, label: "" }] : [];
     const next: ApiMessageState = Object.assign({}, props.state, {
-      links: [{ url: link, label: "" }],
+      links,
       content,
       subject,
       submittedEmailAt: dayjs().toISOString(),
@@ -38,11 +41,10 @@ export default (props: MessageCreateProps) => {
   return (
     <>
       <form action={submit}>
-        <h1 className="govie-heading-l">Email</h1>
-        <p>Lets have some templates here</p>
+        <h1 className="govie-heading-l">{t("title")}</h1>
         <div className="govie-form-group">
           <label htmlFor="input-field" className="govie-label--s">
-            Subject
+            {t("subject")}
           </label>
           <input
             type="text"
@@ -57,7 +59,7 @@ export default (props: MessageCreateProps) => {
         <div className="govie-form-group">
           <h1 className="govie-label-wrapper">
             <label htmlFor="message" className="govie-label--s govie-label--l">
-              Message
+              {t("message")}
             </label>
           </h1>
           <textarea
@@ -71,7 +73,7 @@ export default (props: MessageCreateProps) => {
 
         <div className="govie-form-group">
           <label htmlFor="link" className="govie-label--s">
-            Link
+            {t("link")}
           </label>
           <input
             type="text"
@@ -83,11 +85,11 @@ export default (props: MessageCreateProps) => {
         </div>
 
         <button type="submit" className="govie-button">
-          Preview
+          {t("submitText")}
         </button>
       </form>
       <form action={goBack}>
-        <BackButton>Back</BackButton>
+        <BackButton>{t("backLink")}</BackButton>
       </form>
     </>
   );

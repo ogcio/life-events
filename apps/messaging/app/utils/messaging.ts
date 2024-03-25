@@ -16,7 +16,8 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
     key: string;
     label: string;
     url: string;
-    icon: ComponentProps<typeof ds.Icon>["icon"];
+    icon?: ComponentProps<typeof ds.Icon>["icon"];
+    type?: "button";
   }[] = [];
 
   if (isAdminUser) {
@@ -25,7 +26,7 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
         key: routes.sendAMessage.slug,
         label: t("sendMessage"),
         url: routes.sendAMessage.slug,
-        icon: "death",
+        type: "button",
       },
       {
         key: routes.emailTemplates.slug,

@@ -5,15 +5,13 @@ import { api, buildNotificationService } from "messages";
 
 export default async () => {
   const { email } = await PgSessions.get();
-  // const notificationService = buildNotificationService(userId);
-  // const unreadNotificationsCount =
-  //   await notificationService.getUnreadNotificationsCount();
+
   const unreadNotificationsCount = await api.getUnreadMessageCount(email);
 
   return (
     <>
       <Link
-        href={new URL("/notifications", process.env.MESSAGES_HOST_URL).href}
+        href={new URL("/messages", process.env.MESSAGES_HOST_URL).href}
         style={{ display: "flex", position: "relative" }}
       >
         {unreadNotificationsCount > 0 && (

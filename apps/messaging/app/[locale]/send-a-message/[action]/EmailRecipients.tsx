@@ -3,8 +3,10 @@ import { MessageCreateProps } from "../../../utils/messaging";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
+import { useTranslations } from "next-intl";
 
 export default (props: MessageCreateProps) => {
+  const t = useTranslations("sendAMessage.EmailRecipients");
   async function submit(formData: FormData) {
     "use server";
 
@@ -42,13 +44,11 @@ export default (props: MessageCreateProps) => {
   return (
     <>
       <form action={recipientAction}>
-        <h1 className="govie-heading-l">Add Recipients</h1>
+        <h1 className="govie-heading-l">{t("title")}</h1>
 
         <div className="govie-form-group">
-          <label htmlFor="input-field" className="govie-label--s">
-            Add recipient
-          </label>
-          <div className="govie-hint">Added recipients will be added below</div>
+          <h3 className="govie-label--s">{t("addRecipient")}</h3>
+          <div className="govie-hint">{t("addRecipientHint")}</div>
           <div className="govie-input__wrapper">
             <input
               type="text"
@@ -57,7 +57,7 @@ export default (props: MessageCreateProps) => {
               className="govie-input"
               defaultValue=""
             />
-            <button className="govie-input__suffix">Add</button>
+            <button className="govie-input__suffix">{t("add")}</button>
           </div>
         </div>
         <ul className="govie-list">
@@ -71,11 +71,11 @@ export default (props: MessageCreateProps) => {
           disabled={!Boolean(props.state.emailRecipients.length)}
           className="govie-button"
         >
-          Continue to schedule
+          {t("submitText")}
         </button>
       </form>
       <form action={goBack}>
-        <BackButton>Back to message</BackButton>
+        <BackButton>{t("backLink")}</BackButton>
       </form>
     </>
   );

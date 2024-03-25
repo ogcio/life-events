@@ -3,8 +3,10 @@ import { MessageCreateProps } from "../../../utils/messaging";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
+import { useTranslations } from "next-intl";
 
 export default (props: MessageCreateProps) => {
+  const t = useTranslations("sendAMessage.EmailPreview");
   async function submit() {
     "use server";
     await api.upsertMessageState(
@@ -35,10 +37,10 @@ export default (props: MessageCreateProps) => {
             {props.state.links.at(0)?.url ?? ""}
           </a>
         </div>
-        <button className="govie-button">Confirm and continue</button>
+        <button className="govie-button">{t("submitText")}</button>
       </form>
       <form action={goBack}>
-        <BackButton>Back to edit</BackButton>
+        <BackButton>{t("backLink")}</BackButton>
       </form>
     </>
   );
