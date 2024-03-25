@@ -45,7 +45,7 @@ export default async (props: {
     if (hasRequirements === "agree") {
       await postgres.pgpool.query(
         `
-          UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('hasRequirements', true)
+          UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('hasRequirements', true), updated_at = now()
           WHERE user_id = $1 AND flow = $2
       `,
         [props.userId, props.flow],

@@ -17,7 +17,7 @@ export default async (props: {
 
     await postgres.pgpool.query(
       `
-          UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('hasConfirmedDetails', true, 'submittedAt', now())
+          UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('hasConfirmedDetails', true, 'submittedAt', now()), updated_at = now()
           WHERE user_id = $1 AND flow = $2
       `,
       [userId, flow],
