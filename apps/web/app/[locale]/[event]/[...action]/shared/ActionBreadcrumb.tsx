@@ -8,8 +8,6 @@ type Props = {
 
 export default ({ action, step }: Props) => {
   const t = useTranslations("BreadcrumbsBySlug");
-  console.log("== ACTION ==", action);
-  console.log("== STEP ===", step);
   const actionElement =
     action.href !== undefined ? (
       <Link className="govie-breadcrumbs__link" href={action.href}>
