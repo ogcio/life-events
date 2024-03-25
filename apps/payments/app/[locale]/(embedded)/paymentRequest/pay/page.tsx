@@ -38,7 +38,7 @@ async function getPaymentRequestDetails(paymentId: string) {
     `select pr.title, pr.description, pr.amount, pp.provider_name, pp.provider_type, 
       pr.allow_amount_override as "allowAmountOverride", pr.allow_custom_amount as "allowCustomAmount"
       from payment_requests pr
-      join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
+      JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
       join payment_providers pp on ppr.provider_id = pp.provider_id
       where pr.payment_request_id = $1`,
     [paymentId],
