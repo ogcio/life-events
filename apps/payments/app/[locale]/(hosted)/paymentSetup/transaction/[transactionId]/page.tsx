@@ -35,8 +35,6 @@ export default async function ({ params: { transactionId } }) {
     getTransactionDetails(transactionId),
   ]);
 
-  console.log(details);
-
   return (
     <div>
       <h1 className="govie-heading-l">{t("transactionDetails")}</h1>
