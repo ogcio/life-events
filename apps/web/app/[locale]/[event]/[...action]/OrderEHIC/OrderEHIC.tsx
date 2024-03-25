@@ -274,7 +274,7 @@ export default async (props: web.NextPageProps) => {
 
   const stepSlug = props.params.action?.at(1);
   const actionSlug = props.params.action?.at(0);
-  const baseActionHref = `/${props.params.locale}/health/${actionSlug}/${nextSlug}`;
+  const baseActionHref = `/${props.params.locale}/${props.params.event}/${actionSlug}/${nextSlug}`;
 
   if (!actionSlug) {
     throw notFound();

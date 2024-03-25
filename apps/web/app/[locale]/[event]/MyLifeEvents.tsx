@@ -7,12 +7,14 @@ import { postgres, routes, workflow } from "../../utils";
 import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
 import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/OrderBirthCertificate";
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
+import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
 
 const eventRules = {
   [workflow.keys.orderEHIC]: orderEHICRules,
   [workflow.keys.renewDriversLicence]: renewDriverLicenceRules,
   [workflow.keys.orderBirthCertificate]: orderBirthCertificateRules,
   [workflow.keys.notifyDeath]: notifyDeathRules,
+  [workflow.keys.applyJobseekersAllowance]: applyJobseekersAllowanceRules,
 };
 
 async function getEvents() {
@@ -33,6 +35,10 @@ async function getEvents() {
     {
       flowKey: workflow.keys.notifyDeath,
       category: workflow.categories.death,
+    },
+    {
+      flowKey: workflow.keys.applyJobseekersAllowance,
+      category: workflow.categories.employment,
     },
   ]);
 }
