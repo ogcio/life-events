@@ -6,16 +6,17 @@ const baseURL = process.env.HOST_URL ?? "http://localhost:3001";
 export default defineConfig({
   timeout: 30 * 1000,
   testDir: path.join(__dirname, "e2e"),
-  retries: 1,
+  retries: process.env.CI ? 1 : 0,
   outputDir: "./e2e/test-results/",
+  workers: process.env.CI ? 1 : undefined,
   use: {
     baseURL,
-    trace: "retry-with-trace",
+    trace: "on",
     video: "retain-on-failure",
   },
   reporter: process.env.CI
     ? [["github"], ["blob"]]
-    : [["list"], ["html", { outputFolder: "./playwright/playwright-report" }]],
+    : [["list"], ["html", { open: "on-failure" }]],
   projects: [
     {
       name: "Desktop Chrome",
