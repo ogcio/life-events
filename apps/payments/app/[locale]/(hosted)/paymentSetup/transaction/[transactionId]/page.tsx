@@ -11,7 +11,7 @@ type TransactionDetails = {
   updated_at: string;
 };
 
-export async function getTransactionDetails(transactionId: string) {
+async function getTransactionDetails(transactionId: string) {
   const res = await pgpool.query<TransactionDetails>(
     `
     SELECT
