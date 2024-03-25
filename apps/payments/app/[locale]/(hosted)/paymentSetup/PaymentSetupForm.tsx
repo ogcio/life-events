@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { pgpool } from "../../../dbConnection";
 import { PaymentRequestDetails } from "./db";
+import { providerTypes } from "./providers/types";
 
 async function getRegisteredAccounts(userId: string, providerType: string) {
   "use server";
@@ -9,7 +10,7 @@ async function getRegisteredAccounts(userId: string, providerType: string) {
     { provider_id: string; provider_name: string },
     string[]
   >(
-    `select provider_id, provider_name from payment_providers where user_id = $1 and provider_type = $2`,
+    `select provider_id, provider_name from payment_providers where user_id = $1 and provider_type = $2 and status = 'connected'`,
     [userId, providerType],
   );
 
@@ -34,22 +35,10 @@ export default async function ({
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tCommon = await getTranslations("Common");
 
-  const [openBankingAccounts, stripeAccounts, manualBankTransferAccounts] =
-    await Promise.all([
-      getRegisteredAccounts(userId, "openbanking"),
-      getRegisteredAccounts(userId, "stripe"),
-      getRegisteredAccounts(userId, "banktransfer"),
-    ]);
-
-  const stripeProvider = details?.providers.find(
-    (provider) => provider.provider_type === "stripe",
+  const providerAccountsPromises = providerTypes.map((providerType) =>
+    getRegisteredAccounts(userId, providerType),
   );
-  const openBankingProvider = details?.providers.find(
-    (provider) => provider.provider_type === "openbanking",
-  );
-  const bankTransferProvider = details?.providers.find(
-    (provider) => provider.provider_type === "banktransfer",
-  );
+  const providerAccounts = await Promise.all(providerAccountsPromises);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
@@ -80,64 +69,34 @@ export default async function ({
             defaultValue={details?.description}
           ></textarea>
         </div>
-        <div className="govie-form-group">
-          <label htmlFor="openbanking-account" className="govie-label--s">
-            {t("form.paymentProvider.openbanking")}
-          </label>
-          <select
-            id="openbanking-account"
-            name="openbanking-account"
-            className="govie-select"
-            defaultValue={openBankingProvider?.provider_id}
-            disabled={!!openBankingProvider?.provider_id}
-          >
-            <option value={""}>Disabled</option>
-            {openBankingAccounts.map((account) => (
-              <option key={account.provider_id} value={account.provider_id}>
-                {account.provider_name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="govie-form-group">
-          <label htmlFor="stripe-account" className="govie-label--s">
-            {t("form.paymentProvider.stripe")}
-          </label>
-          <select
-            id="stripe-account"
-            name="stripe-account"
-            className="govie-select"
-            defaultValue={stripeProvider?.provider_id}
-            disabled={!!stripeProvider?.provider_id}
-          >
-            <option value={""}>Disabled</option>
-            {stripeAccounts.map((account) => (
-              <option key={account.provider_id} value={account.provider_id}>
-                {account.provider_name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="govie-form-group">
-          <label htmlFor="banktransfer-account" className="govie-label--s">
-            {t("form.paymentProvider.banktransfer")}
-          </label>
-          <select
-            id="banktransfer-account"
-            name="banktransfer-account"
-            className="govie-select"
-            defaultValue={bankTransferProvider?.provider_id}
-            disabled={!!bankTransferProvider?.provider_id}
-          >
-            <option value={""}>Disabled</option>
-            {manualBankTransferAccounts.map((account) => (
-              <option key={account.provider_id} value={account.provider_id}>
-                {account.provider_name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {providerTypes.map((providerType, index) => {
+          const provider = details?.providers.find(
+            (p) => p.provider_type === providerType,
+          );
+          return (
+            <div className="govie-form-group">
+              <label
+                htmlFor={`${providerType}-account`}
+                className="govie-label--s"
+              >
+                {t(`form.paymentProvider.${providerType}`)}
+              </label>
+              <select
+                id={`${providerType}-account`}
+                name={`${providerType}-account`}
+                className="govie-select"
+                defaultValue={provider?.provider_id}
+              >
+                <option value={""}>Disabled</option>
+                {providerAccounts[index].map((account) => (
+                  <option key={account.provider_id} value={account.provider_id}>
+                    {account.provider_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          );
+        })}
         <div className="govie-form-group">
           <label htmlFor="reference" className="govie-label--s">
             {t("form.reference")}

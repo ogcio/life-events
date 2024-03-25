@@ -3,7 +3,8 @@
     "notFound": "Payment request not found",
     "edit": "Edit",
     "save": "Save",
-    "currencySymbol": "€"
+    "currencySymbol": "€",
+    "delete": "Delete"
   },
   "PaymentSetup": {
     "menu": {
@@ -116,13 +117,27 @@
         "date": "Date",
         "title": "Title",
         "paymentTitle": "Description",
-        "beneficiaryAccount": "Beneficiary Account"
+        "beneficiaryAccount": "Beneficiary Account",
+        "actions": "Actions",
+        "details": "Details"
+      },
+      "details": {
+        "transactionDetails": "Transaction details",
+        "requestTitle": "Payment Request Title",
+        "amount": "Amount",
+        "lastUpdate": "Last update",
+        "status": "Status"
       },
       "assignTitle": "Assign to User",
       "assignDescription": "Send this payment to a user",
       "userPpsn": "User PPS Number",
       "userPpsnHint": "The Personal Public Service Number of the user you would like to assign this payment to",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "actions": {
+        "delete": {
+          "cannotDelete": "Cannot delete payment request since there are existing transactions"
+        }
+      }
     },
     "CreatePayment": {
       "title": "Payment Setup Form",

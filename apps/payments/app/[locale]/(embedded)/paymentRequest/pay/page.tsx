@@ -1,6 +1,10 @@
 import { getTranslations } from "next-intl/server";
 
-import { formatCurrency, stringToAmount } from "../../../../utils";
+import {
+  formatCurrency,
+  getRealAmount,
+  stringToAmount,
+} from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
 import { PgSessions } from "auth/sessions";
 import ClientLink from "./ClientLink";
@@ -27,28 +31,6 @@ type PaymentRequestDetails = Pick<
   | "allowCustomAmount"
 > & { provider_name: string; provider_type: string };
 
-export const getRealAmount = ({
-  amount,
-  customAmount,
-  amountOverride,
-  allowAmountOverride,
-  allowCustomOverride,
-}: {
-  // Default amount required from the database
-  amount: number;
-  // Custom amount choosen by the user (if applicable)
-  customAmount?: number;
-  // Amount override from the URL (if applicable)
-  amountOverride?: number;
-  allowAmountOverride: boolean;
-  allowCustomOverride: boolean;
-}) => {
-  if (allowAmountOverride && amountOverride) return amountOverride;
-  if (allowCustomOverride && customAmount) return customAmount;
-
-  return amount;
-};
-
 async function getPaymentRequestDetails(paymentId: string) {
   "use server";
 
@@ -56,7 +38,7 @@ async function getPaymentRequestDetails(paymentId: string) {
     `select pr.title, pr.description, pr.amount, pp.provider_name, pp.provider_type, 
       pr.allow_amount_override as "allowAmountOverride", pr.allow_custom_amount as "allowCustomAmount"
       from payment_requests pr
-      join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
+      JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
       join payment_providers pp on ppr.provider_id = pp.provider_id
       where pr.payment_request_id = $1`,
     [paymentId],
@@ -266,6 +248,7 @@ export default async function Page(props: Props) {
                 )}
               />
             </div>
+            <hr className="govie-section-break govie-section-break--visible"></hr>
           </>
         )}
         {hasStripe && (
