@@ -31,7 +31,7 @@ export async function getTransactionDetails(transactionId: string) {
 
 export default async function ({ params: { transactionId } }) {
   const [t, details] = await Promise.all([
-    getTranslations("PaymentSetup.Payments"),
+    getTranslations("PaymentSetup.Request.details"),
     getTransactionDetails(transactionId),
   ]);
 
@@ -39,27 +39,27 @@ export default async function ({ params: { transactionId } }) {
 
   return (
     <div>
-      <h1 className="govie-heading-l">Transaction details</h1>
+      <h1 className="govie-heading-l">{t("transactionDetails")}</h1>
 
       <dl className="govie-summary-list">
         <div className="govie-summary-list__row">
-          <dt className="govie-summary-list__key">Payment Request Title</dt>
+          <dt className="govie-summary-list__key">{t("requestTitle")}</dt>
           <dt className="govie-summary-list__value">{details.title}</dt>
         </div>
         <div className="govie-summary-list__row">
-          <dt className="govie-summary-list__key">Amount</dt>
+          <dt className="govie-summary-list__key">{t("amount")}</dt>
           <dt className="govie-summary-list__value">
             {formatCurrency(details.amount)}
           </dt>
         </div>
         <div className="govie-summary-list__row">
-          <dt className="govie-summary-list__key">Last update</dt>
+          <dt className="govie-summary-list__key">{t("lastUpdate")}</dt>
           <dt className="govie-summary-list__value">
             {dayjs(details.updated_at).format("DD/MM/YYYY")}
           </dt>
         </div>
         <div className="govie-summary-list__row">
-          <dt className="govie-summary-list__key">Status</dt>
+          <dt className="govie-summary-list__key">{t("status")}</dt>
           <dt className="govie-summary-list__value">{details.status}</dt>
         </div>
       </dl>
