@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import CopyLink from "./CopyBtn";
 import { PgSessions } from "auth/sessions";
 import { RequestDetails } from "./RequestDetails";
+import Link from "next/link";
 
 async function createTransaction(requestId: string, formData: FormData) {
   "use server";
@@ -86,13 +87,13 @@ export default async function ({ params: { requestId } }) {
                   {t("table.date")}
                 </th>
                 <th scope="col" className="govie-table__header">
-                  {t("table.payee")}
-                </th>
-                <th scope="col" className="govie-table__header">
                   {t("table.paymentTitle")}
                 </th>
                 <th scope="col" className="govie-table__header">
                   {t("table.amount")}
+                </th>
+                <th scope="col" className="govie-table__header">
+                  {t("table.actions")}
                 </th>
               </tr>
             </thead>
@@ -107,14 +108,17 @@ export default async function ({ params: { requestId } }) {
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     {dayjs(trx.updated_at).format("DD/MM/YYYY")}
                   </td>
-                  <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    {trx.citizen_name || "-"}
-                  </td>
+
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     {trx.title}
                   </td>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     {formatCurrency(trx.amount)}
+                  </td>
+                  <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                    <Link href={`../transaction/${trx.transaction_id}`}>
+                      {t("table.details")}
+                    </Link>
                   </td>
                 </tr>
               ))}
