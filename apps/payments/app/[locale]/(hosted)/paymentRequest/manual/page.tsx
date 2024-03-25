@@ -21,7 +21,7 @@ async function getPaymentDetails(paymentId: string, amount?: number) {
       pp.provider_data,
       pr.allow_amount_override
     FROM payment_requests pr
-    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id
+    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
     JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
     WHERE pr.payment_request_id = $1
       AND pp.provider_type = 'banktransfer'
