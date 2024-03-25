@@ -176,7 +176,7 @@ export default async () => {
                     >
                       <path
                         fillRule="evenodd"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                         d="m0 0 5.753 6.5L0 13h4.247l4.78-5.4L10 6.5l-.974-1.1L4.247 0H0Z"
                         fill="#2C55A2"
                       />
