@@ -7,16 +7,17 @@ import {
 } from "../utils/mocks";
 import { paymentSetupPage } from "../utils/constants";
 
-test.describe("Manual bank transfer provider", () => {
+test.describe("Open Banking provider", () => {
   let page: Page;
   let providerName: string;
 
   test.beforeAll(async ({ browser, browserName }) => {
     page = await browser.newPage();
-    providerName = `Test manual bank transfer ${browserName}`;
+    providerName = `Test open banking ${browserName}`;
+    console.log(`Provider name: ${providerName}`);
   });
 
-  test("Add bank transfer provider", async () => {
+  test("Add open banking provider", async () => {
     await page.goto(paymentSetupPage);
 
     const providersMenuLink = await page.getByRole("link", {
@@ -27,10 +28,10 @@ test.describe("Manual bank transfer provider", () => {
       name: "New account",
     });
     await createNewAccountBtn.click();
-    const selectManualBankTransferBtn = await page.getByRole("button", {
-      name: "Select Manual Bank Transfer",
+    const selectOpenBankingBtn = await page.getByRole("button", {
+      name: "Select OpenBanking",
     });
-    await selectManualBankTransferBtn.click();
+    await selectOpenBankingBtn.click();
 
     await page.getByRole("textbox", { name: /Name/ }).fill(providerName);
     await page
@@ -45,19 +46,20 @@ test.describe("Manual bank transfer provider", () => {
     await page.getByRole("button", { name: "Confirm" }).click();
 
     await page.waitForURL(`/en/paymentSetup/providers`);
-    const accountName = await page.getByRole("cell", { name: providerName });
+    const accountName = await page.getByRole("cell", {
+      name: providerName,
+      exact: true,
+    });
     await expect(accountName).toBeVisible();
   });
 
-  test("Edit bank transfer provider", async () => {
+  test("Edit open banking provider", async () => {
     const row = page.getByRole("row").filter({ hasText: providerName });
     await row.getByRole("link", { name: "edit" }).click({ force: true });
     await page.waitForLoadState();
 
     await expect(
-      page.getByRole("heading", {
-        name: "Edit Manual Bank Transfer payment provider",
-      }),
+      page.getByRole("heading", { name: "Edit OpenBanking payment provider" }),
     ).toBeVisible();
     const sortCodeInput = await page.getByRole("textbox", {
       name: /Bank sort code/,
