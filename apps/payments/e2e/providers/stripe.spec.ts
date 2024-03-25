@@ -1,22 +1,18 @@
 import { Page, expect } from "@playwright/test";
 import { test } from "../fixtures/test";
-import {
-  mockAccountHolderName,
-  mockAccountNumber,
-  mockSortCode,
-} from "../utils/mocks";
+import { mockStripePublishableKey, mockStripeSecretKey } from "../utils/mocks";
 import { paymentSetupPage } from "../utils/constants";
 
-test.describe("Open Banking provider", () => {
+test.describe("Stripe provider", () => {
   let page: Page;
   let providerName: string;
 
   test.beforeAll(async ({ browser, browserName }) => {
     page = await browser.newPage();
-    providerName = `Test open banking ${browserName}`;
+    providerName = `Test stripe ${browserName}`;
   });
 
-  test("Add open banking provider", async () => {
+  test("Add stripe provider", async () => {
     await page.goto(paymentSetupPage);
 
     const providersMenuLink = await page.getByRole("link", {
@@ -27,21 +23,18 @@ test.describe("Open Banking provider", () => {
       name: "New account",
     });
     await createNewAccountBtn.click();
-    const selectOpenBankingBtn = await page.getByRole("button", {
-      name: "Select OpenBanking",
+    const selectStripeBtn = await page.getByRole("button", {
+      name: "Select Stripe",
     });
-    await selectOpenBankingBtn.click();
+    await selectStripeBtn.click();
 
     await page.getByRole("textbox", { name: /Name/ }).fill(providerName);
     await page
-      .getByRole("textbox", { name: "Bank account holder name" })
-      .fill(mockAccountHolderName);
+      .getByRole("textbox", { name: "Live Publishable Key" })
+      .fill(mockStripePublishableKey);
     await page
-      .getByRole("textbox", { name: "Bank sort code" })
-      .fill(mockSortCode);
-    await page
-      .getByRole("textbox", { name: "Bank account number" })
-      .fill(mockAccountNumber);
+      .getByRole("textbox", { name: "Live Secret Key" })
+      .fill(mockStripeSecretKey);
     await page.getByRole("button", { name: "Confirm" }).click();
 
     await page.waitForURL(`/en/paymentSetup/providers`);
@@ -52,22 +45,22 @@ test.describe("Open Banking provider", () => {
     await expect(accountName).toBeVisible();
   });
 
-  test("Edit open banking provider", async () => {
+  test("Edit stripe provider", async () => {
     const row = page.getByRole("row").filter({ hasText: providerName });
     await row.getByRole("link", { name: "edit" }).click({ force: true });
     await page.waitForLoadState();
 
     await expect(
-      page.getByRole("heading", { name: "Edit OpenBanking payment provider" }),
+      page.getByRole("heading", { name: "Edit Stripe payment provider" }),
     ).toBeVisible();
-    const sortCodeInput = await page.getByRole("textbox", {
-      name: /Bank sort code/,
+    const pubKeyInput = await page.getByRole("textbox", {
+      name: "Live Publishable Key",
     });
-    await expect(sortCodeInput).toHaveValue(mockSortCode);
-    const accountNumberInput = await page.getByRole("textbox", {
-      name: /Bank account number/,
+    await expect(pubKeyInput).toHaveValue(mockStripePublishableKey);
+    const secretKeyInput = await page.getByRole("textbox", {
+      name: "Live Secret Key",
     });
-    await expect(accountNumberInput).toHaveValue(mockAccountNumber);
+    await expect(secretKeyInput).toHaveValue(mockStripeSecretKey);
     const nameInput = await page.getByRole("textbox", { name: /Name/ });
     await expect(nameInput).toHaveValue(providerName);
     await nameInput.clear();
