@@ -55,9 +55,8 @@ export default function CheckoutForm({ returnUri }: CheckoutFormProps) {
       <PaymentElement id="payment-element" options={paymentElementOptions} />
       <button
         className="govie-button govie-button--primary"
-        style={{ marginTop: "1.5rem" }}
+        style={{ marginTop: "2rem", width: "100%" }}
         disabled={isLoading || !stripe || !elements}
-        id="submit"
       >
         {t("payNow")}
       </button>

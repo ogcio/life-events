@@ -1,12 +1,12 @@
 import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import EditProviderForm from "./EditProviderForm";
-import type { Provider, StripeData } from "../types";
+import type { StripeProvider, StripeData } from "../types";
 import { getTranslations } from "next-intl/server";
 import StripeFields from "../add-stripe/StripeFields";
 
 type Props = {
-  provider: Provider;
+  provider: StripeProvider;
 };
 
 export default async ({ provider }: Props) => {

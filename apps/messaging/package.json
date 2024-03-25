@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3002",
     "test:e2e": "playwright test"
   },
   "nodemonConfig": {

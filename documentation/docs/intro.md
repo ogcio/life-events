@@ -39,3 +39,18 @@ Service URLs
 ## Localisation
 
 Translation files are stored in /web/messages. Localisation works on React server components and it uses [next-intl](https://next-intl-docs.vercel.app/)
+
+## Docker build
+
+To build the images for the apps you have to build the base images before (following are the commands from the root folder)
+
+```
+docker build -t base-deps:latest  --file Dockerfile .
+docker build -t design-system-container:latest --file packages/design-system/Dockerfile .
+```
+
+Then you can build the app image from the root folder
+
+```
+docker build -t web-container:latest --file apps/web/Dockerfile .
+```
