@@ -20,3 +20,6 @@ export async function GET(req, res) {
     paymentRequestId: response.rows[0].payment_request_id,
   });
 }
+
+// forces the route handler to be dynamic
+export const dynamic = "force-dynamic";

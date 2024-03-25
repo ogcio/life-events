@@ -48,3 +48,15 @@ Translation files are stored in /web/messages. Localisation works on React serve
 - [Upload your public key to the True Layer Console](https://docs.truelayer.com/docs/quickstart-make-a-payment#upload-your-public-key-to-console-and-create-a-merchant-account)
 - Add our redirect URI to the True layer console - `http://web.localtest.me/en/paymentRequest/complete`
 - Follow [these steps](https://docs.truelayer.com/docs/quickstart-make-a-payment#format-your-private-key) to format your private key so it can be used within an environment variable
+
+## Docker build
+To build the images for the apps you have to build the base images before (following are the commands from the root folder)
+```
+docker build -t base-deps:latest  --file Dockerfile .
+docker build -t design-system-container:latest --file packages/design-system/Dockerfile .
+```
+
+Then you can build the app image from the root folder
+```
+docker build -t web-container:latest --file apps/web/Dockerfile .
+```
