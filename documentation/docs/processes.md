@@ -74,7 +74,7 @@ Currently, this is not validated with precommit hooks, you can use the commit me
 
 1. Reviewers should provide constructive feedback and approve changes only when they meet project standards.
 2. Address feedback and make necessary adjustments. Re-request reviews if needed.
-3. A conversation is considered resolved once comment has been discussed and changes has been committed if necessary. Both the comment author and the PR creator can resolve a conversation. Ideally we want all the conversations to be resolved before approving a PR.
+3. A conversation is ideally initiated by person A (the reviewer) and addressed by person B (usually the PR author). Once the comment is addressed, person B re-requests a review from person A. Person A then reviews, closes the conversation, and approves the PR. If the PR is already approved and the comment is not blocking, the conversation can be resolved by the person who opened the PR. However, this should only be a guideline and good sense always applies. There are cases where, even if the PR is not approved, it just makes sense to resolve it, especially if the conversation is about a small fix that has already been addressed. This approach prevents the process from becoming too time-consuming for everyone.
 4. Once approved, the pull request can be merged by the PR author or any other developer
 
 ### Merging Guidelines
