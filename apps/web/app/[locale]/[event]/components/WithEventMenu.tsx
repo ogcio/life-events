@@ -1,4 +1,4 @@
-import { routes } from "../../utils";
+import { routes, web } from "../../../utils";
 import LifeEventsMenu from "./LifeEventsMenu";
 import { getFeatureFlag } from "feature-flags/utils";
 
@@ -13,34 +13,35 @@ import { getFeatureFlag } from "feature-flags/utils";
 // Note: it is very likely this component is getting removed. /Ludwig 8th march 2024
 export default async function WithEventMenu({
   children,
-  selectedEvent,
   userName,
+  params,
 }: {
   children: React.ReactNode;
   userName: string;
-  selectedEvent?: string;
+  params: web.NextPageProps["params"];
 }) {
   const eventsFeatureFlag = await getFeatureFlag("portal", "events");
+  const url = (slug: string) => "/" + params.locale + "/" + slug;
   return (
     <div
       style={{
         display: "flex",
         marginTop: "1.3rem",
-        gap: "2rem",
+        gap: "2.5rem",
       }}
     >
       <div>
         <LifeEventsMenu
           userName={userName}
           ppsn="TUV1234123"
-          selected={selectedEvent ?? ""}
+          selected={params.event ?? ""}
           options={[
             ...(eventsFeatureFlag?.is_enabled
               ? [
                   {
                     key: "events",
                     icon: "events",
-                    url: "/" + routes.events.slug,
+                    url: url(routes.events.slug),
                     label: "Events",
                   },
                 ]
@@ -48,37 +49,52 @@ export default async function WithEventMenu({
             {
               key: "about-me",
               icon: "about",
-              url: "/" + routes.aboutMe.slug,
+              url: url(routes.aboutMe.slug),
               label: "About me",
             },
 
-            { key: "birth", icon: "birth", url: "/birth", label: "Birth" },
-            { key: "health", icon: "health", url: "/health", label: "Health" },
+            {
+              key: "birth",
+              icon: "birth",
+              url: url(routes.birth.slug),
+              label: "Birth",
+            },
+            {
+              key: "health",
+              icon: "health",
+              url: url(routes.health.slug),
+              label: "Health",
+            },
             {
               key: "driving",
               icon: "driving",
-              url: "/" + routes.driving.slug,
+              url: url(routes.driving.slug),
               label: "Driving",
             },
             {
               key: "employment",
               icon: "employment",
-              url: "/employment",
+              url: url(routes.employment.slug),
               label: "Employment",
             },
             {
               key: "business",
               icon: "business",
-              url: "/business",
+              url: url(routes.business.slug),
               label: "Starting a business",
             },
             {
               key: "housing",
               icon: "housing",
-              url: "/housing",
+              url: url(routes.housing.slug),
               label: "Housing",
             },
-            { key: "death", icon: "death", url: "/death", label: "Death" },
+            {
+              key: "death",
+              icon: "death",
+              url: url(routes.death.slug),
+              label: "Death",
+            },
           ]}
         />
       </div>

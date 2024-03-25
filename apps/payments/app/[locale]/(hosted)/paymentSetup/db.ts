@@ -78,6 +78,7 @@ type TransactionDetails = {
   title: string;
   amount: number;
   updated_at: string;
+  transaction_id: string;
 };
 export async function getUserTransactionDetails(userId: string) {
   const userInfo = await getUserInfoById(userId);
@@ -86,6 +87,7 @@ export async function getUserTransactionDetails(userId: string) {
   const res = await pgpool.query(
     `
   SELECT
+    t.transaction_id,
     t.status,
     t.user_id,
     pr.title,
@@ -112,6 +114,7 @@ export async function getRequestTransactionDetails(requestId: string) {
 
   const res = await pgpool.query<TransactionDetails>(
     `SELECT
+      t.transaction_id,
       t.status,
       pr.title,
       pt.amount,

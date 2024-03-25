@@ -14,7 +14,12 @@ export default ({ action, step }: Props) => {
         {t(action.slug)}
       </Link>
     ) : (
-      <span className="govie-breadcrumbs__link">{t(action.slug)}</span>
+      <span
+        className="govie-breadcrumbs__link"
+        style={{ pointerEvents: "none", textDecoration: "none" }}
+      >
+        {t(action.slug)}
+      </span>
     );
   return (
     <div className="govie-breadcrumbs" style={{ marginBottom: "30px" }}>
@@ -26,7 +31,12 @@ export default ({ action, step }: Props) => {
         </li>
         <li className="govie-breadcrumbs__list-item">{actionElement}</li>
         <li className="govie-breadcrumbs__list-item">
-          <span className="govie-breadcrumbs__link">{t(step)}</span>
+          <span
+            className="govie-breadcrumbs__link"
+            style={{ pointerEvents: "none", textDecoration: "none" }}
+          >
+            {t(step)}
+          </span>
         </li>
       </ol>
     </div>

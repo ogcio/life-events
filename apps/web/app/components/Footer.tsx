@@ -8,7 +8,7 @@ export default () => (
     style={{ width: "100%", marginTop: "auto" }}
   >
     <div className="govie-width-container">
-      <div className="govie-footer__meta">
+      <div className="govie-footer__meta" style={{ alignItems: "center" }}>
         <div className="govie-footer__meta-item govie-footer__meta-item--grow">
           <svg
             aria-hidden="true"
