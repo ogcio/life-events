@@ -30,7 +30,7 @@ async function getEvents() {
     },
     {
       flowKey: workflow.keys.orderBirthCertificate,
-      category: workflow.categories.health,
+      category: workflow.categories.birth,
     },
     {
       flowKey: workflow.keys.notifyDeath,

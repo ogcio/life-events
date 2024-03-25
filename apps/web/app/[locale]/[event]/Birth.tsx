@@ -7,19 +7,19 @@ async function getEvents() {
   return Promise.resolve([
     {
       flowKey: workflow.keys.orderBirthCertificate,
-      category: workflow.categories.health,
+      category: workflow.categories.birth,
     },
     {
       flowKey: workflow.keys.correctBirthCertificate,
-      category: workflow.categories.health,
+      category: workflow.categories.birth,
     },
     {
       flowKey: workflow.keys.overseasBirthCertificate,
-      category: workflow.categories.health,
+      category: workflow.categories.birth,
     },
     {
       flowKey: workflow.keys.addFatherNameBirthCertificate,
-      category: workflow.categories.health,
+      category: workflow.categories.birth,
     },
   ]);
 }

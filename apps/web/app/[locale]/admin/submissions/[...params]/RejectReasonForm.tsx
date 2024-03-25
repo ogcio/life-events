@@ -1,11 +1,14 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { postgres } from "../../../../utils";
+import { postgres, routes, web } from "../../../../utils";
+import FormLayout from "../../../../components/FormLayout";
+import { headers } from "next/headers";
 
 type Props = {
   flow: string;
   userId: string;
+  params: web.NextPageProps["params"];
 };
 
 export default (props: Props) => {
@@ -27,38 +30,50 @@ export default (props: Props) => {
       ));
     redirect("/admin");
   }
+  const basePath =
+    headers().get("x-pathname")?.split("/reject")[0] ?? undefined;
 
   return (
-    <form action={rejectAction}>
-      <h1 className="govie-heading-s">{t("title")}</h1>
-      <div className="govie-form-group">
-        <h1 className="govie-label-wrapper">
-          <label
-            htmlFor="default-textarea"
-            className="govie-label--s govie-label--l"
+    <FormLayout
+      action={{
+        slug: "submissions." + props.flow,
+        href: basePath,
+      }}
+      step={"reject"}
+      backHref={basePath ?? `/${routes.admin.slug}`}
+      homeHref={`/${routes.admin.slug}`}
+    >
+      <form action={rejectAction}>
+        <h1 className="govie-heading-s">{t("title")}</h1>
+        <div className="govie-form-group">
+          <h1 className="govie-label-wrapper">
+            <label
+              htmlFor="default-textarea"
+              className="govie-label--s govie-label--l"
+            >
+              {t("inputLabel")}
+            </label>
+          </h1>
+          <textarea
+            name="rejectReason"
+            className="govie-textarea"
+            rows={5}
+          ></textarea>
+          <input type="hidden" name="userId" defaultValue={props.userId} />
+          <input type="hidden" name="flow" defaultValue={props.flow} />
+        </div>
+        <div style={{ display: "flex", gap: "20px" }}>
+          <Link
+            className="govie-button govie-button--medium govie-button--outlined"
+            href={new URL("/admin/submissions", process.env.HOST_URL).href}
           >
-            {t("inputLabel")}
-          </label>
-        </h1>
-        <textarea
-          name="rejectReason"
-          className="govie-textarea"
-          rows={5}
-        ></textarea>
-        <input type="hidden" name="userId" defaultValue={props.userId} />
-        <input type="hidden" name="flow" defaultValue={props.flow} />
-      </div>
-      <div style={{ display: "flex", gap: "20px" }}>
-        <Link
-          className="govie-button govie-button--medium govie-button--outlined"
-          href={new URL("/admin/submissions", process.env.HOST_URL).href}
-        >
-          {t("cancel")}
-        </Link>
-        <button type="submit" className="govie-button govie-button--medium ">
-          {t("submit")}
-        </button>
-      </div>
-    </form>
+            {t("cancel")}
+          </Link>
+          <button type="submit" className="govie-button govie-button--medium ">
+            {t("submit")}
+          </button>
+        </div>
+      </form>
+    </FormLayout>
   );
 };
