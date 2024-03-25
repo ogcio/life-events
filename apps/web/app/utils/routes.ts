@@ -151,7 +151,75 @@ export const driving = {
     },
   },
 };
-export const employment = { slug: "employment" };
+export const employment = {
+  slug: "employment",
+  applyJobseekersAllowance: {
+    slug: "apply-jobseekers-allowance",
+    path() {
+      return `${employment.slug}/${employment.applyJobseekersAllowance.slug}`;
+    },
+    introduction: {
+      slug: "introduction",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.introduction.slug}`;
+      },
+    },
+    benefitsEntitlements: {
+      slug: "benefits-entitlements",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.benefitsEntitlements.slug}`;
+      },
+    },
+    apply: {
+      slug: "apply-jobseekers-allowance",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.apply.slug}`;
+      },
+    },
+    rates: {
+      slug: "rates",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.rates.slug}`;
+      },
+    },
+    questions: {
+      slug: "what-asked-about",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.questions.slug}`;
+      },
+    },
+    confirmDetails: {
+      slug: "confirm-details",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.confirmDetails.slug}`;
+      },
+    },
+    changeDetails: {
+      slug: "change-details",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.changeDetails.slug}`;
+      },
+    },
+    newAddress: {
+      slug: "new-address",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.newAddress.slug}`;
+      },
+    },
+    proofOfAddress: {
+      slug: "proof-of-address",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.proofOfAddress.slug}`;
+      },
+    },
+    applicationSuccess: {
+      slug: "application-success",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.applicationSuccess.slug}`;
+      },
+    },
+  },
+};
 export const business = { slug: "business" };
 export const housing = { slug: "housing" };
 export const death = {
@@ -204,4 +272,7 @@ export const category = {
   health,
   driving,
   death,
+  employment,
+  business,
+  housing,
 };

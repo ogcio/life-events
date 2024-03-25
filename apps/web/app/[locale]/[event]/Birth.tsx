@@ -1,6 +1,5 @@
 import { getTranslations } from "next-intl/server";
 import { routes, workflow } from "../../utils";
-import Link from "next/link";
 import EventsList from "./components/EventsList";
 
 async function getEvents() {

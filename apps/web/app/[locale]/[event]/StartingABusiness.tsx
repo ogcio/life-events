@@ -5,6 +5,7 @@ export default async () => {
   return (
     <section style={{ margin: "1rem 0" }}>
       <div className="govie-heading-l">{t("title")}</div>
+      <p className="govie-body">{t("comingSoon")}</p>
     </section>
   );
 };

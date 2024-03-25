@@ -200,9 +200,25 @@ export const keys = {
   orderEHIC: "orderEHIC",
   orderBirthCertificate: "orderBirthCertificate",
   notifyDeath: "notifyDeath",
+  applyJobseekersAllowance: "applyJobseekersAllowance",
   correctBirthCertificate: "correctBirthCertificate",
   overseasBirthCertificate: "overseasBirthCertificate",
   addFatherNameBirthCertificate: "addFatherNameBirthCertificate",
+  overseasDeathCertificate: "overseasDeathCertificate",
+  changeWillAfterDeath: "changeWillAfterDeath",
+  declarationPresumedDeath: "declarationPresumedDeath",
+  replaceLostStolenLicence: "replaceLostStolenLicence",
+  drivingLicenceCategories: "drivingLicenceCategories",
+  payEmployersPaye: "payEmployersPaye",
+  employmentTribunal: "employmentTribunal",
+  selfEmployedExpenses: "selfEmployedExpenses",
+  irishHealthSecurityAgency: "irishHealthSecurityAgency",
+  workHealthProgramme: "workHealthProgramme",
+  healthSafetyExecutive: "healthSafetyExecutive",
+  notifyChangeAddress: "notifyChangeAddress",
+  housingBenefit: "housingBenefit",
+  housingAssociationHomes: "housingAssociationHomes",
+  housingOmbudsman: "housingOmbudsman",
 };
 
 // ===== categories =====
@@ -212,6 +228,8 @@ export const categories = {
   health: "health",
   death: "death",
   birth: "birth",
+  employment: "employment",
+  housing: "housing",
 };
 
 // ===== utils =====
