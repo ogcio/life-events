@@ -1,14 +1,11 @@
-import { useTranslations } from "next-intl";
-import SideMenu from "./SideMenu";
-import { routes } from "../utils";
-
+import { PgSessions } from "auth/sessions";
 import { redirect, RedirectType } from "next/navigation";
 
-type Props = {
-  params: {
-    locale: string;
-  };
-};
+export default async () => {
+  const { publicServant } = await PgSessions.get();
 
-export default ({ children }: React.PropsWithChildren) =>
-  redirect("/send-a-message", RedirectType.replace);
+  redirect(
+    publicServant ? "/send-a-message" : "/messages",
+    RedirectType.replace,
+  );
+};
