@@ -1,62 +1,11 @@
 # Life Events Platform
 
-Life Events Platform, using the [OGCIO](https://www.ogcio.gov.ie/) building blocks.
+Welcome in the Life Events Platform, using the [OGCIO](https://www.ogcio.gov.ie/) building blocks.
+This repository contains the Live Events application and two Building Blocks: Messaging and Payments.
 
-The platform follows a mono-repo architecture.
-The OGCIO design system requires a wrapper for usage within NextJS. This is done to ensure seamless integration of the design system while preserving the progressive enhancement capabilities.
+To read more about the project you can refer to the [Documentation](documentation/docs/) folder.
+You can start by reading the [Introduction](documentation/docs/intro.md) which contains the Setup to run this project locally.
 
-Most building blocks and 3rd party services are mocked in this mono-repo.
+In case you want a more interactive experince you can start our web-based documentation just by running: `npm i && npm start:docs`.
 
-Testing around RSC and RSA is still poorly supported. We use Playwright for e2e testing and Jest for unit testing. At the moment there isn't a solid integration testing library for async React components
-
-## Setup
-
-This repo requires:
-
-- NodeJS LTS
-- Docker (Linux/OSX env)
-- TrueLayer account. Follow the steps [below](#true-layer-setup) to create your console account and get your credentials
-
-Once you've set up your TrueLayer console account, add the following URL to the 'Allowed redirect URIs' section of the settings page
-
-```
-http://web.localtest.me/en/paymentRequest/complete
-```
-
-- Clone the repo
-- if you have nvm installed run `nvm use`, otherwise ensure you're running Node LTS
-- Copy `.env.sample` to `.env` and update the variables for all apps
-- run `npm run build:ds` to build the design system.
-- run `npm start` to start the supporting docker services and run our services in 'dev' mode. If the docker services are already running you can just run `npm run start:services`
-
-Service URLs
-
-- web (Life events portal) - `localhost:3000`
-- payments - `localhost:3001`
-- messages - `localhost:3002`
-- mock-api - `localhost:8000`
-
-## Localisation
-
-Translation files are stored in /web/messages. Localisation works on React server components and it uses [next-intl](https://next-intl-docs.vercel.app/)
-
-## True Layer Setup
-
-- Follow the instructions to set up a console account and create an app [here](https://docs.truelayer.com/docs/quickstart-create-a-console-account)
-- You should now have your client_id and client_secret values
-- Then follow [these steps](https://docs.truelayer.com/docs/quickstart-make-a-payment#generate-keys) to generate your public and private keys
-- [Upload your public key to the True Layer Console](https://docs.truelayer.com/docs/quickstart-make-a-payment#upload-your-public-key-to-console-and-create-a-merchant-account)
-- Add our redirect URI to the True layer console - `http://web.localtest.me/en/paymentRequest/complete`
-- Follow [these steps](https://docs.truelayer.com/docs/quickstart-make-a-payment#format-your-private-key) to format your private key so it can be used within an environment variable
-
-## Docker build
-To build the images for the apps you have to build the base images before (following are the commands from the root folder)
-```
-docker build -t base-deps:latest  --file Dockerfile .
-docker build -t design-system-container:latest --file packages/design-system/Dockerfile .
-```
-
-Then you can build the app image from the root folder
-```
-docker build -t web-container:latest --file apps/web/Dockerfile .
-```
+The docs application will start usually at `http://localhost:3000`. From there you can setup this repo and read all the technical docs
