@@ -1,11 +1,10 @@
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
-import { PgSessions } from "auth/sessions";
-import { getUserTransactionDetails } from "./../../db";
 import { formatCurrency } from "../../../../../utils";
 import { pgpool } from "../../../../../dbConnection";
+import dayjs from "dayjs";
 
 type TransactionDetails = {
+  transaction_id: string;
   status: string;
   title: string;
   amount: number;
@@ -16,6 +15,7 @@ export async function getTransactionDetails(transactionId: string) {
   const res = await pgpool.query<TransactionDetails>(
     `
     SELECT
+      t.transaction_id,
       t.status,
       pr.title,
       t.amount,
@@ -37,5 +37,32 @@ export default async function ({ params: { transactionId } }) {
 
   console.log(details);
 
-  return <h1>{JSON.stringify(details, null, 2)}</h1>;
+  return (
+    <div>
+      <h1 className="govie-heading-l">Transaction details</h1>
+
+      <dl className="govie-summary-list">
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">Payment Request Title</dt>
+          <dt className="govie-summary-list__value">{details.title}</dt>
+        </div>
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">Amount</dt>
+          <dt className="govie-summary-list__value">
+            {formatCurrency(details.amount)}
+          </dt>
+        </div>
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">Last update</dt>
+          <dt className="govie-summary-list__value">
+            {dayjs(details.updated_at).format("DD/MM/YYYY")}
+          </dt>
+        </div>
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">Status</dt>
+          <dt className="govie-summary-list__value">{details.status}</dt>
+        </div>
+      </dl>
+    </div>
+  );
 }
