@@ -3,10 +3,7 @@ import { useTranslations } from "next-intl";
 export default () => {
   const t = useTranslations("FeedbackBanner");
   return (
-    <div
-      className="govie-phase-banner"
-      style={{ width: "80%", margin: "0 auto" }}
-    >
+    <div className="govie-phase-banner">
       <p className="govie-phase-banner__content">
         <strong className="govie-tag govie-phase-banner__content__tag">
           {t("tag")}

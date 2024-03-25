@@ -273,4 +273,6 @@ export const category = {
   driving,
   death,
   employment,
+  business,
+  housing,
 };
