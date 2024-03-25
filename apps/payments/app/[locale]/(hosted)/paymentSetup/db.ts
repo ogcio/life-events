@@ -25,13 +25,21 @@ export async function getPaymentRequestDetails(
 ): Promise<PaymentRequestDetails | undefined> {
   "use server";
   const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.payment_request_id, pr.description, pr.amount, json_agg(pp) as providers, 
-      pr.reference, pr.redirect_url, pr.allow_amount_override as "allowAmountOverride", pr.allow_custom_amount as "allowCustomAmount"
-      from payment_requests pr
-      join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-      join payment_providers pp on ppr.provider_id = pp.provider_id
-      where pr.payment_request_id = $1
-      group by pr.payment_request_id`,
+    `SELECT pr.title,
+        pr.payment_request_id,
+        pr.description,
+        pr.amount,
+        json_agg(pp) as providers,
+        pr.reference,
+        pr.redirect_url,
+        pr.allow_amount_override AS "allowAmountOverride",
+        pr.allow_custom_amount AS "allowCustomAmount"
+    FROM payment_requests pr
+    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
+    JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
+    WHERE pr.payment_request_id = $1
+    GROUP BY pr.payment_request_id
+`,
     [requestId],
   );
 
@@ -103,15 +111,16 @@ export async function getRequestTransactionDetails(requestId: string) {
   "use server";
 
   const res = await pgpool.query<TransactionDetails>(
-    `Select
+    `SELECT
       t.status,
       pr.title,
-      pr.amount,
+      pt.amount,
       t.updated_at
-    from payment_transactions t
-    inner join payment_requests pr on pr.payment_request_id = t.payment_request_id
-    where pr.payment_request_id = $1
-    order by t.updated_at desc`,
+    FROM payment_transactions t
+    INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+    INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
+    WHERE pr.payment_request_id = $1
+    ORDER BY t.updated_at DESC`,
     [requestId],
   );
 
