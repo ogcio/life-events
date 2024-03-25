@@ -9,6 +9,15 @@ export async function getFeatureFlag(application: string, slug: string) {
   return result.rows[0];
 }
 
+export async function isEnabled(featureFlagName: string, application?: string) {
+  const featureFlag = await getFeatureFlag(
+    application || "portal",
+    featureFlagName,
+  );
+
+  return Boolean(featureFlag?.is_enabled);
+}
+
 export async function getFeatureFlags(application: string) {
   const result = await pgpool.query<FeatureFlag, [string]>(
     `SELECT * FROM feature_flags WHERE application = $1`,

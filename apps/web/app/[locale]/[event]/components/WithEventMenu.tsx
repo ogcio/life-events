@@ -1,6 +1,13 @@
 import { routes, web } from "../../../utils";
 import LifeEventsMenu from "./LifeEventsMenu";
-import { getFeatureFlag } from "feature-flags/utils";
+import { isEnabled } from "feature-flags/utils";
+
+type MenuOption = {
+  key: string;
+  icon: string;
+  url: string;
+  label: string;
+};
 
 /**
  * If a path from an event continues (not final), we can't use the menu in a next layout
@@ -20,8 +27,81 @@ export default async function WithEventMenu({
   userName: string;
   params: web.NextPageProps["params"];
 }) {
-  const eventsFeatureFlag = await getFeatureFlag("portal", "events");
   const url = (slug: string) => "/" + params.locale + "/" + slug;
+
+  const menuOptions = [
+    {
+      key: "events",
+      icon: "events",
+      url: url(routes.events.slug),
+      label: "Events",
+    },
+    {
+      key: "about-me",
+      icon: "about",
+      url: url(routes.aboutMe.slug),
+      label: "About me",
+    },
+    {
+      key: "birth",
+      icon: "birth",
+      url: url(routes.birth.slug),
+      label: "Birth",
+    },
+    {
+      key: "health",
+      icon: "health",
+      url: url(routes.health.slug),
+      label: "Health",
+    },
+    {
+      key: "driving",
+      icon: "driving",
+      url: url(routes.driving.slug),
+      label: "Driving",
+    },
+    {
+      key: "employment",
+      icon: "employment",
+      url: url(routes.employment.slug),
+      label: "Employment",
+    },
+    {
+      key: "business",
+      icon: "business",
+      url: url(routes.business.slug),
+      label: "Starting a business",
+    },
+    {
+      key: "housing",
+      icon: "housing",
+      url: url(routes.housing.slug),
+      label: "Housing",
+    },
+    {
+      key: "death",
+      icon: "death",
+      url: url(routes.death.slug),
+      label: "Death",
+    },
+  ];
+
+  async function getFilteredOptions() {
+    const enabledOptions: MenuOption[] = [];
+
+    await Promise.all(
+      menuOptions.map(async (option) => {
+        const enabled = await isEnabled(option.key);
+        if (enabled) {
+          enabledOptions.push(option);
+        }
+      }),
+    );
+
+    return enabledOptions;
+  }
+  const filteredOptions = await getFilteredOptions();
+
   return (
     <div
       style={{
@@ -35,67 +115,7 @@ export default async function WithEventMenu({
           userName={userName}
           ppsn="TUV1234123"
           selected={params.event ?? ""}
-          options={[
-            ...(eventsFeatureFlag?.is_enabled
-              ? [
-                  {
-                    key: "events",
-                    icon: "events",
-                    url: url(routes.events.slug),
-                    label: "Events",
-                  },
-                ]
-              : []),
-            {
-              key: "about-me",
-              icon: "about",
-              url: url(routes.aboutMe.slug),
-              label: "About me",
-            },
-
-            {
-              key: "birth",
-              icon: "birth",
-              url: url(routes.birth.slug),
-              label: "Birth",
-            },
-            {
-              key: "health",
-              icon: "health",
-              url: url(routes.health.slug),
-              label: "Health",
-            },
-            {
-              key: "driving",
-              icon: "driving",
-              url: url(routes.driving.slug),
-              label: "Driving",
-            },
-            {
-              key: "employment",
-              icon: "employment",
-              url: url(routes.employment.slug),
-              label: "Employment",
-            },
-            {
-              key: "business",
-              icon: "business",
-              url: url(routes.business.slug),
-              label: "Starting a business",
-            },
-            {
-              key: "housing",
-              icon: "housing",
-              url: url(routes.housing.slug),
-              label: "Housing",
-            },
-            {
-              key: "death",
-              icon: "death",
-              url: url(routes.death.slug),
-              label: "Death",
-            },
-          ]}
+          options={filteredOptions}
         />
       </div>
       {children}
