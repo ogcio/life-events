@@ -3,13 +3,17 @@ import { getTranslations } from "next-intl/server";
 import { postgres, workflow } from "../../../../utils";
 import { revalidatePath } from "next/cache";
 
-export default async (props: { userId: string; flow: string }) => {
+export default async (props: {
+  userId: string;
+  flow: string;
+  data: workflow.NotifyDeath;
+}) => {
   const t = await getTranslations("NotifyDeathRequiredInfoForm");
   async function submitAction() {
     "use server";
 
     const dataToUpdate: workflow.NotifyDeath = {
-      ...workflow.emptyNotifyDeath(),
+      ...props.data,
       hasRequiredInformation: true,
     };
 
