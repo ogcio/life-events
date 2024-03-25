@@ -8,7 +8,6 @@ import { headers } from "next/headers";
 type Props = {
   flow: string;
   userId: string;
-  params: web.NextPageProps["params"];
 };
 
 export default (props: Props) => {
