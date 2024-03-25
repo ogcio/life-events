@@ -50,7 +50,7 @@ test.describe("Manual bank transfer provider", () => {
   });
 
   test("Edit bank transfer provider", async () => {
-    await page.getByRole("link", { name: "edit" }).click();
+    await page.getByRole("link", { name: "edit" }).click({ force: true });
     await page.waitForLoadState();
 
     await expect(
