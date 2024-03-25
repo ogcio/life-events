@@ -36,5 +36,6 @@ export const colours = {
     turquoise: "#28a197",
     darkTurquoise: "#10403c",
     lightTurquoise: "#bfe3e0",
+    primaryButton: "#004d44",
   },
 };

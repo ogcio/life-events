@@ -4,7 +4,7 @@ import OpenBankingHost from "./OpenBankingHost";
 import { pgpool } from "../../../../dbConnection";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
-import { getRealAmount } from "../../../(embedded)/paymentRequest/pay/page";
+import { getRealAmount } from "../../../../utils";
 
 async function getPaymentDetails(
   paymentId: string,

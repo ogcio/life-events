@@ -110,7 +110,10 @@ export default async function Card(props: {
       }}
     >
       <NextIntlClientProvider messages={stripeMessages}>
-        <StripeHost clientSecret={client_secret} returnUri={returnUri} />
+        <StripeHost
+          clientSecret={client_secret as string | undefined}
+          returnUri={returnUri}
+        />
       </NextIntlClientProvider>
     </div>
   );
