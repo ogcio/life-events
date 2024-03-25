@@ -97,33 +97,31 @@ async function editPayment(
 
     const { providers } = details;
 
-    await updateProvider(
-      client,
-      paymentRequestId,
-      providers.find((provider) => provider.provider_type === "openbanking")
-        ?.provider_id,
-      formData.get("openbanking-account")?.toString(),
-    );
-
-    await updateProvider(
-      client,
-      paymentRequestId,
-      providers.find((provider) => provider.provider_type === "banktransfer")
-        ?.provider_id,
-      formData.get("banktransfer-account")?.toString(),
-    );
-
-    await updateProvider(
-      client,
-      paymentRequestId,
-      providers.find((provider) => provider.provider_type === "stripe")
-        ?.provider_id,
-      formData.get("stripe-account")?.toString(),
-    );
+    await Promise.all([
+      updateProvider(
+        client,
+        paymentRequestId,
+        providers.find((provider) => provider.provider_type === "openbanking")
+          ?.provider_id,
+        formData.get("openbanking-account")?.toString(),
+      ),
+      updateProvider(
+        client,
+        paymentRequestId,
+        providers.find((provider) => provider.provider_type === "banktransfer")
+          ?.provider_id,
+        formData.get("banktransfer-account")?.toString(),
+      ),
+      updateProvider(
+        client,
+        paymentRequestId,
+        providers.find((provider) => provider.provider_type === "stripe")
+          ?.provider_id,
+        formData.get("stripe-account")?.toString(),
+      ),
+    ]);
 
     await client.query("COMMIT");
-
-    //TODO: Add the possibility to update providers in the edit
   } catch (e) {
     await client.query("ROLLBACK");
     throw e;
