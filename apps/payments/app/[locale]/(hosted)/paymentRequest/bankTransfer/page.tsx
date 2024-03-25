@@ -4,7 +4,7 @@ import OpenBankingHost from "./OpenBankingHost";
 import { pgpool } from "../../../../dbConnection";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
-import { getRealAmount } from "../../../(embedded)/paymentRequest/pay/page";
+import { getRealAmount } from "../../../../utils";
 
 async function getPaymentDetails(
   paymentId: string,
@@ -26,7 +26,7 @@ async function getPaymentDetails(
       pr.allow_amount_override as "allowAmountOverride",
       pr.allow_custom_amount as "allowCustomAmount"
     FROM payment_requests pr
-    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id
+    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
     JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
     WHERE pr.payment_request_id = $1
       AND pp.provider_type = 'openbanking'

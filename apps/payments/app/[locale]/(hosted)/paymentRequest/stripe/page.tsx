@@ -21,7 +21,7 @@ async function getPaymentDetails(paymentId: string, amount?: string) {
       pp.provider_data,
       pr.allow_amount_override
     from payment_requests pr
-    join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
+    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
     join payment_providers pp on ppr.provider_id = pp.provider_id
     where pr.payment_request_id = $1
       and pp.provider_type = 'stripe'
@@ -110,7 +110,10 @@ export default async function Card(props: {
       }}
     >
       <NextIntlClientProvider messages={stripeMessages}>
-        <StripeHost clientSecret={client_secret} returnUri={returnUri} />
+        <StripeHost
+          clientSecret={client_secret as string | undefined}
+          returnUri={returnUri}
+        />
       </NextIntlClientProvider>
     </div>
   );
