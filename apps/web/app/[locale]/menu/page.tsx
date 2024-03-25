@@ -1,5 +1,5 @@
 import { PgSessions } from "auth/sessions";
-import LifeEventsMenu from "../[event]/LifeEventsMenu";
+import LifeEventsMenu from "../[event]/components/LifeEventsMenu";
 import { routes } from "../../utils";
 
 export default async () => {
