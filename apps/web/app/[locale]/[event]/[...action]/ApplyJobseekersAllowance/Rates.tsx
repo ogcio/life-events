@@ -6,6 +6,18 @@ export default async (props: { userId: string; flow: string }) => {
   const t = await getTranslations("ApplyJobseekersAllowanceRates");
   const ratesT = await getTranslations("ApplyJobseekersAllowanceRates.rates");
 
+  const rates = [
+    "title",
+    "fullPaymentOver25",
+    "paymentUnder25",
+    "extraPaymentOver25",
+    "extraPaymentUnder25",
+    "extraPaymentChildOver12Full",
+    "extraPaymentChildOver12Half",
+    "extraPaymentChildUnder12Full",
+    "extraPaymentChildUnder12Half",
+  ];
+
   async function submitAction() {
     "use server";
 
@@ -28,31 +40,23 @@ export default async (props: { userId: string; flow: string }) => {
           <p className="govie-body">{t("secondParagraph")}</p>
           <h2 className="govie-heading-m">{t("subtitle")}</h2>
           <dl className="govie-summary-list">
-            {Array.from({ length: 18 }).map((_, index) => {
-              if (index % 2 === 0 && index < 18 - 1) {
-                return (
-                  <div
-                    className="govie-summary-list__row"
-                    key={`${index} - ${index + 1}`}
-                  >
-                    <dt
-                      className="govie-summary-list__key"
-                      style={{ width: "50%", fontWeight: "normal" }}
-                    >
-                      {ratesT.rich(`${index}`, {
-                        bold: (chunks) => <strong>{chunks}</strong>,
-                      })}
-                    </dt>
-                    <dd className="govie-summary-list__value">
-                      {ratesT.rich(`${index + 1}`, {
-                        bold: (chunks) => <strong>{chunks}</strong>,
-                      })}
-                    </dd>
-                  </div>
-                );
-              }
-              return null;
-            })}
+            {rates.map((rate) => (
+              <div className="govie-summary-list__row" key={rate}>
+                <dt
+                  className="govie-summary-list__key"
+                  style={{ width: "50%", fontWeight: "normal" }}
+                >
+                  {ratesT.rich(`${rate}.key`, {
+                    bold: (chunks) => <strong>{chunks}</strong>,
+                  })}
+                </dt>
+                <dd className="govie-summary-list__value">
+                  {ratesT.rich(`${rate}.value`, {
+                    bold: (chunks) => <strong>{chunks}</strong>,
+                  })}
+                </dd>
+              </div>
+            ))}
           </dl>
           <button type="submit" className="govie-button">
             {t("continue")}

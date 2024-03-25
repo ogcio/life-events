@@ -7,6 +7,7 @@ export default async (props: { userId: string; flow: string }) => {
   const questionsT = await getTranslations(
     "ApplyJobseekersAllowanceQuestions.questions",
   );
+  const questions = ["details", "employmentInfo", "financialInfo"];
 
   async function submitAction() {
     "use server";
@@ -29,24 +30,19 @@ export default async (props: { userId: string; flow: string }) => {
           className="govie-list govie-list--bullet"
           style={{ maxWidth: "100%" }}
         >
-          {Array.from({ length: 6 }).map((_, index) => {
-            if (index % 2 === 0 && index < 6 - 1) {
-              return (
-                <li>
-                  <p
-                    className="govie-heading-s"
-                    style={{ marginBottom: "5px", fontWeight: "bold" }}
-                  >
-                    {questionsT(`${index}`)}
-                  </p>
-                  <p className="govie-body-s" style={{ marginTop: 0 }}>
-                    {questionsT(`${index + 1}`)}
-                  </p>
-                </li>
-              );
-            }
-            return null;
-          })}
+          {questions.map((question) => (
+            <li key={question}>
+              <p
+                className="govie-heading-s"
+                style={{ marginBottom: "5px", fontWeight: "bold" }}
+              >
+                {questionsT(`${question}.title`)}
+              </p>
+              <p className="govie-body-s" style={{ marginTop: 0 }}>
+                {questionsT(`${question}.description`)}
+              </p>
+            </li>
+          ))}
         </ul>
         <form action={submitAction}>
           <button type="submit" className="govie-button">
