@@ -126,7 +126,9 @@
         "requestTitle": "Payment Request Title",
         "amount": "Amount",
         "lastUpdate": "Last update",
-        "status": "Status"
+        "status": "Status",
+        "providerName": "Provider name",
+        "providerType": "Provider type"
       },
       "assignTitle": "Assign to User",
       "assignDescription": "Send this payment to a user",
