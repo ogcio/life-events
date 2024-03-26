@@ -5,7 +5,7 @@ import {
   mockAccountNumber,
   mockSortCode,
 } from "../utils/mocks";
-import { paymentSetupPage } from "../utils/constants";
+import { paymentSetupPage, providersPage } from "../utils/constants";
 
 test.describe("Open Banking provider", () => {
   let page: Page;
@@ -44,7 +44,7 @@ test.describe("Open Banking provider", () => {
       .fill(mockAccountNumber);
     await page.getByRole("button", { name: "Confirm" }).click();
 
-    await page.waitForURL(`/en/paymentSetup/providers`);
+    await page.waitForURL(providersPage);
     const accountName = await page.getByRole("cell", {
       name: providerName,
       exact: true,
@@ -53,9 +53,10 @@ test.describe("Open Banking provider", () => {
   });
 
   test("Edit open banking provider", async () => {
-    const row = page.getByRole("row").filter({ hasText: providerName });
+    const row = page
+      .getByRole("row")
+      .filter({ hasText: new RegExp(providerName) });
     await row.getByRole("link", { name: "edit" }).click({ force: true });
-    await page.waitForLoadState();
 
     await expect(
       page.getByRole("heading", { name: "Edit OpenBanking payment provider" }),
@@ -71,12 +72,12 @@ test.describe("Open Banking provider", () => {
     const nameInput = await page.getByRole("textbox", { name: /Name/ });
     await expect(nameInput).toHaveValue(providerName);
     await nameInput.clear();
-    const newProviderName = `${providerName} new`;
+    const newProviderName = `${providerName} edited`;
     await nameInput.fill(newProviderName);
 
     await page.getByRole("button", { name: "Save" }).click();
 
-    await page.waitForURL(`/en/paymentSetup/providers`);
+    await page.waitForURL(providersPage);
     const accountName = await page.getByRole("cell", { name: newProviderName });
     await expect(accountName).toBeVisible();
   });

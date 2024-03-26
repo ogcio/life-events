@@ -5,7 +5,7 @@ import {
   mockAccountNumber,
   mockSortCode,
 } from "../utils/mocks";
-import { paymentSetupPage } from "../utils/constants";
+import { paymentSetupPage, providersPage } from "../utils/constants";
 
 test.describe("Manual bank transfer provider", () => {
   let page: Page;
@@ -44,13 +44,15 @@ test.describe("Manual bank transfer provider", () => {
       .fill(mockAccountNumber);
     await page.getByRole("button", { name: "Confirm" }).click();
 
-    await page.waitForURL(`/en/paymentSetup/providers`);
+    await page.waitForURL(providersPage);
     const accountName = await page.getByRole("cell", { name: providerName });
     await expect(accountName).toBeVisible();
   });
 
   test("Edit bank transfer provider", async () => {
-    const row = page.getByRole("row").filter({ hasText: providerName });
+    const row = page
+      .getByRole("row")
+      .filter({ hasText: new RegExp(providerName) });
     await row.getByRole("link", { name: "edit" }).click({ force: true });
     await page.waitForLoadState();
 
@@ -70,12 +72,12 @@ test.describe("Manual bank transfer provider", () => {
     const nameInput = await page.getByRole("textbox", { name: /Name/ });
     await expect(nameInput).toHaveValue(providerName);
     await nameInput.clear();
-    const newProviderName = `${providerName} new`;
+    const newProviderName = `${providerName} edited`;
     await nameInput.fill(newProviderName);
 
     await page.getByRole("button", { name: "Save" }).click();
 
-    await page.waitForURL(`/en/paymentSetup/providers`);
+    await page.waitForURL(providersPage);
     const accountName = await page.getByRole("cell", { name: newProviderName });
     await expect(accountName).toBeVisible();
   });
