@@ -35,7 +35,15 @@
     "benefits-entitlements": "Your benefits entitlements",
     "rates": "What may I receive?",
     "what-asked-about": "What will  you be asked about?",
-    "confirm-details": "Confirm your contact details"
+    "confirm-details": "Confirm your contact details",
+    "submissions": {
+      "renewDriversLicence": "Driving licence renewal",
+      "orderEHIC": "EHIC application",
+      "applyJobseekersAllowance": "Jobseeker's Allowance application",
+      "notifyDeath": "Death notification",
+      "orderBirthCertificate": "Birth certificate application"
+    },
+    "reject": "Reject"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -336,7 +344,7 @@
     "title": "Renew your driving licence"
   },
   "Generic": {
-    "back": "back"
+    "back": "Back"
   },
   "MyLifeEvents": {
     "lifeEvents": "My Life Events",

@@ -9,7 +9,7 @@ import ApplyJobseekersAllowance from "./ApplyJobseekersAllowance/ApplyJobseekers
 const componentsMap = {
   [routes.driving.renewDriversLicence.slug]: RenewDriversLicence,
   [routes.health.orderEHIC.slug]: OrderEHIC,
-  [routes.health.orderBirthCertificate.slug]: OrderBirthCertificate,
+  [routes.birth.orderBirthCertificate.slug]: OrderBirthCertificate,
   [routes.death.notifyDeath.slug]: NotifyDeath,
   [routes.employment.applyJobseekersAllowance.slug]: ApplyJobseekersAllowance,
 };

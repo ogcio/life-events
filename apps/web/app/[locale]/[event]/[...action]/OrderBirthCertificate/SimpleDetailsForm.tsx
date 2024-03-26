@@ -15,7 +15,7 @@ export default async (props: {
 
   const errors = await form.getErrorsQuery(
     props.userId,
-    routes.health.orderBirthCertificate.changeDetails.slug,
+    routes.birth.orderBirthCertificate.changeDetails.slug,
     props.flow,
   );
 
@@ -78,7 +78,7 @@ export default async (props: {
       await form.insertErrors(
         formErrors,
         userId,
-        routes.health.orderBirthCertificate.changeDetails.slug,
+        routes.birth.orderBirthCertificate.changeDetails.slug,
         flow,
       );
 
@@ -162,7 +162,7 @@ export default async (props: {
         userId,
         workflow.keys.orderBirthCertificate,
         JSON.stringify(dataToUpdate),
-        workflow.categories.health,
+        workflow.categories.birth,
       ],
     );
 
