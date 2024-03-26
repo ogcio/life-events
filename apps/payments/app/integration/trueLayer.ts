@@ -58,8 +58,8 @@ export async function createPaymentRequest(paymentRequest) {
       },
     },
     user: {
-      name: paymentRequest.user_name,
-      email: paymentRequest.govid_email,
+      name: paymentRequest.user.name,
+      email: paymentRequest.user.email,
     },
   });
 
