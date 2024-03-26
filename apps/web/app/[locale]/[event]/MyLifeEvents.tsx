@@ -120,7 +120,7 @@ async function getFlows() {
 
 export default async () => {
   const t = await getTranslations("MyLifeEvents");
-  const [flow, events] = await Promise.all([getFlows(), getEvents()]);
+  const [flow] = await Promise.all([getFlows(), getEvents()]);
 
   const { email } = await PgSessions.get();
   const messageEvents = await api.getMessages(email, {
@@ -129,20 +129,6 @@ export default async () => {
     size: 10,
     type: "event",
   });
-
-  // const eventsToRender = events
-  //   .filter((event) => !flow.some((f) => f.flowKey === event.flowKey))
-  //   .map((event) => {
-  //     // do some mapping for flow key
-  //     const flowTitle = event.flowKey + ".title.base";
-  //     const descriptionKey = event.flowKey + ".description.base";
-  //     return {
-  //       flowTitle,
-  //       flowKey: event.flowKey,
-  //       descriptionKey,
-  //       slug: routes.category[event.category][event.flowKey].path(),
-  //     };
-  //   });
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1, gap: "2.5rem" }}>
@@ -177,66 +163,12 @@ export default async () => {
               <hr className="govie-section-break govie-section-break--visible" />
             </li>
           ))}
-          {/* {eventsToRender.map((evt) => (
-            <li
-              key={`le_${evt.flowKey}`}
-              style={{
-                margin: "1rem 0",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-around",
-                gap: "1rem",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <div>
-                  <Link className="govie-link" href={evt.slug}>
-                    {t(evt.flowTitle)}
-                  </Link>
-                  <p
-                    className="govie-body"
-                    style={{ margin: "unset", marginTop: "16px" }}
-                  >
-                    {t(evt.descriptionKey, { date: "19th March" })}
-                  </p>
-                </div>
-                <div>
-                  <Link
-                    className="govie-link"
-                    href={evt.slug}
-                    aria-label={t(evt.flowTitle)}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="10"
-                      height="13"
-                      fill="none"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="m0 0 5.753 6.5L0 13h4.247l4.78-5.4L10 6.5l-.974-1.1L4.247 0H0Z"
-                        fill="#2C55A2"
-                      />
-                    </svg>
-                  </Link>
-                </div>
-              </div>
-              <hr className="govie-section-break govie-section-break--visible" />
-            </li>
-          ))} */}
         </ul>
       </section>
       <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
         <div className="govie-heading-l">{t("openEvents")}</div>
         <ul className="govie-list">
-          {/* {flow.map((evt) => (
+          {flow.map((evt) => (
             <li
               key={`o_${evt.flowKey}`}
               style={{
@@ -263,7 +195,7 @@ export default async () => {
                 </p>
               </div>
             </li>
-          ))} */}
+          ))}
         </ul>
       </section>
     </div>
