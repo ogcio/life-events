@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { routes, web, workflow } from "../../../../utils";
-import FormLayout from "../shared/FormLayout";
+import FormLayout from "../../../../components/FormLayout";
 import Introduction from "./Introduction";
 import { PgSessions } from "auth/sessions";
 import BenefitsEntitlements from "./BenefitsEntitlements";
