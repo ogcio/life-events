@@ -12,6 +12,8 @@ export default async () => {
   async function handleSubmit(formData: FormData) {
     "use server";
     const providerName = formData.get("provider_name");
+    const liveSecretKey = formData.get("live_secret_key");
+    const livePublishableKey = formData.get("live_publishable_key");
 
     await pgpool.query(
       `
@@ -24,10 +26,9 @@ export default async () => {
         "stripe",
         "connected",
         {
-          // TODO: use form inputs - currently using env vars for testing
-          // keys need to be encrypted
-          liveSecretKey: process.env.STRIPE_SECRET_KEY,
-          livePublishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+          // TODO: keys need to be encrypted
+          liveSecretKey,
+          livePublishableKey,
         },
       ],
     );
