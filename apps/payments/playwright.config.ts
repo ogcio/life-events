@@ -15,7 +15,7 @@ export default defineConfig({
     video: "retain-on-failure",
   },
   reporter: process.env.CI
-    ? [["github"], ["blob"]]
+    ? [["junit", { outputFile: "test-results/e2e-junit-results.xml" }]]
     : [["list"], ["html", { open: "on-failure" }]],
   projects: [
     {
