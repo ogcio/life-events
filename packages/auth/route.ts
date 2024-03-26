@@ -42,10 +42,10 @@ export default async function (req: Request) {
     userId: id,
   });
 
+  console.log("Setting session id");
   cookies().set({
     name: "sessionId",
     value: ssid,
-    httpOnly: true,
     path: "/",
   });
 
