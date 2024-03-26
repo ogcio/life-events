@@ -45,7 +45,6 @@ export default async function (req: Request) {
   cookies().set({
     name: "sessionId",
     value: ssid,
-    httpOnly: true,
     path: "/",
   });
 
