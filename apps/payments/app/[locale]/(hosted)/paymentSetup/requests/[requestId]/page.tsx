@@ -18,37 +18,9 @@ export default async function ({ params: { requestId } }) {
 
   const transactions = await getRequestTransactionDetails(requestId);
 
-  const integrationReference = `${userId}:${requestId}`;
-  const completePaymentLink = new URL(
-    `/paymentRequest/pay?paymentId=${requestId}&id=${integrationReference}`,
-    process.env.HOST_URL ?? "",
-  ).toString();
-
   return (
     <div>
       <RequestDetails requestId={requestId} />
-
-      <div
-        style={{
-          display: "flex",
-          columnGap: "2em",
-          alignItems: "center",
-          marginBottom: "4em",
-        }}
-      >
-        <div>
-          <label htmlFor="" className="govie-label">
-            {tCreatePayment("paymentLink")}
-          </label>
-          <a href={completePaymentLink} className="govie-link">
-            {completePaymentLink}
-          </a>
-        </div>
-        <CopyLink
-          link={completePaymentLink}
-          buttonText={tCreatePayment("copyLink")}
-        />
-      </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
         <section
