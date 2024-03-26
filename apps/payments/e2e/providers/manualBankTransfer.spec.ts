@@ -13,7 +13,7 @@ test.describe("Manual bank transfer provider", () => {
 
   test.beforeAll(async ({ browser, browserName }) => {
     page = await browser.newPage();
-    providerName = `Test manual bank transfer ${browserName}`;
+    providerName = `Test manual bank transfer ${browserName} ${new Date()}`;
   });
 
   test("Add bank transfer provider", async () => {
@@ -50,9 +50,7 @@ test.describe("Manual bank transfer provider", () => {
   });
 
   test("Edit bank transfer provider", async () => {
-    const row = page
-      .getByRole("row")
-      .filter({ hasText: new RegExp(providerName) });
+    const row = page.getByRole("row").filter({ hasText: providerName });
     await row.getByRole("link", { name: "edit" }).click({ force: true });
     await page.waitForLoadState();
 

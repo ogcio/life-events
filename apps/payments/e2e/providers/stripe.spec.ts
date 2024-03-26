@@ -9,7 +9,7 @@ test.describe("Stripe provider", () => {
 
   test.beforeAll(async ({ browser, browserName }) => {
     page = await browser.newPage();
-    providerName = `Test stripe ${browserName}`;
+    providerName = `Test stripe ${browserName} ${new Date()}`;
   });
 
   test("Add stripe provider", async () => {
@@ -46,9 +46,7 @@ test.describe("Stripe provider", () => {
   });
 
   test("Edit stripe provider", async () => {
-    const row = page
-      .getByRole("row")
-      .filter({ hasText: new RegExp(providerName) });
+    const row = page.getByRole("row").filter({ hasText: providerName });
     await row.getByRole("link", { name: "edit" }).click({ force: true });
 
     await expect(

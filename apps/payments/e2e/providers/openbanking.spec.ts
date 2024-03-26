@@ -13,7 +13,7 @@ test.describe("Open Banking provider", () => {
 
   test.beforeAll(async ({ browser, browserName }) => {
     page = await browser.newPage();
-    providerName = `Test open banking ${browserName}`;
+    providerName = `Test open banking ${browserName} ${new Date()}`;
   });
 
   test("Add open banking provider", async () => {
@@ -53,9 +53,7 @@ test.describe("Open Banking provider", () => {
   });
 
   test("Edit open banking provider", async () => {
-    const row = page
-      .getByRole("row")
-      .filter({ hasText: new RegExp(providerName) });
+    const row = page.getByRole("row").filter({ hasText: providerName });
     await row.getByRole("link", { name: "edit" }).click({ force: true });
 
     await expect(
