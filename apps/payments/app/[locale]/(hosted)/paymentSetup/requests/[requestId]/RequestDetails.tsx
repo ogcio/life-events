@@ -6,6 +6,7 @@ import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Tooltip from "../../../../../components/Tooltip";
+import CopyLink from "./CopyBtn";
 
 async function deletePaymentRequest(requestId: string) {
   "use server";
@@ -45,6 +46,12 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
   // Cannot delete the payment request if we already have transactions
   const disableDeleteButton = await hasTransactions(requestId);
 
+  const integrationReference = requestId;
+  const completePaymentLink = new URL(
+    `/paymentRequest/pay?paymentId=${requestId}&id=${integrationReference}`,
+    process.env.HOST_URL ?? "",
+  ).toString();
+
   return (
     <>
       <div
@@ -63,7 +70,7 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
           }}
         >
           <Link href={`/paymentSetup/edit/${requestId}`}>
-            <button className="govie-button govie-button--primary">
+            <button className="govie-button govie-button--secondary">
               {tCommon("edit")}
             </button>
           </Link>
@@ -129,6 +136,17 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
           </dt>
           <dt className="govie-summary-list__value">
             {JSON.stringify(details.allowCustomAmount)}
+          </dt>
+        </div>
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("paymentLink")}</dt>
+          <dt className="govie-summary-list__value">
+            <div style={{ display: "flex", gap: "10px" }}>
+              <a href={completePaymentLink} className="govie-link">
+                {completePaymentLink}
+              </a>
+              <CopyLink link={completePaymentLink} buttonText={t("copyLink")} />
+            </div>
           </dt>
         </div>
       </dl>
