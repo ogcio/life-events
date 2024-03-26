@@ -1,12 +1,12 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import dayjs from "dayjs";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { aws, postgres, web, workflow } from "../../../../utils";
+import { aws, postgres, routes, web, workflow } from "../../../../utils";
 import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
+import FormLayout from "../../../../components/FormLayout";
 
 type Props = {
   flowData: workflow.RenewDriversLicence;
@@ -51,7 +51,11 @@ export default async ({ userId, flow, flowData }: Props) => {
   }
 
   return (
-    <>
+    <FormLayout
+      action={{ slug: "submissions." + flow }}
+      backHref={`/${routes.admin.slug}`}
+      homeHref={`/${routes.admin.slug}`}
+    >
       <div className="govie-heading-l">
         {t("title", { flow: t(flow).toLowerCase() })}
       </div>
@@ -91,7 +95,7 @@ export default async ({ userId, flow, flowData }: Props) => {
                     {t(flowData.proofOfAddressRequest)}
                   </a>
                 ) : (
-                  t(flowData.proofOfAddressRequest)
+                  ""
                 ),
               }}
             />
@@ -134,6 +138,6 @@ export default async ({ userId, flow, flowData }: Props) => {
           {t("approve")}
         </button>
       </form>
-    </>
+    </FormLayout>
   );
 };

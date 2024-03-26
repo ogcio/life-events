@@ -1,6 +1,44 @@
 export const events = { slug: "events" };
 export const aboutMe = { slug: "about-me" };
-export const birth = { slug: "birth" };
+export const birth = {
+  slug: "birth",
+  orderBirthCertificate: {
+    slug: "order-birth-certificate",
+    path() {
+      return `${birth.slug}/${birth.orderBirthCertificate.slug}`;
+    },
+    checkDetails: {
+      slug: "check-details",
+      path() {
+        return `${birth.slug}/${birth.orderBirthCertificate.slug}/${birth.orderBirthCertificate.checkDetails.slug}`;
+      },
+    },
+    changeDetails: {
+      slug: "change-details",
+      path() {
+        return `${birth.slug}/${birth.orderBirthCertificate.slug}/${birth.orderBirthCertificate.changeDetails.slug}`;
+      },
+    },
+    newAddress: {
+      slug: "new-address",
+      path() {
+        return `${birth.slug}/${birth.orderBirthCertificate.slug}/${birth.orderBirthCertificate.newAddress.slug}`;
+      },
+    },
+    proofOfAddress: {
+      slug: "proof-of-address",
+      path() {
+        return `${birth.slug}/${birth.orderBirthCertificate.slug}/${birth.orderBirthCertificate.proofOfAddress.slug}`;
+      },
+    },
+    applicationSuccess: {
+      slug: "application-success",
+      path() {
+        return `${birth.slug}/${birth.orderBirthCertificate.slug}/${birth.orderBirthCertificate.applicationSuccess.slug}`;
+      },
+    },
+  },
+};
 
 export const health = {
   slug: "health",
@@ -49,42 +87,6 @@ export const health = {
       slug: "application-success",
       path() {
         return `${health.slug}/${health.orderEHIC.slug}/${health.orderEHIC.applicationSuccess.slug}`;
-      },
-    },
-  },
-  orderBirthCertificate: {
-    slug: "order-birth-certificate",
-    path() {
-      return `${health.slug}/${health.orderBirthCertificate.slug}`;
-    },
-    checkDetails: {
-      slug: "check-details",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.checkDetails.slug}`;
-      },
-    },
-    changeDetails: {
-      slug: "change-details",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.changeDetails.slug}`;
-      },
-    },
-    newAddress: {
-      slug: "new-address",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.newAddress.slug}`;
-      },
-    },
-    proofOfAddress: {
-      slug: "proof-of-address",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.proofOfAddress.slug}`;
-      },
-    },
-    applicationSuccess: {
-      slug: "application-success",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.applicationSuccess.slug}`;
       },
     },
   },
@@ -268,10 +270,15 @@ export const death = {
   },
 };
 
+export const admin = {
+  slug: "admin",
+};
+
 export const category = {
   health,
   driving,
   death,
+  birth,
   employment,
   business,
   housing,

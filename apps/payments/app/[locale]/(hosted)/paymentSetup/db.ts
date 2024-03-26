@@ -129,3 +129,28 @@ export async function getRequestTransactionDetails(requestId: string) {
 
   return res.rows;
 }
+
+export async function createTransaction(
+  paymentId: string,
+  userId: string,
+  extPaymentId: string,
+  tenantReference: string,
+  amount: number,
+  paymentProviderId: string,
+) {
+  "use server";
+  await pgpool.query<{ transaction_id: number }>(
+    `
+    insert into payment_transactions (payment_request_id, user_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id)
+    values ($1, $2, $3, $4, $5, 'pending', now(), now(), $6);
+    `,
+    [
+      paymentId,
+      userId,
+      extPaymentId,
+      tenantReference,
+      amount,
+      paymentProviderId,
+    ],
+  );
+}
