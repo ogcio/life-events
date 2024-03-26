@@ -7,6 +7,7 @@ import { createTransaction } from "../../paymentSetup/db";
 
 async function getPaymentDetails(
   paymentId: string,
+  user: { name: string; email: string },
   amount?: number,
   customAmount?: number,
 ) {
@@ -45,6 +46,7 @@ async function getPaymentDetails(
   const paymentDetails = {
     ...paymentRows[0],
     amount: realAmount,
+    user,
   };
 
   const paymentRequest = await createPaymentRequest(paymentDetails);
@@ -62,6 +64,8 @@ export default async function Bank(props: {
         integrationRef: string;
         amount?: string;
         customAmount?: string;
+        name: string;
+        email: string;
       }
     | undefined;
 }) {
@@ -78,8 +82,14 @@ export default async function Bank(props: {
     ? parseFloat(props.searchParams.customAmount)
     : undefined;
 
+  const userInfo = {
+    name: props.searchParams.name,
+    email: props.searchParams.email,
+  };
+
   const details = await getPaymentDetails(
     props.searchParams.paymentId,
+    userInfo,
     amount,
     customAmount,
   );
@@ -93,6 +103,7 @@ export default async function Bank(props: {
     props.searchParams.integrationRef,
     paymentDetails.amount,
     paymentDetails.provider_id,
+    userInfo,
   );
 
   const returnUri = new URL(

@@ -42,7 +42,13 @@ async function getPaymentDetails(paymentId: string, amount?: string) {
 export default async function Card(props: {
   params: { locale: string };
   searchParams:
-    | { paymentId: string; integrationRef: string; amount?: string }
+    | {
+        paymentId: string;
+        integrationRef: string;
+        amount?: string;
+        name: string;
+        email: string;
+      }
     | undefined;
 }) {
   const messages = await getMessages({ locale: props.params.locale });
@@ -62,12 +68,17 @@ export default async function Card(props: {
   const { client_secret, id: paymentIntentId } =
     await createPaymentIntent(paymentDetails);
 
+  const userInfo = {
+    name: props.searchParams.name,
+    email: props.searchParams.email,
+  };
   await createTransaction(
     props.searchParams.paymentId,
     paymentIntentId,
     props.searchParams.integrationRef,
     paymentDetails.amount,
     paymentDetails.provider_id,
+    userInfo,
   );
 
   const returnUri = new URL(
