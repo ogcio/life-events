@@ -28,6 +28,12 @@ export default async () => {
         description={t("stripeDescription")}
         href={"add-stripe"}
       />
+      {/* TODO: restore worldpay once it's integrated */}
+      {/* <ProviderTypeCard
+        title={t("worldpay")}
+        description={t("worldpayDescription")}
+        href={"add-worldpay"}
+      /> */}
     </div>
   );
 };

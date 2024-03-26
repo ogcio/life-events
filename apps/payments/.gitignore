@@ -36,6 +36,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-playwright
+playwright-report
 e2e/test-results
 e2e/.auth
