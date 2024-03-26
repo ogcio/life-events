@@ -83,11 +83,13 @@ export default async function ({
               >
                 {t(`form.paymentProvider.${providerType}`)}
               </label>
+              <br />
               <select
                 id={`${providerType}-account`}
                 name={`${providerType}-account`}
                 className="govie-select"
                 defaultValue={provider?.provider_id}
+                style={{ width: "350px" }}
               >
                 <option value={""}>Disabled</option>
                 {providerAccounts[index].map((account) => (
