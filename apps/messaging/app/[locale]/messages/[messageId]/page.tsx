@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 
 export default async (props: { params: { messageId: string } }) => {
   const message = await api.getMessage(props.params.messageId);
-  console.log({ message });
   if (!message) {
     // dunno what to show here :(
     throw notFound();
