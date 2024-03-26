@@ -63,5 +63,6 @@ export const seedProviders = (pool, userId) => {
     ],
   );
 
-  return Promise.all([manualBankTransfer, openBanking, stripe, worldpay]);
+  // TODO: add worldpay
+  return Promise.all([manualBankTransfer, openBanking, stripe]);
 };
