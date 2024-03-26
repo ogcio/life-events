@@ -166,11 +166,14 @@
     }
   },
   "PayPaymentRequest": {
+    "choose": "Choose payment method",
+    "confirm": "Confirm method",
     "title": "Pay your fee",
     "toPay": "Total to pay",
     "payByBank": "Pay by bank app",
     "payByBankDescription": "Make a direct payment securely from your bank app - no card needed",
     "payByCard": "Credit/Debit card",
+    "payByCardDescription": "Pay securely with your credit or debit card",
     "payNow": "Pay now",
     "manualBankTransfer": "Manual Bank Transfer",
     "manualBankTransferDescription": "Make a manual bank transfer",
