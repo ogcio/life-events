@@ -10,7 +10,6 @@ export default async function (req: Request) {
 
   const loginUrl = process.env.LOGIN_URL;
 
-  console.log("so fresh..");
 
   if (!loginUrl) {
     throw Error("Missing env var LOGIN_URL");
