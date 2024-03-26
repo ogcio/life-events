@@ -89,6 +89,17 @@
       "liveSecretKeyHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
       "confirm": "Confirm"
     },
+    "AddWorldpay": {
+      "title": "Add Worldpay payment provider",
+      "editTitle": "Edit Worldpay payment provider",
+      "name": "Name",
+      "nameHint": "Give a name to this payment provider to help you recognize it",
+      "merchantCode": "Merchant Code",
+      "merchantCodeHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "installationId": "Installation Id",
+      "installationIdHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "confirm": "Confirm"
+    },
     "Payments": {
       "createPayment": "Create payment",
       "transactions": "Transactions",
@@ -150,7 +161,8 @@
         "paymentProvider": {
           "openbanking": "OpenBanking Account",
           "banktransfer": "Manual Bank Transfer Account",
-          "stripe": "Stripe Account"
+          "stripe": "Stripe Account",
+          "worldpay": "Worldpay Account"
         },
         "reference": "Reference",
         "amount": "Amount",

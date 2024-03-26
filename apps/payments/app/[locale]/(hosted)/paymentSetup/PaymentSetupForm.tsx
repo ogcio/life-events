@@ -70,6 +70,8 @@ export default async function ({
           ></textarea>
         </div>
         {providerTypes.map((providerType, index) => {
+          // TODO: remove this line once worldpay is integrated
+          if (providerType === "worldpay") return null;
           const provider = details?.providers.find(
             (p) => p.provider_type === providerType,
           );
