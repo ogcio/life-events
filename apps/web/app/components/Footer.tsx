@@ -25,10 +25,12 @@ export default () => (
             ></path>
           </svg>
           <span className="govie-footer__licence-description">
-            All content is available under the
-            <a className="govie-footer__link" href="#" rel="license">
-              Open Government Licence v3.0
-            </a>
+            All content is available under the{" "}
+            <span>
+              <a className="govie-footer__link" href="#" rel="license">
+                Open Government Licence v3.0
+              </a>
+            </span>
             , except where otherwise stated
           </span>
         </div>

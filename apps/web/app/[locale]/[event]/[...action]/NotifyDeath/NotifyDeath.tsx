@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { routes, web, workflow } from "../../../../utils";
-import FormLayout from "../shared/FormLayout";
+import FormLayout from "../../../../components/FormLayout";
 import { PgSessions } from "auth/sessions";
 import RequiredInformationForm from "./RequiredInformationForm";
 import AuthorityCheckForm from "./AuthorityCheckForm";
