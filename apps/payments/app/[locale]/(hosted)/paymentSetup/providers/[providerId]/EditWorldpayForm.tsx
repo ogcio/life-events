@@ -1,12 +1,12 @@
 import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import EditProviderForm from "./EditProviderForm";
-import type { Provider, WorldpayData } from "../types";
+import type { WorldpayData, WorldpayProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import WorldpayFields from "../add-worldpay/WorldpayFields";
 
 type Props = {
-  provider: Provider;
+  provider: WorldpayProvider;
 };
 
 export default async ({ provider }: Props) => {
@@ -15,7 +15,6 @@ export default async ({ provider }: Props) => {
   async function updateProvider(formData: FormData) {
     "use server";
     const providerName = formData.get("provider_name");
-
     const merchantCode = formData.get("merchant_code");
     const installationId = formData.get("installation_id");
     const providerData = {
