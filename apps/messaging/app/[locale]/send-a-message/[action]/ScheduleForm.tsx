@@ -40,7 +40,6 @@ export default (props: MessageCreateProps) => {
     const next = Object.assign({}, props.state, {
       confirmedEmailRecipientsAt: "",
     });
-    console.log(next);
     await api.upsertMessageState(next, props.userId, props.stateId);
     revalidatePath("/");
   }
