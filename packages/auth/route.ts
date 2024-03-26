@@ -46,9 +46,7 @@ export default async function (req: Request) {
     name: "sessionId",
     value: ssid,
     httpOnly: true,
-    secure: false, // Set to true with https
     path: "/",
-    sameSite: "lax", // Set to none with https
   });
 
   if (is_public_servant) {
