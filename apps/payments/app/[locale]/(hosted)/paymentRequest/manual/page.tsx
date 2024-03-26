@@ -4,14 +4,12 @@ import { pgpool } from "../../../../dbConnection";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
 import Link from "next/link";
-import { getUserInfoById } from "auth/sessions";
 
 async function getPaymentDetails(paymentId: string, amount?: number) {
   const { rows: paymentRows } = await pgpool.query(
     `
     SELECT
       pr.payment_request_id,
-      pr.user_id,
       pr.title,
       pr.description,
       pr.reference,
@@ -31,18 +29,12 @@ async function getPaymentDetails(paymentId: string, amount?: number) {
 
   if (!paymentRows.length) return undefined;
 
-  const userInfo = await getUserInfoById(paymentRows[0].user_id);
-
-  if (!userInfo) return undefined;
-
   return {
     ...paymentRows[0],
     amount:
       paymentRows[0].allow_amount_override && amount
         ? amount
         : paymentRows[0].amount,
-    govid_email: userInfo.govid_email,
-    user_name: userInfo.user_name,
   };
 }
 

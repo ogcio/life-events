@@ -11,6 +11,10 @@ type TransactionDetails = {
   updated_at: string;
   provider_name: string;
   provider_type: string;
+  user_data: {
+    name: string;
+    email: string;
+  };
 };
 
 async function getTransactionDetails(transactionId: string) {
@@ -19,6 +23,7 @@ async function getTransactionDetails(transactionId: string) {
     SELECT
       t.transaction_id,
       t.status,
+      t.user_data,
       pr.title,
       t.amount,
       t.updated_at,
@@ -72,6 +77,18 @@ export default async function ({ params: { transactionId } }) {
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("providerType")}</dt>
           <dt className="govie-summary-list__value">{details.provider_type}</dt>
+        </div>
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("payerName")}</dt>
+          <dt className="govie-summary-list__value">
+            {details.user_data.name}
+          </dt>
+        </div>
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("payerEmail")}</dt>
+          <dt className="govie-summary-list__value">
+            {details.user_data.email}
+          </dt>
         </div>
       </dl>
     </div>
