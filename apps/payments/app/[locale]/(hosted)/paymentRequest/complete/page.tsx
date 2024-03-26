@@ -66,18 +66,18 @@ export default async function Page(props: Props) {
       props.searchParams.error === "tl_hpp_abandoned" ? "abandoned" : "error";
   }
 
-  // if (!extPaymentId) {
-  //   if (props.searchParams?.payment_intent) {
-  //     const paymentIntent = await getPaymentIntent(
-  //       props.searchParams!.payment_intent,
-  //     );
-  //     extPaymentId = paymentIntent.id;
+  if (!extPaymentId) {
+    if (props.searchParams?.payment_intent) {
+      const paymentIntent = await getPaymentIntent(
+        props.searchParams!.payment_intent,
+      );
+      extPaymentId = paymentIntent.id;
 
-  //     status = paymentIntent.status;
-  //   } else {
-  //     return <h1 className="govie-heading-l">{t("notFound")}</h1>;
-  //   }
-  // }
+      status = paymentIntent.status;
+    } else {
+      return <h1 className="govie-heading-l">{t("notFound")}</h1>;
+    }
+  }
 
   const transactionDetail = await updateTransaction(extPaymentId, status);
   const requestDetail = await getRequestDetails(

@@ -35,7 +35,7 @@
     "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
   },
   "Header": {
-    "myLifeEvents": "My life events"
+    "myLifeEvents": "Digital postbox"
   },
   "SendAnEmail": {
     "title": "Send an email"
@@ -52,7 +52,7 @@
   "sendAMessage": {
     "ComposeMessageMeta": {
       "title": "Send a message",
-      "chooseTransportation": "Choose transportation",
+      "chooseTransportation": "Choose transport",
       "email": "Email",
       "sms": "SMS",
       "postalService": "Postal service",

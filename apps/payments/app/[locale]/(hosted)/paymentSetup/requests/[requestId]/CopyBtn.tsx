@@ -6,9 +6,9 @@ export default function CopyLink(props: { link: string; buttonText: string }) {
   }
 
   // Clipboard is only available over HTTPS
-  // if (!navigator.clipboard) {
-  //   return null;
-  // }
+  if (!navigator.clipboard) {
+    return null;
+  }
 
   return (
     <button

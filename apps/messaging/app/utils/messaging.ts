@@ -32,7 +32,7 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
         key: routes.emailTemplates.slug,
         label: t("emailTemplate"),
         url: routes.emailTemplates.slug,
-        icon: "death",
+        icon: "employment",
       },
     );
   } else {
@@ -40,7 +40,7 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
       key: routes.messages.slug,
       label: t("messages"),
       url: routes.messages.slug,
-      icon: "death",
+      icon: "events",
     });
   }
   options.push({

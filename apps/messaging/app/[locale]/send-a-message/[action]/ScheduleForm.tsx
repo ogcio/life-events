@@ -27,7 +27,7 @@ export default (props: MessageCreateProps) => {
     await api.pushMessage({
       data,
       sender: { email: "whatever" },
-      transports: props.state.transportations as "email"[], // real pro typescripting
+      transports: props.state.transportations as "email"[],
       type: props.state.messageType as "message" | "event",
     });
 
