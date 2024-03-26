@@ -1,4 +1,3 @@
-import { PgSessions, getUserInfoById } from "auth/sessions";
 import { pgpool } from "../../../../dbConnection";
 import StripeHost from "./StripeHost";
 import { getMessages, getTranslations } from "next-intl/server";
@@ -12,7 +11,6 @@ async function getPaymentDetails(paymentId: string, amount?: string) {
     `
     select
       pr.payment_request_id,
-      pr.user_id,
       pr.title,
       pr.description,
       pr.reference,
@@ -32,25 +30,25 @@ async function getPaymentDetails(paymentId: string, amount?: string) {
 
   if (!rows.length) return undefined;
 
-  const userInfo = await getUserInfoById(rows[0].user_id);
-
-  if (!userInfo) return undefined;
-
   return {
     ...rows[0],
     amount:
       rows[0].allow_amount_override && amount
         ? parseFloat(amount)
         : rows[0].amount,
-    govid_email: userInfo.govid_email,
-    user_name: userInfo.user_name,
   };
 }
 
 export default async function Card(props: {
   params: { locale: string };
   searchParams:
-    | { paymentId: string; integrationRef: string; amount?: string }
+    | {
+        paymentId: string;
+        integrationRef: string;
+        amount?: string;
+        name: string;
+        email: string;
+      }
     | undefined;
 }) {
   const messages = await getMessages({ locale: props.params.locale });
@@ -61,7 +59,6 @@ export default async function Card(props: {
   if (!props.searchParams?.paymentId) {
     return <h1>{t("notFound")}</h1>;
   }
-  const { userId } = await PgSessions.get();
 
   const paymentDetails = await getPaymentDetails(
     props.searchParams.paymentId,
@@ -71,13 +68,17 @@ export default async function Card(props: {
   const { client_secret, id: paymentIntentId } =
     await createPaymentIntent(paymentDetails);
 
+  const userInfo = {
+    name: props.searchParams.name,
+    email: props.searchParams.email,
+  };
   await createTransaction(
     props.searchParams.paymentId,
-    userId,
     paymentIntentId,
     props.searchParams.integrationRef,
     paymentDetails.amount,
     paymentDetails.provider_id,
+    userInfo,
   );
 
   const returnUri = new URL(

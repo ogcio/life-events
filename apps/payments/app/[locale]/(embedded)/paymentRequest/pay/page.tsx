@@ -6,8 +6,6 @@ import {
   stringToAmount,
 } from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
-import { PgSessions } from "auth/sessions";
-import ClientLink from "./ClientLink";
 import { PaymentRequestDO } from "../../../../../types/common";
 import { redirect } from "next/navigation";
 
@@ -51,16 +49,12 @@ async function getPaymentRequestDetails(paymentId: string) {
   return res.rows;
 }
 
-async function selectCustomAmount(
-  requestId: string,
-  userId: string,
-  formData: FormData,
-) {
+async function selectCustomAmount(requestId: string, formData: FormData) {
   "use server";
   const customAmount = stringToAmount(
     formData.get("customAmount")?.toString() as string,
   );
-  const integrationReference = `${userId}:${requestId}`;
+  const integrationReference = requestId;
 
   redirect(
     `./pay?paymentId=${requestId}&id=${integrationReference}&customAmount=${customAmount}`,
@@ -77,23 +71,39 @@ async function redirectToPaymentUrl(
   formData: FormData,
 ) {
   "use server";
-  const type = formData.get("type") as string;
-  const { paymentId, integrationRef, amount, customAmount } = settings;
+
   redirect(
-    getPaymentUrl(paymentId, type, integrationRef, amount, customAmount),
+    getPaymentUrl({
+      ...settings,
+      type: formData.get("type") as string,
+      email: formData.get("email") as string,
+      name: formData.get("name") as string,
+    }),
   );
 }
 
-function getPaymentUrl(
-  paymentId: string,
-  type: string,
-  integrationRef: string,
-  amount?: number,
-  customAmount?: number,
-) {
+function getPaymentUrl({
+  paymentId,
+  type,
+  integrationRef,
+  amount,
+  customAmount,
+  name,
+  email,
+}: {
+  paymentId: string;
+  type: string;
+  integrationRef: string;
+  amount?: number;
+  customAmount?: number;
+  name: string;
+  email: string;
+}) {
   const url = new URL(`/paymentRequest/${type}`, process.env.HOST_URL);
   url.searchParams.set("paymentId", paymentId);
   url.searchParams.set("integrationRef", integrationRef);
+  url.searchParams.set("name", name);
+  url.searchParams.set("email", email);
   if (amount) {
     url.searchParams.set("amount", amount.toString());
   }
@@ -110,9 +120,6 @@ const NotFound = async () => {
 export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return <NotFound />;
-
-  // Enforce being logged in
-  const { userId } = await PgSessions.get();
 
   const [details, t, tCommon] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId),
@@ -154,7 +161,6 @@ export default async function Page(props: Props) {
   const selectAmountAction = selectCustomAmount.bind(
     this,
     props.searchParams?.paymentId,
-    userId,
   );
 
   const redirectToPayment = redirectToPaymentUrl.bind(this, {
@@ -227,7 +233,37 @@ export default async function Page(props: Props) {
         <hr className="govie-section-break govie-section-break--visible"></hr>
         <form action={redirectToPayment} style={{ marginTop: "20px" }}>
           <div className="govie-form-group">
+            <h2 className="govie-heading-l">{t("addInfo")}</h2>
+            <div className="govie-form-group">
+              <div className="govie-hint" id="name-hint">
+                {t("name")}
+              </div>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                className="govie-input"
+                aria-describedby="name-hint"
+                required
+                style={{ maxWidth: "500px" }}
+              />
+            </div>
+            <div className="govie-form-group">
+              <div className="govie-hint" id="email-hint">
+                {t("email")}
+              </div>
+              <input
+                type="text"
+                id="email"
+                name="email"
+                className="govie-input"
+                aria-describedby="email-hint"
+                required
+                style={{ maxWidth: "500px" }}
+              />
+            </div>
             <h2 className="govie-heading-l">{t("choose")}</h2>
+
             <div
               data-module="govie-radios"
               className="govie-radios govie-radios--large"
