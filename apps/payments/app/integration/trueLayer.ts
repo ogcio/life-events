@@ -57,10 +57,10 @@ export async function createPaymentRequest(paymentRequest) {
         },
       },
     },
-    user: {
-      name: paymentRequest.user_name,
-      email: paymentRequest.govid_email,
-    },
+    // user: {
+    //   name: paymentRequest.user_name,
+    //   email: paymentRequest.govid_email,
+    // },
   });
 
   const idempotencyKey = randomUUID();

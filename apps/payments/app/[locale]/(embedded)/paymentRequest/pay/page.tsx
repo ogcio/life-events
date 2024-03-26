@@ -6,7 +6,6 @@ import {
   stringToAmount,
 } from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
-import { PgSessions } from "auth/sessions";
 import ClientLink from "./ClientLink";
 import { PaymentRequestDO } from "../../../../../types/common";
 import { redirect } from "next/navigation";
@@ -51,16 +50,12 @@ async function getPaymentRequestDetails(paymentId: string) {
   return res.rows;
 }
 
-async function selectCustomAmount(
-  requestId: string,
-  userId: string,
-  formData: FormData,
-) {
+async function selectCustomAmount(requestId: string, formData: FormData) {
   "use server";
   const customAmount = stringToAmount(
     formData.get("customAmount")?.toString() as string,
   );
-  const integrationReference = `${userId}:${requestId}`;
+  const integrationReference = requestId;
 
   redirect(
     `./pay?paymentId=${requestId}&id=${integrationReference}&customAmount=${customAmount}`,
@@ -93,9 +88,6 @@ const NotFound = async () => {
 export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return <NotFound />;
-
-  // Enforce being logged in
-  const { userId } = await PgSessions.get();
 
   const [details, t, tCommon] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId),
@@ -137,7 +129,6 @@ export default async function Page(props: Props) {
   const selectAmountAction = selectCustomAmount.bind(
     this,
     props.searchParams?.paymentId,
-    userId,
   );
 
   return (

@@ -89,16 +89,14 @@ export async function getUserTransactionDetails(userId: string) {
   SELECT
     t.transaction_id,
     t.status,
-    t.user_id,
     pr.title,
     t.amount,
     t.updated_at
   FROM payment_transactions t
   LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
-  WHERE pr.user_id = $1
   ORDER BY t.updated_at DESC
 `,
-    [userId],
+    [],
   );
   const transactions = res.rows;
 
@@ -132,7 +130,6 @@ export async function getRequestTransactionDetails(requestId: string) {
 
 export async function createTransaction(
   paymentId: string,
-  userId: string,
   extPaymentId: string,
   tenantReference: string,
   amount: number,
@@ -141,16 +138,9 @@ export async function createTransaction(
   "use server";
   await pgpool.query<{ transaction_id: number }>(
     `
-    insert into payment_transactions (payment_request_id, user_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id)
-    values ($1, $2, $3, $4, $5, 'pending', now(), now(), $6);
+    insert into payment_transactions (payment_request_id,  ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id)
+    values ($1, $2, $3, $4, 'pending', now(), now(), $5);
     `,
-    [
-      paymentId,
-      userId,
-      extPaymentId,
-      tenantReference,
-      amount,
-      paymentProviderId,
-    ],
+    [paymentId, extPaymentId, tenantReference, amount, paymentProviderId],
   );
 }

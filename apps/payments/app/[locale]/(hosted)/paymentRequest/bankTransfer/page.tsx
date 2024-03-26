@@ -1,5 +1,3 @@
-import { PgSessions, getUserInfoById } from "auth/sessions";
-
 import OpenBankingHost from "./OpenBankingHost";
 import { pgpool } from "../../../../dbConnection";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
@@ -16,7 +14,6 @@ async function getPaymentDetails(
     `
     SELECT
       pr.payment_request_id,
-      pr.user_id,
       pr.title,
       pr.description,
       pr.reference,
@@ -37,10 +34,6 @@ async function getPaymentDetails(
 
   if (!paymentRows.length) return undefined;
 
-  const userInfo = await getUserInfoById(paymentRows[0].user_id);
-
-  if (!userInfo) return undefined;
-
   const realAmount = getRealAmount({
     amount: paymentRows[0].amount,
     customAmount,
@@ -52,8 +45,6 @@ async function getPaymentDetails(
   const paymentDetails = {
     ...paymentRows[0],
     amount: realAmount,
-    govid_email: userInfo.govid_email,
-    user_name: userInfo.user_name,
   };
 
   const paymentRequest = await createPaymentRequest(paymentDetails);
@@ -79,8 +70,6 @@ export default async function Bank(props: {
     return <h1>{t("notFound")}</h1>;
   }
 
-  const { userId } = await PgSessions.get();
-
   const amount = props.searchParams.amount
     ? parseFloat(props.searchParams.amount)
     : undefined;
@@ -100,7 +89,6 @@ export default async function Bank(props: {
 
   await createTransaction(
     props.searchParams.paymentId,
-    userId,
     paymentRequest.id,
     props.searchParams.integrationRef,
     paymentDetails.amount,
