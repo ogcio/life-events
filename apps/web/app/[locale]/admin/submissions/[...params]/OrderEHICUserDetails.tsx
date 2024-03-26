@@ -4,8 +4,9 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
-import { aws, postgres, web, workflow } from "../../../../utils";
+import { aws, postgres, routes, web, workflow } from "../../../../utils";
 import { headers } from "next/headers";
+import FormLayout from "../../../../components/FormLayout";
 
 type Props = {
   flowData: workflow.OrderEHIC;
@@ -50,7 +51,11 @@ export default async ({ userId, flow, flowData }: Props) => {
   }
 
   return (
-    <>
+    <FormLayout
+      action={{ slug: "submissions." + flow }}
+      backHref={`/${routes.admin.slug}`}
+      homeHref={`/${routes.admin.slug}`}
+    >
       <div className="govie-heading-l">{t("title")}</div>
       <div className="govie-heading-m">{flowData.userName}</div>
       <div className="govie-grid-row">
@@ -133,6 +138,6 @@ export default async ({ userId, flow, flowData }: Props) => {
           {t("approve")}
         </button>
       </form>
-    </>
+    </FormLayout>
   );
 };

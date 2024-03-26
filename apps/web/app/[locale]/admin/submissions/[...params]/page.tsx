@@ -6,6 +6,7 @@ import RejectReasonForm from "./RejectReasonForm";
 import RenewLicenceUserDetails from "./RenewLicenceUserDetails";
 import OrderBirthCertificateUserDetails from "./OrderBirthCertificateUserDetails";
 import NotifyDeathDetails from "./NotifyDeathDetails";
+import ApplyJobseekersAllowanceDetails from "./ApplyJobseekersAllowanceDetails";
 
 const isOrderEHICData = (
   flow: string,
@@ -28,6 +29,12 @@ const isNotifyDeatheData = (
   flow: string,
   flowData: workflow.Workflow,
 ): flowData is workflow.NotifyDeath => flow === workflow.keys.notifyDeath;
+
+const isApplyJobseekersAllowanceData = (
+  flow: string,
+  flowData: workflow.Workflow,
+): flowData is workflow.ApplyJobseekersAllowance =>
+  flow === workflow.keys.applyJobseekersAllowance;
 
 export default async (props: { params: { params: string[] } }) => {
   const [flow, userId, action] = props.params.params;
@@ -96,6 +103,19 @@ export default async (props: { params: { params: string[] } }) => {
 
   if (flow === workflow.keys.notifyDeath && isNotifyDeatheData(flow, data)) {
     return <NotifyDeathDetails flow={flow} flowData={data} userId={userId} />;
+  }
+
+  if (
+    flow === workflow.keys.applyJobseekersAllowance &&
+    isApplyJobseekersAllowanceData(flow, data)
+  ) {
+    return (
+      <ApplyJobseekersAllowanceDetails
+        flow={flow}
+        flowData={data}
+        userId={userId}
+      />
+    );
   }
 
   throw notFound();

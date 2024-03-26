@@ -79,7 +79,7 @@ export default async (props: {
             >
               <div
                 className="govie-radios__item"
-                style={{ marginBottom: "30px" }}
+                style={{ marginBottom: "30px", paddingLeft: 0 }}
               >
                 <div className="govie-radios__item">
                   <input

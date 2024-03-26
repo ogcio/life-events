@@ -10,7 +10,7 @@ async function getRegisteredAccounts(userId: string, providerType: string) {
     { provider_id: string; provider_name: string },
     string[]
   >(
-    `select provider_id, provider_name from payment_providers where user_id = $1 and provider_type = $2`,
+    `select provider_id, provider_name from payment_providers where user_id = $1 and provider_type = $2 and status = 'connected'`,
     [userId, providerType],
   );
 
@@ -86,7 +86,6 @@ export default async function ({
                 name={`${providerType}-account`}
                 className="govie-select"
                 defaultValue={provider?.provider_id}
-                disabled={!!provider?.provider_id}
               >
                 <option value={""}>Disabled</option>
                 {providerAccounts[index].map((account) => (
@@ -148,6 +147,23 @@ export default async function ({
               htmlFor="allow-override-hint"
             >
               {t("form.allowAmountOverride")}
+            </label>
+          </div>
+        </div>
+        <div className="govie-form-group">
+          <div className="govie-checkboxes__item">
+            <input
+              className="govie-checkboxes__input"
+              id="allow-custom-hint"
+              name="allowCustomAmount"
+              type="checkbox"
+              defaultChecked={details?.allowCustomAmount}
+            />
+            <label
+              className="govie-label--s govie-checkboxes__label"
+              htmlFor="allow-custom-hint"
+            >
+              {t("form.allowCustomAmount")}
             </label>
           </div>
         </div>

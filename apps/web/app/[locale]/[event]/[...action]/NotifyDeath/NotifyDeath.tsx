@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { routes, web, workflow } from "../../../../utils";
-import FormLayout from "../shared/FormLayout";
+import FormLayout from "../../../../components/FormLayout";
 import { PgSessions } from "auth/sessions";
 import RequiredInformationForm from "./RequiredInformationForm";
 import AuthorityCheckForm from "./AuthorityCheckForm";
@@ -103,6 +103,7 @@ const RequiredInformationStep: React.FC<FormProps> = ({
   userId,
   flow,
   eventsPageHref,
+  data,
 }) => {
   return stepSlug === nextSlug ? (
     <FormLayout
@@ -110,7 +111,7 @@ const RequiredInformationStep: React.FC<FormProps> = ({
       step={stepSlug}
       backHref={eventsPageHref}
     >
-      <RequiredInformationForm userId={userId} flow={flow} />
+      <RequiredInformationForm userId={userId} flow={flow} data={data} />
     </FormLayout>
   ) : (
     redirect(nextSlug || "")

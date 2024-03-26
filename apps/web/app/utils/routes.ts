@@ -1,6 +1,44 @@
 export const events = { slug: "events" };
 export const aboutMe = { slug: "about-me" };
-export const birth = { slug: "birth" };
+export const birth = {
+  slug: "birth",
+  orderBirthCertificate: {
+    slug: "order-birth-certificate",
+    path() {
+      return `${birth.slug}/${birth.orderBirthCertificate.slug}`;
+    },
+    checkDetails: {
+      slug: "check-details",
+      path() {
+        return `${birth.slug}/${birth.orderBirthCertificate.slug}/${birth.orderBirthCertificate.checkDetails.slug}`;
+      },
+    },
+    changeDetails: {
+      slug: "change-details",
+      path() {
+        return `${birth.slug}/${birth.orderBirthCertificate.slug}/${birth.orderBirthCertificate.changeDetails.slug}`;
+      },
+    },
+    newAddress: {
+      slug: "new-address",
+      path() {
+        return `${birth.slug}/${birth.orderBirthCertificate.slug}/${birth.orderBirthCertificate.newAddress.slug}`;
+      },
+    },
+    proofOfAddress: {
+      slug: "proof-of-address",
+      path() {
+        return `${birth.slug}/${birth.orderBirthCertificate.slug}/${birth.orderBirthCertificate.proofOfAddress.slug}`;
+      },
+    },
+    applicationSuccess: {
+      slug: "application-success",
+      path() {
+        return `${birth.slug}/${birth.orderBirthCertificate.slug}/${birth.orderBirthCertificate.applicationSuccess.slug}`;
+      },
+    },
+  },
+};
 
 export const health = {
   slug: "health",
@@ -49,42 +87,6 @@ export const health = {
       slug: "application-success",
       path() {
         return `${health.slug}/${health.orderEHIC.slug}/${health.orderEHIC.applicationSuccess.slug}`;
-      },
-    },
-  },
-  orderBirthCertificate: {
-    slug: "order-birth-certificate",
-    path() {
-      return `${health.slug}/${health.orderBirthCertificate.slug}`;
-    },
-    checkDetails: {
-      slug: "check-details",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.checkDetails.slug}`;
-      },
-    },
-    changeDetails: {
-      slug: "change-details",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.changeDetails.slug}`;
-      },
-    },
-    newAddress: {
-      slug: "new-address",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.newAddress.slug}`;
-      },
-    },
-    proofOfAddress: {
-      slug: "proof-of-address",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.proofOfAddress.slug}`;
-      },
-    },
-    applicationSuccess: {
-      slug: "application-success",
-      path() {
-        return `${health.slug}/${health.orderBirthCertificate.slug}/${health.orderBirthCertificate.applicationSuccess.slug}`;
       },
     },
   },
@@ -151,7 +153,75 @@ export const driving = {
     },
   },
 };
-export const employment = { slug: "employment" };
+export const employment = {
+  slug: "employment",
+  applyJobseekersAllowance: {
+    slug: "apply-jobseekers-allowance",
+    path() {
+      return `${employment.slug}/${employment.applyJobseekersAllowance.slug}`;
+    },
+    introduction: {
+      slug: "introduction",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.introduction.slug}`;
+      },
+    },
+    benefitsEntitlements: {
+      slug: "benefits-entitlements",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.benefitsEntitlements.slug}`;
+      },
+    },
+    apply: {
+      slug: "apply-jobseekers-allowance",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.apply.slug}`;
+      },
+    },
+    rates: {
+      slug: "rates",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.rates.slug}`;
+      },
+    },
+    questions: {
+      slug: "what-asked-about",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.questions.slug}`;
+      },
+    },
+    confirmDetails: {
+      slug: "confirm-details",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.confirmDetails.slug}`;
+      },
+    },
+    changeDetails: {
+      slug: "change-details",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.changeDetails.slug}`;
+      },
+    },
+    newAddress: {
+      slug: "new-address",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.newAddress.slug}`;
+      },
+    },
+    proofOfAddress: {
+      slug: "proof-of-address",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.proofOfAddress.slug}`;
+      },
+    },
+    applicationSuccess: {
+      slug: "application-success",
+      path() {
+        return `${employment.slug}/${employment.applyJobseekersAllowance.slug}/${employment.applyJobseekersAllowance.applicationSuccess.slug}`;
+      },
+    },
+  },
+};
 export const business = { slug: "business" };
 export const housing = { slug: "housing" };
 export const death = {
@@ -200,8 +270,16 @@ export const death = {
   },
 };
 
+export const admin = {
+  slug: "admin",
+};
+
 export const category = {
   health,
   driving,
   death,
+  birth,
+  employment,
+  business,
+  housing,
 };

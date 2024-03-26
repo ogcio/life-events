@@ -35,14 +35,32 @@ export type ProviderData =
   | StripeData
   | WorldpayData;
 
-export type Provider = {
+export type CommonProvider = {
   id: string;
   name: string;
   userId?: string;
-  type: ProviderType;
   status: ProviderStatus;
-  providerData: ProviderData;
 };
+
+export type StripeProvider = CommonProvider & {
+  type: "stripe";
+  providerData: StripeData;
+};
+
+export type OpenBankingProvider = CommonProvider & {
+  type: "openbanking";
+  providerData: OpenBankingData;
+};
+
+export type BankTransferProvider = CommonProvider & {
+  type: "banktransfer";
+  providerData: BankTransferData;
+};
+
+export type Provider =
+  | StripeProvider
+  | OpenBankingProvider
+  | BankTransferProvider;
 
 export const parseProvider = (rawProvider: any): Provider => ({
   id: rawProvider.provider_id,
