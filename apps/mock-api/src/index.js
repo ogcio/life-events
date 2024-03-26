@@ -34,7 +34,11 @@ const fastify = Fastify({
   logger: true,
 });
 
-await fastify.register(fastifyEnv, { schema: envSchema, dotenv: true });
+await fastify.register(fastifyEnv, {
+  schema: envSchema,
+  dotenv: true,
+  data: process.env,
+});
 
 await fastify.register(fastifyPostgres, {
   host: fastify.config.POSTGRES_HOST,
