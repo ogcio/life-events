@@ -2,22 +2,22 @@ import { getTranslations } from "next-intl/server";
 
 type Props = {
   providerName?: string;
-  livePublishableKey?: string;
-  liveSecretKey?: string;
+  merchantCode?: string;
+  installationId?: string;
 };
 
 export default async ({
   providerName = "",
-  livePublishableKey = "",
-  liveSecretKey = "",
+  merchantCode = "",
+  installationId = "",
 }: Props) => {
-  const t = await getTranslations("PaymentSetup.AddStripe");
+  const t = await getTranslations("PaymentSetup.AddWorldpay");
 
   return (
     <div className="govie-form-group ">
       <div className="govie-form-group">
         <label className="govie-label--s" htmlFor="provider_name">
-          {t("name")}{" "}
+          {t("name")}
         </label>
         <div className="govie-hint">{t("nameHint")}</div>
         <input
@@ -29,29 +29,29 @@ export default async ({
         />
       </div>
       <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="live_publishable_key">
-          {t("livePublishableKey")}{" "}
+        <label className="govie-label--s" htmlFor="merchant_code">
+          {t("merchantCode")}
         </label>
-        <div className="govie-hint">{t("livePublishableKeyHint")}</div>
+        <div className="govie-hint">{t("merchantCodeHint")}</div>
         <input
           type="text"
-          id="live_publishable_key"
-          name="live_publishable_key"
+          id="merchant_code"
+          name="merchant_code"
           className="govie-input"
-          defaultValue={livePublishableKey}
+          defaultValue={merchantCode}
         />
       </div>
       <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="live_secret_key">
-          {t("liveSecretKey")}{" "}
+        <label className="govie-label--s" htmlFor="installation_id">
+          {t("installationId")}
         </label>
-        <div className="govie-hint">{t("liveSecretKeyHint")}</div>
+        <div className="govie-hint">{t("installationIdHint")}</div>
         <input
           type="text"
-          id="live_secret_key"
-          name="live_secret_key"
+          id="installation_id"
+          name="installation_id"
           className="govie-input"
-          defaultValue={liveSecretKey}
+          defaultValue={installationId}
         />
       </div>
     </div>
