@@ -67,6 +67,23 @@ async function selectCustomAmount(
   );
 }
 
+async function redirectToPaymentUrl(
+  settings: {
+    paymentId: string;
+    integrationRef: string;
+    amount?: number;
+    customAmount?: number;
+  },
+  formData: FormData,
+) {
+  "use server";
+  const type = formData.get("type") as string;
+  const { paymentId, integrationRef, amount, customAmount } = settings;
+  redirect(
+    getPaymentUrl(paymentId, type, integrationRef, amount, customAmount),
+  );
+}
+
 function getPaymentUrl(
   paymentId: string,
   type: string,
@@ -140,6 +157,13 @@ export default async function Page(props: Props) {
     userId,
   );
 
+  const redirectToPayment = redirectToPaymentUrl.bind(this, {
+    paymentId: props.searchParams.paymentId,
+    integrationRef: props.searchParams.id,
+    amount: urlAmount,
+    customAmount,
+  });
+
   return (
     <div
       style={{
@@ -156,7 +180,6 @@ export default async function Page(props: Props) {
           display: "flex",
           flexDirection: "column",
           width: "80%",
-          gap: "2em",
         }}
       >
         <h1 className="govie-heading-l">{t("title")}</h1>
@@ -202,70 +225,81 @@ export default async function Page(props: Props) {
         )}
 
         <hr className="govie-section-break govie-section-break--visible"></hr>
-        {hasOpenBanking && (
-          <>
-            <div style={{ margin: "1em 0" }}>
-              <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
-                <h3 className="govie-heading-s" style={{ margin: 0 }}>
-                  {t("payByBank")}
-                </h3>
-                <strong className="govie-tag govie-tag--green">
-                  Recommended
-                </strong>
-              </div>
-              <p className="govie-body">{t("payByBankDescription")}</p>
-              <ClientLink
-                label={t("payNow")}
-                href={getPaymentUrl(
-                  props.searchParams.paymentId,
-                  "bankTransfer",
-                  props.searchParams.id,
-                  urlAmount,
-                  customAmount,
-                )}
-              />
-            </div>
-            <hr className="govie-section-break govie-section-break--visible"></hr>
-          </>
-        )}
-        {hasManualBanking && (
-          <>
-            <div style={{ margin: "1em 0" }}>
-              <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
-                <h3 className="govie-heading-s" style={{ margin: 0 }}>
-                  {t("manualBankTransfer")}
-                </h3>
-              </div>
-              <p className="govie-body">{t("manualBankTransferDescription")}</p>
-              <ClientLink
-                label={t("payNow")}
-                href={getPaymentUrl(
-                  props.searchParams.paymentId,
-                  "manual",
-                  props.searchParams.id,
-                  urlAmount,
-                  customAmount,
-                )}
-              />
-            </div>
-            <hr className="govie-section-break govie-section-break--visible"></hr>
-          </>
-        )}
-        {hasStripe && (
-          <div style={{ margin: "1em 0" }}>
-            <h3 className="govie-heading-s">{t("payByCard")}</h3>
-            <ClientLink
-              label={t("payNow")}
-              href={getPaymentUrl(
-                props.searchParams!.paymentId,
-                "stripe",
-                props.searchParams!.id,
-                urlAmount,
-                customAmount,
+        <form action={redirectToPayment} style={{ marginTop: "20px" }}>
+          <div className="govie-form-group">
+            <h2 className="govie-heading-l">{t("choose")}</h2>
+            <div
+              data-module="govie-radios"
+              className="govie-radios govie-radios--large"
+            >
+              {hasOpenBanking && (
+                <div className="govie-radios__item">
+                  <input
+                    id="bankTransfer-0"
+                    name="type"
+                    type="radio"
+                    value="bankTransfer"
+                    className="govie-radios__input"
+                  />
+                  <label
+                    className="govie-label--s govie-radios__label"
+                    htmlFor="bankTransfer-0"
+                  >
+                    {t("payByBank")}
+                    <p className="govie-body">{t("payByBankDescription")}</p>
+                  </label>
+                </div>
               )}
-            />
+
+              {hasManualBanking && (
+                <div className="govie-radios__item">
+                  <input
+                    id="manual-0"
+                    name="type"
+                    type="radio"
+                    value="manual"
+                    className="govie-radios__input"
+                  />
+
+                  <label
+                    className="govie-label--s govie-radios__label"
+                    htmlFor="manual-0"
+                  >
+                    {t("manualBankTransfer")}
+                    <p className="govie-body">
+                      {t("manualBankTransferDescription")}
+                    </p>
+                  </label>
+                </div>
+              )}
+
+              {hasStripe && (
+                <div className="govie-radios__item">
+                  <input
+                    id="stripe-0"
+                    name="type"
+                    type="radio"
+                    value="stripe"
+                    className="govie-radios__input"
+                  />
+                  <label
+                    className="govie-label--s govie-radios__label"
+                    htmlFor="stripe-0"
+                  >
+                    {t("payByCard")}
+                    <p className="govie-body">{t("payByCardDescription")}</p>
+                  </label>
+                </div>
+              )}
+            </div>
+
+            <div className="govie-form-group" style={{ marginTop: "20px" }}>
+              <button className="govie-button govie-button--primary">
+                {t("confirm")}
+              </button>
+            </div>
           </div>
-        )}
+        </form>
       </div>
     </div>
   );
