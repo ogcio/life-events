@@ -1,6 +1,6 @@
 import { routes, web } from "../../../utils";
 import LifeEventsMenu from "./LifeEventsMenu";
-import { isEnabled } from "feature-flags/utils";
+import { isFeatureFlagEnabled } from "feature-flags/utils";
 
 type MenuOption = {
   key: string;
@@ -90,7 +90,7 @@ export default async function WithEventMenu({
     const enabledOptions: MenuOption[] = [];
 
     for (const option of menuOptions) {
-      const enabled = await isEnabled(option.key);
+      const enabled = await isFeatureFlagEnabled(option.key);
       if (enabled) {
         enabledOptions.push(option);
       }

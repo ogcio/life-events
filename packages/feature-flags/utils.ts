@@ -31,22 +31,19 @@ const defaultFeatureFlags = {
   },
 };
 
-export async function getFeatureFlag(application: string, slug: string) {
+export async function isFeatureFlagEnabled(
+  name: string,
+  application: string = "portal",
+) {
   const result = await pgpool.query<FeatureFlag, [string, string]>(
     `SELECT * FROM feature_flags WHERE application = $1 AND slug = $2`,
-    [application, slug],
+    [application, name],
   );
-  return result.rows[0];
-}
 
-export async function isEnabled(featureFlagName: string, application?: string) {
-  const featureFlag = await getFeatureFlag(
-    application || "portal",
-    featureFlagName,
-  );
+  const featureFlag = result.rows[0];
 
   if (!featureFlag) {
-    return defaultFeatureFlags[featureFlagName].enabled;
+    return defaultFeatureFlags[name].enabled;
   }
 
   return Boolean(featureFlag?.is_enabled);
