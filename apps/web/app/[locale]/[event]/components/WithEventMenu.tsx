@@ -86,21 +86,19 @@ export default async function WithEventMenu({
     },
   ];
 
-  async function getFilteredOptions() {
+  async function getEnabledOptions() {
     const enabledOptions: MenuOption[] = [];
 
-    await Promise.all(
-      menuOptions.map(async (option) => {
-        const enabled = await isEnabled(option.key);
-        if (enabled) {
-          enabledOptions.push(option);
-        }
-      }),
-    );
+    for (const option of menuOptions) {
+      const enabled = await isEnabled(option.key);
+      if (enabled) {
+        enabledOptions.push(option);
+      }
+    }
 
     return enabledOptions;
   }
-  const filteredOptions = await getFilteredOptions();
+  const enabledOptions = await getEnabledOptions();
 
   return (
     <div
@@ -115,7 +113,7 @@ export default async function WithEventMenu({
           userName={userName}
           ppsn="TUV1234123"
           selected={params.event ?? ""}
-          options={filteredOptions}
+          options={enabledOptions}
         />
       </div>
       {children}
