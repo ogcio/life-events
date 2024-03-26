@@ -89,6 +89,17 @@
       "liveSecretKeyHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
       "confirm": "Confirm"
     },
+    "AddWorldpay": {
+      "title": "Add Worldpay payment provider",
+      "editTitle": "Edit Worldpay payment provider",
+      "name": "Name",
+      "nameHint": "Give a name to this payment provider to help you recognize it",
+      "merchantCode": "Merchant Code",
+      "merchantCodeHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "installationId": "Installation Id",
+      "installationIdHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "confirm": "Confirm"
+    },
     "Payments": {
       "createPayment": "Create payment",
       "transactions": "Transactions",
@@ -126,7 +137,9 @@
         "requestTitle": "Payment Request Title",
         "amount": "Amount",
         "lastUpdate": "Last update",
-        "status": "Status"
+        "status": "Status",
+        "providerName": "Provider name",
+        "providerType": "Provider type"
       },
       "assignTitle": "Assign to User",
       "assignDescription": "Send this payment to a user",
@@ -148,7 +161,8 @@
         "paymentProvider": {
           "openbanking": "OpenBanking Account",
           "banktransfer": "Manual Bank Transfer Account",
-          "stripe": "Stripe Account"
+          "stripe": "Stripe Account",
+          "worldpay": "Worldpay Account"
         },
         "reference": "Reference",
         "amount": "Amount",
@@ -158,17 +172,20 @@
         "allowCustomAmount": "Allow the user to pay a custom amount",
         "submit": "Continue"
       },
-      "copyLink": "Copy link",
+      "copyLink": "Copy",
       "goBack": "Back to payments",
       "paymentLink": "Payment link"
     }
   },
   "PayPaymentRequest": {
+    "choose": "Choose payment method",
+    "confirm": "Confirm method",
     "title": "Pay your fee",
     "toPay": "Total to pay",
     "payByBank": "Pay by bank app",
     "payByBankDescription": "Make a direct payment securely from your bank app - no card needed",
     "payByCard": "Credit/Debit card",
+    "payByCardDescription": "Pay securely with your credit or debit card",
     "payNow": "Pay now",
     "manualBankTransfer": "Manual Bank Transfer",
     "manualBankTransferDescription": "Make a manual bank transfer",

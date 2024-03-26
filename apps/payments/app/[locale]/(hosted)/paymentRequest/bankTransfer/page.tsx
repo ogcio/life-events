@@ -5,6 +5,7 @@ import { pgpool } from "../../../../dbConnection";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 import { getRealAmount } from "../../../../utils";
+import { createTransaction } from "../../paymentSetup/db";
 
 async function getPaymentDetails(
   paymentId: string,
@@ -63,23 +64,6 @@ async function getPaymentDetails(
   };
 }
 
-async function createTransaction(
-  paymentId: string,
-  userId: string,
-  extPaymentId: string,
-  tenantReference: string,
-  amount: number,
-) {
-  "use server";
-  await pgpool.query<{ transaction_id: number }>(
-    `
-    insert into payment_transactions (payment_request_id, user_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at)
-    values ($1, $2, $3, $4, $5, 'pending', now(), now());
-    `,
-    [paymentId, userId, extPaymentId, tenantReference, amount],
-  );
-}
-
 export default async function Bank(props: {
   params: { locale: string };
   searchParams:
@@ -121,6 +105,7 @@ export default async function Bank(props: {
     paymentRequest.id,
     props.searchParams.integrationRef,
     paymentDetails.amount,
+    paymentDetails.provider_id,
   );
 
   const returnUri = new URL(
