@@ -160,7 +160,7 @@
         "allowCustomAmount": "Allow the user to pay a custom amount",
         "submit": "Continue"
       },
-      "copyLink": "Copy link",
+      "copyLink": "Copy",
       "goBack": "Back to payments",
       "paymentLink": "Payment link"
     }
