@@ -5,10 +5,6 @@ import { driving } from "../../../utils/routes";
 import { api, temporaryMockUtils } from "messages";
 import { PgSessions } from "auth/sessions";
 
-export async function POST() {
-  console.log("hoho");
-}
-
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const transactionId = searchParams.get("transactionId");
