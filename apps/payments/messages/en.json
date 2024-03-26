@@ -139,7 +139,9 @@
         "lastUpdate": "Last update",
         "status": "Status",
         "providerName": "Provider name",
-        "providerType": "Provider type"
+        "providerType": "Provider type",
+        "payerName": "Payer name",
+        "payerEmail": "Payer email"
       },
       "assignTitle": "Assign to User",
       "assignDescription": "Send this payment to a user",
@@ -190,7 +192,10 @@
     "manualBankTransfer": "Manual Bank Transfer",
     "manualBankTransferDescription": "Make a manual bank transfer",
     "selectCustomAmount": "Pay a custom amount",
-    "changeAmount": "Change amount"
+    "changeAmount": "Change amount",
+    "name": "Full Name",
+    "email": "Email",
+    "addInfo": "Add your information"
   },
   "PayManualBankTransfer": {
     "title": "Pay with a Manual Bank Transfer",
