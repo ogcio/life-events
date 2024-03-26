@@ -10,22 +10,6 @@ import { PgSessions } from "auth/sessions";
 import { RequestDetails } from "./RequestDetails";
 import Link from "next/link";
 
-async function createTransaction(requestId: string, formData: FormData) {
-  "use server";
-
-  const userId = formData.get("user_id");
-  await pgpool.query<{ transaction_id: number }>(
-    `
-    insert into payment_transactions (payment_request_id, user_ppsn, status, created_at, updated_at)
-    values ($1, $2, 'assigned', now(), now());
-    `,
-    [requestId, userId],
-  );
-
-  // reload the page
-  redirect(requestId);
-}
-
 export default async function ({ params: { requestId } }) {
   const t = await getTranslations("PaymentSetup.Request");
   const tCreatePayment = await getTranslations("PaymentSetup.CreatePayment");
@@ -33,7 +17,6 @@ export default async function ({ params: { requestId } }) {
   const { userId } = await PgSessions.get();
 
   const transactions = await getRequestTransactionDetails(requestId);
-  const handleSubmit = createTransaction.bind(this, requestId);
 
   const integrationReference = `${userId}:${requestId}`;
   const completePaymentLink = new URL(
@@ -125,32 +108,6 @@ export default async function ({ params: { requestId } }) {
             </tbody>
           </table>
         </section>
-      </div>
-      <div>
-        <h2 className="govie-heading-m">{t("assignTitle")}</h2>
-        <p className="govie-body">{t("assignDescription")}</p>
-        <form action={handleSubmit}>
-          <div className="govie-form-group">
-            <label className="govie-label--s" htmlFor="provider_name">
-              {t("userPpsn")}{" "}
-            </label>
-            <div className="govie-hint">{t("userPpsnHint")}</div>
-            <input
-              type="text"
-              id="user_ppsn"
-              name="user_ppsn"
-              className="govie-input"
-            />
-          </div>
-          <button
-            id="button"
-            type="submit"
-            data-module="govie-button"
-            className="govie-button"
-          >
-            {t("confirm")}
-          </button>
-        </form>
       </div>
     </div>
   );
