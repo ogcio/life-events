@@ -109,7 +109,7 @@ export default (props: MessageCreateProps) => {
         <div className="govie-radios govie-radios--small ">
           <div className="govie-radios__item">
             <input
-              id="messageType"
+              id="message"
               name="messageType"
               type="radio"
               value="message"
@@ -118,14 +118,14 @@ export default (props: MessageCreateProps) => {
             />
             <label
               className="govie-label--s govie-radios__label"
-              htmlFor="messageType"
+              htmlFor="message"
             >
               {t("message")}
             </label>
           </div>
           <div className="govie-radios__item">
             <input
-              id="messageType"
+              id="event"
               name="messageType"
               type="radio"
               value="event"
@@ -133,7 +133,7 @@ export default (props: MessageCreateProps) => {
             />
             <label
               className="govie-label--s govie-radios__label"
-              htmlFor="messageType"
+              htmlFor="event"
             >
               {t("event")}
             </label>
