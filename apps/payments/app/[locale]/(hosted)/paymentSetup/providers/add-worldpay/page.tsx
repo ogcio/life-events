@@ -12,6 +12,8 @@ export default async () => {
   async function handleSubmit(formData: FormData) {
     "use server";
     const providerName = formData.get("provider_name");
+    const merchantCode = formData.get("merchant_code");
+    const installationId = formData.get("installation_id");
 
     await pgpool.query(
       `
@@ -24,9 +26,9 @@ export default async () => {
         "worldpay",
         "connected",
         {
-          // TODO: use form inputs - currently using env vars for testing
-          merchantCode: process.env.WORLDPAY_MERCHANT_CODE,
-          installationId: process.env.WORLDPAY_INSTALLATION_ID,
+          // TODO: codes need to be encrypted
+          merchantCode,
+          installationId,
         },
       ],
     );
