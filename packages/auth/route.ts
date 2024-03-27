@@ -22,9 +22,8 @@ function getSessionIdCookieConfig(req: Request, cookieValue: string) {
     name: "sessionId",
     value: cookieValue,
     httpOnly: true,
-    secure: false, // Set to true with https
+    secure: false,
     path: "/",
-    sameSite: SAME_SITE_VALUES.LAX,
   };
   const url = new URL(req.url);
   if (url.protocol === "https:") {
@@ -42,7 +41,10 @@ function getSessionIdCookieConfig(req: Request, cookieValue: string) {
     };
   }
 
-  return cookieConfig;
+  return {
+    ...cookieConfig,
+    sameSite: SAME_SITE_VALUES.LAX,
+  };
 }
 
 export default async function (req: Request) {
