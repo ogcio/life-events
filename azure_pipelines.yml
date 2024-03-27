@@ -155,7 +155,7 @@ stages:
     - stage: RunE2ETests${{ replace(serviceName, '-', '_') }}
       displayName: Run E2E tests for ${{ serviceName }} service
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
-      condition: ${{ containsValue(parameters.testServices, '${{ serviceName }}') }}
+      condition: ${{ containsValue(parameters.testServices, serviceName) }}
       pool:
         vmImage: 'ubuntu-latest'
       jobs:  
