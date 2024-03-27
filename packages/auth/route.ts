@@ -26,6 +26,7 @@ function getSessionIdCookieConfig(req: Request, cookieValue: string) {
     path: "/",
   };
   const url = new URL(req.url);
+  console.log(`Auth route. Current hostname: ${url.hostname}`);
   if (url.protocol === "https:") {
     return {
       ...cookieConfig,
@@ -54,7 +55,6 @@ export default async function (req: Request) {
   const isPublicServant = Boolean(formData.get("public_servant"));
 
   const loginUrl = process.env.LOGIN_URL;
-
 
   if (!loginUrl) {
     throw Error("Missing env var LOGIN_URL");
@@ -88,7 +88,9 @@ export default async function (req: Request) {
     userId: id,
   });
 
-  cookies().set(getSessionIdCookieConfig(req, ssid));
+  const cookiesConfig = getSessionIdCookieConfig(req, ssid);
+  console.log(`Auth route. Cookie config: ${JSON.stringify(cookiesConfig)}`);
+  cookies().set(cookiesConfig);
 
   if (is_public_servant) {
     return redirect("/admin", RedirectType.replace);
