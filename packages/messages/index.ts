@@ -23,6 +23,8 @@ type MessageState = {
   confirmedEmailRecipientsAt: string;
   confirmedScheduleAt: string;
   messageType: string;
+  paymentRequestId: string;
+  paymentUserId: string;
 };
 
 type MessageType = "message" | "event";
@@ -39,6 +41,8 @@ export const api = {
       abstract?: string;
       content: string;
       actionUrl?: string;
+      paymentRequestId?: string;
+      paymentUserId?: string;
     };
     sender: { email: string };
     transports: "email"[];
@@ -52,14 +56,17 @@ export const api = {
     // caveat: we dont care about size for now. If we need to send over 10k emails, I think we need
     // a better way than including 10k+ emails in a request. Maybe upload a csv or w/e.
 
-    const args: string[] = [];
     const vals: (string | null)[] = [
       data.subject,
       data.content, //data.abstract || "null", // The little description eg.
       data.content,
       data.actionUrl || null,
+      data.paymentRequestId || null,
+      data.paymentUserId || null,
       type,
     ];
+    const originalSize = vals.length;
+    const args: string[] = [];
 
     let i = vals.length + 1;
     while (data.recipients.length) {
@@ -68,10 +75,14 @@ export const api = {
         break;
       }
 
-      args.push(`($1, $2, $3, $4, $5, $${i})`);
+      args.push(
+        `(${[...new Array(originalSize)].map((_, i) => `$${i + 1}`)},$${i})`,
+      );
       vals.push(email);
       i += 1;
     }
+
+    console.log("Tuck\n", { args, vals });
 
     const eventQuery = pgpool.query(
       `
@@ -80,6 +91,8 @@ export const api = {
         abstract, 
         content, 
         action_url,
+        payment_request_id,
+        payment_user_id,
         message_type,
         for_email)
     VALUES ${args.join(",")}`,
@@ -283,6 +296,8 @@ export const api = {
       content, 
       action_url as "link",
       message_type as "type",
+      payment_request_id as "paymentRequestId",
+      payment_user_id as "paymentUserId",
       a.interpolations
     FROM messages m
     JOIN LATERAL(
@@ -300,6 +315,8 @@ export const api = {
         content: string;
         link: string;
         type: MessageType;
+        paymentRequestId?: string;
+        paymentUserId?: string;
         interpolations: { key: string; value: string }[];
       }>(query, args)
       .then((res) => res.rows.at(0));
@@ -381,6 +398,8 @@ export const api = {
                 submittedMetaAt: "",
                 transportations: [],
                 messageType: "",
+                paymentRequestId: "",
+                paymentUserId: "",
               },
             };
       });
