@@ -1,13 +1,11 @@
+import { PgSessions } from "auth/sessions";
 import { redirect, RedirectType } from "next/navigation";
-import { routeDefinitions } from "../routeDefinitions";
 
-type Props = {
-  params: {
-    locale: string;
-  };
-};
+export default async () => {
+  const { publicServant } = await PgSessions.get();
 
-export default (props: Props) => {
-  const path = `${props.params.locale}/${routeDefinitions.templates.slug}`;
-  redirect(path, RedirectType.replace);
+  redirect(
+    publicServant ? "/send-a-message" : "/messages",
+    RedirectType.replace,
+  );
 };
