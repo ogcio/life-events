@@ -19,6 +19,6 @@ export type Response<TPayload = object> = {
   headers: any;
 };
 
-export type SendEmail = {
-  (data: MailDataRequired | MailDataRequired[]): Promise<[Response, {}]> | void;
-};
+export type SendEmail = (
+  data: MailDataRequired | MailDataRequired[],
+) => Promise<[void | Response, {}]>;

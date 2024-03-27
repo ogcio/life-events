@@ -1,4 +1,10 @@
 {
+  "SideMenu": {
+    "sendMessage": "Send a message",
+    "messages": "Messages",
+    "settings": "Settings",
+    "emailTemplate": "Email templates"
+  },
   "EmailTemplates": {
     "menu": {
       "templates": "Email templates",
@@ -22,6 +28,84 @@
         "edit": "Edit",
         "delete": "Delete"
       }
+    }
+  },
+  "FeedbackBanner": {
+    "tag": "prototype",
+    "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
+  },
+  "Header": {
+    "myLifeEvents": "Digital postbox"
+  },
+  "SendAnEmail": {
+    "title": "Send an email"
+  },
+  "Messages": {
+    "searchPlaceholder": "Search Messages",
+    "header": "Messages",
+    "date": "Date",
+    "type": "Type",
+    "status": "Status",
+    "subject": "Subject",
+    "action": "Action"
+  },
+  "sendAMessage": {
+    "ComposeMessageMeta": {
+      "title": "Send a message",
+      "chooseTransportation": "Choose transport",
+      "email": "Email",
+      "sms": "SMS",
+      "postalService": "Postal service",
+      "chooseMessageType": "Choose message type",
+      "message": "Message",
+      "event": "Event",
+      "submitText": "Continue"
+    },
+    "EmailForm": {
+      "title": "Send a message",
+      "subject": "Subject",
+      "message": "Message",
+      "link": "Link",
+      "submitText": "Continue to preview",
+      "backLink": "Back"
+    },
+    "EmailPreview": {
+      "submitText": "Continue to recipients",
+      "backLink": "Back to edit"
+    },
+    "EmailRecipients": {
+      "title": "Add recipients",
+      "addRecipient": "Add recipient",
+      "addRecipientHint": "Added recipients will be added below",
+      "add": "Add",
+      "submitText": "Continue to schedule",
+      "backLink": "Back to message"
+    },
+    "ScheduleForm": {
+      "title": "Schedule message",
+      "schedule": "Schedule",
+      "scheduleHint": "When would you like this sent?",
+      "sendNow": "Send now",
+      "sendLater": "Send later",
+      "day": "Day",
+      "month": "Month",
+      "year": "Year",
+      "hour": "HH",
+      "minute": "MM",
+      "submitText": "Send message",
+      "backLink": "Back to recipients"
+    },
+    "SuccessForm": {
+      "title": "Your message has been sent",
+      "body": "A copy of this message will appear in your sent messages.",
+      "submitText": "Send another message"
+    }
+  },
+  "formErrors": {
+    "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
+    "fields": {
+      "subject": "subject",
+      "message": "message"
     }
   }
 }
