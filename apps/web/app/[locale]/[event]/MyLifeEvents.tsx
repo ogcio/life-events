@@ -5,6 +5,7 @@ import OpenEventStatusImage from "./components/OpenEventStatusImage";
 import { renewDriverLicenceRules } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { postgres, routes, workflow } from "../../utils";
 import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
+import { api } from "messages";
 import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/OrderBirthCertificate";
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
@@ -19,6 +20,7 @@ const eventRules = {
 
 async function getEvents() {
   "use server";
+
   return Promise.resolve([
     {
       flowKey: workflow.keys.renewDriversLicence,
@@ -118,78 +120,46 @@ async function getFlows() {
 
 export default async () => {
   const t = await getTranslations("MyLifeEvents");
-  const [flow, events] = await Promise.all([getFlows(), getEvents()]);
+  const [flow] = await Promise.all([getFlows(), getEvents()]);
 
-  const eventsToRender = events
-    .filter((event) => !flow.some((f) => f.flowKey === event.flowKey))
-    .map((event) => {
-      // do some mapping for flow key
-      const flowTitle = event.flowKey + ".title.base";
-      const descriptionKey = event.flowKey + ".description.base";
-      return {
-        flowTitle,
-        flowKey: event.flowKey,
-        descriptionKey,
-        slug: routes.category[event.category][event.flowKey].path(),
-      };
-    });
+  const { email } = await PgSessions.get();
+  const messageEvents = await api.getMessages(email, {
+    page: 1,
+    search: "",
+    size: 10,
+    type: "event",
+  });
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1, gap: "2.5rem" }}>
       <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
         <div className="govie-heading-l">{t("lifeEvents")}</div>
         <ul className="govie-list">
-          {eventsToRender.map((evt) => (
+          {messageEvents.map((msg) => (
             <li
-              key={`le_${evt.flowKey}`}
+              key={msg.subject}
               style={{
-                margin: "1rem 0",
+                margin: "1rem",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-around",
                 gap: "1rem",
               }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
+              <Link
+                className="govie-link"
+                href={
+                  new URL(
+                    `messages/${msg.messageId}`,
+                    process.env.MESSAGES_HOST_URL,
+                  ).href
+                }
               >
-                <div>
-                  <Link className="govie-link" href={evt.slug}>
-                    {t(evt.flowTitle)}
-                  </Link>
-                  <p
-                    className="govie-body"
-                    style={{ margin: "unset", marginTop: "16px" }}
-                  >
-                    {t(evt.descriptionKey, { date: "19th March" })}
-                  </p>
-                </div>
-                <div>
-                  <Link
-                    className="govie-link"
-                    href={evt.slug}
-                    aria-label={t(evt.flowTitle)}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="10"
-                      height="13"
-                      fill="none"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="m0 0 5.753 6.5L0 13h4.247l4.78-5.4L10 6.5l-.974-1.1L4.247 0H0Z"
-                        fill="#2C55A2"
-                      />
-                    </svg>
-                  </Link>
-                </div>
-              </div>
+                {msg.subject}
+              </Link>
+              <p className="govie-body" style={{ margin: "unset" }}>
+                {msg.content}
+              </p>
               <hr className="govie-section-break govie-section-break--visible" />
             </li>
           ))}

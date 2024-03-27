@@ -55,6 +55,7 @@ export default async function (req: Request) {
 
   const loginUrl = process.env.LOGIN_URL;
 
+
   if (!loginUrl) {
     throw Error("Missing env var LOGIN_URL");
   }

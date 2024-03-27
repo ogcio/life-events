@@ -1,11 +1,14 @@
 import sgMail from "@sendgrid/mail";
 import { SendEmail } from "../../types";
 
-export const send: SendEmail = (data) => {
+export const send: SendEmail = async (data) => {
   if (typeof process.env.SENDGRID_API_KEY === "undefined") {
-    return console.log(
-      "Warning - SENDGRID_API_KEY env variable missing. Printing request: ",
-      data,
+    throw new Error(
+      `Warning - SENDGRID_API_KEY env variable missing. Printing request: ${JSON.stringify(
+        data,
+        null,
+        4,
+      )}`,
     );
   }
 
