@@ -213,7 +213,7 @@ stages:
             displayName: Wait for application to be ready
           - script: npx playwright install --with-deps
             displayName: 'Install Playwright browsers'
-          - script: npm run playwrigh test --project=${{matrix.projects}} --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+          - script: npx playwright test --project=$(project) --shard=$(shard)
             displayName: 'Run Playwright tests'
             env:
               CI: 'true'
