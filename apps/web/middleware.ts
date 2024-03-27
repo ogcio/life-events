@@ -8,11 +8,11 @@ export default function (request: NextRequest) {
   );
 
   nextResponse.headers.append("x-pathname", request.nextUrl.pathname);
-  const sessionCookie = request.cookies.get("sessionId");
-  if (sessionCookie && !nextResponse.cookies.has("sessionId")) {
-    console.log("Setting cookie in middleware");
-    nextResponse.cookies.set(sessionCookie);
-  }
+  // const sessionCookie = request.cookies.get("sessionId");
+  // if (sessionCookie && !nextResponse.cookies.has("sessionId")) {
+  //   console.log("Setting cookie in middleware");
+  //   nextResponse.cookies.set(sessionCookie);
+  // }
   return nextResponse;
 }
 
