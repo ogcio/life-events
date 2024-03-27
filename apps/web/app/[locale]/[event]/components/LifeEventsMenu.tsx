@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ds from "design-system";
+import Timeline from "./Timeline";
 
 const Icon = ds.Icon;
 
@@ -19,7 +20,15 @@ export default (props: Props) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 
   return (
-    <ol className="govie-list govie-list--spaced" style={{ width: "200px" }}>
+    <ol
+      className="govie-list govie-list--spaced"
+      style={{
+        width: "200px",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <li
         key="userinfo"
         style={{
@@ -34,7 +43,8 @@ export default (props: Props) => {
           {props.userName}
         </label>
       </li>
-      {props.options.map((option) => (
+      <Timeline />
+      {/* {props.options.map((option) => (
         <li key={`lem_${option.url}`} tabIndex={0}>
           <Link
             className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
@@ -57,7 +67,7 @@ export default (props: Props) => {
             {option.label}
           </Link>
         </li>
-      ))}
+      ))} */}
     </ol>
   );
 };
