@@ -26,19 +26,11 @@ function getSessionIdCookieConfig(req: Request, cookieValue: string) {
     path: "/",
   };
   const url = new URL(process.env.HOST_URL ?? req.url);
-  console.log(`Auth route. Current hostname: ${url.hostname}`);
   if (url.protocol === "https:") {
     return {
       ...cookieConfig,
       secure: true,
       sameSite: SAME_SITE_VALUES.NONE,
-    };
-  }
-
-  if (url.hostname !== "localhost") {
-    return {
-      ...cookieConfig,
-      domain: getDomainForCookie(url.hostname),
     };
   }
 
