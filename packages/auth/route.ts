@@ -82,6 +82,7 @@ export default async function (req: Request) {
     [email, "not needed atm", [firstName, lastName].join(" "), isPublicServant],
   );
 
+  console.log(`Auth route?? ${JSON.stringify(q.rows)}`);
   const [{ id, is_public_servant }] = q.rows;
 
   const ssid = await PgSessions.set({
