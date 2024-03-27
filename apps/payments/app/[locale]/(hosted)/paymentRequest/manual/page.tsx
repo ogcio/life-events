@@ -4,6 +4,7 @@ import { pgpool } from "../../../../dbConnection";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
 import Link from "next/link";
+import { createTransaction } from "../../paymentSetup/db";
 
 async function getPaymentDetails(paymentId: string, amount?: number) {
   const { rows: paymentRows } = await pgpool.query(
@@ -14,6 +15,7 @@ async function getPaymentDetails(paymentId: string, amount?: number) {
       pr.description,
       pr.reference,
       pr.amount,
+      pr.redirect_url,
       pp.provider_id,
       pp.provider_name,
       pp.provider_data,
@@ -38,8 +40,29 @@ async function getPaymentDetails(paymentId: string, amount?: number) {
   };
 }
 
+async function confirmPayment(transactionId: string, redirectUrl: string) {
+  "use server";
+  await pgpool.query(
+    `
+    UPDATE payment_transactions
+    SET status = 'confirmed'
+    WHERE transaction_id = $1
+    `,
+    [transactionId],
+  );
+  redirect(redirectUrl, RedirectType.replace);
+}
+
 export default async function Bank(params: {
-  searchParams: { paymentId: string; amount?: string } | undefined;
+  searchParams:
+    | {
+        paymentId: string;
+        integrationRef: string;
+        amount?: string;
+        name: string;
+        email: string;
+      }
+    | undefined;
 }) {
   if (!params.searchParams?.paymentId) {
     redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
@@ -53,6 +76,32 @@ export default async function Bank(params: {
   const paymentDetails = await getPaymentDetails(
     params.searchParams.paymentId,
     amount,
+  );
+
+  //TODO: In production, we want to avoid collisions on the DB
+  const paymentIntentId = Math.random()
+    .toString(36)
+    .substring(2, 8)
+    .toUpperCase();
+
+  const userInfo = {
+    name: params.searchParams.name,
+    email: params.searchParams.email,
+  };
+
+  const transactionId = await createTransaction(
+    params.searchParams.paymentId,
+    paymentIntentId,
+    params.searchParams.integrationRef,
+    paymentDetails.amount,
+    paymentDetails.provider_id,
+    userInfo,
+  );
+
+  const paymentMade = confirmPayment.bind(
+    this,
+    transactionId,
+    paymentDetails.redirect_url,
   );
 
   return (
@@ -102,12 +151,22 @@ export default async function Bank(params: {
               {paymentDetails.provider_data.accountNumber}
             </dt>
           </div>
+          <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">
+              {t("summary.referenceCode")}*
+            </dt>
+            <dt className="govie-summary-list__value">
+              <b>{paymentIntentId}</b>
+              <br />
+            </dt>
+          </div>
         </dl>
-        <Link href="/">
+        <p className="govie-body">*{t("summary.referenceCodeDescription")}</p>
+        <form action={paymentMade}>
           <button className="govie-button govie-button--primary">
-            {t("back")}
+            {t("confirmPayment")}
           </button>
-        </Link>
+        </form>
       </section>
     </div>
   );
