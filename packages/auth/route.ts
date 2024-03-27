@@ -2,6 +2,49 @@ import { cookies } from "next/headers";
 import { decodeJwt, pgpool, PgSessions } from "./sessions";
 import { redirect, RedirectType } from "next/navigation";
 
+function getDomainForCookie(hostname: string) {
+  const splitted = hostname.split(".");
+  if (splitted.length === 1) {
+    return hostname;
+  }
+  const topDomain = splitted.pop();
+
+  return `.${splitted.pop()}.${topDomain}`;
+}
+
+enum SAME_SITE_VALUES {
+  LAX = "lax",
+  NONE = "none",
+}
+
+function getSessionIdCookieConfig(req: Request, cookieValue: string) {
+  const cookieConfig = {
+    name: "sessionId",
+    value: cookieValue,
+    httpOnly: true,
+    secure: false, // Set to true with https
+    path: "/",
+    sameSite: SAME_SITE_VALUES.LAX,
+  };
+  const url = new URL(req.url);
+  if (url.protocol === "https:") {
+    return {
+      ...cookieConfig,
+      secure: true,
+      sameSite: SAME_SITE_VALUES.NONE,
+    };
+  }
+
+  if (url.hostname !== "localhost") {
+    return {
+      ...cookieConfig,
+      domain: getDomainForCookie(url.hostname),
+    };
+  }
+
+  return cookieConfig;
+}
+
 export default async function (req: Request) {
   const formData = await req.formData();
   const token = formData.get("id_token")?.toString() ?? "";
@@ -42,12 +85,7 @@ export default async function (req: Request) {
     userId: id,
   });
 
-  console.log("Setting session id");
-  cookies().set({
-    name: "sessionId",
-    value: ssid,
-    path: "/",
-  });
+  cookies().set(getSessionIdCookieConfig(req, ssid));
 
   if (is_public_servant) {
     return redirect("/admin", RedirectType.replace);
