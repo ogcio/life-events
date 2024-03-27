@@ -1,2 +1,2 @@
-export const paymentSetupPage = "/en/paymentSetup";
-export const providersPage = "/en/paymentSetup/providers";
+export const paymentSetupUrl = "/en/paymentSetup";
+export const providersUrl = "/en/paymentSetup/providers";
