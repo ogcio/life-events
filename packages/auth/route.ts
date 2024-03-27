@@ -25,7 +25,7 @@ function getSessionIdCookieConfig(req: Request, cookieValue: string) {
     secure: false,
     path: "/",
   };
-  const url = new URL(req.url);
+  const url = new URL(process.env.HOST_URL ?? req.url);
   console.log(`Auth route. Current hostname: ${url.hostname}`);
   if (url.protocol === "https:") {
     return {
