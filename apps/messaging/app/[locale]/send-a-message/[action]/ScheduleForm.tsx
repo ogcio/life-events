@@ -22,6 +22,8 @@ export default (props: MessageCreateProps) => {
       recipients: props.state.emailRecipients,
       subject: props.state.subject,
       actionUrl: props.state.links?.[0]?.url || "",
+      paymentRequestId: props.state.paymentRequestId,
+      paymentUserId: props.userId,
     };
 
     await api.pushMessage({

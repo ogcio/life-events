@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "migrate": "db-migrate up"
+    "migrate": "db-migrate up",
+    "migrate:create": "db-migrate create --sql-file"
   },
   "author": "",
   "license": "ISC",

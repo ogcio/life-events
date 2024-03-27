@@ -9,6 +9,24 @@ export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.EmailForm");
   const tError = await getTranslations("formErrors");
 
+  type request = {
+    requestId: string;
+    userId: string;
+    title: string;
+    redirectUrl: string;
+  };
+
+  const paymentRequests: request[] = [];
+  try {
+    const paymentRequestRespone = await fetch(
+      "http://localhost:3001/api/requests",
+    );
+    const parsed = (await paymentRequestRespone.json()) as request[];
+    paymentRequests.push(...parsed);
+  } catch (err) {
+    console.log(err);
+  }
+
   const errors = props.stateId
     ? await temporaryMockUtils.getErrors(props.userId, props.stateId)
     : [];
@@ -20,6 +38,8 @@ export default async (props: MessageCreateProps) => {
     if (!props.stateId) {
       return;
     }
+
+    const paymentRequestId = formData.get("paymentRequestId")?.toString() || "";
 
     const subject = formData.get("subject")?.toString();
     const content = formData.get("message")?.toString();
@@ -59,6 +79,7 @@ export default async (props: MessageCreateProps) => {
       content,
       subject,
       submittedEmailAt: dayjs().toISOString(),
+      paymentRequestId,
     });
 
     await api.upsertMessageState(next, props.userId, props.stateId);
@@ -151,6 +172,18 @@ export default async (props: MessageCreateProps) => {
             defaultValue={props.state.links.at(0)?.url ?? ""}
           />
         </div>
+
+        {Boolean(paymentRequests.length) ? (
+          <div className="govie-form-group">
+            <h3>Add a payment! :D</h3>
+            <select name="paymentRequestId">
+              <option value="">None</option>
+              {paymentRequests.map((req) => (
+                <option value={req.requestId}>{req.title}</option>
+              ))}
+            </select>
+          </div>
+        ) : null}
 
         <button type="submit" className="govie-button">
           {t("submitText")}
