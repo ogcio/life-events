@@ -1,16 +1,21 @@
-const checkKey = (
-  keyName: string,
-  errors: string[],
-  defaultValue?: string,
-): string => {
-  let value = process.env[keyName];
-  if (!value && !defaultValue) {
-    errors.push(keyName);
-    return "";
+const checkKey = (params: {
+  keyName: string;
+  errors: string[];
+  required?: boolean;
+  defaultValue?: string;
+}): string | undefined => {
+  let value = process.env[params.keyName];
+  if (!(params.required ?? true)) {
+    return value;
   }
 
-  if (defaultValue) {
-    return defaultValue;
+  if (!value && !params.defaultValue) {
+    params.errors.push(params.keyName);
+    return undefined;
+  }
+
+  if (params.defaultValue) {
+    return params.defaultValue;
   }
 
   return value as string;
@@ -21,7 +26,7 @@ export interface S3ClientConfig {
     region: string;
     endpoint: string;
     forcePathStyle: boolean;
-    credentials: {
+    credentials?: {
       accessKeyId: string;
       secretAccessKey: string;
     };
@@ -31,26 +36,47 @@ export interface S3ClientConfig {
 
 export const getS3ClientConfig = (): S3ClientConfig => {
   const errors = [] as string[];
-  const region = checkKey("S3_REGION", errors, "eu-west-1");
-  const endpoint = checkKey("S3_ENDPOINT", errors);
-  const accessKeyId = checkKey("S3_ACCESS_KEY_ID", errors);
-  const secretAccessKey = checkKey("S3_SECRET_ACCESS_KEY", errors);
-  const bucketName = checkKey("S3_BUCKET_NAME", errors, "life-events-files");
+  const region = checkKey({
+    keyName: "S3_REGION",
+    errors,
+    defaultValue: "eu-west-1",
+  }) as string;
+  const endpoint = checkKey({ keyName: "S3_ENDPOINT", errors }) as string;
+  const accessKeyId = checkKey({
+    keyName: "S3_ACCESS_KEY_ID",
+    errors,
+    required: false,
+  });
+  const secretAccessKey = checkKey({
+    keyName: "S3_SECRET_ACCESS_KEY",
+    errors,
+    required: false,
+  });
+  const bucketName = checkKey({
+    keyName: "S3_BUCKET_NAME",
+    errors,
+    defaultValue: "life-events-files",
+  }) as string;
 
   if (errors.length) {
     throw new Error(`AWS Config. Missing following keys: ${errors.join(", ")}`);
   }
 
-  return {
+  const output: S3ClientConfig = {
     config: {
       region,
       endpoint,
       forcePathStyle: true,
-      credentials: {
-        accessKeyId,
-        secretAccessKey,
-      },
     },
     bucketName,
   };
+
+  if (accessKeyId && secretAccessKey) {
+    output.config.credentials = {
+      accessKeyId,
+      secretAccessKey,
+    };
+  }
+
+  return output;
 };
