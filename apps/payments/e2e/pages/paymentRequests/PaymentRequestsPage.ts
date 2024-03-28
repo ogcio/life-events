@@ -1,4 +1,4 @@
-import { type Page, type Locator } from "@playwright/test";
+import { type Page, type Locator, expect } from "@playwright/test";
 import { paymentRequestUrl } from "../../utils/constants";
 import { PaymentRequestFormPage } from "./PaymentRequestFormPage";
 import { ProviderType } from "../../../app/[locale]/(hosted)/paymentSetup/providers/types";
@@ -26,9 +26,13 @@ export class PaymentRequestsPage {
     await this.page.goto(paymentRequestUrl);
   }
 
-  async create(provider: PaymentRequestParams) {
+  async create(paymentRequest: PaymentRequestParams) {
     await this.createPaymentBtn.click();
     const createPaymentRequestPage = new PaymentRequestFormPage(this.page);
-    await createPaymentRequestPage.create(provider);
+    await createPaymentRequestPage.create(paymentRequest);
+
+    await expect(
+      this.page.getByRole("heading", { name: "Payment details" }),
+    ).toBeVisible({ timeout: 10000 });
   }
 }
