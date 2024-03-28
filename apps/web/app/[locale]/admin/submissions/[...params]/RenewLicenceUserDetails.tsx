@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { aws, postgres, routes, web, workflow } from "../../../../utils";
 import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
 import FormLayout from "../../../../components/FormLayout";
+import { getS3ClientConfig } from "../../../../utils/aws";
 
 type Props = {
   flowData: workflow.RenewDriversLicence;
@@ -36,16 +37,13 @@ export default async ({ userId, flow, flowData }: Props) => {
 
   // New link is generated on each render, but expires after 5 minutes. This might not be desirable but there has been no specifications
   if (flowData.proofOfAddressFileId) {
-    const s3Client = new S3Client({
-      ...aws.s3ClientConfig,
-      endpoint: process.env.S3_ENDPOINT,
-    });
+    const s3Config = getS3ClientConfig();
 
     const command = new GetObjectCommand({
-      Bucket: aws.fileBucketName,
+      Bucket: s3Config.bucketName,
       Key: `${userId}/${flowData.proofOfAddressFileId}`,
     });
-    proofOfAddressDownloadUrl = await getSignedUrl(s3Client, command, {
+    proofOfAddressDownloadUrl = await getSignedUrl(s3Config.client, command, {
       expiresIn: 5 * 60,
     });
   }
