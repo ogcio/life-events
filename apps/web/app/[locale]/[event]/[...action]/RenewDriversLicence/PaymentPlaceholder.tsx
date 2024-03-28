@@ -1,8 +1,11 @@
-import { postgres } from "../../../../utils";
 import PaymentError from "./PaymentError";
 
+function getUrlForPaymentAPI(path: string) {
+  return new URL(path, process.env.PAYMENT_HOST_URL);
+}
+
 async function findPaymentRequest() {
-  const response = await fetch("http://localhost:3001/api/findPaymentRequest");
+  const response = await fetch(getUrlForPaymentAPI("/api/findPaymentRequest"));
   const data = await response.json();
 
   return data.paymentRequestId;
@@ -20,10 +23,7 @@ export default async (props: { flow: string; userId: string }) => {
     return <PaymentError />;
   }
 
-  const paymentsUrl = new URL(
-    "/paymentRequest/pay",
-    process.env.PAYMENT_HOST_URL,
-  );
+  const paymentsUrl = getUrlForPaymentAPI("/paymentRequest/pay");
   paymentsUrl.searchParams.set("paymentId", paymentRequestId);
   paymentsUrl.searchParams.set("id", `${props.userId}:${props.flow}`);
 
