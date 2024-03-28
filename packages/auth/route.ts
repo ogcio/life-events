@@ -70,8 +70,7 @@ export default async function (req: Request) {
     userId: id,
   });
 
-  const cookiesConfig = getSessionIdCookieConfig(req, ssid);
-  cookies().set(cookiesConfig);
+  cookies().set(getSessionIdCookieConfig(req, ssid));
 
   if (is_public_servant) {
     return redirect("/admin", RedirectType.replace);
