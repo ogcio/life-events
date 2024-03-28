@@ -672,6 +672,9 @@
       "closed": "Closed"
     }
   },
+  "Timeline": {
+    "back": "Back to My Portal"
+  },
   "formErrors": {
     "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
     "invalidField": "Enter {indArticleCheck, select, an {an} other {a}} valid {field}",

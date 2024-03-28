@@ -5,7 +5,7 @@ import ds from "design-system";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
-import { TimeLineData } from "./ExpandedTimeline";
+import { TimeLineData } from "../../timeline/TimeLineGrid";
 
 const Icon = ds.Icon;
 
@@ -82,7 +82,7 @@ export default () => {
             style={{ minWidth: "initial", width: "100%" }}
             onChange={(e) => handleCategoryChange(e.target.value)}
           >
-            <option value="all">All categories</option>
+            <option value="all">All services</option>
             <option value="driving">Driving</option>
             <option value="housing">Housing</option>
           </select>

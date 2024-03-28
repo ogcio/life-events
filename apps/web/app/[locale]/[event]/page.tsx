@@ -15,7 +15,6 @@ import Employment from "./Employment";
 import StartingABusiness from "./StartingABusiness";
 import Housing from "./Housing";
 import Death from "./Death";
-import ExpandedTimeline from "./components/ExpandedTimeline";
 
 const componentsMap = {
   [routes.events.slug]: MyLifeEvents,
@@ -27,7 +26,6 @@ const componentsMap = {
   [routes.business.slug]: StartingABusiness,
   [routes.housing.slug]: Housing,
   [routes.death.slug]: Death,
-  [routes.timeline.slug]: ExpandedTimeline,
 };
 
 export default async (props: web.NextPageProps) => {

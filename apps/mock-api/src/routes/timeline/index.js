@@ -42,6 +42,22 @@ const housingEvent3 = (date) => ({
   description: faker.lorem.words(10),
 });
 
+const employmentEvent1 = (date) => ({
+  category: "employment",
+  date: new Date(date),
+  title: "Self-assessment deadline",
+  description: faker.lorem.words(10),
+  dismissable: true,
+});
+
+const healthEvent1 = (date) => ({
+  category: "health",
+  date: new Date(date),
+  title: "Applied for EHIC",
+  description: faker.lorem.words(10),
+  detailsLink: "/",
+});
+
 const timeLineData = [
   {
     year: 2029,
@@ -72,7 +88,7 @@ const timeLineData = [
     year: 2025,
     months: [
       { month: "January", events: [drivingEvent1("2025-01-20")] },
-      { month: "September", events: [housingEvent1("2025-09-15")] },
+      { month: "October", events: [employmentEvent1("2025-10-31")] },
     ],
   },
   {
@@ -95,7 +111,7 @@ const timeLineData = [
       { month: "January", events: [] },
       { month: "June", events: [drivingEvent3("2023-06-07")] },
       { month: "September", events: [] },
-      { month: "October", events: [housingEvent2("2023-10-06")] },
+      { month: "October", events: [healthEvent1("2023-10-06")] },
     ],
   },
   {
