@@ -3,6 +3,8 @@ import { test as base } from "./test";
 
 type providersFixtures = {
   stripeProvider: string;
+  openBankingProvider: string;
+  bankTransferProvider: string;
 };
 
 export const test = base.extend<providersFixtures>({
@@ -11,6 +13,22 @@ export const test = base.extend<providersFixtures>({
     await providersPage.goto();
     const providerName = `Test stripe ${browserName} ${new Date()}`;
     await providersPage.addProvider(providerName, "stripe");
+    await use(providerName);
+  },
+
+  openBankingProvider: async ({ page, browserName }, use) => {
+    const providersPage = new ProvidersPage(page);
+    await providersPage.goto();
+    const providerName = `Test open banking ${browserName} ${new Date()}`;
+    await providersPage.addProvider(providerName, "openbanking");
+    await use(providerName);
+  },
+
+  bankTransferProvider: async ({ page, browserName }, use) => {
+    const providersPage = new ProvidersPage(page);
+    await providersPage.goto();
+    const providerName = `Test bank transfer ${browserName} ${new Date()}`;
+    await providersPage.addProvider(providerName, "banktransfer");
     await use(providerName);
   },
 });

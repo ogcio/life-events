@@ -6,7 +6,6 @@ import {
   mockDescription,
   mockRedirectUrl,
 } from "../../utils/mocks";
-import { ProviderType } from "../../../app/[locale]/(hosted)/paymentSetup/providers/types";
 import { providerTypeAccountLabelMap } from "../../utils";
 
 export class PaymentRequestFormPage {
@@ -57,6 +56,6 @@ export class PaymentRequestFormPage {
     if (params.allowAmountOverride) await this.amountOverrideCheckbox.check();
     if (params.allowCustomAmount) await this.customAmountChweckbox.check();
     await this.redirectURLInput.fill(mockRedirectUrl);
-    await this.saveButton.click();
+    await this.saveButton.click({ force: true });
   }
 }
