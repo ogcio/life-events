@@ -2,16 +2,6 @@ import { cookies } from "next/headers";
 import { decodeJwt, pgpool, PgSessions } from "./sessions";
 import { redirect, RedirectType } from "next/navigation";
 
-function getDomainForCookie(hostname: string) {
-  const splitted = hostname.split(".");
-  if (splitted.length === 1) {
-    return hostname;
-  }
-  const topDomain = splitted.pop();
-
-  return `.${splitted.pop()}.${topDomain}`;
-}
-
 enum SAME_SITE_VALUES {
   LAX = "lax",
   NONE = "none",
@@ -73,7 +63,6 @@ export default async function (req: Request) {
     [email, "not needed atm", [firstName, lastName].join(" "), isPublicServant],
   );
 
-  console.log(`Auth route?? ${JSON.stringify(q.rows)}`);
   const [{ id, is_public_servant }] = q.rows;
 
   const ssid = await PgSessions.set({
@@ -82,7 +71,6 @@ export default async function (req: Request) {
   });
 
   const cookiesConfig = getSessionIdCookieConfig(req, ssid);
-  console.log(`Auth route. Cookie config: ${JSON.stringify(cookiesConfig)}`);
   cookies().set(cookiesConfig);
 
   if (is_public_servant) {

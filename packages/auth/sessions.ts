@@ -49,7 +49,6 @@ export const buildPgPool = () =>
   });
 
 async function getPgSession(key: string) {
-  console.log(`querying session ${key}`);
   const query = await pgpool.query<
     {
       token: string;
@@ -69,12 +68,9 @@ async function getPgSession(key: string) {
     [key],
   );
 
-  console.log(`querying session count ${query.rowCount}`);
   if (!query.rowCount) {
     return undefined;
   }
-
-  console.log(`querying session rows ${JSON.stringify(query.rows)}`);
 
   const [{ token, userId, publicServant }] = query.rows;
   return { token, userId, publicServant };
@@ -93,14 +89,12 @@ export const PgSessions: Sessions = {
   async get() {
     const sessionId = cookies().get("sessionId")?.value;
     if (!sessionId) {
-      console.log(`No session ID - logout`);
       return redirect("/logout", RedirectType.replace);
     }
 
     const session = await getPgSession(sessionId); //PgSessions.get(sessionId);
 
     if (!session) {
-      console.log(`No session found - logout`);
       return redirect("/logout", RedirectType.replace);
     }
 
