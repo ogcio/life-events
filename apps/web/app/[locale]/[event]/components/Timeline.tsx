@@ -18,7 +18,7 @@ export default () => {
     endDate: dayjs().add(5, "year").format("YYYY"),
   });
 
-  const [category, setCategory] = useState("all");
+  const [service, setService] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [timeLineData, setTimeLineData] = useState<TimeLineData[]>([]);
 
@@ -26,7 +26,7 @@ export default () => {
     const queryParams = new URLSearchParams({
       startDate: dates.startDate,
       endDate: dates.endDate,
-      category,
+      services: service,
       searchQuery,
     });
 
@@ -45,13 +45,13 @@ export default () => {
 
   useEffect(() => {
     fetchTimelineData();
-  }, [category, searchQuery]);
+  }, [service, searchQuery]);
 
-  const handleCategoryChange = (selectedCategory: string) => {
+  const handleCategoryChange = (selectedService: string) => {
     if (dates.startDate !== minYear.toString()) {
       setDates({ startDate: minYear.toString(), endDate: maxYear.toString() });
     }
-    setCategory(selectedCategory);
+    setService(selectedService);
   };
 
   const handleSearchChangeDebounced = debounce((value) => {
@@ -80,10 +80,12 @@ export default () => {
             id="default-select"
             name="default-select"
             style={{ minWidth: "initial", width: "100%" }}
-            onChange={(e) => handleCategoryChange(e.target.value)}
+            onChange={(e) => handleCategoryChange(e.target.value.toLowerCase())}
           >
-            <option value="all">All services</option>
+            <option value="">All services</option>
             <option value="driving">Driving</option>
+            <option value="employment">Employment</option>
+            <option value="health">Health</option>
             <option value="housing">Housing</option>
           </select>
         </div>
