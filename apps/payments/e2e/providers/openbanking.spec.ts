@@ -5,7 +5,8 @@ import {
   mockAccountNumber,
   mockSortCode,
 } from "../utils/mocks";
-import { paymentSetupPage, providersPage } from "../utils/constants";
+import { paymentSetupUrl, providersUrl } from "../utils/constants";
+import { ProvidersPage } from "../pages/providers/ProvidersPage";
 
 test.describe("Open Banking provider", () => {
   let page: Page;
@@ -17,39 +18,15 @@ test.describe("Open Banking provider", () => {
   });
 
   test("Add open banking provider", async () => {
-    await page.goto(paymentSetupPage);
+    await page.goto(paymentSetupUrl);
 
     const providersMenuLink = await page.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
-    const createNewAccountBtn = await page.getByRole("button", {
-      name: "New account",
-    });
-    await createNewAccountBtn.click();
-    const selectOpenBankingBtn = await page.getByRole("button", {
-      name: "Select OpenBanking",
-    });
-    await selectOpenBankingBtn.click();
 
-    await page.getByRole("textbox", { name: /Name/ }).fill(providerName);
-    await page
-      .getByRole("textbox", { name: "Bank account holder name" })
-      .fill(mockAccountHolderName);
-    await page
-      .getByRole("textbox", { name: "Bank sort code" })
-      .fill(mockSortCode);
-    await page
-      .getByRole("textbox", { name: "Bank account number" })
-      .fill(mockAccountNumber);
-    await page.getByRole("button", { name: "Confirm" }).click();
-
-    await page.waitForURL(providersPage);
-    const accountName = await page.getByRole("cell", {
-      name: providerName,
-      exact: true,
-    });
-    await expect(accountName).toBeVisible();
+    const providersPage = new ProvidersPage(page);
+    await providersPage.addProvider(providerName, "openbanking");
   });
 
   test("Edit open banking provider", async () => {
@@ -75,7 +52,7 @@ test.describe("Open Banking provider", () => {
 
     await page.getByRole("button", { name: "Save" }).click();
 
-    await page.waitForURL(providersPage);
+    await page.waitForURL(providersUrl);
     const accountName = await page.getByRole("cell", { name: newProviderName });
     await expect(accountName).toBeVisible();
   });
