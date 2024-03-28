@@ -15,7 +15,7 @@ export type TimeLineData = {
   months: {
     month: string;
     events: {
-      category: string;
+      service: string;
       date: Date;
       title: string;
       description: string;
@@ -36,7 +36,7 @@ export default ({ userName }: { userName: string }) => {
     startDate: dayjs().subtract(1, "year").format("YYYY"),
     endDate: dayjs().add(4, "year").format("YYYY"),
   });
-  const [category, setCategory] = useState("all");
+  const [services, setServices] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [timeLineData, setTimeLineData] = useState<TimeLineData[]>([]);
 
@@ -44,7 +44,7 @@ export default ({ userName }: { userName: string }) => {
     const queryParams = new URLSearchParams({
       startDate: dates.startDate,
       endDate: dates.endDate,
-      category,
+      services: services.join(","),
       searchQuery,
     });
 
@@ -63,14 +63,16 @@ export default ({ userName }: { userName: string }) => {
 
   useEffect(() => {
     fetchTimelineData();
-  }, [category, searchQuery, dates]);
+  }, [services.length, searchQuery, dates]);
 
-  const handleCategoryChange = (selectedCategory: string) => {
-    if (selectedCategory.toLowerCase() === category) {
-      setCategory("all");
-    } else {
-      setCategory(selectedCategory.toLowerCase());
-    }
+  const handleServiceChange = (selectedService: string) => {
+    setServices((prevServices) => {
+      if (prevServices.includes(selectedService)) {
+        return prevServices.filter((item) => item !== selectedService);
+      } else {
+        return [...prevServices, selectedService];
+      }
+    });
   };
 
   const handleSearchChangeDebounced = debounce((value) => {
@@ -101,7 +103,7 @@ export default ({ userName }: { userName: string }) => {
         <Menu
           userName={userName}
           handleSearchChange={handleSearchChange}
-          handleCategoryChange={handleCategoryChange}
+          handleCategoryChange={handleServiceChange}
         />
       </div>
       <div>
@@ -111,7 +113,7 @@ export default ({ userName }: { userName: string }) => {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "40px 1fr 1fr 1fr 1fr 1fr 40px",
+              gridTemplateColumns: "40px 200px 200px 200px 200px 200px 40px",
               columnGap: "20px",
               minHeight: "100%",
             }}
@@ -166,7 +168,7 @@ export default ({ userName }: { userName: string }) => {
                               }}
                             >
                               <Icon
-                                icon={event.category}
+                                icon={event.service}
                                 className="govie-button__icon-left"
                                 color={ds.colours.ogcio.darkGreen}
                               />

@@ -135,7 +135,7 @@ export default () => {
                         }}
                       ></div>
                       <Icon
-                        icon={event.category}
+                        icon={event.service}
                         className="govie-button__icon-left"
                         color={ds.colours.ogcio.darkGreen}
                       />

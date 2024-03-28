@@ -24,7 +24,7 @@ export default ({
         name="servicesToInform"
         type="checkbox"
         value={service}
-        onChange={(e) => handleCategoryChange(e.target.value)}
+        onChange={(e) => handleCategoryChange(e.target.value.toLowerCase())}
       />
       <label
         className="govie-label--s govie-checkboxes__label"

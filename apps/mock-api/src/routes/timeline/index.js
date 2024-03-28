@@ -1,49 +1,49 @@
 import { faker } from "@faker-js/faker";
 
 const drivingEvent1 = (date) => ({
-  category: "driving",
+  service: "driving",
   date: new Date(date),
   title: "Driving licence renewal due",
   description: faker.lorem.words(10),
 });
 
 const drivingEvent2 = (date) => ({
-  category: "driving",
+  service: "driving",
   date: new Date(date),
   title: "Driving licence renewed",
   description: faker.lorem.words(10),
 });
 
 const drivingEvent3 = (date) => ({
-  category: "driving",
+  service: "driving",
   date: new Date(date),
   title: "VW Golf registered",
   description: faker.lorem.words(10),
 });
 
 const housingEvent1 = (date) => ({
-  category: "housing",
+  service: "housing",
   date: new Date(date),
   title: "Local Property Tax due",
   description: faker.lorem.words(10),
 });
 
 const housingEvent2 = (date) => ({
-  category: "housing",
+  service: "housing",
   date: new Date(date),
   title: "Local Property Tax paid",
   description: faker.lorem.words(10),
 });
 
 const housingEvent3 = (date) => ({
-  category: "housing",
+  service: "housing",
   date: new Date(date),
   title: "Applied for housing benefit",
   description: faker.lorem.words(10),
 });
 
 const employmentEvent1 = (date) => ({
-  category: "employment",
+  service: "employment",
   date: new Date(date),
   title: "Self-assessment deadline",
   description: faker.lorem.words(10),
@@ -51,7 +51,7 @@ const employmentEvent1 = (date) => ({
 });
 
 const healthEvent1 = (date) => ({
-  category: "health",
+  service: "health",
   date: new Date(date),
   title: "Applied for EHIC",
   description: faker.lorem.words(10),
@@ -141,28 +141,28 @@ function filterEventsByDateRange(events, startDate, endDate) {
   });
 }
 
-function filterEventsByAdditionalParams(events, category, searchQuery) {
+function filterEventsByAdditionalParams(events, services, searchQuery) {
   if (searchQuery.length > 0) {
     const lowerCaseSearchQuery = searchQuery.toLowerCase();
     return events.filter((event) =>
       event.title.toLowerCase().includes(lowerCaseSearchQuery),
     );
   }
-  return events.filter((event) => filterByCategory(event, category));
+  return events.filter((event) => filterByService(event, services));
 }
 
-function filterByCategory(event, category) {
-  if (!category || category === "all") {
+function filterByService(event, services) {
+  if (!services || !services.length) {
     return true;
   }
-  return event.category === category;
+  return services.split(",").includes(event.service);
 }
 
 function filterTimeline(
   timeLineData,
   startDate,
   endDate,
-  category,
+  services,
   searchQuery,
 ) {
   const filteredData = [];
@@ -179,7 +179,7 @@ function filterTimeline(
         year: year.year,
         months: filteredMonths.map(({ month, events }) => ({
           month,
-          events: filterEventsByAdditionalParams(events, category, searchQuery),
+          events: filterEventsByAdditionalParams(events, services, searchQuery),
         })),
       });
     }
@@ -190,12 +190,12 @@ function filterTimeline(
 
 export default async function (app) {
   app.get("/", async (req, reply) => {
-    const { startDate, endDate, category, searchQuery } = req.query;
+    const { startDate, endDate, services, searchQuery } = req.query;
     const filteredTimeLineData = filterTimeline(
       timeLineData,
       new Date(startDate),
       new Date(endDate),
-      category,
+      services,
       searchQuery,
     );
 
