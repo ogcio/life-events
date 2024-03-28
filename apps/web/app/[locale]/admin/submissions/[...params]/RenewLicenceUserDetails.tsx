@@ -38,13 +38,12 @@ export default async ({ userId, flow, flowData }: Props) => {
   // New link is generated on each render, but expires after 5 minutes. This might not be desirable but there has been no specifications
   if (flowData.proofOfAddressFileId) {
     const s3Config = getS3ClientConfig();
-    const s3Client = new S3Client(s3Config.config);
 
     const command = new GetObjectCommand({
       Bucket: s3Config.bucketName,
       Key: `${userId}/${flowData.proofOfAddressFileId}`,
     });
-    proofOfAddressDownloadUrl = await getSignedUrl(s3Client, command, {
+    proofOfAddressDownloadUrl = await getSignedUrl(s3Config.client, command, {
       expiresIn: 5 * 60,
     });
   }

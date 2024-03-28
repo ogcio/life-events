@@ -1,3 +1,5 @@
+import { S3Client } from "@aws-sdk/client-s3";
+
 const checkKey = (params: {
   keyName: string;
   errors: string[];
@@ -32,6 +34,7 @@ export interface S3ClientConfig {
     };
   };
   bucketName: string;
+  client: S3Client;
 }
 
 export const getS3ClientConfig = (): S3ClientConfig => {
@@ -61,22 +64,24 @@ export const getS3ClientConfig = (): S3ClientConfig => {
   if (errors.length) {
     throw new Error(`AWS Config. Missing following keys: ${errors.join(", ")}`);
   }
-
-  const output: S3ClientConfig = {
-    config: {
-      region,
-      endpoint,
-      forcePathStyle: true,
-    },
-    bucketName,
-  };
+  const config = {
+    region,
+    endpoint,
+    forcePathStyle: true,
+  } as any;
 
   if (accessKeyId && secretAccessKey) {
-    output.config.credentials = {
+    config.credentials = {
       accessKeyId,
       secretAccessKey,
     };
   }
+
+  const output: S3ClientConfig = {
+    config,
+    bucketName,
+    client: new S3Client(config),
+  };
 
   return output;
 };

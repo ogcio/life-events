@@ -66,12 +66,9 @@ export default async (props: {
     let fileExtension = "";
     let fileType = "";
     let s3Config: S3ClientConfig | undefined;
-    let s3Client: S3Client | undefined;
     let awsObjectKey = "";
     if (identitySelection !== "noDocuments" && poaFile) {
       s3Config = getS3ClientConfig();
-      s3Client = new S3Client(s3Config);
-
       fileId = randomUUID();
       fileExtension = poaFile.name.split(".").at(-1) || "";
       fileType = "proofOfAddress";
@@ -79,7 +76,7 @@ export default async (props: {
       awsObjectKey = `${props.userId}/${fileId}`;
 
       try {
-        await s3Client.send(
+        await s3Config.client.send(
           new PutObjectCommand({
             Bucket: s3Config.bucketName,
             Key: awsObjectKey,
@@ -93,6 +90,8 @@ export default async (props: {
           field: "identity-selection",
           messageKey: form.errorTranslationKeys.fileUploadFail,
         });
+
+        console.log(err);
       }
     }
 
@@ -143,8 +142,8 @@ export default async (props: {
       await transaction.query("COMMIT");
     } catch (err) {
       await transaction.query("ROLLBACK");
-      if (s3Client && awsObjectKey) {
-        await s3Client.send(
+      if (s3Config && s3Config.client && awsObjectKey) {
+        await s3Config.client.send(
           new DeleteObjectCommand({
             Bucket: s3Config?.bucketName,
             Key: awsObjectKey,
