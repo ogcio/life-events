@@ -1,5 +1,9 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import { mockAmount, mockDescription } from "../../utils/mocks";
+import {
+  mockAmount,
+  mockDescription,
+  mockRedirectUrl,
+} from "../../utils/mocks";
 import { PaymentRequestParams } from "./PaymentRequestsPage";
 import { formatCurrency } from "../../../app/utils";
 import { providerTypeAccountLabelMap } from "../../utils";
@@ -24,7 +28,7 @@ export class PaymentRequestDetailsPage {
     this.amountText = this.page.getByText(
       formatCurrency(parseInt(mockAmount, 10) * 100),
     );
-    this.redirectURL = this.page.getByRole("button", { name: "Copy" });
+    this.redirectURL = this.page.getByText(mockRedirectUrl);
     this.allowAmountOverride = (value: string) =>
       this.page
         .locator("div")
