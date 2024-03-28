@@ -16,7 +16,20 @@ const checkKey = (
   return value as string;
 };
 
-export const getS3ClientConfig = () => {
+export interface S3ClientConfig {
+  config: {
+    region: string;
+    endpoint: string;
+    forcePathStyle: boolean;
+    credentials: {
+      accessKeyId: string;
+      secretAccessKey: string;
+    };
+  };
+  bucketName: string;
+}
+
+export const getS3ClientConfig = (): S3ClientConfig => {
   const errors = [] as string[];
   const region = checkKey("S3_REGION", errors, "eu-west-1");
   const endpoint = checkKey("S3_ENDPOINT", errors);

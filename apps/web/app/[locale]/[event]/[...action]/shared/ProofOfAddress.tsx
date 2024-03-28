@@ -9,6 +9,7 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { randomUUID } from "crypto";
+import { getS3ClientConfig, S3ClientConfig } from "../../../../utils/aws";
 
 export default async (props: {
   step?: string;
@@ -64,10 +65,12 @@ export default async (props: {
     let fileId = "";
     let fileExtension = "";
     let fileType = "";
+    let s3Config: S3ClientConfig | undefined;
     let s3Client: S3Client | undefined;
     let awsObjectKey = "";
     if (identitySelection !== "noDocuments" && poaFile) {
-      s3Client = new S3Client(aws.s3ClientConfig);
+      s3Config = getS3ClientConfig();
+      s3Client = new S3Client(s3Config);
 
       fileId = randomUUID();
       fileExtension = poaFile.name.split(".").at(-1) || "";
@@ -78,7 +81,7 @@ export default async (props: {
       try {
         await s3Client.send(
           new PutObjectCommand({
-            Bucket: aws.fileBucketName,
+            Bucket: s3Config.bucketName,
             Key: awsObjectKey,
             Body: Buffer.from(await poaFile.arrayBuffer()),
             ContentType: poaFile.type,
@@ -143,7 +146,7 @@ export default async (props: {
       if (s3Client && awsObjectKey) {
         await s3Client.send(
           new DeleteObjectCommand({
-            Bucket: aws.fileBucketName,
+            Bucket: s3Config?.bucketName,
             Key: awsObjectKey,
           }),
         );
