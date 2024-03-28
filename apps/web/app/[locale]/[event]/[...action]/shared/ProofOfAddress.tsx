@@ -145,7 +145,7 @@ export default async (props: {
       if (s3Config && s3Config.client && awsObjectKey) {
         await s3Config.client.send(
           new DeleteObjectCommand({
-            Bucket: s3Config?.bucketName,
+            Bucket: s3Config.bucketName,
             Key: awsObjectKey,
           }),
         );
