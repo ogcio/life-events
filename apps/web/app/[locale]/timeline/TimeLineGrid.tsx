@@ -6,6 +6,7 @@ import { debounce } from "lodash";
 import dayjs from "dayjs";
 import Menu from "./Menu";
 import Link from "next/link";
+import NavButton from "./NavButton";
 
 const Icon = ds.Icon;
 
@@ -26,6 +27,7 @@ export type TimeLineData = {
 
 const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 const opaque = ds.hexToRgba(ds.colours.ogcio.gold, 5);
+const grey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 30);
 const minYear = 2021;
 const maxYear = 2029;
 
@@ -109,27 +111,33 @@ export default ({ userName }: { userName: string }) => {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "40px 1fr 1fr 1fr 1fr 1fr 1fr 40px",
+              gridTemplateColumns: "40px 1fr 1fr 1fr 1fr 1fr 40px",
               columnGap: "20px",
+              minHeight: "100%",
             }}
           >
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div style={{ height: "25px" }}>
-                <button
-                  onClick={() => goBack()}
+                <NavButton
                   disabled={dayjs(dates.startDate).year() === minYear}
-                >
-                  {"<"}
-                </button>
+                  onClick={() => goBack()}
+                  transform={false}
+                />
               </div>
             </div>
             {timeLineData.map((yearData) => {
+              const { year, months } = yearData;
               return (
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "column",
                     gap: "20px",
+                    padding: "0 10px",
+                    borderLeft:
+                      year === dayjs().year() ? `1px solid ${grey}` : "none",
+                    borderRight:
+                      year === dayjs().year() ? `1px solid ${grey}` : "none",
                   }}
                   key={yearData.year}
                 >
@@ -138,10 +146,10 @@ export default ({ userName }: { userName: string }) => {
                       className="govie-body"
                       style={{ textAlign: "center", marginBottom: 0 }}
                     >
-                      {yearData.year}
+                      {year === dayjs().year() ? <strong>{year}</strong> : year}
                     </p>
                   </div>
-                  {yearData.months.map((monthObject) => {
+                  {months.map((monthObject) => {
                     const { events } = monthObject;
                     return (
                       <>
@@ -196,12 +204,11 @@ export default ({ userName }: { userName: string }) => {
             })}
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div style={{ height: "25px" }}>
-                <button
-                  onClick={() => goForward()}
+                <NavButton
                   disabled={dayjs(dates.endDate).year() === maxYear}
-                >
-                  {">"}
-                </button>
+                  onClick={() => goForward()}
+                  transform={true}
+                />
               </div>
             </div>
           </div>
