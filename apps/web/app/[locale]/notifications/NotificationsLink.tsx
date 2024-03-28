@@ -1,21 +1,20 @@
 import Link from "next/link";
 import ds from "design-system/";
 import { PgSessions } from "auth/sessions";
-import { buildNotificationService } from "messages";
+import { api, buildNotificationService } from "messages";
 
 export default async () => {
-  const { userId } = await PgSessions.get();
-  const notificationService = buildNotificationService(userId);
-  const unreadNotificationsCount =
-    await notificationService.getUnreadNotificationsCount();
+  const { email } = await PgSessions.get();
+
+  const unreadNotificationsCount = await api.getUnreadMessageCount(email);
 
   return (
     <>
       <Link
-        href="/notifications"
+        href={new URL("/messages", process.env.MESSAGES_HOST_URL).href}
         style={{ display: "flex", position: "relative" }}
       >
-        {unreadNotificationsCount && unreadNotificationsCount > 0 && (
+        {unreadNotificationsCount > 0 && (
           <div
             style={{
               position: "absolute",
