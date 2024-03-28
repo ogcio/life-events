@@ -274,6 +274,10 @@ export const admin = {
   slug: "admin",
 };
 
+export const timeline = {
+  slug: "timeline",
+};
+
 export const category = {
   health,
   driving,
