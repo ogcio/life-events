@@ -1,29 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
 
-// There is a bug in the client generation
-// It generates the type correctly
-// But then it enforce to use the last in the union
-// export const Provider = Type.Union([
-//   Type.Object({
-//     name: Type.String(),
-//     type: Type.Literal("banktransfer"),
-//     providerData: Type.Object({
-//       sortCode: Type.String(),
-//       accountNumber: Type.String(),
-//       accountHolderName: Type.String(),
-//     }),
-//   }),
-//   Type.Object({
-//     name: Type.String(),
-//     type: Type.Literal("stripe"),
-//     providerData: Type.Object({
-//       stripeAccountId: Type.String(),
-//       stripeAccountSecret: Type.String(),
-//     }),
-//   }),
-// ]);
-
 export const Provider = Type.Union([
   Type.Object({
     name: Type.String(),
