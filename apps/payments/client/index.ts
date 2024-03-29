@@ -7,13 +7,11 @@ const buildAxiosInstance = (userId) => {
   return instance;
 };
 
-const backendUrl = "http://localhost:8001";
-
 export default (userId) => {
   return {
     providers: new ProvidersApi(
       undefined,
-      backendUrl,
+      process.env.BACKEND_URL,
       buildAxiosInstance(userId),
     ),
   };
