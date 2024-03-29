@@ -18,8 +18,10 @@ COPY ./packages/auth/ /app/packages/auth/
 
 FROM deps AS builder
 WORKDIR /app
+ARG nextPublicStripePublishableKey
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
+ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$nextPublicStripePublishableKey
 
 RUN npm run build --workspace=apps/payments
 
