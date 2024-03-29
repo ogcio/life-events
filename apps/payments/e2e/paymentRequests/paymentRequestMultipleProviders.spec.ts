@@ -56,7 +56,11 @@ test.describe("Payment Request with multiple providers", () => {
 
     const paymentMethodFormPage = new PaymentMethodFormPage(page);
     await paymentMethodFormPage.verifyAmount(mockAmount);
-    await paymentMethodFormPage.verifyAvailableMethods(["stripe"]);
+    await paymentMethodFormPage.verifyAvailableMethods([
+      "stripe",
+      "banktransfer",
+      "openbanking",
+    ]);
     await page.goBack();
   });
 
