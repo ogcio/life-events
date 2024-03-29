@@ -26,9 +26,7 @@ export class PaymentRequestDetailsPage {
       .filter({ hasText: "Payment link" })
       .last()
       .getByRole("link");
-    this.amountText = this.page.getByText(
-      formatCurrency(parseInt(mockAmount, 10) * 100),
-    );
+    this.amountText = this.page.getByText(formatCurrency(mockAmount * 100));
     this.redirectURL = this.page.getByText(mockRedirectUrl);
     this.allowAmountOverride = (value: string) =>
       this.page
@@ -79,7 +77,7 @@ export class PaymentRequestDetailsPage {
     await this.deleteButton.click({ force: true });
   }
 
-  async openLink() {
-    await this.paymentLink.click();
+  async getPaymentLink() {
+    return await this.paymentLink.textContent();
   }
 }
