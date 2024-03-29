@@ -27,7 +27,7 @@ export class PaymentRequestsPage {
   }
 
   async create(paymentRequest: PaymentRequestParams) {
-    await this.createPaymentBtn.click();
+    await this.createPaymentBtn.click({ force: true });
     const createPaymentRequestPage = new PaymentRequestFormPage(this.page);
     await createPaymentRequestPage.create(paymentRequest);
 
