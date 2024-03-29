@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { web, workflow, routes } from "../../../../utils";
 import { PgSessions } from "auth/sessions";
-import FormLayout from "../shared/FormLayout";
+import FormLayout from "../../../../components/FormLayout";
 import SimpleDetailsForm from "./SimpleDetailsForm";
 import DetailsSummary from "./DetailsSummary";
 import AddressForm from "../shared/AddressForm";
@@ -70,24 +70,22 @@ const CheckDetailsStep: React.FC<FormProps> = ({
   userId,
   isStepValid,
 }) => {
-  if (nextSlug === routes.health.orderEHIC.checkDetails.slug) {
-    return (
-      <FormLayout
-        action={{ slug: actionSlug }}
-        step={stepSlug}
-        backHref={"/events"}
-      >
-        <DetailsSummary
-          data={data}
-          flow={workflow.keys.orderEHIC}
-          userId={userId}
-          dataValid={isStepValid}
-        />
-      </FormLayout>
-    );
-  } else {
-    return redirect(nextSlug || "");
-  }
+  return stepSlug === nextSlug ? (
+    <FormLayout
+      action={{ slug: actionSlug }}
+      step={stepSlug}
+      backHref={"/events"}
+    >
+      <DetailsSummary
+        data={data}
+        flow={workflow.keys.orderEHIC}
+        userId={userId}
+        dataValid={isStepValid}
+      />
+    </FormLayout>
+  ) : (
+    redirect(nextSlug || "")
+  );
 };
 
 const ChangeDetailsStep: React.FC<FormProps> = ({
@@ -276,7 +274,7 @@ export default async (props: web.NextPageProps) => {
 
   const stepSlug = props.params.action?.at(1);
   const actionSlug = props.params.action?.at(0);
-  const baseActionHref = `/${props.params.locale}/health/${actionSlug}/${nextSlug}`;
+  const baseActionHref = `/${props.params.locale}/${props.params.event}/${actionSlug}/${nextSlug}`;
 
   if (!actionSlug) {
     throw notFound();

@@ -1,22 +1,26 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
-import OpenEventStatusImage from "./OpenEventStatusImage";
+import OpenEventStatusImage from "./components/OpenEventStatusImage";
 import { renewDriverLicenceRules } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { postgres, routes, workflow } from "../../utils";
 import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
+import { api } from "messages";
 import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/OrderBirthCertificate";
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
+import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
 
 const eventRules = {
   [workflow.keys.orderEHIC]: orderEHICRules,
   [workflow.keys.renewDriversLicence]: renewDriverLicenceRules,
   [workflow.keys.orderBirthCertificate]: orderBirthCertificateRules,
   [workflow.keys.notifyDeath]: notifyDeathRules,
+  [workflow.keys.applyJobseekersAllowance]: applyJobseekersAllowanceRules,
 };
 
 async function getEvents() {
   "use server";
+
   return Promise.resolve([
     {
       flowKey: workflow.keys.renewDriversLicence,
@@ -28,11 +32,15 @@ async function getEvents() {
     },
     {
       flowKey: workflow.keys.orderBirthCertificate,
-      category: workflow.categories.health,
+      category: workflow.categories.birth,
     },
     {
       flowKey: workflow.keys.notifyDeath,
       category: workflow.categories.death,
+    },
+    {
+      flowKey: workflow.keys.applyJobseekersAllowance,
+      category: workflow.categories.employment,
     },
   ]);
 }
@@ -112,30 +120,24 @@ async function getFlows() {
 
 export default async () => {
   const t = await getTranslations("MyLifeEvents");
-  const [flow, events] = await Promise.all([getFlows(), getEvents()]);
+  const [flow] = await Promise.all([getFlows(), getEvents()]);
 
-  const eventsToRender = events
-    .filter((event) => !flow.some((f) => f.flowKey === event.flowKey))
-    .map((event) => {
-      // do some mapping for flow key
-      const flowTitle = event.flowKey + ".title.base";
-      const descriptionKey = event.flowKey + ".description.base";
-      return {
-        flowTitle,
-        flowKey: event.flowKey,
-        descriptionKey,
-        slug: routes.category[event.category][event.flowKey].path(),
-      };
-    });
+  const { email } = await PgSessions.get();
+  const messageEvents = await api.getMessages(email, {
+    page: 1,
+    search: "",
+    size: 10,
+    type: "event",
+  });
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
+    <div style={{ display: "flex", flexWrap: "wrap", flex: 1, gap: "2.5rem" }}>
       <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
-        <div className="govie-heading-l">My Life Events</div>
+        <div className="govie-heading-l">{t("lifeEvents")}</div>
         <ul className="govie-list">
-          {eventsToRender.map((evt) => (
+          {messageEvents.map((msg) => (
             <li
-              key={`le_${evt.flowKey}`}
+              key={msg.subject}
               style={{
                 margin: "1rem",
                 display: "flex",
@@ -144,11 +146,19 @@ export default async () => {
                 gap: "1rem",
               }}
             >
-              <Link className="govie-link" href={evt.slug}>
-                {t(evt.flowTitle)}
+              <Link
+                className="govie-link"
+                href={
+                  new URL(
+                    `messages/${msg.messageId}`,
+                    process.env.MESSAGES_HOST_URL,
+                  ).href
+                }
+              >
+                {msg.subject}
               </Link>
               <p className="govie-body" style={{ margin: "unset" }}>
-                {t(evt.descriptionKey, { date: "19th March" })}
+                {msg.content}
               </p>
               <hr className="govie-section-break govie-section-break--visible" />
             </li>
@@ -156,7 +166,7 @@ export default async () => {
         </ul>
       </section>
       <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
-        <div className="govie-heading-l">Open Events</div>
+        <div className="govie-heading-l">{t("openEvents")}</div>
         <ul className="govie-list">
           {flow.map((evt) => (
             <li

@@ -4,8 +4,9 @@
   "scripts": {
     "dev": "nodemon",
     "build": "next build",
-    "start": "next start",
-    "test:e2e": "playwright test",
+    "start": "next start -p 3001",
+    "test:e2e": "playwright test e2e",
+    "test:visual": "playwright test --ui",
     "migrate": "db-migrate up",
     "seed": "node --import tsx ./migrations/seeding/index.ts"
   },

@@ -1,9 +1,13 @@
 import { getTranslations } from "next-intl/server";
 
-import { formatCurrency } from "../../../../utils";
+import {
+  formatCurrency,
+  getRealAmount,
+  stringToAmount,
+} from "../../../../utils";
 import { pgpool } from "../../../../dbConnection";
-import { PgSessions } from "auth/sessions";
-import ClientLink from "./ClientLink";
+import { PaymentRequestDO } from "../../../../../types/common";
+import { redirect } from "next/navigation";
 
 type Props = {
   searchParams:
@@ -11,36 +15,28 @@ type Props = {
         paymentId: string;
         id: string;
         amount?: string;
+        customAmount?: string;
       }
     | undefined;
 };
 
-// Need a common place for these types
-type PaymentRequestDO = {
-  payment_request_id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  provider_id: string;
-  reference: string;
-  amount: number;
-  status: string;
-  redirect_url: string;
-  allowAmountOverride: boolean;
-};
-
 type PaymentRequestDetails = Pick<
   PaymentRequestDO,
-  "title" | "description" | "amount" | "allowAmountOverride"
+  | "title"
+  | "description"
+  | "amount"
+  | "allowAmountOverride"
+  | "allowCustomAmount"
 > & { provider_name: string; provider_type: string };
 
 async function getPaymentRequestDetails(paymentId: string) {
   "use server";
 
   const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.description, pr.amount, pp.provider_name, pp.provider_type, pr.allow_amount_override as "allowAmountOverride"
+    `select pr.title, pr.description, pr.amount, pp.provider_name, pp.provider_type, 
+      pr.allow_amount_override as "allowAmountOverride", pr.allow_custom_amount as "allowCustomAmount"
       from payment_requests pr
-      join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
+      JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
       join payment_providers pp on ppr.provider_id = pp.provider_id
       where pr.payment_request_id = $1`,
     [paymentId],
@@ -53,17 +49,66 @@ async function getPaymentRequestDetails(paymentId: string) {
   return res.rows;
 }
 
-function getPaymentUrl(
-  paymentId: string,
-  type: string,
-  integrationRef: string,
-  amount?: string,
+async function selectCustomAmount(requestId: string, formData: FormData) {
+  "use server";
+  const customAmount = stringToAmount(
+    formData.get("customAmount")?.toString() as string,
+  );
+  const integrationReference = requestId;
+
+  redirect(
+    `./pay?paymentId=${requestId}&id=${integrationReference}&customAmount=${customAmount}`,
+  );
+}
+
+async function redirectToPaymentUrl(
+  settings: {
+    paymentId: string;
+    integrationRef: string;
+    amount?: number;
+    customAmount?: number;
+  },
+  formData: FormData,
 ) {
+  "use server";
+
+  redirect(
+    getPaymentUrl({
+      ...settings,
+      type: formData.get("type") as string,
+      email: formData.get("email") as string,
+      name: formData.get("name") as string,
+    }),
+  );
+}
+
+function getPaymentUrl({
+  paymentId,
+  type,
+  integrationRef,
+  amount,
+  customAmount,
+  name,
+  email,
+}: {
+  paymentId: string;
+  type: string;
+  integrationRef: string;
+  amount?: number;
+  customAmount?: number;
+  name: string;
+  email: string;
+}) {
   const url = new URL(`/paymentRequest/${type}`, process.env.HOST_URL);
   url.searchParams.set("paymentId", paymentId);
   url.searchParams.set("integrationRef", integrationRef);
+  url.searchParams.set("name", name);
+  url.searchParams.set("email", email);
   if (amount) {
-    url.searchParams.set("amount", amount);
+    url.searchParams.set("amount", amount.toString());
+  }
+  if (customAmount) {
+    url.searchParams.set("customAmount", customAmount.toString());
   }
   return url.href;
 }
@@ -76,12 +121,10 @@ export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return <NotFound />;
 
-  // Enforce being logged in
-  await PgSessions.get();
-
-  const [details, t] = await Promise.all([
+  const [details, t, tCommon] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId),
     getTranslations("PayPaymentRequest"),
+    getTranslations("Common"),
   ]);
 
   if (!details) return <NotFound />;
@@ -98,13 +141,34 @@ export default async function Page(props: Props) {
     ({ provider_type }) => provider_type === "stripe",
   );
 
-  const baseAmount = details[0].amount;
-  const canOverrideAmount = details[0].allowAmountOverride;
-  const urlAmount = props.searchParams.amount;
-  let realAmount = baseAmount;
-  if (urlAmount && canOverrideAmount) {
-    realAmount = parseFloat(urlAmount);
-  }
+  const allowCustomAmount = details[0].allowCustomAmount;
+
+  const urlAmount = props.searchParams.amount
+    ? parseFloat(props.searchParams.amount)
+    : undefined;
+  const customAmount = props.searchParams.customAmount
+    ? parseFloat(props.searchParams.customAmount)
+    : undefined;
+
+  const realAmount = getRealAmount({
+    amount: details[0].amount,
+    customAmount,
+    amountOverride: urlAmount,
+    allowAmountOverride: details[0].allowAmountOverride,
+    allowCustomOverride: details[0].allowCustomAmount,
+  });
+
+  const selectAmountAction = selectCustomAmount.bind(
+    this,
+    props.searchParams?.paymentId,
+  );
+
+  const redirectToPayment = redirectToPaymentUrl.bind(this, {
+    paymentId: props.searchParams.paymentId,
+    integrationRef: props.searchParams.id,
+    amount: urlAmount,
+    customAmount,
+  });
 
   return (
     <div
@@ -122,75 +186,156 @@ export default async function Page(props: Props) {
           display: "flex",
           flexDirection: "column",
           width: "80%",
-          gap: "2em",
         }}
       >
         <h1 className="govie-heading-l">{t("title")}</h1>
         <h2 className="govie-heading-m">
           {t("toPay")}: {formatCurrency(realAmount)}
         </h2>
+        {allowCustomAmount && (
+          <div className="govie-form-group">
+            <label htmlFor="amount" className="govie-label--s">
+              {t("selectCustomAmount")}
+            </label>
+
+            <form style={{ maxWidth: "500px" }} action={selectAmountAction}>
+              <div style={{ margin: "1em 0px" }}>
+                <div className="govie-input__wrapper">
+                  <div aria-hidden="true" className="govie-input__prefix">
+                    {tCommon("currencySymbol")}
+                  </div>
+                  <input
+                    type="number"
+                    id="customAmount"
+                    name="customAmount"
+                    className="govie-input"
+                    min="0.00"
+                    max="10000.00"
+                    step="0.01"
+                    required
+                    defaultValue={
+                      customAmount && allowCustomAmount
+                        ? customAmount / 100
+                        : undefined
+                    }
+                  />
+                </div>
+              </div>
+              <input
+                type="submit"
+                value={t("changeAmount")}
+                className="govie-button"
+              />
+            </form>
+          </div>
+        )}
+
         <hr className="govie-section-break govie-section-break--visible"></hr>
-        {hasOpenBanking && (
-          <>
-            <div style={{ margin: "1em 0" }}>
-              <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
-                <h3 className="govie-heading-s" style={{ margin: 0 }}>
-                  {t("payByBank")}
-                </h3>
-                <strong className="govie-tag govie-tag--green">
-                  Recommended
-                </strong>
+        <form action={redirectToPayment} style={{ marginTop: "20px" }}>
+          <div className="govie-form-group">
+            <h2 className="govie-heading-l">{t("addInfo")}</h2>
+            <div className="govie-form-group">
+              <div className="govie-hint" id="name-hint">
+                {t("name")}
               </div>
-              <p className="govie-body">{t("payByBankDescription")}</p>
-              <ClientLink
-                label={t("payNow")}
-                href={getPaymentUrl(
-                  props.searchParams.paymentId,
-                  "bankTransfer",
-                  props.searchParams.id,
-                  urlAmount,
-                )}
+              <input
+                type="text"
+                id="name"
+                name="name"
+                className="govie-input"
+                aria-describedby="name-hint"
+                required
+                style={{ maxWidth: "500px" }}
               />
             </div>
-            <hr className="govie-section-break govie-section-break--visible"></hr>
-          </>
-        )}
-        {hasManualBanking && (
-          <>
-            <div style={{ margin: "1em 0" }}>
-              <div style={{ display: "flex", gap: "1em", marginBottom: "1em" }}>
-                <h3 className="govie-heading-s" style={{ margin: 0 }}>
-                  {t("manualBankTransfer")}
-                </h3>
+            <div className="govie-form-group">
+              <div className="govie-hint" id="email-hint">
+                {t("email")}
               </div>
-              <p className="govie-body">{t("manualBankTransferDescription")}</p>
-              <ClientLink
-                label={t("payNow")}
-                href={getPaymentUrl(
-                  props.searchParams.paymentId,
-                  "manual",
-                  props.searchParams.id,
-                  urlAmount,
-                )}
+              <input
+                type="text"
+                id="email"
+                name="email"
+                className="govie-input"
+                aria-describedby="email-hint"
+                required
+                style={{ maxWidth: "500px" }}
               />
             </div>
-            <hr className="govie-section-break govie-section-break--visible"></hr>
-          </>
-        )}
-        <div style={{ margin: "1em 0" }}>
-          <h3 className="govie-heading-s">{t("payByCard")}</h3>
-          {hasStripe && (
-            <ClientLink
-              label={t("payNow")}
-              href={getPaymentUrl(
-                props.searchParams!.paymentId,
-                "stripe",
-                props.searchParams!.id,
-                urlAmount,
+            <h2 className="govie-heading-l">{t("choose")}</h2>
+
+            <div
+              data-module="govie-radios"
+              className="govie-radios govie-radios--large"
+            >
+              {hasOpenBanking && (
+                <div className="govie-radios__item">
+                  <input
+                    id="bankTransfer-0"
+                    name="type"
+                    type="radio"
+                    value="bankTransfer"
+                    className="govie-radios__input"
+                  />
+                  <label
+                    className="govie-label--s govie-radios__label"
+                    htmlFor="bankTransfer-0"
+                  >
+                    {t("payByBank")}
+                    <p className="govie-body">{t("payByBankDescription")}</p>
+                  </label>
+                </div>
               )}
-            />
-          )}
-        </div>
+
+              {hasManualBanking && (
+                <div className="govie-radios__item">
+                  <input
+                    id="manual-0"
+                    name="type"
+                    type="radio"
+                    value="manual"
+                    className="govie-radios__input"
+                  />
+
+                  <label
+                    className="govie-label--s govie-radios__label"
+                    htmlFor="manual-0"
+                  >
+                    {t("manualBankTransfer")}
+                    <p className="govie-body">
+                      {t("manualBankTransferDescription")}
+                    </p>
+                  </label>
+                </div>
+              )}
+
+              {hasStripe && (
+                <div className="govie-radios__item">
+                  <input
+                    id="stripe-0"
+                    name="type"
+                    type="radio"
+                    value="stripe"
+                    className="govie-radios__input"
+                  />
+                  <label
+                    className="govie-label--s govie-radios__label"
+                    htmlFor="stripe-0"
+                  >
+                    {t("payByCard")}
+                    <p className="govie-body">{t("payByCardDescription")}</p>
+                  </label>
+                </div>
+              )}
+            </div>
+
+            <div className="govie-form-group" style={{ marginTop: "20px" }}>
+              <button className="govie-button govie-button--primary">
+                {t("confirm")}
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import Fastify from "fastify";
 import path from "path";
+import cors from "@fastify/cors";
 import fastifyEnv from "@fastify/env";
 import fastifyPostgres from "@fastify/postgres";
 
@@ -17,6 +18,7 @@ const envSchema = {
     POSTGRES_PASSWORD: { type: "string" },
     POSTGRES_DB: { type: "string" },
     POSTGRES_DB_NAME_SHARED: { type: "string" },
+    ORIGIN_URL: { type: "string" },
   },
   required: [
     "POSTGRES_HOST",
@@ -24,6 +26,7 @@ const envSchema = {
     "POSTGRES_USER",
     "POSTGRES_PASSWORD",
     "POSTGRES_DB_NAME_SHARED",
+    "ORIGIN_URL",
   ],
 };
 
@@ -31,7 +34,11 @@ const fastify = Fastify({
   logger: true,
 });
 
-await fastify.register(fastifyEnv, { schema: envSchema, dotenv: true });
+await fastify.register(fastifyEnv, {
+  schema: envSchema,
+  dotenv: true,
+  data: process.env,
+});
 
 await fastify.register(fastifyPostgres, {
   host: fastify.config.POSTGRES_HOST,
@@ -58,6 +65,10 @@ fastify.register(import("@fastify/autoload"), {
   options: {
     prefix: "/static",
   },
+});
+
+await fastify.register(cors, {
+  origin: fastify.config.ORIGIN_URL,
 });
 
 try {

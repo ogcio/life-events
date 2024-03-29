@@ -35,6 +35,7 @@ export default (
     `,
       [props.userId, props.flow],
     );
+
     revalidatePath("/confirm-application");
   }
 

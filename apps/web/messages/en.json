@@ -29,7 +29,21 @@
     "enter-details": "Enter the following details",
     "confirm-notification": "Confirm your notification",
     "services-list-to-inform": "List of services to inform",
-    "notification-success": "Notification submitted"
+    "notification-success": "Notification submitted",
+    "apply-jobseekers-allowance": "Apply for Jobseeker's Allowance",
+    "introduction": "Introduction",
+    "benefits-entitlements": "Your benefits entitlements",
+    "rates": "What may I receive?",
+    "what-asked-about": "What will  you be asked about?",
+    "confirm-details": "Confirm your contact details",
+    "submissions": {
+      "renewDriversLicence": "Driving licence renewal",
+      "orderEHIC": "EHIC application",
+      "applyJobseekersAllowance": "Jobseeker's Allowance application",
+      "notifyDeath": "Death notification",
+      "orderBirthCertificate": "Birth certificate application"
+    },
+    "reject": "Reject"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -39,7 +53,9 @@
     "mobileNumber": "Mobile number",
     "sex": "Sex",
     "submitText": "Confirm and continue",
-    "PPSN": "PPSN"
+    "PPSN": "PPSN",
+    "email": "Email",
+    "contactNumber": "Contact number"
   },
   "DetailsSummaryForm": {
     "title": "Confirm your application",
@@ -163,6 +179,121 @@
     "title": "List of services we can inform",
     "confirm": "Confirm and submit notification"
   },
+  "ApplyJobseekersAllowanceIntro": {
+    "title": "Introduction",
+    "firstSubtitle": "Jobseeker's Allowance",
+    "paragraph1": "Jobseeker's Allowance is a means-tested payment made to people who are unemployed and",
+    "firstPoint": "who do not qualify for Jobseeker's Benefit or Jobseeker's Benefit for the Self-Employed",
+    "secondPoint": "whose entitlement to Jobseeker's Benefit or Jobseeker's Benefit for the Self-Employed has expired",
+    "thirdPoint": "who do qualify for Jobseeker's Benefit or Jobseeker's Benefit for the Self-Employed but choose to claim optional Jobseeker's Allowance instead.",
+    "paragraph2": "Whether you qualify for Jobseeker's Allowance depends on your income and whether you are habitually resident in Ireland. In other words, you live here and have close links to Ireland.",
+    "secondSubtitle": "Jobseeker's Benefit",
+    "paragraph3": "Jobseeker's Benefit is a weekly payment from the Department of Social Protection (DSP) to people who are out of work and are covered by social insurance (PRSI). If you don't qualify for Jobseeker's Benefit you may qualify for Jobseeker's Allowance.",
+    "thirdSubtitle": "Benefit payment for 65 year olds",
+    "paragraph4": "Jobseeker's Benefit (Self-Employed) gives income support to self-employed people who are no longer engaged in self-employment.",
+    "paragraph5": "If you are 65 and have left employment or self-employment, you may qualify for the Benefit Payment for 65 Year Olds until you turn 66.",
+    "continue": "Check for benefits eligibility"
+  },
+  "ApplyJobseekersAllowanceBenefitsEntitlements": {
+    "title": "Your benefits entitlements",
+    "paragraph1": "Your Jobseekers Benefit entitlement has expired.",
+    "paragraph2": "You may still apply for Jobseekers allowance",
+    "continue": "Apply for Jobseekers Allowance"
+  },
+  "ApplyJobseekersAllowanceRequirements": {
+    "title": "Apply for Jobseeker's Allowance",
+    "firstSubtitle": "To qualify for Jobseeker's Allowance, you must:",
+    "secondSubtitle": "The above statements are true",
+    "requirements": {
+      "0": "Be over 18 and under 66 years of age",
+      "1": "Satisfy a means test",
+      "2": "be habitually resident in Ireland",
+      "3": "Be capable of work",
+      "4": "Be available for full-time work",
+      "5": "Be genuinely seeking work",
+      "6": "Be fully or partly unemployed (at least 4 days out of work in every 7)"
+    },
+    "note": "Note: If you are self-employed, the last condition does not apply.",
+    "firstParagraph": "You can work for up to 3 days a week and may still get Jobseeker's Allowance for the other days. If you are getting Jobseeker's Allowance, you can use a benefit of work estimator to see how taking up part-time work would affect the amount you would get.",
+    "secondParagraph": "The Reckoner works out the total amount you would get if you take up part-time work (including any Working Family Payment payable for the family) and compares this to what you are getting in jobseeker's payments (including Rent Supplement).",
+    "agree": "I agree",
+    "disagree": "I disagree",
+    "continue": "Continue"
+  },
+  "ApplyJobseekersAllowanceRates": {
+    "title": "What may I receive?",
+    "firstParagraph": "Your rate of payment will depend on your income and the outcome of the means assessment. If you have no means, are aged 25 or over, and you are single, you will get the full weekly payment of €232.",
+    "secondParagraph": "An increase is payable for each child dependant if you are getting an increase for a qualified adult. If you do not qualify for an increase for a qualified adult, you may get a half-rate increase for a qualified child dependant.",
+    "subtitle": "The current rates are as follows:",
+    "rates": {
+      "title": {
+        "key": "<bold>Jobseeker's Allowance Rates</bold>",
+        "value": "<bold>Rate</bold>"
+      },
+      "fullPaymentOver25": {
+        "key": "Full personal payment (25 or over)",
+        "value": "€232.00"
+      },
+      "paymentUnder25": {
+        "key": "Personal Rate 18 to 24",
+        "value": "€141.70"
+      },
+      "extraPaymentOver25": {
+        "key": "Extra payment for <bold>qualified adult</bold>",
+        "value": "€154.00"
+      },
+      "extraPaymentUnder25": {
+        "key": "Extra payment for <bold>qualified adult (18 to 24)</bold>",
+        "value": "€141.70"
+      },
+      "extraPaymentChildOver12Full": {
+        "key": "Extra payment for <bold>qualified child under 12</bold>",
+        "value": "€46.00 (full-rate)"
+      },
+      "extraPaymentChildOver12Half": {
+        "key": "",
+        "value": "€23.00 (half-rate)"
+      },
+      "extraPaymentChildUnder12Full": {
+        "key": "Extra payment for <bold>qualified child 12 and over</bold>",
+        "value": "€54.00 (Full rate)"
+      },
+      "extraPaymentChildUnder12Half": {
+        "key": "",
+        "value": "€27.00 (half rate)"
+      }
+    },
+    "message": "Go to <profile>my profile</profile>",
+    "continue": "Continue"
+  },
+  "ApplyJobseekersAllowanceQuestions": {
+    "title": "What will you be asked about?",
+    "questions": {
+      "details": {
+        "title": "Your details",
+        "description": "Questions about you, your address, any children and your relationship status."
+      },
+      "employmentInfo": {
+        "title": "Employment and training information",
+        "description": "Questions about your employment history and training or education."
+      },
+      "financialInfo": {
+        "title": "Your financial information",
+        "description": "Questions about any income, savings or investments you or your partner may have."
+      }
+    },
+    "continue": "Accept and Continue"
+  },
+  "ApplyJobseekersAllowanceConfirmDetails": {
+    "title": "Confirm your contact details",
+    "subTitle": "Personal details",
+    "name": "Name",
+    "currentAddress": "Current address",
+    "email": "Email address",
+    "contactNumber": "Daytime contact number",
+    "change": "Change",
+    "continue": "Confirm and submit application"
+  },
   "PaymentSuccessful": {
     "panelTitle": "Your payment was successful",
     "panelReferenceText": "Your reference number",
@@ -205,15 +336,19 @@
     "orderEHICBody": "Once approved your EHIC will be available in your Digital Wallet and will be sent to you by post and you should receive it within 7 days.",
     "orderBirthCertificate": "Birth certificate copy",
     "orderBirthCertificateBody": "Once approved your birth certificate will be sent to you by post and you should receive it within 7 days.",
+    "applyJobseekersAllowance": "Jobseeker's Allowance",
+    "applyJobseekersAllowanceBody": "Someone from the Department of Social Protection will contact you using the details you provided.",
     "date": "Date of application"
   },
   "RenewDriversLicence": {
     "title": "Renew your driving licence"
   },
   "Generic": {
-    "back": "back"
+    "back": "Back"
   },
   "MyLifeEvents": {
+    "lifeEvents": "My Life Events",
+    "openEvents": "Open Events",
     "renewDriversLicence": {
       "title": {
         "base": "Renew your drivers licence",
@@ -277,6 +412,140 @@
         "post": "The details you submitted will be logged and shared with the relevant services",
         "rejected": "{rejectedReason}"
       }
+    },
+    "applyJobseekersAllowance": {
+      "title": {
+        "base": "Apply for Jobseekers Allowance",
+        "pre": "Continue with your request for Jobseekers Allowance",
+        "mid": "Your Jobseekers Allowance is being processed",
+        "post": "Your Jobseekers Allowance is approved",
+        "rejected": "Your Jobseekers Allowance is rejected"
+      },
+      "description": {
+        "base": "A line of text to support this statement",
+        "pre": "A line of text to support this statement",
+        "mid": "You will be informed here once the application has been complete",
+        "post": "Your allowance will begin on 1.2.24. Please update us if your employment changes",
+        "rejected": "{rejectedReason}"
+      }
+    }
+  },
+  "AboutMe": {
+    "title": "About me",
+    "comingSoon": "Coming soon"
+  },
+  "Birth": {
+    "title": "Birth",
+    "orderBirthCertificate": {
+      "title": "Order a copy of my birth certificate",
+      "description": "A line of text to support this statement"
+    },
+    "correctBirthCertificate": {
+      "title": "Correct a birth registration",
+      "description": "Coming soon"
+    },
+    "overseasBirthCertificate": {
+      "title": "Overseas birth certificate",
+      "description": "Coming soon"
+    },
+    "addFatherNameBirthCertificate": {
+      "title": "Adding a father name to a certificate",
+      "description": "Coming soon"
+    }
+  },
+  "Health": {
+    "title": "Health",
+    "orderEHIC": {
+      "title": "Order an EHIC",
+      "description": "A line of text to support this statement"
+    },
+    "irishHealthSecurityAgency": {
+      "title": "Irish Health Security Agency",
+      "description": "Coming soon"
+    },
+    "workHealthProgramme": {
+      "title": "Work and Health Programme",
+      "description": "Coming soon"
+    },
+    "healthSafetyExecutive": {
+      "title": "Health and Safety Executive",
+      "description": "Coming soon"
+    }
+  },
+  "Driving": {
+    "title": "Driving",
+    "renewDriversLicence": {
+      "title": "Renew your driving licence",
+      "description": "A line of text to support this statement"
+    },
+    "replaceLostStolenLicence": {
+      "title": "Replace a lost or stolen licence",
+      "description": "Coming soon"
+    },
+    "drivingLicenceCategories": {
+      "title": "Driving licence categories",
+      "description": "Coming soon"
+    }
+  },
+  "Employment": {
+    "title": "Employment",
+    "applyJobseekersAllowance": {
+      "title": "Apply for Jobseekers Allowance",
+      "description": "A line of text to support this statement"
+    },
+    "payEmployersPaye": {
+      "title": "Pay employers' PAYE",
+      "description": "Coming soon"
+    },
+    "employmentTribunal": {
+      "title": "Employment Tribunal",
+      "description": "Coming soon"
+    },
+    "selfEmployedExpenses": {
+      "title": "Expenses if you're self employed",
+      "description": "Coming soon"
+    }
+  },
+  "StartingABusiness": {
+    "title": "Starting a business",
+    "comingSoon": "Coming soon"
+  },
+  "Housing": {
+    "title": "Housing",
+    "notifyChangeAddress": {
+      "title": "Notify Change of Address",
+      "description": "Coming soon"
+    },
+    "housingBenefit": {
+      "title": "Housing benefit",
+      "description": "Coming soon"
+    },
+    "housingAssociationHomes": {
+      "title": "Housing association home",
+      "description": "Coming soon"
+    },
+    "housingOmbudsman": {
+      "title": "Housing Ombudsman",
+      "description": "Coming soon"
+    }
+  },
+  "Death": {
+    "title": "Death",
+    "notifyDeath": {
+      "title": "Notify a death to government departments",
+      "description": "A line of text to support this statement"
+    },
+    "overseasDeathCertificate": {
+      "title": "Overseas death certificate",
+      "description": "Coming soon"
+    },
+    "changeWillAfterDeath": {
+      "title": "Change a will after death",
+      "description": "Coming soon"
+    },
+    "declarationPresumedDeath": {
+      "title": "Declaration of presumed death",
+      "description": "Coming soon"
     }
   },
   "MedicalForm": {
@@ -365,6 +634,16 @@
       "servicesToInform": "Services to inform",
       "notifyDeath": "Death notification"
     },
+    "ApplyJobseekersAllowanceDetails": {
+      "title": "Review Jobseeker's Allowance application",
+      "reject": "Reject",
+      "approve": "Approve",
+      "userName": "Name",
+      "email": "Email",
+      "contactNumber": "Contact number",
+      "currentAddress": "Current address",
+      "applyJobseekersAllowance": "Jobseeker's Allowance"
+    },
     "RejectReasonForm": {
       "title": "Reason for rejection",
       "inputLabel": "Provide the reason for the user to see",
@@ -383,7 +662,8 @@
       "eventNotFound": "Event not found",
       "orderEHIC": "Application for an EHIC",
       "orderBirthCertificate": "Application for a copy of the birth certificate",
-      "notifyDeath": "Death notification"
+      "notifyDeath": "Death notification",
+      "applyJobseekersAllowance": "Application for Jobseeker's Allowance"
     },
     "StatusMenu": {
       "all": "All",
@@ -400,6 +680,7 @@
     "fileUploadFail": "Failed to upload file",
     "internalServerError": "Server error",
     "noAuthority": "You must have authority to continue",
+    "noRequirements": "You must meet the requirements above to continue",
     "fields": {
       "name": "name",
       "email": "email address",
@@ -415,7 +696,8 @@
       "county": "county",
       "PPSN": "PPSN",
       "referenceNumber": "12 digit reference number",
-      "deceasedSurname": "surname"
+      "deceasedSurname": "surname",
+      "contactNumber": "contact number"
     }
   },
   "Notifications": {

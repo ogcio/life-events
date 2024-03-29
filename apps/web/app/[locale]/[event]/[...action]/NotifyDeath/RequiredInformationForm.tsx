@@ -1,20 +1,19 @@
 import ds from "design-system";
 import { getTranslations } from "next-intl/server";
-import { postgres, routes, workflow } from "../../../../utils";
+import { postgres, workflow } from "../../../../utils";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export default async (props: {
   userId: string;
   flow: string;
-  onSubmitRedirectSlug: string;
+  data: workflow.NotifyDeath;
 }) => {
   const t = await getTranslations("NotifyDeathRequiredInfoForm");
   async function submitAction() {
     "use server";
 
     const dataToUpdate: workflow.NotifyDeath = {
-      ...workflow.emptyNotifyDeath(),
+      ...props.data,
       hasRequiredInformation: true,
     };
 
@@ -34,7 +33,7 @@ export default async (props: {
       ],
     );
 
-    redirect(props.onSubmitRedirectSlug);
+    revalidatePath("/");
   }
 
   return (

@@ -2,11 +2,11 @@ import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import OpenBankingFields from "../add-openbanking/OpenBankingFields";
 import EditProviderForm from "./EditProviderForm";
-import type { Provider } from "../types";
+import type { OpenBankingProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 
 type Props = {
-  provider: Provider;
+  provider: OpenBankingProvider;
 };
 
 export default async ({ provider }: Props) => {

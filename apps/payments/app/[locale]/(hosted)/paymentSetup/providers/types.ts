@@ -1,4 +1,10 @@
-export type ProviderType = "openbanking" | "banktransfer" | "stripe";
+export const providerTypes = [
+  "openbanking",
+  "banktransfer",
+  "stripe",
+  "worldpay",
+] as const;
+export type ProviderType = (typeof providerTypes)[number];
 export type ProviderStatus = "connected" | "disconnected";
 
 export type OpenBankingData = {
@@ -18,16 +24,49 @@ export type StripeData = {
   liveSecretKey: string;
 };
 
-export type ProviderData = OpenBankingData | BankTransferData | StripeData;
+export type WorldpayData = {
+  merchantCode: string;
+  installationId: string;
+};
 
-export type Provider = {
+export type ProviderData =
+  | OpenBankingData
+  | BankTransferData
+  | StripeData
+  | WorldpayData;
+
+export type CommonProvider = {
   id: string;
   name: string;
   userId?: string;
-  type: ProviderType;
   status: ProviderStatus;
-  providerData: ProviderData;
 };
+
+export type StripeProvider = CommonProvider & {
+  type: "stripe";
+  providerData: StripeData;
+};
+
+export type OpenBankingProvider = CommonProvider & {
+  type: "openbanking";
+  providerData: OpenBankingData;
+};
+
+export type BankTransferProvider = CommonProvider & {
+  type: "banktransfer";
+  providerData: BankTransferData;
+};
+
+export type WorldpayProvider = CommonProvider & {
+  type: "worldpay";
+  providerData: WorldpayData;
+};
+
+export type Provider =
+  | StripeProvider
+  | OpenBankingProvider
+  | BankTransferProvider
+  | WorldpayProvider;
 
 export const parseProvider = (rawProvider: any): Provider => ({
   id: rawProvider.provider_id,

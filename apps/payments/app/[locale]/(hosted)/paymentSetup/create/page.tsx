@@ -3,6 +3,7 @@ import { PgSessions } from "auth/sessions";
 import { RedirectType, redirect } from "next/navigation";
 import { pgpool } from "../../../../dbConnection";
 import PaymentSetupForm from "../PaymentSetupForm";
+import { stringToAmount } from "../../../../utils";
 
 async function getRegisteredAccounts(userId: string, providerType: string) {
   "use server";
@@ -25,15 +26,19 @@ async function getRegisteredAccounts(userId: string, providerType: string) {
 async function createPayment(userId: string, formData: FormData) {
   "use server";
 
-  const amountAsString = formData.get("amount")?.toString() ?? "";
-  // JS sucks at handling money
-  const amount = Math.round(parseFloat(amountAsString) * 100);
+  const amount = stringToAmount(formData.get("amount")?.toString() as string);
 
   const openBankingAccount = formData.get("openbanking-account")?.toString();
   const bankTransferAccount = formData.get("banktransfer-account")?.toString();
   const stripeAccount = formData.get("stripe-account")?.toString();
+  const worldpayAccount = formData.get("worldpay-account")?.toString();
 
-  if (!openBankingAccount && !bankTransferAccount && !stripeAccount) {
+  if (
+    !openBankingAccount &&
+    !bankTransferAccount &&
+    !stripeAccount &&
+    !worldpayAccount
+  ) {
     throw new Error("Failed to create payment");
   }
 
@@ -44,6 +49,7 @@ async function createPayment(userId: string, formData: FormData) {
     amount,
     redirectUrl: formData.get("redirect-url")?.toString(),
     allowAmountOverride: formData.get("allowAmountOverride") === "on",
+    allowCustomAmount: formData.get("allowCustomAmount") === "on",
   };
 
   const client = await pgpool.connect();
@@ -53,8 +59,8 @@ async function createPayment(userId: string, formData: FormData) {
     const paymentRequestQueryResult = await pgpool.query<{
       payment_request_id: string;
     }>(
-      `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override)
-        values ($1, $2, $3, $4, $5, $6, $7, $8)
+      `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override, allow_custom_amount)
+        values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         returning payment_request_id`,
       [
         userId,
@@ -65,6 +71,7 @@ async function createPayment(userId: string, formData: FormData) {
         data.redirectUrl,
         "pending",
         data.allowAmountOverride,
+        data.allowCustomAmount,
       ],
     );
 
@@ -80,8 +87,8 @@ async function createPayment(userId: string, formData: FormData) {
       const paymentRequestProviderQueryResult = await pgpool.query<{
         payment_request_id: string;
       }>(
-        `insert into payment_requests_providers (provider_id, payment_request_id)
-        values ($1, $2)`,
+        `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
+        values ($1, $2 , true)`,
         [openBankingAccount, paymentRequestId],
       );
 
@@ -95,8 +102,8 @@ async function createPayment(userId: string, formData: FormData) {
       const paymentRequestProviderQueryResult = await pgpool.query<{
         payment_request_id: string;
       }>(
-        `insert into payment_requests_providers (provider_id, payment_request_id)
-        values ($1, $2)`,
+        `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
+        values ($1, $2, true)`,
         [bankTransferAccount, paymentRequestId],
       );
 
@@ -110,9 +117,23 @@ async function createPayment(userId: string, formData: FormData) {
       const paymentRequestProviderQueryResult = await pgpool.query<{
         payment_request_id: string;
       }>(
+        `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
+        values ($1, $2, true)`,
+        [stripeAccount, paymentRequestId],
+      );
+
+      if (!paymentRequestProviderQueryResult.rowCount) {
+        throw new Error("Failed to create payment");
+      }
+    }
+
+    if (worldpayAccount) {
+      const paymentRequestProviderQueryResult = await pgpool.query<{
+        payment_request_id: string;
+      }>(
         `insert into payment_requests_providers (provider_id, payment_request_id)
         values ($1, $2)`,
-        [stripeAccount, paymentRequestId],
+        [worldpayAccount, paymentRequestId],
       );
 
       if (!paymentRequestProviderQueryResult.rowCount) {
@@ -123,32 +144,19 @@ async function createPayment(userId: string, formData: FormData) {
     await client.query("COMMIT");
 
     redirect(
-      `create/${paymentRequestQueryResult.rows[0].payment_request_id}`,
+      `./requests/${paymentRequestQueryResult.rows[0].payment_request_id}`,
       RedirectType.replace,
     );
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
+  } finally {
+    client.release();
   }
 }
 
 export default async function Page() {
-  const t = await getTranslations("PaymentSetup.CreatePayment");
-
   const { userId } = await PgSessions.get();
-
-  const openBankingAccounts = await getRegisteredAccounts(
-    userId,
-    "openbanking",
-  );
-
-  const stripeAccounts = await getRegisteredAccounts(userId, "stripe");
-
-  const manualBankTransferAccounts = await getRegisteredAccounts(
-    userId,
-    "banktransfer",
-  );
-
   const submitPayment = createPayment.bind(this, userId);
 
   return <PaymentSetupForm userId={userId} action={submitPayment} />;

@@ -2,7 +2,9 @@
   "Common": {
     "notFound": "Payment request not found",
     "edit": "Edit",
-    "save": "Save"
+    "save": "Save",
+    "currencySymbol": "€",
+    "delete": "Delete"
   },
   "PaymentSetup": {
     "menu": {
@@ -87,6 +89,17 @@
       "liveSecretKeyHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
       "confirm": "Confirm"
     },
+    "AddWorldpay": {
+      "title": "Add Worldpay payment provider",
+      "editTitle": "Edit Worldpay payment provider",
+      "name": "Name",
+      "nameHint": "Give a name to this payment provider to help you recognize it",
+      "merchantCode": "Merchant Code",
+      "merchantCodeHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "installationId": "Installation Id",
+      "installationIdHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "confirm": "Confirm"
+    },
     "Payments": {
       "createPayment": "Create payment",
       "transactions": "Transactions",
@@ -115,13 +128,33 @@
         "date": "Date",
         "title": "Title",
         "paymentTitle": "Description",
-        "beneficiaryAccount": "Beneficiary Account"
+        "beneficiaryAccount": "Beneficiary Account",
+        "actions": "Actions",
+        "details": "Details"
       },
+      "details": {
+        "transactionDetails": "Transaction details",
+        "requestTitle": "Payment Request Title",
+        "amount": "Amount",
+        "lastUpdate": "Last update",
+        "status": "Status",
+        "providerName": "Provider name",
+        "providerType": "Provider type",
+        "payerName": "Payer name",
+        "payerEmail": "Payer email",
+        "referenceCode": "Payment reference code"
+      },
+      "transactionFound": "Transaction found with this reference code",
       "assignTitle": "Assign to User",
       "assignDescription": "Send this payment to a user",
       "userPpsn": "User PPS Number",
       "userPpsnHint": "The Personal Public Service Number of the user you would like to assign this payment to",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "actions": {
+        "delete": {
+          "cannotDelete": "Cannot delete payment request since there are existing transactions"
+        }
+      }
     },
     "CreatePayment": {
       "title": "Payment Setup Form",
@@ -132,29 +165,39 @@
         "paymentProvider": {
           "openbanking": "OpenBanking Account",
           "banktransfer": "Manual Bank Transfer Account",
-          "stripe": "Stripe Account"
+          "stripe": "Stripe Account",
+          "worldpay": "Worldpay Account"
         },
         "reference": "Reference",
         "amount": "Amount",
         "currencySymbol": "€",
         "redirectUrl": "Redirect URL",
         "allowAmountOverride": "Allow amount override from url",
+        "allowCustomAmount": "Allow the user to pay a custom amount",
         "submit": "Continue"
       },
-      "copyLink": "Copy link",
+      "copyLink": "Copy",
       "goBack": "Back to payments",
       "paymentLink": "Payment link"
     }
   },
   "PayPaymentRequest": {
+    "choose": "Choose payment method",
+    "confirm": "Confirm method",
     "title": "Pay your fee",
     "toPay": "Total to pay",
     "payByBank": "Pay by bank app",
     "payByBankDescription": "Make a direct payment securely from your bank app - no card needed",
     "payByCard": "Credit/Debit card",
+    "payByCardDescription": "Pay securely with your credit or debit card",
     "payNow": "Pay now",
     "manualBankTransfer": "Manual Bank Transfer",
-    "manualBankTransferDescription": "Make a manual bank transfer"
+    "manualBankTransferDescription": "Make a manual bank transfer",
+    "selectCustomAmount": "Pay a custom amount",
+    "changeAmount": "Change amount",
+    "name": "Full Name",
+    "email": "Email",
+    "addInfo": "Add your information"
   },
   "PayManualBankTransfer": {
     "title": "Pay with a Manual Bank Transfer",
@@ -165,8 +208,11 @@
       "amount": "Total to pay",
       "accountHolderName": "Name on the account",
       "sortCode": "Sort code",
-      "accountNumber": "Account number"
-    }
+      "accountNumber": "Account number",
+      "referenceCode": "Payment reference code",
+      "referenceCodeDescription": "Please use this reference code when making the money transfer, we will use it to identify your payment. If you forget to include it, your payment may not be processed correctly."
+    },
+    "confirmPayment": "I have made the payment"
   },
   "PayStripe": {
     "payNow": "Pay now",

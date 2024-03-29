@@ -1,12 +1,12 @@
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
-import Header from "./Header";
-import Footer from "./Footer";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { PgSessions } from "auth/sessions";
 import { RedirectType, redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { pgpool } from "../utils/postgres";
-import FeedbackBanner from "./FeedbackBanner";
+import FeedbackBanner from "../components/FeedbackBanner";
 
 export default async function RootLayout({
   children,
@@ -49,9 +49,7 @@ export default async function RootLayout({
           style={{ maxWidth: "1440px", width: "100%" }}
         >
           <FeedbackBanner />
-          <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
-            {children}
-          </div>
+          <div style={{ margin: "0 auto", paddingTop: "20px" }}>{children}</div>
         </div>
         <Footer />
       </body>

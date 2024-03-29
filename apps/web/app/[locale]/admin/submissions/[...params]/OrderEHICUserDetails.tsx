@@ -4,8 +4,10 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
-import { aws, postgres, web, workflow } from "../../../../utils";
+import { aws, postgres, routes, web, workflow } from "../../../../utils";
 import { headers } from "next/headers";
+import FormLayout from "../../../../components/FormLayout";
+import { getS3ClientConfig } from "../../../../utils/aws";
 
 type Props = {
   flowData: workflow.OrderEHIC;
@@ -35,22 +37,23 @@ export default async ({ userId, flow, flowData }: Props) => {
 
   // New link is generated on each render, but expires after 5 minutes. This might not be desirable but there has been no specifications
   if (flowData.proofOfAddressFileId) {
-    const s3Client = new S3Client({
-      ...aws.s3ClientConfig,
-      endpoint: process.env.S3_CLIENT_ENDPOINT,
-    });
+    const s3Config = getS3ClientConfig();
 
     const command = new GetObjectCommand({
-      Bucket: aws.fileBucketName,
+      Bucket: s3Config.bucketName,
       Key: `${userId}/${flowData.proofOfAddressFileId}`,
     });
-    proofOfAddressDownloadUrl = await getSignedUrl(s3Client, command, {
+    proofOfAddressDownloadUrl = await getSignedUrl(s3Config.client, command, {
       expiresIn: 5 * 60,
     });
   }
 
   return (
-    <>
+    <FormLayout
+      action={{ slug: "submissions." + flow }}
+      backHref={`/${routes.admin.slug}`}
+      homeHref={`/${routes.admin.slug}`}
+    >
       <div className="govie-heading-l">{t("title")}</div>
       <div className="govie-heading-m">{flowData.userName}</div>
       <div className="govie-grid-row">
@@ -133,6 +136,6 @@ export default async ({ userId, flow, flowData }: Props) => {
           {t("approve")}
         </button>
       </form>
-    </>
+    </FormLayout>
   );
 };

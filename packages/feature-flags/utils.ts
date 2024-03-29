@@ -1,12 +1,52 @@
 import { pgpool } from "./dbConnection";
 import { FeatureFlag } from "./types/FeatureFlags";
 
-export async function getFeatureFlag(application: string, slug: string) {
+const defaultFeatureFlags = {
+  events: {
+    enabled: true,
+  },
+  "about-me": {
+    enabled: true,
+  },
+  birth: {
+    enabled: true,
+  },
+  health: {
+    enabled: true,
+  },
+  driving: {
+    enabled: true,
+  },
+  employment: {
+    enabled: true,
+  },
+  business: {
+    enabled: true,
+  },
+  housing: {
+    enabled: true,
+  },
+  death: {
+    enabled: true,
+  },
+};
+
+export async function isFeatureFlagEnabled(
+  name: string,
+  application: string = "portal",
+) {
   const result = await pgpool.query<FeatureFlag, [string, string]>(
     `SELECT * FROM feature_flags WHERE application = $1 AND slug = $2`,
-    [application, slug],
+    [application, name],
   );
-  return result.rows[0];
+
+  const featureFlag = result.rows[0];
+
+  if (!featureFlag) {
+    return defaultFeatureFlags[name].enabled;
+  }
+
+  return Boolean(featureFlag?.is_enabled);
 }
 
 export async function getFeatureFlags(application: string) {

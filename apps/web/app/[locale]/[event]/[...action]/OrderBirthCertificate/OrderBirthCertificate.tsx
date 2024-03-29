@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { web, workflow, routes } from "../../../../utils";
 import { PgSessions } from "auth/sessions";
-import FormLayout from "../shared/FormLayout";
+import FormLayout from "../../../../components/FormLayout";
 import SimpleDetailsForm from "./SimpleDetailsForm";
 import DetailsSummary from "./DetailsSummary";
 import AddressForm from "../shared/AddressForm";
@@ -29,7 +29,7 @@ export const orderBirthCertificateRules: Parameters<
       return { key: null, isStepValid: true };
     }
     return {
-      key: routes.health.orderBirthCertificate.checkDetails.slug,
+      key: routes.birth.orderBirthCertificate.checkDetails.slug,
       isStepValid: false,
     };
   },
@@ -37,11 +37,11 @@ export const orderBirthCertificateRules: Parameters<
   ({ confirmedApplication }) =>
     !confirmedApplication
       ? {
-          key: routes.health.orderBirthCertificate.checkDetails.slug,
+          key: routes.birth.orderBirthCertificate.checkDetails.slug,
           isStepValid: true,
         }
       : {
-          key: routes.health.orderBirthCertificate.applicationSuccess.slug,
+          key: routes.birth.orderBirthCertificate.applicationSuccess.slug,
           isStepValid: true,
         },
 ];
@@ -68,24 +68,22 @@ const CheckDetailsStep: React.FC<FormProps> = ({
   isStepValid,
   eventsPageHref,
 }) => {
-  if (nextSlug === routes.health.orderBirthCertificate.checkDetails.slug) {
-    return (
-      <FormLayout
-        action={{ slug: actionSlug }}
-        step={stepSlug}
-        backHref={eventsPageHref}
-      >
-        <DetailsSummary
-          data={data}
-          flow={workflow.keys.orderBirthCertificate}
-          userId={userId}
-          dataValid={isStepValid}
-        />
-      </FormLayout>
-    );
-  } else {
-    return redirect(nextSlug || "");
-  }
+  return stepSlug === nextSlug ? (
+    <FormLayout
+      action={{ slug: actionSlug }}
+      step={stepSlug}
+      backHref={eventsPageHref}
+    >
+      <DetailsSummary
+        data={data}
+        flow={workflow.keys.orderBirthCertificate}
+        userId={userId}
+        dataValid={isStepValid}
+      />
+    </FormLayout>
+  ) : (
+    redirect(nextSlug || "")
+  );
 };
 
 const ChangeDetailsStep: React.FC<FormProps> = ({
@@ -135,10 +133,10 @@ const NewAddressStep: React.FC<FormProps> = ({
         flow={workflow.keys.orderBirthCertificate}
         userId={userId}
         data={data}
-        slug={routes.health.orderBirthCertificate.newAddress.slug}
-        category={workflow.categories.health}
+        slug={routes.birth.orderBirthCertificate.newAddress.slug}
+        category={workflow.categories.birth}
         onSubmitRedirectSlug={
-          routes.health.orderBirthCertificate.proofOfAddress.slug
+          routes.birth.orderBirthCertificate.proofOfAddress.slug
         }
         showWarning={true}
       />
@@ -166,7 +164,7 @@ const ProofOfAddressStep: React.FC<FormProps> = ({
         step={searchParams?.step}
         flow={workflow.keys.orderBirthCertificate}
         userId={userId}
-        slug={routes.health.orderBirthCertificate.proofOfAddress.slug}
+        slug={routes.birth.orderBirthCertificate.proofOfAddress.slug}
         onSubmitRedirectSlug={baseActionHref}
       />
     </FormLayout>
@@ -191,11 +189,11 @@ const ApplicationSuccessStep: React.FC<FormProps> = ({
 };
 
 const FormComponentsMap = {
-  [routes.health.orderBirthCertificate.checkDetails.slug]: CheckDetailsStep,
-  [routes.health.orderBirthCertificate.changeDetails.slug]: ChangeDetailsStep,
-  [routes.health.orderBirthCertificate.newAddress.slug]: NewAddressStep,
-  [routes.health.orderBirthCertificate.proofOfAddress.slug]: ProofOfAddressStep,
-  [routes.health.orderBirthCertificate.applicationSuccess.slug]:
+  [routes.birth.orderBirthCertificate.checkDetails.slug]: CheckDetailsStep,
+  [routes.birth.orderBirthCertificate.changeDetails.slug]: ChangeDetailsStep,
+  [routes.birth.orderBirthCertificate.newAddress.slug]: NewAddressStep,
+  [routes.birth.orderBirthCertificate.proofOfAddress.slug]: ProofOfAddressStep,
+  [routes.birth.orderBirthCertificate.applicationSuccess.slug]:
     ApplicationSuccessStep,
 };
 
@@ -213,7 +211,7 @@ export default async (props: web.NextPageProps) => {
 
   const stepSlug = props.params.action?.at(1);
   const actionSlug = props.params.action?.at(0);
-  const baseActionHref = `/${props.params.locale}/health/${actionSlug}/${nextSlug}`;
+  const baseActionHref = `/${props.params.locale}/birth/${actionSlug}/${nextSlug}`;
 
   if (!actionSlug) {
     throw notFound();
@@ -241,5 +239,5 @@ export default async (props: web.NextPageProps) => {
     );
   }
 
-  return redirect(`${routes.health.orderBirthCertificate.slug}/${nextSlug}`);
+  return redirect(`${routes.birth.orderBirthCertificate.slug}/${nextSlug}`);
 };

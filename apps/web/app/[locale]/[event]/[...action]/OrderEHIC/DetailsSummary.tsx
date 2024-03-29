@@ -23,7 +23,7 @@ export default (props: {
     `,
       [userId, flow],
     );
-    revalidatePath(routes.health.orderEHIC.checkDetails.slug);
+    revalidatePath("/");
   }
 
   const changeDetailsHref = routes.health.orderEHIC.changeDetails.slug;
