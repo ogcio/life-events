@@ -7,6 +7,7 @@ import {
 import { PaymentRequestParams } from "./PaymentRequestsPage";
 import { formatCurrency } from "../../../app/utils";
 import { providerTypeAccountLabelMap } from "../../utils";
+import { PaymentRequestFormPage } from "./PaymentRequestFormPage";
 
 export class PaymentRequestDetailsPage {
   private readonly editButton: Locator;
@@ -67,12 +68,15 @@ export class PaymentRequestDetailsPage {
     await expect(this.paymentLink).toBeVisible();
   }
 
-  async edit() {
-    await this.editButton.click();
+  async edit(name: string) {
+    await this.editButton.click({ force: true });
+    const editPaymentRequestPage = new PaymentRequestFormPage(this.page);
+    await editPaymentRequestPage.edit(name);
+    await expect(this.page.getByText(name)).toBeVisible();
   }
 
   async delete() {
-    await this.deleteButton.click();
+    await this.deleteButton.click({ force: true });
   }
 
   async openLink() {

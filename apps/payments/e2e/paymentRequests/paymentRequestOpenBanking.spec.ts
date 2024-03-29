@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 import { test } from "../fixtures/providersFixtures";
 import {
   PaymentRequestParams,
@@ -34,5 +34,18 @@ test.describe("Payment Request with open banking provider", () => {
 
     const detailsPage = new PaymentRequestDetailsPage(page);
     await detailsPage.verifyDetails(request);
+  });
+
+  test("Edit payment request", async () => {
+    const detailsPage = new PaymentRequestDetailsPage(page);
+    name = `${name} edited`;
+    await detailsPage.edit(name);
+  });
+
+  test("Delete payment request", async () => {
+    const detailsPage = new PaymentRequestDetailsPage(page);
+    await detailsPage.delete();
+    const paymentRequestsPage = new PaymentRequestsPage(page);
+    await paymentRequestsPage.verifyDeleted(name);
   });
 });

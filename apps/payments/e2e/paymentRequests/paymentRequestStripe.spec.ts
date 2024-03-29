@@ -35,4 +35,17 @@ test.describe("Payment Request with stripe provider", () => {
     const detailsPage = new PaymentRequestDetailsPage(page);
     await detailsPage.verifyDetails(request);
   });
+
+  test("Edit payment request", async () => {
+    const detailsPage = new PaymentRequestDetailsPage(page);
+    name = `${name} edited`;
+    await detailsPage.edit(name);
+  });
+
+  test("Delete payment request", async () => {
+    const detailsPage = new PaymentRequestDetailsPage(page);
+    await detailsPage.delete();
+    const paymentRequestsPage = new PaymentRequestsPage(page);
+    await paymentRequestsPage.verifyDeleted(name);
+  });
 });
