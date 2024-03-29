@@ -5,6 +5,8 @@ import {
   PaymentRequestsPage,
 } from "../pages/paymentRequests/PaymentRequestsPage";
 import { PaymentRequestDetailsPage } from "../pages/paymentRequests/PaymentRequestDetailsPage";
+import { PaymentMethodFormPage } from "../pages/payment/PaymentMethodFormPage";
+import { mockAmount } from "../utils/mocks";
 
 test.describe("Payment Request with manual bank transfer provider", () => {
   let page: Page;
@@ -34,6 +36,22 @@ test.describe("Payment Request with manual bank transfer provider", () => {
 
     const detailsPage = new PaymentRequestDetailsPage(page);
     await detailsPage.verifyDetails(request);
+  });
+
+  test("Verify payment request link", async () => {
+    const detailsPage = new PaymentRequestDetailsPage(page);
+    await detailsPage.openLink();
+
+    const newAmount = 300;
+    const url = page.url();
+    const urlWithAmountOverride = `${url}&amount=${newAmount * 100}`;
+    await page.goto(urlWithAmountOverride);
+
+    const paymentMethodFormPage = new PaymentMethodFormPage(page);
+    await paymentMethodFormPage.verifyAmount(newAmount);
+    await paymentMethodFormPage.verifyAvailableMethods(["banktransfer"]);
+    await page.goBack();
+    await page.goBack();
   });
 
   test("Edit payment request", async () => {
