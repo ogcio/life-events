@@ -38,20 +38,21 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await detailsPage.verifyDetails(request);
   });
 
-  test("Verify payment request link", async () => {
+  test("Verify payment request link", async ({ context }) => {
     const detailsPage = new PaymentRequestDetailsPage(page);
-    await detailsPage.openLink();
+    const paymentLink = await detailsPage.getPaymentLink();
 
     const newAmount = 300;
-    const url = page.url();
-    const urlWithAmountOverride = `${url}&amount=${newAmount * 100}`;
-    await page.goto(urlWithAmountOverride);
+    const newPage = await context.newPage();
+    const urlWithAmountOverride = `${paymentLink}&amount=${newAmount * 100}`;
+    await newPage.goto(urlWithAmountOverride!);
 
-    const paymentMethodFormPage = new PaymentMethodFormPage(page);
+    const paymentMethodFormPage = new PaymentMethodFormPage(newPage);
     await paymentMethodFormPage.verifyAmount(newAmount);
     await paymentMethodFormPage.verifyAvailableMethods(["banktransfer"]);
-    await page.goBack();
-    await page.goBack();
+
+    await newPage.close();
+    await page.bringToFront();
   });
 
   test("Edit payment request", async () => {

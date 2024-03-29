@@ -50,18 +50,22 @@ test.describe("Payment Request with multiple providers", () => {
     await detailsPage.verifyDetails(request);
   });
 
-  test("Verify payment request link", async () => {
+  test("Verify payment request link", async ({ context }) => {
     const detailsPage = new PaymentRequestDetailsPage(page);
-    await detailsPage.openLink();
+    const paymentLink = await detailsPage.getPaymentLink();
+    const newPage = await context.newPage();
+    await newPage.goto(paymentLink!);
 
-    const paymentMethodFormPage = new PaymentMethodFormPage(page);
+    const paymentMethodFormPage = new PaymentMethodFormPage(newPage);
     await paymentMethodFormPage.verifyAmount(mockAmount);
     await paymentMethodFormPage.verifyAvailableMethods([
       "stripe",
       "banktransfer",
       "openbanking",
     ]);
-    await page.goBack();
+
+    await newPage.close();
+    await page.bringToFront();
   });
 
   test("Edit payment request", async () => {

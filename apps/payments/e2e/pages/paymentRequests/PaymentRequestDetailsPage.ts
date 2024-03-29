@@ -77,7 +77,7 @@ export class PaymentRequestDetailsPage {
     await this.deleteButton.click({ force: true });
   }
 
-  async openLink() {
-    await this.paymentLink.click();
+  async getPaymentLink() {
+    return await this.paymentLink.textContent();
   }
 }

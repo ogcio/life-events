@@ -38,13 +38,18 @@ test.describe("Payment Request with stripe provider", () => {
     await detailsPage.verifyDetails(request);
   });
 
-  test("Verify payment request link", async () => {
+  test("Verify payment request link", async ({ context }) => {
     const detailsPage = new PaymentRequestDetailsPage(page);
-    await detailsPage.openLink();
-    const paymentMethodFormPage = new PaymentMethodFormPage(page);
+    const paymentLink = await detailsPage.getPaymentLink();
+    const newPage = await context.newPage();
+    await newPage.goto(paymentLink!);
+
+    const paymentMethodFormPage = new PaymentMethodFormPage(newPage);
     await paymentMethodFormPage.verifyAmount(mockAmount);
     await paymentMethodFormPage.verifyAvailableMethods(["stripe"]);
-    await page.goBack();
+
+    await newPage.close();
+    await page.bringToFront();
   });
 
   test("Edit payment request", async () => {
