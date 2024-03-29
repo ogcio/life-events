@@ -35,4 +35,8 @@ export class PaymentRequestsPage {
       this.page.getByRole("heading", { name: "Payment details" }),
     ).toBeVisible({ timeout: 10000 });
   }
+
+  async verifyDeleted(name: string) {
+    await expect(this.page.getByText(name)).not.toBeVisible();
+  }
 }

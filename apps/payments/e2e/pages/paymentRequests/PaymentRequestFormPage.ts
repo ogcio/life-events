@@ -58,4 +58,9 @@ export class PaymentRequestFormPage {
     await this.redirectURLInput.fill(mockRedirectUrl);
     await this.saveButton.click({ force: true });
   }
+
+  async edit(name: string) {
+    await this.titleInput.fill(name);
+    await this.saveButton.click({ force: true });
+  }
 }
