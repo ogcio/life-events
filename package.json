@@ -22,7 +22,7 @@
     "migrate:payments": "npm run migrate --workspace=payments",
     "migrate:messages": "npm run migrate --workspace=messages",
     "start:docs": "cd documentation && npm run start",
-    "kill-services": "sudo lsof -ti:8000,3000,3001,3002 | xargs sudo kill -9"
+    "kill-services": "sudo lsof -ti:8000,8001,3000,3001,3002 | xargs sudo kill -9"
   },
   "author": "",
   "license": "MIT",

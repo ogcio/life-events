@@ -1,16 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../../../dbConnection";
 import OpenBankingFields from "./OpenBankingFields";
-import axios from "axios";
-import { ProvidersApi } from "../../../../../../client";
-
-const buildAxiosInstance = (userId) => {
-  const instance = axios.create({});
-  instance.defaults.headers.common["x-user-id"] = userId;
-  return instance;
-};
+import buildApiClient from "../../../../../../client/index";
 
 export default async () => {
   const t = await getTranslations("PaymentSetup.AddOpenbanking");
@@ -20,12 +12,7 @@ export default async () => {
   async function handleSubmit(formData: FormData) {
     "use server";
 
-    const providersApi = new ProvidersApi(
-      undefined, //Eventually we will add here the token for the user
-      "http://localhost:8080",
-      buildAxiosInstance(userId), //This will not be required anymore
-    );
-    await providersApi.apiV1ProvidersPost({
+    await buildApiClient(userId).providers.apiV1ProvidersPost({
       name: formData.get("provider_name") as string,
       type: "openbanking",
       providerData: {
