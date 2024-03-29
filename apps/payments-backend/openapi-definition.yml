@@ -1,0 +1,56 @@
+openapi: 3.0.3
+info:
+  title: OGCIO Payment API
+  description: API for OGCIO Payment Service
+  version: 0.1.0
+components:
+  schemas: {}
+paths:
+  /api/v1/health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/providers/:
+    post:
+      tags:
+        - Providers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - banktransfer
+                    - type: string
+                      enum:
+                        - openbanking
+                    - type: string
+                      enum:
+                        - stripe
+                providerData:
+                  type: object
+                  properties: {}
+              required:
+                - name
+                - type
+                - providerData
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+tags:
+  - name: Providers
