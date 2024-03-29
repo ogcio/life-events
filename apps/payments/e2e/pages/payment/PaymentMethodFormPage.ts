@@ -15,6 +15,8 @@ export class PaymentMethodFormPage {
   private readonly emailInput: Locator;
   private readonly paymentMethodHeader: Locator;
   private readonly confirmButton: Locator;
+  private readonly customAmountInput: Locator;
+  private readonly changeAmountButton: Locator;
 
   constructor(public readonly page: Page) {
     this.title = page.getByRole("heading", { name: "Pay your fee" });
@@ -26,11 +28,20 @@ export class PaymentMethodFormPage {
       name: "Choose payment method",
     });
     this.confirmButton = page.getByRole("button", { name: "Confirm method" });
+    this.customAmountInput = page.getByLabel("Pay a custom amount");
+    this.changeAmountButton = page.getByRole("button", {
+      name: "Change amount",
+    });
   }
 
   async verifyAmount(amount: number) {
     await expect(this.title).toBeVisible();
     await expect(this.amountText(amount)).toBeVisible();
+  }
+
+  async verifyCustomAmount() {
+    await expect(this.title).toBeVisible();
+    await expect(this.customAmountInput).toBeVisible();
   }
 
   async verifyAvailableMethods(providers: ProviderType[]) {
@@ -52,6 +63,11 @@ export class PaymentMethodFormPage {
   async fillUserDetails(name: string, email: string) {
     await this.nameInput.fill(name);
     await this.emailInput.fill(email);
+  }
+
+  async changeAmount(amount: number) {
+    await this.customAmountInput.fill(amount.toString());
+    await this.changeAmountButton.click({ force: true });
   }
 
   async chooseMethod(method: PaymentMethod) {

@@ -5,6 +5,8 @@ import {
   PaymentRequestsPage,
 } from "../pages/paymentRequests/PaymentRequestsPage";
 import { PaymentRequestDetailsPage } from "../pages/paymentRequests/PaymentRequestDetailsPage";
+import { PaymentMethodFormPage } from "../pages/payment/PaymentMethodFormPage";
+import { mockAmount } from "../utils/mocks";
 
 test.describe("Payment Request with open banking provider", () => {
   let page: Page;
@@ -34,6 +36,20 @@ test.describe("Payment Request with open banking provider", () => {
 
     const detailsPage = new PaymentRequestDetailsPage(page);
     await detailsPage.verifyDetails(request);
+  });
+
+  test("Verify payment request link", async () => {
+    const detailsPage = new PaymentRequestDetailsPage(page);
+    await detailsPage.openLink();
+    const paymentMethodFormPage = new PaymentMethodFormPage(page);
+    await paymentMethodFormPage.verifyAmount(mockAmount);
+    await paymentMethodFormPage.verifyAvailableMethods(["openbanking"]);
+    await paymentMethodFormPage.verifyCustomAmount();
+    const newAmount = 20;
+    await paymentMethodFormPage.changeAmount(newAmount);
+    await paymentMethodFormPage.verifyAmount(newAmount);
+    await page.goBack();
+    await page.goBack();
   });
 
   test("Edit payment request", async () => {
