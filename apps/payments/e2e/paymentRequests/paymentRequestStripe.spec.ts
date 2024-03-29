@@ -5,6 +5,8 @@ import {
   PaymentRequestsPage,
 } from "../pages/paymentRequests/PaymentRequestsPage";
 import { PaymentRequestDetailsPage } from "../pages/paymentRequests/PaymentRequestDetailsPage";
+import { PaymentMethodFormPage } from "../pages/payment/PaymentMethodFormPage";
+import { mockAmount } from "../utils/mocks";
 
 test.describe("Payment Request with stripe provider", () => {
   let page: Page;
@@ -34,6 +36,15 @@ test.describe("Payment Request with stripe provider", () => {
 
     const detailsPage = new PaymentRequestDetailsPage(page);
     await detailsPage.verifyDetails(request);
+  });
+
+  test("Verify payment request link", async () => {
+    const detailsPage = new PaymentRequestDetailsPage(page);
+    await detailsPage.openLink();
+    const paymentMethodFormPage = new PaymentMethodFormPage(page);
+    await paymentMethodFormPage.verifyAmount(mockAmount);
+    await paymentMethodFormPage.verifyAvailableMethods(["stripe"]);
+    await page.goBack();
   });
 
   test("Edit payment request", async () => {
