@@ -52,7 +52,7 @@ export class PaymentRequestFormPage {
       }),
     );
     await this.referenceInput.fill("123");
-    await this.amountInput.fill(mockAmount);
+    await this.amountInput.fill(mockAmount.toString());
     if (params.allowAmountOverride) await this.amountOverrideCheckbox.check();
     if (params.allowCustomAmount) await this.customAmountChweckbox.check();
     await this.redirectURLInput.fill(mockRedirectUrl);

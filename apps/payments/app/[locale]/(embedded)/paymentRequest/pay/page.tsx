@@ -194,7 +194,7 @@ export default async function Page(props: Props) {
         </h2>
         {allowCustomAmount && (
           <div className="govie-form-group">
-            <label htmlFor="amount" className="govie-label--s">
+            <label htmlFor="customAmount" className="govie-label--s">
               {t("selectCustomAmount")}
             </label>
 
