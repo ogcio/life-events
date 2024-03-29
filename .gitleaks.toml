@@ -6,7 +6,9 @@ regexes = [
     '''[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}''',
     '''(azu|AZU)[sdvptSDVPT].+0[0-9][0-9]?\b'''
     ]
-
+paths = [
+  '''pipeline-variables\/.*\.yml''',
+]
 
 [[rules]]
 description = "Adobe Client ID (Oauth Web)"
