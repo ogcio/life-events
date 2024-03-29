@@ -144,7 +144,7 @@ export async function createTransaction(
     await pgpool.query<{ transaction_id: number }>(
       `
     insert into payment_transactions (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_data)
-    values ($1, $2, $3, $4, 'pending', now(), now(), $5, $6) returning transaction_id;
+    values ($1, $2, $3, $4, 'initiated', now(), now(), $5, $6) returning transaction_id;
     `,
       [
         paymentId,

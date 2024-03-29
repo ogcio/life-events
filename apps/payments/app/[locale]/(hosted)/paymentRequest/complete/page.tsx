@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { pgpool } from "../../../../dbConnection";
 import { RedirectType, redirect } from "next/navigation";
 import { getPaymentIntent } from "../../../../integration/stripe";
+import { ProviderType } from "../../paymentSetup/providers/types";
 
 type Props = {
   searchParams:
@@ -11,6 +12,35 @@ type Props = {
         payment_intent?: string;
       }
     | undefined;
+};
+
+const paymentStatus = {
+  canceled: "canceled",
+  pending: "pending",
+  succeeded: "succeeded",
+  failed: "failed",
+};
+
+const getInternalStatus = (provider: ProviderType, status: string) => {
+  const map = {
+    stripe: {
+      canceled: paymentStatus.canceled,
+      processing: paymentStatus.pending,
+      succeeded: paymentStatus.succeeded,
+    },
+    openbanking: {
+      authorization_required: paymentStatus.pending,
+      authorizing: paymentStatus.pending,
+      authorized: paymentStatus.pending,
+      executed: paymentStatus.pending,
+      failed: paymentStatus.canceled,
+      settled: paymentStatus.succeeded,
+    },
+    banktransfer: {},
+    worldpay: {},
+  };
+
+  return map[provider]?.[status];
 };
 
 async function updateTransaction(extPaymentId: string, status: string) {
@@ -59,7 +89,7 @@ export default async function Page(props: Props) {
   const t = await getTranslations("Common");
 
   let extPaymentId = props.searchParams?.payment_id ?? "";
-  let status = "executed";
+  let status = "pending";
 
   if (props.searchParams?.error) {
     status =
