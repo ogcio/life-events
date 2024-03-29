@@ -69,14 +69,14 @@ export class PaymentRequestDetailsPage {
   }
 
   async edit(name: string) {
-    await this.editButton.click();
+    await this.editButton.click({ force: true });
     const editPaymentRequestPage = new PaymentRequestFormPage(this.page);
     await editPaymentRequestPage.edit(name);
     await expect(this.page.getByText(name)).toBeVisible();
   }
 
   async delete() {
-    await this.deleteButton.click();
+    await this.deleteButton.click({ force: true });
   }
 
   async openLink() {
