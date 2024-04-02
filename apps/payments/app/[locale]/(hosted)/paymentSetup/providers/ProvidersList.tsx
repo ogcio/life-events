@@ -37,18 +37,18 @@ export default async () => {
       </thead>
       <tbody className="govie-table__body">
         {providers.map((provider) => (
-          <tr key={provider.id} className="govie-table__row">
+          <tr key={provider.providerId} className="govie-table__row">
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-              {provider.type}
+              {provider.providerType}
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               <ProviderStatusTag status={provider.status}></ProviderStatusTag>
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-              {provider.name}
+              {provider.providerName}
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s govie-table__header--numeric">
-              <Link href={`providers/${provider.id}`}>{t("edit")}</Link>
+              <Link href={`providers/${provider.providerId}`}>{t("edit")}</Link>
             </td>
           </tr>
         ))}
