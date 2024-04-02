@@ -1,9 +1,11 @@
 export const sendAMessage = {
   slug: "send-a-message",
+  url: "admin/send-a-message",
 };
 
 export const emailTemplates = {
   slug: "templates",
+  url: "admin/templates",
 };
 
 export const messages = {

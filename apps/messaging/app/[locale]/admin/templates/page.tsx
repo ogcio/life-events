@@ -1,6 +1,5 @@
 import { getTranslations } from "next-intl/server";
 import TemplatesList from "./TemplatesList";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async () => {

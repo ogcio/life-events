@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { api } from "messages";
-import { ApiMessageState, getCurrentStep } from "../../../utils/messaging";
+import { ApiMessageState, getCurrentStep } from "../../../../utils/messaging";
 import { PgSessions } from "auth/sessions";
 import ComposeMessageMeta from "./ComposeMessageMeta";
 import EmailForm from "./EmailForm";
