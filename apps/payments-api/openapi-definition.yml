@@ -52,5 +52,28 @@ paths:
                 properties:
                   id:
                     type: string
+    get:
+      tags:
+        - Providers
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    providerId:
+                      type: string
+                    providerName:
+                      type: string
+                    providerType:
+                      type: string
+                    providerData:
+                      type: object
+                    status:
+                      type: string
 tags:
   - name: Providers

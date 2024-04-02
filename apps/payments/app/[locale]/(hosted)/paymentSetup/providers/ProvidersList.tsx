@@ -2,52 +2,13 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { PgSessions } from "auth/sessions";
 import ProviderStatusTag from "./ProviderStatusTag";
-import { pgpool } from "../../../../dbConnection";
-import {
-  ProviderData,
-  ProviderStatus,
-  ProviderType,
-  parseProvider,
-} from "./types";
-
-async function getProviders() {
-  "use server";
-
-  const { userId } = await PgSessions.get();
-
-  const providersQueryResult = await pgpool.query<
-    {
-      provider_id: string;
-      provider_name: string;
-      provider_type: ProviderType;
-      provider_data: ProviderData;
-      status: ProviderStatus;
-    },
-    string[]
-  >(
-    `
-      SELECT
-        provider_id,
-        provider_name,
-        provider_type,
-        provider_data,
-        status
-      FROM payment_providers
-      WHERE user_id = $1
-    `,
-    [userId],
-  );
-
-  if (!providersQueryResult.rowCount) {
-    return [];
-  }
-
-  return providersQueryResult.rows.map(parseProvider);
-}
+import buildApiClient from "../../../../../client/index";
 
 export default async () => {
   const t = useTranslations("PaymentSetup.Providers.table");
-  const providers = await getProviders();
+  const { userId } = await PgSessions.get();
+  const providers = (await buildApiClient(userId).providers.apiV1ProvidersGet())
+    .data;
 
   if (providers.length === 0) {
     return <p className="govie-body">{t("emptyMessage")}</p>;
@@ -76,18 +37,18 @@ export default async () => {
       </thead>
       <tbody className="govie-table__body">
         {providers.map((provider) => (
-          <tr key={provider.id} className="govie-table__row">
+          <tr key={provider.providerId} className="govie-table__row">
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-              {provider.type}
+              {provider.providerType}
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               <ProviderStatusTag status={provider.status}></ProviderStatusTag>
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-              {provider.name}
+              {provider.providerName}
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s govie-table__header--numeric">
-              <Link href={`providers/${provider.id}`}>{t("edit")}</Link>
+              <Link href={`providers/${provider.providerId}`}>{t("edit")}</Link>
             </td>
           </tr>
         ))}

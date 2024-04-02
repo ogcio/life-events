@@ -1,28 +1,47 @@
 import { FastifyInstance } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
 
-export const Provider = Type.Union([
+const ProviderTypes = Type.Union([
+  Type.Literal("banktransfer"),
+  Type.Literal("openbanking"),
+  Type.Literal("stripe"),
+]);
+
+export const CreateProvider = Type.Union([
   Type.Object({
     name: Type.String(),
-    type: Type.Union([
-      Type.Literal("banktransfer"),
-      Type.Literal("openbanking"),
-      Type.Literal("stripe"),
-    ]),
+    type: ProviderTypes,
     providerData: Type.Object({}),
   }),
 ]);
 
-export type ProviderType = Static<typeof Provider>;
+export type CreateProviderType = Static<typeof CreateProvider>;
+
+export const Provider = Type.Union([
+  Type.Object({
+    providerId: Type.String(),
+    providerName: Type.String(),
+    providerType: ProviderTypes,
+    providerData: Type.Object({}),
+    status: Type.Union([
+      Type.Literal("connected"),
+      Type.Literal("disconnected"),
+    ]),
+  }),
+]);
+
+export const ProvidersList = Type.Union([Type.Array(Provider)]);
+
+export type ProvidersListType = Static<typeof ProvidersList>;
 
 export default async function providers(app: FastifyInstance) {
-  app.post<{ Body: ProviderType; Reply: { id: string } }>(
+  app.post<{ Body: CreateProviderType; Reply: { id: string } }>(
     "/",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
-        body: Provider,
+        body: CreateProvider,
         response: {
           200: {
             type: "object",
@@ -46,6 +65,60 @@ export default async function providers(app: FastifyInstance) {
       );
 
       reply.send({ id: result.rows[0].id });
+    },
+  );
+
+  app.get<{ Reply: ProvidersListType }>(
+    "/",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Providers"],
+        response: {
+          200: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                providerId: {
+                  type: "string",
+                },
+                providerName: {
+                  type: "string",
+                },
+                providerType: {
+                  type: "string",
+                },
+                providerData: {
+                  type: "object",
+                },
+                status: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+
+      const result = await app.pg.query(
+        `
+          SELECT
+            provider_id as "providerId",
+            provider_name as "providerName",
+            provider_type as "providerType",
+            provider_data as "providerData",
+            status
+          FROM payment_providers
+          WHERE user_id = $1
+        `,
+        [userId],
+      );
+
+      reply.send(result.rows);
     },
   );
 }

@@ -42,6 +42,43 @@ import {
 /**
  *
  * @export
+ * @interface ApiV1ProvidersGet200ResponseInner
+ */
+export interface ApiV1ProvidersGet200ResponseInner {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersGet200ResponseInner
+   */
+  providerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersGet200ResponseInner
+   */
+  providerName?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersGet200ResponseInner
+   */
+  providerType?: string;
+  /**
+   *
+   * @type {object}
+   * @memberof ApiV1ProvidersGet200ResponseInner
+   */
+  providerData?: object;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersGet200ResponseInner
+   */
+  status?: string;
+}
+/**
+ *
+ * @export
  * @interface ApiV1ProvidersPost200Response
  */
 export interface ApiV1ProvidersPost200Response {
@@ -222,6 +259,44 @@ export const ProvidersApiAxiosParamCreator = function (
   return {
     /**
      *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1ProvidersGet: async (
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/api/v1/providers/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "GET",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @param {ApiV1ProvidersPostRequest} apiV1ProvidersPostRequest
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -286,6 +361,34 @@ export const ProvidersApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1ProvidersGet(
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<Array<ApiV1ProvidersGet200ResponseInner>>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1ProvidersGet(options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["ProvidersApi.apiV1ProvidersGet"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
      * @param {ApiV1ProvidersPostRequest} apiV1ProvidersPostRequest
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -333,6 +436,18 @@ export const ProvidersApiFactory = function (
   return {
     /**
      *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1ProvidersGet(
+      options?: any,
+    ): AxiosPromise<Array<ApiV1ProvidersGet200ResponseInner>> {
+      return localVarFp
+        .apiV1ProvidersGet(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @param {ApiV1ProvidersPostRequest} apiV1ProvidersPostRequest
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -355,6 +470,18 @@ export const ProvidersApiFactory = function (
  * @extends {BaseAPI}
  */
 export class ProvidersApi extends BaseAPI {
+  /**
+   *
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ProvidersApi
+   */
+  public apiV1ProvidersGet(options?: RawAxiosRequestConfig) {
+    return ProvidersApiFp(this.configuration)
+      .apiV1ProvidersGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    *
    * @param {ApiV1ProvidersPostRequest} apiV1ProvidersPostRequest
