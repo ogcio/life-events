@@ -92,7 +92,7 @@ export default () => {
           <div className="govie-!-font-size-27">
             <strong>PROTOTYPE</strong>
           </div>
-          <Link href="/logout" style={{ float: "right" }}>
+          <Link href="/logout" prefetch={false} style={{ float: "right" }}>
             <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={35} />
           </Link>
         </div>

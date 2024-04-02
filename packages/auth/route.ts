@@ -2,16 +2,6 @@ import { cookies } from "next/headers";
 import { decodeJwt, pgpool, PgSessions } from "./sessions";
 import { redirect, RedirectType } from "next/navigation";
 
-function getDomainForCookie(hostname: string) {
-  const splitted = hostname.split(".");
-  if (splitted.length === 1) {
-    return hostname;
-  }
-  const topDomain = splitted.pop();
-
-  return `.${splitted.pop()}.${topDomain}`;
-}
-
 enum SAME_SITE_VALUES {
   LAX = "lax",
   NONE = "none",
@@ -25,19 +15,12 @@ function getSessionIdCookieConfig(req: Request, cookieValue: string) {
     secure: false,
     path: "/",
   };
-  const url = new URL(req.url);
+  const url = new URL(process.env.HOST_URL ?? req.url);
   if (url.protocol === "https:") {
     return {
       ...cookieConfig,
       secure: true,
       sameSite: SAME_SITE_VALUES.NONE,
-    };
-  }
-
-  if (url.hostname !== "localhost") {
-    return {
-      ...cookieConfig,
-      domain: getDomainForCookie(url.hostname),
     };
   }
 
@@ -54,7 +37,6 @@ export default async function (req: Request) {
   const isPublicServant = Boolean(formData.get("public_servant"));
 
   const loginUrl = process.env.LOGIN_URL;
-
 
   if (!loginUrl) {
     throw Error("Missing env var LOGIN_URL");
