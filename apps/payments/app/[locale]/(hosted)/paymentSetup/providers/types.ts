@@ -68,6 +68,7 @@ export type Provider =
   | BankTransferProvider
   | WorldpayProvider;
 
+// TODO: Remove if there are no more usage of it. Current usage in providers/{id}
 export const parseProvider = (rawProvider: any): Provider => ({
   id: rawProvider.provider_id,
   name: rawProvider.provider_name,

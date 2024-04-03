@@ -2,52 +2,13 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { PgSessions } from "auth/sessions";
 import ProviderStatusTag from "./ProviderStatusTag";
-import { pgpool } from "../../../../dbConnection";
-import {
-  ProviderData,
-  ProviderStatus,
-  ProviderType,
-  parseProvider,
-} from "./types";
-
-async function getProviders() {
-  "use server";
-
-  const { userId } = await PgSessions.get();
-
-  const providersQueryResult = await pgpool.query<
-    {
-      provider_id: string;
-      provider_name: string;
-      provider_type: ProviderType;
-      provider_data: ProviderData;
-      status: ProviderStatus;
-    },
-    string[]
-  >(
-    `
-      SELECT
-        provider_id,
-        provider_name,
-        provider_type,
-        provider_data,
-        status
-      FROM payment_providers
-      WHERE user_id = $1
-    `,
-    [userId],
-  );
-
-  if (!providersQueryResult.rowCount) {
-    return [];
-  }
-
-  return providersQueryResult.rows.map(parseProvider);
-}
+import buildApiClient from "../../../../../client/index";
 
 export default async () => {
   const t = useTranslations("PaymentSetup.Providers.table");
-  const providers = await getProviders();
+  const { userId } = await PgSessions.get();
+  const providers = (await buildApiClient(userId).providers.apiV1ProvidersGet())
+    .data;
 
   if (providers.length === 0) {
     return <p className="govie-body">{t("emptyMessage")}</p>;
