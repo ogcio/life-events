@@ -34,9 +34,7 @@ paths:
                     - type: string
                       enum:
                         - stripe
-                data:
-                  type: object
-                  properties: {}
+                data: {}
               required:
                 - name
                 - type
@@ -52,6 +50,8 @@ paths:
                 properties:
                   id:
                     type: string
+                required:
+                  - id
     get:
       tags:
         - Providers
@@ -71,9 +71,90 @@ paths:
                       type: string
                     type:
                       type: string
-                    data:
-                      type: object
+                    data: {}
                     status:
                       type: string
+                  required:
+                    - id
+                    - name
+                    - type
+                    - data
+                    - status
+  /api/v1/providers/{providerId}:
+    get:
+      tags:
+        - Providers
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  type:
+                    type: string
+                  data: {}
+                  status:
+                    type: string
+                required:
+                  - id
+                  - name
+                  - type
+                  - data
+                  - status
+    put:
+      tags:
+        - Providers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                data: {}
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - connected
+                    - type: string
+                      enum:
+                        - disconnected
+              required:
+                - name
+                - data
+                - status
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                  - ok
 tags:
   - name: Providers
