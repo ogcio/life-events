@@ -36,21 +36,17 @@ export const seedPaymentRequest = async (
 
   const paymentRequestId = paymentRequestQueryResult.rows[0].payment_request_id;
 
-  await Promise.all[
-    (pool.query(
-      `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
-      values ($1, $2 , true)`,
-      [openBankingProviderId, paymentRequestId],
-    ),
-    pool.query(
-      `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
-      values ($1, $2, true)`,
-      [manualBankTransferProviderId, paymentRequestId],
-    ),
-    pool.query(
-      `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
-      values ($1, $2, true)`,
-      [stripeProviderId, paymentRequestId],
-    ))
-  ];
+  await pool.query(
+    `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
+    values
+        ($2, $1, true),
+        ($3, $1, true),
+        ($4, $1, true)`,
+    [
+      paymentRequestId,
+      openBankingProviderId,
+      manualBankTransferProviderId,
+      stripeProviderId,
+    ],
+  );
 };
