@@ -6,7 +6,7 @@ info:
 components:
   schemas: {}
 paths:
-  /api/v1/health:
+  /health:
     get:
       responses:
         "200":
