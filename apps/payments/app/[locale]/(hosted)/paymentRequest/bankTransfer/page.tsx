@@ -1,13 +1,13 @@
-import { PgSessions, getUserInfoById } from "auth/sessions";
-
 import OpenBankingHost from "./OpenBankingHost";
 import { pgpool } from "../../../../dbConnection";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 import { getRealAmount } from "../../../../utils";
+import { createTransaction } from "../../paymentSetup/db";
 
 async function getPaymentDetails(
   paymentId: string,
+  user: { name: string; email: string },
   amount?: number,
   customAmount?: number,
 ) {
@@ -15,7 +15,6 @@ async function getPaymentDetails(
     `
     SELECT
       pr.payment_request_id,
-      pr.user_id,
       pr.title,
       pr.description,
       pr.reference,
@@ -26,7 +25,7 @@ async function getPaymentDetails(
       pr.allow_amount_override as "allowAmountOverride",
       pr.allow_custom_amount as "allowCustomAmount"
     FROM payment_requests pr
-    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id
+    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
     JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
     WHERE pr.payment_request_id = $1
       AND pp.provider_type = 'openbanking'
@@ -35,10 +34,6 @@ async function getPaymentDetails(
   );
 
   if (!paymentRows.length) return undefined;
-
-  const userInfo = await getUserInfoById(paymentRows[0].user_id);
-
-  if (!userInfo) return undefined;
 
   const realAmount = getRealAmount({
     amount: paymentRows[0].amount,
@@ -51,8 +46,7 @@ async function getPaymentDetails(
   const paymentDetails = {
     ...paymentRows[0],
     amount: realAmount,
-    govid_email: userInfo.govid_email,
-    user_name: userInfo.user_name,
+    user,
   };
 
   const paymentRequest = await createPaymentRequest(paymentDetails);
@@ -60,23 +54,6 @@ async function getPaymentDetails(
     paymentDetails,
     paymentRequest,
   };
-}
-
-async function createTransaction(
-  paymentId: string,
-  userId: string,
-  extPaymentId: string,
-  tenantReference: string,
-  amount: number,
-) {
-  "use server";
-  await pgpool.query<{ transaction_id: number }>(
-    `
-    insert into payment_transactions (payment_request_id, user_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at)
-    values ($1, $2, $3, $4, $5, 'pending', now(), now());
-    `,
-    [paymentId, userId, extPaymentId, tenantReference, amount],
-  );
 }
 
 export default async function Bank(props: {
@@ -87,6 +64,8 @@ export default async function Bank(props: {
         integrationRef: string;
         amount?: string;
         customAmount?: string;
+        name: string;
+        email: string;
       }
     | undefined;
 }) {
@@ -94,8 +73,6 @@ export default async function Bank(props: {
   if (!props.searchParams?.paymentId) {
     return <h1>{t("notFound")}</h1>;
   }
-
-  const { userId } = await PgSessions.get();
 
   const amount = props.searchParams.amount
     ? parseFloat(props.searchParams.amount)
@@ -105,8 +82,14 @@ export default async function Bank(props: {
     ? parseFloat(props.searchParams.customAmount)
     : undefined;
 
+  const userInfo = {
+    name: props.searchParams.name,
+    email: props.searchParams.email,
+  };
+
   const details = await getPaymentDetails(
     props.searchParams.paymentId,
+    userInfo,
     amount,
     customAmount,
   );
@@ -116,10 +99,11 @@ export default async function Bank(props: {
 
   await createTransaction(
     props.searchParams.paymentId,
-    userId,
     paymentRequest.id,
     props.searchParams.integrationRef,
     paymentDetails.amount,
+    paymentDetails.provider_id,
+    userInfo,
   );
 
   const returnUri = new URL(

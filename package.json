@@ -11,13 +11,18 @@
   },
   "scripts": {
     "build:ds": "npm run build --workspace=design-system",
-    "start:services": "concurrently --kill-others \"npm run dev --workspace=mock-api\" \"npm run dev --workspace=web\" \"npm run dev --workspace=payments\" \"npm run dev --workspace=messaging\"",
+    "start:services": "concurrently --kill-others \"npm run dev --workspace=mock-api\" \"npm run dev --workspace=web\" \"npm run dev --workspace=payments\" \"npm run dev --workspace=messaging\" \"npm run dev --workspace=payments-backend\"",
     "start:docker": "docker-compose down &&  DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans -d",
     "start": "npm run start:docker && concurrently \"npm run start:services\" \"sleep 5 && npm run migrate\"",
     "reset-docker": "docker-compose down && docker system prune -a -f && docker builder prune -f && docker image prune -f",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "(command -v husky && husky) || true",
-    "migrate": "npm run migrate --workspace=web && npm run migrate --workspace=payments && npm run migrate --workspace=messages"
+    "migrate": "npm run migrate --workspace=web && npm run migrate --workspace=payments && npm run migrate --workspace=messages",
+    "migrate:web": "npm run migrate --workspace=web",
+    "migrate:payments": "npm run migrate --workspace=payments",
+    "migrate:messages": "npm run migrate --workspace=messages",
+    "start:docs": "cd documentation && npm run start",
+    "kill-services": "sudo lsof -ti:8000,8001,3000,3001,3002 | xargs sudo kill -9"
   },
   "author": "",
   "license": "MIT",

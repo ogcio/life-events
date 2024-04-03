@@ -1,21 +1,24 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
+
 export default function CopyLink(props: { link: string; buttonText: string }) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   function copyLink() {
-    navigator.clipboard.writeText(props.link);
+    if (isClient && navigator.clipboard) {
+      navigator.clipboard.writeText(props.link);
+    }
   }
 
-  // Clipboard is only available over HTTPS
-  if (!navigator.clipboard) {
-    return null;
-  }
+  if (!isClient) return;
 
   return (
-    <button
-      className="govie-button"
-      style={{ margin: "32px 0 0" }}
-      onClick={copyLink}
-    >
+    <button className="govie-button govie-button--secondary" onClick={copyLink}>
       {props.buttonText}
     </button>
   );

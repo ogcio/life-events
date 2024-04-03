@@ -11,7 +11,7 @@ import ProofOfAddress from "../shared/ProofOfAddress";
 import SimpleDetailsForm from "./SimpleDetailsForm";
 import PaymentSuccess from "./PaymentSuccess";
 import PaymentError from "./PaymentError";
-import FormLayout from "../shared/FormLayout";
+import FormLayout from "../../../../components/FormLayout";
 
 export const renewDriverLicenceRules: Parameters<
   typeof workflow.getCurrentStep<workflow.RenewDriversLicence>
@@ -155,9 +155,14 @@ const ConfirmApplicationStep: React.FC<FormProps> = ({
   userId,
   data,
   isStepValid,
+  eventsPageHref,
 }) => {
   return stepSlug === nextSlug ? (
-    <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
+    <FormLayout
+      action={{ slug: actionSlug }}
+      step={stepSlug}
+      backHref={eventsPageHref}
+    >
       <DetailsSummary
         userId={userId}
         sex={data.sex}

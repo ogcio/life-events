@@ -27,10 +27,10 @@ export default (props: {
   }
 
   const changeDetailsHref =
-    routes.health.orderBirthCertificate.changeDetails.slug;
-  const changeAddressHref = routes.health.orderBirthCertificate.newAddress.slug;
+    routes.birth.orderBirthCertificate.changeDetails.slug;
+  const changeAddressHref = routes.birth.orderBirthCertificate.newAddress.slug;
   const changeProofOfAddressHref =
-    routes.health.orderBirthCertificate.proofOfAddress.slug;
+    routes.birth.orderBirthCertificate.proofOfAddress.slug;
   const dateOfBirth =
     data.yearOfBirth && data.monthOfBirth && data.dayOfBirth
       ? web.formatDate(

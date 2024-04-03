@@ -4,12 +4,14 @@ import OrderEHIC from "./OrderEHIC/OrderEHIC";
 import RenewDriversLicence from "./RenewDriversLicence/RenewDriversLicence";
 import OrderBirthCertificate from "./OrderBirthCertificate/OrderBirthCertificate";
 import NotifyDeath from "./NotifyDeath/NotifyDeath";
+import ApplyJobseekersAllowance from "./ApplyJobseekersAllowance/ApplyJobseekersAllowance";
 
 const componentsMap = {
   [routes.driving.renewDriversLicence.slug]: RenewDriversLicence,
   [routes.health.orderEHIC.slug]: OrderEHIC,
-  [routes.health.orderBirthCertificate.slug]: OrderBirthCertificate,
+  [routes.birth.orderBirthCertificate.slug]: OrderBirthCertificate,
   [routes.death.notifyDeath.slug]: NotifyDeath,
+  [routes.employment.applyJobseekersAllowance.slug]: ApplyJobseekersAllowance,
 };
 
 export default function ActionPage(props: web.NextPageProps) {

@@ -5,7 +5,8 @@
     "dev": "nodemon",
     "build": "next build",
     "start": "next start -p 3001",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test e2e",
+    "test:visual": "playwright test --ui",
     "migrate": "db-migrate up",
     "seed": "node --import tsx ./migrations/seeding/index.ts"
   },
@@ -21,6 +22,7 @@
     "@stripe/react-stripe-js": "^2.6.2",
     "@stripe/stripe-js": "^3.0.10",
     "auth": "*",
+    "axios": "^1.6.8",
     "dayjs": "^1.11.10",
     "design-system": "*",
     "dotenv": "^16.4.5",

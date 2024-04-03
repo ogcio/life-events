@@ -15,6 +15,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
-EXPOSE 80
+EXPOSE 8000
 
 CMD [ "npm", "--prefix", "apps/mock-api",  "run", "dev" ]
