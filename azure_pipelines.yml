@@ -44,7 +44,7 @@ stages:
             displayName: GitLeaks Scan
   - stage: BuildDeps
     displayName: Build service dependencies
-    jobs:  
+    jobs:
       - job: BuildBaseContainer
         displayName: Build base container
         pool:
@@ -113,7 +113,7 @@ stages:
             repository: life-events-${{ serviceName }}
             dockerfile: apps/${{ serviceName }}/Dockerfile
             buildContext: '$(Build.SourcesDirectory)'
-            arguments: '--build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)'
+            arguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)"'
         - task: Docker@0
           displayName: 'Run a Docker command'
           condition: eq(variables.pushArtefacts, true)
