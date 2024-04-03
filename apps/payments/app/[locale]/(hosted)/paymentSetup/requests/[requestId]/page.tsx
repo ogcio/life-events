@@ -54,7 +54,7 @@ export default async function ({ params: { requestId } }) {
             </thead>
             <tbody className="govie-table__body">
               {transactions.map((trx) => (
-                <tr className="govie-table__row">
+                <tr className="govie-table__row" key={trx.transaction_id}>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     <strong className="govie-tag govie-tag--green govie-body-s">
                       {trx.status}
