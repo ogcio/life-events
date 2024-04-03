@@ -1,6 +1,6 @@
 import { pgpool } from "./dbConnection";
 import { send as twilioSend } from "./strategies/twilio/index";
-
+import nodemailer from "nodemailer";
 // In case we need to do it, we can replace this with another provider
 // We just need to keep the same SendEmail interface
 export const send = twilioSend;
@@ -25,6 +25,116 @@ type MessageState = {
   messageType: string;
   paymentRequestId: string;
   paymentUserId: string;
+};
+
+type EmailProvider = {
+  id: string;
+  name: string;
+  host: string;
+  username: string;
+  password: string;
+};
+export const mailApi = {
+  async createProvider(
+    name: string,
+    host: string,
+    username: string,
+    password: string,
+  ) {
+    pgpool.query(
+      `
+      INSERT INTO email_providers(provider_name, smtp_host, username, pw)
+      VALUES($1,$2,$3,$4)
+    `,
+      [name, host, username, password],
+    );
+  },
+  async updateProvider(data: EmailProvider) {
+    pgpool.query(
+      `
+      UPDATE email_providers set 
+        provider_name = $1, 
+        smtp_host = $2,
+        username = $3,
+        pw = $4
+      WHERE id = $5
+    `,
+      [data.name, data.host, data.username, data.password, data.id],
+    );
+  },
+  async providers() {
+    return pgpool
+      .query<EmailProvider>(
+        `
+      SELECT id, provider_name as "name", smtp_host as "host", username, pw as "password" FROM email_providers
+      ORDER BY created_at DESC
+    `,
+      )
+      .then((res) => res.rows);
+  },
+  async provider(id: string) {
+    return pgpool
+      .query<EmailProvider>(
+        `
+      SELECT 
+        provider_name as "name", 
+        smtp_host as "host", 
+        username, pw as "password" 
+      FROM email_providers
+      WHERE id =$1
+    `,
+        [id],
+      )
+      .then((res) => res.rows.at(0));
+  },
+  /// Need to refer to html template or this is gonna be dull
+  async sendMails(
+    providerId: string,
+    recipients: string[],
+    subject: string,
+    body: string,
+  ) {
+    try {
+      const provider = await pgpool
+        .query<{ host: string; username: string; password: string }>(
+          `
+          SELECT smtp_host as "host", username, pw as "password" FROM 
+          email_providers
+          WHERE id = $1
+        `,
+          [providerId],
+        )
+        .then((res) => res.rows.at(0));
+
+      if (!provider) {
+        return;
+      }
+
+      const { host, password, username } = provider;
+
+      const transporter: nodemailer.Transporter = nodemailer.createTransport({
+        host,
+        port: Number(process.env.SMTP_PORT) || 0,
+        // secure: false,
+        auth: {
+          user: username,
+          pass: password,
+        },
+      });
+
+      console.log({ recipients });
+
+      return transporter.sendMail({
+        from: username,
+        to: recipients.join(", "), //"test@skoj.se",
+        subject: subject,
+        html: body,
+      });
+    } catch (err) {
+      console.log(err);
+      throw new Error(err);
+    }
+  },
 };
 
 type MessageType = "message" | "event";
@@ -67,6 +177,7 @@ export const api = {
     ];
     const originalSize = vals.length;
     const args: string[] = [];
+    const recipients: string[] = [];
 
     let i = vals.length + 1;
     while (data.recipients.length) {
@@ -74,15 +185,13 @@ export const api = {
       if (!email) {
         break;
       }
-
+      recipients.push(email);
       args.push(
         `(${[...new Array(originalSize)].map((_, i) => `$${i + 1}`)},$${i})`,
       );
       vals.push(email);
       i += 1;
     }
-
-    console.log("Tuck\n", { args, vals });
 
     const eventQuery = pgpool.query(
       `
@@ -101,9 +210,16 @@ export const api = {
 
     promises.push(eventQuery);
 
-    // if (transports.includes("email")) {
-    // push
-    // }
+    if (transports.includes("email")) {
+      promises.push(
+        mailApi.sendMails(
+          "1043ff86-3a0a-4091-9d99-e9e4dc855eb2",
+          recipients,
+          data.subject,
+          data.content,
+        ),
+      );
+    }
 
     await Promise.all(promises);
   },

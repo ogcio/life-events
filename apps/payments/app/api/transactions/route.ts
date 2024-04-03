@@ -2,7 +2,6 @@ import { pgpool } from "../../dbConnection";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  console.log("hello", req.nextUrl.searchParams);
   const transactionId = req.nextUrl.searchParams
     .get("transactionId")
     ?.toString();
