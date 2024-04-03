@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 
-export default (props: { status: string }) => {
+export default (props: { status?: string }) => {
   const t = useTranslations("PaymentSetup.Providers.status");
   const { status } = props;
 
