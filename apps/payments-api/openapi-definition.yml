@@ -34,13 +34,13 @@ paths:
                     - type: string
                       enum:
                         - stripe
-                providerData:
+                data:
                   type: object
                   properties: {}
               required:
                 - name
                 - type
-                - providerData
+                - data
         required: true
       responses:
         "200":
@@ -65,13 +65,13 @@ paths:
                 items:
                   type: object
                   properties:
-                    providerId:
+                    id:
                       type: string
-                    providerName:
+                    name:
                       type: string
-                    providerType:
+                    type:
                       type: string
-                    providerData:
+                    data:
                       type: object
                     status:
                       type: string

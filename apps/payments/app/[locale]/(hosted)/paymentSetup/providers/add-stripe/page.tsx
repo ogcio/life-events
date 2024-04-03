@@ -15,7 +15,7 @@ export default async () => {
     await buildApiClient(userId).providers.apiV1ProvidersPost({
       name: formData.get("provider_name") as string,
       type: "stripe",
-      providerData: {
+      data: {
         liveSecretKey: formData.get("live_secret_key"),
         livePublishableKey: formData.get("live_publishable_key"),
       },

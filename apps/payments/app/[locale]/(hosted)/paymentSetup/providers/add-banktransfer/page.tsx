@@ -15,10 +15,10 @@ export default async () => {
     await buildApiClient(userId).providers.apiV1ProvidersPost({
       name: formData.get("provider_name") as string,
       type: "banktransfer",
-      providerData: {
-        sortCode: formData.get("sort_code") as string,
-        accountNumber: formData.get("account_number") as string,
-        accountHolderName: formData.get("account_holder_name") as string,
+      data: {
+        sortCode: formData.get("sort_code"),
+        accountNumber: formData.get("account_number"),
+        accountHolderName: formData.get("account_holder_name"),
       },
     });
 

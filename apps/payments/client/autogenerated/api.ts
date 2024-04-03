@@ -50,25 +50,25 @@ export interface ApiV1ProvidersGet200ResponseInner {
    * @type {string}
    * @memberof ApiV1ProvidersGet200ResponseInner
    */
-  providerId?: string;
+  id?: string;
   /**
    *
    * @type {string}
    * @memberof ApiV1ProvidersGet200ResponseInner
    */
-  providerName?: string;
+  name?: string;
   /**
    *
    * @type {string}
    * @memberof ApiV1ProvidersGet200ResponseInner
    */
-  providerType?: string;
+  type?: string;
   /**
    *
    * @type {object}
    * @memberof ApiV1ProvidersGet200ResponseInner
    */
-  providerData?: object;
+  data?: object;
   /**
    *
    * @type {string}
@@ -112,7 +112,7 @@ export interface ApiV1ProvidersPostRequest {
    * @type {object}
    * @memberof ApiV1ProvidersPostRequest
    */
-  providerData: object;
+  data: object;
 }
 /**
  *

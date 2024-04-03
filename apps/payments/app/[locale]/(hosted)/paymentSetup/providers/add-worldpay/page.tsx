@@ -15,7 +15,7 @@ export default async () => {
     await buildApiClient(userId).providers.apiV1ProvidersPost({
       name: formData.get("provider_name") as string,
       type: "worldpay",
-      providerData: {
+      data: {
         merchantCode: formData.get("merchant_code"),
         installationId: formData.get("installation_id"),
       },

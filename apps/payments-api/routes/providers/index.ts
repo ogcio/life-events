@@ -7,22 +7,22 @@ const ProviderTypes = Type.Union([
   Type.Literal("stripe"),
 ]);
 
-export const CreateProvider = Type.Union([
+const CreateProvider = Type.Union([
   Type.Object({
     name: Type.String(),
     type: ProviderTypes,
-    providerData: Type.Object({}),
+    data: Type.Object({}),
   }),
 ]);
 
-export type CreateProviderType = Static<typeof CreateProvider>;
+type CreateProviderType = Static<typeof CreateProvider>;
 
-export const Provider = Type.Union([
+const Provider = Type.Union([
   Type.Object({
-    providerId: Type.String(),
-    providerName: Type.String(),
-    providerType: ProviderTypes,
-    providerData: Type.Object({}),
+    id: Type.String(),
+    name: Type.String(),
+    type: ProviderTypes,
+    data: Type.Object({}),
     status: Type.Union([
       Type.Literal("connected"),
       Type.Literal("disconnected"),
@@ -30,9 +30,9 @@ export const Provider = Type.Union([
   }),
 ]);
 
-export const ProvidersList = Type.Union([Type.Array(Provider)]);
+const ProvidersList = Type.Union([Type.Array(Provider)]);
 
-export type ProvidersListType = Static<typeof ProvidersList>;
+type ProvidersListType = Static<typeof ProvidersList>;
 
 export default async function providers(app: FastifyInstance) {
   app.post<{ Body: CreateProviderType; Reply: { id: string } }>(
@@ -54,14 +54,14 @@ export default async function providers(app: FastifyInstance) {
     },
     async (request, reply) => {
       const userId = request.user?.id;
-      const { name, type, providerData } = request.body;
+      const { name, type, data } = request.body;
 
       const result = await app.pg.query(
         `
         INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
         VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
             `,
-        [userId, name, type, "connected", providerData],
+        [userId, name, type, "connected", data],
       );
 
       reply.send({ id: result.rows[0].id });
@@ -80,16 +80,16 @@ export default async function providers(app: FastifyInstance) {
             items: {
               type: "object",
               properties: {
-                providerId: {
+                id: {
                   type: "string",
                 },
-                providerName: {
+                name: {
                   type: "string",
                 },
-                providerType: {
+                type: {
                   type: "string",
                 },
-                providerData: {
+                data: {
                   type: "object",
                 },
                 status: {
@@ -107,10 +107,10 @@ export default async function providers(app: FastifyInstance) {
       const result = await app.pg.query(
         `
           SELECT
-            provider_id as "providerId",
-            provider_name as "providerName",
-            provider_type as "providerType",
-            provider_data as "providerData",
+            provider_id as id,
+            provider_name as name,
+            provider_type as type,
+            provider_data as data,
             status
           FROM payment_providers
           WHERE user_id = $1
