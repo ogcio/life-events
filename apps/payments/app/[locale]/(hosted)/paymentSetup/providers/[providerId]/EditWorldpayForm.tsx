@@ -18,7 +18,7 @@ export default async ({ provider }: Props) => {
 
     const { userId } = await PgSessions.get();
 
-    const providerName = formData.get("provider_name");
+    const providerName = formData.get("provider_name") as string;
     const merchantCode = formData.get("merchant_code");
     const installationId = formData.get("installation_id");
     const providerData = {

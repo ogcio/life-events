@@ -18,7 +18,7 @@ export default async ({ provider }: Props) => {
 
     const { userId } = await PgSessions.get();
 
-    const providerName = formData.get("provider_name");
+    const providerName = formData.get("provider_name") as string;
     const livePublishableKey = formData.get("live_publishable_key");
     const liveSecretKey = formData.get("live_secret_key");
     const providerData = {

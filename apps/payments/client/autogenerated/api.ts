@@ -131,31 +131,31 @@ export interface ApiV1ProvidersProviderIdGet200Response {
    * @type {string}
    * @memberof ApiV1ProvidersProviderIdGet200Response
    */
-  id?: string;
+  id: string;
   /**
    *
    * @type {string}
    * @memberof ApiV1ProvidersProviderIdGet200Response
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {string}
    * @memberof ApiV1ProvidersProviderIdGet200Response
    */
-  type?: string;
+  type: string;
   /**
    *
    * @type {any}
    * @memberof ApiV1ProvidersProviderIdGet200Response
    */
-  data?: any;
+  data: any;
   /**
    *
    * @type {string}
    * @memberof ApiV1ProvidersProviderIdGet200Response
    */
-  status?: string;
+  status: string;
 }
 /**
  *

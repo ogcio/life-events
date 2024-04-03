@@ -39,26 +39,26 @@ export type CommonProvider = {
   id: string;
   name: string;
   userId?: string;
-  status: ProviderStatus;
+  status: string;
 };
 
 export type StripeProvider = CommonProvider & {
-  type: "stripe";
+  type: string;
   data: StripeData;
 };
 
 export type OpenBankingProvider = CommonProvider & {
-  type: "openbanking";
+  type: string;
   data: OpenBankingData;
 };
 
 export type BankTransferProvider = CommonProvider & {
-  type: "banktransfer";
+  type: string;
   data: BankTransferData;
 };
 
 export type WorldpayProvider = CommonProvider & {
-  type: "worldpay";
+  type: string;
   data: WorldpayData;
 };
 
