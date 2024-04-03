@@ -37,12 +37,9 @@ export default async function providers(app: FastifyInstance) {
         tags: ["Providers"],
         body: CreateProvider,
         response: {
-          200: {
-            type: "object",
-            properties: {
-              id: { type: "string" },
-            },
-          },
+          200: Type.Object({
+            id: Type.String(),
+          }),
         },
       },
     },
@@ -69,29 +66,17 @@ export default async function providers(app: FastifyInstance) {
       schema: {
         tags: ["Providers"],
         response: {
-          200: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                id: {
-                  type: "string",
-                },
-                name: {
-                  type: "string",
-                },
-                type: {
-                  type: "string",
-                },
-                data: {
-                  type: "object",
-                },
-                status: {
-                  type: "string",
-                },
-              },
-            },
-          },
+          200: Type.Array(
+            Type.Union([
+              Type.Object({
+                id: Type.String(),
+                name: Type.String(),
+                type: Type.String(),
+                data: Type.Any(),
+                status: Type.String(),
+              }),
+            ]),
+          ),
         },
       },
     },
@@ -164,12 +149,9 @@ export default async function providers(app: FastifyInstance) {
         tags: ["Providers"],
         body: UpdateProvider,
         response: {
-          200: {
-            type: "object",
-            properties: {
-              ok: { type: "boolean" },
-            },
-          },
+          200: Type.Object({
+            ok: Type.Boolean(),
+          }),
         },
       },
     },

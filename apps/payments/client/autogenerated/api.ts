@@ -50,31 +50,31 @@ export interface ApiV1ProvidersGet200ResponseInner {
    * @type {string}
    * @memberof ApiV1ProvidersGet200ResponseInner
    */
-  id?: string;
+  id: string;
   /**
    *
    * @type {string}
    * @memberof ApiV1ProvidersGet200ResponseInner
    */
-  name?: string;
+  name: string;
   /**
    *
    * @type {string}
    * @memberof ApiV1ProvidersGet200ResponseInner
    */
-  type?: string;
+  type: string;
   /**
    *
-   * @type {object}
+   * @type {any}
    * @memberof ApiV1ProvidersGet200ResponseInner
    */
-  data?: object;
+  data: any;
   /**
    *
    * @type {string}
    * @memberof ApiV1ProvidersGet200ResponseInner
    */
-  status?: string;
+  status: string;
 }
 /**
  *
@@ -87,7 +87,7 @@ export interface ApiV1ProvidersPost200Response {
    * @type {string}
    * @memberof ApiV1ProvidersPost200Response
    */
-  id?: string;
+  id: string;
 }
 /**
  *
@@ -123,43 +123,6 @@ export interface ApiV1ProvidersPostRequestType {}
 /**
  *
  * @export
- * @interface ApiV1ProvidersProviderIdGet200Response
- */
-export interface ApiV1ProvidersProviderIdGet200Response {
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet200Response
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet200Response
-   */
-  name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet200Response
-   */
-  type: string;
-  /**
-   *
-   * @type {any}
-   * @memberof ApiV1ProvidersProviderIdGet200Response
-   */
-  data: any;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet200Response
-   */
-  status: string;
-}
-/**
- *
- * @export
  * @interface ApiV1ProvidersProviderIdPut200Response
  */
 export interface ApiV1ProvidersProviderIdPut200Response {
@@ -168,7 +131,7 @@ export interface ApiV1ProvidersProviderIdPut200Response {
    * @type {boolean}
    * @memberof ApiV1ProvidersProviderIdPut200Response
    */
-  ok?: boolean;
+  ok: boolean;
 }
 /**
  *
@@ -627,7 +590,7 @@ export const ProvidersApiFp = function (configuration?: Configuration) {
       (
         axios?: AxiosInstance,
         basePath?: string,
-      ) => AxiosPromise<ApiV1ProvidersProviderIdGet200Response>
+      ) => AxiosPromise<ApiV1ProvidersGet200ResponseInner>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.apiV1ProvidersProviderIdGet(
@@ -732,7 +695,7 @@ export const ProvidersApiFactory = function (
     apiV1ProvidersProviderIdGet(
       providerId: string,
       options?: any,
-    ): AxiosPromise<ApiV1ProvidersProviderIdGet200Response> {
+    ): AxiosPromise<ApiV1ProvidersGet200ResponseInner> {
       return localVarFp
         .apiV1ProvidersProviderIdGet(providerId, options)
         .then((request) => request(axios, basePath));

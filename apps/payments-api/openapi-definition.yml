@@ -50,6 +50,8 @@ paths:
                 properties:
                   id:
                     type: string
+                required:
+                  - id
     get:
       tags:
         - Providers
@@ -69,10 +71,15 @@ paths:
                       type: string
                     type:
                       type: string
-                    data:
-                      type: object
+                    data: {}
                     status:
                       type: string
+                  required:
+                    - id
+                    - name
+                    - type
+                    - data
+                    - status
   /api/v1/providers/{providerId}:
     get:
       tags:
@@ -147,5 +154,7 @@ paths:
                 properties:
                   ok:
                     type: boolean
+                required:
+                  - ok
 tags:
   - name: Providers
