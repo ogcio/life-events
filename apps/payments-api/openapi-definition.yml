@@ -34,13 +34,13 @@ paths:
                     - type: string
                       enum:
                         - stripe
-                providerData:
+                data:
                   type: object
                   properties: {}
               required:
                 - name
                 - type
-                - providerData
+                - data
         required: true
       responses:
         "200":
@@ -52,5 +52,28 @@ paths:
                 properties:
                   id:
                     type: string
+    get:
+      tags:
+        - Providers
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    type:
+                      type: string
+                    data:
+                      type: object
+                    status:
+                      type: string
 tags:
   - name: Providers
