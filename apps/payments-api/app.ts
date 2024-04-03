@@ -11,6 +11,7 @@ import fastifySwaggerUi from "@fastify/swagger-ui";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import healthCheck from "./routes/healthcheck";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -59,6 +60,8 @@ export async function build(opts?: FastifyServerOptions) {
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB_NAME,
   });
+
+  app.register(healthCheck);
 
   app.register(routes, { prefix: "/api/v1" });
 
