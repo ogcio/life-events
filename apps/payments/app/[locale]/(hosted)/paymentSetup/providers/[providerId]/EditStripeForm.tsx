@@ -1,9 +1,10 @@
-import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import EditProviderForm from "./EditProviderForm";
 import type { StripeProvider, StripeData } from "../types";
 import { getTranslations } from "next-intl/server";
 import StripeFields from "../add-stripe/StripeFields";
+import { PgSessions } from "auth/sessions";
+import buildApiClient from "../../../../../../client/index";
 
 type Props = {
   provider: StripeProvider;
@@ -14,8 +15,10 @@ export default async ({ provider }: Props) => {
 
   async function updateProvider(formData: FormData) {
     "use server";
-    const providerName = formData.get("provider_name");
 
+    const { userId } = await PgSessions.get();
+
+    const providerName = formData.get("provider_name");
     const livePublishableKey = formData.get("live_publishable_key");
     const liveSecretKey = formData.get("live_secret_key");
     const providerData = {
@@ -23,13 +26,13 @@ export default async ({ provider }: Props) => {
       liveSecretKey,
     };
 
-    await pgpool.query(
-      `
-      UPDATE payment_providers SET provider_name = $1,
-        provider_data = $2
-      WHERE provider_id = $3
-    `,
-      [providerName, providerData, provider.id],
+    await buildApiClient(userId).providers.apiV1ProvidersProviderIdPut(
+      provider.id,
+      {
+        name: providerName,
+        data: providerData,
+        status: provider.status,
+      },
     );
 
     redirect("./");
@@ -40,10 +43,8 @@ export default async ({ provider }: Props) => {
       <h1 className="govie-heading-l">{t("editTitle")}</h1>
       <StripeFields
         providerName={provider.name}
-        livePublishableKey={
-          (provider.providerData as StripeData).livePublishableKey
-        }
-        liveSecretKey={(provider.providerData as StripeData).liveSecretKey}
+        livePublishableKey={(provider.data as StripeData).livePublishableKey}
+        liveSecretKey={(provider.data as StripeData).liveSecretKey}
       />
     </EditProviderForm>
   );

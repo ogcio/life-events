@@ -1,9 +1,10 @@
-import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import EditProviderForm from "./EditProviderForm";
 import type { WorldpayData, WorldpayProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import WorldpayFields from "../add-worldpay/WorldpayFields";
+import { PgSessions } from "auth/sessions";
+import buildApiClient from "../../../../../../client/index";
 
 type Props = {
   provider: WorldpayProvider;
@@ -14,6 +15,9 @@ export default async ({ provider }: Props) => {
 
   async function updateProvider(formData: FormData) {
     "use server";
+
+    const { userId } = await PgSessions.get();
+
     const providerName = formData.get("provider_name");
     const merchantCode = formData.get("merchant_code");
     const installationId = formData.get("installation_id");
@@ -22,13 +26,13 @@ export default async ({ provider }: Props) => {
       installationId,
     };
 
-    await pgpool.query(
-      `
-      UPDATE payment_providers SET provider_name = $1,
-        provider_data = $2
-      WHERE provider_id = $3
-    `,
-      [providerName, providerData, provider.id],
+    await buildApiClient(userId).providers.apiV1ProvidersProviderIdPut(
+      provider.id,
+      {
+        name: providerName,
+        data: providerData,
+        status: provider.status,
+      },
     );
 
     redirect("./");
@@ -39,8 +43,8 @@ export default async ({ provider }: Props) => {
       <h1 className="govie-heading-l">{t("editTitle")}</h1>
       <WorldpayFields
         providerName={provider.name}
-        merchantCode={(provider.providerData as WorldpayData).merchantCode}
-        installationId={(provider.providerData as WorldpayData).installationId}
+        merchantCode={(provider.data as WorldpayData).merchantCode}
+        installationId={(provider.data as WorldpayData).installationId}
       />
     </EditProviderForm>
   );
