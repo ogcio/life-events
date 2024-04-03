@@ -1,49 +1,10 @@
-import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
+import { PgSessions } from "auth/sessions";
 import EditOpenBankingForm from "./EditOpenBankingForm";
-import {
-  Provider,
-  ProviderData,
-  ProviderStatus,
-  ProviderType,
-  parseProvider,
-} from "../types";
 import EditBankTransferForm from "./EditBankTransferForm";
 import EditStripeForm from "./EditStripeForm";
 import EditWorldpayForm from "./EditWorldpayForm";
-
-async function getProvider(providerId: string): Promise<Provider> {
-  "use server";
-
-  const providersQueryResult = await pgpool.query<
-    {
-      provider_id: string;
-      provider_name: string;
-      provider_type: ProviderType;
-      provider_data: ProviderData;
-      status: ProviderStatus;
-    },
-    string[]
-  >(
-    `
-      SELECT
-        provider_id,
-        provider_name,
-        provider_type,
-        provider_data,
-        status
-      FROM payment_providers
-      WHERE provider_id = $1
-    `,
-    [providerId],
-  );
-
-  if (!providersQueryResult.rowCount) {
-    redirect("/paymentSetup/providers");
-  }
-
-  return parseProvider(providersQueryResult.rows[0]);
-}
+import buildApiClient from "../../../../../../client/index";
 
 type Props = {
   params: {
@@ -52,7 +13,16 @@ type Props = {
 };
 
 export default async ({ params: { providerId } }: Props) => {
-  const provider = await getProvider(providerId);
+  const { userId } = await PgSessions.get();
+  const provider = (
+    await buildApiClient(userId).providers.apiV1ProvidersProviderIdGet(
+      providerId,
+    )
+  ).data;
+
+  if (!provider) {
+    redirect("/paymentSetup/providers");
+  }
 
   if (provider.type === "openbanking") {
     return <EditOpenBankingForm provider={provider} />;
