@@ -9,7 +9,7 @@ app.listen({ port: 8001 }, (err, address) => {
     console.error(err);
     process.exit(1);
   }
-  console.log(`app listening at ${address}`);
+  console.log(`app listening at: ${address}`);
 });
 
 await app.ready();
