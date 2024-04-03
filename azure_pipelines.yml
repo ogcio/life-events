@@ -21,7 +21,7 @@ parameters:
 variables:
   - template: pipeline-variables/dev.yml
   - name: pushArtefacts
-    value: $[containsValue(parameters.envBranches, variables['Build.SourceBranch'])]
+    value: $[containsValue(pipeline.parameters.envBranches, variables['Build.SourceBranch'])]
 
 stages:
   - stage: securityScan
