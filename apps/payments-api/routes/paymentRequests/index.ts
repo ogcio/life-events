@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
 import { httpErrors } from "@fastify/sensible";
+import { HttpError } from "../../types/httpErrors";
 
 const ProviderDetails = Type.Object({
   userId: Type.String(),
@@ -133,13 +134,7 @@ export default async function paymentRequests(app: FastifyInstance) {
             allowAmountOverride: Type.Boolean(),
             allowCustomAmount: Type.Boolean(),
           }),
-          404: Type.Object({
-            statusCode: Type.Number(),
-            code: Type.String(),
-            error: Type.String(),
-            message: Type.String(),
-            time: Type.String(),
-          }),
+          404: HttpError,
         },
       },
     },

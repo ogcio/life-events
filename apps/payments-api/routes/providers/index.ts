@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
 import { httpErrors } from "@fastify/sensible";
+import { HttpError } from "../../types/httpErrors";
 
 const Provider = Type.Union([
   Type.Object({
@@ -121,13 +122,7 @@ export default async function providers(app: FastifyInstance) {
             data: Type.Any(),
             status: Type.String(),
           }),
-          404: Type.Object({
-            statusCode: Type.Number(),
-            code: Type.String(),
-            error: Type.String(),
-            message: Type.String(),
-            time: Type.String(),
-          }),
+          404: HttpError,
         },
       },
     },
