@@ -1,6 +1,6 @@
 import { PgSessions } from "auth/sessions";
 import { web } from "../../utils";
-import TimeLineGrid from "./TimeLineGrid";
+import Timeline from "./Timeline";
 
 export default async (props: web.NextPageProps) => {
   const { firstName, lastName } = await PgSessions.get();
@@ -15,7 +15,7 @@ export default async (props: web.NextPageProps) => {
         gap: "2.5rem",
       }}
     >
-      <TimeLineGrid userName={userName} />
+      <Timeline userName={userName} searchParams={props.searchParams} />
     </div>
   );
 };

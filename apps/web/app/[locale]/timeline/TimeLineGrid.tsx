@@ -1,220 +1,133 @@
 "use client";
-import { useEffect, useState } from "react";
-import { formatDate } from "../../utils/web";
 import ds from "design-system";
-import { debounce } from "lodash";
 import dayjs from "dayjs";
-import Menu from "./Menu";
-import Link from "next/link";
 import NavButton from "./NavButton";
+import { TimeLineData } from "./Timeline";
+import { useEffect, useState } from "react";
+import MonthsCards from "./MonthsCards";
 
-const Icon = ds.Icon;
-
-export type TimeLineData = {
-  year: number;
-  months: {
-    month: string;
-    events: {
-      service: string;
-      date: Date;
-      title: string;
-      description: string;
-      dismissable?: boolean;
-      detailsLink?: string;
-    }[];
-  }[];
-};
-
-const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
-const opaque = ds.hexToRgba(ds.colours.ogcio.gold, 5);
 const grey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 30);
-const minYear = 2021;
-const maxYear = 2029;
 
-export default ({ userName }: { userName: string }) => {
-  const [dates, setDates] = useState({
-    startDate: dayjs().subtract(1, "year").format("YYYY"),
-    endDate: dayjs().add(4, "year").format("YYYY"),
-  });
-  const [services, setServices] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [timeLineData, setTimeLineData] = useState<TimeLineData[]>([]);
-
-  const fetchTimelineData = async () => {
-    const queryParams = new URLSearchParams({
-      startDate: dates.startDate,
-      endDate: dates.endDate,
-      services: services.join(","),
-      searchQuery,
-    });
-
-    const timelineResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/timeline/?${queryParams}`,
-    );
-
-    const responseData = await timelineResponse.json();
-
-    setTimeLineData(responseData.reverse());
-  };
+export default ({ timeLineData }: { timeLineData?: TimeLineData }) => {
+  const data = timeLineData?.data || [];
+  const [visibleYears, setVisibleYears] = useState<TimeLineData["data"]>([]);
 
   useEffect(() => {
-    fetchTimelineData();
-  }, []);
-
-  useEffect(() => {
-    fetchTimelineData();
-  }, [services.length, searchQuery, dates]);
-
-  const handleServiceChange = (selectedService: string) => {
-    setServices((prevServices) => {
-      if (prevServices.includes(selectedService)) {
-        return prevServices.filter((item) => item !== selectedService);
-      } else {
-        return [...prevServices, selectedService];
-      }
-    });
-  };
-
-  const handleSearchChangeDebounced = debounce((value) => {
-    setSearchQuery(value);
-  }, 300);
-
-  const handleSearchChange = (value) => {
-    handleSearchChangeDebounced(value);
-  };
+    if (timeLineData?.data) {
+      const { data } = timeLineData;
+      setVisibleYears([
+        data[data.length - 3],
+        data[data.length - 2],
+        data[data.length - 1],
+      ]);
+    }
+  }, [timeLineData]);
 
   const goBack = () => {
-    setDates((prevDates) => ({
-      startDate: (parseInt(prevDates.startDate) - 1).toString(),
-      endDate: (parseInt(prevDates.endDate) - 1).toString(),
-    }));
+    const currentIndex = data.findIndex((year) => year === visibleYears[0]);
+    if (currentIndex > 0) {
+      setVisibleYears([
+        data[currentIndex - 1],
+        data[currentIndex],
+        data[currentIndex + 1],
+      ]);
+    }
   };
 
   const goForward = () => {
-    setDates((prevDates) => ({
-      startDate: (parseInt(prevDates.startDate) + 1).toString(),
-      endDate: (parseInt(prevDates.endDate) + 1).toString(),
-    }));
+    const currentIndex = data.findIndex((year) => year === visibleYears[2]);
+    if (currentIndex < data.length - 1) {
+      setVisibleYears([
+        data[currentIndex - 1],
+        data[currentIndex],
+        data[currentIndex + 1],
+      ]);
+    }
   };
 
   return (
     <>
-      <div>
-        <Menu
-          userName={userName}
-          handleSearchChange={handleSearchChange}
-          handleCategoryChange={handleServiceChange}
-        />
-      </div>
-      <div>
-        {!timeLineData.length ? (
-          <p className="govie-body">Events not found</p>
-        ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "40px 200px 200px 200px 200px 200px 40px",
-              columnGap: "20px",
-              minHeight: "100%",
-            }}
-          >
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ height: "25px" }}>
-                <NavButton
-                  disabled={dayjs(dates.startDate).year() === minYear}
-                  onClick={() => goBack()}
-                  transform={false}
-                />
-              </div>
-            </div>
-            {timeLineData.map((yearData) => {
-              const { year, months } = yearData;
-              return (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "20px",
-                    padding: "0 10px",
-                    borderLeft:
-                      year === dayjs().year() ? `1px solid ${grey}` : "none",
-                    borderRight:
-                      year === dayjs().year() ? `1px solid ${grey}` : "none",
-                  }}
-                  key={yearData.year}
-                >
-                  <div>
-                    <p
-                      className="govie-body"
-                      style={{ textAlign: "center", marginBottom: 0 }}
-                    >
-                      {year === dayjs().year() ? <strong>{year}</strong> : year}
-                    </p>
-                  </div>
-                  {months.map((monthObject) => {
-                    const { events } = monthObject;
-                    return (
-                      <>
-                        {events.map((event) => {
-                          return (
-                            <div
-                              style={{
-                                backgroundColor: dayjs(event.date).isBefore(
-                                  dayjs(),
-                                )
-                                  ? opaque
-                                  : tintGold,
-                                padding: "12px",
-                              }}
-                            >
-                              <Icon
-                                icon={event.service}
-                                className="govie-button__icon-left"
-                                color={ds.colours.ogcio.darkGreen}
-                              />
-                              <p
-                                className="govie-body govie-!-font-size-16"
-                                style={{ marginBottom: 0 }}
-                              >
-                                <strong>{formatDate(event.date)}</strong>
-                              </p>
-                              <p className="govie-body govie-!-font-size-16">
-                                {event.title}
-                              </p>
-                              {event.dismissable && (
-                                <div style={{ textAlign: "right" }}>
-                                  <Link href="/dismiss" className="govie-link">
-                                    <span>Dismiss</span>
-                                  </Link>
-                                </div>
-                              )}
-                              {event.detailsLink && (
-                                <div style={{ textAlign: "right" }}>
-                                  <Link href="/details" className="govie-link">
-                                    <span>View details</span>
-                                  </Link>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </>
-                    );
-                  })}
-                </div>
-              );
-            })}
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ height: "25px" }}>
-                <NavButton
-                  disabled={dayjs(dates.endDate).year() === maxYear}
-                  onClick={() => goForward()}
-                  transform={true}
-                />
-              </div>
-            </div>
+      <div
+        style={{
+          display: "flex",
+          columnGap: "20px",
+          minHeight: "100%",
+          minWidth: "100%",
+          justifyContent: "space-between",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "40px",
+          }}
+        >
+          <div style={{ height: "25px" }}>
+            <NavButton
+              disabled={
+                visibleYears[0]?.year
+                  ? visibleYears[0]?.year === timeLineData?.minYear
+                  : true
+              }
+              onClick={() => goBack()}
+              transform={false}
+            />
           </div>
-        )}
+        </div>
+        {visibleYears?.map((yearData) => {
+          if (!yearData) {
+            return;
+          }
+          const { year, months } = yearData;
+          return (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "20px",
+                padding: "0 10px",
+                borderLeft:
+                  year === dayjs().year() ? `1px solid ${grey}` : "none",
+                borderRight:
+                  year === dayjs().year() ? `1px solid ${grey}` : "none",
+                flex: 1,
+              }}
+              key={yearData.year}
+            >
+              <div>
+                <p
+                  className="govie-body"
+                  style={{ textAlign: "center", marginBottom: 0 }}
+                >
+                  {year === dayjs().year() ? <strong>{year}</strong> : year}
+                </p>
+              </div>
+              <MonthsCards months={months} view={"grid"} />
+            </div>
+          );
+        })}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            width: "40px",
+          }}
+        >
+          <div style={{ height: "25px" }}>
+            <NavButton
+              disabled={
+                visibleYears[visibleYears.length - 1]?.year
+                  ? visibleYears[visibleYears.length - 1].year ===
+                    timeLineData?.maxYear
+                  : true
+              }
+              onClick={() => goForward()}
+              transform={true}
+            />
+          </div>
+        </div>
       </div>
     </>
   );

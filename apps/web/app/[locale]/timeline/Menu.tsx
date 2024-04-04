@@ -14,7 +14,7 @@ export default ({
 }) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 
-  const categories = ["Driving", "Employment", "Health", "Housing"];
+  const categories = ["Driving", "Employment", "Housing"];
 
   const checkboxes = categories.map((service: string, index: number) => (
     <div className="govie-checkboxes__item" key={service}>
@@ -68,16 +68,6 @@ export default ({
         </label>
       </li>
       <li>
-        <div>
-          <button
-            className="govie-button"
-            style={{ width: "100%", marginBottom: "0" }}
-          >
-            + Add an Event
-          </button>
-        </div>
-      </li>
-      <li>
         <form>
           <div className="govie-form-group" style={{ marginBottom: "15px" }}>
             <input
@@ -90,27 +80,12 @@ export default ({
             />
           </div>
           <div className="govie-form-group" style={{ marginBottom: "15px" }}>
-            <select
-              className="govie-select"
-              id="default-select"
-              name="default-select"
-              style={{ minWidth: "initial", width: "100%" }}
-              onChange={(e) =>
-                console.log("== VIEW CHANGED ===", e.target.value)
-              }
-            >
-              <option value="year">Year</option>
-              <option value="month">Month</option>
-              <option value="week">Week</option>
-            </select>
-          </div>
-          <div className="govie-form-group" style={{ marginBottom: "15px" }}>
             <fieldset className="govie-fieldset">
               <legend
                 className="govie-fieldset__legend govie-fieldset__legend--l"
                 style={{ marginBottom: 0 }}
               >
-                <p className="govie-heading-m">Services</p>
+                <p className="govie-heading-s">Filter by service</p>
               </legend>
               <div
                 className="govie-checkboxes govie-checkboxes--small"

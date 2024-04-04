@@ -3,24 +3,23 @@ import Link from "next/link";
 import { formatDate } from "../../../utils/web";
 import ds from "design-system";
 import { useEffect, useState } from "react";
-import dayjs from "dayjs";
 import { debounce } from "lodash";
-import { TimeLineData } from "../../timeline/TimeLineGrid";
+import { TimeLineData } from "../../timeline/Timeline";
 
 const Icon = ds.Icon;
 
-const minYear = 2021;
-const maxYear = 2029;
+const minYear = 2018;
+const maxYear = 2025;
 
 export default () => {
   const [dates, setDates] = useState({
-    startDate: dayjs().format("YYYY"),
-    endDate: dayjs().add(5, "year").format("YYYY"),
+    startDate: minYear.toString(),
+    endDate: maxYear.toString(),
   });
 
   const [service, setService] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [timeLineData, setTimeLineData] = useState<TimeLineData[]>([]);
+  const [timeLineData, setTimeLineData] = useState<TimeLineData>();
 
   const fetchTimelineData = async () => {
     const queryParams = new URLSearchParams({
@@ -36,7 +35,7 @@ export default () => {
 
     const responseData = await timelineResponse.json();
 
-    setTimeLineData(responseData.reverse());
+    setTimeLineData(responseData);
   };
 
   useEffect(() => {
@@ -51,6 +50,7 @@ export default () => {
     if (dates.startDate !== minYear.toString()) {
       setDates({ startDate: minYear.toString(), endDate: maxYear.toString() });
     }
+
     setService(selectedService);
   };
 
@@ -69,9 +69,6 @@ export default () => {
     <div style={{ height: "100" }}>
       <div>
         <p className="govie-heading-m">Timeline</p>
-        <button className="govie-button" style={{ width: "100%" }}>
-          + Add an Event
-        </button>
       </div>
       <form>
         <div className="govie-form-group">
@@ -85,7 +82,6 @@ export default () => {
             <option value="">All services</option>
             <option value="driving">Driving</option>
             <option value="employment">Employment</option>
-            <option value="health">Health</option>
             <option value="housing">Housing</option>
           </select>
         </div>
@@ -111,8 +107,8 @@ export default () => {
         }}
       >
         <div style={{ borderLeft: "1px solid #B1B4B6", paddingLeft: "10px" }}>
-          {timeLineData &&
-            timeLineData.reverse().map((yearObject) => {
+          {timeLineData?.data &&
+            timeLineData.data.map((yearObject) => {
               return yearObject.months.map((monthObject) => {
                 const { events } = monthObject;
                 return events.map((event) => {
@@ -157,7 +153,7 @@ export default () => {
         </div>
       </div>
       <Link
-        href={`/timeline`}
+        href={`/timeline?grid=true`}
         className="govie-button"
         style={{ width: "100%", lineHeight: "normal" }}
       >
