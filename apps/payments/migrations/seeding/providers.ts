@@ -3,7 +3,7 @@ export const seedProviders = (pool, userId) => {
 
   const manualBankTransfer = pool.query(
     `INSERT INTO payment_providers(user_id, provider_name, provider_type, status, provider_data) 
-     VALUES($1, $2, $3, $4, $5)`,
+     VALUES($1, $2, $3, $4, $5) returning provider_id`,
     [
       userId,
       "Manual Bank Transfer",
@@ -19,7 +19,7 @@ export const seedProviders = (pool, userId) => {
 
   const openBanking = pool.query(
     `INSERT INTO payment_providers(user_id, provider_name, provider_type, status, provider_data) 
-     VALUES($1, $2, $3, $4, $5)`,
+     VALUES($1, $2, $3, $4, $5) returning provider_id`,
     [
       userId,
       "Open Banking provider",
@@ -35,7 +35,7 @@ export const seedProviders = (pool, userId) => {
 
   const stripe = pool.query(
     `INSERT INTO payment_providers(user_id, provider_name, provider_type, status, provider_data) 
-     VALUES($1, $2, $3, $4, $5)`,
+     VALUES($1, $2, $3, $4, $5) returning provider_id`,
     [
       userId,
       "Stripe provider",
