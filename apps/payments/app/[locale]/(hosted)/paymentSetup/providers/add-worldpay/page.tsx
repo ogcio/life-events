@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../../../dbConnection";
+import buildApiClient from "../../../../../../client/index";
 import WorldpayFields from "./WorldpayFields";
 
 export default async () => {
@@ -11,27 +11,15 @@ export default async () => {
 
   async function handleSubmit(formData: FormData) {
     "use server";
-    const providerName = formData.get("provider_name");
-    const merchantCode = formData.get("merchant_code");
-    const installationId = formData.get("installation_id");
 
-    await pgpool.query(
-      `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5)
-    `,
-      [
-        userId,
-        providerName,
-        "worldpay",
-        "connected",
-        {
-          // TODO: codes need to be encrypted
-          merchantCode,
-          installationId,
-        },
-      ],
-    );
+    await buildApiClient(userId).providers.apiV1ProvidersPost({
+      name: formData.get("provider_name") as string,
+      type: "worldpay",
+      data: {
+        merchantCode: formData.get("merchant_code"),
+        installationId: formData.get("installation_id"),
+      },
+    });
 
     redirect("./");
   }

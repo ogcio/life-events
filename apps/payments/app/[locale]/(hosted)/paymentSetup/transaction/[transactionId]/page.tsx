@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../../utils";
 import { pgpool } from "../../../../../dbConnection";
 import dayjs from "dayjs";
+import { revalidatePath } from "next/cache";
 
 type TransactionDetails = {
   transaction_id: string;
@@ -11,6 +12,7 @@ type TransactionDetails = {
   updated_at: string;
   provider_name: string;
   provider_type: string;
+  ext_payment_id: string;
   user_data: {
     name: string;
     email: string;
@@ -25,6 +27,7 @@ async function getTransactionDetails(transactionId: string) {
       t.status,
       t.user_data,
       pr.title,
+      t.ext_payment_id,
       t.amount,
       t.updated_at,
       pp.provider_name,
@@ -39,11 +42,28 @@ async function getTransactionDetails(transactionId: string) {
   return res.rows[0];
 }
 
+async function confirmTransaction(transactionId: string) {
+  "use server";
+  await pgpool.query(
+    `
+    UPDATE payment_transactions
+    SET status = 'completed'
+    WHERE transaction_id = $1
+    `,
+    [transactionId],
+  );
+
+  revalidatePath("/");
+}
+
 export default async function ({ params: { transactionId } }) {
-  const [t, details] = await Promise.all([
+  const [t, details, tRequest] = await Promise.all([
     getTranslations("PaymentSetup.Request.details"),
     getTransactionDetails(transactionId),
+    getTranslations("PaymentSetup.Request"),
   ]);
+
+  const confirm = confirmTransaction.bind(null, transactionId);
 
   return (
     <div>
@@ -79,6 +99,12 @@ export default async function ({ params: { transactionId } }) {
           <dt className="govie-summary-list__value">{details.provider_type}</dt>
         </div>
         <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("referenceCode")}</dt>
+          <dt className="govie-summary-list__value">
+            {details.ext_payment_id}
+          </dt>
+        </div>
+        <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("payerName")}</dt>
           <dt className="govie-summary-list__value">
             {details.user_data.name}
@@ -91,6 +117,14 @@ export default async function ({ params: { transactionId } }) {
           </dt>
         </div>
       </dl>
+
+      {details.provider_type && details.status === "confirmed" && (
+        <form action={confirm}>
+          <button className="govie-button govie-button--primary">
+            {tRequest("transactionFound")}
+          </button>
+        </form>
+      )}
     </div>
   );
 }

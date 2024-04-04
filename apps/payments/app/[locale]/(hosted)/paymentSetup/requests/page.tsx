@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
 import { formatCurrency } from "../../../../utils";
-import { getUserPaymentRequestDetails } from "../db";
+import buildApiClient from "../../../../../client/index";
 
 export default async function () {
   const [t, { userId }] = await Promise.all([
@@ -10,7 +10,9 @@ export default async function () {
     PgSessions.get(),
   ]);
 
-  const paymentRequests = await getUserPaymentRequestDetails(userId);
+  const paymentRequests = (
+    await buildApiClient(userId).paymentRequests.apiV1RequestsGet()
+  ).data;
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
@@ -57,14 +59,12 @@ export default async function () {
           </thead>
           <tbody className="govie-table__body">
             {paymentRequests.map((req) => (
-              <tr className="govie-table__row">
+              <tr className="govie-table__row" key={req.paymentRequestId}>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                   {req.title}
                 </td>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {req.providers
-                    .map(({ provider_name }) => provider_name)
-                    .join(", ")}
+                  {req.providers.map(({ name }) => name).join(", ")}
                 </td>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                   {req.reference}
@@ -75,7 +75,7 @@ export default async function () {
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                   <Link
                     className="govie-link"
-                    href={`/paymentSetup/requests/${req.payment_request_id}`}
+                    href={`/paymentSetup/requests/${req.paymentRequestId}`}
                   >
                     {t("table.details")}
                   </Link>

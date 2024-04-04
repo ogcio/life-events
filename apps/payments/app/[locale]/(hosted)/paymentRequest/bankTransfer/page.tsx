@@ -49,7 +49,6 @@ async function getPaymentDetails(
     user,
   };
 
-
   const paymentRequest = await createPaymentRequest(paymentDetails);
   return {
     paymentDetails,

@@ -141,8 +141,10 @@
         "providerName": "Provider name",
         "providerType": "Provider type",
         "payerName": "Payer name",
-        "payerEmail": "Payer email"
+        "payerEmail": "Payer email",
+        "referenceCode": "Payment reference code"
       },
+      "transactionFound": "Transaction found with this reference code",
       "assignTitle": "Assign to User",
       "assignDescription": "Send this payment to a user",
       "userPpsn": "User PPS Number",
@@ -206,8 +208,11 @@
       "amount": "Total to pay",
       "accountHolderName": "Name on the account",
       "sortCode": "Sort code",
-      "accountNumber": "Account number"
-    }
+      "accountNumber": "Account number",
+      "referenceCode": "Payment reference code",
+      "referenceCodeDescription": "Please use this reference code when making the money transfer, we will use it to identify your payment. If you forget to include it, your payment may not be processed correctly."
+    },
+    "confirmPayment": "I have made the payment"
   },
   "PayStripe": {
     "payNow": "Pay now",

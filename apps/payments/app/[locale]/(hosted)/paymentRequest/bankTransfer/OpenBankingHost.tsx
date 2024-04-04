@@ -60,7 +60,7 @@ export default function Page(props: Props) {
 
       status.current = "loading";
     }
-  }, [payment, status, containerRef.current]);
+  }, [payment, status, containerRef]);
 
   return <div style={{ flex: 1, height: "750px" }} ref={containerRef}></div>;
 }

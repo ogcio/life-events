@@ -2,10 +2,7 @@ import React from "react";
 import { getTranslations } from "next-intl/server";
 import { getRequestTransactionDetails } from "../../db";
 import { formatCurrency } from "../../../../../utils";
-import { pgpool } from "../../../../../dbConnection";
-import { redirect } from "next/navigation";
 import dayjs from "dayjs";
-import CopyLink from "./CopyBtn";
 import { PgSessions } from "auth/sessions";
 import { RequestDetails } from "./RequestDetails";
 import Link from "next/link";
@@ -54,7 +51,7 @@ export default async function ({ params: { requestId } }) {
             </thead>
             <tbody className="govie-table__body">
               {transactions.map((trx) => (
-                <tr className="govie-table__row">
+                <tr className="govie-table__row" key={trx.transaction_id}>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     <strong className="govie-tag govie-tag--green govie-body-s">
                       {trx.status}

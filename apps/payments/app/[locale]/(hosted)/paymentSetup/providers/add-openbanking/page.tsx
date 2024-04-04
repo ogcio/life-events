@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../../../dbConnection";
 import OpenBankingFields from "./OpenBankingFields";
+import buildApiClient from "../../../../../../client/index";
 
 export default async () => {
   const t = await getTranslations("PaymentSetup.AddOpenbanking");
@@ -11,28 +11,16 @@ export default async () => {
 
   async function handleSubmit(formData: FormData) {
     "use server";
-    const providerName = formData.get("provider_name");
-    const sortCode = formData.get("sort_code");
-    const accountNumber = formData.get("account_number");
-    const accountHolderName = formData.get("account_holder_name");
 
-    await pgpool.query(
-      `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5)
-    `,
-      [
-        userId,
-        providerName,
-        "openbanking",
-        "connected",
-        {
-          sortCode,
-          accountNumber,
-          accountHolderName,
-        },
-      ],
-    );
+    await buildApiClient(userId).providers.apiV1ProvidersPost({
+      name: formData.get("provider_name") as string,
+      type: "openbanking",
+      data: {
+        sortCode: formData.get("sort_code"),
+        accountNumber: formData.get("account_number"),
+        accountHolderName: formData.get("account_holder_name"),
+      },
+    });
 
     redirect("./");
   }

@@ -1,9 +1,9 @@
-import { getPaymentRequestDetails } from "../../db";
 import { PgSessions } from "auth/sessions";
 import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import PaymentSetupForm from "../../PaymentSetupForm";
 import { stringToAmount } from "../../../../../utils";
+import buildApiClient from "../../../../../../client/index";
 
 const updateProvider = async (
   client,
@@ -92,7 +92,12 @@ async function editPayment(
       ],
     );
 
-    const details = await getPaymentRequestDetails(paymentRequestId);
+    const details = (
+      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+        paymentRequestId,
+      )
+    ).data;
+
     if (!details) throw new Error("Payment request not found");
 
     const { providers } = details;
@@ -101,22 +106,19 @@ async function editPayment(
       updateProvider(
         client,
         paymentRequestId,
-        providers.find((provider) => provider.provider_type === "openbanking")
-          ?.provider_id,
+        providers.find((provider) => provider.type === "openbanking")?.id,
         formData.get("openbanking-account")?.toString(),
       ),
       updateProvider(
         client,
         paymentRequestId,
-        providers.find((provider) => provider.provider_type === "banktransfer")
-          ?.provider_id,
+        providers.find((provider) => provider.type === "banktransfer")?.id,
         formData.get("banktransfer-account")?.toString(),
       ),
       updateProvider(
         client,
         paymentRequestId,
-        providers.find((provider) => provider.provider_type === "stripe")
-          ?.provider_id,
+        providers.find((provider) => provider.type === "stripe")?.id,
         formData.get("stripe-account")?.toString(),
       ),
     ]);
@@ -132,8 +134,12 @@ async function editPayment(
 }
 
 export default async function (props: { params: { request_id: string } }) {
-  const details = await getPaymentRequestDetails(props.params.request_id);
   const { userId } = await PgSessions.get();
+  const details = (
+    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+      props.params.request_id,
+    )
+  ).data;
 
   if (!details) {
     return <h1 className="govie-heading-l">Payment request not found</h1>;
@@ -142,7 +148,7 @@ export default async function (props: { params: { request_id: string } }) {
   const submitPayment = editPayment.bind(
     this,
     userId,
-    details.payment_request_id,
+    details.paymentRequestId,
   );
 
   return (

@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../../../dbConnection";
+import buildApiClient from "../../../../../../client/index";
 import StripeFields from "./StripeFields";
 
 export default async () => {
@@ -11,27 +11,15 @@ export default async () => {
 
   async function handleSubmit(formData: FormData) {
     "use server";
-    const providerName = formData.get("provider_name");
-    const liveSecretKey = formData.get("live_secret_key");
-    const livePublishableKey = formData.get("live_publishable_key");
 
-    await pgpool.query(
-      `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5)
-    `,
-      [
-        userId,
-        providerName,
-        "stripe",
-        "connected",
-        {
-          // TODO: keys need to be encrypted
-          liveSecretKey,
-          livePublishableKey,
-        },
-      ],
-    );
+    await buildApiClient(userId).providers.apiV1ProvidersPost({
+      name: formData.get("provider_name") as string,
+      type: "stripe",
+      data: {
+        liveSecretKey: formData.get("live_secret_key"),
+        livePublishableKey: formData.get("live_publishable_key"),
+      },
+    });
 
     redirect("./");
   }

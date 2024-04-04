@@ -1,5 +1,5 @@
 import createMiddleware from "next-intl/middleware";
-import type { NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 const locales = ["en", "ga"];
 
 export default function (request: NextRequest) {
@@ -8,6 +8,7 @@ export default function (request: NextRequest) {
   );
 
   nextResponse.headers.append("x-pathname", request.nextUrl.pathname);
+
   return nextResponse;
 }
 

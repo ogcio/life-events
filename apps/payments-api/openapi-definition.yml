@@ -1,0 +1,333 @@
+openapi: 3.0.3
+info:
+  title: OGCIO Payment API
+  description: API for OGCIO Payment Service
+  version: 0.1.0
+components:
+  schemas: {}
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/providers/:
+    post:
+      tags:
+        - Providers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - banktransfer
+                    - type: string
+                      enum:
+                        - openbanking
+                    - type: string
+                      enum:
+                        - stripe
+                data: {}
+              required:
+                - name
+                - type
+                - data
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+    get:
+      tags:
+        - Providers
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    type:
+                      type: string
+                    data: {}
+                    status:
+                      type: string
+                  required:
+                    - id
+                    - name
+                    - type
+                    - data
+                    - status
+  /api/v1/providers/{providerId}:
+    get:
+      tags:
+        - Providers
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  type:
+                    type: string
+                  data: {}
+                  status:
+                    type: string
+                required:
+                  - id
+                  - name
+                  - type
+                  - data
+                  - status
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+    put:
+      tags:
+        - Providers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                data: {}
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - connected
+                    - type: string
+                      enum:
+                        - disconnected
+              required:
+                - name
+                - data
+                - status
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                  - ok
+  /api/v1/requests/:
+    get:
+      tags:
+        - PaymentRequests
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    paymentRequestId:
+                      type: string
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    amount:
+                      type: number
+                    reference:
+                      type: string
+                    providers:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          userId:
+                            type: string
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          type:
+                            type: string
+                          status:
+                            type: string
+                          data: {}
+                          createdAt:
+                            type: string
+                        required:
+                          - userId
+                          - id
+                          - name
+                          - type
+                          - status
+                          - data
+                          - createdAt
+                  required:
+                    - paymentRequestId
+                    - title
+                    - description
+                    - amount
+                    - reference
+                    - providers
+  /api/v1/requests/{requestId}:
+    get:
+      tags:
+        - PaymentRequests
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: requestId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  paymentRequestId:
+                    type: string
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  amount:
+                    type: number
+                  reference:
+                    type: string
+                  providers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: string
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        type:
+                          type: string
+                        status:
+                          type: string
+                        data: {}
+                        createdAt:
+                          type: string
+                      required:
+                        - userId
+                        - id
+                        - name
+                        - type
+                        - status
+                        - data
+                        - createdAt
+                  redirectUrl:
+                    type: string
+                  allowAmountOverride:
+                    type: boolean
+                  allowCustomAmount:
+                    type: boolean
+                required:
+                  - paymentRequestId
+                  - title
+                  - description
+                  - amount
+                  - reference
+                  - providers
+                  - redirectUrl
+                  - allowAmountOverride
+                  - allowCustomAmount
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+tags:
+  - name: Providers
