@@ -4,27 +4,21 @@ import { formatDate } from "../../../utils/web";
 import ds from "design-system";
 import { useEffect, useState } from "react";
 import { debounce } from "lodash";
-import { TimeLineData } from "../../timeline/Timeline";
+import { GroupedEvents, TimeLineData } from "../../timeline/Timeline";
 
 const Icon = ds.Icon;
 
-const minYear = 2018;
-const maxYear = 2025;
+const darkGrey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 80);
 
 export default () => {
-  const [dates, setDates] = useState({
-    startDate: minYear.toString(),
-    endDate: maxYear.toString(),
-  });
-
   const [service, setService] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [timeLineData, setTimeLineData] = useState<TimeLineData>();
 
   const fetchTimelineData = async () => {
     const queryParams = new URLSearchParams({
-      startDate: dates.startDate,
-      endDate: dates.endDate,
+      startDate: "2018-01-01",
+      endDate: "2025-12-31",
       services: service,
       searchQuery,
     });
@@ -35,7 +29,7 @@ export default () => {
 
     const responseData = await timelineResponse.json();
 
-    setTimeLineData(responseData);
+    setTimeLineData({ ...responseData, data: responseData.data.reverse() });
   };
 
   useEffect(() => {
@@ -47,17 +41,10 @@ export default () => {
   }, [service, searchQuery]);
 
   const handleCategoryChange = (selectedService: string) => {
-    if (dates.startDate !== minYear.toString()) {
-      setDates({ startDate: minYear.toString(), endDate: maxYear.toString() });
-    }
-
     setService(selectedService);
   };
 
   const handleSearchChangeDebounced = debounce((value) => {
-    if (dates.startDate !== minYear.toString()) {
-      setDates({ startDate: minYear.toString(), endDate: maxYear.toString() });
-    }
     setSearchQuery(value);
   }, 300);
 
@@ -111,43 +98,77 @@ export default () => {
             timeLineData.data.map((yearObject) => {
               return yearObject.months.map((monthObject) => {
                 const { events } = monthObject;
-                return events.map((event) => {
-                  return (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginBottom: "20px",
-                        position: "relative",
-                      }}
-                    >
+                const groupedEvents: GroupedEvents = events.reduce(
+                  (grouped, event) => {
+                    const { service, ...rest } = event;
+                    if (!grouped[service]) {
+                      grouped[service] = [];
+                    }
+                    grouped[service].push(rest);
+                    return grouped;
+                  },
+                  {},
+                );
+
+                return Object.entries(groupedEvents).map(
+                  ([service, events]) => {
+                    return (
                       <div
                         style={{
-                          position: "absolute",
-                          left: "-15px",
-                          width: "10px",
-                          height: "10px",
-                          background: "#B1B4B6",
-                          content: "''",
-                          borderRadius: "50%",
+                          display: "flex",
+                          marginBottom: "20px",
+                          position: "relative",
                         }}
-                      ></div>
-                      <Icon
-                        icon={event.service}
-                        className="govie-button__icon-left"
-                        color={ds.colours.ogcio.darkGreen}
-                      />
-                      <div>
-                        <p className="govie-body" style={{ marginBottom: 0 }}>
-                          <strong>{formatDate(event.date)}</strong>
-                        </p>
-                        <p className="govie-body" style={{ margin: 0 }}>
-                          {event.title}
-                        </p>
+                      >
+                        <div
+                          style={{
+                            position: "absolute",
+                            left: "-15px",
+                            width: "10px",
+                            height: "10px",
+                            marginTop: "10px",
+                            background: "#B1B4B6",
+                            content: "''",
+                            borderRadius: "50%",
+                          }}
+                        ></div>
+                        <div>
+                          <Icon
+                            icon={
+                              service as
+                                | "driving"
+                                | "employment"
+                                | "health"
+                                | "housing"
+                            }
+                            className="govie-button__icon-left"
+                            color={ds.colours.ogcio.darkGreen}
+                          />
+                          {events.map((event) => (
+                            <div>
+                              <p
+                                className="govie-body"
+                                style={{
+                                  marginBottom: 0,
+                                  fontWeight:
+                                    event.weight > 1 ? "bold" : "normal",
+                                }}
+                              >
+                                {event.title}
+                              </p>
+                              <p
+                                className="govie-body"
+                                style={{ color: darkGrey }}
+                              >
+                                <strong>{formatDate(event.date)}</strong>
+                              </p>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  );
-                });
+                    );
+                  },
+                );
               });
             })}
         </div>
