@@ -181,7 +181,7 @@ export default async function ({
             name="redirect-url"
             className="govie-input"
             required
-            defaultValue={details?.redirect_url}
+            defaultValue={details?.redirectUrl}
           />
         </div>
 

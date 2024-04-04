@@ -4,12 +4,12 @@ import { PaymentRequestDO } from "../../../../types/common";
 
 export type PaymentRequestDetails = Pick<
   PaymentRequestDO,
-  | "payment_request_id"
+  | "paymentRequestId"
   | "title"
   | "description"
   | "amount"
   | "reference"
-  | "redirect_url"
+  | "redirectUrl"
   | "allowAmountOverride"
   | "allowCustomAmount"
 > & {

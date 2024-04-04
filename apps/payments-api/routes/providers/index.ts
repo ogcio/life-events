@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
+import { httpErrors } from "@fastify/sensible";
 
 const Provider = Type.Union([
   Type.Object({
@@ -141,6 +142,11 @@ export default async function providers(app: FastifyInstance) {
         `,
         [providerId, userId],
       );
+
+      if (!result.rows.length) {
+        reply.send(httpErrors.notFound("The requested provider was not found"));
+        return;
+      }
 
       reply.send(result.rows[0]);
     },

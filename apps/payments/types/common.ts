@@ -6,15 +6,15 @@ export type NextPageProps = {
 };
 
 export type PaymentRequestDO = {
-  payment_request_id: string;
-  user_id: string;
+  paymentRequestId: string;
+  userId: string;
   title: string;
   description: string;
   provider_id: string;
   reference: string;
   amount: number;
   status: string;
-  redirect_url: string;
+  redirectUrl: string;
   allowAmountOverride: boolean;
   allowCustomAmount: boolean;
 };

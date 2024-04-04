@@ -59,7 +59,7 @@ export default async function () {
           </thead>
           <tbody className="govie-table__body">
             {paymentRequests.map((req) => (
-              <tr className="govie-table__row" key={req.payment_request_id}>
+              <tr className="govie-table__row" key={req.paymentRequestId}>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                   {req.title}
                 </td>
@@ -75,7 +75,7 @@ export default async function () {
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                   <Link
                     className="govie-link"
-                    href={`/paymentSetup/requests/${req.payment_request_id}`}
+                    href={`/paymentSetup/requests/${req.paymentRequestId}`}
                   >
                     {t("table.details")}
                   </Link>

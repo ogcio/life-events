@@ -175,7 +175,7 @@ export interface ApiV1RequestsGet200ResponseInner {
    * @type {string}
    * @memberof ApiV1RequestsGet200ResponseInner
    */
-  payment_request_id: string;
+  paymentRequestId: string;
   /**
    *
    * @type {string}
@@ -218,7 +218,7 @@ export interface ApiV1RequestsGet200ResponseInnerProvidersInner {
    * @type {string}
    * @memberof ApiV1RequestsGet200ResponseInnerProvidersInner
    */
-  user_id: string;
+  userId: string;
   /**
    *
    * @type {string}
@@ -254,7 +254,7 @@ export interface ApiV1RequestsGet200ResponseInnerProvidersInner {
    * @type {string}
    * @memberof ApiV1RequestsGet200ResponseInnerProvidersInner
    */
-  created_at: string;
+  createdAt: string;
 }
 /**
  *
@@ -267,7 +267,7 @@ export interface ApiV1RequestsRequestIdGet200Response {
    * @type {string}
    * @memberof ApiV1RequestsRequestIdGet200Response
    */
-  payment_request_id: string;
+  paymentRequestId: string;
   /**
    *
    * @type {string}
@@ -303,7 +303,7 @@ export interface ApiV1RequestsRequestIdGet200Response {
    * @type {string}
    * @memberof ApiV1RequestsRequestIdGet200Response
    */
-  redirect_url: string;
+  redirectUrl: string;
   /**
    *
    * @type {boolean}

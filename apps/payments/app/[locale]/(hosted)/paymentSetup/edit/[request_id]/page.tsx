@@ -148,7 +148,7 @@ export default async function (props: { params: { request_id: string } }) {
   const submitPayment = editPayment.bind(
     this,
     userId,
-    details.payment_request_id,
+    details.paymentRequestId,
   );
 
   return (

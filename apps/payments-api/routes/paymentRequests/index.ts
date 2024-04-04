@@ -1,8 +1,9 @@
 import { FastifyInstance } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
+import { httpErrors } from "@fastify/sensible";
 
 const ProviderDetails = Type.Object({
-  user_id: Type.String(),
+  userId: Type.String(),
   id: Type.String(),
   name: Type.String(),
   type: Type.Union([
@@ -12,11 +13,11 @@ const ProviderDetails = Type.Object({
   ]),
   status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
   data: Type.Any(),
-  created_at: Type.String(),
+  createdAt: Type.String(),
 });
 
 const PaymentRequest = Type.Object({
-  payment_request_id: Type.String(),
+  paymentRequestId: Type.String(),
   title: Type.String(),
   description: Type.String(),
   amount: Type.Number(),
@@ -28,7 +29,7 @@ type PaymentRequest = Static<typeof PaymentRequest>;
 const PaymentRequestDetails = Type.Composite([
   PaymentRequest,
   Type.Object({
-    redirect_url: Type.String(),
+    redirectUrl: Type.String(),
     allowAmountOverride: Type.Boolean(),
     allowCustomAmount: Type.Boolean(),
   }),
@@ -50,20 +51,20 @@ export default async function paymentRequests(app: FastifyInstance) {
         response: {
           200: Type.Array(
             Type.Object({
-              payment_request_id: Type.String(),
+              paymentRequestId: Type.String(),
               title: Type.String(),
               description: Type.String(),
               amount: Type.Number(),
               reference: Type.String(),
               providers: Type.Array(
                 Type.Object({
-                  user_id: Type.String(),
+                  userId: Type.String(),
                   id: Type.String(),
                   name: Type.String(),
                   type: Type.String(),
                   status: Type.String(),
                   data: Type.Any(),
-                  created_at: Type.String(),
+                  createdAt: Type.String(),
                 }),
               ),
             }),
@@ -75,21 +76,25 @@ export default async function paymentRequests(app: FastifyInstance) {
       const userId = request.user?.id;
 
       const result = await app.pg.query(
-        `select pr.title, pr.payment_request_id, pr.description, pr.amount, pr.reference,
-                json_agg(json_build_object(
-                    'user_id', pp.user_id,
-                    'id', pp.provider_id,
-                    'name', pp.provider_name,
-                    'type', pp.provider_type,
-                    'status', pp.status,
-                    'data', pp.provider_data,
-                    'created_at', pp.created_at
-                )) as providers
-                from payment_requests pr
-                join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-                join payment_providers pp on ppr.provider_id = pp.provider_id
-                where pr.user_id = $1
-                group by pr.payment_request_id`,
+        `select pr.title,
+          pr.payment_request_id as "paymentRequestId",
+          pr.description,
+          pr.amount,
+          pr.reference,
+          json_agg(json_build_object(
+              'userId', pp.user_id,
+              'id', pp.provider_id,
+              'name', pp.provider_name,
+              'type', pp.provider_type,
+              'status', pp.status,
+              'data', pp.provider_data,
+              'createdAt', pp.created_at
+          )) as providers
+        from payment_requests pr
+        join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
+        join payment_providers pp on ppr.provider_id = pp.provider_id
+        where pr.user_id = $1
+        group by pr.payment_request_id`,
         [userId],
       );
 
@@ -105,26 +110,27 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: ["PaymentRequests"],
         response: {
           200: Type.Object({
-            payment_request_id: Type.String(),
+            paymentRequestId: Type.String(),
             title: Type.String(),
             description: Type.String(),
             amount: Type.Number(),
             reference: Type.String(),
             providers: Type.Array(
               Type.Object({
-                user_id: Type.String(),
+                userId: Type.String(),
                 id: Type.String(),
                 name: Type.String(),
                 type: Type.String(),
                 status: Type.String(),
                 data: Type.Any(),
-                created_at: Type.String(),
+                createdAt: Type.String(),
               }),
             ),
-            redirect_url: Type.String(),
+            redirectUrl: Type.String(),
             allowAmountOverride: Type.Boolean(),
             allowCustomAmount: Type.Boolean(),
           }),
+          404: Type.Any(),
         },
       },
     },
@@ -134,20 +140,20 @@ export default async function paymentRequests(app: FastifyInstance) {
 
       const result = await app.pg.query(
         `SELECT pr.title,
-            pr.payment_request_id,
+            pr.payment_request_id as "paymentRequestId",
             pr.description,
             pr.amount,
             json_agg(json_build_object(
-              'user_id', pp.user_id,
+              'userId', pp.user_id,
               'id', pp.provider_id,
               'name', pp.provider_name,
               'type', pp.provider_type,
               'status', pp.status,
               'data', pp.provider_data,
-              'created_at', pp.created_at
+              'createdAt', pp.created_at
             )) as providers,
             pr.reference,
-            pr.redirect_url,
+            pr.redirect_url as "redirectUrl",
             pr.allow_amount_override AS "allowAmountOverride",
             pr.allow_custom_amount AS "allowCustomAmount"
         FROM payment_requests pr
@@ -158,6 +164,13 @@ export default async function paymentRequests(app: FastifyInstance) {
         GROUP BY pr.payment_request_id`,
         [requestId, userId],
       );
+
+      if (!result.rows.length) {
+        reply.send(
+          httpErrors.notFound("The requested payment request was not found"),
+        );
+        return;
+      }
 
       reply.send(result.rows[0]);
     },

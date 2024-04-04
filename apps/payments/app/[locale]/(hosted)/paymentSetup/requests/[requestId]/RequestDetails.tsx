@@ -48,7 +48,7 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
     return <h1 className="govie-heading-l">Payment request not found</h1>;
   }
 
-  const deletePR = deletePaymentRequest.bind(this, details.payment_request_id);
+  const deletePR = deletePaymentRequest.bind(this, details.paymentRequestId);
   // Cannot delete the payment request if we already have transactions
   const disableDeleteButton = await hasTransactions(requestId);
 
@@ -126,7 +126,7 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.redirectUrl")}</dt>
-          <dt className="govie-summary-list__value">{details.redirect_url}</dt>
+          <dt className="govie-summary-list__value">{details.redirectUrl}</dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">

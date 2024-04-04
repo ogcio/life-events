@@ -12,6 +12,8 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
+import HttpErrors from "@fastify/sensible/lib/httpError";
+import { httpErrors } from "@fastify/sensible";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -67,6 +69,9 @@ export async function build(opts?: FastifyServerOptions) {
 
   app.setErrorHandler((error, request, reply) => {
     app.log.error(error);
+    if (error instanceof Error && error.name !== "error") {
+      throw error;
+    }
     reply.code(500).type("application/json").send({ error });
   });
 

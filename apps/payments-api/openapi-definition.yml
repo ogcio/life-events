@@ -170,7 +170,7 @@ paths:
                 items:
                   type: object
                   properties:
-                    payment_request_id:
+                    paymentRequestId:
                       type: string
                     title:
                       type: string
@@ -185,7 +185,7 @@ paths:
                       items:
                         type: object
                         properties:
-                          user_id:
+                          userId:
                             type: string
                           id:
                             type: string
@@ -196,18 +196,18 @@ paths:
                           status:
                             type: string
                           data: {}
-                          created_at:
+                          createdAt:
                             type: string
                         required:
-                          - user_id
+                          - userId
                           - id
                           - name
                           - type
                           - status
                           - data
-                          - created_at
+                          - createdAt
                   required:
-                    - payment_request_id
+                    - paymentRequestId
                     - title
                     - description
                     - amount
@@ -231,7 +231,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  payment_request_id:
+                  paymentRequestId:
                     type: string
                   title:
                     type: string
@@ -246,7 +246,7 @@ paths:
                     items:
                       type: object
                       properties:
-                        user_id:
+                        userId:
                           type: string
                         id:
                           type: string
@@ -257,31 +257,38 @@ paths:
                         status:
                           type: string
                         data: {}
-                        created_at:
+                        createdAt:
                           type: string
                       required:
-                        - user_id
+                        - userId
                         - id
                         - name
                         - type
                         - status
                         - data
-                        - created_at
-                  redirect_url:
+                        - createdAt
+                  redirectUrl:
                     type: string
                   allowAmountOverride:
                     type: boolean
                   allowCustomAmount:
                     type: boolean
                 required:
-                  - payment_request_id
+                  - paymentRequestId
                   - title
                   - description
                   - amount
                   - reference
                   - providers
-                  - redirect_url
+                  - redirectUrl
                   - allowAmountOverride
                   - allowCustomAmount
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
 tags:
   - name: Providers
