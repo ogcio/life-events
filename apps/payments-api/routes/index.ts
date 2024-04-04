@@ -1,4 +1,3 @@
-import healthCheck from "./healthcheck";
 import providers from "./providers";
 import { FastifyInstance } from "fastify";
 
