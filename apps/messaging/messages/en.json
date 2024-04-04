@@ -116,10 +116,14 @@
   },
   "settings": {
     "Emails": {
+      "title": "Email",
       "nameTableHeader": "Name",
       "hostTableHeader": "Host",
       "actionTableHeader": "Action",
       "editLink": "Edit",
+      "backLink": "Back",
+      "addProviderLink": "Add provider",
+      "providersSubtitle": "Providers",
       "deleteButton": "Delete"
     },
     "EmailProvider": {

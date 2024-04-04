@@ -1,6 +1,7 @@
 import { mailApi } from "messages";
 import { pgpool } from "messages/dbConnection";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
@@ -85,20 +86,26 @@ const EmailProviderTable = ({
 };
 
 export default async (props: any) => {
+  const t = await getTranslations("settings.Emails");
   const emailProviders = await mailApi.providers();
   return (
     <div>
-      <h1>Email settings</h1>
+      <h1>
+        <span className="govie-heading-l">{t("title")}</span>
+      </h1>
       <h3>
-        <span className="govie-heading-m">Providers</span>
+        <span className="govie-heading-m">{t("providersSubtitle")}</span>
       </h3>
 
       <Link className="govie-link" href="emails/provider">
-        Add provider
+        {t("addProviderLink")}
       </Link>
 
       <hr />
       <EmailProviderTable providers={emailProviders} />
+      <Link href="./" className="govie-back-link">
+        {t("backLink")}
+      </Link>
     </div>
   );
 };
