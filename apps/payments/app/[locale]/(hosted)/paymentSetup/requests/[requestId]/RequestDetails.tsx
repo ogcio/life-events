@@ -1,12 +1,13 @@
 import React from "react";
 import { getTranslations } from "next-intl/server";
-import { getPaymentRequestDetails } from "../../db";
 import { formatCurrency } from "../../../../../utils";
 import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Tooltip from "../../../../../components/Tooltip";
 import CopyLink from "./CopyBtn";
+import buildApiClient from "../../../../../../client/index";
+import { PgSessions } from "auth/sessions";
 
 async function deletePaymentRequest(requestId: string) {
   "use server";
@@ -33,7 +34,12 @@ async function hasTransactions(requestId: string) {
 }
 
 export const RequestDetails = async ({ requestId }: { requestId: string }) => {
-  const details = await getPaymentRequestDetails(requestId);
+  const { userId } = await PgSessions.get();
+  const details = (
+    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+      requestId,
+    )
+  ).data;
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tSetup = await getTranslations("PaymentSetup");
   const tCommon = await getTranslations("Common");
@@ -42,7 +48,7 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
     return <h1 className="govie-heading-l">Payment request not found</h1>;
   }
 
-  const deletePR = deletePaymentRequest.bind(this, details.payment_request_id);
+  const deletePR = deletePaymentRequest.bind(this, details.paymentRequestId);
   // Cannot delete the payment request if we already have transactions
   const disableDeleteButton = await hasTransactions(requestId);
 
@@ -103,16 +109,14 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
           <dt className="govie-summary-list__value">{details.description}</dt>
         </div>
 
-        {details.providers.map(
-          ({ provider_name, provider_type, provider_id }) => (
-            <div className="govie-summary-list__row" key={provider_id}>
-              <dt className="govie-summary-list__key">
-                {t(`form.paymentProvider.${provider_type}`)}
-              </dt>
-              <dt className="govie-summary-list__value">{provider_name}</dt>
-            </div>
-          ),
-        )}
+        {details.providers.map(({ name, type, id }) => (
+          <div className="govie-summary-list__row" key={id}>
+            <dt className="govie-summary-list__key">
+              {t(`form.paymentProvider.${type}`)}
+            </dt>
+            <dt className="govie-summary-list__value">{name}</dt>
+          </div>
+        ))}
 
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.amount")}</dt>
@@ -122,7 +126,7 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.redirectUrl")}</dt>
-          <dt className="govie-summary-list__value">{details.redirect_url}</dt>
+          <dt className="govie-summary-list__value">{details.redirectUrl}</dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">

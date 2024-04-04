@@ -67,6 +67,9 @@ export async function build(opts?: FastifyServerOptions) {
 
   app.setErrorHandler((error, request, reply) => {
     app.log.error(error);
+    if (error instanceof Error && error.name !== "error") {
+      throw error;
+    }
     reply.code(500).type("application/json").send({ error });
   });
 

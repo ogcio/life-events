@@ -113,6 +113,29 @@ paths:
                   - type
                   - data
                   - status
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
     put:
       tags:
         - Providers
@@ -156,5 +179,155 @@ paths:
                     type: boolean
                 required:
                   - ok
+  /api/v1/requests/:
+    get:
+      tags:
+        - PaymentRequests
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    paymentRequestId:
+                      type: string
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    amount:
+                      type: number
+                    reference:
+                      type: string
+                    providers:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          userId:
+                            type: string
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          type:
+                            type: string
+                          status:
+                            type: string
+                          data: {}
+                          createdAt:
+                            type: string
+                        required:
+                          - userId
+                          - id
+                          - name
+                          - type
+                          - status
+                          - data
+                          - createdAt
+                  required:
+                    - paymentRequestId
+                    - title
+                    - description
+                    - amount
+                    - reference
+                    - providers
+  /api/v1/requests/{requestId}:
+    get:
+      tags:
+        - PaymentRequests
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: requestId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  paymentRequestId:
+                    type: string
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  amount:
+                    type: number
+                  reference:
+                    type: string
+                  providers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: string
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        type:
+                          type: string
+                        status:
+                          type: string
+                        data: {}
+                        createdAt:
+                          type: string
+                      required:
+                        - userId
+                        - id
+                        - name
+                        - type
+                        - status
+                        - data
+                        - createdAt
+                  redirectUrl:
+                    type: string
+                  allowAmountOverride:
+                    type: boolean
+                  allowCustomAmount:
+                    type: boolean
+                required:
+                  - paymentRequestId
+                  - title
+                  - description
+                  - amount
+                  - reference
+                  - providers
+                  - redirectUrl
+                  - allowAmountOverride
+                  - allowCustomAmount
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
 tags:
   - name: Providers
