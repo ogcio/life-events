@@ -1,9 +1,8 @@
-import { useTranslations } from "next-intl";
 import { messages, routes } from "../../utils";
 import SideMenu from "../SideMenu";
 import { PgSessions } from "auth/sessions";
 
-export default async ({ children }: React.PropsWithChildren) => {
+export default async ({ children }: { children: React.ReactNode }) => {
   const { publicServant } = await PgSessions.get();
   return (
     <div style={{ display: "flex", gap: "30px" }}>

@@ -4,8 +4,5 @@ import { redirect, RedirectType } from "next/navigation";
 export default async () => {
   const { publicServant } = await PgSessions.get();
 
-  redirect(
-    publicServant ? "/send-a-message" : "/messages",
-    RedirectType.replace,
-  );
+  redirect(publicServant ? "/admin" : "/messages", RedirectType.replace);
 };

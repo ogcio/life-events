@@ -11,9 +11,18 @@ type Props = {
   selected: string;
 };
 
+function background(option: Props["options"][0], selected: string) {
+  if (option.type === "button") {
+    return "";
+  }
+  if (option.key === selected) {
+    return ds.hexToRgba(ds.colours.ogcio.gold, 15);
+  }
+  return "";
+}
+
 export default (props: Props) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
-
   return (
     <ol className="govie-list govie-list--spaced" style={{ width: "250px" }}>
       {props.options.map((option) => (
@@ -33,12 +42,7 @@ export default (props: Props) => {
               justifyContent:
                 option.type === "button" ? "center" : "flex-start",
               alignItems: "center",
-              background:
-                props.selected === option.key
-                  ? option.type === "button"
-                    ? ""
-                    : tintGold
-                  : "",
+              background: background(option, props.selected),
             }}
           >
             {option.icon ? (

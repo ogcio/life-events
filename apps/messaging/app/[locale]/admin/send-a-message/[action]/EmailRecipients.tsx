@@ -1,5 +1,5 @@
 import { api } from "messages";
-import { MessageCreateProps } from "../../../utils/messaging";
+import { MessageCreateProps } from "../../../../utils/messaging";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";

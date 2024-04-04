@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { api } from "messages";
 import { revalidatePath } from "next/cache";
-import { MessageCreateProps } from "../../../utils/messaging";
+import { MessageCreateProps } from "../../../../utils/messaging";
 import { useTranslations } from "next-intl";
 
 export default (props: MessageCreateProps) => {

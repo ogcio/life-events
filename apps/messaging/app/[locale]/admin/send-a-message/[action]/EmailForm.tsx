@@ -1,5 +1,8 @@
 import dayjs from "dayjs";
-import { ApiMessageState, MessageCreateProps } from "../../../utils/messaging";
+import {
+  ApiMessageState,
+  MessageCreateProps,
+} from "../../../../utils/messaging";
 import { api, temporaryMockUtils } from "messages";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
@@ -8,6 +11,23 @@ import { getTranslations } from "next-intl/server";
 export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.EmailForm");
   const tError = await getTranslations("formErrors");
+
+  type request = {
+    requestId: string;
+    userId: string;
+    title: string;
+    redirectUrl: string;
+  };
+
+  const paymentRequests: request[] = [];
+  try {
+    const requestURL = new URL("api/requests", process.env.PAYMENTS_URL);
+    const paymentRequestRespone = await fetch(requestURL.href);
+    const parsed = (await paymentRequestRespone.json()) as request[];
+    paymentRequests.push(...parsed);
+  } catch (err) {
+    console.log(err);
+  }
 
   const errors = props.stateId
     ? await temporaryMockUtils.getErrors(props.userId, props.stateId)
@@ -20,6 +40,8 @@ export default async (props: MessageCreateProps) => {
     if (!props.stateId) {
       return;
     }
+
+    const paymentRequestId = formData.get("paymentRequestId")?.toString() || "";
 
     const subject = formData.get("subject")?.toString();
     const content = formData.get("message")?.toString();
@@ -59,6 +81,7 @@ export default async (props: MessageCreateProps) => {
       content,
       subject,
       submittedEmailAt: dayjs().toISOString(),
+      paymentRequestId,
     });
 
     await api.upsertMessageState(next, props.userId, props.stateId);
@@ -151,6 +174,20 @@ export default async (props: MessageCreateProps) => {
             defaultValue={props.state.links.at(0)?.url ?? ""}
           />
         </div>
+
+        {Boolean(paymentRequests.length) ? (
+          <div className="govie-form-group">
+            <h3>
+              <span className="govie-heading-s">{t("addPaymentTitle")}</span>
+            </h3>
+            <select className="govie-select" name="paymentRequestId">
+              <option value="">{t("emptyPaymentOption")}</option>
+              {paymentRequests.map((req) => (
+                <option value={req.requestId}>{req.title}</option>
+              ))}
+            </select>
+          </div>
+        ) : null}
 
         <button type="submit" className="govie-button">
           {t("submitText")}

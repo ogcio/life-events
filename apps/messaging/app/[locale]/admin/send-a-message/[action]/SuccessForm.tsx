@@ -1,5 +1,5 @@
 import { RedirectType, redirect } from "next/navigation";
-import { MessageCreateProps } from "../../../utils/messaging";
+import { MessageCreateProps } from "../../../../utils/messaging";
 import { api } from "messages";
 import { useTranslations } from "next-intl";
 
