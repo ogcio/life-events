@@ -76,7 +76,14 @@ fastify.register(autoload, {
 });
 
 await fastify.register(cors, {
-  origin: fastify.config.ORIGIN_URL,
+  origin: (origin, callback) => {
+    const hostname = new URL(origin).hostname;
+    if (origin === fastify.config.ORIGIN_URL || hostname === "localhost") {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS Error: Origin not allowed"), false);
+    }
+  },
 });
 
 try {
