@@ -82,7 +82,6 @@ export const api = {
       i += 1;
     }
 
-    console.log("Tuck\n", { args, vals });
 
     const eventQuery = pgpool.query(
       `
