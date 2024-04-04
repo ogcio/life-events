@@ -73,7 +73,7 @@ export default async function ({
           // TODO: remove this line once worldpay is integrated
           if (providerType === "worldpay") return null;
           const provider = details?.providers.find(
-            (p) => p.provider_type === providerType,
+            (p) => p.type === providerType,
           );
           return (
             <div className="govie-form-group" key={index}>
@@ -88,7 +88,7 @@ export default async function ({
                 id={`${providerType}-account`}
                 name={`${providerType}-account`}
                 className="govie-select"
-                defaultValue={provider?.provider_id}
+                defaultValue={provider?.id}
                 style={{ width: "350px" }}
               >
                 <option value={""}>Disabled</option>

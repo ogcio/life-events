@@ -14,63 +14,11 @@ export type PaymentRequestDetails = Pick<
   | "allowCustomAmount"
 > & {
   providers: {
-    provider_name: string;
-    provider_type: string;
-    provider_id: string;
+    name: string;
+    type: string;
+    id: string;
   }[];
 };
-
-export async function getPaymentRequestDetails(
-  requestId: string,
-): Promise<PaymentRequestDetails | undefined> {
-  "use server";
-  const res = await pgpool.query<PaymentRequestDetails>(
-    `SELECT pr.title,
-        pr.payment_request_id,
-        pr.description,
-        pr.amount,
-        json_agg(pp) as providers,
-        pr.reference,
-        pr.redirect_url,
-        pr.allow_amount_override AS "allowAmountOverride",
-        pr.allow_custom_amount AS "allowCustomAmount"
-    FROM payment_requests pr
-    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
-    JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
-    WHERE pr.payment_request_id = $1
-    GROUP BY pr.payment_request_id
-`,
-    [requestId],
-  );
-
-  if (!res.rowCount) {
-    return undefined;
-  }
-
-  return res.rows[0];
-}
-
-export async function getUserPaymentRequestDetails(
-  userId: string,
-): Promise<PaymentRequestDetails[]> {
-  "use server";
-
-  const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.payment_request_id, pr.description, pr.amount, pr.reference, json_agg(pp) as providers
-      from payment_requests pr
-      join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-      join payment_providers pp on ppr.provider_id = pp.provider_id
-      where pr.user_id = $1
-      group by pr.payment_request_id`,
-    [userId],
-  );
-
-  if (!res.rowCount) {
-    return [];
-  }
-
-  return res.rows;
-}
 
 type TransactionDetails = {
   status: string;

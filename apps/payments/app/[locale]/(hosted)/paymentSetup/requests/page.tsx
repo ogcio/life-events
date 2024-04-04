@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
 import { formatCurrency } from "../../../../utils";
-import { getUserPaymentRequestDetails } from "../db";
+import buildApiClient from "../../../../../client/index";
 
 export default async function () {
   const [t, { userId }] = await Promise.all([
@@ -10,7 +10,9 @@ export default async function () {
     PgSessions.get(),
   ]);
 
-  const paymentRequests = await getUserPaymentRequestDetails(userId);
+  const paymentRequests = (
+    await buildApiClient(userId).paymentRequests.apiV1RequestsGet()
+  ).data;
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
@@ -62,9 +64,7 @@ export default async function () {
                   {req.title}
                 </td>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {req.providers
-                    .map(({ provider_name }) => provider_name)
-                    .join(", ")}
+                  {req.providers.map(({ name }) => name).join(", ")}
                 </td>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                   {req.reference}

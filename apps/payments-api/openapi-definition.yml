@@ -156,5 +156,132 @@ paths:
                     type: boolean
                 required:
                   - ok
+  /api/v1/requests/:
+    get:
+      tags:
+        - PaymentRequests
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    payment_request_id:
+                      type: string
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    amount:
+                      type: number
+                    reference:
+                      type: string
+                    providers:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          user_id:
+                            type: string
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          type:
+                            type: string
+                          status:
+                            type: string
+                          data: {}
+                          created_at:
+                            type: string
+                        required:
+                          - user_id
+                          - id
+                          - name
+                          - type
+                          - status
+                          - data
+                          - created_at
+                  required:
+                    - payment_request_id
+                    - title
+                    - description
+                    - amount
+                    - reference
+                    - providers
+  /api/v1/requests/{requestId}:
+    get:
+      tags:
+        - PaymentRequests
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: requestId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payment_request_id:
+                    type: string
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  amount:
+                    type: number
+                  reference:
+                    type: string
+                  providers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user_id:
+                          type: string
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        type:
+                          type: string
+                        status:
+                          type: string
+                        data: {}
+                        created_at:
+                          type: string
+                      required:
+                        - user_id
+                        - id
+                        - name
+                        - type
+                        - status
+                        - data
+                        - created_at
+                  redirect_url:
+                    type: string
+                  allowAmountOverride:
+                    type: boolean
+                  allowCustomAmount:
+                    type: boolean
+                required:
+                  - payment_request_id
+                  - title
+                  - description
+                  - amount
+                  - reference
+                  - providers
+                  - redirect_url
+                  - allowAmountOverride
+                  - allowCustomAmount
 tags:
   - name: Providers
