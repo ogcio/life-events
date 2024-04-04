@@ -107,7 +107,7 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Reply: ProviderType; Params: ParamsWithProviderId }>(
+  app.get<{ Reply: ProviderType | Error; Params: ParamsWithProviderId }>(
     "/:providerId",
     {
       preValidation: app.verifyUser,
@@ -120,6 +120,13 @@ export default async function providers(app: FastifyInstance) {
             type: Type.String(),
             data: Type.Any(),
             status: Type.String(),
+          }),
+          404: Type.Object({
+            statusCode: Type.Number(),
+            code: Type.String(),
+            error: Type.String(),
+            message: Type.String(),
+            time: Type.String(),
           }),
         },
       },

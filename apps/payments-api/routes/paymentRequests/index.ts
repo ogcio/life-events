@@ -102,7 +102,10 @@ export default async function paymentRequests(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Reply: PaymentRequestDetails; Params: ParamsWithPaymentRequestId }>(
+  app.get<{
+    Reply: PaymentRequestDetails | Error;
+    Params: ParamsWithPaymentRequestId;
+  }>(
     "/:requestId",
     {
       preValidation: app.verifyUser,
@@ -130,7 +133,13 @@ export default async function paymentRequests(app: FastifyInstance) {
             allowAmountOverride: Type.Boolean(),
             allowCustomAmount: Type.Boolean(),
           }),
-          404: Type.Any(),
+          404: Type.Object({
+            statusCode: Type.Number(),
+            code: Type.String(),
+            error: Type.String(),
+            message: Type.String(),
+            time: Type.String(),
+          }),
         },
       },
     },
