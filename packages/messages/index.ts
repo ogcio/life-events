@@ -9,6 +9,7 @@ export * from "./templates";
 export * from "./notifications";
 export * from "./types";
 
+export const etherealEmailProviderName = "Ethereal email provider";
 type MessageState = {
   submittedMetaAt: string; // First step of meta selection such as type, transportation eg.
   submittedEmailAt: string;
@@ -41,13 +42,16 @@ export const mailApi = {
     username: string,
     password: string,
   ) {
-    pgpool.query(
-      `
+    return pgpool
+      .query<{ id: string }>(
+        `
       INSERT INTO email_providers(provider_name, smtp_host, username, pw)
       VALUES($1,$2,$3,$4)
+      RETURNING id
     `,
-      [name, host, username, password],
-    );
+        [name, host, username, password],
+      )
+      .then((res) => res.rows.at(0)?.id);
   },
   async updateProvider(data: EmailProvider) {
     pgpool.query(
@@ -211,14 +215,14 @@ export const api = {
     promises.push(eventQuery);
 
     if (transports.includes("email")) {
-      promises.push(
-        mailApi.sendMails(
-          "1043ff86-3a0a-4091-9d99-e9e4dc855eb2",
-          recipients,
-          data.subject,
-          data.content,
-        ),
-      );
+      const id = await temporaryMockUtils.getEtherealMailProvider();
+      if (!id) {
+        console.log("No mock provider id. No mails been sent");
+      } else {
+        promises.push(
+          mailApi.sendMails(id, recipients, data.subject, data.content),
+        );
+      }
     }
 
     await Promise.all(promises);
@@ -228,8 +232,10 @@ export const api = {
     interpolations: Record<string, string>,
     recipients: string[],
     type: MessageType,
+    transports: "email"[],
   ) {
     const pgclient = await pgpool.connect();
+    let messageId: string | undefined;
     try {
       await pgclient.query("BEGIN");
 
@@ -257,7 +263,7 @@ export const api = {
 
       // Lets omit emailing eg. for now
 
-      // We need to compose a new message based on a template. We need create interpoilation link to the message (not the template!! :D)
+      // We need to compose a new message based on a template. We need create interpoilation link to the message (not the template!)
       // Let's also just auto select english for now (or first template translation really..). This will need to be looked for user profile or default something
       const chosenTemplateTranslations = template.data.at(0);
       if (!chosenTemplateTranslations) {
@@ -281,8 +287,9 @@ export const api = {
         i += 2;
       }
 
-      await pgpool.query(
-        `
+      messageId = await pgpool
+        .query<{ messageId: string }>(
+          `
       WITH msg_insert AS(
         INSERT INTO messages(for_email, subject, content, message_type)
         VALUES($1,$2,$3,$4)
@@ -290,15 +297,34 @@ export const api = {
       )
       INSERT INTO message_interpolation_accessors(message_id, key_accessor, value_accessor)
       values ${intrplvalues.join(", ")}
+      RETURNING (SELECT message_id FROM msg_insert) as "messageId"
     `,
-        args,
-      );
+          args,
+        )
+        .then((res) => res.rows.at(0)?.messageId);
 
       await pgclient.query("COMMIT");
     } catch (err) {
       await pgclient.query("ROLLBACK");
+      throw new Error(err);
     } finally {
       pgclient.release();
+    }
+
+    // Email
+    if (transports.includes("email")) {
+      const tmpId = await temporaryMockUtils.getEtherealMailProvider();
+      if (tmpId && messageId) {
+        const message = await api.getMessage(messageId);
+
+        message &&
+          mailApi.sendMails(
+            tmpId,
+            recipients,
+            message.subject,
+            message.content,
+          );
+      }
     }
   },
   async getMessages(
@@ -635,7 +661,6 @@ export const temporaryMockUtils = {
     }
     return templateId;
   },
-
   async getErrors(userId: string, stateId: string) {
     return pgpool
       .query<{ field: string; messageKey: string; errorValue: string }>(
@@ -672,5 +697,41 @@ export const temporaryMockUtils = {
           .flat(),
       ],
     );
+  },
+  async getEtherealMailProvider() {
+    let id = await pgpool
+      .query<{ id: string }>(
+        `
+      select 
+        id 
+      from email_providers 
+      where provider_name = $1
+    `,
+        [etherealEmailProviderName],
+      )
+      .then((res) => res.rows.at(0)?.id);
+
+    if (!id) {
+      id = await new Promise((res, rej) => {
+        nodemailer.createTestAccount(
+          async function handleCreated(err, account) {
+            if (err) {
+              console.log(err);
+              rej(err);
+            }
+
+            id = await mailApi.createProvider(
+              etherealEmailProviderName,
+              account.smtp.host,
+              account.user,
+              account.pass,
+            );
+            res(id);
+          },
+        );
+      });
+    }
+
+    return id;
   },
 };
