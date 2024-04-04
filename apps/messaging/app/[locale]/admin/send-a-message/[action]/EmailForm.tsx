@@ -21,9 +21,8 @@ export default async (props: MessageCreateProps) => {
 
   const paymentRequests: request[] = [];
   try {
-    const paymentRequestRespone = await fetch(
-      "http://localhost:3001/api/requests",
-    );
+    const requestURL = new URL("api/requests", process.env.PAYMENTS_URL);
+    const paymentRequestRespone = await fetch(requestURL.href);
     const parsed = (await paymentRequestRespone.json()) as request[];
     paymentRequests.push(...parsed);
   } catch (err) {
@@ -178,9 +177,11 @@ export default async (props: MessageCreateProps) => {
 
         {Boolean(paymentRequests.length) ? (
           <div className="govie-form-group">
-            <h3>Add a payment! :D</h3>
-            <select name="paymentRequestId">
-              <option value="">None</option>
+            <h3>
+              <span className="govie-heading-s">{t("addPaymentTitle")}</span>
+            </h3>
+            <select className="govie-select" name="paymentRequestId">
+              <option value="">{t("emptyPaymentOption")}</option>
               {paymentRequests.map((req) => (
                 <option value={req.requestId}>{req.title}</option>
               ))}
