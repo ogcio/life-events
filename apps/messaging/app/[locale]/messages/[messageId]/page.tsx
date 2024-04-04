@@ -29,7 +29,7 @@ export default async (props: { params: { messageId: string } }) => {
       process.env.PAYMENTS_URL,
     );
     transactionUrl.searchParams.append(
-      "transactionId",
+      "paymentRequestId",
       message.paymentRequestId,
     );
     transactionUrl.searchParams.append("userId", userId);
@@ -43,14 +43,13 @@ export default async (props: { params: { messageId: string } }) => {
       <h1 className="govie-heading-l">{message.subject}</h1>
       <p className="govie-body">{message.content}</p>
       {Boolean(message.paymentRequestId) ? (
-        didPayThePayment || true ? (
+        didPayThePayment ? (
           <p className="govie-inset-text">This payment has been successful.</p>
         ) : (
           <iframe
             style={{ border: "none" }}
             height={600}
             width="100%"
-            // src={`http://localhost:3001/en/paymentRequest/pay?id=${userId}&paymentId=${message.paymentRequestId}`}
             src={paymentUrl?.href}
           />
         )
