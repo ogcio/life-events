@@ -1,15 +1,17 @@
 import { FastifyInstance } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
 
+const ProviderTypes = Type.Union([
+  Type.Literal("banktransfer"),
+  Type.Literal("openbanking"),
+  Type.Literal("stripe"),
+]);
+
 const Provider = Type.Union([
   Type.Object({
     id: Type.String(),
     name: Type.String(),
-    type: Type.Union([
-      Type.Literal("banktransfer"),
-      Type.Literal("openbanking"),
-      Type.Literal("stripe"),
-    ]),
+    type: ProviderTypes,
     data: Type.Any(),
     status: Type.Union([
       Type.Literal("connected"),
@@ -76,7 +78,7 @@ export default async function providers(app: FastifyInstance) {
               Type.Object({
                 id: Type.String(),
                 name: Type.String(),
-                type: Type.String(),
+                type: ProviderTypes,
                 data: Type.Any(),
                 status: Type.String(),
               }),

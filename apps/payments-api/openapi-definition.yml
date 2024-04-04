@@ -70,7 +70,16 @@ paths:
                     name:
                       type: string
                     type:
-                      type: string
+                      anyOf:
+                        - type: string
+                          enum:
+                            - banktransfer
+                        - type: string
+                          enum:
+                            - openbanking
+                        - type: string
+                          enum:
+                            - stripe
                     data: {}
                     status:
                       type: string
