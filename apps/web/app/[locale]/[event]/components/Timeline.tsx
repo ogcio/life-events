@@ -158,12 +158,22 @@ export default () => {
                               </p>
                               <p
                                 className="govie-body"
-                                style={{ color: darkGrey }}
+                                style={{
+                                  color: darkGrey,
+                                }}
                               >
                                 <strong>{formatDate(event.date)}</strong>
                               </p>
                             </div>
                           ))}
+                          <Link
+                            href={{
+                              pathname: "/timeline/details",
+                            }}
+                            className="govie-link govie-body-s"
+                          >
+                            <span>View details</span>
+                          </Link>
                         </div>
                       </div>
                     );

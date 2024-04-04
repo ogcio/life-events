@@ -10,6 +10,8 @@ export default async (props: web.NextPageProps) => {
 
   const userName = [firstName, lastName].join(" ");
   const searchParams = props.searchParams;
+  const locale = props.params.locale;
+
   return (
     <div
       style={{
@@ -28,7 +30,11 @@ export default async (props: web.NextPageProps) => {
         }}
       >
         <Link
-          href={`/timeline?${searchParams?.view || "grid"}=true`}
+          href={
+            searchParams?.view
+              ? `/timeline?${searchParams?.view || "grid"}=true`
+              : `/${locale}/events`
+          }
           className="govie-back-link"
           style={{ marginTop: "0" }}
         >
