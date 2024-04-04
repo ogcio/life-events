@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       },
       [email],
       "message",
-      ["email"],
+      [],
     );
   }
 
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       { event: "Drivers licence renewal", date: new Date().toDateString() },
       [email],
       "message",
-      ["email"],
+      [],
     );
   }
 
