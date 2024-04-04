@@ -76,7 +76,7 @@ export default async function ({
             (p) => p.provider_type === providerType,
           );
           return (
-            <div className="govie-form-group">
+            <div className="govie-form-group" key={index}>
               <label
                 htmlFor={`${providerType}-account`}
                 className="govie-label--s"
