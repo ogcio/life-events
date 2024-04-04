@@ -3,6 +3,7 @@ import { seedProviders } from "./providers";
 import { createUser } from "./users";
 import { buildPgPool as buildAuthPool } from "auth/sessions";
 import dotenv from "dotenv";
+import { seedPaymentRequest } from "./request";
 dotenv.config();
 
 const pgpool = new Pool({
@@ -15,7 +16,26 @@ const pgpool = new Pool({
 
 const seed = async () => {
   const { rows: users } = await createUser(buildAuthPool());
-  await seedProviders(pgpool, users[0].id);
+  const userId = users[0].id;
+  const [manualBankTransfer, openBanking, stripe] = await seedProviders(
+    pgpool,
+    userId,
+  );
+
+  await seedPaymentRequest(pgpool, {
+    openBankingProviderId: openBanking.rows[0].provider_id,
+    manualBankTransferProviderId: manualBankTransfer.rows[0].provider_id,
+    stripeProviderId: stripe.rows[0].provider_id,
+    userId,
+    title: "Test Payment Request",
+    description: "Description",
+    reference: "1234",
+    amount: 1000,
+    redirectUrl: "https://www.google.com",
+    allowAmountOverride: false,
+    status: "initiated",
+    allowCustomAmount: false,
+  });
 };
 
 seed();

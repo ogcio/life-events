@@ -28,6 +28,11 @@ type ProvidersListType = Static<typeof ProvidersList>;
 const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
 type UpdateProviderType = Static<typeof UpdateProvider>;
 
+const ParamsWithProviderId = Type.Object({
+  providerId: Type.String(),
+});
+type ParamsWithProviderId = Static<typeof ParamsWithProviderId>;
+
 export default async function providers(app: FastifyInstance) {
   app.post<{ Body: CreateProviderType; Reply: { id: string } }>(
     "/",
@@ -101,7 +106,7 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Reply: ProviderType }>(
+  app.get<{ Reply: ProviderType; Params: ParamsWithProviderId }>(
     "/:providerId",
     {
       preValidation: app.verifyUser,
@@ -141,7 +146,7 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.put<{ Body: UpdateProviderType }>(
+  app.put<{ Body: UpdateProviderType; Params: ParamsWithProviderId }>(
     "/:providerId",
     {
       preValidation: app.verifyUser,
