@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { debounce } from "lodash";
 import Menu from "./Menu";
 import Link from "next/link";
 import TimeLineGrid from "./TimeLineGrid";
@@ -68,7 +67,9 @@ export default ({
   }, []);
 
   useEffect(() => {
-    fetchTimelineData();
+    if (services.length || !searchQuery.length) {
+      fetchTimelineData();
+    }
   }, [services.length, searchQuery]);
 
   const handleServiceChange = (selectedService: string) => {
@@ -81,13 +82,18 @@ export default ({
     });
   };
 
-  const handleSearchChangeDebounced = debounce((value) => {
-    setSearchQuery(value);
-  }, 300);
-
   const handleSearchChange = (value) => {
-    handleSearchChangeDebounced(value);
+    if (value.length) {
+      setSearchQuery(value);
+    } else {
+      setSearchQuery("");
+    }
   };
+
+  const searchEvent = () => {
+    fetchTimelineData();
+  };
+
   const showGrid = Boolean(searchParams?.grid) || false;
 
   return (
@@ -97,6 +103,7 @@ export default ({
           userName={userName}
           handleSearchChange={handleSearchChange}
           handleCategoryChange={handleServiceChange}
+          searchEvent={searchEvent}
         />
       </div>
       <div style={{ width: "100%" }}>

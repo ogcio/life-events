@@ -3,14 +3,18 @@ import ds from "design-system";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 
+const Icon = ds.Icon;
+
 export default ({
   userName,
   handleCategoryChange,
   handleSearchChange,
+  searchEvent,
 }: {
   userName: string;
   handleCategoryChange: (value: string) => void;
   handleSearchChange: (value: string) => void;
+  searchEvent: () => void;
 }) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 
@@ -68,8 +72,8 @@ export default ({
         </label>
       </li>
       <li>
-        <form>
-          <div className="govie-form-group" style={{ marginBottom: "15px" }}>
+        <div className="govie-form-group" style={{ marginBottom: "15px" }}>
+          <div className="govie-input__wrapper">
             <input
               type="text"
               id="default-input"
@@ -78,24 +82,33 @@ export default ({
               placeholder={"Search event..."}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
+            <button
+              type="button"
+              className="govie-input__suffix"
+              style={{ cursor: "pointer" }}
+              onClick={() => searchEvent()}
+              aria-label="Search"
+            >
+              <Icon icon={"search"} color={ds.colours.ogcio.darkGreen} />
+            </button>
           </div>
-          <div className="govie-form-group" style={{ marginBottom: "15px" }}>
-            <fieldset className="govie-fieldset">
-              <legend
-                className="govie-fieldset__legend govie-fieldset__legend--l"
-                style={{ marginBottom: 0 }}
-              >
-                <p className="govie-heading-s">Filter by service</p>
-              </legend>
-              <div
-                className="govie-checkboxes govie-checkboxes--small"
-                data-module="govie-checkboxes"
-              >
-                {checkboxes}
-              </div>
-            </fieldset>
-          </div>
-        </form>
+        </div>
+        <div className="govie-form-group" style={{ marginBottom: "15px" }}>
+          <fieldset className="govie-fieldset">
+            <legend
+              className="govie-fieldset__legend govie-fieldset__legend--l"
+              style={{ marginBottom: 0 }}
+            >
+              <p className="govie-heading-s">Filter by service</p>
+            </legend>
+            <div
+              className="govie-checkboxes govie-checkboxes--small"
+              data-module="govie-checkboxes"
+            >
+              {checkboxes}
+            </div>
+          </fieldset>
+        </div>
       </li>
     </ol>
   );

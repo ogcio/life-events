@@ -3,7 +3,6 @@ import Link from "next/link";
 import { formatDate } from "../../../utils/web";
 import ds from "design-system";
 import { useEffect, useState } from "react";
-import { debounce } from "lodash";
 import { GroupedEvents, TimeLineData } from "../../timeline/Timeline";
 
 const Icon = ds.Icon;
@@ -37,19 +36,25 @@ export default () => {
   }, []);
 
   useEffect(() => {
-    fetchTimelineData();
+    if (service || !searchQuery.length) {
+      fetchTimelineData();
+    }
   }, [service, searchQuery]);
 
   const handleCategoryChange = (selectedService: string) => {
     setService(selectedService);
   };
 
-  const handleSearchChangeDebounced = debounce((value) => {
-    setSearchQuery(value);
-  }, 300);
-
   const handleSearchChange = (value) => {
-    handleSearchChangeDebounced(value);
+    if (value.length) {
+      setSearchQuery(value);
+    } else {
+      setSearchQuery("");
+    }
+  };
+
+  const searchEvent = () => {
+    fetchTimelineData();
   };
 
   return (
@@ -57,23 +62,23 @@ export default () => {
       <div>
         <p className="govie-heading-m">Timeline</p>
       </div>
-      <form>
-        <div className="govie-form-group">
-          <select
-            className="govie-select"
-            id="default-select"
-            name="default-select"
-            style={{ minWidth: "initial", width: "100%" }}
-            onChange={(e) => handleCategoryChange(e.target.value.toLowerCase())}
-          >
-            <option value="">All services</option>
-            <option value="driving">Driving</option>
-            <option value="employment">Employment</option>
-            <option value="housing">Housing</option>
-          </select>
-        </div>
+      <div className="govie-form-group">
+        <select
+          className="govie-select"
+          id="default-select"
+          name="default-select"
+          style={{ minWidth: "initial", width: "100%" }}
+          onChange={(e) => handleCategoryChange(e.target.value.toLowerCase())}
+        >
+          <option value="">All services</option>
+          <option value="driving">Driving</option>
+          <option value="employment">Employment</option>
+          <option value="housing">Housing</option>
+        </select>
+      </div>
 
-        <div className="govie-form-group">
+      <div className="govie-form-group">
+        <div className="govie-input__wrapper">
           <input
             type="text"
             id="default-input"
@@ -82,8 +87,17 @@ export default () => {
             placeholder={"Search event..."}
             onChange={(e) => handleSearchChange(e.target.value)}
           />
+          <button
+            type="button"
+            className="govie-input__suffix"
+            style={{ cursor: "pointer" }}
+            onClick={() => searchEvent()}
+            aria-label="Search"
+          >
+            <Icon icon={"search"} color={ds.colours.ogcio.darkGreen} />
+          </button>
         </div>
-      </form>
+      </div>
       <div
         style={{
           height: "400px",
