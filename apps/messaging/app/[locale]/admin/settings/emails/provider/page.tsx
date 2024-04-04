@@ -1,10 +1,11 @@
 import { mailApi } from "messages";
 import { pgpool } from "messages/dbConnection";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async (props: { searchParams: { id: string } }) => {
-  console.log({ props, id: props.searchParams.id });
+  const t = await getTranslations("settings.EmailProvider");
   async function submitAction(formData: FormData) {
     "use server";
 
@@ -36,15 +37,17 @@ export default async (props: { searchParams: { id: string } }) => {
   const data = props.searchParams.id
     ? await mailApi.provider(props.searchParams.id)
     : undefined;
-  console.log(data);
+
   return (
     <>
-      <h1>Add provider</h1>
+      <h1>
+        <span className="govie-heading-l">{t("title")}</span>
+      </h1>
       <form action={submitAction}>
         <input name="id" value={props.searchParams.id} type="hidden" />
         <div className="govie-form-group">
           <label htmlFor="host" className="govie-label--s">
-            Name
+            {t("nameLabel")}
           </label>
           <input
             id="name"
@@ -57,7 +60,7 @@ export default async (props: { searchParams: { id: string } }) => {
 
         <div className="govie-form-group">
           <label htmlFor="host" className="govie-label--s">
-            Host
+            {t("hostLabel")}
           </label>
           <input
             id="host"
@@ -70,7 +73,7 @@ export default async (props: { searchParams: { id: string } }) => {
 
         <div className="govie-form-group">
           <label htmlFor="host" className="govie-label--s">
-            Username
+            {t("usernameLabel")}
           </label>
           <input
             id="username"
@@ -83,7 +86,7 @@ export default async (props: { searchParams: { id: string } }) => {
 
         <div className="govie-form-group">
           <label htmlFor="host" className="govie-label--s">
-            Password
+            {t("passwordLabel")}
           </label>
           <input
             id="password"
@@ -94,11 +97,11 @@ export default async (props: { searchParams: { id: string } }) => {
           />
         </div>
         <button className="govie-button" type="submit">
-          {props.searchParams.id ? "Update" : "Create"}
+          {props.searchParams.id ? t("updateButton") : t("createButton")}
         </button>
       </form>
       <Link className="govie-back-link" href={"./"}>
-        Back
+        {t("backLink")}
       </Link>
     </>
   );

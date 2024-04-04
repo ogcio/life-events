@@ -49,6 +49,10 @@
     "subject": "Subject",
     "action": "Action"
   },
+  "Message": {
+    "paymentSuccess": "This payment has been successfully paid.",
+    "back": "Back"
+  },
   "sendAMessage": {
     "ComposeMessageMeta": {
       "title": "Send a message",
@@ -108,6 +112,25 @@
     "fields": {
       "subject": "subject",
       "message": "message"
+    }
+  },
+  "settings": {
+    "Emails": {
+      "nameTableHeader": "Name",
+      "hostTableHeader": "Host",
+      "actionTableHeader": "Action",
+      "editLink": "Edit",
+      "deleteButton": "Delete"
+    },
+    "EmailProvider": {
+      "title": "Add provider",
+      "nameLabel": "Name",
+      "hostLabel": "Host",
+      "usernameLabel": "Username",
+      "passwordLabel": "Password",
+      "backLink": "Back",
+      "updateButton": "Update",
+      "createButton": "Create"
     }
   }
 }

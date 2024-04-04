@@ -1,5 +1,6 @@
 import { mailApi } from "messages";
 import { pgpool } from "messages/dbConnection";
+import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
@@ -8,6 +9,7 @@ const EmailProviderTable = ({
 }: {
   providers: Awaited<ReturnType<typeof mailApi.providers>>;
 }) => {
+  const t = useTranslations("settings.Emails");
   async function deleteAction(formData: FormData) {
     "use server";
     const id = formData.get("id")?.toString();
@@ -25,13 +27,13 @@ const EmailProviderTable = ({
       <thead className="govie-table__head">
         <tr className="govie-table__row">
           <th scope="col" className="govie-table__header">
-            Name
+            {t("nameTableHeader")}
           </th>
           <th scope="col" className="govie-table__header">
-            Host
+            {t("hostTableHeader")}
           </th>
           <th scope="col" className="govie-table__header">
-            Action
+            {t("actionTableHeader")}
           </th>
         </tr>
       </thead>
@@ -57,7 +59,7 @@ const EmailProviderTable = ({
                     return url.href;
                   })()}
                 >
-                  Edit
+                  {t("editLink")}
                 </Link>
                 <form
                   action={deleteAction}
@@ -70,7 +72,7 @@ const EmailProviderTable = ({
                     className="govie-button govie-button--small govie-button--outlined"
                     style={{ margin: "unset" }}
                   >
-                    Delete
+                    {t("deleteButton")}
                   </button>
                 </form>
               </div>
