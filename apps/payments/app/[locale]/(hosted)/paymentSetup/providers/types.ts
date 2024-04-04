@@ -39,27 +39,27 @@ export type CommonProvider = {
   id: string;
   name: string;
   userId?: string;
-  status: ProviderStatus;
+  status: string;
 };
 
 export type StripeProvider = CommonProvider & {
-  type: "stripe";
-  providerData: StripeData;
+  type: string;
+  data: StripeData;
 };
 
 export type OpenBankingProvider = CommonProvider & {
-  type: "openbanking";
-  providerData: OpenBankingData;
+  type: string;
+  data: OpenBankingData;
 };
 
 export type BankTransferProvider = CommonProvider & {
-  type: "banktransfer";
-  providerData: BankTransferData;
+  type: string;
+  data: BankTransferData;
 };
 
 export type WorldpayProvider = CommonProvider & {
-  type: "worldpay";
-  providerData: WorldpayData;
+  type: string;
+  data: WorldpayData;
 };
 
 export type Provider =
@@ -67,11 +67,3 @@ export type Provider =
   | OpenBankingProvider
   | BankTransferProvider
   | WorldpayProvider;
-
-export const parseProvider = (rawProvider: any): Provider => ({
-  id: rawProvider.provider_id,
-  name: rawProvider.provider_name,
-  type: rawProvider.provider_type,
-  providerData: rawProvider.provider_data,
-  status: rawProvider.status,
-});

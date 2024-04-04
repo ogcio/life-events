@@ -1,8 +1,9 @@
-import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import type { Provider } from "../types";
 import type { PropsWithChildren } from "react";
 import { getTranslations } from "next-intl/server";
+import { PgSessions } from "auth/sessions";
+import buildApiClient from "../../../../../../client/index";
 
 type Props = {
   provider: Provider;
@@ -18,12 +19,16 @@ export default async ({
 
   async function setProviderStatus(status: string) {
     "use server";
-    await pgpool.query(
-      `
-      UPDATE payment_providers SET status = $1
-      WHERE provider_id = $2
-  `,
-      [status, provider.id],
+
+    const { userId } = await PgSessions.get();
+
+    await buildApiClient(userId).providers.apiV1ProvidersProviderIdPut(
+      provider.id,
+      {
+        name: provider.name,
+        data: provider.data,
+        status,
+      },
     );
 
     redirect("./");

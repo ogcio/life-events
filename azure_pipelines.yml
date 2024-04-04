@@ -12,18 +12,16 @@ pr:
 parameters:
   - name: services
     type: object
-    default: ["web", "mock-api", "payments", "messaging"]
+    default: ["web", "mock-api", "payments", "messaging", "payments-api"]
 
-  - name: destroy
-    type: boolean
-    default: false
-  
   - name: envBranches
     type: object
     default: ["refs/heads/dev", "refs/heads/sta", "refs/heads/uat", "refs/heads/feat/improve-pipeline"]
 
 variables:
   - template: pipeline-variables/dev.yml
+  - name: pushArtefacts
+    value: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranch']) }}
 
 stages:
   - stage: securityScan
@@ -46,7 +44,7 @@ stages:
             displayName: GitLeaks Scan
   - stage: BuildDeps
     displayName: Build service dependencies
-    jobs:  
+    jobs:
       - job: BuildBaseContainer
         displayName: Build base container
         pool:
@@ -115,20 +113,22 @@ stages:
             repository: life-events-${{ serviceName }}
             dockerfile: apps/${{ serviceName }}/Dockerfile
             buildContext: '$(Build.SourcesDirectory)'
-            arguments: '--build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)'
+            arguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)"'
         - task: Docker@0
           displayName: 'Run a Docker command'
+          condition: eq(variables.pushArtefacts, true)
           inputs:
             action: 'Run a Docker command'
             customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_${{ serviceName }}_$(Build.BuildId).tar life-events-${{ serviceName }}:$(Build.BuildId)'
         - publish:  $(Build.ArtifactStagingDirectory)
+          condition: eq(variables.pushArtefacts, true)
           artifact: 'docker-${{ serviceName }}-$(Build.BuildId)'
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
+      condition: and(succeeded(), eq(variables.pushArtefacts, true))
       jobs:
       - job: Push
-        condition: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranch']) }}
         displayName: Push - ${{ serviceName }}
         pool:
           vmImage: 'ubuntu-latest'

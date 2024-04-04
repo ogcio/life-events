@@ -42,6 +42,43 @@ import {
 /**
  *
  * @export
+ * @interface ApiV1ProvidersGet200ResponseInner
+ */
+export interface ApiV1ProvidersGet200ResponseInner {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersGet200ResponseInner
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersGet200ResponseInner
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersGet200ResponseInner
+   */
+  type: string;
+  /**
+   *
+   * @type {any}
+   * @memberof ApiV1ProvidersGet200ResponseInner
+   */
+  data: any;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersGet200ResponseInner
+   */
+  status: string;
+}
+/**
+ *
+ * @export
  * @interface ApiV1ProvidersPost200Response
  */
 export interface ApiV1ProvidersPost200Response {
@@ -50,7 +87,7 @@ export interface ApiV1ProvidersPost200Response {
    * @type {string}
    * @memberof ApiV1ProvidersPost200Response
    */
-  id?: string;
+  id: string;
 }
 /**
  *
@@ -72,10 +109,10 @@ export interface ApiV1ProvidersPostRequest {
   type: ApiV1ProvidersPostRequestType;
   /**
    *
-   * @type {object}
+   * @type {any}
    * @memberof ApiV1ProvidersPostRequest
    */
-  providerData: object;
+  data: any;
 }
 /**
  *
@@ -83,6 +120,50 @@ export interface ApiV1ProvidersPostRequest {
  * @interface ApiV1ProvidersPostRequestType
  */
 export interface ApiV1ProvidersPostRequestType {}
+/**
+ *
+ * @export
+ * @interface ApiV1ProvidersProviderIdPut200Response
+ */
+export interface ApiV1ProvidersProviderIdPut200Response {
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiV1ProvidersProviderIdPut200Response
+   */
+  ok: boolean;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1ProvidersProviderIdPutRequest
+ */
+export interface ApiV1ProvidersProviderIdPutRequest {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdPutRequest
+   */
+  name: string;
+  /**
+   *
+   * @type {any}
+   * @memberof ApiV1ProvidersProviderIdPutRequest
+   */
+  data: any;
+  /**
+   *
+   * @type {ApiV1ProvidersProviderIdPutRequestStatus}
+   * @memberof ApiV1ProvidersProviderIdPutRequest
+   */
+  status: ApiV1ProvidersProviderIdPutRequestStatus;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1ProvidersProviderIdPutRequestStatus
+ */
+export interface ApiV1ProvidersProviderIdPutRequestStatus {}
 
 /**
  * DefaultApi - axios parameter creator
@@ -222,6 +303,44 @@ export const ProvidersApiAxiosParamCreator = function (
   return {
     /**
      *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1ProvidersGet: async (
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/api/v1/providers/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "GET",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @param {ApiV1ProvidersPostRequest} apiV1ProvidersPostRequest
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -273,6 +392,119 @@ export const ProvidersApiAxiosParamCreator = function (
         options: localVarRequestOptions,
       };
     },
+    /**
+     *
+     * @param {string} providerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1ProvidersProviderIdGet: async (
+      providerId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'providerId' is not null or undefined
+      assertParamExists(
+        "apiV1ProvidersProviderIdGet",
+        "providerId",
+        providerId,
+      );
+      const localVarPath = `/api/v1/providers/{providerId}`.replace(
+        `{${"providerId"}}`,
+        encodeURIComponent(String(providerId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "GET",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @param {string} providerId
+     * @param {ApiV1ProvidersProviderIdPutRequest} apiV1ProvidersProviderIdPutRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1ProvidersProviderIdPut: async (
+      providerId: string,
+      apiV1ProvidersProviderIdPutRequest: ApiV1ProvidersProviderIdPutRequest,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'providerId' is not null or undefined
+      assertParamExists(
+        "apiV1ProvidersProviderIdPut",
+        "providerId",
+        providerId,
+      );
+      // verify required parameter 'apiV1ProvidersProviderIdPutRequest' is not null or undefined
+      assertParamExists(
+        "apiV1ProvidersProviderIdPut",
+        "apiV1ProvidersProviderIdPutRequest",
+        apiV1ProvidersProviderIdPutRequest,
+      );
+      const localVarPath = `/api/v1/providers/{providerId}`.replace(
+        `{${"providerId"}}`,
+        encodeURIComponent(String(providerId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "PUT",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter["Content-Type"] = "application/json";
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        apiV1ProvidersProviderIdPutRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
   };
 };
 
@@ -284,6 +516,34 @@ export const ProvidersApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator =
     ProvidersApiAxiosParamCreator(configuration);
   return {
+    /**
+     *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1ProvidersGet(
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<Array<ApiV1ProvidersGet200ResponseInner>>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1ProvidersGet(options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["ProvidersApi.apiV1ProvidersGet"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
     /**
      *
      * @param {ApiV1ProvidersPostRequest} apiV1ProvidersPostRequest
@@ -317,6 +577,75 @@ export const ProvidersApiFp = function (configuration?: Configuration) {
           configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
+    /**
+     *
+     * @param {string} providerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1ProvidersProviderIdGet(
+      providerId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiV1ProvidersGet200ResponseInner>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1ProvidersProviderIdGet(
+          providerId,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["ProvidersApi.apiV1ProvidersProviderIdGet"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
+     * @param {string} providerId
+     * @param {ApiV1ProvidersProviderIdPutRequest} apiV1ProvidersProviderIdPutRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1ProvidersProviderIdPut(
+      providerId: string,
+      apiV1ProvidersProviderIdPutRequest: ApiV1ProvidersProviderIdPutRequest,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiV1ProvidersProviderIdPut200Response>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1ProvidersProviderIdPut(
+          providerId,
+          apiV1ProvidersProviderIdPutRequest,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["ProvidersApi.apiV1ProvidersProviderIdPut"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
   };
 };
 
@@ -333,6 +662,18 @@ export const ProvidersApiFactory = function (
   return {
     /**
      *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1ProvidersGet(
+      options?: any,
+    ): AxiosPromise<Array<ApiV1ProvidersGet200ResponseInner>> {
+      return localVarFp
+        .apiV1ProvidersGet(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @param {ApiV1ProvidersPostRequest} apiV1ProvidersPostRequest
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -343,6 +684,40 @@ export const ProvidersApiFactory = function (
     ): AxiosPromise<ApiV1ProvidersPost200Response> {
       return localVarFp
         .apiV1ProvidersPost(apiV1ProvidersPostRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @param {string} providerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1ProvidersProviderIdGet(
+      providerId: string,
+      options?: any,
+    ): AxiosPromise<ApiV1ProvidersGet200ResponseInner> {
+      return localVarFp
+        .apiV1ProvidersProviderIdGet(providerId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @param {string} providerId
+     * @param {ApiV1ProvidersProviderIdPutRequest} apiV1ProvidersProviderIdPutRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1ProvidersProviderIdPut(
+      providerId: string,
+      apiV1ProvidersProviderIdPutRequest: ApiV1ProvidersProviderIdPutRequest,
+      options?: any,
+    ): AxiosPromise<ApiV1ProvidersProviderIdPut200Response> {
+      return localVarFp
+        .apiV1ProvidersProviderIdPut(
+          providerId,
+          apiV1ProvidersProviderIdPutRequest,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -357,6 +732,18 @@ export const ProvidersApiFactory = function (
 export class ProvidersApi extends BaseAPI {
   /**
    *
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ProvidersApi
+   */
+  public apiV1ProvidersGet(options?: RawAxiosRequestConfig) {
+    return ProvidersApiFp(this.configuration)
+      .apiV1ProvidersGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @param {ApiV1ProvidersPostRequest} apiV1ProvidersPostRequest
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -368,6 +755,44 @@ export class ProvidersApi extends BaseAPI {
   ) {
     return ProvidersApiFp(this.configuration)
       .apiV1ProvidersPost(apiV1ProvidersPostRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @param {string} providerId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ProvidersApi
+   */
+  public apiV1ProvidersProviderIdGet(
+    providerId: string,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ProvidersApiFp(this.configuration)
+      .apiV1ProvidersProviderIdGet(providerId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @param {string} providerId
+   * @param {ApiV1ProvidersProviderIdPutRequest} apiV1ProvidersProviderIdPutRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ProvidersApi
+   */
+  public apiV1ProvidersProviderIdPut(
+    providerId: string,
+    apiV1ProvidersProviderIdPutRequest: ApiV1ProvidersProviderIdPutRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return ProvidersApiFp(this.configuration)
+      .apiV1ProvidersProviderIdPut(
+        providerId,
+        apiV1ProvidersProviderIdPutRequest,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 }

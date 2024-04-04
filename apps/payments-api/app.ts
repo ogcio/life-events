@@ -8,6 +8,13 @@ import { envSchema } from "./config";
 import authPlugin from "./plugins/auth";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
+import fs from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import healthCheck from "./routes/healthcheck";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 dotenv.config();
 
@@ -37,6 +44,13 @@ export async function build(opts?: FastifyServerOptions) {
 
   app.register(fastifySwaggerUi, {
     routePrefix: "/docs",
+    logo: {
+      type: "image/png",
+      content: Buffer.from(
+        fs.readFileSync(join(__dirname, "logo.png")).toString("base64"),
+        "base64",
+      ),
+    },
   });
 
   app.register(postgres, {
@@ -46,6 +60,8 @@ export async function build(opts?: FastifyServerOptions) {
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB_NAME,
   });
+
+  app.register(healthCheck);
 
   app.register(routes, { prefix: "/api/v1" });
 

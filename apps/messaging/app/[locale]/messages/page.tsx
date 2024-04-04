@@ -2,10 +2,9 @@ import { PgSessions } from "auth/sessions";
 import { api } from "messages";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { RedirectType, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import ds from "design-system";
-import { revalidatePath } from "next/cache";
 
 export default async (props: { searchParams: any }) => {
   const t = await getTranslations("Messages");

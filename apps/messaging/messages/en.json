@@ -67,7 +67,9 @@
       "message": "Message",
       "link": "Link",
       "submitText": "Continue to preview",
-      "backLink": "Back"
+      "backLink": "Back",
+      "addPaymentTitle": "Add a payment",
+      "emptyPaymentOption": "Select payment..."
     },
     "EmailPreview": {
       "submitText": "Continue to recipients",

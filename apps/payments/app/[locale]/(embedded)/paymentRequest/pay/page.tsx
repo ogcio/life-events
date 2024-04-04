@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 
 import {
   formatCurrency,
@@ -8,8 +9,13 @@ import {
 import { pgpool } from "../../../../dbConnection";
 import { PaymentRequestDO } from "../../../../../types/common";
 import { redirect } from "next/navigation";
+import SelectPaymentMethod from "./SelectPaymentMethod";
+import getRequestConfig from "../../../../../i18n";
 
 type Props = {
+  params: {
+    locale: string;
+  };
   searchParams:
     | {
         paymentId: string;
@@ -61,57 +67,6 @@ async function selectCustomAmount(requestId: string, formData: FormData) {
   );
 }
 
-async function redirectToPaymentUrl(
-  settings: {
-    paymentId: string;
-    integrationRef: string;
-    amount?: number;
-    customAmount?: number;
-  },
-  formData: FormData,
-) {
-  "use server";
-
-  redirect(
-    getPaymentUrl({
-      ...settings,
-      type: formData.get("type") as string,
-      email: formData.get("email") as string,
-      name: formData.get("name") as string,
-    }),
-  );
-}
-
-function getPaymentUrl({
-  paymentId,
-  type,
-  integrationRef,
-  amount,
-  customAmount,
-  name,
-  email,
-}: {
-  paymentId: string;
-  type: string;
-  integrationRef: string;
-  amount?: number;
-  customAmount?: number;
-  name: string;
-  email: string;
-}) {
-  const url = new URL(`/paymentRequest/${type}`, process.env.HOST_URL);
-  url.searchParams.set("paymentId", paymentId);
-  url.searchParams.set("integrationRef", integrationRef);
-  url.searchParams.set("name", name);
-  url.searchParams.set("email", email);
-  if (amount) {
-    url.searchParams.set("amount", amount.toString());
-  }
-  if (customAmount) {
-    url.searchParams.set("customAmount", customAmount.toString());
-  }
-  return url.href;
-}
 const NotFound = async () => {
   const t = await getTranslations("Common");
   return <h1 className="govie-heading-l">{t("notFound")}</h1>;
@@ -126,6 +81,8 @@ export default async function Page(props: Props) {
     getTranslations("PayPaymentRequest"),
     getTranslations("Common"),
   ]);
+
+  const { messages } = await getRequestConfig({ locale: props.params.locale });
 
   if (!details) return <NotFound />;
 
@@ -162,13 +119,6 @@ export default async function Page(props: Props) {
     this,
     props.searchParams?.paymentId,
   );
-
-  const redirectToPayment = redirectToPaymentUrl.bind(this, {
-    paymentId: props.searchParams.paymentId,
-    integrationRef: props.searchParams.id,
-    amount: urlAmount,
-    customAmount,
-  });
 
   return (
     <div
@@ -231,111 +181,19 @@ export default async function Page(props: Props) {
         )}
 
         <hr className="govie-section-break govie-section-break--visible"></hr>
-        <form action={redirectToPayment} style={{ marginTop: "20px" }}>
-          <div className="govie-form-group">
-            <h2 className="govie-heading-l">{t("addInfo")}</h2>
-            <div className="govie-form-group">
-              <div className="govie-hint" id="name-hint">
-                {t("name")}
-              </div>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                className="govie-input"
-                aria-describedby="name-hint"
-                required
-                style={{ maxWidth: "500px" }}
-              />
-            </div>
-            <div className="govie-form-group">
-              <div className="govie-hint" id="email-hint">
-                {t("email")}
-              </div>
-              <input
-                type="text"
-                id="email"
-                name="email"
-                className="govie-input"
-                aria-describedby="email-hint"
-                required
-                style={{ maxWidth: "500px" }}
-              />
-            </div>
-            <h2 className="govie-heading-l">{t("choose")}</h2>
-
-            <div
-              data-module="govie-radios"
-              className="govie-radios govie-radios--large"
-            >
-              {hasOpenBanking && (
-                <div className="govie-radios__item">
-                  <input
-                    id="bankTransfer-0"
-                    name="type"
-                    type="radio"
-                    value="bankTransfer"
-                    className="govie-radios__input"
-                  />
-                  <label
-                    className="govie-label--s govie-radios__label"
-                    htmlFor="bankTransfer-0"
-                  >
-                    {t("payByBank")}
-                    <p className="govie-body">{t("payByBankDescription")}</p>
-                  </label>
-                </div>
-              )}
-
-              {hasManualBanking && (
-                <div className="govie-radios__item">
-                  <input
-                    id="manual-0"
-                    name="type"
-                    type="radio"
-                    value="manual"
-                    className="govie-radios__input"
-                  />
-
-                  <label
-                    className="govie-label--s govie-radios__label"
-                    htmlFor="manual-0"
-                  >
-                    {t("manualBankTransfer")}
-                    <p className="govie-body">
-                      {t("manualBankTransferDescription")}
-                    </p>
-                  </label>
-                </div>
-              )}
-
-              {hasStripe && (
-                <div className="govie-radios__item">
-                  <input
-                    id="stripe-0"
-                    name="type"
-                    type="radio"
-                    value="stripe"
-                    className="govie-radios__input"
-                  />
-                  <label
-                    className="govie-label--s govie-radios__label"
-                    htmlFor="stripe-0"
-                  >
-                    {t("payByCard")}
-                    <p className="govie-body">{t("payByCardDescription")}</p>
-                  </label>
-                </div>
-              )}
-            </div>
-
-            <div className="govie-form-group" style={{ marginTop: "20px" }}>
-              <button className="govie-button govie-button--primary">
-                {t("confirm")}
-              </button>
-            </div>
-          </div>
-        </form>
+        <NextIntlClientProvider
+          messages={messages?.["PayPaymentRequest"] as AbstractIntlMessages}
+        >
+          <SelectPaymentMethod
+            hasManualBanking={hasManualBanking}
+            hasOpenBanking={hasOpenBanking}
+            hasStripe={hasStripe}
+            paymentId={props.searchParams.paymentId}
+            referenceId={props.searchParams.id}
+            urlAmount={urlAmount}
+            customAmount={customAmount}
+          />
+        </NextIntlClientProvider>
       </div>
     </div>
   );
