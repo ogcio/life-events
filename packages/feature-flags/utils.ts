@@ -29,6 +29,9 @@ const defaultFeatureFlags = {
   death: {
     enabled: true,
   },
+  eventsMenu: {
+    enabled: false,
+  },
 };
 
 export async function isFeatureFlagEnabled(

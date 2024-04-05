@@ -10,7 +10,7 @@ export default async (props: web.NextPageProps) => {
   const userName = [firstName, lastName].join(" ");
 
   const messages = await getMessages({ locale: props.params.locale });
-  const timelineMessages = messages.Timeline as unknown as AbstractIntlMessages;
+  const timelineMessages = messages.Timeline as AbstractIntlMessages;
 
   return (
     <div

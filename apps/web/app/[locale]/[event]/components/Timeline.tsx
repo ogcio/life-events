@@ -9,6 +9,7 @@ import { useTranslations } from "next-intl";
 const Icon = ds.Icon;
 
 const darkGrey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 80);
+const midGrey = ds.colours.ogcio.midGrey;
 
 export default () => {
   const t = useTranslations();
@@ -94,7 +95,7 @@ export default () => {
             className="govie-input__suffix"
             style={{ cursor: "pointer" }}
             onClick={() => searchEvent()}
-            aria-label={t(`Search`)}
+            aria-label={t(`search`)}
           >
             <Icon icon={"search"} color={ds.colours.ogcio.darkGreen} />
           </button>
@@ -143,7 +144,7 @@ export default () => {
                             width: "10px",
                             height: "10px",
                             marginTop: "10px",
-                            background: "#B1B4B6",
+                            background: midGrey,
                             content: "''",
                             borderRadius: "50%",
                           }}
