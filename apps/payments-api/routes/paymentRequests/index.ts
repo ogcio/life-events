@@ -54,6 +54,18 @@ const CreatePaymentRequest = Type.Object({
 });
 type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
 
+const EditPaymentRequest = Type.Composite([
+  Type.Omit(CreatePaymentRequest, ["providers"]),
+  Type.Object({
+    paymentRequestId: Type.String(),
+    providersUpdate: Type.Object({
+      toDisable: Type.Array(Type.String()),
+      toCreate: Type.Array(Type.String()),
+    }),
+  }),
+]);
+type EditPaymentRequest = Static<typeof EditPaymentRequest>;
+
 export default async function paymentRequests(app: FastifyInstance) {
   app.get<{ Reply: PaymentRequest[] }>(
     "/",
@@ -269,6 +281,88 @@ export default async function paymentRequests(app: FastifyInstance) {
         });
 
         reply.send({ id: result });
+      } catch (error) {
+        reply.send(httpErrors.internalServerError((error as Error).message));
+      }
+    },
+  );
+
+  app.put<{ Body: EditPaymentRequest; Reply: { id: string } | Error }>(
+    "/",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["PaymentRequests"],
+        body: EditPaymentRequest,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const {
+        title,
+        description,
+        reference,
+        amount,
+        redirectUrl,
+        allowAmountOverride,
+        allowCustomAmount,
+        paymentRequestId,
+        providersUpdate,
+      } = request.body;
+
+      try {
+        const result = await app.pg.transact(async (client) => {
+          await client.query(
+            `update payment_requests 
+              set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 
+              where payment_request_id = $8 and user_id = $9`,
+            [
+              title,
+              description,
+              reference,
+              amount,
+              redirectUrl,
+              allowAmountOverride,
+              allowCustomAmount,
+              paymentRequestId,
+              userId,
+            ],
+          );
+
+          if (providersUpdate.toDisable.length) {
+            const idsToDisable = providersUpdate.toDisable.join(", ");
+
+            await app.pg.query(
+              `update payment_requests_providers set enabled = false
+                where payment_request_id = $1 and provider_id in ($2)`,
+              [paymentRequestId, idsToDisable],
+            );
+          }
+
+          if (providersUpdate.toCreate.length) {
+            const sqlData = [paymentRequestId, ...providersUpdate.toCreate];
+            const queryValues = providersUpdate.toCreate
+              .map((_, index) => {
+                return `($${index + 2}, $1, true)`;
+              })
+              .join(",");
+
+            await client.query(
+              `INSERT INTO payment_requests_providers (provider_id, payment_request_id, enabled) 
+              VALUES ${queryValues}
+              ON CONFLICT (provider_id, payment_request_id) 
+              DO UPDATE SET enabled = EXCLUDED.enabled`,
+              sqlData,
+            );
+          }
+        });
+
+        reply.send({ id: paymentRequestId });
       } catch (error) {
         reply.send(httpErrors.internalServerError((error as Error).message));
       }
