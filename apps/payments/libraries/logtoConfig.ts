@@ -1,10 +1,8 @@
 export const logtoConfig = {
-  //TODO: Load from env var
-  appId: "b5cjre4p352dyuf85uey8",
+  appId: process.env.LOGTO_APP_ID as string,
   cookieSecure: process.env.NODE_ENV === "production",
-  // Change to your own base URL - TODO: Load from env var
-  baseUrl: "http://localhost:3001",
-  endpoint: "http://localhost:3301/",
-  appSecret: "BmwGrQHugwDbgYs9gxUvZf8soV4cGvSd",
-  cookieSecret: "CRyNGTYSGJIVoAFZc0ACJUChaFo1A3rr",
+  baseUrl: process.env.LOGTO_BASE_URL as string,
+  endpoint: process.env.LOGTO_ENDPOINT as string,
+  appSecret: process.env.LOGTO_APP_SECRET as string,
+  cookieSecret: process.env.LOGTO_COOKIE_SECRET as string,
 };
