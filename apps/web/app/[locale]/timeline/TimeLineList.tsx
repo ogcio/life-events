@@ -17,7 +17,7 @@ export default ({ timeLineData }: { timeLineData?: TimeLineData }) => {
   return (
     <>
       <ul className="govie-list">
-        {reversedTimeLine.reverse().map((yearData) => {
+        {reversedTimeLine.map((yearData) => {
           if (!yearData) {
             return;
           }
