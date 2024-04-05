@@ -4,11 +4,6 @@ import PaymentSetupForm from "../PaymentSetupForm";
 import { stringToAmount } from "../../../../utils";
 import buildApiClient from "../../../../../client/index";
 
-type Account = {
-  account: string;
-  enabled: boolean;
-};
-
 async function createPayment(userId: string, formData: FormData) {
   "use server";
 
