@@ -1,0 +1,42 @@
+{
+  "name": "profile",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon",
+    "build": "next build",
+    "start": "next start -p 3003",
+    "migrate": "db-migrate up"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "../../packages/auth/src/**/*",
+      "../../packages/feature-flags/src/**/*",
+      "../../packages/messages/src/**/*"
+    ],
+    "ext": "ts,tsx,json",
+    "exec": "next dev -p 3003"
+  },
+  "dependencies": {
+    "auth": "*",
+    "dayjs": "^1.11.10",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
+    "design-system": "*",
+    "feature-flags": "*",
+    "messages": "*",
+    "next": "latest",
+    "next-intl": "^3.7.0",
+    "pg": "^8.11.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.10.4",
+    "@types/pg": "^8.11.0",
+    "@types/react": "18.2.45",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
+    "typescript": "5.3.3"
+  }
+}
