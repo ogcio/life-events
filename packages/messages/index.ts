@@ -32,24 +32,27 @@ type EmailProvider = {
   id: string;
   name: string;
   host: string;
+  port: number;
   username: string;
   password: string;
 };
+
 export const mailApi = {
-  async createProvider(
-    name: string,
-    host: string,
-    username: string,
-    password: string,
-  ) {
+  async createProvider({
+    host,
+    name,
+    password,
+    port,
+    username,
+  }: Omit<EmailProvider, "id">) {
     return pgpool
       .query<{ id: string }>(
         `
-      INSERT INTO email_providers(provider_name, smtp_host, username, pw)
-      VALUES($1,$2,$3,$4)
+      INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw)
+      VALUES($1,$2,$3,$4,$5)
       RETURNING id
     `,
-        [name, host, username, password],
+        [name, host, port, username, password],
       )
       .then((res) => res.rows.at(0)?.id);
   },
@@ -59,18 +62,19 @@ export const mailApi = {
       UPDATE email_providers set 
         provider_name = $1, 
         smtp_host = $2,
-        username = $3,
-        pw = $4
-      WHERE id = $5
+        smtp_port = $3,
+        username = $4,
+        pw = $5
+      WHERE id = $6
     `,
-      [data.name, data.host, data.username, data.password, data.id],
+      [data.name, data.host, data.port, data.username, data.password, data.id],
     );
   },
   async providers() {
     return pgpool
       .query<EmailProvider>(
         `
-      SELECT id, provider_name as "name", smtp_host as "host", username, pw as "password" FROM email_providers
+      SELECT id, provider_name as "name", smtp_host as "host", smtp_port as "port", username, pw as "password" FROM email_providers
       ORDER BY created_at DESC
     `,
       )
@@ -83,6 +87,7 @@ export const mailApi = {
       SELECT 
         provider_name as "name", 
         smtp_host as "host", 
+        smtp_port as "port", 
         username, pw as "password" 
       FROM email_providers
       WHERE id =$1
@@ -99,26 +104,17 @@ export const mailApi = {
     body: string,
   ) {
     try {
-      const provider = await pgpool
-        .query<{ host: string; username: string; password: string }>(
-          `
-          SELECT smtp_host as "host", username, pw as "password" FROM 
-          email_providers
-          WHERE id = $1
-        `,
-          [providerId],
-        )
-        .then((res) => res.rows.at(0));
+      const provider = await mailApi.provider(providerId);
 
       if (!provider) {
         return;
       }
 
-      const { host, password, username } = provider;
+      const { host, password, username, port } = provider;
 
       const transporter: nodemailer.Transporter = nodemailer.createTransport({
         host,
-        port: Number(process.env.SMTP_PORT) || 0,
+        port,
         // secure: false,
         auth: {
           user: username,
@@ -126,11 +122,9 @@ export const mailApi = {
         },
       });
 
-      console.log({ recipients });
-
       return transporter.sendMail({
         from: username,
-        to: recipients.join(", "), //"test@skoj.se",
+        to: recipients.join(", "),
         subject: subject,
         html: body,
       });
@@ -313,6 +307,7 @@ export const api = {
 
     // Email
     if (transports.includes("email")) {
+      // Hardcode to use the dev ethereal mail provider always. This should be configurable somehow.
       const tmpId = await temporaryMockUtils.getEtherealMailProvider();
       if (tmpId && messageId) {
         const message = await api.getMessage(messageId);
@@ -720,12 +715,13 @@ export const temporaryMockUtils = {
               rej(err);
             }
 
-            id = await mailApi.createProvider(
-              etherealEmailProviderName,
-              account.smtp.host,
-              account.user,
-              account.pass,
-            );
+            id = await mailApi.createProvider({
+              name: etherealEmailProviderName,
+              host: account.smtp.host,
+              port: 587,
+              username: account.user,
+              password: account.pass,
+            });
             res(id);
           },
         );

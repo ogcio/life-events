@@ -1,30 +1,32 @@
 import { mailApi } from "messages";
-import { pgpool } from "messages/dbConnection";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async (props: { searchParams: { id: string } }) => {
   const t = await getTranslations("settings.EmailProvider");
+
   async function submitAction(formData: FormData) {
     "use server";
 
     const name = formData.get("name")?.toString();
     const host = formData.get("host")?.toString();
+    const port = Number(formData.get("port")?.toString());
     const username = formData.get("username")?.toString();
     const password = formData.get("password")?.toString();
 
     const id = formData.get("id")?.toString();
 
-    if (!name || !host || !username || !password) {
+    if (!name || !host || !username || !password || !port) {
       return;
     }
 
     if (!id) {
-      await mailApi.createProvider(name, host, username, password);
+      await mailApi.createProvider({ name, host, username, password, port });
     } else {
       await mailApi.updateProvider({
         host,
+        port,
         id,
         name,
         password,
@@ -68,6 +70,19 @@ export default async (props: { searchParams: { id: string } }) => {
             name="host"
             className="govie-input"
             defaultValue={data?.host}
+          />
+        </div>
+
+        <div className="govie-form-group">
+          <label htmlFor="host" className="govie-label--s">
+            {t("portLabel")}
+          </label>
+          <input
+            id="port"
+            type="text"
+            name="port"
+            className="govie-input"
+            defaultValue={data?.port}
           />
         </div>
 

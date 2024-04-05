@@ -34,6 +34,9 @@ const EmailProviderTable = ({
             {t("hostTableHeader")}
           </th>
           <th scope="col" className="govie-table__header">
+            {t("portTableHeader")}
+          </th>
+          <th scope="col" className="govie-table__header">
             {t("actionTableHeader")}
           </th>
         </tr>
@@ -46,6 +49,9 @@ const EmailProviderTable = ({
             </th>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               {provider.host}
+            </td>
+            <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+              {provider.port}
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               <div style={{ display: "flex", alignItems: "center" }}>
