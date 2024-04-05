@@ -673,7 +673,20 @@
     }
   },
   "Timeline": {
-    "back": "Back to My Portal"
+    "title": "Timeline",
+    "filterByService": "Filter by service",
+    "allServices": "All services",
+    "driving": "Driving",
+    "employment": "Employment",
+    "housing": "Housing",
+    "searchEvent": "Search event...",
+    "search": "Search",
+    "details": "View details",
+    "seeAllEvents": "See all events",
+    "view": "View",
+    "list": "List",
+    "grid": "Grid",
+    "backToPortal": "Back to My Portal"
   },
   "formErrors": {
     "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",

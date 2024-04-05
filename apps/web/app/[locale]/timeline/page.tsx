@@ -1,11 +1,16 @@
 import { PgSessions } from "auth/sessions";
 import { web } from "../../utils";
 import Timeline from "./Timeline";
+import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 export default async (props: web.NextPageProps) => {
   const { firstName, lastName } = await PgSessions.get();
 
   const userName = [firstName, lastName].join(" ");
+
+  const messages = await getMessages({ locale: props.params.locale });
+  const timelineMessages = messages.Timeline as unknown as AbstractIntlMessages;
 
   return (
     <div
@@ -15,7 +20,9 @@ export default async (props: web.NextPageProps) => {
         gap: "2.5rem",
       }}
     >
-      <Timeline userName={userName} searchParams={props.searchParams} />
+      <NextIntlClientProvider messages={timelineMessages}>
+        <Timeline userName={userName} searchParams={props.searchParams} />
+      </NextIntlClientProvider>
     </div>
   );
 };

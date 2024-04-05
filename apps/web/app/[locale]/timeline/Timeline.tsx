@@ -5,6 +5,7 @@ import Link from "next/link";
 import TimeLineGrid from "./TimeLineGrid";
 import { NextPageProps } from "../../utils/web";
 import TimeLineList from "./TimeLineList";
+import { useTranslations } from "next-intl";
 
 type Event = {
   service: string;
@@ -41,6 +42,7 @@ export default ({
   userName: string;
   searchParams: NextPageProps["searchParams"];
 }) => {
+  const t = useTranslations();
   const [services, setServices] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [timeLineData, setTimeLineData] = useState<TimeLineData>();
@@ -109,13 +111,13 @@ export default ({
       <div style={{ width: "100%" }}>
         <div style={{ textAlign: "right" }}>
           <p className="govie-body-s">
-            View:{" "}
+            {t("view")}:{" "}
             <Link href="?list=true" className="govie-link">
-              List
+              {t("list")}
             </Link>{" "}
             |{" "}
             <Link href="?grid=true" className="govie-link">
-              Grid
+              {t("grid")}
             </Link>
           </p>
         </div>

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import ds from "design-system";
 import Timeline from "./Timeline";
+import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 const Icon = ds.Icon;
 
@@ -14,10 +16,14 @@ type Props = {
   selected: string;
   userName: string;
   ppsn: string;
+  locale: string;
 };
 
-export default (props: Props) => {
+export default async (props: Props) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
+
+  const messages = await getMessages({ locale: props.locale });
+  const timelineMessages = messages.Timeline as unknown as AbstractIntlMessages;
 
   return (
     <ol
@@ -43,7 +49,9 @@ export default (props: Props) => {
           {props.userName}
         </label>
       </li>
-      <Timeline />
+      <NextIntlClientProvider messages={timelineMessages}>
+        <Timeline />
+      </NextIntlClientProvider>
       {/* {props.options.map((option) => (
         <li key={`lem_${option.url}`} tabIndex={0}>
           <Link

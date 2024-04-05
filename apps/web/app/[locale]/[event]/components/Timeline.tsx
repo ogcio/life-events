@@ -4,12 +4,14 @@ import { formatDate } from "../../../utils/web";
 import ds from "design-system";
 import { useEffect, useState } from "react";
 import { GroupedEvents, TimeLineData } from "../../timeline/Timeline";
+import { useTranslations } from "next-intl";
 
 const Icon = ds.Icon;
 
 const darkGrey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 80);
 
 export default () => {
+  const t = useTranslations();
   const [service, setService] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [timeLineData, setTimeLineData] = useState<TimeLineData>();
@@ -60,7 +62,7 @@ export default () => {
   return (
     <div style={{ height: "100" }}>
       <div>
-        <p className="govie-heading-m">Timeline</p>
+        <p className="govie-heading-m">{t("title")}</p>
       </div>
       <div className="govie-form-group">
         <select
@@ -70,10 +72,10 @@ export default () => {
           style={{ minWidth: "initial", width: "100%" }}
           onChange={(e) => handleCategoryChange(e.target.value.toLowerCase())}
         >
-          <option value="">All services</option>
-          <option value="driving">Driving</option>
-          <option value="employment">Employment</option>
-          <option value="housing">Housing</option>
+          <option value="">{t("allServices")}</option>
+          <option value="driving">{t("driving")}</option>
+          <option value="employment">{t("employment")}</option>
+          <option value="housing">{t("housing")}</option>
         </select>
       </div>
 
@@ -84,7 +86,7 @@ export default () => {
             id="default-input"
             name="default-input"
             className="govie-input"
-            placeholder={"Search event..."}
+            placeholder={t(`searchEvent`)}
             onChange={(e) => handleSearchChange(e.target.value)}
           />
           <button
@@ -92,7 +94,7 @@ export default () => {
             className="govie-input__suffix"
             style={{ cursor: "pointer" }}
             onClick={() => searchEvent()}
-            aria-label="Search"
+            aria-label={t(`Search`)}
           >
             <Icon icon={"search"} color={ds.colours.ogcio.darkGreen} />
           </button>
@@ -186,7 +188,7 @@ export default () => {
                             }}
                             className="govie-link govie-body-s"
                           >
-                            <span>View details</span>
+                            <span>{t("details")}</span>
                           </Link>
                         </div>
                       </div>
@@ -202,7 +204,7 @@ export default () => {
         className="govie-button"
         style={{ width: "100%", lineHeight: "normal" }}
       >
-        See all events
+        {t("seeAllEvents")}
       </Link>
     </div>
   );

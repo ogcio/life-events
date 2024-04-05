@@ -16,9 +16,10 @@ export default ({
   handleSearchChange: (value: string) => void;
   searchEvent: () => void;
 }) => {
+  const t = useTranslations();
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 
-  const categories = ["Driving", "Employment", "Housing"];
+  const categories = [t("driving"), t("employment"), t("housing")];
 
   const checkboxes = categories.map((service: string, index: number) => (
     <div className="govie-checkboxes__item" key={service}>
@@ -55,7 +56,7 @@ export default ({
         className="govie-back-link"
         style={{ marginTop: "0" }}
       >
-        Back to My Portal
+        {t("backToPortal")}
       </Link>
       <li
         key="userinfo"
@@ -79,7 +80,7 @@ export default ({
               id="default-input"
               name="default-input"
               className="govie-input"
-              placeholder={"Search event..."}
+              placeholder={t("searchEvent")}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
             <button
@@ -87,7 +88,7 @@ export default ({
               className="govie-input__suffix"
               style={{ cursor: "pointer" }}
               onClick={() => searchEvent()}
-              aria-label="Search"
+              aria-label={t("search")}
             >
               <Icon icon={"search"} color={ds.colours.ogcio.darkGreen} />
             </button>
@@ -99,7 +100,7 @@ export default ({
               className="govie-fieldset__legend govie-fieldset__legend--l"
               style={{ marginBottom: 0 }}
             >
-              <p className="govie-heading-s">Filter by service</p>
+              <p className="govie-heading-s">{t("filterByService")}</p>
             </legend>
             <div
               className="govie-checkboxes govie-checkboxes--small"

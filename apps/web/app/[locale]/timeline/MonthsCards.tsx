@@ -3,6 +3,7 @@ import { formatDate } from "../../utils/web";
 import { GroupedEvents, Month } from "./Timeline";
 import ds from "design-system";
 import dayjs from "dayjs";
+import { useTranslations } from "next-intl";
 
 const Icon = ds.Icon;
 
@@ -11,6 +12,7 @@ const opaque = ds.hexToRgba(ds.colours.ogcio.gold, 5);
 const darkGrey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 80);
 
 export default ({ months, view }: { months: Month[]; view: string }) => {
+  const t = useTranslations();
   return months.map((monthObject) => {
     const { events } = monthObject;
     const groupedEvents: GroupedEvents = events.reduce((grouped, event) => {
@@ -71,7 +73,7 @@ export default ({ months, view }: { months: Month[]; view: string }) => {
                   }}
                   className="govie-link"
                 >
-                  <span>View details</span>
+                  <span>{t("details")}</span>
                 </Link>
               </div>
             </div>
