@@ -26,7 +26,7 @@ export default async function () {
             onSignOut={async () => {
               "use server";
 
-              await signOut(logtoConfig);
+              await signOut(logtoConfig, "http://localhost:3001/");
             }}
           />{" "}
           <SignIn
