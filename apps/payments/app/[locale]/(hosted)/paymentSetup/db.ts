@@ -28,10 +28,7 @@ type TransactionDetails = {
   updated_at: string;
   transaction_id: string;
 };
-export async function getUserTransactionDetails(userId: string) {
-  const userInfo = await getUserInfoById(userId);
-  if (!userInfo) return [];
-
+export async function getUserTransactionDetails() {
   const res = await pgpool.query(
     `
   SELECT
@@ -47,10 +44,6 @@ export async function getUserTransactionDetails(userId: string) {
     [],
   );
   const transactions = res.rows;
-
-  for (let transaction of transactions) {
-    transaction.citizen_name = userInfo.user_name;
-  }
 
   return transactions;
 }
