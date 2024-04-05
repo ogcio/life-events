@@ -343,29 +343,10 @@ export interface ApiV1RequestsPostRequest {
   allowCustomAmount: boolean;
   /**
    *
-   * @type {Array<ApiV1RequestsPostRequestAccountsInner>}
+   * @type {Array<string>}
    * @memberof ApiV1RequestsPostRequest
    */
-  accounts: Array<ApiV1RequestsPostRequestAccountsInner>;
-}
-/**
- *
- * @export
- * @interface ApiV1RequestsPostRequestAccountsInner
- */
-export interface ApiV1RequestsPostRequestAccountsInner {
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1RequestsPostRequestAccountsInner
-   */
-  account: string;
-  /**
-   *
-   * @type {boolean}
-   * @memberof ApiV1RequestsPostRequestAccountsInner
-   */
-  enabled: boolean;
+  providers: Array<string>;
 }
 /**
  *

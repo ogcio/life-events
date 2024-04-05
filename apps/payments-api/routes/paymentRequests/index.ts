@@ -50,12 +50,7 @@ const CreatePaymentRequest = Type.Object({
   redirectUrl: Type.String(),
   allowAmountOverride: Type.Boolean(),
   allowCustomAmount: Type.Boolean(),
-  accounts: Type.Array(
-    Type.Object({
-      account: Type.String(),
-      enabled: Type.Boolean(),
-    }),
-  ),
+  providers: Type.Array(Type.String()),
 });
 type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
 
@@ -221,7 +216,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         redirectUrl,
         allowAmountOverride,
         allowCustomAmount,
-        accounts,
+        providers,
       } = request.body;
 
       try {
@@ -251,24 +246,21 @@ export default async function paymentRequests(app: FastifyInstance) {
           const paymentRequestId =
             paymentRequestQueryResult.rows[0].payment_request_id;
 
-          const accountsData = [paymentRequestId].concat(
-            accounts.flatMap((acc) => [acc.account, acc.enabled]),
-          );
+          const sqlData = [paymentRequestId, ...providers];
 
-          const queryValues = accounts
-            .map((acc, index) => {
-              const paramPosition = 2 * (index + 1);
-              return `($${paramPosition}, $1 , $${paramPosition + 1})`;
+          const queryValues = providers
+            .map((_, index) => {
+              return `($${index + 2}, $1, true)`;
             })
             .join(",");
 
           const paymentRequestProviderQueryResult = await client.query(
             `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
             values ${queryValues} RETURNING payment_request_id`,
-            accountsData,
+            sqlData,
           );
 
-          if (paymentRequestProviderQueryResult.rowCount !== accounts.length) {
+          if (paymentRequestProviderQueryResult.rowCount !== providers.length) {
             // handle creation failure
             throw new Error("Failed to create payment");
           }

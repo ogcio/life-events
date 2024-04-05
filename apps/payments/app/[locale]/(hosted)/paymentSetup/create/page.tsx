@@ -12,26 +12,14 @@ type Account = {
 async function createPayment(userId: string, formData: FormData) {
   "use server";
 
-  const accounts: Account[] = [
-    {
-      account: formData.get("openbanking-account")?.toString(),
-      enabled: true,
-    },
-    {
-      account: formData.get("banktransfer-account")?.toString(),
-      enabled: true,
-    },
-    {
-      account: formData.get("stripe-account")?.toString(),
-      enabled: true,
-    },
-    {
-      account: formData.get("worldpay-account")?.toString(),
-      enabled: false,
-    },
-  ].filter((acc): acc is Account => !!acc.account);
+  // Worldpay integration is missing, temporarily ignore it
+  const providers: string[] = [
+    formData.get("openbanking-account")?.toString(),
+    formData.get("banktransfer-account")?.toString(),
+    formData.get("stripe-account")?.toString(),
+  ].filter((provider): provider is string => !!provider);
 
-  if (!accounts.length) {
+  if (!providers.length) {
     throw new Error("Failed to create payment");
   }
 
@@ -43,7 +31,7 @@ async function createPayment(userId: string, formData: FormData) {
     redirectUrl: formData.get("redirect-url") as string,
     allowAmountOverride: formData.get("allowAmountOverride") === "on",
     allowCustomAmount: formData.get("allowCustomAmount") === "on",
-    accounts,
+    providers,
   };
 
   const paymentRequestId = (

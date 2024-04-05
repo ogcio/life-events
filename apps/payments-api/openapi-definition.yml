@@ -259,18 +259,10 @@ paths:
                   type: boolean
                 allowCustomAmount:
                   type: boolean
-                accounts:
+                providers:
                   type: array
                   items:
-                    type: object
-                    properties:
-                      account:
-                        type: string
-                      enabled:
-                        type: boolean
-                    required:
-                      - account
-                      - enabled
+                    type: string
               required:
                 - title
                 - description
@@ -279,7 +271,7 @@ paths:
                 - redirectUrl
                 - allowAmountOverride
                 - allowCustomAmount
-                - accounts
+                - providers
         required: true
       responses:
         "200":
