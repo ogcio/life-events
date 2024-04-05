@@ -5,7 +5,8 @@ import { getUserTransactionDetails } from "./db";
 import { formatCurrency } from "../../../utils";
 import SignIn from "../../../sign-in";
 import SignOut from "../../../sign-out";
-import { getLogtoContext } from "../../../../libraries/logto";
+import { getLogtoContext, signIn, signOut } from "@logto/next/server-actions";
+import { logtoConfig } from "../../../../libraries/logtoConfig";
 
 export default async function () {
   const [t] = await Promise.all([
@@ -13,18 +14,28 @@ export default async function () {
     // PgSessions.get(),
   ]);
 
-  const context = await getLogtoContext();
-  console.log(context); //{ isAuthenticated: false } always false
-
   const transactions = []; //await getUserTransactionDetails(userId);
-
+  const { isAuthenticated } = await getLogtoContext(logtoConfig);
   return (
     <>
       <main>
         <h1>Hello Logto.</h1>
-        <p>{context.isAuthenticated ? "Auth" : "No Auth"}</p>
+        <p>{isAuthenticated ? "Auth" : "No Auth"}</p>
         <div>
-          <SignOut /> <SignIn />
+          <SignOut
+            onSignOut={async () => {
+              "use server";
+
+              await signOut(logtoConfig);
+            }}
+          />{" "}
+          <SignIn
+            onSignIn={async () => {
+              "use server";
+
+              await signIn(logtoConfig);
+            }}
+          />
         </div>
       </main>
       <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
