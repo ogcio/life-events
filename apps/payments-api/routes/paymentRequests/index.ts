@@ -42,6 +42,18 @@ const ParamsWithPaymentRequestId = Type.Object({
 });
 type ParamsWithPaymentRequestId = Static<typeof ParamsWithPaymentRequestId>;
 
+const CreatePaymentRequest = Type.Object({
+  title: Type.String(),
+  description: Type.String(),
+  reference: Type.String(),
+  amount: Type.Number(),
+  redirectUrl: Type.String(),
+  allowAmountOverride: Type.Boolean(),
+  allowCustomAmount: Type.Boolean(),
+  providers: Type.Array(Type.String()),
+});
+type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
+
 export default async function paymentRequests(app: FastifyInstance) {
   app.get<{ Reply: PaymentRequest[] }>(
     "/",
@@ -169,7 +181,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         [requestId, userId],
       );
 
-      if (!result.rows.length) {
+      if (!result.rowCount) {
         reply.send(
           httpErrors.notFound("The requested payment request was not found"),
         );
@@ -177,6 +189,89 @@ export default async function paymentRequests(app: FastifyInstance) {
       }
 
       reply.send(result.rows[0]);
+    },
+  );
+
+  app.post<{ Body: CreatePaymentRequest; Reply: { id: string } | Error }>(
+    "/",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["PaymentRequests"],
+        body: CreatePaymentRequest,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const {
+        title,
+        description,
+        reference,
+        amount,
+        redirectUrl,
+        allowAmountOverride,
+        allowCustomAmount,
+        providers,
+      } = request.body;
+
+      try {
+        const result = await app.pg.transact(async (client) => {
+          const paymentRequestQueryResult = await client.query(
+            `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override, allow_custom_amount)
+              values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+              returning payment_request_id`,
+            [
+              userId,
+              title,
+              description,
+              reference,
+              amount,
+              redirectUrl,
+              "pending",
+              allowAmountOverride,
+              allowCustomAmount,
+            ],
+          );
+
+          if (!paymentRequestQueryResult.rowCount) {
+            // handle creation failure
+            throw new Error("Failed to create payment");
+          }
+
+          const paymentRequestId =
+            paymentRequestQueryResult.rows[0].payment_request_id;
+
+          const sqlData = [paymentRequestId, ...providers];
+
+          const queryValues = providers
+            .map((_, index) => {
+              return `($${index + 2}, $1, true)`;
+            })
+            .join(",");
+
+          const paymentRequestProviderQueryResult = await client.query(
+            `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
+            values ${queryValues} RETURNING payment_request_id`,
+            sqlData,
+          );
+
+          if (paymentRequestProviderQueryResult.rowCount !== providers.length) {
+            // handle creation failure
+            throw new Error("Failed to create payment");
+          }
+
+          return paymentRequestId;
+        });
+
+        reply.send({ id: result });
+      } catch (error) {
+        reply.send(httpErrors.internalServerError((error as Error).message));
+      }
     },
   );
 }

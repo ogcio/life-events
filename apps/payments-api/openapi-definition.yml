@@ -236,6 +236,55 @@ paths:
                     - amount
                     - reference
                     - providers
+    post:
+      tags:
+        - PaymentRequests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                reference:
+                  type: string
+                amount:
+                  type: number
+                redirectUrl:
+                  type: string
+                allowAmountOverride:
+                  type: boolean
+                allowCustomAmount:
+                  type: boolean
+                providers:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - title
+                - description
+                - reference
+                - amount
+                - redirectUrl
+                - allowAmountOverride
+                - allowCustomAmount
+                - providers
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
   /api/v1/requests/{requestId}:
     get:
       tags:
