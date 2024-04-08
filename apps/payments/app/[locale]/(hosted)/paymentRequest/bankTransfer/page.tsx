@@ -1,9 +1,10 @@
 import OpenBankingHost from "./OpenBankingHost";
-import { pgpool } from "../../../../dbConnection";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 import { getRealAmount } from "../../../../utils";
 import { createTransaction } from "../../paymentSetup/db";
+import buildApiClient from "../../../../../client/index";
+import { PgSessions } from "auth/sessions";
 
 async function getPaymentDetails(
   paymentId: string,
@@ -11,40 +12,34 @@ async function getPaymentDetails(
   amount?: number,
   customAmount?: number,
 ) {
-  const { rows: paymentRows } = await pgpool.query(
-    `
-    SELECT
-      pr.payment_request_id,
-      pr.title,
-      pr.description,
-      pr.reference,
-      pr.amount,
-      pp.provider_id,
-      pp.provider_name,
-      pp.provider_data,
-      pr.allow_amount_override as "allowAmountOverride",
-      pr.allow_custom_amount as "allowCustomAmount"
-    FROM payment_requests pr
-    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
-    JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
-    WHERE pr.payment_request_id = $1
-      AND pp.provider_type = 'openbanking'
-    `,
-    [paymentId],
+  const { userId } = await PgSessions.get();
+  const details = (
+    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+      paymentId,
+    )
+  ).data;
+
+  if (!details) return undefined;
+
+  const provider = details.providers.find(
+    (provider) => provider.type === "openbanking",
   );
 
-  if (!paymentRows.length) return undefined;
+  if (!provider) return undefined;
 
   const realAmount = getRealAmount({
-    amount: paymentRows[0].amount,
+    amount: details.amount,
     customAmount,
     amountOverride: amount,
-    allowAmountOverride: paymentRows[0].allowAmountOverride,
-    allowCustomOverride: paymentRows[0].allowCustomAmount,
+    allowAmountOverride: details.allowAmountOverride,
+    allowCustomOverride: details.allowCustomAmount,
   });
 
   const paymentDetails = {
-    ...paymentRows[0],
+    ...details,
+    providerId: provider.id,
+    providerName: provider.name,
+    providerData: provider.data,
     amount: realAmount,
     user,
   };
@@ -102,7 +97,7 @@ export default async function Bank(props: {
     paymentRequest.id,
     props.searchParams.integrationRef,
     paymentDetails.amount,
-    paymentDetails.provider_id,
+    paymentDetails.providerId,
     userInfo,
   );
 

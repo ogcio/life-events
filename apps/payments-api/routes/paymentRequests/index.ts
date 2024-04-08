@@ -316,7 +316,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       } = request.body;
 
       try {
-        const result = await app.pg.transact(async (client) => {
+        await app.pg.transact(async (client) => {
           await client.query(
             `update payment_requests 
               set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 
@@ -366,6 +366,72 @@ export default async function paymentRequests(app: FastifyInstance) {
       } catch (error) {
         reply.send(httpErrors.internalServerError((error as Error).message));
       }
+    },
+  );
+
+  app.delete<{
+    Reply: {} | Error;
+    Params: ParamsWithPaymentRequestId;
+  }>(
+    "/:requestId",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["PaymentRequests"],
+        response: {
+          200: Type.Object({}),
+          404: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { requestId } = request.params;
+
+      const transactions = await app.pg.query(
+        `select transaction_id from payment_transactions where payment_request_id = $1`,
+        [requestId],
+      );
+
+      if (transactions.rowCount) {
+        reply.send(
+          httpErrors.internalServerError(
+            "Payment request with existing transactions cannot be deleted",
+          ),
+        );
+        return;
+      }
+
+      try {
+        await app.pg.transact(async (client) => {
+          await client.query(
+            `delete from payment_requests_providers
+            where payment_request_id = $1`,
+            [requestId],
+          );
+
+          const deleted = await client.query(
+            `delete from payment_requests
+            where payment_request_id = $1
+              and user_id = $2
+            returning payment_request_id`,
+            [requestId, userId],
+          );
+
+          if (deleted.rowCount === 0) {
+            const error = httpErrors.notFound("Payment request was not found");
+            throw error;
+          }
+        });
+      } catch (error) {
+        if (error instanceof Error && error.name !== "error") {
+          reply.send(error);
+        }
+        reply.send(httpErrors.internalServerError((error as Error).message));
+      }
+
+      reply.send();
     },
   );
 }
