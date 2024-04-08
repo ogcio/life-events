@@ -3,6 +3,7 @@ import path from "path";
 import cors from "@fastify/cors";
 import fastifyEnv from "@fastify/env";
 import fastifyPostgres from "@fastify/postgres";
+import autoload from "@fastify/autoload";
 
 import { fileURLToPath } from "url";
 
@@ -60,10 +61,17 @@ fastify.register(import("@fastify/static"), {
   constraints: {},
 });
 
-fastify.register(import("@fastify/autoload"), {
+fastify.register(autoload, {
   dir: path.join(__dirname, "stubs"),
   options: {
     prefix: "/static",
+  },
+});
+
+fastify.register(autoload, {
+  dir: path.join(__dirname, "routes"),
+  options: {
+    prefix: "/api",
   },
 });
 

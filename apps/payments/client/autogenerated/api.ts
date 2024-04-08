@@ -123,6 +123,43 @@ export interface ApiV1ProvidersPostRequestType {}
 /**
  *
  * @export
+ * @interface ApiV1ProvidersProviderIdGet404Response
+ */
+export interface ApiV1ProvidersProviderIdGet404Response {
+  /**
+   *
+   * @type {number}
+   * @memberof ApiV1ProvidersProviderIdGet404Response
+   */
+  statusCode: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet404Response
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet404Response
+   */
+  error: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet404Response
+   */
+  message: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet404Response
+   */
+  time: string;
+}
+/**
+ *
+ * @export
  * @interface ApiV1ProvidersProviderIdPut200Response
  */
 export interface ApiV1ProvidersProviderIdPut200Response {
@@ -164,6 +201,214 @@ export interface ApiV1ProvidersProviderIdPutRequest {
  * @interface ApiV1ProvidersProviderIdPutRequestStatus
  */
 export interface ApiV1ProvidersProviderIdPutRequestStatus {}
+/**
+ *
+ * @export
+ * @interface ApiV1RequestsGet200ResponseInner
+ */
+export interface ApiV1RequestsGet200ResponseInner {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsGet200ResponseInner
+   */
+  paymentRequestId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsGet200ResponseInner
+   */
+  title: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsGet200ResponseInner
+   */
+  description: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ApiV1RequestsGet200ResponseInner
+   */
+  amount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsGet200ResponseInner
+   */
+  reference: string;
+  /**
+   *
+   * @type {Array<ApiV1RequestsGet200ResponseInnerProvidersInner>}
+   * @memberof ApiV1RequestsGet200ResponseInner
+   */
+  providers: Array<ApiV1RequestsGet200ResponseInnerProvidersInner>;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1RequestsGet200ResponseInnerProvidersInner
+ */
+export interface ApiV1RequestsGet200ResponseInnerProvidersInner {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsGet200ResponseInnerProvidersInner
+   */
+  userId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsGet200ResponseInnerProvidersInner
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsGet200ResponseInnerProvidersInner
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsGet200ResponseInnerProvidersInner
+   */
+  type: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsGet200ResponseInnerProvidersInner
+   */
+  status: string;
+  /**
+   *
+   * @type {any}
+   * @memberof ApiV1RequestsGet200ResponseInnerProvidersInner
+   */
+  data: any;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsGet200ResponseInnerProvidersInner
+   */
+  createdAt: string;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1RequestsPostRequest
+ */
+export interface ApiV1RequestsPostRequest {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  title: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  reference: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  amount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  redirectUrl: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  allowAmountOverride: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  allowCustomAmount: boolean;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  providers: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1RequestsRequestIdGet200Response
+ */
+export interface ApiV1RequestsRequestIdGet200Response {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsRequestIdGet200Response
+   */
+  paymentRequestId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsRequestIdGet200Response
+   */
+  title: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsRequestIdGet200Response
+   */
+  description: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ApiV1RequestsRequestIdGet200Response
+   */
+  amount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsRequestIdGet200Response
+   */
+  reference: string;
+  /**
+   *
+   * @type {Array<ApiV1RequestsGet200ResponseInnerProvidersInner>}
+   * @memberof ApiV1RequestsRequestIdGet200Response
+   */
+  providers: Array<ApiV1RequestsGet200ResponseInnerProvidersInner>;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsRequestIdGet200Response
+   */
+  redirectUrl: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiV1RequestsRequestIdGet200Response
+   */
+  allowAmountOverride: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiV1RequestsRequestIdGet200Response
+   */
+  allowCustomAmount: boolean;
+}
 
 /**
  * DefaultApi - axios parameter creator
@@ -178,10 +423,10 @@ export const DefaultApiAxiosParamCreator = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiV1HealthGet: async (
+    healthGet: async (
       options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
-      const localVarPath = `/api/v1/health`;
+      const localVarPath = `/health`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -226,16 +471,16 @@ export const DefaultApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async apiV1HealthGet(
+    async healthGet(
       options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.apiV1HealthGet(options);
+        await localVarAxiosParamCreator.healthGet(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.apiV1HealthGet"]?.[
+        operationServerMap["DefaultApi.healthGet"]?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -265,9 +510,9 @@ export const DefaultApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    apiV1HealthGet(options?: any): AxiosPromise<void> {
+    healthGet(options?: any): AxiosPromise<void> {
       return localVarFp
-        .apiV1HealthGet(options)
+        .healthGet(options)
         .then((request) => request(axios, basePath));
     },
   };
@@ -286,9 +531,367 @@ export class DefaultApi extends BaseAPI {
    * @throws {RequiredError}
    * @memberof DefaultApi
    */
-  public apiV1HealthGet(options?: RawAxiosRequestConfig) {
+  public healthGet(options?: RawAxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
-      .apiV1HealthGet(options)
+      .healthGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * PaymentRequestsApi - axios parameter creator
+ * @export
+ */
+export const PaymentRequestsApiAxiosParamCreator = function (
+  configuration?: Configuration,
+) {
+  return {
+    /**
+     *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsGet: async (
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/api/v1/requests/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "GET",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @param {ApiV1RequestsPostRequest} apiV1RequestsPostRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsPost: async (
+      apiV1RequestsPostRequest: ApiV1RequestsPostRequest,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'apiV1RequestsPostRequest' is not null or undefined
+      assertParamExists(
+        "apiV1RequestsPost",
+        "apiV1RequestsPostRequest",
+        apiV1RequestsPostRequest,
+      );
+      const localVarPath = `/api/v1/requests/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "POST",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter["Content-Type"] = "application/json";
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        apiV1RequestsPostRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @param {string} requestId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsRequestIdGet: async (
+      requestId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'requestId' is not null or undefined
+      assertParamExists("apiV1RequestsRequestIdGet", "requestId", requestId);
+      const localVarPath = `/api/v1/requests/{requestId}`.replace(
+        `{${"requestId"}}`,
+        encodeURIComponent(String(requestId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "GET",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * PaymentRequestsApi - functional programming interface
+ * @export
+ */
+export const PaymentRequestsApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator =
+    PaymentRequestsApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1RequestsGet(
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<Array<ApiV1RequestsGet200ResponseInner>>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1RequestsGet(options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["PaymentRequestsApi.apiV1RequestsGet"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
+     * @param {ApiV1RequestsPostRequest} apiV1RequestsPostRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1RequestsPost(
+      apiV1RequestsPostRequest: ApiV1RequestsPostRequest,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiV1ProvidersPost200Response>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1RequestsPost(
+          apiV1RequestsPostRequest,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["PaymentRequestsApi.apiV1RequestsPost"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
+     * @param {string} requestId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1RequestsRequestIdGet(
+      requestId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiV1RequestsRequestIdGet200Response>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1RequestsRequestIdGet(
+          requestId,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["PaymentRequestsApi.apiV1RequestsRequestIdGet"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+  };
+};
+
+/**
+ * PaymentRequestsApi - factory interface
+ * @export
+ */
+export const PaymentRequestsApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance,
+) {
+  const localVarFp = PaymentRequestsApiFp(configuration);
+  return {
+    /**
+     *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsGet(
+      options?: any,
+    ): AxiosPromise<Array<ApiV1RequestsGet200ResponseInner>> {
+      return localVarFp
+        .apiV1RequestsGet(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @param {ApiV1RequestsPostRequest} apiV1RequestsPostRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsPost(
+      apiV1RequestsPostRequest: ApiV1RequestsPostRequest,
+      options?: any,
+    ): AxiosPromise<ApiV1ProvidersPost200Response> {
+      return localVarFp
+        .apiV1RequestsPost(apiV1RequestsPostRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @param {string} requestId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsRequestIdGet(
+      requestId: string,
+      options?: any,
+    ): AxiosPromise<ApiV1RequestsRequestIdGet200Response> {
+      return localVarFp
+        .apiV1RequestsRequestIdGet(requestId, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * PaymentRequestsApi - object-oriented interface
+ * @export
+ * @class PaymentRequestsApi
+ * @extends {BaseAPI}
+ */
+export class PaymentRequestsApi extends BaseAPI {
+  /**
+   *
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PaymentRequestsApi
+   */
+  public apiV1RequestsGet(options?: RawAxiosRequestConfig) {
+    return PaymentRequestsApiFp(this.configuration)
+      .apiV1RequestsGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @param {ApiV1RequestsPostRequest} apiV1RequestsPostRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PaymentRequestsApi
+   */
+  public apiV1RequestsPost(
+    apiV1RequestsPostRequest: ApiV1RequestsPostRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PaymentRequestsApiFp(this.configuration)
+      .apiV1RequestsPost(apiV1RequestsPostRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @param {string} requestId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PaymentRequestsApi
+   */
+  public apiV1RequestsRequestIdGet(
+    requestId: string,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PaymentRequestsApiFp(this.configuration)
+      .apiV1RequestsRequestIdGet(requestId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }

@@ -47,6 +47,7 @@
     "@types/react": "18.2.45",
     "db-migrate": "^0.11.14",
     "db-migrate-pg": "^1.5.2",
+    "eslint-config-next": "^14.1.4",
     "eslint-config-prettier": "^9.1.0",
     "tsx": "^4.7.1",
     "typescript": "5.3.3"

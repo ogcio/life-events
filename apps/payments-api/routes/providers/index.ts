@@ -1,5 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
+import { httpErrors } from "@fastify/sensible";
+import { HttpError } from "../../types/httpErrors";
 
 const Provider = Type.Union([
   Type.Object({
@@ -106,7 +108,7 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Reply: ProviderType; Params: ParamsWithProviderId }>(
+  app.get<{ Reply: ProviderType | Error; Params: ParamsWithProviderId }>(
     "/:providerId",
     {
       preValidation: app.verifyUser,
@@ -120,6 +122,7 @@ export default async function providers(app: FastifyInstance) {
             data: Type.Any(),
             status: Type.String(),
           }),
+          404: HttpError,
         },
       },
     },
@@ -141,6 +144,11 @@ export default async function providers(app: FastifyInstance) {
         `,
         [providerId, userId],
       );
+
+      if (!result.rows.length) {
+        reply.send(httpErrors.notFound("The requested provider was not found"));
+        return;
+      }
 
       reply.send(result.rows[0]);
     },
