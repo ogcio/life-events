@@ -2,7 +2,11 @@ import Link from "next/link";
 
 export default () => (
   <>
-    <p className="govie-body">Coming soon</p>
+    <div>
+      <Link className="govie-link" href="settings/emails">
+        Emails
+      </Link>
+    </div>
     <Link className="govie-back-link" href="/">
       Back
     </Link>

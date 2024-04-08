@@ -123,6 +123,43 @@ export interface ApiV1ProvidersPostRequestType {}
 /**
  *
  * @export
+ * @interface ApiV1ProvidersProviderIdGet404Response
+ */
+export interface ApiV1ProvidersProviderIdGet404Response {
+  /**
+   *
+   * @type {number}
+   * @memberof ApiV1ProvidersProviderIdGet404Response
+   */
+  statusCode: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet404Response
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet404Response
+   */
+  error: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet404Response
+   */
+  message: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet404Response
+   */
+  time: string;
+}
+/**
+ *
+ * @export
  * @interface ApiV1ProvidersProviderIdPut200Response
  */
 export interface ApiV1ProvidersProviderIdPut200Response {
@@ -255,6 +292,141 @@ export interface ApiV1RequestsGet200ResponseInnerProvidersInner {
    * @memberof ApiV1RequestsGet200ResponseInnerProvidersInner
    */
   createdAt: string;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1RequestsPostRequest
+ */
+export interface ApiV1RequestsPostRequest {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  title: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  reference: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  amount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  redirectUrl: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  allowAmountOverride: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  allowCustomAmount: boolean;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ApiV1RequestsPostRequest
+   */
+  providers: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1RequestsPutRequest
+ */
+export interface ApiV1RequestsPutRequest {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  title: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  reference: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  amount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  redirectUrl: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  allowAmountOverride: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  allowCustomAmount: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  paymentRequestId: string;
+  /**
+   *
+   * @type {ApiV1RequestsPutRequestProvidersUpdate}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  providersUpdate: ApiV1RequestsPutRequestProvidersUpdate;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1RequestsPutRequestProvidersUpdate
+ */
+export interface ApiV1RequestsPutRequestProvidersUpdate {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ApiV1RequestsPutRequestProvidersUpdate
+   */
+  toDisable: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ApiV1RequestsPutRequestProvidersUpdate
+   */
+  toCreate: Array<string>;
 }
 /**
  *
@@ -494,6 +666,157 @@ export const PaymentRequestsApiAxiosParamCreator = function (
     },
     /**
      *
+     * @param {ApiV1RequestsPostRequest} apiV1RequestsPostRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsPost: async (
+      apiV1RequestsPostRequest: ApiV1RequestsPostRequest,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'apiV1RequestsPostRequest' is not null or undefined
+      assertParamExists(
+        "apiV1RequestsPost",
+        "apiV1RequestsPostRequest",
+        apiV1RequestsPostRequest,
+      );
+      const localVarPath = `/api/v1/requests/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "POST",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter["Content-Type"] = "application/json";
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        apiV1RequestsPostRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @param {ApiV1RequestsPutRequest} apiV1RequestsPutRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsPut: async (
+      apiV1RequestsPutRequest: ApiV1RequestsPutRequest,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'apiV1RequestsPutRequest' is not null or undefined
+      assertParamExists(
+        "apiV1RequestsPut",
+        "apiV1RequestsPutRequest",
+        apiV1RequestsPutRequest,
+      );
+      const localVarPath = `/api/v1/requests/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "PUT",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter["Content-Type"] = "application/json";
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        apiV1RequestsPutRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @param {string} requestId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsRequestIdDelete: async (
+      requestId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'requestId' is not null or undefined
+      assertParamExists("apiV1RequestsRequestIdDelete", "requestId", requestId);
+      const localVarPath = `/api/v1/requests/{requestId}`.replace(
+        `{${"requestId"}}`,
+        encodeURIComponent(String(requestId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "DELETE",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -578,6 +901,102 @@ export const PaymentRequestsApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @param {ApiV1RequestsPostRequest} apiV1RequestsPostRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1RequestsPost(
+      apiV1RequestsPostRequest: ApiV1RequestsPostRequest,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiV1ProvidersPost200Response>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1RequestsPost(
+          apiV1RequestsPostRequest,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["PaymentRequestsApi.apiV1RequestsPost"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
+     * @param {ApiV1RequestsPutRequest} apiV1RequestsPutRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1RequestsPut(
+      apiV1RequestsPutRequest: ApiV1RequestsPutRequest,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiV1ProvidersPost200Response>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1RequestsPut(
+          apiV1RequestsPutRequest,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["PaymentRequestsApi.apiV1RequestsPut"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
+     * @param {string} requestId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1RequestsRequestIdDelete(
+      requestId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1RequestsRequestIdDelete(
+          requestId,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["PaymentRequestsApi.apiV1RequestsRequestIdDelete"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
      * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -637,6 +1056,48 @@ export const PaymentRequestsApiFactory = function (
     },
     /**
      *
+     * @param {ApiV1RequestsPostRequest} apiV1RequestsPostRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsPost(
+      apiV1RequestsPostRequest: ApiV1RequestsPostRequest,
+      options?: any,
+    ): AxiosPromise<ApiV1ProvidersPost200Response> {
+      return localVarFp
+        .apiV1RequestsPost(apiV1RequestsPostRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @param {ApiV1RequestsPutRequest} apiV1RequestsPutRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsPut(
+      apiV1RequestsPutRequest: ApiV1RequestsPutRequest,
+      options?: any,
+    ): AxiosPromise<ApiV1ProvidersPost200Response> {
+      return localVarFp
+        .apiV1RequestsPut(apiV1RequestsPutRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @param {string} requestId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsRequestIdDelete(
+      requestId: string,
+      options?: any,
+    ): AxiosPromise<object> {
+      return localVarFp
+        .apiV1RequestsRequestIdDelete(requestId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -668,6 +1129,54 @@ export class PaymentRequestsApi extends BaseAPI {
   public apiV1RequestsGet(options?: RawAxiosRequestConfig) {
     return PaymentRequestsApiFp(this.configuration)
       .apiV1RequestsGet(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @param {ApiV1RequestsPostRequest} apiV1RequestsPostRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PaymentRequestsApi
+   */
+  public apiV1RequestsPost(
+    apiV1RequestsPostRequest: ApiV1RequestsPostRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PaymentRequestsApiFp(this.configuration)
+      .apiV1RequestsPost(apiV1RequestsPostRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @param {ApiV1RequestsPutRequest} apiV1RequestsPutRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PaymentRequestsApi
+   */
+  public apiV1RequestsPut(
+    apiV1RequestsPutRequest: ApiV1RequestsPutRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PaymentRequestsApiFp(this.configuration)
+      .apiV1RequestsPut(apiV1RequestsPutRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @param {string} requestId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PaymentRequestsApi
+   */
+  public apiV1RequestsRequestIdDelete(
+    requestId: string,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PaymentRequestsApiFp(this.configuration)
+      .apiV1RequestsRequestIdDelete(requestId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

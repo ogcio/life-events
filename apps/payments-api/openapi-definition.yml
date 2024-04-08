@@ -236,6 +236,117 @@ paths:
                     - amount
                     - reference
                     - providers
+    post:
+      tags:
+        - PaymentRequests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                reference:
+                  type: string
+                amount:
+                  type: number
+                redirectUrl:
+                  type: string
+                allowAmountOverride:
+                  type: boolean
+                allowCustomAmount:
+                  type: boolean
+                providers:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - title
+                - description
+                - reference
+                - amount
+                - redirectUrl
+                - allowAmountOverride
+                - allowCustomAmount
+                - providers
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+    put:
+      tags:
+        - PaymentRequests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                reference:
+                  type: string
+                amount:
+                  type: number
+                redirectUrl:
+                  type: string
+                allowAmountOverride:
+                  type: boolean
+                allowCustomAmount:
+                  type: boolean
+                paymentRequestId:
+                  type: string
+                providersUpdate:
+                  type: object
+                  properties:
+                    toDisable:
+                      type: array
+                      items:
+                        type: string
+                    toCreate:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - toDisable
+                    - toCreate
+              required:
+                - title
+                - description
+                - reference
+                - amount
+                - redirectUrl
+                - allowAmountOverride
+                - allowCustomAmount
+                - paymentRequestId
+                - providersUpdate
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
   /api/v1/requests/{requestId}:
     get:
       tags:
@@ -307,6 +418,69 @@ paths:
                   - allowAmountOverride
                   - allowCustomAmount
         "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+    delete:
+      tags:
+        - PaymentRequests
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: requestId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+        "500":
           description: Default Response
           content:
             application/json:
