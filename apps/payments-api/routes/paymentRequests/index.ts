@@ -1,70 +1,15 @@
 import { FastifyInstance } from "fastify";
-import { Static, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { httpErrors } from "@fastify/sensible";
 import { HttpError } from "../../types/httpErrors";
-
-const ProviderDetails = Type.Object({
-  userId: Type.String(),
-  id: Type.String(),
-  name: Type.String(),
-  type: Type.Union([
-    Type.Literal("banktransfer"),
-    Type.Literal("openbanking"),
-    Type.Literal("stripe"),
-  ]),
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
-  data: Type.Any(),
-  createdAt: Type.String(),
-});
-
-const PaymentRequest = Type.Object({
-  paymentRequestId: Type.String(),
-  title: Type.String(),
-  description: Type.String(),
-  amount: Type.Number(),
-  reference: Type.String(),
-  providers: Type.Array(ProviderDetails),
-});
-type PaymentRequest = Static<typeof PaymentRequest>;
-
-const PaymentRequestDetails = Type.Composite([
+import {
+  CreatePaymentRequest,
+  EditPaymentRequest,
+  ParamsWithPaymentRequestId,
   PaymentRequest,
-  Type.Object({
-    redirectUrl: Type.String(),
-    allowAmountOverride: Type.Boolean(),
-    allowCustomAmount: Type.Boolean(),
-  }),
-]);
-type PaymentRequestDetails = Static<typeof PaymentRequestDetails>;
-
-const ParamsWithPaymentRequestId = Type.Object({
-  requestId: Type.String(),
-});
-type ParamsWithPaymentRequestId = Static<typeof ParamsWithPaymentRequestId>;
-
-const CreatePaymentRequest = Type.Object({
-  title: Type.String(),
-  description: Type.String(),
-  reference: Type.String(),
-  amount: Type.Number(),
-  redirectUrl: Type.String(),
-  allowAmountOverride: Type.Boolean(),
-  allowCustomAmount: Type.Boolean(),
-  providers: Type.Array(Type.String()),
-});
-type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
-
-const EditPaymentRequest = Type.Composite([
-  Type.Omit(CreatePaymentRequest, ["providers"]),
-  Type.Object({
-    paymentRequestId: Type.String(),
-    providersUpdate: Type.Object({
-      toDisable: Type.Array(Type.String()),
-      toCreate: Type.Array(Type.String()),
-    }),
-  }),
-]);
-type EditPaymentRequest = Static<typeof EditPaymentRequest>;
+  PaymentRequestDetails,
+  Transaction,
+} from "../../types/schemaDefinitions";
 
 export default async function paymentRequests(app: FastifyInstance) {
   app.get<{ Reply: PaymentRequest[] }>(
@@ -432,6 +377,39 @@ export default async function paymentRequests(app: FastifyInstance) {
       }
 
       reply.send();
+    },
+  );
+
+  app.get<{ Reply: Transaction[]; Params: ParamsWithPaymentRequestId }>(
+    "/:requestId/transactions",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Transactions"],
+        response: {
+          200: Type.Array(Transaction),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { requestId } = request.params;
+
+      const result = await app.pg.query(
+        `SELECT
+          t.transaction_id as "transactionId",
+          t.status,
+          pr.title,
+          pt.amount,
+          t.updated_at as "updatedAt"
+        FROM payment_transactions t
+        INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+        INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
+        WHERE pr.payment_request_id = $1
+        ORDER BY t.updated_at DESC`,
+        [requestId],
+      );
+
+      reply.send(result.rows);
     },
   );
 }

@@ -55,27 +55,6 @@ export async function getUserTransactionDetails(userId: string) {
   return transactions;
 }
 
-export async function getRequestTransactionDetails(requestId: string) {
-  "use server";
-
-  const res = await pgpool.query<TransactionDetails>(
-    `SELECT
-      t.transaction_id,
-      t.status,
-      pr.title,
-      pt.amount,
-      t.updated_at
-    FROM payment_transactions t
-    INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
-    INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
-    WHERE pr.payment_request_id = $1
-    ORDER BY t.updated_at DESC`,
-    [requestId],
-  );
-
-  return res.rows;
-}
-
 export async function createTransaction(
   paymentId: string,
   extPaymentId: string,

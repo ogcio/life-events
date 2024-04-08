@@ -1,42 +1,17 @@
 import { FastifyInstance } from "fastify";
-import { Static, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { httpErrors } from "@fastify/sensible";
 import { HttpError } from "../../types/httpErrors";
-
-const Provider = Type.Union([
-  Type.Object({
-    id: Type.String(),
-    name: Type.String(),
-    type: Type.Union([
-      Type.Literal("banktransfer"),
-      Type.Literal("openbanking"),
-      Type.Literal("stripe"),
-    ]),
-    data: Type.Any(),
-    status: Type.Union([
-      Type.Literal("connected"),
-      Type.Literal("disconnected"),
-    ]),
-  }),
-]);
-type ProviderType = Static<typeof Provider>;
-
-const CreateProvider = Type.Omit(Provider, ["id", "status"]);
-type CreateProviderType = Static<typeof CreateProvider>;
-
-const ProvidersList = Type.Union([Type.Array(Provider)]);
-type ProvidersListType = Static<typeof ProvidersList>;
-
-const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
-type UpdateProviderType = Static<typeof UpdateProvider>;
-
-const ParamsWithProviderId = Type.Object({
-  providerId: Type.String(),
-});
-type ParamsWithProviderId = Static<typeof ParamsWithProviderId>;
+import {
+  CreateProvider,
+  ParamsWithProviderId,
+  ProvidersList,
+  Provider,
+  UpdateProvider,
+} from "../../types/schemaDefinitions";
 
 export default async function providers(app: FastifyInstance) {
-  app.post<{ Body: CreateProviderType; Reply: { id: string } }>(
+  app.post<{ Body: CreateProvider; Reply: { id: string } }>(
     "/",
     {
       preValidation: app.verifyUser,
@@ -66,7 +41,7 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Reply: ProvidersListType }>(
+  app.get<{ Reply: ProvidersList }>(
     "/",
     {
       preValidation: app.verifyUser,
@@ -108,7 +83,7 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Reply: ProviderType | Error; Params: ParamsWithProviderId }>(
+  app.get<{ Reply: Provider | Error; Params: ParamsWithProviderId }>(
     "/:providerId",
     {
       preValidation: app.verifyUser,
@@ -154,7 +129,7 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.put<{ Body: UpdateProviderType; Params: ParamsWithProviderId }>(
+  app.put<{ Body: UpdateProvider; Params: ParamsWithProviderId }>(
     "/:providerId",
     {
       preValidation: app.verifyUser,

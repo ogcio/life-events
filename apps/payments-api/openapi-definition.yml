@@ -503,5 +503,118 @@ paths:
                   - error
                   - message
                   - time
+  /api/v1/requests/{requestId}/transactions:
+    get:
+      tags:
+        - Transactions
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: requestId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    transactionId:
+                      type: string
+                    status:
+                      type: string
+                    title:
+                      type: string
+                    amount:
+                      type: number
+                    updatedAt:
+                      type: string
+                  required:
+                    - transactionId
+                    - status
+                    - title
+                    - amount
+                    - updatedAt
+  /api/v1/transactions/{transactionId}:
+    get:
+      tags:
+        - Transactions
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: transactionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionId:
+                    type: string
+                  status:
+                    type: string
+                  title:
+                    type: string
+                  amount:
+                    type: number
+                  updatedAt:
+                    type: string
+                  userData:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      email:
+                        type: string
+                    required:
+                      - name
+                      - email
+                  extPaymentId:
+                    type: string
+                  providerName:
+                    type: string
+                  providerType:
+                    type: string
+                required:
+                  - transactionId
+                  - status
+                  - title
+                  - amount
+                  - updatedAt
+                  - userData
+                  - extPaymentId
+                  - providerName
+                  - providerType
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
 tags:
   - name: Providers
