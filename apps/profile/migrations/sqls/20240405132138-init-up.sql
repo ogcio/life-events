@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS user_details(
 );
 
 CREATE TABLE IF NOT EXISTS user_addresses (
-    address_id NOT NULL DEFAULT gen_random_uuid() UNIQUE,
+    address_id UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     user_id UUID NOT NULL,
     address_line1 TEXT NOT NULL,
     address_line2 TEXT,

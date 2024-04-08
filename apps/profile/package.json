@@ -5,8 +5,8 @@
     "dev": "nodemon",
     "build": "next build",
     "start": "next start -p 3003",
-    "migrate": "db-migrate up",
-    "migrate:create": "db-migrate create $npm_config_name --sql-file"
+    "test:e2e": "playwright test",
+    "migrate": "db-migrate up"
   },
   "nodemonConfig": {
     "watch": [
@@ -33,6 +33,7 @@
     "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.1",
     "@types/node": "20.10.4",
     "@types/pg": "^8.11.0",
     "@types/react": "18.2.45",
