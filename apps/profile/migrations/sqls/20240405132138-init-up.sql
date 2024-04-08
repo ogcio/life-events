@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS user_details(
-    user_id UUID NOT NULL,
+    user_id UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     title TEXT NOT NULL,
-    name TEXT NOT NULL,
-    surname TEXT NOT NULL,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
     date_of_birth DATE NOT NULL,
     ppsn TEXT NOT NULL,
     gender TEXT NOT NULL,
@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS user_details(
     primary key(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS addresses (
-    address_id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS user_addresses (
+    address_id NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     user_id UUID NOT NULL,
     address_line1 TEXT NOT NULL,
     address_line2 TEXT,
@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS addresses (
     eirecode TEXT NOT NULL,
     is_primary BOOLEAN NOT NULL DEFAULT FALSE,
     ownership_status TEXT NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE,
+    start_date  TIMESTAMP NOT NULL,
+    end_date  TIMESTAMP,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES user_details(user_id)
