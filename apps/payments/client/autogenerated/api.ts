@@ -351,6 +351,86 @@ export interface ApiV1RequestsPostRequest {
 /**
  *
  * @export
+ * @interface ApiV1RequestsPutRequest
+ */
+export interface ApiV1RequestsPutRequest {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  title: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  reference: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  amount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  redirectUrl: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  allowAmountOverride: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  allowCustomAmount: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  paymentRequestId: string;
+  /**
+   *
+   * @type {ApiV1RequestsPutRequestProvidersUpdate}
+   * @memberof ApiV1RequestsPutRequest
+   */
+  providersUpdate: ApiV1RequestsPutRequestProvidersUpdate;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1RequestsPutRequestProvidersUpdate
+ */
+export interface ApiV1RequestsPutRequestProvidersUpdate {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ApiV1RequestsPutRequestProvidersUpdate
+   */
+  toDisable: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ApiV1RequestsPutRequestProvidersUpdate
+   */
+  toCreate: Array<string>;
+}
+/**
+ *
+ * @export
  * @interface ApiV1RequestsRequestIdGet200Response
  */
 export interface ApiV1RequestsRequestIdGet200Response {
@@ -639,6 +719,59 @@ export const PaymentRequestsApiAxiosParamCreator = function (
     },
     /**
      *
+     * @param {ApiV1RequestsPutRequest} apiV1RequestsPutRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsPut: async (
+      apiV1RequestsPutRequest: ApiV1RequestsPutRequest,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'apiV1RequestsPutRequest' is not null or undefined
+      assertParamExists(
+        "apiV1RequestsPut",
+        "apiV1RequestsPutRequest",
+        apiV1RequestsPutRequest,
+      );
+      const localVarPath = `/api/v1/requests/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "PUT",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter["Content-Type"] = "application/json";
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        apiV1RequestsPutRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -756,6 +889,39 @@ export const PaymentRequestsApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @param {ApiV1RequestsPutRequest} apiV1RequestsPutRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1RequestsPut(
+      apiV1RequestsPutRequest: ApiV1RequestsPutRequest,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiV1ProvidersPost200Response>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1RequestsPut(
+          apiV1RequestsPutRequest,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["PaymentRequestsApi.apiV1RequestsPut"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
      * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -829,6 +995,20 @@ export const PaymentRequestsApiFactory = function (
     },
     /**
      *
+     * @param {ApiV1RequestsPutRequest} apiV1RequestsPutRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1RequestsPut(
+      apiV1RequestsPutRequest: ApiV1RequestsPutRequest,
+      options?: any,
+    ): AxiosPromise<ApiV1ProvidersPost200Response> {
+      return localVarFp
+        .apiV1RequestsPut(apiV1RequestsPutRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @param {string} requestId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -876,6 +1056,22 @@ export class PaymentRequestsApi extends BaseAPI {
   ) {
     return PaymentRequestsApiFp(this.configuration)
       .apiV1RequestsPost(apiV1RequestsPostRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @param {ApiV1RequestsPutRequest} apiV1RequestsPutRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PaymentRequestsApi
+   */
+  public apiV1RequestsPut(
+    apiV1RequestsPutRequest: ApiV1RequestsPutRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PaymentRequestsApiFp(this.configuration)
+      .apiV1RequestsPut(apiV1RequestsPutRequest, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
