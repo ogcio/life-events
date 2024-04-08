@@ -776,6 +776,51 @@ export const PaymentRequestsApiAxiosParamCreator = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
+    apiV1RequestsRequestIdDelete: async (
+      requestId: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'requestId' is not null or undefined
+      assertParamExists("apiV1RequestsRequestIdDelete", "requestId", requestId);
+      const localVarPath = `/api/v1/requests/{requestId}`.replace(
+        `{${"requestId"}}`,
+        encodeURIComponent(String(requestId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "DELETE",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @param {string} requestId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
     apiV1RequestsRequestIdGet: async (
       requestId: string,
       options: RawAxiosRequestConfig = {},
@@ -926,6 +971,36 @@ export const PaymentRequestsApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
+    async apiV1RequestsRequestIdDelete(
+      requestId: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1RequestsRequestIdDelete(
+          requestId,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["PaymentRequestsApi.apiV1RequestsRequestIdDelete"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
+     * @param {string} requestId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
     async apiV1RequestsRequestIdGet(
       requestId: string,
       options?: RawAxiosRequestConfig,
@@ -1013,6 +1088,20 @@ export const PaymentRequestsApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
+    apiV1RequestsRequestIdDelete(
+      requestId: string,
+      options?: any,
+    ): AxiosPromise<object> {
+      return localVarFp
+        .apiV1RequestsRequestIdDelete(requestId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @param {string} requestId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
     apiV1RequestsRequestIdGet(
       requestId: string,
       options?: any,
@@ -1072,6 +1161,22 @@ export class PaymentRequestsApi extends BaseAPI {
   ) {
     return PaymentRequestsApiFp(this.configuration)
       .apiV1RequestsPut(apiV1RequestsPutRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @param {string} requestId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PaymentRequestsApi
+   */
+  public apiV1RequestsRequestIdDelete(
+    requestId: string,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return PaymentRequestsApiFp(this.configuration)
+      .apiV1RequestsRequestIdDelete(requestId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

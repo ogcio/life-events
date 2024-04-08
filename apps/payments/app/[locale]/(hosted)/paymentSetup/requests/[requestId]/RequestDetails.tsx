@@ -9,14 +9,11 @@ import CopyLink from "./CopyBtn";
 import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 
-async function deletePaymentRequest(requestId: string) {
+async function deletePaymentRequest(requestId: string, userId: string) {
   "use server";
 
-  await pgpool.query(
-    `
-    delete from payment_requests where payment_request_id = $1
-    `,
-    [requestId],
+  await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdDelete(
+    requestId,
   );
 
   redirect("/paymentSetup/requests");
@@ -48,7 +45,11 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
     return <h1 className="govie-heading-l">Payment request not found</h1>;
   }
 
-  const deletePR = deletePaymentRequest.bind(this, details.paymentRequestId);
+  const deletePR = deletePaymentRequest.bind(
+    this,
+    details.paymentRequestId,
+    userId,
+  );
   // Cannot delete the payment request if we already have transactions
   const disableDeleteButton = await hasTransactions(requestId);
 

@@ -1,41 +1,36 @@
-import { pgpool } from "../../../../dbConnection";
 import StripeHost from "./StripeHost";
 import { getMessages, getTranslations } from "next-intl/server";
 import { createPaymentIntent } from "../../../../integration/stripe";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { createTransaction } from "../../paymentSetup/db";
+import buildApiClient from "../../../../../client/index";
+import { PgSessions } from "auth/sessions";
 
 async function getPaymentDetails(paymentId: string, amount?: string) {
-  "use server";
-  const { rows } = await pgpool.query(
-    `
-    select
-      pr.payment_request_id,
-      pr.title,
-      pr.description,
-      pr.reference,
-      pr.amount,
-      pp.provider_id,
-      pp.provider_name,
-      pp.provider_data,
-      pr.allow_amount_override
-    from payment_requests pr
-    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
-    join payment_providers pp on ppr.provider_id = pp.provider_id
-    where pr.payment_request_id = $1
-      and pp.provider_type = 'stripe'
-    `,
-    [paymentId],
+  const { userId } = await PgSessions.get();
+  const details = (
+    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+      paymentId,
+    )
+  ).data;
+
+  if (!details) return undefined;
+
+  const provider = details.providers.find(
+    (provider) => provider.type === "stripe",
   );
 
-  if (!rows.length) return undefined;
+  if (!provider) return undefined;
 
   return {
-    ...rows[0],
+    ...details,
+    providerId: provider.id,
+    providerName: provider.name,
+    providerData: provider.data,
     amount:
-      rows[0].allow_amount_override && amount
+      details.allowAmountOverride && amount
         ? parseFloat(amount)
-        : rows[0].amount,
+        : details.amount,
   };
 }
 
@@ -65,6 +60,10 @@ export default async function Card(props: {
     props.searchParams.amount,
   );
 
+  if (!paymentDetails) {
+    return <h1 className="govie-heading-l">Payment details not found</h1>;
+  }
+
   const { client_secret, id: paymentIntentId } =
     await createPaymentIntent(paymentDetails);
 
@@ -77,7 +76,7 @@ export default async function Card(props: {
     paymentIntentId,
     props.searchParams.integrationRef,
     paymentDetails.amount,
-    paymentDetails.provider_id,
+    paymentDetails.providerId,
     userInfo,
   );
 
