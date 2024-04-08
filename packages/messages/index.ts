@@ -1,6 +1,6 @@
 import { pgpool } from "./dbConnection";
 import { send as twilioSend } from "./strategies/twilio/index";
-
+import nodemailer from "nodemailer";
 // In case we need to do it, we can replace this with another provider
 // We just need to keep the same SendEmail interface
 export const send = twilioSend;
@@ -9,6 +9,7 @@ export * from "./templates";
 export * from "./notifications";
 export * from "./types";
 
+export const etherealEmailProviderName = "Ethereal email provider";
 type MessageState = {
   submittedMetaAt: string; // First step of meta selection such as type, transportation eg.
   submittedEmailAt: string;
@@ -25,6 +26,113 @@ type MessageState = {
   messageType: string;
   paymentRequestId: string;
   paymentUserId: string;
+};
+
+type EmailProvider = {
+  id: string;
+  name: string;
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+};
+
+export const mailApi = {
+  async createProvider({
+    host,
+    name,
+    password,
+    port,
+    username,
+  }: Omit<EmailProvider, "id">) {
+    return pgpool
+      .query<{ id: string }>(
+        `
+      INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw)
+      VALUES($1,$2,$3,$4,$5)
+      RETURNING id
+    `,
+        [name, host, port, username, password],
+      )
+      .then((res) => res.rows.at(0)?.id);
+  },
+  async updateProvider(data: EmailProvider) {
+    pgpool.query(
+      `
+      UPDATE email_providers set 
+        provider_name = $1, 
+        smtp_host = $2,
+        smtp_port = $3,
+        username = $4,
+        pw = $5
+      WHERE id = $6
+    `,
+      [data.name, data.host, data.port, data.username, data.password, data.id],
+    );
+  },
+  async providers() {
+    return pgpool
+      .query<EmailProvider>(
+        `
+      SELECT id, provider_name as "name", smtp_host as "host", smtp_port as "port", username, pw as "password" FROM email_providers
+      ORDER BY created_at DESC
+    `,
+      )
+      .then((res) => res.rows);
+  },
+  async provider(id: string) {
+    return pgpool
+      .query<EmailProvider>(
+        `
+      SELECT 
+        provider_name as "name", 
+        smtp_host as "host", 
+        smtp_port as "port", 
+        username, pw as "password" 
+      FROM email_providers
+      WHERE id =$1
+    `,
+        [id],
+      )
+      .then((res) => res.rows.at(0));
+  },
+  /// Need to refer to html template or this is gonna be dull
+  async sendMails(
+    providerId: string,
+    recipients: string[],
+    subject: string,
+    body: string,
+  ) {
+    try {
+      const provider = await mailApi.provider(providerId);
+
+      if (!provider) {
+        return;
+      }
+
+      const { host, password, username, port } = provider;
+
+      const transporter: nodemailer.Transporter = nodemailer.createTransport({
+        host,
+        port,
+        // secure: false,
+        auth: {
+          user: username,
+          pass: password,
+        },
+      });
+
+      return transporter.sendMail({
+        from: username,
+        to: recipients.join(", "),
+        subject: subject,
+        html: body,
+      });
+    } catch (err) {
+      console.log(err);
+      throw new Error(err);
+    }
+  },
 };
 
 type MessageType = "message" | "event";
@@ -67,6 +175,7 @@ export const api = {
     ];
     const originalSize = vals.length;
     const args: string[] = [];
+    const recipients: string[] = [];
 
     let i = vals.length + 1;
     while (data.recipients.length) {
@@ -74,14 +183,13 @@ export const api = {
       if (!email) {
         break;
       }
-
+      recipients.push(email);
       args.push(
         `(${[...new Array(originalSize)].map((_, i) => `$${i + 1}`)},$${i})`,
       );
       vals.push(email);
       i += 1;
     }
-
 
     const eventQuery = pgpool.query(
       `
@@ -100,19 +208,33 @@ export const api = {
 
     promises.push(eventQuery);
 
-    // if (transports.includes("email")) {
-    // push
-    // }
+    if (transports.includes("email")) {
+      const id = await temporaryMockUtils.getFirstOrEtherealMailProvider();
+      if (!id) {
+        console.log("No mock provider id. No mails been sent");
+      } else {
+        promises.push(
+          mailApi.sendMails(id, recipients, data.subject, data.content),
+        );
+      }
+    }
 
     await Promise.all(promises);
   },
+  /**
+   * push a message
+   *  we create a message in the database, so that some cron whatever can pick it up later.
+   */
   async pushMessageByTemplate(
     templateId: string,
     interpolations: Record<string, string>,
-    recipients: string[],
-    type: MessageType,
+    recipients: string[], // TODO: []userId from SSO
+    type: MessageType, // undecided. Not interesting
+    preferredTransports: "email"[], // preferred transports link table
+    securityLevel?: string, // high/medium/low. Default high.
   ) {
     const pgclient = await pgpool.connect();
+    let messageId: string | undefined;
     try {
       await pgclient.query("BEGIN");
 
@@ -140,7 +262,7 @@ export const api = {
 
       // Lets omit emailing eg. for now
 
-      // We need to compose a new message based on a template. We need create interpoilation link to the message (not the template!! :D)
+      // We need to compose a new message based on a template. We need create interpoilation link to the message (not the template!)
       // Let's also just auto select english for now (or first template translation really..). This will need to be looked for user profile or default something
       const chosenTemplateTranslations = template.data.at(0);
       if (!chosenTemplateTranslations) {
@@ -164,8 +286,9 @@ export const api = {
         i += 2;
       }
 
-      await pgpool.query(
-        `
+      messageId = await pgpool
+        .query<{ messageId: string }>(
+          `
       WITH msg_insert AS(
         INSERT INTO messages(for_email, subject, content, message_type)
         VALUES($1,$2,$3,$4)
@@ -173,15 +296,36 @@ export const api = {
       )
       INSERT INTO message_interpolation_accessors(message_id, key_accessor, value_accessor)
       values ${intrplvalues.join(", ")}
+      RETURNING (SELECT message_id FROM msg_insert) as "messageId"
     `,
-        args,
-      );
+          args,
+        )
+        .then((res) => res.rows.at(0)?.messageId);
 
       await pgclient.query("COMMIT");
     } catch (err) {
       await pgclient.query("ROLLBACK");
+      throw new Error(err);
     } finally {
       pgclient.release();
+    }
+
+    // This will be moved to scheduler
+    // Email
+    if (preferredTransports.includes("email")) {
+      // Hardcode to use the dev ethereal mail provider always. This should be configurable somehow.
+      const tmpId = await temporaryMockUtils.getFirstOrEtherealMailProvider();
+      if (tmpId && messageId) {
+        const message = await api.getMessage(messageId);
+
+        message &&
+          mailApi.sendMails(
+            tmpId,
+            recipients,
+            message.subject,
+            message.content,
+          );
+      }
     }
   },
   async getMessages(
@@ -518,7 +662,6 @@ export const temporaryMockUtils = {
     }
     return templateId;
   },
-
   async getErrors(userId: string, stateId: string) {
     return pgpool
       .query<{ field: string; messageKey: string; errorValue: string }>(
@@ -535,6 +678,7 @@ export const temporaryMockUtils = {
       .then((res) => res.rows);
   },
   async createErrors(errors: FormError[], userId: string, stateId: string) {
+    console.log({ errors, userId, stateId });
     let i = 3;
     const values: string[] = [];
     for (const _ of errors) {
@@ -555,5 +699,46 @@ export const temporaryMockUtils = {
           .flat(),
       ],
     );
+  },
+  /**
+   * Takes the latest email provider, or creates a temporary ethereal.mail account
+   */
+  async getFirstOrEtherealMailProvider() {
+    let id = await pgpool
+      .query<{ id: string }>(
+        `
+      select 
+        id 
+      from email_providers 
+      order by created_at desc
+      limit 1
+    `,
+        [],
+      )
+      .then((res) => res.rows.at(0)?.id);
+
+    if (!id) {
+      id = await new Promise((res, rej) => {
+        nodemailer.createTestAccount(
+          async function handleCreated(err, account) {
+            if (err) {
+              console.log(err);
+              rej(err);
+            }
+
+            id = await mailApi.createProvider({
+              name: etherealEmailProviderName,
+              host: account.smtp.host,
+              port: 587,
+              username: account.user,
+              password: account.pass,
+            });
+            res(id);
+          },
+        );
+      });
+    }
+
+    return id;
   },
 };

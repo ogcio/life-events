@@ -1,4 +1,3 @@
-import { useTranslations } from "next-intl";
 import { routes } from ".";
 import { getTranslations } from "next-intl/server";
 import { ComponentProps } from "react";
@@ -34,21 +33,29 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
         url: routes.emailTemplates.url,
         icon: "employment",
       },
+      {
+        key: routes.settings.slug,
+        label: t("settings"),
+        url: `admin/${routes.settings.slug}`,
+        icon: "about",
+      },
     );
   } else {
-    options.push({
-      key: routes.messages.slug,
-      label: t("messages"),
-      url: routes.messages.slug,
-      icon: "events",
-    });
+    options.push(
+      {
+        key: routes.messages.slug,
+        label: t("messages"),
+        url: routes.messages.slug,
+        icon: "events",
+      },
+      {
+        key: routes.settings.slug,
+        label: t("settings"),
+        url: routes.settings.slug,
+        icon: "about",
+      },
+    );
   }
-  options.push({
-    key: routes.settings.slug,
-    label: t("settings"),
-    url: routes.settings.slug,
-    icon: "about",
-  });
   return options;
 };
 

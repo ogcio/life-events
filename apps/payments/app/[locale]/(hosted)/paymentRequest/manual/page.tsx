@@ -3,40 +3,32 @@ import { routeDefinitions } from "../../../../routeDefinitions";
 import { pgpool } from "../../../../dbConnection";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
-import Link from "next/link";
 import { createTransaction } from "../../paymentSetup/db";
+import buildApiClient from "../../../../../client/index";
+import { PgSessions } from "auth/sessions";
 
 async function getPaymentDetails(paymentId: string, amount?: number) {
-  const { rows: paymentRows } = await pgpool.query(
-    `
-    SELECT
-      pr.payment_request_id,
-      pr.title,
-      pr.description,
-      pr.reference,
-      pr.amount,
-      pr.redirect_url,
-      pp.provider_id,
-      pp.provider_name,
-      pp.provider_data,
-      pr.allow_amount_override
-    FROM payment_requests pr
-    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
-    JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
-    WHERE pr.payment_request_id = $1
-      AND pp.provider_type = 'banktransfer'
-    `,
-    [paymentId],
+  const { userId } = await PgSessions.get();
+  const details = (
+    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+      paymentId,
+    )
+  ).data;
+
+  if (!details) return undefined;
+
+  const provider = details.providers.find(
+    (provider) => provider.type === "banktransfer",
   );
 
-  if (!paymentRows.length) return undefined;
+  if (!provider) return undefined;
 
   return {
-    ...paymentRows[0],
-    amount:
-      paymentRows[0].allow_amount_override && amount
-        ? amount
-        : paymentRows[0].amount,
+    ...details,
+    providerId: provider.id,
+    providerName: provider.name,
+    providerData: provider.data,
+    amount: details.allowAmountOverride && amount ? amount : details.amount,
   };
 }
 
@@ -78,6 +70,10 @@ export default async function Bank(params: {
     amount,
   );
 
+  if (!paymentDetails) {
+    return <h1 className="govie-heading-l">Payment details not found</h1>;
+  }
+
   //TODO: In production, we want to avoid collisions on the DB
   const paymentIntentId = Math.random()
     .toString(36)
@@ -94,14 +90,14 @@ export default async function Bank(params: {
     paymentIntentId,
     params.searchParams.integrationRef,
     paymentDetails.amount,
-    paymentDetails.provider_id,
+    paymentDetails.providerId,
     userInfo,
   );
 
   const paymentMade = confirmPayment.bind(
     this,
     transactionId,
-    paymentDetails.redirect_url,
+    paymentDetails.redirectUrl,
   );
 
   return (
@@ -134,13 +130,13 @@ export default async function Bank(params: {
               {t("summary.accountHolderName")}
             </dt>
             <dt className="govie-summary-list__value">
-              {paymentDetails.provider_data.accountHolderName}
+              {paymentDetails.providerData.accountHolderName}
             </dt>
           </div>
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("summary.sortCode")}</dt>
             <dt className="govie-summary-list__value">
-              {paymentDetails.provider_data.sortCode}
+              {paymentDetails.providerData.sortCode}
             </dt>
           </div>
           <div className="govie-summary-list__row">
@@ -148,7 +144,7 @@ export default async function Bank(params: {
               {t("summary.accountHolderName")}
             </dt>
             <dt className="govie-summary-list__value">
-              {paymentDetails.provider_data.accountNumber}
+              {paymentDetails.providerData.accountNumber}
             </dt>
           </div>
           <div className="govie-summary-list__row">
