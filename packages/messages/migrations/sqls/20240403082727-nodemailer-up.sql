@@ -8,3 +8,5 @@ create table email_providers(
     created_at timestamptz not null default now(),
     primary key(id)
 );
+
+alter table form_errors alter column state_id type text;

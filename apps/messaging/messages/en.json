@@ -111,7 +111,12 @@
     "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
     "fields": {
       "subject": "subject",
-      "message": "message"
+      "message": "message",
+      "name": "name",
+      "host": "host",
+      "port": "port",
+      "username": "username",
+      "password": "password"
     }
   },
   "settings": {

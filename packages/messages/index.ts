@@ -209,7 +209,7 @@ export const api = {
     promises.push(eventQuery);
 
     if (transports.includes("email")) {
-      const id = await temporaryMockUtils.getEtherealMailProvider();
+      const id = await temporaryMockUtils.getFirstOrEtherealMailProvider();
       if (!id) {
         console.log("No mock provider id. No mails been sent");
       } else {
@@ -221,12 +221,17 @@ export const api = {
 
     await Promise.all(promises);
   },
+  /**
+   * push a message
+   *  we create a message in the database, so that some cron whatever can pick it up later.
+   */
   async pushMessageByTemplate(
     templateId: string,
     interpolations: Record<string, string>,
-    recipients: string[],
-    type: MessageType,
-    transports: "email"[],
+    recipients: string[], // TODO: []userId from SSO
+    type: MessageType, // undecided. Not interesting
+    preferredTransports: "email"[], // preferred transports link table
+    securityLevel?: string, // high/medium/low. Default high.
   ) {
     const pgclient = await pgpool.connect();
     let messageId: string | undefined;
@@ -305,10 +310,11 @@ export const api = {
       pgclient.release();
     }
 
+    // This will be moved to scheduler
     // Email
-    if (transports.includes("email")) {
+    if (preferredTransports.includes("email")) {
       // Hardcode to use the dev ethereal mail provider always. This should be configurable somehow.
-      const tmpId = await temporaryMockUtils.getEtherealMailProvider();
+      const tmpId = await temporaryMockUtils.getFirstOrEtherealMailProvider();
       if (tmpId && messageId) {
         const message = await api.getMessage(messageId);
 
@@ -672,6 +678,7 @@ export const temporaryMockUtils = {
       .then((res) => res.rows);
   },
   async createErrors(errors: FormError[], userId: string, stateId: string) {
+    console.log({ errors, userId, stateId });
     let i = 3;
     const values: string[] = [];
     for (const _ of errors) {
@@ -693,16 +700,20 @@ export const temporaryMockUtils = {
       ],
     );
   },
-  async getEtherealMailProvider() {
+  /**
+   * Takes the latest email provider, or creates a temporary ethereal.mail account
+   */
+  async getFirstOrEtherealMailProvider() {
     let id = await pgpool
       .query<{ id: string }>(
         `
       select 
         id 
       from email_providers 
-      where provider_name = $1
+      order by created_at desc
+      limit 1
     `,
-        [etherealEmailProviderName],
+        [],
       )
       .then((res) => res.rows.at(0)?.id);
 
