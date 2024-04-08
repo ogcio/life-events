@@ -1,6 +1,5 @@
 import Link from "next/link";
 import ds from "design-system/";
-import UserIcon from "./UserIcon";
 import { useTranslations } from "next-intl";
 import { headers } from "next/headers";
 import "./Header.css";
@@ -143,7 +142,6 @@ export default () => {
                 Gealic
               </Link>
             </div>
-            {/* <UserIcon /> */}
 
             <Link href="/logout" prefetch={false} style={{ display: "flex" }}>
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />

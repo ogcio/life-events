@@ -1,7 +1,7 @@
 export default () => {
   return (
     <div>
-      <p>Profile app</p>
+      <h1 className="govie-heading-l">About me</h1>
     </div>
   );
 };
