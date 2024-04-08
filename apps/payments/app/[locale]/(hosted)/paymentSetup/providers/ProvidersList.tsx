@@ -6,9 +6,11 @@ import buildApiClient from "../../../../../client/index";
 
 export default async () => {
   const t = useTranslations("PaymentSetup.Providers.table");
-  const { userId } = await PgSessions.get();
-  const providers = (await buildApiClient(userId).providers.apiV1ProvidersGet())
-    .data;
+  // const { userId } = await PgSessions.get();
+  const fakeUserId = "40cab290-000c-4770-9d79-fefe9856b4ca";
+  const providers = (
+    await buildApiClient(fakeUserId).providers.apiV1ProvidersGet()
+  ).data;
 
   if (providers.length === 0) {
     return <p className="govie-body">{t("emptyMessage")}</p>;

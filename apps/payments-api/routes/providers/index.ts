@@ -89,6 +89,7 @@ export default async function providers(app: FastifyInstance) {
     },
     async (request, reply) => {
       const userId = request.user?.id;
+      console.log("auth token 2", request.headers["x-logto-auth"]);
 
       const result = await app.pg.query(
         `
