@@ -15,22 +15,6 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  //const { userId } = await PgSessions.get();
-
-  // const result = await pgpool.query<{ isInitialized: boolean }>(
-  //   `SELECT EXISTS (SELECT 1 FROM user_consents WHERE user_id = $1 AND agreement = 'storeUserData' LIMIT 1) AS "isInitialized"`,
-  //   [userId],
-  // );
-
-  // const isInitialized = Boolean(result.rows.at(0)?.isInitialized);
-
-  // const path = headers().get("x-pathname")?.toString();
-  // if (!isInitialized && !path?.endsWith("welcome")) {
-  //   const url = new URL(`${locale}/welcome`, process.env.HOST_URL);
-  //   url.searchParams.append("redirect_url", path ?? "/");
-  //   redirect(url.href, RedirectType.replace);
-  // }
-
   return (
     <html lang={locale}>
       <body
