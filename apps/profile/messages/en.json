@@ -1,12 +1,25 @@
 {
-  "Index": {
-    "title": "Homepage"
-  },
   "Header": {
     "myLifeEvents": "My life events"
   },
   "FeedbackBanner": {
     "tag": "prototype",
     "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
+  },
+  "ProfileDetails": {
+    "name": "Name",
+    "title": "Title",
+    "firstName": "First name",
+    "surname": "Surname",
+    "dateOfBirth": "Date of birth",
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
+    "ppsn": "PPSN",
+    "clickToReveal": "Click to reveal",
+    "reveal": "Reveal",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female"
   }
 }
