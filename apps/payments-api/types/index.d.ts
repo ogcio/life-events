@@ -9,6 +9,7 @@ import {
   RawServerBase,
   RawServerDefault,
 } from "fastify";
+import { Permission } from "../plugins/logtoAuth";
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -20,5 +21,10 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     verifyUser: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    checkPermission: (
+      req: FastifyRequest,
+      rep: FastifyReply,
+      requiredPermissions: Permission[],
+    ) => Promise<void>;
   }
 }

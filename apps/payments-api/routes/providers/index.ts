@@ -9,7 +9,7 @@ import {
   Provider,
   UpdateProvider,
 } from "../../types/schemaDefinitions";
-import { auth } from "../../plugins/logtoAuth";
+import { permissions } from "../../plugins/logtoAuth";
 
 export default async function providers(app: FastifyInstance) {
   app.post<{ Body: CreateProvider; Reply: { id: string } }>(
@@ -45,7 +45,8 @@ export default async function providers(app: FastifyInstance) {
   app.get<{ Reply: ProvidersList }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermission(req, res, [permissions.READ_PAYMENT]),
       schema: {
         tags: ["Providers"],
         response: {
@@ -65,7 +66,6 @@ export default async function providers(app: FastifyInstance) {
     },
     async (request, reply) => {
       const userId = request.user?.id;
-      await auth(request);
       const result = await app.pg.query(
         `
           SELECT

@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 export const getUser = async (loginIfUnauthenticated = true) => {
-  console.log("getUser");
   const context = await getLogtoContext(logtoConfig, {
     fetchUserInfo: true,
     getAccessToken: true,
