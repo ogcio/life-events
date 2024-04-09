@@ -5,4 +5,6 @@ export const logtoConfig = {
   endpoint: process.env.LOGTO_ENDPOINT as string,
   appSecret: process.env.LOGTO_APP_SECRET as string,
   cookieSecret: process.env.LOGTO_COOKIE_SECRET as string,
+  resources: ["http://localhost:8001"], // Add API resources
+  scopes: ["payments:read"],
 };

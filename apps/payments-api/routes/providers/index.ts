@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
 import { httpErrors } from "@fastify/sensible";
 import { HttpError } from "../../types/httpErrors";
+import { auth } from "../../plugins/logtoAuth";
 
 const Provider = Type.Union([
   Type.Object({
@@ -89,8 +90,7 @@ export default async function providers(app: FastifyInstance) {
     },
     async (request, reply) => {
       const userId = request.user?.id;
-      console.log("auth token 2", request.headers["x-logto-auth"]);
-
+      await auth(request);
       const result = await app.pg.query(
         `
           SELECT
