@@ -3,7 +3,6 @@ import { httpErrors } from "@fastify/sensible";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreateTransactionBody,
-  FullTransaction,
   ParamsWithTransactionId,
   TransactionDetails,
   UpdateTransactionBody,

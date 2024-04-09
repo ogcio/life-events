@@ -1,24 +1,30 @@
 import { getTranslations } from "next-intl/server";
-import { pgpool } from "../../../dbConnection";
 import { PaymentRequestDetails } from "./db";
 import { providerTypes } from "./providers/types";
+import buildApiClient from "../../../../client/index";
 
-async function getRegisteredAccounts(userId: string, providerType: string) {
-  "use server";
+async function getRegisteredAccounts(userId: string) {
+  const providers = (await buildApiClient(userId).providers.apiV1ProvidersGet())
+    .data;
 
-  const accountsQueryResult = await pgpool.query<
-    { provider_id: string; provider_name: string },
-    string[]
-  >(
-    `select provider_id, provider_name from payment_providers where user_id = $1 and provider_type = $2 and status = 'connected'`,
-    [userId, providerType],
-  );
-
-  if (!accountsQueryResult.rowCount) {
-    return [];
+  if (!providers) {
+    return new Map();
   }
 
-  return accountsQueryResult.rows;
+  const accounts = providers.reduce((acc, provider) => {
+    if (!acc.get(provider.type)) {
+      acc.set(provider.type, []);
+    }
+
+    acc.get(provider.type).push({
+      id: provider.id,
+      name: provider.name,
+    });
+
+    return acc;
+  }, new Map());
+
+  return accounts;
 }
 
 type PaymentSetupFormProps = {
@@ -35,10 +41,7 @@ export default async function ({
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tCommon = await getTranslations("Common");
 
-  const providerAccountsPromises = providerTypes.map((providerType) =>
-    getRegisteredAccounts(userId, providerType),
-  );
-  const providerAccounts = await Promise.all(providerAccountsPromises);
+  const providerAccounts = await getRegisteredAccounts(userId);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
@@ -92,9 +95,9 @@ export default async function ({
                 style={{ width: "350px" }}
               >
                 <option value={""}>Disabled</option>
-                {providerAccounts[index].map((account) => (
-                  <option key={account.provider_id} value={account.provider_id}>
-                    {account.provider_name}
+                {(providerAccounts.get(providerType) ?? []).map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.name}
                   </option>
                 ))}
               </select>
