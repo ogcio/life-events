@@ -6,24 +6,7 @@ import { revalidatePath } from "next/cache";
 import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 
-type TransactionDetails = {
-  transactionId: string;
-  status: string;
-  title: string;
-  amount: number;
-  updatedAt: string;
-  providerName: string;
-  providerType: string;
-  extPaymentId: string;
-  userData: {
-    name: string;
-    email: string;
-  };
-};
-
-async function getTransactionDetails(
-  transactionId: string,
-): Promise<TransactionDetails> {
+async function getTransactionDetails(transactionId: string) {
   const { userId } = await PgSessions.get();
 
   const detauils = (
