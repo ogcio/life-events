@@ -9,7 +9,7 @@ export default async () => {
   const { userId } = await PgSessions.get();
   const { data: providers } = await new Payments(userId).getProviders();
 
-  if (providers && providers.length === 0) {
+  if (providers?.length === 0) {
     return <p className="govie-body">{t("emptyMessage")}</p>;
   }
 
