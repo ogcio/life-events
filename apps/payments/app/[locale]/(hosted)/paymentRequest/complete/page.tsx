@@ -2,6 +2,8 @@ import { getTranslations } from "next-intl/server";
 import { pgpool } from "../../../../dbConnection";
 import { RedirectType, redirect } from "next/navigation";
 import { getPaymentIntent } from "../../../../integration/stripe";
+import buildApiClient from "../../../../../client/index";
+import { PgSessions } from "auth/sessions";
 
 type Props = {
   searchParams:
@@ -16,6 +18,7 @@ type Props = {
 async function updateTransaction(extPaymentId: string, status: string) {
   "use server";
 
+  // TODO: Do not touch this for now!
   const { rows } = await pgpool.query<{
     transaction_id: number;
     payment_request_id: string;
@@ -39,20 +42,14 @@ async function updateTransaction(extPaymentId: string, status: string) {
 }
 
 async function getRequestDetails(requestId: string) {
-  "use server";
+  const { userId } = await PgSessions.get();
+  const details = (
+    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+      requestId,
+    )
+  ).data;
 
-  const res = await pgpool.query<{ amount: number; redirect_url: string }>(
-    `
-    select
-      redirect_url,
-      amount
-    from payment_requests
-    where payment_request_id = $1
-    `,
-    [requestId],
-  );
-
-  return res.rows[0];
+  return details;
 }
 
 export default async function Page(props: Props) {
@@ -84,7 +81,7 @@ export default async function Page(props: Props) {
     transactionDetail.payment_request_id,
   );
 
-  const returnUrl = new URL(requestDetail.redirect_url);
+  const returnUrl = new URL(requestDetail.redirectUrl);
   returnUrl.searchParams.append(
     "transactionId",
     transactionDetail.transaction_id.toString(),

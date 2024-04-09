@@ -20,8 +20,10 @@ COPY ./packages/messages/ /app/packages/messages/
 
 FROM deps AS builder
 WORKDIR /app
+ARG NEXT_PUBLIC_API_ENDPOINT
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
+ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
 
 RUN npm run build --workspace=apps/web
 

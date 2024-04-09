@@ -1,58 +1,15 @@
 import { FastifyInstance } from "fastify";
-import { Static, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { httpErrors } from "@fastify/sensible";
 import { HttpError } from "../../types/httpErrors";
-
-const ProviderDetails = Type.Object({
-  userId: Type.String(),
-  id: Type.String(),
-  name: Type.String(),
-  type: Type.Union([
-    Type.Literal("banktransfer"),
-    Type.Literal("openbanking"),
-    Type.Literal("stripe"),
-  ]),
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
-  data: Type.Any(),
-  createdAt: Type.String(),
-});
-
-const PaymentRequest = Type.Object({
-  paymentRequestId: Type.String(),
-  title: Type.String(),
-  description: Type.String(),
-  amount: Type.Number(),
-  reference: Type.String(),
-  providers: Type.Array(ProviderDetails),
-});
-type PaymentRequest = Static<typeof PaymentRequest>;
-
-const PaymentRequestDetails = Type.Composite([
+import {
+  CreatePaymentRequest,
+  EditPaymentRequest,
+  ParamsWithPaymentRequestId,
   PaymentRequest,
-  Type.Object({
-    redirectUrl: Type.String(),
-    allowAmountOverride: Type.Boolean(),
-    allowCustomAmount: Type.Boolean(),
-  }),
-]);
-type PaymentRequestDetails = Static<typeof PaymentRequestDetails>;
-
-const ParamsWithPaymentRequestId = Type.Object({
-  requestId: Type.String(),
-});
-type ParamsWithPaymentRequestId = Static<typeof ParamsWithPaymentRequestId>;
-
-const CreatePaymentRequest = Type.Object({
-  title: Type.String(),
-  description: Type.String(),
-  reference: Type.String(),
-  amount: Type.Number(),
-  redirectUrl: Type.String(),
-  allowAmountOverride: Type.Boolean(),
-  allowCustomAmount: Type.Boolean(),
-  providers: Type.Array(Type.String()),
-});
-type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
+  PaymentRequestDetails,
+  Transaction,
+} from "../../types/schemaDefinitions";
 
 export default async function paymentRequests(app: FastifyInstance) {
   app.get<{ Reply: PaymentRequest[] }>(
@@ -272,6 +229,187 @@ export default async function paymentRequests(app: FastifyInstance) {
       } catch (error) {
         reply.send(httpErrors.internalServerError((error as Error).message));
       }
+    },
+  );
+
+  app.put<{ Body: EditPaymentRequest; Reply: { id: string } | Error }>(
+    "/",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["PaymentRequests"],
+        body: EditPaymentRequest,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const {
+        title,
+        description,
+        reference,
+        amount,
+        redirectUrl,
+        allowAmountOverride,
+        allowCustomAmount,
+        paymentRequestId,
+        providersUpdate,
+      } = request.body;
+
+      try {
+        await app.pg.transact(async (client) => {
+          await client.query(
+            `update payment_requests 
+              set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 
+              where payment_request_id = $8 and user_id = $9`,
+            [
+              title,
+              description,
+              reference,
+              amount,
+              redirectUrl,
+              allowAmountOverride,
+              allowCustomAmount,
+              paymentRequestId,
+              userId,
+            ],
+          );
+
+          if (providersUpdate.toDisable.length) {
+            const idsToDisable = providersUpdate.toDisable.join(", ");
+
+            await app.pg.query(
+              `update payment_requests_providers set enabled = false
+                where payment_request_id = $1 and provider_id in ($2)`,
+              [paymentRequestId, idsToDisable],
+            );
+          }
+
+          if (providersUpdate.toCreate.length) {
+            const sqlData = [paymentRequestId, ...providersUpdate.toCreate];
+            const queryValues = providersUpdate.toCreate
+              .map((_, index) => {
+                return `($${index + 2}, $1, true)`;
+              })
+              .join(",");
+
+            await client.query(
+              `INSERT INTO payment_requests_providers (provider_id, payment_request_id, enabled) 
+              VALUES ${queryValues}
+              ON CONFLICT (provider_id, payment_request_id) 
+              DO UPDATE SET enabled = EXCLUDED.enabled`,
+              sqlData,
+            );
+          }
+        });
+
+        reply.send({ id: paymentRequestId });
+      } catch (error) {
+        reply.send(httpErrors.internalServerError((error as Error).message));
+      }
+    },
+  );
+
+  app.delete<{
+    Reply: {} | Error;
+    Params: ParamsWithPaymentRequestId;
+  }>(
+    "/:requestId",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["PaymentRequests"],
+        response: {
+          200: Type.Object({}),
+          404: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { requestId } = request.params;
+
+      const transactions = await app.pg.query(
+        `select transaction_id from payment_transactions where payment_request_id = $1`,
+        [requestId],
+      );
+
+      if (transactions.rowCount) {
+        reply.send(
+          httpErrors.internalServerError(
+            "Payment request with existing transactions cannot be deleted",
+          ),
+        );
+        return;
+      }
+
+      try {
+        await app.pg.transact(async (client) => {
+          await client.query(
+            `delete from payment_requests_providers
+            where payment_request_id = $1`,
+            [requestId],
+          );
+
+          const deleted = await client.query(
+            `delete from payment_requests
+            where payment_request_id = $1
+              and user_id = $2
+            returning payment_request_id`,
+            [requestId, userId],
+          );
+
+          if (deleted.rowCount === 0) {
+            const error = httpErrors.notFound("Payment request was not found");
+            throw error;
+          }
+        });
+      } catch (error) {
+        if (error instanceof Error && error.name !== "error") {
+          reply.send(error);
+        }
+        reply.send(httpErrors.internalServerError((error as Error).message));
+      }
+
+      reply.send();
+    },
+  );
+
+  app.get<{ Reply: Transaction[]; Params: ParamsWithPaymentRequestId }>(
+    "/:requestId/transactions",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Transactions"],
+        response: {
+          200: Type.Array(Transaction),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { requestId } = request.params;
+
+      const result = await app.pg.query(
+        `SELECT
+          t.transaction_id as "transactionId",
+          t.status,
+          pr.title,
+          pt.amount,
+          t.updated_at as "updatedAt"
+        FROM payment_transactions t
+        INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+        INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
+        WHERE pr.payment_request_id = $1
+        ORDER BY t.updated_at DESC`,
+        [requestId],
+      );
+
+      reply.send(result.rows);
     },
   );
 }

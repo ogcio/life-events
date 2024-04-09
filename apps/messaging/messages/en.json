@@ -49,6 +49,10 @@
     "subject": "Subject",
     "action": "Action"
   },
+  "Message": {
+    "paymentSuccess": "This payment has been successfully paid.",
+    "back": "Back"
+  },
   "sendAMessage": {
     "ComposeMessageMeta": {
       "title": "Send a message",
@@ -107,7 +111,37 @@
     "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
     "fields": {
       "subject": "subject",
-      "message": "message"
+      "message": "message",
+      "name": "name",
+      "host": "host",
+      "port": "port",
+      "username": "username",
+      "password": "password"
+    }
+  },
+  "settings": {
+    "Emails": {
+      "title": "Email",
+      "nameTableHeader": "Name",
+      "hostTableHeader": "Host",
+      "portTableHeader": "Port",
+      "actionTableHeader": "Action",
+      "editLink": "Edit",
+      "backLink": "Back",
+      "addProviderLink": "Add provider",
+      "providersSubtitle": "Providers",
+      "deleteButton": "Delete"
+    },
+    "EmailProvider": {
+      "title": "Add provider",
+      "nameLabel": "Name",
+      "hostLabel": "Host",
+      "portLabel": "Port",
+      "usernameLabel": "Username",
+      "passwordLabel": "Password",
+      "backLink": "Back",
+      "updateButton": "Update",
+      "createButton": "Create"
     }
   }
 }

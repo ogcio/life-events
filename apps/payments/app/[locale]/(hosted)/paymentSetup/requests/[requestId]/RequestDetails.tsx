@@ -1,7 +1,6 @@
 import React from "react";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../../utils";
-import { pgpool } from "../../../../../dbConnection";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Tooltip from "../../../../../components/Tooltip";
@@ -9,28 +8,24 @@ import CopyLink from "./CopyBtn";
 import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 
-async function deletePaymentRequest(requestId: string) {
+async function deletePaymentRequest(requestId: string, userId: string) {
   "use server";
 
-  await pgpool.query(
-    `
-    delete from payment_requests where payment_request_id = $1
-    `,
-    [requestId],
+  await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdDelete(
+    requestId,
   );
 
   redirect("/paymentSetup/requests");
 }
 
-async function hasTransactions(requestId: string) {
-  const { rows } = await pgpool.query<{ transaction_id: number }>(
-    `
-    select transaction_id from payment_transactions where payment_request_id = $1
-    `,
-    [requestId],
-  );
+async function hasTransactions(requestId: string, userId: string) {
+  const transactions = (
+    await buildApiClient(
+      userId,
+    ).transactions.apiV1RequestsRequestIdTransactionsGet(requestId)
+  ).data;
 
-  return rows.length > 0;
+  return transactions.length > 0;
 }
 
 export const RequestDetails = async ({ requestId }: { requestId: string }) => {
@@ -48,9 +43,13 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
     return <h1 className="govie-heading-l">Payment request not found</h1>;
   }
 
-  const deletePR = deletePaymentRequest.bind(this, details.paymentRequestId);
+  const deletePR = deletePaymentRequest.bind(
+    this,
+    details.paymentRequestId,
+    userId,
+  );
   // Cannot delete the payment request if we already have transactions
-  const disableDeleteButton = await hasTransactions(requestId);
+  const disableDeleteButton = await hasTransactions(requestId, userId);
 
   const integrationReference = requestId;
   const completePaymentLink = new URL(
