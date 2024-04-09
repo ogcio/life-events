@@ -12,7 +12,7 @@ pr:
 parameters:
   - name: services
     type: object
-    default: ["web", "mock-api", "payments", "messaging", "payments-api"]
+    default: ["web", "mock-api", "payments", "messaging", "payments-api", "profile"]
 
   - name: envBranches
     type: object
@@ -113,7 +113,7 @@ stages:
             repository: life-events-${{ serviceName }}
             dockerfile: apps/${{ serviceName }}/Dockerfile
             buildContext: '$(Build.SourcesDirectory)'
-            arguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)"'
+            arguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicApiEndpoint)"'
         - task: Docker@0
           displayName: 'Run a Docker command'
           condition: eq(variables.pushArtefacts, true)

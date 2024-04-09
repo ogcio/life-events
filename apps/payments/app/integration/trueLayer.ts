@@ -48,12 +48,12 @@ export async function createPaymentRequest(paymentRequest) {
       type: "bank_transfer",
       beneficiary: {
         type: "external_account",
-        account_holder_name: paymentRequest.provider_data.accountHolderName,
+        account_holder_name: paymentRequest.providerData.accountHolderName,
         reference: paymentRequest.reference,
         account_identifier: {
           type: "sort_code_account_number",
-          sort_code: paymentRequest.provider_data.sortCode.replace(/-/g, ""),
-          account_number: paymentRequest.provider_data.accountNumber,
+          sort_code: paymentRequest.providerData.sortCode.replace(/-/g, ""),
+          account_number: paymentRequest.providerData.accountNumber,
         },
       },
     },

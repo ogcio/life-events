@@ -1,11 +1,11 @@
 import React from "react";
 import { getTranslations } from "next-intl/server";
-import { getRequestTransactionDetails } from "../../db";
 import { formatCurrency } from "../../../../../utils";
 import dayjs from "dayjs";
 import { PgSessions } from "auth/sessions";
 import { RequestDetails } from "./RequestDetails";
 import Link from "next/link";
+import buildApiClient from "../../../../../../client/index";
 
 export default async function ({ params: { requestId } }) {
   const t = await getTranslations("PaymentSetup.Request");
@@ -13,7 +13,11 @@ export default async function ({ params: { requestId } }) {
 
   const { userId } = await PgSessions.get();
 
-  const transactions = await getRequestTransactionDetails(requestId);
+  const transactions = (
+    await buildApiClient(
+      userId,
+    ).transactions.apiV1RequestsRequestIdTransactionsGet(requestId)
+  ).data;
 
   return (
     <div>
@@ -51,14 +55,14 @@ export default async function ({ params: { requestId } }) {
             </thead>
             <tbody className="govie-table__body">
               {transactions.map((trx) => (
-                <tr className="govie-table__row" key={trx.transaction_id}>
+                <tr className="govie-table__row" key={trx.transactionId}>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     <strong className="govie-tag govie-tag--green govie-body-s">
                       {trx.status}
                     </strong>
                   </td>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    {dayjs(trx.updated_at).format("DD/MM/YYYY")}
+                    {dayjs(trx.updatedAt).format("DD/MM/YYYY")}
                   </td>
 
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
@@ -68,7 +72,7 @@ export default async function ({ params: { requestId } }) {
                     {formatCurrency(trx.amount)}
                   </td>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    <Link href={`../transaction/${trx.transaction_id}`}>
+                    <Link href={`../transaction/${trx.transactionId}`}>
                       {t("table.details")}
                     </Link>
                   </td>

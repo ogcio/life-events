@@ -114,6 +114,7 @@ export default async function WithEventMenu({
           ppsn="TUV1234123"
           selected={params.event ?? ""}
           options={enabledOptions}
+          locale={params.locale}
         />
       </div>
       {children}
