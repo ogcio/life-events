@@ -1,6 +1,5 @@
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../../utils";
-import { pgpool } from "../../../../../dbConnection";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import buildApiClient from "../../../../../../client/index";
@@ -20,13 +19,13 @@ async function getTransactionDetails(transactionId: string) {
 
 async function confirmTransaction(transactionId: string) {
   "use server";
-  await pgpool.query(
-    `
-    UPDATE payment_transactions
-    SET status = 'completed'
-    WHERE transaction_id = $1
-    `,
-    [transactionId],
+
+  const { userId } = await PgSessions.get();
+  await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdPatch(
+    transactionId,
+    {
+      status: "completed",
+    },
   );
 
   revalidatePath("/");
