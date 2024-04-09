@@ -20,18 +20,11 @@ export type PaymentRequestDetails = Pick<
   }[];
 };
 
-type TransactionDetails = {
-  status: string;
-  citizen_name: string;
-  title: string;
-  amount: number;
-  updated_at: string;
-  transaction_id: string;
-};
 export async function getUserTransactionDetails(userId: string) {
   const userInfo = await getUserInfoById(userId);
   if (!userInfo) return [];
 
+  // TODO: Do not touch this for now!
   const res = await pgpool.query(
     `
   SELECT
@@ -53,34 +46,4 @@ export async function getUserTransactionDetails(userId: string) {
   }
 
   return transactions;
-}
-
-export async function createTransaction(
-  paymentId: string,
-  extPaymentId: string,
-  tenantReference: string,
-  amount: number,
-  paymentProviderId: string,
-  userInfo: {
-    name: string;
-    email: string;
-  },
-) {
-  "use server";
-  return (
-    await pgpool.query<{ transaction_id: number }>(
-      `
-    insert into payment_transactions (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_data)
-    values ($1, $2, $3, $4, 'pending', now(), now(), $5, $6) returning transaction_id;
-    `,
-      [
-        paymentId,
-        extPaymentId,
-        tenantReference,
-        amount,
-        paymentProviderId,
-        userInfo,
-      ],
-    )
-  ).rows[0].transaction_id;
 }

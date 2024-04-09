@@ -18,6 +18,7 @@ type Props = {
 async function updateTransaction(extPaymentId: string, status: string) {
   "use server";
 
+  // TODO: Do not touch this for now!
   const { rows } = await pgpool.query<{
     transaction_id: number;
     payment_request_id: string;

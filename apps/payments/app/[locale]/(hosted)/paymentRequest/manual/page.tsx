@@ -1,14 +1,15 @@
 import { RedirectType, redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
-import { pgpool } from "../../../../dbConnection";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
-import { createTransaction } from "../../paymentSetup/db";
 import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 
-async function getPaymentDetails(paymentId: string, amount?: number) {
-  const { userId } = await PgSessions.get();
+async function getPaymentDetails(
+  userId: string,
+  paymentId: string,
+  amount?: number,
+) {
   const details = (
     await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
       paymentId,
@@ -32,16 +33,20 @@ async function getPaymentDetails(paymentId: string, amount?: number) {
   };
 }
 
-async function confirmPayment(transactionId: string, redirectUrl: string) {
+async function confirmPayment(
+  userId: string,
+  transactionId: string,
+  redirectUrl: string,
+) {
   "use server";
-  await pgpool.query(
-    `
-    UPDATE payment_transactions
-    SET status = 'confirmed'
-    WHERE transaction_id = $1
-    `,
-    [transactionId],
+
+  await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdPatch(
+    transactionId,
+    {
+      status: "confirmed",
+    },
   );
+
   redirect(redirectUrl, RedirectType.replace);
 }
 
@@ -56,6 +61,7 @@ export default async function Bank(params: {
       }
     | undefined;
 }) {
+  const { userId } = await PgSessions.get();
   if (!params.searchParams?.paymentId) {
     redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
   }
@@ -66,6 +72,7 @@ export default async function Bank(params: {
     ? parseFloat(params.searchParams.amount)
     : undefined;
   const paymentDetails = await getPaymentDetails(
+    userId,
     params.searchParams.paymentId,
     amount,
   );
@@ -85,17 +92,20 @@ export default async function Bank(params: {
     email: params.searchParams.email,
   };
 
-  const transactionId = await createTransaction(
-    params.searchParams.paymentId,
-    paymentIntentId,
-    params.searchParams.integrationRef,
-    paymentDetails.amount,
-    paymentDetails.providerId,
-    userInfo,
-  );
+  const transactionId = (
+    await buildApiClient(userId).transactions.apiV1TransactionsPost({
+      paymentRequestId: params.searchParams.paymentId,
+      extPaymentId: paymentIntentId,
+      integrationReference: params.searchParams.integrationRef,
+      amount: paymentDetails.amount,
+      paymentProviderId: paymentDetails.providerId,
+      userData: userInfo,
+    })
+  ).data.transactionId;
 
   const paymentMade = confirmPayment.bind(
     this,
+    userId,
     transactionId,
     paymentDetails.redirectUrl,
   );

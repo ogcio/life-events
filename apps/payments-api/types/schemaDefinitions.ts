@@ -109,28 +109,56 @@ export type ParamsWithPaymentRequestId = Static<
  * Transactions types
  */
 
-export const Transaction = Type.Object({
+export const FullTransaction = Type.Object({
   transactionId: Type.String(),
+  paymentRequestId: Type.String(),
+  extPaymentId: Type.String(),
   status: Type.String(),
-  title: Type.String(),
+  integrationReference: Type.String(),
   amount: Type.Number(),
+  paymentProviderId: Type.String(),
+  createdAt: Type.String(),
   updatedAt: Type.String(),
+  userData: Type.Object({
+    name: Type.String(),
+    email: Type.String(),
+  }),
 });
+export type FullTransaction = Static<typeof FullTransaction>;
+
+export const Transaction = Type.Composite([
+  Type.Pick(FullTransaction, [
+    "transactionId",
+    "status",
+    "amount",
+    "updatedAt",
+  ]),
+  Type.Object({
+    title: Type.String(),
+  }),
+]);
 export type Transaction = Static<typeof Transaction>;
 
 export const TransactionDetails = Type.Composite([
   Transaction,
+  Type.Pick(FullTransaction, ["extPaymentId", "userData"]),
   Type.Object({
-    userData: Type.Object({
-      name: Type.String(),
-      email: Type.String(),
-    }),
-    extPaymentId: Type.String(),
     providerName: Type.String(),
     providerType: Type.String(),
   }),
 ]);
 export type TransactionDetails = Static<typeof TransactionDetails>;
+
+export const UpdateTransactionBody = Type.Pick(Transaction, ["status"]);
+export type UpdateTransactionBody = Static<typeof UpdateTransactionBody>;
+
+export const CreateTransactionBody = Type.Omit(FullTransaction, [
+  "transactionId",
+  "status",
+  "createdAt",
+  "updatedAt",
+]);
+export type CreateTransactionBody = Static<typeof CreateTransactionBody>;
 
 export const ParamsWithTransactionId = Type.Object({
   transactionId: Type.String(),

@@ -509,12 +509,6 @@ export interface ApiV1RequestsRequestIdTransactionsGet200ResponseInner {
   status: string;
   /**
    *
-   * @type {string}
-   * @memberof ApiV1RequestsRequestIdTransactionsGet200ResponseInner
-   */
-  title: string;
-  /**
-   *
    * @type {number}
    * @memberof ApiV1RequestsRequestIdTransactionsGet200ResponseInner
    */
@@ -525,6 +519,68 @@ export interface ApiV1RequestsRequestIdTransactionsGet200ResponseInner {
    * @memberof ApiV1RequestsRequestIdTransactionsGet200ResponseInner
    */
   updatedAt: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsRequestIdTransactionsGet200ResponseInner
+   */
+  title: string;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1TransactionsPost200Response
+ */
+export interface ApiV1TransactionsPost200Response {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1TransactionsPost200Response
+   */
+  transactionId: string;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1TransactionsPostRequest
+ */
+export interface ApiV1TransactionsPostRequest {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1TransactionsPostRequest
+   */
+  paymentRequestId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1TransactionsPostRequest
+   */
+  extPaymentId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1TransactionsPostRequest
+   */
+  integrationReference: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ApiV1TransactionsPostRequest
+   */
+  amount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1TransactionsPostRequest
+   */
+  paymentProviderId: string;
+  /**
+   *
+   * @type {ApiV1TransactionsTransactionIdGet200ResponseUserData}
+   * @memberof ApiV1TransactionsPostRequest
+   */
+  userData: ApiV1TransactionsTransactionIdGet200ResponseUserData;
 }
 /**
  *
@@ -546,12 +602,6 @@ export interface ApiV1TransactionsTransactionIdGet200Response {
   status: string;
   /**
    *
-   * @type {string}
-   * @memberof ApiV1TransactionsTransactionIdGet200Response
-   */
-  title: string;
-  /**
-   *
    * @type {number}
    * @memberof ApiV1TransactionsTransactionIdGet200Response
    */
@@ -564,16 +614,22 @@ export interface ApiV1TransactionsTransactionIdGet200Response {
   updatedAt: string;
   /**
    *
-   * @type {ApiV1TransactionsTransactionIdGet200ResponseUserData}
+   * @type {string}
    * @memberof ApiV1TransactionsTransactionIdGet200Response
    */
-  userData: ApiV1TransactionsTransactionIdGet200ResponseUserData;
+  title: string;
   /**
    *
    * @type {string}
    * @memberof ApiV1TransactionsTransactionIdGet200Response
    */
   extPaymentId: string;
+  /**
+   *
+   * @type {ApiV1TransactionsTransactionIdGet200ResponseUserData}
+   * @memberof ApiV1TransactionsTransactionIdGet200Response
+   */
+  userData: ApiV1TransactionsTransactionIdGet200ResponseUserData;
   /**
    *
    * @type {string}
@@ -605,6 +661,19 @@ export interface ApiV1TransactionsTransactionIdGet200ResponseUserData {
    * @memberof ApiV1TransactionsTransactionIdGet200ResponseUserData
    */
   email: string;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1TransactionsTransactionIdPatchRequest
+ */
+export interface ApiV1TransactionsTransactionIdPatchRequest {
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1TransactionsTransactionIdPatchRequest
+   */
+  status: string;
 }
 
 /**
@@ -1877,6 +1946,59 @@ export const TransactionsApiAxiosParamCreator = function (
     },
     /**
      *
+     * @param {ApiV1TransactionsPostRequest} apiV1TransactionsPostRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1TransactionsPost: async (
+      apiV1TransactionsPostRequest: ApiV1TransactionsPostRequest,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'apiV1TransactionsPostRequest' is not null or undefined
+      assertParamExists(
+        "apiV1TransactionsPost",
+        "apiV1TransactionsPostRequest",
+        apiV1TransactionsPostRequest,
+      );
+      const localVarPath = `/api/v1/transactions/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "POST",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter["Content-Type"] = "application/json";
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        apiV1TransactionsPostRequest,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @param {string} transactionId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1918,6 +2040,70 @@ export const TransactionsApiAxiosParamCreator = function (
         ...headersFromBaseOptions,
         ...options.headers,
       };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @param {string} transactionId
+     * @param {ApiV1TransactionsTransactionIdPatchRequest} apiV1TransactionsTransactionIdPatchRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1TransactionsTransactionIdPatch: async (
+      transactionId: string,
+      apiV1TransactionsTransactionIdPatchRequest: ApiV1TransactionsTransactionIdPatchRequest,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'transactionId' is not null or undefined
+      assertParamExists(
+        "apiV1TransactionsTransactionIdPatch",
+        "transactionId",
+        transactionId,
+      );
+      // verify required parameter 'apiV1TransactionsTransactionIdPatchRequest' is not null or undefined
+      assertParamExists(
+        "apiV1TransactionsTransactionIdPatch",
+        "apiV1TransactionsTransactionIdPatchRequest",
+        apiV1TransactionsTransactionIdPatchRequest,
+      );
+      const localVarPath = `/api/v1/transactions/{transactionId}`.replace(
+        `{${"transactionId"}}`,
+        encodeURIComponent(String(transactionId)),
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: "PATCH",
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      localVarHeaderParameter["Content-Type"] = "application/json";
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        apiV1TransactionsTransactionIdPatchRequest,
+        localVarRequestOptions,
+        configuration,
+      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -1972,6 +2158,39 @@ export const TransactionsApiFp = function (configuration?: Configuration) {
     },
     /**
      *
+     * @param {ApiV1TransactionsPostRequest} apiV1TransactionsPostRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1TransactionsPost(
+      apiV1TransactionsPostRequest: ApiV1TransactionsPostRequest,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string,
+      ) => AxiosPromise<ApiV1TransactionsPost200Response>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1TransactionsPost(
+          apiV1TransactionsPostRequest,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap["TransactionsApi.apiV1TransactionsPost"]?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
      * @param {string} transactionId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1994,6 +2213,39 @@ export const TransactionsApiFp = function (configuration?: Configuration) {
       const localVarOperationServerBasePath =
         operationServerMap[
           "TransactionsApi.apiV1TransactionsTransactionIdGet"
+        ]?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     *
+     * @param {string} transactionId
+     * @param {ApiV1TransactionsTransactionIdPatchRequest} apiV1TransactionsTransactionIdPatchRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async apiV1TransactionsTransactionIdPatch(
+      transactionId: string,
+      apiV1TransactionsTransactionIdPatchRequest: ApiV1TransactionsTransactionIdPatchRequest,
+      options?: RawAxiosRequestConfig,
+    ): Promise<
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>
+    > {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.apiV1TransactionsTransactionIdPatch(
+          transactionId,
+          apiV1TransactionsTransactionIdPatchRequest,
+          options,
+        );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap[
+          "TransactionsApi.apiV1TransactionsTransactionIdPatch"
         ]?.[localVarOperationServerIndex]?.url;
       return (axios, basePath) =>
         createRequestFunction(
@@ -2035,6 +2287,20 @@ export const TransactionsApiFactory = function (
     },
     /**
      *
+     * @param {ApiV1TransactionsPostRequest} apiV1TransactionsPostRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1TransactionsPost(
+      apiV1TransactionsPostRequest: ApiV1TransactionsPostRequest,
+      options?: any,
+    ): AxiosPromise<ApiV1TransactionsPost200Response> {
+      return localVarFp
+        .apiV1TransactionsPost(apiV1TransactionsPostRequest, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @param {string} transactionId
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -2045,6 +2311,26 @@ export const TransactionsApiFactory = function (
     ): AxiosPromise<ApiV1TransactionsTransactionIdGet200Response> {
       return localVarFp
         .apiV1TransactionsTransactionIdGet(transactionId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @param {string} transactionId
+     * @param {ApiV1TransactionsTransactionIdPatchRequest} apiV1TransactionsTransactionIdPatchRequest
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    apiV1TransactionsTransactionIdPatch(
+      transactionId: string,
+      apiV1TransactionsTransactionIdPatchRequest: ApiV1TransactionsTransactionIdPatchRequest,
+      options?: any,
+    ): AxiosPromise<object> {
+      return localVarFp
+        .apiV1TransactionsTransactionIdPatch(
+          transactionId,
+          apiV1TransactionsTransactionIdPatchRequest,
+          options,
+        )
         .then((request) => request(axios, basePath));
     },
   };
@@ -2075,6 +2361,22 @@ export class TransactionsApi extends BaseAPI {
 
   /**
    *
+   * @param {ApiV1TransactionsPostRequest} apiV1TransactionsPostRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TransactionsApi
+   */
+  public apiV1TransactionsPost(
+    apiV1TransactionsPostRequest: ApiV1TransactionsPostRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return TransactionsApiFp(this.configuration)
+      .apiV1TransactionsPost(apiV1TransactionsPostRequest, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @param {string} transactionId
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -2086,6 +2388,28 @@ export class TransactionsApi extends BaseAPI {
   ) {
     return TransactionsApiFp(this.configuration)
       .apiV1TransactionsTransactionIdGet(transactionId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @param {string} transactionId
+   * @param {ApiV1TransactionsTransactionIdPatchRequest} apiV1TransactionsTransactionIdPatchRequest
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof TransactionsApi
+   */
+  public apiV1TransactionsTransactionIdPatch(
+    transactionId: string,
+    apiV1TransactionsTransactionIdPatchRequest: ApiV1TransactionsTransactionIdPatchRequest,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return TransactionsApiFp(this.configuration)
+      .apiV1TransactionsTransactionIdPatch(
+        transactionId,
+        apiV1TransactionsTransactionIdPatchRequest,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath));
   }
 }
