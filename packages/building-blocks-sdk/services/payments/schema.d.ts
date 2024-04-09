@@ -140,6 +140,36 @@ export interface paths {
         };
       };
     };
+    put: {
+      requestBody: {
+        content: {
+          "application/json": {
+            title: string;
+            description: string;
+            reference: string;
+            amount: number;
+            redirectUrl: string;
+            allowAmountOverride: boolean;
+            allowCustomAmount: boolean;
+            paymentRequestId: string;
+            providersUpdate: {
+              toDisable: string[];
+              toCreate: string[];
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+      };
+    };
     post: {
       requestBody: {
         content: {
@@ -201,6 +231,173 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        path: {
+          requestId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": Record<string, never>;
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/requests/{requestId}/transactions": {
+    get: {
+      parameters: {
+        path: {
+          requestId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              transactionId: string;
+              status: string;
+              amount: number;
+              updatedAt: string;
+              title: string;
+            }[];
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/transactions/{transactionId}": {
+    get: {
+      parameters: {
+        path: {
+          transactionId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              transactionId: string;
+              status: string;
+              amount: number;
+              updatedAt: string;
+              title: string;
+              extPaymentId: string;
+              userData: {
+                name: string;
+                email: string;
+              };
+              providerName: string;
+              providerType: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+    patch: {
+      parameters: {
+        path: {
+          transactionId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            status: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": Record<string, never>;
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/transactions/": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            paymentRequestId: string;
+            extPaymentId: string;
+            integrationReference: string;
+            amount: number;
+            paymentProviderId: string;
+            userData: {
+              name: string;
+              email: string;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              transactionId: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
           content: {
             "application/json": {
               statusCode: number;

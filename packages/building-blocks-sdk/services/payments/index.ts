@@ -1,12 +1,27 @@
-import createClient, { type Middleware } from "openapi-fetch";
+import createClient, { FetchResponse, type Middleware } from "openapi-fetch";
 import type { paths } from "./schema";
+
+const formatQueryResult = async <T, O>(
+  promise: Promise<FetchResponse<T, O>>,
+) => {
+  try {
+    const result = await promise;
+    return { data: result.data, error: null };
+  } catch (error) {
+    return { data: undefined, error };
+  }
+};
 
 export class Payments {
   client: ReturnType<typeof createClient<paths>>;
   constructor(authToken: string) {
     const authMiddleware: Middleware = {
       async onRequest(req) {
-        req.headers.set("Authorization", `Bearer ${authToken}`);
+        // Send temporarly the user id as auth token
+        req.headers.set("x-user-id", authToken);
+
+        // Once the logto integration is complete, we will send the real auth token
+        //req.headers.set("Authorization", `Bearer ${authToken}`);
         return req;
       },
     };
@@ -18,6 +33,16 @@ export class Payments {
   }
 
   async getProviders() {
-    return this.client.GET("/api/v1/providers/");
+    return formatQueryResult(this.client.GET("/api/v1/providers/"));
+  }
+
+  async createProvider(
+    data: paths["/api/v1/providers/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/providers/", {
+        body: data,
+      }),
+    );
   }
 }
