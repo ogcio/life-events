@@ -8,6 +8,7 @@ export const getUser = async (loginIfUnauthenticated = true) => {
   const context = await getLogtoContext(logtoConfig, {
     fetchUserInfo: true,
     getAccessToken: true,
+    resource: "http://localhost:8001",
   });
   if (!context.isAuthenticated && loginIfUnauthenticated) {
     redirect("/login");

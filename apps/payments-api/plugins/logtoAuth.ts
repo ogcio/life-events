@@ -8,20 +8,7 @@ const extractBearerTokenFromHeaders = (request: FastifyRequest) => {
     throw new Error("No Authorization header found");
   }
 
-  const parts = authHeader.split(" ");
-
-  if (parts.length !== 2) {
-    throw new Error("Invalid Authorization header format");
-  }
-
-  const scheme = parts[0];
-  const token = parts[1];
-
-  if (!/^Bearer$/i.test(scheme)) {
-    throw new Error("Authorization header is not of type Bearer");
-  }
-
-  return token;
+  return authHeader.slice(7);
 };
 
 // Generate a JWKS using jwks_uri obtained from the Logto server
@@ -46,5 +33,5 @@ export const auth = async (req: FastifyRequest) => {
   // Sub is the user ID, used for user identification
   const { scope, sub } = payload;
 
-  console.log(scope, sub);
+  console.log(payload);
 };
