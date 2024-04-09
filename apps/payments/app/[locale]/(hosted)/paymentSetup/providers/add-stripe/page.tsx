@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
+import { getUser } from "../../../../../../libraries/auth";
 import { redirect } from "next/navigation";
 import buildApiClient from "../../../../../../client/index";
 import StripeFields from "./StripeFields";
@@ -7,12 +7,12 @@ import StripeFields from "./StripeFields";
 export default async () => {
   const t = await getTranslations("PaymentSetup.AddStripe");
 
-  const { userId } = await PgSessions.get();
+  const user = await getUser();
 
   async function handleSubmit(formData: FormData) {
     "use server";
 
-    await buildApiClient(userId).providers.apiV1ProvidersPost({
+    await buildApiClient(user.accessToken).providers.apiV1ProvidersPost({
       name: formData.get("provider_name") as string,
       type: "stripe",
       data: {

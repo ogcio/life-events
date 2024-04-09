@@ -15,7 +15,8 @@ export default async function providers(app: FastifyInstance) {
   app.post<{ Body: CreateProvider; Reply: { id: string } }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermission(req, res, [permissions.READ_PAYMENT]),
       schema: {
         tags: ["Providers"],
         body: CreateProvider,
@@ -87,7 +88,8 @@ export default async function providers(app: FastifyInstance) {
   app.get<{ Reply: Provider | Error; Params: ParamsWithProviderId }>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermission(req, res, [permissions.READ_PAYMENT]),
       schema: {
         tags: ["Providers"],
         response: {
@@ -133,7 +135,8 @@ export default async function providers(app: FastifyInstance) {
   app.put<{ Body: UpdateProvider; Params: ParamsWithProviderId }>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermission(req, res, [permissions.READ_PAYMENT]),
       schema: {
         tags: ["Providers"],
         body: UpdateProvider,

@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
-import { PgSessions } from "auth/sessions";
 import EditOpenBankingForm from "./EditOpenBankingForm";
 import EditBankTransferForm from "./EditBankTransferForm";
 import EditStripeForm from "./EditStripeForm";
 import EditWorldpayForm from "./EditWorldpayForm";
 import buildApiClient from "../../../../../../client/index";
+import { getUser } from "../../../../../../libraries/auth";
 
 type Props = {
   params: {
@@ -13,11 +13,12 @@ type Props = {
 };
 
 export default async ({ params: { providerId } }: Props) => {
-  const { userId } = await PgSessions.get();
+  const user = await getUser();
+
   const provider = (
-    await buildApiClient(userId).providers.apiV1ProvidersProviderIdGet(
-      providerId,
-    )
+    await buildApiClient(
+      user.accessToken,
+    ).providers.apiV1ProvidersProviderIdGet(providerId)
   ).data;
 
   if (!provider) {

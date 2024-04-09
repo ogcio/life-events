@@ -1,18 +1,18 @@
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
 import buildApiClient from "../../../../../../client/index";
 import BankTransferFields from "./BankTransferFields";
+import { getUser } from "../../../../../../libraries/auth";
 
 export default async () => {
   const t = await getTranslations("PaymentSetup.AddBankTransfer");
 
-  const { userId } = await PgSessions.get();
+  const user = await getUser();
 
   async function handleSubmit(formData: FormData) {
     "use server";
 
-    await buildApiClient(userId).providers.apiV1ProvidersPost({
+    await buildApiClient(user.accessToken).providers.apiV1ProvidersPost({
       name: formData.get("provider_name") as string,
       type: "banktransfer",
       data: {

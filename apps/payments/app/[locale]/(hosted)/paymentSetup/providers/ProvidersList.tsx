@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { PgSessions } from "auth/sessions";
 import ProviderStatusTag from "./ProviderStatusTag";
 import buildApiClient from "../../../../../client/index";
 import { getUser } from "../../../../../libraries/auth";
@@ -8,14 +7,8 @@ import { getUser } from "../../../../../libraries/auth";
 export default async () => {
   const t = useTranslations("PaymentSetup.Providers.table");
   const user = await getUser();
-  // const { userId } = await PgSessions.get();
-  const fakeUserId = "40cab290-000c-4770-9d79-fefe9856b4ca";
-  console.log("USER LOGTO", user);
   const providers = (
-    await buildApiClient(
-      fakeUserId,
-      user.accessToken,
-    ).providers.apiV1ProvidersGet()
+    await buildApiClient(user.accessToken).providers.apiV1ProvidersGet()
   ).data;
 
   if (providers.length === 0) {
