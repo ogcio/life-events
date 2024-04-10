@@ -7,27 +7,35 @@ export default () => {
   const t = useTranslations("PaymentSetup.Providers");
 
   return (
-    <main className="govie-main-wrapper " id="main-content" role="main">
-      <div
+    <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
+      <section
         style={{
+          margin: "1rem 0",
+          flex: 1,
           display: "flex",
-          justifyContent: "space-between",
+          flexDirection: "column",
         }}
       >
-        <h1 className="govie-heading-l">{t("title")}</h1>
-        <Link href="providers/add">
-          <button
-            id="button"
-            data-module="govie-button"
-            className="govie-button"
-          >
-            {t("add")}
-          </button>
-        </Link>
-      </div>
-      <p className="govie-body">{t("description")}</p>
-
-      <ProvidersList />
-    </main>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <h1 className="govie-heading-l">{t("title")}</h1>
+          <Link href="providers/add">
+            <button
+              id="button"
+              data-module="govie-button"
+              className="govie-button"
+            >
+              {t("add")}
+            </button>
+          </Link>
+        </div>
+        <p className="govie-body">{t("description")}</p>
+        <ProvidersList />
+      </section>
+    </div>
   );
 };

@@ -22,7 +22,7 @@ export default async function () {
           flexDirection: "column",
         }}
       >
-        <h2 className="govie-heading-m">{t("title")}</h2>
+        <h1 className="govie-heading-m">{t("title")}</h1>
         <table className="govie-table">
           <thead className="govie-table__head">
             <tr className="govie-table__row">
