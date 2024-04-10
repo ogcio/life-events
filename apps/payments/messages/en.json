@@ -6,6 +6,10 @@
     "currencySymbol": "€",
     "delete": "Delete"
   },
+  "EmptyStatus": {
+    "title": "Nothing to show...",
+    "description": "The current list is empty"
+  },
   "PaymentSetup": {
     "menu": {
       "payments": "Payments",
@@ -24,6 +28,10 @@
         "actions": "Actions",
         "emptyMessage": "No providers",
         "edit": "edit"
+      },
+      "empty": {
+        "title": "No payment providers",
+        "description": "You have not added any payment providers yet. Click the button below to add one."
       },
       "status": {
         "connected": "Connected",

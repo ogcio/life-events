@@ -1,18 +1,9 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { PgSessions } from "auth/sessions";
 import ProviderStatusTag from "./ProviderStatusTag";
-import buildApiClient from "../../../../../client/index";
 
-export default async () => {
+export default async ({ providers }) => {
   const t = useTranslations("PaymentSetup.Providers.table");
-  const { userId } = await PgSessions.get();
-  const providers = (await buildApiClient(userId).providers.apiV1ProvidersGet())
-    .data;
-
-  if (providers.length === 0) {
-    return <p className="govie-body">{t("emptyMessage")}</p>;
-  }
 
   return (
     <table className="govie-table">
