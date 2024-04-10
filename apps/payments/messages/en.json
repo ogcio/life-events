@@ -31,7 +31,7 @@
       },
       "empty": {
         "title": "No payment providers",
-        "description": "You have not added any payment providers yet. Click the button below to add one."
+        "description": "You have not added any payment providers yet."
       },
       "status": {
         "connected": "Connected",

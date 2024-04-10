@@ -28,14 +28,16 @@ export const EmptyStatus = async ({
         width: "100%",
       }}
     >
-      <div>
+      <div style={{ marginBottom: "15px" }}>
         <ds.Icon
           icon={icon || "search"}
           color={ds.colours.ogcio.green}
           size={42}
         />
       </div>
-      <h2 className="govie-heading-m">{title || t("title")}</h2>
+      <h2 className="govie-heading-m" style={{ marginBottom: "5px" }}>
+        {title || t("title")}
+      </h2>
       <p className="govie-body">{description || t("description")} </p>
       {action}
     </div>
