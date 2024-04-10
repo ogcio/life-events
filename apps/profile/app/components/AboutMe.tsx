@@ -92,7 +92,7 @@ async function submitAction(formData: FormData) {
     const setClause = keys
       .map((key, index) => `${key} = $${index + 1}`)
       .join(", ");
-    console.log("== UPDATING ===");
+
     await postgres.pgpool.query(
       `
         UPDATE user_details
