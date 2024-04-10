@@ -2,12 +2,14 @@ import StripeHost from "./StripeHost";
 import { getMessages, getTranslations } from "next-intl/server";
 import { createPaymentIntent } from "../../../../integration/stripe";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
-import { createTransaction } from "../../paymentSetup/db";
 import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 
-async function getPaymentDetails(paymentId: string, amount?: string) {
-  const { userId } = await PgSessions.get();
+async function getPaymentDetails(
+  userId: string,
+  paymentId: string,
+  amount?: string,
+) {
   const details = (
     await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
       paymentId,
@@ -46,6 +48,7 @@ export default async function Card(props: {
       }
     | undefined;
 }) {
+  const { userId } = await PgSessions.get();
   const messages = await getMessages({ locale: props.params.locale });
   const stripeMessages =
     (await messages.PayStripe) as unknown as AbstractIntlMessages;
@@ -56,6 +59,7 @@ export default async function Card(props: {
   }
 
   const paymentDetails = await getPaymentDetails(
+    userId,
     props.searchParams.paymentId,
     props.searchParams.amount,
   );
@@ -71,14 +75,15 @@ export default async function Card(props: {
     name: props.searchParams.name,
     email: props.searchParams.email,
   };
-  await createTransaction(
-    props.searchParams.paymentId,
-    paymentIntentId,
-    props.searchParams.integrationRef,
-    paymentDetails.amount,
-    paymentDetails.providerId,
-    userInfo,
-  );
+
+  await buildApiClient(userId).transactions.apiV1TransactionsPost({
+    paymentRequestId: props.searchParams.paymentId,
+    extPaymentId: paymentIntentId,
+    integrationReference: props.searchParams.integrationRef,
+    amount: paymentDetails.amount,
+    paymentProviderId: paymentDetails.providerId,
+    userData: userInfo,
+  });
 
   const returnUri = new URL(
     `/${props.params.locale}/paymentRequest/complete`,

@@ -12,6 +12,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
+import sensible from "@fastify/sensible";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -65,10 +66,13 @@ export async function build(opts?: FastifyServerOptions) {
 
   app.register(routes, { prefix: "/api/v1" });
 
+  app.register(sensible);
+
   app.setErrorHandler((error, request, reply) => {
     app.log.error(error);
     if (error instanceof Error && error.name !== "error") {
-      throw error;
+      reply.type("application/json").send({ error });
+      return;
     }
     reply.code(500).type("application/json").send({ error });
   });

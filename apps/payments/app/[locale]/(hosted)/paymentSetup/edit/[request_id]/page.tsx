@@ -1,5 +1,5 @@
 import { PgSessions } from "auth/sessions";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import PaymentSetupForm from "../../PaymentSetupForm";
 import { stringToAmount } from "../../../../../utils";
 import buildApiClient from "../../../../../../client/index";
@@ -73,14 +73,20 @@ async function editPayment(
 
 export default async function (props: { params: { request_id: string } }) {
   const { userId } = await PgSessions.get();
-  const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-      props.params.request_id,
-    )
-  ).data;
+  let details;
+
+  try {
+    details = (
+      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+        props.params.request_id,
+      )
+    ).data;
+  } catch (err) {
+    console.log(err);
+  }
 
   if (!details) {
-    return <h1 className="govie-heading-l">Payment request not found</h1>;
+    notFound();
   }
 
   const submitPayment = editPayment.bind(

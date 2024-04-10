@@ -2,17 +2,16 @@ import OpenBankingHost from "./OpenBankingHost";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 import { getRealAmount } from "../../../../utils";
-import { createTransaction } from "../../paymentSetup/db";
 import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 
 async function getPaymentDetails(
   paymentId: string,
+  userId: string,
   user: { name: string; email: string },
   amount?: number,
   customAmount?: number,
 ) {
-  const { userId } = await PgSessions.get();
   const details = (
     await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
       paymentId,
@@ -64,6 +63,7 @@ export default async function Bank(props: {
       }
     | undefined;
 }) {
+  const { userId } = await PgSessions.get();
   const t = await getTranslations("Common");
   if (!props.searchParams?.paymentId) {
     return <h1>{t("notFound")}</h1>;
@@ -84,6 +84,7 @@ export default async function Bank(props: {
 
   const details = await getPaymentDetails(
     props.searchParams.paymentId,
+    userId,
     userInfo,
     amount,
     customAmount,
@@ -92,14 +93,14 @@ export default async function Bank(props: {
 
   const { paymentDetails, paymentRequest } = details;
 
-  await createTransaction(
-    props.searchParams.paymentId,
-    paymentRequest.id,
-    props.searchParams.integrationRef,
-    paymentDetails.amount,
-    paymentDetails.providerId,
-    userInfo,
-  );
+  await buildApiClient(userId).transactions.apiV1TransactionsPost({
+    paymentRequestId: props.searchParams.paymentId,
+    extPaymentId: paymentRequest.id,
+    integrationReference: props.searchParams.integrationRef,
+    amount: paymentDetails.amount,
+    paymentProviderId: paymentDetails.providerId,
+    userData: userInfo,
+  });
 
   const returnUri = new URL(
     `/${props.params.locale}/paymentRequest/complete`,

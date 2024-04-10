@@ -6,11 +6,11 @@ import {
   getRealAmount,
   stringToAmount,
 } from "../../../../utils";
-import { pgpool } from "../../../../dbConnection";
-import { PaymentRequestDO } from "../../../../../types/common";
 import { redirect } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
+import buildApiClient from "../../../../../client/index";
+import { PgSessions } from "auth/sessions";
 
 type Props = {
   params: {
@@ -26,33 +26,19 @@ type Props = {
     | undefined;
 };
 
-type PaymentRequestDetails = Pick<
-  PaymentRequestDO,
-  | "title"
-  | "description"
-  | "amount"
-  | "allowAmountOverride"
-  | "allowCustomAmount"
-> & { provider_name: string; provider_type: string };
-
 async function getPaymentRequestDetails(paymentId: string) {
-  "use server";
+  const { userId } = await PgSessions.get();
+  const details = (
+    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+      paymentId,
+    )
+  ).data;
 
-  const res = await pgpool.query<PaymentRequestDetails>(
-    `select pr.title, pr.description, pr.amount, pp.provider_name, pp.provider_type, 
-      pr.allow_amount_override as "allowAmountOverride", pr.allow_custom_amount as "allowCustomAmount"
-      from payment_requests pr
-      JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
-      join payment_providers pp on ppr.provider_id = pp.provider_id
-      where pr.payment_request_id = $1`,
-    [paymentId],
-  );
-
-  if (!res.rowCount) {
+  if (!details) {
     return undefined;
   }
 
-  return res.rows;
+  return details;
 }
 
 async function selectCustomAmount(requestId: string, formData: FormData) {
@@ -86,19 +72,17 @@ export default async function Page(props: Props) {
 
   if (!details) return <NotFound />;
 
-  const hasOpenBanking = details.some(
-    ({ provider_type }) => provider_type === "openbanking",
+  const hasOpenBanking = details.providers.some(
+    ({ type }) => type === "openbanking",
   );
 
-  const hasManualBanking = details.some(
-    ({ provider_type }) => provider_type === "banktransfer",
+  const hasManualBanking = details.providers.some(
+    ({ type }) => type === "banktransfer",
   );
 
-  const hasStripe = details.some(
-    ({ provider_type }) => provider_type === "stripe",
-  );
+  const hasStripe = details.providers.some(({ type }) => type === "stripe");
 
-  const allowCustomAmount = details[0].allowCustomAmount;
+  const allowCustomAmount = details.allowCustomAmount;
 
   const urlAmount = props.searchParams.amount
     ? parseFloat(props.searchParams.amount)
@@ -108,11 +92,11 @@ export default async function Page(props: Props) {
     : undefined;
 
   const realAmount = getRealAmount({
-    amount: details[0].amount,
+    amount: details.amount,
     customAmount,
     amountOverride: urlAmount,
-    allowAmountOverride: details[0].allowAmountOverride,
-    allowCustomOverride: details[0].allowCustomAmount,
+    allowAmountOverride: details.allowAmountOverride,
+    allowCustomOverride: details.allowCustomAmount,
   });
 
   const selectAmountAction = selectCustomAmount.bind(
