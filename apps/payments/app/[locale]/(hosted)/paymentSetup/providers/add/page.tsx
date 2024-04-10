@@ -16,7 +16,6 @@ export default async () => {
         title={t("openbanking")}
         description={t("openbankingDescription")}
         href={"add-openbanking"}
-        recommended
       />
       <ProviderTypeCard
         title={t("banktransfer")}
