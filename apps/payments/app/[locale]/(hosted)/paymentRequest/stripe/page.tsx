@@ -3,15 +3,10 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { createPaymentIntent } from "../../../../integration/stripe";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import buildApiClient from "../../../../../client/index";
-import { PgSessions } from "auth/sessions";
 
-async function getPaymentDetails(
-  userId: string,
-  paymentId: string,
-  amount?: string,
-) {
+async function getPaymentDetails(paymentId: string, amount?: string) {
   const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+    await buildApiClient().paymentRequests.apiV1RequestsRequestIdSummaryGet(
       paymentId,
     )
   ).data;
@@ -48,7 +43,6 @@ export default async function Card(props: {
       }
     | undefined;
 }) {
-  const { userId } = await PgSessions.get();
   const messages = await getMessages({ locale: props.params.locale });
   const stripeMessages =
     (await messages.PayStripe) as unknown as AbstractIntlMessages;
@@ -59,7 +53,6 @@ export default async function Card(props: {
   }
 
   const paymentDetails = await getPaymentDetails(
-    userId,
     props.searchParams.paymentId,
     props.searchParams.amount,
   );
@@ -76,7 +69,7 @@ export default async function Card(props: {
     email: props.searchParams.email,
   };
 
-  await buildApiClient(userId).transactions.apiV1TransactionsPost({
+  await buildApiClient().transactions.apiV1TransactionsPost({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentIntentId,
     integrationReference: props.searchParams.integrationRef,

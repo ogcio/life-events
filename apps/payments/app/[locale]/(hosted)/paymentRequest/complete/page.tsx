@@ -42,9 +42,8 @@ async function updateTransaction(extPaymentId: string, status: string) {
 }
 
 async function getRequestDetails(requestId: string) {
-  const { userId } = await PgSessions.get();
   const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+    await buildApiClient().paymentRequests.apiV1RequestsRequestIdSummaryGet(
       requestId,
     )
   ).data;

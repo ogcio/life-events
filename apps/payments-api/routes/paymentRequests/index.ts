@@ -149,6 +149,75 @@ export default async function paymentRequests(app: FastifyInstance) {
     },
   );
 
+  app.get<{
+    Reply: PaymentRequestDetails | Error;
+    Params: ParamsWithPaymentRequestId;
+  }>(
+    "/:requestId/summary",
+    {
+      schema: {
+        tags: ["PaymentRequests"],
+        response: {
+          200: Type.Object({
+            paymentRequestId: Type.String(),
+            title: Type.String(),
+            description: Type.String(),
+            amount: Type.Number(),
+            reference: Type.String(),
+            providers: Type.Array(
+              Type.Object({
+                id: Type.String(),
+                name: Type.String(),
+                type: Type.String(),
+                //TODO: Send only public available data, not the whole object
+                data: Type.Any(),
+              }),
+            ),
+            redirectUrl: Type.String(),
+            allowAmountOverride: Type.Boolean(),
+            allowCustomAmount: Type.Boolean(),
+          }),
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { requestId } = request.params;
+
+      const result = await app.pg.query(
+        `SELECT pr.title,
+            pr.payment_request_id as "paymentRequestId",
+            pr.description,
+            pr.amount,
+            json_agg(json_build_object(
+              'id', pp.provider_id,
+              'name', pp.provider_name,
+              'type', pp.provider_type,
+              'data', pp.provider_data
+            )) as providers,
+            pr.reference,
+            pr.redirect_url as "redirectUrl",
+            pr.allow_amount_override AS "allowAmountOverride",
+            pr.allow_custom_amount AS "allowCustomAmount"
+        FROM payment_requests pr
+        JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
+        JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
+        WHERE pr.payment_request_id = $1
+        GROUP BY pr.payment_request_id`,
+        [requestId],
+      );
+
+      if (!result.rowCount) {
+        reply.send(
+          httpErrors.notFound("The requested payment request was not found"),
+        );
+        return;
+      }
+
+      reply.send(result.rows[0]);
+    },
+  );
+
   app.post<{ Body: CreatePaymentRequest; Reply: { id: string } | Error }>(
     "/",
     {

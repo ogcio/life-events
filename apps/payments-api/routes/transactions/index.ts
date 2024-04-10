@@ -64,7 +64,6 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/:transactionId",
     {
-      preValidation: app.verifyUser,
       schema: {
         tags: ["Transactions"],
         body: UpdateTransactionBody,
@@ -96,7 +95,6 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: app.verifyUser,
       schema: {
         tags: ["Transactions"],
         body: CreateTransactionBody,

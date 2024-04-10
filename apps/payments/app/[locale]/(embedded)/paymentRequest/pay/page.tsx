@@ -10,7 +10,6 @@ import { redirect } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
 import buildApiClient from "../../../../../client/index";
-import { PgSessions } from "auth/sessions";
 
 type Props = {
   params: {
@@ -27,9 +26,8 @@ type Props = {
 };
 
 async function getPaymentRequestDetails(paymentId: string) {
-  const { userId } = await PgSessions.get();
   const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+    await buildApiClient().paymentRequests.apiV1RequestsRequestIdSummaryGet(
       paymentId,
     )
   ).data;

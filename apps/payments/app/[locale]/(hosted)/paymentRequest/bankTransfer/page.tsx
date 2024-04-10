@@ -7,13 +7,12 @@ import { PgSessions } from "auth/sessions";
 
 async function getPaymentDetails(
   paymentId: string,
-  userId: string,
   user: { name: string; email: string },
   amount?: number,
   customAmount?: number,
 ) {
   const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+    await buildApiClient().paymentRequests.apiV1RequestsRequestIdSummaryGet(
       paymentId,
     )
   ).data;
@@ -63,7 +62,6 @@ export default async function Bank(props: {
       }
     | undefined;
 }) {
-  const { userId } = await PgSessions.get();
   const t = await getTranslations("Common");
   if (!props.searchParams?.paymentId) {
     return <h1>{t("notFound")}</h1>;
@@ -84,7 +82,6 @@ export default async function Bank(props: {
 
   const details = await getPaymentDetails(
     props.searchParams.paymentId,
-    userId,
     userInfo,
     amount,
     customAmount,
@@ -93,7 +90,7 @@ export default async function Bank(props: {
 
   const { paymentDetails, paymentRequest } = details;
 
-  await buildApiClient(userId).transactions.apiV1TransactionsPost({
+  await buildApiClient().transactions.apiV1TransactionsPost({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentRequest.id,
     integrationReference: props.searchParams.integrationRef,

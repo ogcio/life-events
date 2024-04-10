@@ -3,15 +3,10 @@ import { routeDefinitions } from "../../../../routeDefinitions";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
 import buildApiClient from "../../../../../client/index";
-import { PgSessions } from "auth/sessions";
 
-async function getPaymentDetails(
-  userId: string,
-  paymentId: string,
-  amount?: number,
-) {
+async function getPaymentDetails(paymentId: string, amount?: number) {
   const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+    await buildApiClient().paymentRequests.apiV1RequestsRequestIdSummaryGet(
       paymentId,
     )
   ).data;
@@ -33,14 +28,10 @@ async function getPaymentDetails(
   };
 }
 
-async function confirmPayment(
-  userId: string,
-  transactionId: string,
-  redirectUrl: string,
-) {
+async function confirmPayment(transactionId: string, redirectUrl: string) {
   "use server";
 
-  await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdPatch(
+  await buildApiClient().transactions.apiV1TransactionsTransactionIdPatch(
     transactionId,
     {
       status: "confirmed",
@@ -61,7 +52,6 @@ export default async function Bank(params: {
       }
     | undefined;
 }) {
-  const { userId } = await PgSessions.get();
   if (!params.searchParams?.paymentId) {
     redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
   }
@@ -72,7 +62,6 @@ export default async function Bank(params: {
     ? parseFloat(params.searchParams.amount)
     : undefined;
   const paymentDetails = await getPaymentDetails(
-    userId,
     params.searchParams.paymentId,
     amount,
   );
@@ -93,7 +82,7 @@ export default async function Bank(params: {
   };
 
   const transactionId = (
-    await buildApiClient(userId).transactions.apiV1TransactionsPost({
+    await buildApiClient().transactions.apiV1TransactionsPost({
       paymentRequestId: params.searchParams.paymentId,
       extPaymentId: paymentIntentId,
       integrationReference: params.searchParams.integrationRef,
@@ -105,7 +94,6 @@ export default async function Bank(params: {
 
   const paymentMade = confirmPayment.bind(
     this,
-    userId,
     transactionId,
     paymentDetails.redirectUrl,
   );
