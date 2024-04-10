@@ -1,17 +1,25 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { PgSessions } from "auth/sessions";
 import ProviderStatusTag from "./ProviderStatusTag";
+import { PgSessions } from "auth/sessions";
 import buildApiClient from "../../../../../client/index";
+import { EmptyStatus } from "../../../../components/EmptyStatus";
 
 export default async () => {
-  const t = useTranslations("PaymentSetup.Providers.table");
+  const t = useTranslations("PaymentSetup.Providers");
+
   const { userId } = await PgSessions.get();
+
   const providers = (await buildApiClient(userId).providers.apiV1ProvidersGet())
     .data;
 
   if (providers.length === 0) {
-    return <p className="govie-body">{t("emptyMessage")}</p>;
+    return (
+      <EmptyStatus
+        title={t("empty.title")}
+        description={t("empty.description")}
+      />
+    );
   }
 
   return (
@@ -19,19 +27,19 @@ export default async () => {
       <thead className="govie-table__head">
         <tr className="govie-table__row">
           <th scope="col" className="govie-table__header">
-            {t("provider")}
+            {t("table.provider")}
           </th>
           <th scope="col" className="govie-table__header">
-            {t("status")}
+            {t("table.status")}
           </th>
           <th scope="col" className="govie-table__header">
-            {t("account")}
+            {t("table.account")}
           </th>
           <th
             scope="col"
             className="govie-table__header govie-table__header--numeric"
           >
-            {t("actions")}
+            {t("table.actions")}
           </th>
         </tr>
       </thead>
@@ -48,7 +56,7 @@ export default async () => {
               {provider.name}
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s govie-table__header--numeric">
-              <Link href={`providers/${provider.id}`}>{t("edit")}</Link>
+              <Link href={`providers/${provider.id}`}>{t("table.edit")}</Link>
             </td>
           </tr>
         ))}
