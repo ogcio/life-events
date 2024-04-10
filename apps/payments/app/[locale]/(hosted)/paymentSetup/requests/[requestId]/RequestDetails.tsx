@@ -1,8 +1,7 @@
 import React from "react";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../../utils";
-import { pgpool } from "../../../../../dbConnection";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Tooltip from "../../../../../components/Tooltip";
 import CopyLink from "./CopyBtn";
@@ -19,30 +18,35 @@ async function deletePaymentRequest(requestId: string, userId: string) {
   redirect("/paymentSetup/requests");
 }
 
-async function hasTransactions(requestId: string) {
-  const { rows } = await pgpool.query<{ transaction_id: number }>(
-    `
-    select transaction_id from payment_transactions where payment_request_id = $1
-    `,
-    [requestId],
-  );
+async function hasTransactions(requestId: string, userId: string) {
+  const transactions = (
+    await buildApiClient(
+      userId,
+    ).transactions.apiV1RequestsRequestIdTransactionsGet(requestId)
+  ).data;
 
-  return rows.length > 0;
+  return transactions.length > 0;
 }
 
 export const RequestDetails = async ({ requestId }: { requestId: string }) => {
   const { userId } = await PgSessions.get();
-  const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-      requestId,
-    )
-  ).data;
+  let details;
+
+  try {
+    details = (
+      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+        requestId,
+      )
+    ).data;
+  } catch (err) {
+    console.log(err);
+  }
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tSetup = await getTranslations("PaymentSetup");
   const tCommon = await getTranslations("Common");
 
   if (!details) {
-    return <h1 className="govie-heading-l">Payment request not found</h1>;
+    notFound();
   }
 
   const deletePR = deletePaymentRequest.bind(
@@ -51,7 +55,7 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
     userId,
   );
   // Cannot delete the payment request if we already have transactions
-  const disableDeleteButton = await hasTransactions(requestId);
+  const disableDeleteButton = await hasTransactions(requestId, userId);
 
   const integrationReference = requestId;
   const completePaymentLink = new URL(
@@ -149,7 +153,11 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
           <dt className="govie-summary-list__key">{t("paymentLink")}</dt>
           <dt className="govie-summary-list__value">
             <div style={{ display: "flex", gap: "10px" }}>
-              <a href={completePaymentLink} className="govie-link">
+              <a
+                href={completePaymentLink}
+                className="govie-link"
+                target="_blank"
+              >
                 {completePaymentLink}
               </a>
               <CopyLink link={completePaymentLink} buttonText={t("copyLink")} />
