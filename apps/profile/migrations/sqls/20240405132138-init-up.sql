@@ -41,4 +41,11 @@ CREATE TABLE IF NOT EXISTS entitlements (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES user_details(user_id)
-)
+);
+
+CREATE TABLE IF NOT EXISTS form_errors(
+    user_id UUID NOT NULL,
+    field TEXT NOT NULL,
+    error_value TEXT,
+    error_message TEXT NOT NULL
+);

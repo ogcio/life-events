@@ -5,9 +5,117 @@ import UserDetails from "./UserDetails";
 import Addresses from "./Addresses";
 import Entitlements from "./Entitlements";
 import Consent from "./Consent";
+import { revalidatePath } from "next/cache";
+import { form, postgres } from "../utils";
+import { PgSessions } from "auth/sessions";
+
+async function submitAction(formData: FormData) {
+  "use server";
+
+  const { userId } = await PgSessions.get();
+
+  const formErrors: form.Error[] = [];
+
+  const phone = formData.get("phone")?.toString();
+  formErrors.push(
+    ...form.validation.stringNotEmpty(form.fieldTranslationKeys.phone, phone),
+  );
+
+  const email = formData.get("email")?.toString();
+  formErrors.push(
+    ...form.validation.emailErrors(form.fieldTranslationKeys.email, email),
+  );
+
+  if (formErrors.length) {
+    await form.insertErrors(formErrors, userId);
+
+    return revalidatePath("/");
+  }
+
+  let data = {
+    title: "",
+    firstName: "",
+    lastName: "",
+    ppsn: "",
+    gender: "",
+    phone: "",
+    email: "",
+  };
+
+  const formIterator = formData.entries();
+  let iterResult = formIterator.next();
+
+  while (!iterResult.done) {
+    const [key, value] = iterResult.value;
+
+    if (
+      [
+        "title",
+        "firstName",
+        "lastName",
+        "ppsn",
+        "gender",
+        "phone",
+        "email",
+      ].includes(key)
+    ) {
+      data[key] = value;
+    }
+
+    iterResult = formIterator.next();
+  }
+
+  const dayOfBirth = formData.get("dayOfBirth");
+  const monthOfBirth = formData.get("monthOfBirth");
+  const yearOfBirth = formData.get("yearOfBirth");
+
+  if (dayOfBirth && monthOfBirth && yearOfBirth) {
+    const dateOfBirth = new Date(
+      Number(yearOfBirth),
+      Number(monthOfBirth) - 1,
+      Number(dayOfBirth),
+    );
+
+    const dateOfBirthData = { date_of_birth: dateOfBirth };
+
+    data = { ...data, ...dateOfBirthData };
+  }
+
+  const currentDataResults = await postgres.pgpool.query(
+    `
+      SELECT * FROM user_details
+      WHERE user_id = $1
+  `,
+    [userId],
+  );
+
+  let dataToUpdate = data;
+
+  if (currentDataResults.rowCount) {
+    const [{ currentData }] = currentDataResults.rows;
+    Object.assign(currentData, data);
+    dataToUpdate = currentData;
+  }
+
+  const keys = Object.keys(data);
+  const values = Object.values(data);
+
+  const columns = keys.join(", ");
+  const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
+
+  await postgres.pgpool.query(
+    `
+  INSERT INTO user_details (${columns})
+  VALUES (${placeholders})
+  RETURNING user_id;
+`,
+    values,
+  );
+}
 
 export default async () => {
   const t = await getTranslations("AboutMe");
+
   return (
     <div>
       <h1 className="govie-heading-l">{t("title")}</h1>
@@ -28,12 +136,16 @@ export default async () => {
           </svg>{" "}
         </span>
         <strong>
-          Fields labelled with a{" "}
-          <span style={{ color: ds.colours.ogcio.red }}>*</span> are editable.
-          All others are view only.
+          {t.rich("subtitle", {
+            red: (chunks) => {
+              return (
+                <span style={{ color: ds.colours.ogcio.red }}>{chunks}</span>
+              );
+            },
+          })}
         </strong>
       </p>
-      <form>
+      <form action={submitAction}>
         <UserDetails />
         <hr style={{ marginBottom: "30px" }} />
         <Addresses />
