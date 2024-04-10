@@ -109,6 +109,15 @@
       "confirm": "Confirm"
     },
     "Payments": {
+      "empty": {
+        "title": "There are no payment requests.",
+        "description": "You have not created any payment requests yet."
+      },
+      "emptyPaymentsList": {
+        "title": "There are no payments.",
+        "description": "You have not received any payments yet.",
+        "startHere": "Start by adding a payment provider"
+      },
       "createPayment": "Create payment request",
       "title": "Payments",
       "paymentRequests": "Payment requests",
@@ -127,7 +136,11 @@
       }
     },
     "Request": {
-      "transactions": "Transactions",
+      "empty": {
+        "title": "There are no payments yet",
+        "description": "You have not received any payments yet for this request"
+      },
+      "payments": "Payments Received",
       "table": {
         "status": "Status",
         "reference": "Reference",
