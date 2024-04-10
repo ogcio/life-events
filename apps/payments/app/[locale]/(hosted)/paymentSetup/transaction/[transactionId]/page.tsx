@@ -4,17 +4,23 @@ import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
+import { notFound } from "next/navigation";
 
 async function getTransactionDetails(transactionId: string) {
   const { userId } = await PgSessions.get();
+  let details;
 
-  const detauils = (
-    await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdGet(
-      transactionId,
-    )
-  ).data;
+  try {
+    details = (
+      await buildApiClient(
+        userId,
+      ).transactions.apiV1TransactionsTransactionIdGet(transactionId)
+    ).data;
+  } catch (err) {
+    console.log(err);
+  }
 
-  return detauils;
+  return details;
 }
 
 async function confirmTransaction(transactionId: string) {
@@ -37,6 +43,10 @@ export default async function ({ params: { transactionId } }) {
     getTransactionDetails(transactionId),
     getTranslations("PaymentSetup.Request"),
   ]);
+
+  if (!details) {
+    notFound();
+  }
 
   const confirm = confirmTransaction.bind(null, transactionId);
 

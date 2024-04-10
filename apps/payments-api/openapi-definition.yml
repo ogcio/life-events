@@ -113,29 +113,18 @@ paths:
                   - type
                   - data
                   - status
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
         "404":
           description: Default Response
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  statusCode:
-                    type: number
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  time:
-                    type: string
-                required:
-                  - statusCode
-                  - code
-                  - error
-                  - message
-                  - time
+                type: string
     put:
       tags:
         - Providers

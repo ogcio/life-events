@@ -10,15 +10,19 @@ import { EmptyStatus } from "../../../../../components/EmptyStatus";
 
 export default async function ({ params: { requestId } }) {
   const t = await getTranslations("PaymentSetup.Request");
-  const tCreatePayment = await getTranslations("PaymentSetup.CreatePayment");
 
   const { userId } = await PgSessions.get();
 
-  const transactions = (
-    await buildApiClient(
-      userId,
-    ).transactions.apiV1RequestsRequestIdTransactionsGet(requestId)
-  ).data;
+  let transactions: Array<any> = [];
+  try {
+    transactions = (
+      await buildApiClient(
+        userId,
+      ).transactions.apiV1RequestsRequestIdTransactionsGet(requestId)
+    ).data;
+  } catch (err) {
+    console.log(err);
+  }
 
   return (
     <div>
