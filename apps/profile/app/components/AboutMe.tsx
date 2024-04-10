@@ -32,7 +32,19 @@ async function submitAction(formData: FormData) {
     return revalidatePath("/");
   }
 
+  const dayOfBirth = formData.get("dayOfBirth");
+  const monthOfBirth = formData.get("monthOfBirth");
+  const yearOfBirth = formData.get("yearOfBirth");
+
+  const dateOfBirth = new Date(
+    Number(yearOfBirth),
+    Number(monthOfBirth) - 1,
+    Number(dayOfBirth),
+  );
+
   let data = {
+    user_id: userId,
+    date_of_birth: dateOfBirth,
     title: "",
     firstName: "",
     lastName: "",
@@ -65,22 +77,6 @@ async function submitAction(formData: FormData) {
     iterResult = formIterator.next();
   }
 
-  const dayOfBirth = formData.get("dayOfBirth");
-  const monthOfBirth = formData.get("monthOfBirth");
-  const yearOfBirth = formData.get("yearOfBirth");
-
-  if (dayOfBirth && monthOfBirth && yearOfBirth) {
-    const dateOfBirth = new Date(
-      Number(yearOfBirth),
-      Number(monthOfBirth) - 1,
-      Number(dayOfBirth),
-    );
-
-    const dateOfBirthData = { date_of_birth: dateOfBirth };
-
-    data = { ...data, ...dateOfBirthData };
-  }
-
   const currentDataResults = await postgres.pgpool.query(
     `
       SELECT * FROM user_details
@@ -89,28 +85,34 @@ async function submitAction(formData: FormData) {
     [userId],
   );
 
-  let dataToUpdate = data;
-
-  if (currentDataResults.rowCount) {
-    const [{ currentData }] = currentDataResults.rows;
-    Object.assign(currentData, data);
-    dataToUpdate = currentData;
-  }
-
   const keys = Object.keys(data);
   const values = Object.values(data);
 
-  const columns = keys.join(", ");
-  const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
+  if (currentDataResults.rows.length > 0) {
+    const setClause = keys
+      .map((key, index) => `${key} = $${index + 1}`)
+      .join(", ");
+    console.log("== UPDATING ===");
+    await postgres.pgpool.query(
+      `
+        UPDATE user_details
+        SET ${setClause}
+        WHERE user_id = $${keys.length + 1}
+      `,
+      [...values, userId],
+    );
+  } else {
+    const columns = keys.join(", ");
+    const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
 
-  await postgres.pgpool.query(
-    `
-  INSERT INTO user_details (${columns})
-  VALUES (${placeholders})
-  RETURNING user_id;
-`,
-    values,
-  );
+    await postgres.pgpool.query(
+      `
+        INSERT INTO user_details (${columns})
+        VALUES (${placeholders})
+      `,
+      values,
+    );
+  }
 }
 
 export default async () => {
