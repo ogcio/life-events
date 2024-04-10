@@ -6,6 +6,11 @@
     "currencySymbol": "€",
     "delete": "Delete"
   },
+  "NotFound": {
+    "title": "Not Found",
+    "description": " Sorry, the requested resource could not be found",
+    "return-home": "Return Home"
+  },
   "PaymentSetup": {
     "menu": {
       "payments": "Payments",
