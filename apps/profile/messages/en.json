@@ -6,9 +6,10 @@
     "tag": "prototype",
     "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
   },
-  "ProfileDetails": {
+  "AboutMe": {
+    "title": "About me",
     "name": "Name",
-    "title": "Title",
+    "userTitle": "Title",
     "firstName": "First name",
     "surname": "Surname",
     "dateOfBirth": "Date of birth",

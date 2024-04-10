@@ -1,5 +1,5 @@
 import Menu from "../components/Menu";
-import ProfileForm from "../components/ProfileForm";
+import AboutMe from "../components/AboutMe";
 
 export default () => {
   return (
@@ -13,8 +13,7 @@ export default () => {
       >
         <Menu />
         <div className="govie-grid-column-two-thirds-from-desktop">
-          <h1 className="govie-heading-l">About me</h1>
-          <ProfileForm />
+          <AboutMe />
         </div>
       </div>
     </div>
