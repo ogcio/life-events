@@ -22,18 +22,7 @@ export default async function () {
           flexDirection: "column",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Link href="paymentSetup/create">
-            <button
-              id="button"
-              data-module="govie-button"
-              className="govie-button"
-            >
-              {t("createPayment")}
-            </button>
-          </Link>
-        </div>
-        <h2 className="govie-heading-m">{t("transactions")}</h2>
+        <h2 className="govie-heading-m">{t("title")}</h2>
         <table className="govie-table">
           <thead className="govie-table__head">
             <tr className="govie-table__row">
@@ -58,7 +47,10 @@ export default async function () {
             {transactions.map((trx) => (
               <tr className="govie-table__row" key={trx.transaction_id}>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  <strong className="govie-tag govie-tag--green govie-body-s">
+                  <strong
+                    className="govie-tag govie-tag--green govie-body-s"
+                    style={{ marginBottom: "0px" }}
+                  >
                     {trx.status}
                   </strong>
                 </td>

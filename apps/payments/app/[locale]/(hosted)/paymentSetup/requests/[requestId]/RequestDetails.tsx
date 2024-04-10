@@ -147,7 +147,11 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
           <dt className="govie-summary-list__key">{t("paymentLink")}</dt>
           <dt className="govie-summary-list__value">
             <div style={{ display: "flex", gap: "10px" }}>
-              <a href={completePaymentLink} className="govie-link">
+              <a
+                href={completePaymentLink}
+                className="govie-link"
+                target="_blank"
+              >
                 {completePaymentLink}
               </a>
               <CopyLink link={completePaymentLink} buttonText={t("copyLink")} />

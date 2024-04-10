@@ -12,7 +12,7 @@
       "paymentRequests": "Payment requests",
       "providers": "Providers"
     },
-    "details": "Payment details",
+    "details": "Payment request details",
     "Providers": {
       "title": "Your payments integrations",
       "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
@@ -101,8 +101,8 @@
       "confirm": "Confirm"
     },
     "Payments": {
-      "createPayment": "Create payment",
-      "transactions": "Transactions",
+      "createPayment": "Create payment request",
+      "title": "Payments",
       "paymentRequests": "Payment requests",
       "table": {
         "status": "Status",
@@ -110,7 +110,7 @@
         "payee": "Citizen Name",
         "amount": "Amount",
         "date": "Date",
-        "title": "Title",
+        "title": "Payment Request Title",
         "paymentTitle": "Description",
         "beneficiaryAccount": "Beneficiary Account",
         "actions": "Actions",
@@ -133,7 +133,7 @@
         "details": "Details"
       },
       "details": {
-        "transactionDetails": "Transaction details",
+        "paymentDetails": "Payment details",
         "requestTitle": "Payment Request Title",
         "amount": "Amount",
         "lastUpdate": "Last update",
@@ -157,7 +157,7 @@
       }
     },
     "CreatePayment": {
-      "title": "Payment Setup Form",
+      "title": "Payment Request Setup Form",
       "form": {
         "title": "Title",
         "description": "Description",
