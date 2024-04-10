@@ -1,6 +1,5 @@
 import ds from "design-system";
 import { getTranslations } from "next-intl/server";
-import "./ProfileForm.css";
 import UserDetails from "./UserDetails";
 import Addresses from "./Addresses";
 import Entitlements from "./Entitlements";

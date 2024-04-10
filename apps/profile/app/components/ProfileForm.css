@@ -1,4 +1,0 @@
-.govie-radios__input:disabled + .govie-radios__label,
-.govie-radios__input:disabled ~ .govie-hint {
-  opacity: 1;
-}
