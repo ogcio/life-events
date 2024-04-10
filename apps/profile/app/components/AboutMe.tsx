@@ -2,6 +2,9 @@ import ds from "design-system";
 import { getTranslations } from "next-intl/server";
 import "./ProfileForm.css";
 import UserDetails from "./UserDetails";
+import Addresses from "./Addresses";
+import Entitlements from "./Entitlements";
+import Consent from "./Consent";
 
 export default async () => {
   const t = await getTranslations("AboutMe");
@@ -30,7 +33,34 @@ export default async () => {
           All others are view only.
         </strong>
       </p>
-      <UserDetails />
+      <form>
+        <UserDetails />
+        <hr style={{ marginBottom: "30px" }} />
+        <Addresses />
+        <hr style={{ marginBottom: "30px" }} />
+        <Entitlements />
+        <hr style={{ marginBottom: "30px" }} />
+        <Consent />
+        <hr style={{ marginBottom: "30px" }} />
+        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+          <button
+            type="submit"
+            data-module="govie-button"
+            className="govie-button"
+            style={{ marginBottom: 0 }}
+          >
+            {t("save")}
+          </button>
+          <button
+            type="button"
+            data-module="govie-button"
+            className="govie-button govie-button--secondary"
+            style={{ marginBottom: 0 }}
+          >
+            {t("cancel")}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

@@ -1,8 +1,11 @@
+import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 
 export default async () => {
-  const t = await getTranslations("AboutMe");
+  const t = await getTranslations("UserDetails");
   const titles = ["Mr", "Mrs", "Miss", "Ms"];
+  const { firstName, lastName, email } = await PgSessions.get();
+
   return (
     <>
       <h2 className="govie-heading-m">{t("name")}</h2>
@@ -14,7 +17,11 @@ export default async () => {
           <div className="govie-hint" id="title-field-hint">
             {t("userTitle")}
           </div>
-          <select className="govie-select" aria-labelledby="title-field-hint">
+          <select
+            className="govie-select"
+            aria-labelledby="title-field-hint"
+            disabled
+          >
             {titles.map((title) => (
               <option value="choose">{title}</option>
             ))}
@@ -31,6 +38,7 @@ export default async () => {
             className="govie-input"
             aria-labelledby="firstName-field-hint"
             disabled
+            value={firstName}
           />
         </div>
         <div style={{ flex: 1 }}>
@@ -44,6 +52,7 @@ export default async () => {
             className="govie-input"
             aria-labelledby="surname-field-hint"
             disabled
+            value={lastName}
           />
         </div>
       </div>
@@ -122,53 +131,84 @@ export default async () => {
                   className="govie-button govie-button--secondary"
                   style={{ marginBottom: 0 }}
                 >
-                  Reveal
+                  {t("reveal")}
                 </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <h2 className="govie-heading-m" id="gender-title">
-        {t("gender")}
-      </h2>
+      <h2 className="govie-heading-m">{t("gender")}</h2>
+      <div className="govie-form-group">
+        <div
+          data-module="govie-radios"
+          className="govie-radios govie-radios--large govie-radios--inline"
+        >
+          <div className="govie-radios__item" style={{ paddingLeft: 0 }}>
+            <div className="govie-radios__item">
+              <input
+                id="male-option"
+                name="male"
+                type="radio"
+                value="agree"
+                className="govie-radios__input"
+                disabled
+              />
+              <label
+                className="govie-label--s govie-radios__label"
+                htmlFor="male-option"
+              >
+                {t("male")}
+              </label>
+            </div>
+            <div className="govie-radios__item">
+              <input
+                id="female-option"
+                name="female"
+                type="radio"
+                value="disagree"
+                className="govie-radios__input"
+                disabled
+              />
+              <label
+                className="govie-label--s govie-radios__label"
+                htmlFor="female-option"
+              >
+                {t("female")}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2 className="govie-heading-m">{t("contactDetails")}</h2>
       <div
-        data-module="govie-radios"
-        className="govie-radios govie-radios--large govie-radios--inline"
+        className="govie-form-group"
+        style={{ display: "flex", gap: "20px" }}
       >
-        <div className="govie-radios__item" style={{ paddingLeft: 0 }}>
-          <div className="govie-radios__item">
-            <input
-              id="male-option"
-              name="male"
-              type="radio"
-              value="agree"
-              className="govie-radios__input"
-              disabled
-            />
-            <label
-              className="govie-label--s govie-radios__label"
-              htmlFor="male-option"
-            >
-              {t("male")}
-            </label>
+        <div style={{ flex: 1 }}>
+          <div className="govie-hint" id="telephone-field-hint">
+            {t("telephone")}
           </div>
-          <div className="govie-radios__item">
-            <input
-              id="female-option"
-              name="female"
-              type="radio"
-              value="disagree"
-              className="govie-radios__input"
-              disabled
-            />
-            <label
-              className="govie-label--s govie-radios__label"
-              htmlFor="female-option"
-            >
-              {t("female")}
-            </label>
+          <input
+            type="number"
+            id="input-field"
+            name="input-field"
+            className="govie-input"
+            aria-labelledby="telephone-field-hint"
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div className="govie-hint" id="email-field-hint">
+            {t("email")}
           </div>
+          <input
+            type="text"
+            id="input-field"
+            name="input-field"
+            className="govie-input"
+            aria-labelledby="email-field-hint"
+            defaultValue={email}
+          />
         </div>
       </div>
     </>

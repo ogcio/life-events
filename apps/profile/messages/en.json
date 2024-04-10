@@ -8,6 +8,10 @@
   },
   "AboutMe": {
     "title": "About me",
+    "save": "Save changes",
+    "cancel": "Cancel"
+  },
+  "UserDetails": {
     "name": "Name",
     "userTitle": "Title",
     "firstName": "First name",
@@ -21,6 +25,21 @@
     "reveal": "Reveal",
     "gender": "Gender",
     "male": "Male",
-    "female": "Female"
+    "female": "Female",
+    "contactDetails": "Contact details",
+    "telephone": "Phone",
+    "email": "Email"
+  },
+  "Addresses": {
+    "addresses": "Addresses",
+    "addAddress": "Add new address",
+    "noAddresses": "No addresses available"
+  },
+  "Entitlements": {
+    "entitlements": "Entitlements",
+    "noEntitlements": "No entitlements available"
+  },
+  "Consent": {
+    "preFillFormData": "Pre-fill form data"
   }
 }

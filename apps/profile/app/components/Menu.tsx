@@ -1,6 +1,9 @@
+import { PgSessions } from "auth/sessions";
 import ds from "design-system";
 
-export default () => {
+export default async () => {
+  const { firstName, lastName } = await PgSessions.get();
+  const userName = [firstName, lastName].join(" ");
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
   return (
     <>
@@ -24,7 +27,7 @@ export default () => {
           }}
         >
           <label className="govie-label--s govie-!-font-size-16">
-            Test Test
+            {userName}
           </label>
         </li>
       </ol>
