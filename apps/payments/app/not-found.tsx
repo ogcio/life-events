@@ -1,11 +1,10 @@
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
-import { getTranslations } from "next-intl/server";
 import Header from "./[locale]/(hosted)/Header";
 import Footer from "./[locale]/(hosted)/Footer";
 
+// Using strings temporarly since locale is not working
 export default async function () {
-  const t = await getTranslations("NotFound");
   return (
     <>
       <Header />
@@ -23,11 +22,13 @@ export default async function () {
               height: "50vh",
             }}
           >
-            <h2 className="govie-heading-m">{t("title")}</h2>
-            <p className="govie-body">{t("description")}</p>
+            <h2 className="govie-heading-m">Not Found</h2>
+            <p className="govie-body">
+              Sorry, the requested resource could not be found
+            </p>
             <a href="/">
               <button className="govie-button govie-button--primary">
-                {t("return-home")}
+                Return Home
               </button>
             </a>
           </div>
