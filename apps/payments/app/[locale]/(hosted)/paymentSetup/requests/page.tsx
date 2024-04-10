@@ -18,13 +18,20 @@ export default async function () {
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
       <section
         style={{
-          margin: "1rem 0",
           flex: 1,
           display: "flex",
           flexDirection: "column",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <h1 className="govie-heading-m">{t("paymentRequests")}</h1>
+
           <Link href="create">
             <button
               id="button"
@@ -36,7 +43,6 @@ export default async function () {
           </Link>
         </div>
 
-        <h2 className="govie-heading-m">{t("paymentRequests")}</h2>
         <table className="govie-table">
           <thead className="govie-table__head">
             <tr className="govie-table__row">

@@ -14,9 +14,9 @@
     },
     "details": "Payment request details",
     "Providers": {
-      "title": "Your payments integrations",
-      "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "add": "New account",
+      "title": "Your payment providers",
+      "description": "Manage your payment options, including Stripe, manual bank transfers, and Open Banking, all in one convenient place.",
+      "add": "Create payment provider",
       "table": {
         "provider": "Provider",
         "status": "Status",
