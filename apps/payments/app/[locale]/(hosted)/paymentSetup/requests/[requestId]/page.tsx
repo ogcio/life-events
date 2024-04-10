@@ -43,9 +43,6 @@ export default async function ({ params: { requestId } }) {
                   {t("table.date")}
                 </th>
                 <th scope="col" className="govie-table__header">
-                  {t("table.paymentTitle")}
-                </th>
-                <th scope="col" className="govie-table__header">
                   {t("table.amount")}
                 </th>
                 <th scope="col" className="govie-table__header">
@@ -57,7 +54,10 @@ export default async function ({ params: { requestId } }) {
               {transactions.map((trx) => (
                 <tr className="govie-table__row" key={trx.transactionId}>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    <strong className="govie-tag govie-tag--green govie-body-s">
+                    <strong
+                      className="govie-tag govie-tag--green govie-body-s"
+                      style={{ marginBottom: "0px" }}
+                    >
                       {trx.status}
                     </strong>
                   </td>
@@ -65,9 +65,6 @@ export default async function ({ params: { requestId } }) {
                     {dayjs(trx.updatedAt).format("DD/MM/YYYY")}
                   </td>
 
-                  <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    {trx.title}
-                  </td>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     {formatCurrency(trx.amount)}
                   </td>

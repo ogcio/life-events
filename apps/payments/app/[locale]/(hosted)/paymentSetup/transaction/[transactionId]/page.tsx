@@ -42,7 +42,7 @@ export default async function ({ params: { transactionId } }) {
 
   return (
     <div>
-      <h1 className="govie-heading-l">{t("transactionDetails")}</h1>
+      <h1 className="govie-heading-l">{t("paymentDetails")}</h1>
 
       <dl className="govie-summary-list">
         <div className="govie-summary-list__row">
