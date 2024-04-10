@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import { httpErrors } from "@fastify/sensible";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreateTransactionBody,
@@ -28,29 +27,33 @@ export default async function transactions(app: FastifyInstance) {
     async (request, reply) => {
       const { transactionId } = request.params;
 
-      const result = await app.pg.query(
-        `SELECT
-          t.transaction_id as "transactionId",
-          t.status,
-          t.user_data as "userData",
-          pr.title,
-          t.ext_payment_id as "extPaymentId",
-          t.amount,
-          t.updated_at as "updatedAt",
-          pp.provider_name as "providerName",
-          pp.provider_type as "providerType"
-        FROM payment_transactions t
-        LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
-        JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
-        WHERE t.transaction_id = $1`,
-        [transactionId],
-      );
-
-      if (!result.rowCount) {
-        reply.send(
-          httpErrors.notFound("The requested transaction was not found"),
+      let result;
+      try {
+        result = await app.pg.query(
+          `SELECT
+            t.transaction_id as "transactionId",
+            t.status,
+            t.user_data as "userData",
+            pr.title,
+            t.ext_payment_id as "extPaymentId",
+            t.amount,
+            t.updated_at as "updatedAt",
+            pp.provider_name as "providerName",
+            pp.provider_type as "providerType"
+          FROM payment_transactions t
+          LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+          JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
+          WHERE t.transaction_id = $1`,
+          [transactionId],
         );
-        return;
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      if (!result?.rowCount) {
+        throw app.httpErrors.notFound(
+          "The requested transaction was not found",
+        );
       }
 
       reply.send(result.rows[0]);
@@ -136,10 +139,9 @@ export default async function transactions(app: FastifyInstance) {
       );
 
       if (result.rowCount !== 1) {
-        reply.send(
-          httpErrors.internalServerError("Cannot create payment transactions"),
+        throw app.httpErrors.internalServerError(
+          "Cannot create payment transactions",
         );
-        return;
       }
 
       reply.send({ transactionId: result.rows[0].transactionId });

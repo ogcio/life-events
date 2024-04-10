@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
-import { httpErrors } from "@fastify/sensible";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreateProvider,
@@ -97,7 +96,7 @@ export default async function providers(app: FastifyInstance) {
             data: Type.Any(),
             status: Type.String(),
           }),
-          404: HttpError,
+          400: HttpError,
         },
       },
     },
@@ -105,24 +104,28 @@ export default async function providers(app: FastifyInstance) {
       const userId = request.user?.id;
       const { providerId } = request.params;
 
-      const result = await app.pg.query(
-        `
-        SELECT
-          provider_id as id,
-          provider_name as name,
-          provider_type as type,
-          provider_data as data,
-          status
-        FROM payment_providers
-        WHERE provider_id = $1
-        AND user_id = $2
-        `,
-        [providerId, userId],
-      );
+      let result;
+      try {
+        result = await app.pg.query(
+          `
+          SELECT
+            provider_id as id,
+            provider_name as name,
+            provider_type as type,
+            provider_data as data,
+            status
+          FROM payment_providers
+          WHERE provider_id = $1
+          AND user_id = $2
+          `,
+          [providerId, userId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
 
-      if (!result.rows.length) {
-        reply.send(httpErrors.notFound("The requested provider was not found"));
-        return;
+      if (!result?.rows.length) {
+        throw app.httpErrors.notFound("The requested provider was not found");
       }
 
       reply.send(result.rows[0]);

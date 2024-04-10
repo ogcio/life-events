@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { PgSessions } from "auth/sessions";
 import EditOpenBankingForm from "./EditOpenBankingForm";
 import EditBankTransferForm from "./EditBankTransferForm";
@@ -14,14 +14,19 @@ type Props = {
 
 export default async ({ params: { providerId } }: Props) => {
   const { userId } = await PgSessions.get();
-  const provider = (
-    await buildApiClient(userId).providers.apiV1ProvidersProviderIdGet(
-      providerId,
-    )
-  ).data;
+  let provider;
+  try {
+    provider = (
+      await buildApiClient(userId).providers.apiV1ProvidersProviderIdGet(
+        providerId,
+      )
+    ).data;
+  } catch (err) {
+    console.error(err);
+  }
 
   if (!provider) {
-    redirect("/paymentSetup/providers");
+    notFound();
   }
 
   if (provider.type === "openbanking") {
