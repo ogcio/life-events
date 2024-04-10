@@ -28,3 +28,17 @@ CREATE TABLE IF NOT EXISTS user_addresses (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES user_details(user_id)
 );
+
+CREATE TABLE IF NOT EXISTS entitlements (
+    id UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
+    type TEXT NOT NULL, -- eventually could be an enum
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP,
+    document_number TEXT NOT NULL,
+    user_id UUID NOT NULL,
+    firstName TEXT NOT NULL, 
+    lastName TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (user_id) REFERENCES user_details(user_id)
+)
