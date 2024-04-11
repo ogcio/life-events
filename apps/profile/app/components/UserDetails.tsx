@@ -3,7 +3,115 @@ import { getTranslations } from "next-intl/server";
 import { pgpool } from "../utils/postgres";
 import dayjs from "dayjs";
 import ds from "design-system";
-import { form } from "../utils";
+import { form, postgres } from "../utils";
+import { revalidatePath } from "next/cache";
+
+async function submitAction(formData: FormData) {
+  "use server";
+
+  const { userId } = await PgSessions.get();
+
+  const formErrors: form.Error[] = [];
+
+  const phone = formData.get("phone")?.toString();
+  formErrors.push(
+    ...form.validation.stringNotEmpty(form.fieldTranslationKeys.phone, phone),
+  );
+
+  const email = formData.get("email")?.toString();
+  formErrors.push(
+    ...form.validation.emailErrors(form.fieldTranslationKeys.email, email),
+  );
+
+  if (formErrors.length) {
+    await form.insertErrors(formErrors, userId);
+
+    return revalidatePath("/");
+  }
+
+  const dayOfBirth = formData.get("dayOfBirth");
+  const monthOfBirth = formData.get("monthOfBirth");
+  const yearOfBirth = formData.get("yearOfBirth");
+
+  const dateOfBirth = new Date(
+    Number(yearOfBirth),
+    Number(monthOfBirth) - 1,
+    Number(dayOfBirth),
+  );
+
+  let data = {
+    user_id: userId,
+    date_of_birth: dateOfBirth,
+    title: "",
+    firstName: "",
+    lastName: "",
+    ppsn: "",
+    ppsn_visible: false,
+    gender: "",
+    phone: "",
+    email: "",
+  };
+
+  const formIterator = formData.entries();
+  let iterResult = formIterator.next();
+
+  while (!iterResult.done) {
+    const [key, value] = iterResult.value;
+
+    if (
+      [
+        "title",
+        "firstName",
+        "lastName",
+        "ppsn",
+        "gender",
+        "phone",
+        "email",
+      ].includes(key)
+    ) {
+      data[key] = value;
+    }
+
+    iterResult = formIterator.next();
+  }
+
+  const currentDataResults = await postgres.pgpool.query(
+    `
+      SELECT * FROM user_details
+      WHERE user_id = $1
+  `,
+    [userId],
+  );
+
+  const keys = Object.keys(data);
+  const values = Object.values(data);
+
+  if (currentDataResults.rows.length > 0) {
+    const setClause = keys
+      .map((key, index) => `${key} = $${index + 1}`)
+      .join(", ");
+
+    await postgres.pgpool.query(
+      `
+        UPDATE user_details
+        SET ${setClause}
+        WHERE user_id = $${keys.length + 1}
+      `,
+      [...values, userId],
+    );
+  } else {
+    const columns = keys.join(", ");
+    const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
+
+    await postgres.pgpool.query(
+      `
+        INSERT INTO user_details (${columns})
+        VALUES (${placeholders})
+      `,
+      values,
+    );
+  }
+}
 
 async function getUserDetails() {
   const { firstName, lastName, email, userId } = await PgSessions.get();
@@ -12,35 +120,29 @@ async function getUserDetails() {
     title: string;
     date_of_birth: string;
     ppsn: string;
+    ppsn_visible: boolean;
     gender: string;
     phone: string;
-  }>(`SELECT * FROM user_details WHERE user_id = $1`, [userId]);
+  }>(
+    `SELECT title, date_of_birth, ppsn, ppsn_visible, gender, phone FROM user_details WHERE user_id = $1`,
+    [userId],
+  );
 
-  if (res.rows.length === 0) {
-    return {
-      userId,
-      firstName,
-      lastName,
-      email,
-      title: "Mr",
-      date_of_birth: new Date("1990-01-01T00:00:00Z"),
-      ppsn: "9876543W",
-      gender: "male",
-      phone: "01234567891",
-    };
-  }
+  const { title, date_of_birth, ppsn, ppsn_visible, gender, phone } =
+    res.rows[0] || {};
 
-  const { title, date_of_birth, ppsn, gender, phone } = res.rows[0];
   return {
     userId,
     firstName,
     lastName,
     email,
-    title,
-    date_of_birth,
-    ppsn,
-    gender,
-    phone,
+    /** the defaults below should eventually be removed as the data should never be null */
+    title: title || "Mr",
+    date_of_birth: date_of_birth || new Date("1990-01-01T00:00:00Z"),
+    ppsn: ppsn || "9876543W",
+    ppsn_visible: ppsn_visible || false,
+    gender: gender || "male",
+    phone: phone || "01234567891",
   };
 }
 
@@ -59,9 +161,45 @@ export default async () => {
     title,
     date_of_birth,
     ppsn,
+    ppsn_visible,
     gender,
     phone,
   } = await getUserDetails();
+
+  async function togglePPSN() {
+    "use server";
+
+    const userExistsQuery = await postgres.pgpool.query(
+      `
+        SELECT ppsn_visible
+        FROM user_details
+        WHERE user_id = $1
+      `,
+      [userId],
+    );
+
+    if (userExistsQuery.rows.length > 0) {
+      const isPPSNVisible = userExistsQuery.rows[0].ppsn_visible;
+      await postgres.pgpool.query(
+        `
+            UPDATE user_details
+            SET ppsn_visible = $1
+            WHERE user_id = $2
+          `,
+        [!isPPSNVisible, userId],
+      );
+    } else {
+      await postgres.pgpool.query(
+        `
+            INSERT INTO user_details (user_id, ppsn_visible, firstname, lastname, email)
+            VALUES ($1, TRUE, $2, $3, $4)
+          `,
+        [userId, firstName, lastName, email],
+      );
+    }
+
+    revalidatePath("/");
+  }
 
   const dob = dayjs(date_of_birth);
   const dayOfBirth = dob.date();
@@ -79,7 +217,7 @@ export default async () => {
   );
 
   return (
-    <>
+    <form action={submitAction}>
       <h2 className="govie-heading-m">{t("name")}</h2>
       <div
         className="govie-form-group"
@@ -202,7 +340,7 @@ export default async () => {
                 style={{ display: "flex", alignItems: "center", gap: "20px" }}
               >
                 <input
-                  type="text"
+                  type={ppsn_visible ? "text" : "password"}
                   id="ppsn-field"
                   name="ppsn"
                   className="govie-input"
@@ -212,12 +350,12 @@ export default async () => {
                   style={{ pointerEvents: "none" }}
                 />
                 <button
-                  type="button"
                   data-module="govie-button"
                   className="govie-button govie-button--secondary"
-                  style={{ marginBottom: 0 }}
+                  style={{ marginBottom: 0, width: "90px", minWidth: "90px" }}
+                  formAction={togglePPSN}
                 >
-                  {t("reveal")}
+                  {ppsn_visible ? t("hide") : t("reveal")}
                 </button>
               </div>
             </div>
@@ -329,6 +467,31 @@ export default async () => {
           </div>
         </div>
       </div>
-    </>
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          alignItems: "center",
+          marginBottom: "30px",
+        }}
+      >
+        <button
+          type="submit"
+          data-module="govie-button"
+          className="govie-button"
+          style={{ marginBottom: 0 }}
+        >
+          {t("save")}
+        </button>
+        <button
+          type="button"
+          data-module="govie-button"
+          className="govie-button govie-button--secondary"
+          style={{ marginBottom: 0 }}
+        >
+          {t("cancel")}
+        </button>
+      </div>
+    </form>
   );
 };
