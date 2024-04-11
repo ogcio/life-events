@@ -1,4 +1,4 @@
-import { RedirectType, redirect } from "next/navigation";
+import { RedirectType, notFound, redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
@@ -10,11 +10,16 @@ async function getPaymentDetails(
   paymentId: string,
   amount?: number,
 ) {
-  const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-      paymentId,
-    )
-  ).data;
+  let details;
+  try {
+    details = (
+      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+        paymentId,
+      )
+    ).data;
+  } catch (err) {
+    console.log(err);
+  }
 
   if (!details) return undefined;
 
@@ -78,7 +83,7 @@ export default async function Bank(params: {
   );
 
   if (!paymentDetails) {
-    return <h1 className="govie-heading-l">Payment details not found</h1>;
+    notFound();
   }
 
   //TODO: In production, we want to avoid collisions on the DB
@@ -144,17 +149,9 @@ export default async function Bank(params: {
             </dt>
           </div>
           <div className="govie-summary-list__row">
-            <dt className="govie-summary-list__key">{t("summary.sortCode")}</dt>
+            <dt className="govie-summary-list__key">{t("summary.iban")}</dt>
             <dt className="govie-summary-list__value">
-              {paymentDetails.providerData.sortCode}
-            </dt>
-          </div>
-          <div className="govie-summary-list__row">
-            <dt className="govie-summary-list__key">
-              {t("summary.accountHolderName")}
-            </dt>
-            <dt className="govie-summary-list__value">
-              {paymentDetails.providerData.accountNumber}
+              {paymentDetails.providerData.iban}
             </dt>
           </div>
           <div className="govie-summary-list__row">

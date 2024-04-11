@@ -16,8 +16,7 @@ export default async () => {
       name: formData.get("provider_name") as string,
       type: "banktransfer",
       data: {
-        sortCode: formData.get("sort_code"),
-        accountNumber: formData.get("account_number"),
+        iban: formData.get("iban"),
         accountHolderName: formData.get("account_holder_name"),
       },
     });
