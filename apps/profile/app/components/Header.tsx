@@ -3,6 +3,8 @@ import ds from "design-system/";
 import { useTranslations } from "next-intl";
 import { headers } from "next/headers";
 import "./Header.css";
+import UserIcon from "./UserIcon";
+
 export default () => {
   const t = useTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
@@ -142,6 +144,7 @@ export default () => {
                 Gealic
               </Link>
             </div>
+            <UserIcon />
 
             <Link href="/logout" prefetch={false} style={{ display: "flex" }}>
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />

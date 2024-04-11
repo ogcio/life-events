@@ -1,12 +1,57 @@
 {
-  "Index": {
-    "title": "Homepage"
-  },
   "Header": {
     "myLifeEvents": "My life events"
   },
   "FeedbackBanner": {
     "tag": "prototype",
     "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
+  },
+  "FormErrors": {
+    "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
+    "invalidField": "Enter {indArticleCheck, select, an {an} other {a}} valid {field}",
+    "fields": {
+      "email": "email address",
+      "phone": "phone number"
+    }
+  },
+  "AboutMe": {
+    "title": "About me",
+    "subtitle": "Fields labelled with a <red>*</red> are editable. All others are view only.",
+    "save": "Save changes",
+    "cancel": "Cancel"
+  },
+  "UserDetails": {
+    "name": "Name",
+    "userTitle": "Title",
+    "firstName": "First name",
+    "lastName": "Surname",
+    "dateOfBirth": "Date of birth",
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
+    "ppsn": "PPSN",
+    "clickToReveal": "Click to reveal",
+    "reveal": "Reveal",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "contactDetails": "Contact details",
+    "telephone": "<red>*</red> Phone",
+    "email": "<red>*</red> Email"
+  },
+  "Addresses": {
+    "addresses": "Addresses",
+    "addAddress": "Add new address",
+    "noAddresses": "No addresses available"
+  },
+  "Entitlements": {
+    "entitlements": "Entitlements",
+    "noEntitlements": "No entitlements available"
+  },
+  "Consent": {
+    "preFillFormData": "Pre-fill form data",
+    "consentText": "I consent to using the above data to pre-fill forms",
+    "dvaTitle": "How will DVA use my data?",
+    "dvaText": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   }
 }
