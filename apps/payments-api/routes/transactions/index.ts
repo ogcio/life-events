@@ -4,6 +4,8 @@ import {
   CreateTransactionBody,
   ParamsWithTransactionId,
   TransactionDetails,
+  TransactionStatuses,
+  TransactionStatusesEnum,
   UpdateTransactionBody,
 } from "../../types/schemaDefinitions";
 import { Type } from "@sinclair/typebox";
@@ -125,7 +127,7 @@ export default async function transactions(app: FastifyInstance) {
         `
         insert into payment_transactions
           (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_data)
-          values ($1, $2, $3, $4, 'pending', now(), now(), $5, $6)
+          values ($1, $2, $3, $4, $5, now(), now(), $6, $7)
           returning transaction_id as "transactionId";
         `,
         [
@@ -133,6 +135,7 @@ export default async function transactions(app: FastifyInstance) {
           extPaymentId,
           integrationReference,
           amount,
+          TransactionStatusesEnum.Pending,
           paymentProviderId,
           userData,
         ],

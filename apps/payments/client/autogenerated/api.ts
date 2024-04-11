@@ -123,6 +123,43 @@ export interface ApiV1ProvidersPostRequestType {}
 /**
  *
  * @export
+ * @interface ApiV1ProvidersProviderIdGet400Response
+ */
+export interface ApiV1ProvidersProviderIdGet400Response {
+  /**
+   *
+   * @type {number}
+   * @memberof ApiV1ProvidersProviderIdGet400Response
+   */
+  statusCode: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet400Response
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet400Response
+   */
+  error: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet400Response
+   */
+  message: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1ProvidersProviderIdGet400Response
+   */
+  time: string;
+}
+/**
+ *
+ * @export
  * @interface ApiV1ProvidersProviderIdPut200Response
  */
 export interface ApiV1ProvidersProviderIdPut200Response {
@@ -455,43 +492,6 @@ export interface ApiV1RequestsRequestIdGet200Response {
 /**
  *
  * @export
- * @interface ApiV1RequestsRequestIdGet404Response
- */
-export interface ApiV1RequestsRequestIdGet404Response {
-  /**
-   *
-   * @type {number}
-   * @memberof ApiV1RequestsRequestIdGet404Response
-   */
-  statusCode: number;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1RequestsRequestIdGet404Response
-   */
-  code: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1RequestsRequestIdGet404Response
-   */
-  error: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1RequestsRequestIdGet404Response
-   */
-  message: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1RequestsRequestIdGet404Response
-   */
-  time: string;
-}
-/**
- *
- * @export
  * @interface ApiV1RequestsRequestIdTransactionsGet200ResponseInner
  */
 export interface ApiV1RequestsRequestIdTransactionsGet200ResponseInner {
@@ -503,10 +503,10 @@ export interface ApiV1RequestsRequestIdTransactionsGet200ResponseInner {
   transactionId: string;
   /**
    *
-   * @type {string}
+   * @type {ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus}
    * @memberof ApiV1RequestsRequestIdTransactionsGet200ResponseInner
    */
-  status: string;
+  status: ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus;
   /**
    *
    * @type {number}
@@ -526,6 +526,12 @@ export interface ApiV1RequestsRequestIdTransactionsGet200ResponseInner {
    */
   title: string;
 }
+/**
+ *
+ * @export
+ * @interface ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus
+ */
+export interface ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus {}
 /**
  *
  * @export
@@ -596,10 +602,10 @@ export interface ApiV1TransactionsTransactionIdGet200Response {
   transactionId: string;
   /**
    *
-   * @type {string}
+   * @type {ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus}
    * @memberof ApiV1TransactionsTransactionIdGet200Response
    */
-  status: string;
+  status: ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus;
   /**
    *
    * @type {number}
@@ -670,10 +676,10 @@ export interface ApiV1TransactionsTransactionIdGet200ResponseUserData {
 export interface ApiV1TransactionsTransactionIdPatchRequest {
   /**
    *
-   * @type {string}
+   * @type {ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus}
    * @memberof ApiV1TransactionsTransactionIdPatchRequest
    */
-  status: string;
+  status: ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus;
 }
 
 /**
