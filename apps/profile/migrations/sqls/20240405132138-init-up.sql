@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS user_addresses (
     eirecode TEXT NOT NULL,
     is_primary BOOLEAN NOT NULL DEFAULT FALSE,
     ownership_status TEXT NOT NULL,
-    start_date  TIMESTAMP NOT NULL,
-    end_date  TIMESTAMP,
+    start_date  TIMESTAMPTZ NOT NULL,
+    end_date  TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     FOREIGN KEY (user_id) REFERENCES user_details(user_id)
@@ -32,8 +32,8 @@ CREATE TABLE IF NOT EXISTS user_addresses (
 CREATE TABLE IF NOT EXISTS entitlements (
     id UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     type TEXT NOT NULL, -- eventually could be an enum
-    start_date TIMESTAMP NOT NULL,
-    end_date TIMESTAMP,
+    start_date TIMESTAMPTZ NOT NULL,
+    end_date TIMESTAMPTZ,
     document_number TEXT NOT NULL,
     user_id UUID NOT NULL,
     firstName TEXT NOT NULL, 
