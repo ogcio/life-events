@@ -16,7 +16,7 @@ export default async () => {
       name: formData.get("provider_name") as string,
       type: "openbanking",
       data: {
-        sortCode: formData.get("sort_code"),
+        iban: formData.get("iban"),
         accountNumber: formData.get("account_number"),
         accountHolderName: formData.get("account_holder_name"),
       },

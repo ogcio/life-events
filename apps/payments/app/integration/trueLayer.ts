@@ -40,7 +40,7 @@ export async function getAccessToken() {
 export async function createPaymentRequest(paymentRequest) {
   const body = JSON.stringify({
     amount_in_minor: paymentRequest.amount,
-    currency: "GBP",
+    currency: "EUR",
     payment_method: {
       provider_selection: {
         type: "user_selected",
@@ -51,9 +51,8 @@ export async function createPaymentRequest(paymentRequest) {
         account_holder_name: paymentRequest.providerData.accountHolderName,
         reference: paymentRequest.reference,
         account_identifier: {
-          type: "sort_code_account_number",
-          sort_code: paymentRequest.providerData.sortCode.replace(/-/g, ""),
-          account_number: paymentRequest.providerData.accountNumber,
+          type: "iban",
+          iban: paymentRequest.providerData.iban,
         },
       },
     },
