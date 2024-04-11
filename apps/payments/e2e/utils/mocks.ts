@@ -1,5 +1,4 @@
-export const mockSortCode = "123456";
-export const mockAccountNumber = "12345678";
+export const mockIban = "IE29AIBK93115212345678";
 export const mockAccountHolderName = "Name Surname";
 
 export const mockStripeSecretKey = "sk_test_123456";

@@ -10,7 +10,7 @@ const getStripeInstance = () => {
 export async function createPaymentIntent(paymentRequest) {
   return await getStripeInstance().paymentIntents.create({
     amount: paymentRequest.amount,
-    currency: "GBP",
+    currency: "EUR",
   });
 }
 
