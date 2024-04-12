@@ -49,7 +49,16 @@
   },
   "Entitlements": {
     "entitlements": "Entitlements",
-    "noEntitlements": "No entitlements available"
+    "noEntitlements": "No entitlements available",
+    "drivingLicence": "Driving Licence",
+    "birthCertificate": "Birth Certificate",
+    "drivingLicence-number": "Licence number",
+    "birthCertificate-number": "Birth Certificate number",
+    "firstName": "First Name(s)",
+    "lastName": "Last Name(s)",
+    "issueDate": "Issue date",
+    "expiryDate": "Expiration date",
+    "view": "View"
   },
   "Consent": {
     "preFillFormData": "Pre-fill form data",

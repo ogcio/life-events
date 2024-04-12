@@ -102,14 +102,6 @@ export default async () => {
         >
           {t("save")}
         </button>
-        <button
-          type="button"
-          data-module="govie-button"
-          className="govie-button govie-button--secondary"
-          style={{ marginBottom: 0 }}
-        >
-          {t("cancel")}
-        </button>
       </div>
     </form>
   );

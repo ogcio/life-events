@@ -5,6 +5,10 @@ import Addresses from "./Addresses";
 import Entitlements from "./Entitlements";
 import Consent from "./Consent";
 
+const Line = () => (
+  <hr style={{ marginBottom: "30px", color: ds.colours.ogcio.midGrey }} />
+);
+
 export default async () => {
   const t = await getTranslations("AboutMe");
 
@@ -38,11 +42,11 @@ export default async () => {
         </strong>
       </p>
       <UserDetails />
-      <hr style={{ marginBottom: "30px" }} />
+      <Line />
       <Addresses />
-      <hr style={{ marginBottom: "30px" }} />
+      <Line />
       <Entitlements />
-      <hr style={{ marginBottom: "30px" }} />
+      <Line />
       <Consent />
     </div>
   );

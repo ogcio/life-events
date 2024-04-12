@@ -31,11 +31,11 @@ CREATE TABLE IF NOT EXISTS user_addresses (
     FOREIGN KEY (user_id) REFERENCES user_details(user_id)
 );
 
-CREATE TABLE IF NOT EXISTS entitlements (
+CREATE TABLE IF NOT EXISTS user_entitlements (
     id UUID NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     type TEXT NOT NULL, -- eventually could be an enum
-    start_date TIMESTAMPTZ NOT NULL,
-    end_date TIMESTAMPTZ,
+    issue_date TIMESTAMPTZ NOT NULL,
+    expiry_date TIMESTAMPTZ,
     document_number TEXT NOT NULL,
     user_id UUID NOT NULL,
     firstName TEXT NOT NULL, 
