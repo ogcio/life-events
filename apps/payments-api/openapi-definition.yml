@@ -113,7 +113,7 @@ paths:
                   - type
                   - data
                   - status
-        "404":
+        "400":
           description: Default Response
           content:
             application/json:

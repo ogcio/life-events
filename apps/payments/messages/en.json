@@ -6,17 +6,21 @@
     "currencySymbol": "€",
     "delete": "Delete"
   },
+  "EmptyStatus": {
+    "title": "Nothing to show...",
+    "description": "The current list is empty"
+  },
   "PaymentSetup": {
     "menu": {
       "payments": "Payments",
       "paymentRequests": "Payment requests",
       "providers": "Providers"
     },
-    "details": "Payment details",
+    "details": "Payment request details",
     "Providers": {
-      "title": "Your payments integrations",
-      "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "add": "New account",
+      "title": "Your payment providers",
+      "description": "Manage your payment options, including Stripe, manual bank transfers, and Open Banking, all in one convenient place.",
+      "add": "Create payment provider",
       "table": {
         "provider": "Provider",
         "status": "Status",
@@ -24,6 +28,10 @@
         "actions": "Actions",
         "emptyMessage": "No providers",
         "edit": "edit"
+      },
+      "empty": {
+        "title": "No payment providers",
+        "description": "You have not added any payment providers yet."
       },
       "status": {
         "connected": "Connected",
@@ -37,15 +45,15 @@
       }
     },
     "AddProvider": {
-      "title": "Add payment provider",
-      "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "openbankingDescription": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "stripeDescription": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "worldpayDescription": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "title": "Add Payment Provider",
+      "description": "Easily integrate your preferred payment providers into your platform. Select from a range of providers to enable seamless transactions for your business.",
+      "openbankingDescription": "Utilize OpenBanking for secure and direct bank payments, offering your customers a convenient way to pay directly from their bank accounts without needing to enter payment details.",
+      "stripeDescription": "Incorporate Stripe to accept payments via credit card, Apple Pay, Google Pay, and more. Benefit from Stripe's comprehensive payment infrastructure and fraud prevention tools.",
+      "worldpayDescription": "Connect with WorldPay for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
       "selectHint": "Choose the type of payment provider",
-      "label": "Payment provider",
+      "label": "Payment Provider",
       "banktransfer": "Manual Bank Transfer",
-      "banktransferDescription": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "banktransferDescription": "Enable Manual Bank Transfer to offer your customers the option to pay through their bank. This method requires manual confirmation of payment receipts.",
       "openbanking": "OpenBanking",
       "stripe": "Stripe",
       "worldpay": "WorldPay",
@@ -53,56 +61,61 @@
       "select": "Select"
     },
     "AddOpenbanking": {
-      "title": "Add OpenBanking payment provider",
-      "editTitle": "Edit OpenBanking payment provider",
+      "title": "Add OpenBanking Payment Provider",
+      "editTitle": "Edit OpenBanking Payment Provider",
       "name": "Name",
       "nameHint": "Give a name to this payment provider to help you recognize it",
-      "accountHolderName": "Bank account holder name",
-      "accountHolderNameHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "sortCode": "Bank sort code",
-      "sortCodeHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "accountNumber": "Bank account number",
-      "accountNumberHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "accountHolderName": "Bank Account Holder Name",
+      "accountHolderNameHint": "Enter the name of the account holder as it appears on the bank account. This ensures payments are correctly attributed.",
+      "iban": "IBAN",
+      "ibanHint": "Enter your International Bank Account Number (IBAN) for secure transactions.",
       "confirm": "Confirm"
     },
     "AddBankTransfer": {
-      "title": "Add Manual Bank Transfer payment provider",
-      "editTitle": "Edit Manual Bank Transfer payment provider",
+      "title": "Add Manual Bank Transfer Payment Provider",
+      "editTitle": "Edit Manual Bank Transfer Payment Provider",
       "name": "Name",
       "nameHint": "Give a name to this payment provider to help you recognize it",
-      "accountHolderName": "Bank account holder name",
-      "accountHolderNameHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "sortCode": "Bank sort code",
-      "sortCodeHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "accountNumber": "Bank account number",
-      "accountNumberHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "accountHolderName": "Bank Account Holder Name",
+      "accountHolderNameHint": "Enter the name of the bank account holder exactly as it appears on the account. This is required to match payments to their source accurately.",
+      "iban": "IBAN",
+      "ibanHint": "Enter your International Bank Account Number (IBAN) for secure transactions.",
       "confirm": "Confirm"
     },
     "AddStripe": {
-      "title": "Add Stripe payment provider",
-      "editTitle": "Edit Stripe payment provider",
+      "title": "Add Stripe Payment Provider",
+      "editTitle": "Edit Stripe Payment Provider",
       "name": "Name",
-      "nameHint": "Give a name to this payment provider to help you recognize it",
+      "nameHint": "Assign a name to this Stripe configuration to easily identify it later",
       "livePublishableKey": "Live Publishable Key",
-      "livePublishableKeyHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "livePublishableKeyHint": "This is the public key from your Stripe account used in the live environment. It allows your site to communicate with Stripe for payment processing.",
       "liveSecretKey": "Live Secret Key",
-      "liveSecretKeyHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "liveSecretKeyHint": "Your secret key for the live environment from Stripe.",
       "confirm": "Confirm"
     },
     "AddWorldpay": {
-      "title": "Add Worldpay payment provider",
-      "editTitle": "Edit Worldpay payment provider",
+      "title": "Add Worldpay Payment Provider",
+      "editTitle": "Edit Worldpay Payment Provider",
       "name": "Name",
-      "nameHint": "Give a name to this payment provider to help you recognize it",
+      "nameHint": "Create a name for this Worldpay configuration to easily identify it among your payment options, such as 'Main Site Payments' or 'Event Registrations'.",
       "merchantCode": "Merchant Code",
-      "merchantCodeHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "merchantCodeHint": "This is the unique identifier assigned to your Worldpay account. It's used to ensure that payments are sent to the correct merchant account.",
       "installationId": "Installation Id",
-      "installationIdHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "installationIdHint": "Your specific installation ID from Worldpay, required for integrating your payment gateway with the web application. This ties the payments to your account.",
       "confirm": "Confirm"
     },
     "Payments": {
-      "createPayment": "Create payment",
-      "transactions": "Transactions",
+      "empty": {
+        "title": "There are no payment requests.",
+        "description": "You have not created any payment requests yet."
+      },
+      "emptyPaymentsList": {
+        "title": "There are no payments.",
+        "description": "You have not received any payments yet.",
+        "startHere": "Start by adding a payment provider"
+      },
+      "createPayment": "Create payment request",
+      "title": "Payments",
       "paymentRequests": "Payment requests",
       "table": {
         "status": "Status",
@@ -110,7 +123,7 @@
         "payee": "Citizen Name",
         "amount": "Amount",
         "date": "Date",
-        "title": "Title",
+        "title": "Payment Request Title",
         "paymentTitle": "Description",
         "beneficiaryAccount": "Beneficiary Account",
         "actions": "Actions",
@@ -119,7 +132,11 @@
       }
     },
     "Request": {
-      "transactions": "Transactions",
+      "empty": {
+        "title": "There are no payments yet",
+        "description": "You have not received any payments yet for this request"
+      },
+      "payments": "Payments Received",
       "table": {
         "status": "Status",
         "reference": "Reference",
@@ -133,7 +150,7 @@
         "details": "Details"
       },
       "details": {
-        "transactionDetails": "Transaction details",
+        "paymentDetails": "Payment details",
         "requestTitle": "Payment Request Title",
         "amount": "Amount",
         "lastUpdate": "Last update",
@@ -157,7 +174,7 @@
       }
     },
     "CreatePayment": {
-      "title": "Payment Setup Form",
+      "title": "Payment Request Setup Form",
       "form": {
         "title": "Title",
         "description": "Description",
@@ -207,8 +224,7 @@
       "title": "Title",
       "amount": "Total to pay",
       "accountHolderName": "Name on the account",
-      "sortCode": "Sort code",
-      "accountNumber": "Account number",
+      "iban": "IBAN",
       "referenceCode": "Payment reference code",
       "referenceCodeDescription": "Please use this reference code when making the money transfer, we will use it to identify your payment. If you forget to include it, your payment may not be processed correctly."
     },

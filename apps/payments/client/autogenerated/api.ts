@@ -123,43 +123,6 @@ export interface ApiV1ProvidersPostRequestType {}
 /**
  *
  * @export
- * @interface ApiV1ProvidersProviderIdGet404Response
- */
-export interface ApiV1ProvidersProviderIdGet404Response {
-  /**
-   *
-   * @type {number}
-   * @memberof ApiV1ProvidersProviderIdGet404Response
-   */
-  statusCode: number;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet404Response
-   */
-  code: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet404Response
-   */
-  error: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet404Response
-   */
-  message: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet404Response
-   */
-  time: string;
-}
-/**
- *
- * @export
  * @interface ApiV1ProvidersProviderIdPut200Response
  */
 export interface ApiV1ProvidersProviderIdPut200Response {
@@ -488,6 +451,43 @@ export interface ApiV1RequestsRequestIdGet200Response {
    * @memberof ApiV1RequestsRequestIdGet200Response
    */
   allowCustomAmount: boolean;
+}
+/**
+ *
+ * @export
+ * @interface ApiV1RequestsRequestIdGet404Response
+ */
+export interface ApiV1RequestsRequestIdGet404Response {
+  /**
+   *
+   * @type {number}
+   * @memberof ApiV1RequestsRequestIdGet404Response
+   */
+  statusCode: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsRequestIdGet404Response
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsRequestIdGet404Response
+   */
+  error: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsRequestIdGet404Response
+   */
+  message: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ApiV1RequestsRequestIdGet404Response
+   */
+  time: string;
 }
 /**
  *

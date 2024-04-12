@@ -1,7 +1,7 @@
 import React from "react";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../../utils";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Tooltip from "../../../../../components/Tooltip";
 import CopyLink from "./CopyBtn";
@@ -30,17 +30,23 @@ async function hasTransactions(requestId: string, userId: string) {
 
 export const RequestDetails = async ({ requestId }: { requestId: string }) => {
   const { userId } = await PgSessions.get();
-  const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-      requestId,
-    )
-  ).data;
+  let details;
+
+  try {
+    details = (
+      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+        requestId,
+      )
+    ).data;
+  } catch (err) {
+    console.log(err);
+  }
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tSetup = await getTranslations("PaymentSetup");
   const tCommon = await getTranslations("Common");
 
   if (!details) {
-    return <h1 className="govie-heading-l">Payment request not found</h1>;
+    notFound();
   }
 
   const deletePR = deletePaymentRequest.bind(
@@ -147,7 +153,11 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
           <dt className="govie-summary-list__key">{t("paymentLink")}</dt>
           <dt className="govie-summary-list__value">
             <div style={{ display: "flex", gap: "10px" }}>
-              <a href={completePaymentLink} className="govie-link">
+              <a
+                href={completePaymentLink}
+                className="govie-link"
+                target="_blank"
+              >
                 {completePaymentLink}
               </a>
               <CopyLink link={completePaymentLink} buttonText={t("copyLink")} />
