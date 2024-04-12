@@ -179,282 +179,8 @@ export const mailApi = {
   },
 };
 
-type MessageType = "message" | "event";
 export const api = {
-  async pushMessage({
-    data,
-    sender,
-    transports,
-    type,
-  }: {
-    data: {
-      recipients: string[]; // we (right now) always use email as identifyer
-      subject: string;
-      abstract?: string;
-      content: string;
-      actionUrl?: string;
-      paymentRequestId?: string;
-      paymentUserId?: string;
-    };
-    sender: { email: string };
-    transports: "email"[];
-    type: MessageType;
-  }): Promise<void> {
-    "use server";
-    const promises: Promise<any>[] = [];
-
-    // Always store the event
-
-    // caveat: we dont care about size for now. If we need to send over 10k emails, I think we need
-    // a better way than including 10k+ emails in a request. Maybe upload a csv or w/e.
-
-    const vals: (string | null)[] = [
-      data.subject,
-      data.content, //data.abstract || "null", // The little description eg.
-      data.content,
-      data.actionUrl || null,
-      data.paymentRequestId || null,
-      data.paymentUserId || null,
-      type,
-    ];
-    const originalSize = vals.length;
-    const args: string[] = [];
-    const recipients: string[] = [];
-
-    let i = vals.length + 1;
-    while (data.recipients.length) {
-      const email = data.recipients.shift();
-      if (!email) {
-        break;
-      }
-      recipients.push(email);
-      args.push(
-        `(${[...new Array(originalSize)].map((_, i) => `$${i + 1}`)},$${i})`,
-      );
-      vals.push(email);
-      i += 1;
-    }
-
-    const eventQuery = pgpool.query(
-      `
-    INSERT INTO messages(
-        subject, 
-        abstract, 
-        content, 
-        action_url,
-        payment_request_id,
-        payment_user_id,
-        message_type,
-        for_email)
-    VALUES ${args.join(",")}`,
-      vals,
-    );
-
-    promises.push(eventQuery);
-
-    if (transports.includes("email")) {
-      const id = await temporaryMockUtils.getFirstOrEtherealMailProvider();
-      if (!id) {
-        console.log("No mock provider id. No mails been sent");
-      } else {
-        promises.push(
-          mailApi.sendMails(id, recipients, data.subject, data.content),
-        );
-      }
-    }
-
-    await Promise.all(promises);
-  },
-  /**
-   * push a message
-   *  we create a message in the database, so that some cron whatever can pick it up later.
-   *
-   * Let's start to consider pushMessage only, and deal with template
-   *
-   *
-   */
-  async pushMessageByTemplate(
-    templateId: string,
-    interpolations: Record<string, string>,
-    recipients: string[], // TODO: []userId from SSO
-    type: MessageType, // undecided. Not interesting
-    preferredTransports: "email"[], // preferred transports link table
-    securityLevel?: string, // high/medium/low. Default high.
-  ) {
-    const pgclient = await pgpool.connect();
-    let messageId: string | undefined;
-    try {
-      await pgclient.query("BEGIN");
-
-      const template = await pgpool
-        .query<{
-          id: string;
-          data: Array<{ body: string; subject: string; language: string }>;
-        }>(
-          `
-      SELECT 
-        template.id,
-        translation.data
-      FROM email_templates template
-      JOIN lateral (
-      select jsonb_agg(jsonb_build_object('body', body, 'subject',"subject", 'language', language)) as "data" from email_template_translations translation
-      where translation.template_id = template.id) translation ON template.id = $1;
-    `,
-          [templateId],
-        )
-        .then((res) => res.rows.at(0));
-
-      if (!template) {
-        throw new Error(`template for id ${templateId} not found`);
-      }
-
-      // We need to compose a new message based on a template. We need create interpoilation link to the message (not the template!)
-      // Let's also just auto select english for now (or first template translation really..). This will need to be looked for user profile or default something
-      const chosenTemplateTranslations = template.data.at(0);
-      if (!chosenTemplateTranslations) {
-        throw new Error("no translation values");
-      }
-
-      // Now we have to create a new message, and associate the correct interpolation values that user will get
-      const intrplvalues: string[] = [];
-      const args: string[] = [
-        recipients[0], // We cheat for now
-        chosenTemplateTranslations.subject,
-        chosenTemplateTranslations.body,
-        type,
-      ];
-      let i = args.length + 1;
-      for (const key of Object.keys(interpolations)) {
-        intrplvalues.push(
-          `((SELECT message_id FROM msg_insert), $${i}, $${i + 1})`,
-        );
-        args.push(key, interpolations[key]);
-        i += 2;
-      }
-
-      messageId = await pgpool
-        .query<{ messageId: string }>(
-          `
-      WITH msg_insert AS(
-        INSERT INTO messages(for_email, subject, content, message_type)
-        VALUES($1,$2,$3,$4)
-        RETURNING id
-      )
-      INSERT INTO message_interpolation_accessors(id, key_accessor, value_accessor)
-      values ${intrplvalues.join(", ")}
-      RETURNING (SELECT id FROM msg_insert) as "messageId"
-    `,
-          args,
-        )
-        .then((res) => res.rows.at(0)?.messageId);
-
-      await pgclient.query("COMMIT");
-    } catch (err) {
-      await pgclient.query("ROLLBACK");
-      throw new Error(err);
-    } finally {
-      pgclient.release();
-    }
-
-    // This will be moved to scheduler
-    // Email
-    if (preferredTransports.includes("email")) {
-      const tmpId = await temporaryMockUtils.getFirstOrEtherealMailProvider();
-      if (tmpId && messageId) {
-        const message = await api.getMessage(messageId);
-
-        message &&
-          mailApi.sendMails(
-            tmpId,
-            recipients,
-            message.subject,
-            message.content,
-          );
-      }
-    }
-  },
-  // async getMessages(
-  //   email: string,
-  //   filter: { page: number; size: number; search: string; type?: MessageType },
-  // ) {
-  //   if (!filter.page) {
-  //     filter.page = 1;
-  //   }
-
-  //   if (!filter.size) {
-  //     filter.size = 50;
-  //   }
-
-  //   let query = `
-  //   SELECT
-  //     id as "messageId",
-  //     subject,
-  //     content,
-  //     action_url as "link",
-  //     created_at::DATE::TEXT as "createdAt",
-  //     a.interpolations,
-  //     message_type as "type"
-  //   FROM messages m
-  //   JOIN LATERAL(
-  //     SELECT
-  //       jsonb_agg(jsonb_build_object('key', key_accessor, 'value', value_accessor)) as "interpolations"
-  //       from message_interpolation_accessors a
-  //   where a.message_id = m.id
-  //   ) a on true
-  //   WHERE lower(for_email)=lower($1)`;
-
-  //   const args: (number | string)[] = [email.toLocaleLowerCase()];
-  //   let nextArgIndex = 2;
-  //   if (filter.search) {
-  //     query += `
-  //       AND subject ILIKE $${nextArgIndex}
-  //     `;
-  //     args.push(`%${filter.search}%`);
-  //     nextArgIndex += 1;
-  //   }
-
-  //   if (filter.type) {
-  //     query += `
-  //       AND message_type = $${nextArgIndex}
-  //     `;
-  //     args.push(filter.type);
-  //     nextArgIndex += 1;
-  //   }
-
-  //   query += `
-  //   ORDER BY created_at DESC OFFSET $${nextArgIndex} LIMIT $${nextArgIndex + 1}`;
-  //   args.push((filter.page - 1) * filter.size, filter.size);
-
-  //   const messages = await pgpool
-  //     .query<{
-  //       messageId: string;
-  //       subject: string;
-  //       content: string;
-  //       link: string;
-  //       createdAt: string;
-  //       interpolations: { key: string; value: string }[];
-  //       type: MessageType;
-  //     }>(query, args)
-  //     .then((res) => res.rows);
-
-  //   for (const message of messages) {
-  //     if (message.interpolations) {
-  //       for (const interpolation of message.interpolations) {
-  //         message.content = message.content.replaceAll(
-  //           `{{${interpolation.key}}}`,
-  //           interpolation.value,
-  //         );
-
-  //         message.subject = message.subject.replaceAll(
-  //           `{{${interpolation.key}}}`,
-  //           interpolation.value,
-  //         );
-  //       }
-  //     }
-  //   }
-
-  //   return messages;
-  // },
+  // Where would this belong? Get messages as a meta information?
   async getUnreadMessageCount(userId: string) {
     return pgpool
       .query<{ count: number }>(
@@ -468,66 +194,8 @@ export const api = {
       )
       .then((res) => res.rows.at(0)?.count ?? 0);
   },
-  async seeMessage(email: string, messageId: string) {
-    pgpool.query(
-      `
-        UPDATE messages SET is_seen = true
-        WHERE id = $1 AND for_email=lower($2)
-    `,
-      [messageId, email],
-    );
-  },
-  async getMessage(messageId: string) {
-    let query = `
-    SELECT 
-      subject, 
-      content, 
-      action_url as "link",
-      message_type as "type",
-      payment_request_id as "paymentRequestId",
-      payment_user_id as "paymentUserId",
-      a.interpolations
-    FROM messages m
-    JOIN LATERAL(
-      SELECT
-        jsonb_agg(jsonb_build_object('key', key_accessor, 'value', value_accessor)) as "interpolations"
-        from message_interpolation_accessors a 
-    where a.message_id = m.id
-    ) a on true
-    WHERE id = $1`;
-    const args = [messageId];
 
-    const message = await pgpool
-      .query<{
-        subject: string;
-        content: string;
-        link: string;
-        type: MessageType;
-        paymentRequestId?: string;
-        paymentUserId?: string;
-        interpolations: { key: string; value: string }[];
-      }>(query, args)
-      .then((res) => res.rows.at(0));
-
-    if (message?.interpolations) {
-      for (const interpolation of message.interpolations) {
-        message.content = message.content.replaceAll(
-          `{{${interpolation.key}}}`,
-          interpolation.value,
-        );
-
-        message.subject = message.subject.replaceAll(
-          `{{${interpolation.key}}}`,
-          interpolation.value,
-        );
-      }
-    }
-
-    return message;
-  },
-  /**
-   * Note this needs to be restricted access to different admin role configurations
-   */
+  // message states are tightly coupled to the next app for messaging.
   async upsertMessageState(
     message: MessageState,
     userId: string,
@@ -552,7 +220,6 @@ export const api = {
 
     pgpool.query(query, args);
   },
-
   /**
    * Let's assume that a user can only have one active message state at the time for simplicity
    */
@@ -609,25 +276,7 @@ export const api = {
       [userId, stateId],
     );
   },
-  async getTemplates() {
-    return pgpool
-      .query<{ id: string; keyvals: Array<Record<string, string>> }>(
-        `
-        SELECT template.id, values.keyvals  FROM email_templates template
-        JOIN LATERAL (
-          SELECT template_id, jsonb_agg(jsonb_build_object('key', key_accessor, 'value', value_accessor)) as keyvals
-          from template_interpolation_accessors
-          group by template_id
-        ) values on values.template_id = template.id;
-    `,
-      )
-      .then((res) => res.rows);
-  },
 };
-
-function postgresArrayify(arr: unknown[]): string {
-  return JSON.stringify(arr).replace("[", "{").replace("]", "}");
-}
 
 export const utils = {
   interpolationReducer: function (interpolations: Record<string, string>) {
@@ -657,6 +306,9 @@ export const utils = {
     acc.add(user.lang);
     return acc;
   },
+  postgresArrayify: function postgresArrayify(arr: unknown[]): string {
+    return JSON.stringify(arr).replace("[", "{").replace("]", "}");
+  },
 };
 
 export const apistub = {
@@ -679,7 +331,6 @@ export const apistub = {
         return;
       }
 
-      console.log("Bror", JSON.stringify(body, null, 4));
       /**
        * Note
        *
@@ -752,11 +403,11 @@ export const apistub = {
           richText,
           plainText,
           lang,
-          links.length ? postgresArrayify(links) : null,
+          links.length ? utils.postgresArrayify(links) : null,
           randomUUID().toString(),
           securityLevel,
           body.preferredTransports.length
-            ? postgresArrayify(body.preferredTransports)
+            ? utils.postgresArrayify(body.preferredTransports)
             : null,
           messageName,
           threadName || null,
@@ -878,7 +529,7 @@ export const apistub = {
             "message name", // message name, no idea what we're supposed to put here...
             "thread name", // also no idea how this correlates with a template
             body.preferredTransports
-              ? postgresArrayify(body.preferredTransports)
+              ? utils.postgresArrayify(body.preferredTransports)
               : null,
           ];
           console.log("kompis?", values);
@@ -982,6 +633,7 @@ export const apistub = {
           .catch(console.log);
       }
     },
+    // get("/")
     async getAll(userId: string, query?: URLSearchParams) {
       const type = query?.get("type")?.toString();
 
@@ -1026,6 +678,7 @@ export const apistub = {
         )
         .then((res) => res.rows);
     },
+    // get("/:id")
     async getOne(id: string) {
       const { userId } = await PgSessions.get();
       return pgpool
@@ -1135,6 +788,7 @@ export const apistub = {
         client.release();
       }
     },
+    // get("/:id") lang to query param
     async get(id: string, lang: string) {
       // Not sure what we wanna return here.
       const templateMeta = await pgpool
@@ -1203,6 +857,7 @@ export const apistub = {
 
       return template;
     },
+    // get("/") lang to query param
     async getAll(lang: string) {
       const templates = await pgpool
         .query<{
