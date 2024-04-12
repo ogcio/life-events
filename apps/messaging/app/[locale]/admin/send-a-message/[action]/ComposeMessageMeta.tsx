@@ -122,7 +122,10 @@ export default async (props: MessageCreateProps) => {
               type="radio"
               value="message"
               className="govie-radios__input"
-              defaultChecked={props.state.messageType === "message"}
+              defaultChecked={
+                !props.state.messageType ||
+                props.state.messageType === "message"
+              }
             />
             <label
               className="govie-label--s govie-radios__label"
