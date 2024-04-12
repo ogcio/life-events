@@ -503,10 +503,10 @@ export interface ApiV1RequestsRequestIdTransactionsGet200ResponseInner {
   transactionId: string;
   /**
    *
-   * @type {ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus}
+   * @type {string}
    * @memberof ApiV1RequestsRequestIdTransactionsGet200ResponseInner
    */
-  status: ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus;
+  status: string;
   /**
    *
    * @type {number}
@@ -526,12 +526,6 @@ export interface ApiV1RequestsRequestIdTransactionsGet200ResponseInner {
    */
   title: string;
 }
-/**
- *
- * @export
- * @interface ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus
- */
-export interface ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus {}
 /**
  *
  * @export
@@ -587,7 +581,19 @@ export interface ApiV1TransactionsPostRequest {
    * @memberof ApiV1TransactionsPostRequest
    */
   userData: ApiV1TransactionsTransactionIdGet200ResponseUserData;
+  /**
+   *
+   * @type {ApiV1TransactionsPostRequestStatus}
+   * @memberof ApiV1TransactionsPostRequest
+   */
+  status?: ApiV1TransactionsPostRequestStatus;
 }
+/**
+ *
+ * @export
+ * @interface ApiV1TransactionsPostRequestStatus
+ */
+export interface ApiV1TransactionsPostRequestStatus {}
 /**
  *
  * @export
@@ -602,10 +608,10 @@ export interface ApiV1TransactionsTransactionIdGet200Response {
   transactionId: string;
   /**
    *
-   * @type {ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus}
+   * @type {string}
    * @memberof ApiV1TransactionsTransactionIdGet200Response
    */
-  status: ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus;
+  status: string;
   /**
    *
    * @type {number}
@@ -676,10 +682,10 @@ export interface ApiV1TransactionsTransactionIdGet200ResponseUserData {
 export interface ApiV1TransactionsTransactionIdPatchRequest {
   /**
    *
-   * @type {ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus}
+   * @type {string}
    * @memberof ApiV1TransactionsTransactionIdPatchRequest
    */
-  status: ApiV1RequestsRequestIdTransactionsGet200ResponseInnerStatus;
+  status: string;
 }
 
 /**

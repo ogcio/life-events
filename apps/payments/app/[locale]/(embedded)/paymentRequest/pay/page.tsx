@@ -6,7 +6,7 @@ import {
   getRealAmount,
   stringToAmount,
 } from "../../../../utils";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
 import buildApiClient from "../../../../../client/index";
@@ -53,14 +53,9 @@ async function selectCustomAmount(requestId: string, formData: FormData) {
   );
 }
 
-const NotFound = async () => {
-  const t = await getTranslations("Common");
-  return <h1 className="govie-heading-l">{t("notFound")}</h1>;
-};
-
 export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
-    return <NotFound />;
+    return notFound();
 
   const [details, t, tCommon] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId),
@@ -70,7 +65,7 @@ export default async function Page(props: Props) {
 
   const { messages } = await getRequestConfig({ locale: props.params.locale });
 
-  if (!details) return <NotFound />;
+  if (!details) return notFound();
 
   const hasOpenBanking = details.providers.some(
     ({ type }) => type === "openbanking",

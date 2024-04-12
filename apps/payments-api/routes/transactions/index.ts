@@ -121,6 +121,7 @@ export default async function transactions(app: FastifyInstance) {
         amount,
         paymentProviderId,
         userData,
+        status,
       } = request.body;
 
       const result = await app.pg.query(
@@ -135,7 +136,7 @@ export default async function transactions(app: FastifyInstance) {
           extPaymentId,
           integrationReference,
           amount,
-          TransactionStatusesEnum.Pending,
+          status ?? TransactionStatusesEnum.Pending,
           paymentProviderId,
           userData,
         ],
