@@ -51,7 +51,10 @@
   "Addresses": {
     "addresses": "Addresses",
     "addAddress": "Add new address",
-    "noAddresses": "No addresses available"
+    "noAddresses": "No addresses available",
+    "lastUpdated": "Last updated",
+    "edit": "Edit",
+    "remove": "Remove"
   },
   "Entitlements": {
     "entitlements": "Entitlements",
@@ -88,6 +91,13 @@
     "town": "Town",
     "county": "County",
     "eirecode": "Eirecode",
-    "back": "Back"
+    "back": "Back",
+    "confirmRemoveAddress": "Are you sure you want to remove the address below?",
+    "remove": "Remove address"
+  },
+  "NotFound": {
+    "title": "Not Found",
+    "description": " Sorry, the requested resource could not be found",
+    "return-home": "Return Home"
   }
 }

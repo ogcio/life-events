@@ -77,7 +77,9 @@ async function SearchForm(props: FormProps) {
           aria-describedby="input-field-hint"
         />
       </div>
-      <button className="govie-button">{t("findAddress")}</button>
+      <button className="govie-button" style={{ marginBottom: 0 }}>
+        {t("findAddress")}
+      </button>
     </form>
   );
 }
@@ -372,7 +374,9 @@ async function ManualAddressForm(props: FormProps) {
           />
         </div>
       </fieldset>
-      <button className="govie-button">{t("continueWithAddress")}</button>
+      <button className="govie-button" style={{ marginBottom: 0 }}>
+        {t("continueWithAddress")}
+      </button>
     </form>
   );
 }
@@ -400,9 +404,11 @@ export default async (props: { params: NextPageProps }) => {
           addressQuery={searchUrl?.get(searchParamKeys.address) ?? ""}
           userData={userData}
         />
-        <Link href={"/"} className="govie-back-link">
-          {t("back")}
-        </Link>
+        <div style={{ margin: "30px 0" }}>
+          <Link href={"/"} className="govie-back-link">
+            {t("back")}
+          </Link>
+        </div>
       </div>
     </div>
   );

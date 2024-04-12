@@ -1,5 +1,8 @@
 export type NextPageProps = {
-  params: { event: string; action: string[]; locale: string };
+  params: {
+    locale: string;
+    id?: string;
+  };
   searchParams?: {
     [key: string]: string;
   };
