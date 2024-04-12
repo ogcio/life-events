@@ -106,7 +106,6 @@ export default async function Bank(params: {
       amount: paymentDetails.amount,
       paymentProviderId: paymentDetails.providerId,
       userData: userInfo,
-      status: TransactionStatuses.Initiated,
     })
   ).data.transactionId;
 

@@ -581,19 +581,7 @@ export interface ApiV1TransactionsPostRequest {
    * @memberof ApiV1TransactionsPostRequest
    */
   userData: ApiV1TransactionsTransactionIdGet200ResponseUserData;
-  /**
-   *
-   * @type {ApiV1TransactionsPostRequestStatus}
-   * @memberof ApiV1TransactionsPostRequest
-   */
-  status?: ApiV1TransactionsPostRequestStatus;
 }
-/**
- *
- * @export
- * @interface ApiV1TransactionsPostRequestStatus
- */
-export interface ApiV1TransactionsPostRequestStatus {}
 /**
  *
  * @export

@@ -172,16 +172,11 @@ export type TransactionDetails = Static<typeof TransactionDetails>;
 export const UpdateTransactionBody = Type.Pick(Transaction, ["status"]);
 export type UpdateTransactionBody = Static<typeof UpdateTransactionBody>;
 
-export const CreateTransactionBody = Type.Composite([
-  Type.Omit(FullTransaction, [
-    "transactionId",
-    "status",
-    "createdAt",
-    "updatedAt",
-  ]),
-  Type.Object({
-    status: Type.Optional(TransactionStatuses),
-  }),
+export const CreateTransactionBody = Type.Omit(FullTransaction, [
+  "transactionId",
+  "status",
+  "createdAt",
+  "updatedAt",
 ]);
 export type CreateTransactionBody = Static<typeof CreateTransactionBody>;
 
