@@ -3,6 +3,7 @@ CREATE DATABASE life_events;
 CREATE DATABASE messaging;
 CREATE DATABASE payments;
 CREATE DATABASE shared;
+CREATE DATABASE profile;
 
 -- Setup Extensions
 CREATE EXTENSION "uuid-ossp";

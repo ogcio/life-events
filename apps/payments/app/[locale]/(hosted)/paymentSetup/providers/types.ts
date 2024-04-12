@@ -8,14 +8,12 @@ export type ProviderType = (typeof providerTypes)[number];
 export type ProviderStatus = "connected" | "disconnected";
 
 export type OpenBankingData = {
-  sortCode: string;
-  accountNumber: string;
+  iban: string;
   accountHolderName: string;
 };
 
 export type BankTransferData = {
-  sortCode: string;
-  accountNumber: string;
+  iban: string;
   accountHolderName: string;
 };
 

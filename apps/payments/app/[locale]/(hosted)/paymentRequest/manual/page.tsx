@@ -1,55 +1,58 @@
-import { RedirectType, redirect } from "next/navigation";
+import { RedirectType, notFound, redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
-import { pgpool } from "../../../../dbConnection";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
-import Link from "next/link";
-import { createTransaction } from "../../paymentSetup/db";
+import buildApiClient from "../../../../../client/index";
+import { PgSessions } from "auth/sessions";
+import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 
-async function getPaymentDetails(paymentId: string, amount?: number) {
-  const { rows: paymentRows } = await pgpool.query(
-    `
-    SELECT
-      pr.payment_request_id,
-      pr.title,
-      pr.description,
-      pr.reference,
-      pr.amount,
-      pr.redirect_url,
-      pp.provider_id,
-      pp.provider_name,
-      pp.provider_data,
-      pr.allow_amount_override
-    FROM payment_requests pr
-    JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
-    JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
-    WHERE pr.payment_request_id = $1
-      AND pp.provider_type = 'banktransfer'
-    `,
-    [paymentId],
+async function getPaymentDetails(
+  userId: string,
+  paymentId: string,
+  amount?: number,
+) {
+  let details;
+  try {
+    details = (
+      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+        paymentId,
+      )
+    ).data;
+  } catch (err) {
+    console.log(err);
+  }
+
+  if (!details) return undefined;
+
+  const provider = details.providers.find(
+    (provider) => provider.type === "banktransfer",
   );
 
-  if (!paymentRows.length) return undefined;
+  if (!provider) return undefined;
 
   return {
-    ...paymentRows[0],
-    amount:
-      paymentRows[0].allow_amount_override && amount
-        ? amount
-        : paymentRows[0].amount,
+    ...details,
+    providerId: provider.id,
+    providerName: provider.name,
+    providerData: provider.data,
+    amount: details.allowAmountOverride && amount ? amount : details.amount,
   };
 }
 
-async function confirmPayment(transactionId: string, redirectUrl: string) {
+async function confirmPayment(
+  userId: string,
+  transactionId: string,
+  redirectUrl: string,
+) {
   "use server";
-  await pgpool.query(
-    `
-    UPDATE payment_transactions
-    SET status = 'confirmed'
-    WHERE transaction_id = $1
-    `,
-    [transactionId],
+
+  await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdPatch(
+    transactionId,
+    {
+      status: TransactionStatuses.Pending,
+    },
   );
+
   redirect(redirectUrl, RedirectType.replace);
 }
 
@@ -64,6 +67,7 @@ export default async function Bank(params: {
       }
     | undefined;
 }) {
+  const { userId } = await PgSessions.get();
   if (!params.searchParams?.paymentId) {
     redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
   }
@@ -74,9 +78,14 @@ export default async function Bank(params: {
     ? parseFloat(params.searchParams.amount)
     : undefined;
   const paymentDetails = await getPaymentDetails(
+    userId,
     params.searchParams.paymentId,
     amount,
   );
+
+  if (!paymentDetails) {
+    notFound();
+  }
 
   //TODO: In production, we want to avoid collisions on the DB
   const paymentIntentId = Math.random()
@@ -89,19 +98,22 @@ export default async function Bank(params: {
     email: params.searchParams.email,
   };
 
-  const transactionId = await createTransaction(
-    params.searchParams.paymentId,
-    paymentIntentId,
-    params.searchParams.integrationRef,
-    paymentDetails.amount,
-    paymentDetails.provider_id,
-    userInfo,
-  );
+  const transactionId = (
+    await buildApiClient(userId).transactions.apiV1TransactionsPost({
+      paymentRequestId: params.searchParams.paymentId,
+      extPaymentId: paymentIntentId,
+      integrationReference: params.searchParams.integrationRef,
+      amount: paymentDetails.amount,
+      paymentProviderId: paymentDetails.providerId,
+      userData: userInfo,
+    })
+  ).data.transactionId;
 
   const paymentMade = confirmPayment.bind(
     this,
+    userId,
     transactionId,
-    paymentDetails.redirect_url,
+    paymentDetails.redirectUrl,
   );
 
   return (
@@ -134,21 +146,13 @@ export default async function Bank(params: {
               {t("summary.accountHolderName")}
             </dt>
             <dt className="govie-summary-list__value">
-              {paymentDetails.provider_data.accountHolderName}
+              {paymentDetails.providerData.accountHolderName}
             </dt>
           </div>
           <div className="govie-summary-list__row">
-            <dt className="govie-summary-list__key">{t("summary.sortCode")}</dt>
+            <dt className="govie-summary-list__key">{t("summary.iban")}</dt>
             <dt className="govie-summary-list__value">
-              {paymentDetails.provider_data.sortCode}
-            </dt>
-          </div>
-          <div className="govie-summary-list__row">
-            <dt className="govie-summary-list__key">
-              {t("summary.accountHolderName")}
-            </dt>
-            <dt className="govie-summary-list__value">
-              {paymentDetails.provider_data.accountNumber}
+              {paymentDetails.providerData.iban}
             </dt>
           </div>
           <div className="govie-summary-list__row">

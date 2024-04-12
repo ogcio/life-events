@@ -34,6 +34,7 @@ Service URLs
 - web (Life events portal) - `localhost:3000`
 - payments - `localhost:3001`
 - messages - `localhost:3002`
+- profile - `localhost:3003`
 - mock-api - `localhost:8000`
 
 ## Localisation
