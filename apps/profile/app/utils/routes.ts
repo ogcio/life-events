@@ -13,3 +13,13 @@ export const entitlements = {
     },
   },
 };
+
+export const addresses = {
+  slug: "addresses",
+  newAddress: {
+    slug: "new-address",
+    path() {
+      return `${addresses.slug}/${addresses.newAddress.slug}`;
+    },
+  },
+};

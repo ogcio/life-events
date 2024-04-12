@@ -14,6 +14,12 @@ export const errorTranslationKeys = {
 export const fieldTranslationKeys = {
   email: "email",
   phone: "phone",
+  address: "address",
+  addressFirstLine: "address first line",
+  addressSecondLine: "address second line",
+  town: "town",
+  eirecode: "eirecode",
+  county: "county",
 };
 
 export const validation = {

@@ -11,7 +11,13 @@
     "invalidField": "Enter {indArticleCheck, select, an {an} other {a}} valid {field}",
     "fields": {
       "email": "email address",
-      "phone": "phone number"
+      "phone": "phone number",
+      "address": "address",
+      "addressFirstLine": "address first line",
+      "addressSecondLine": "address second line",
+      "town": "town",
+      "eirecode": "eirecode",
+      "county": "county"
     }
   },
   "AboutMe": {
@@ -67,5 +73,21 @@
     "dvaText": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     "save": "Save changes",
     "cancel": "Cancel"
+  },
+  "AddressForm": {
+    "newAddress": "Enter your new address",
+    "addressSearchTitle": "Address search",
+    "searchHint": "Enter an Eircode or street (for example, F91 DK74 or Ballincar Heights)",
+    "findAddress": "Find address",
+    "error": "Error",
+    "notListedTextLink": "Address not listed - Enter manually",
+    "selectHint": "Choose your address from the drop-down list",
+    "continueWithAddress": "Continue with this address",
+    "firstLineOfAddress": "Address line 1",
+    "secondLineOfAddress": "Address line 2",
+    "town": "Town",
+    "county": "County",
+    "eirecode": "Eirecode",
+    "back": "Back"
   }
 }
