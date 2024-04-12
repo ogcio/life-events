@@ -12,7 +12,7 @@ export default async () => {
 
   const { data: providers } = await new Payments(userId).getProviders();
 
-  if (providers.length === 0) {
+  if (!providers || providers.length === 0) {
     return (
       <EmptyStatus
         title={t("empty.title")}
