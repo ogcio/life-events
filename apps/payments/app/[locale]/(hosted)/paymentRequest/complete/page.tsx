@@ -1,9 +1,13 @@
 import { getTranslations } from "next-intl/server";
 import { pgpool } from "../../../../dbConnection";
-import { RedirectType, redirect } from "next/navigation";
-import { getPaymentIntent } from "../../../../integration/stripe";
+import { RedirectType, notFound, redirect } from "next/navigation";
+import {
+  getInternalStatus,
+  getPaymentIntent,
+} from "../../../../integration/stripe";
 import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
+import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 
 type Props = {
   searchParams:
@@ -56,11 +60,10 @@ export default async function Page(props: Props) {
   const t = await getTranslations("Common");
 
   let extPaymentId = props.searchParams?.payment_id ?? "";
-  let status = "executed";
+  let status = TransactionStatuses.Succeeded;
 
   if (props.searchParams?.error) {
-    status =
-      props.searchParams.error === "tl_hpp_abandoned" ? "abandoned" : "error";
+    status = TransactionStatuses.Failed;
   }
 
   if (!extPaymentId) {
@@ -70,9 +73,15 @@ export default async function Page(props: Props) {
       );
       extPaymentId = paymentIntent.id;
 
-      status = paymentIntent.status;
+      const mappedStatus = getInternalStatus(paymentIntent.status);
+
+      if (!mappedStatus) {
+        throw new Error("Invalid payment intent status recieved!");
+      }
+
+      status = mappedStatus;
     } else {
-      return <h1 className="govie-heading-l">{t("notFound")}</h1>;
+      notFound();
     }
   }
 

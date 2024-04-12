@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
 import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
+import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 
 async function getPaymentDetails(
   userId: string,
@@ -48,7 +49,7 @@ async function confirmPayment(
   await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdPatch(
     transactionId,
     {
-      status: "confirmed",
+      status: TransactionStatuses.Pending,
     },
   );
 
