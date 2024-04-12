@@ -56,14 +56,16 @@
   "sendAMessage": {
     "ComposeMessageMeta": {
       "title": "Send a message",
-      "chooseTransportation": "Choose transport",
+      "chooseTransportation": "Choose preferred transport",
       "email": "Email",
       "sms": "SMS",
       "postalService": "Postal service",
       "chooseMessageType": "Choose message type",
       "message": "Message",
       "event": "Event",
-      "submitText": "Continue"
+      "submitText": "Continue",
+      "chooseTemplateHeading": "Choose a template",
+      "emptyTemplateOption": "Select template..."
     },
     "EmailForm": {
       "title": "Send a message",
@@ -73,6 +75,9 @@
       "submitText": "Continue to preview",
       "backLink": "Back",
       "addPaymentTitle": "Add a payment",
+      "excerptLabel": "Excerpt",
+      "richTextLabel": "Rich text",
+      "plainTextLabel": "Plain text",
       "emptyPaymentOption": "Select payment..."
     },
     "EmailPreview": {
@@ -85,7 +90,9 @@
       "addRecipientHint": "Added recipients will be added below",
       "add": "Add",
       "submitText": "Continue to schedule",
-      "backLink": "Back to message"
+      "backLink": "Back to message",
+      "tableRecipientsHeader": "Recipients",
+      "tableRemoveButtonText": "Remove"
     },
     "ScheduleForm": {
       "title": "Schedule message",
@@ -116,7 +123,8 @@
       "host": "host",
       "port": "port",
       "username": "username",
-      "password": "password"
+      "password": "password",
+      "fromAddress": "from address"
     }
   },
   "settings": {
@@ -133,12 +141,16 @@
       "deleteButton": "Delete"
     },
     "EmailProvider": {
-      "title": "Add provider",
+      "titleAdd": "Add provider",
+      "titleUpdate": "Update provider",
       "nameLabel": "Name",
       "hostLabel": "Host",
       "portLabel": "Port",
       "usernameLabel": "Username",
       "passwordLabel": "Password",
+      "fromAddressLabel": "From address",
+      "throttleLabel": "Throttle",
+      "throttleHint": "Optional field to adjust how long time between each mail, in miliseconds.",
       "backLink": "Back",
       "updateButton": "Update",
       "createButton": "Create"

@@ -134,3 +134,28 @@ export async function getUserInfoById(userId: string) {
   if (res.rows.length === 0) return null;
   return res.rows[0];
 }
+
+// Such safe
+export async function getUsers() {
+  return pgpool
+    .query<{ id: string; email: string; lang: string }>(
+      `
+    SELECT id, govid_email as "email", 'en' as "lang" FROM users where is_public_servant = FALSE
+  `,
+    )
+    .then((res) => res.rows);
+}
+
+export async function getUsersFor(ids: string[]) {
+  const args = ids.map((_, i) => `$${i + 1}`).join(", ");
+
+  return pgpool
+    .query<{ id: string; email: string; lang: string }>(
+      `
+    SELECT id, govid_email as "email", 'en' as "lang" FROM users 
+    where is_public_servant = FALSE and id in (${args})
+  `,
+      ids,
+    )
+    .then((res) => res.rows);
+}

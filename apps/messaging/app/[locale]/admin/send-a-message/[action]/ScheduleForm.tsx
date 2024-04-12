@@ -1,9 +1,10 @@
-import { api } from "messages";
+import { api, apistub } from "messages";
 import { MessageCreateProps } from "../../../../utils/messaging";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { useTranslations } from "next-intl";
+import { SecurityLevel } from "messages/types/mesages";
 
 export default (props: MessageCreateProps) => {
   const t = useTranslations("sendAMessage.ScheduleForm");
@@ -17,20 +18,36 @@ export default (props: MessageCreateProps) => {
       props.stateId,
     );
 
-    const data: Parameters<typeof api.pushMessage>[0]["data"] = {
-      content: props.state.content,
-      recipients: props.state.emailRecipients,
-      subject: props.state.subject,
-      actionUrl: props.state.links?.[0]?.url || "",
-      paymentRequestId: props.state.paymentRequestId,
-      paymentUserId: props.userId,
-    };
+    let message: Parameters<typeof apistub.messages.post>[0]["message"];
+    let template: Parameters<typeof apistub.messages.post>[0]["template"];
 
-    await api.pushMessage({
-      data,
-      sender: { email: "whatever" },
-      transports: props.state.transportations as "email"[],
-      type: props.state.messageType as "message" | "event",
+    if (props.state.templateMetaId) {
+      template = {
+        id: props.state.templateMetaId,
+        interpolations: props.state.templateInterpolations,
+      };
+    } else {
+      message = {
+        excerpt: props.state.excerpt,
+        lang: "en",
+        links: props.state.links,
+        messageName: "",
+        organisationId: "",
+        plainText: props.state.plainText,
+        richText: props.state.richText,
+        securityLevel: props.state.securityLevel as SecurityLevel,
+        subject: props.state.subject,
+        threadName: props.state.threadName,
+        paymentRequestId: props.state.paymentRequestId,
+      };
+    }
+
+    await apistub.messages.post({
+      message,
+      template,
+      preferredTransports: props.state.transportations,
+      userIds: props.state.userIds,
+      security: "high",
     });
 
     revalidatePath("/");
@@ -40,9 +57,11 @@ export default (props: MessageCreateProps) => {
     "use server";
 
     const next = Object.assign({}, props.state, {
-      confirmedEmailRecipientsAt: "",
+      confirmedRecipientsAt: "",
     });
-    await api.upsertMessageState(next, props.userId, props.stateId);
+    try {
+      await api.upsertMessageState(next, props.userId, props.stateId);
+    } catch (err) {}
     revalidatePath("/");
   }
 

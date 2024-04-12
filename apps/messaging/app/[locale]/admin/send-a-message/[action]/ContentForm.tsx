@@ -9,8 +9,10 @@ import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
 
 export default async (props: MessageCreateProps) => {
-  const t = await getTranslations("sendAMessage.EmailForm");
-  const tError = await getTranslations("formErrors");
+  const [t, tError] = await Promise.all([
+    getTranslations("sendAMessage.EmailForm"),
+    getTranslations("formErrors"),
+  ]);
 
   type request = {
     requestId: string;
@@ -44,26 +46,25 @@ export default async (props: MessageCreateProps) => {
     const paymentRequestId = formData.get("paymentRequestId")?.toString() || "";
 
     const subject = formData.get("subject")?.toString();
-    const content = formData.get("message")?.toString();
+    const richText = formData.get("richText")?.toString();
+    const plainText = formData.get("plainText")?.toString();
+    const excerpt = formData.get("excerpt")?.toString();
+
     const link = formData.get("link")?.toString();
 
     const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] =
       [];
 
-    if (!subject) {
-      formErrors.push({
-        errorValue: "",
-        field: "subject",
-        messageKey: "empty",
-      });
-    }
+    const required = { subject, plainText, excerpt };
 
-    if (!content) {
-      formErrors.push({
-        errorValue: "",
-        field: "message",
-        messageKey: "empty",
-      });
+    for (const key of Object.keys(required)) {
+      if (!required[key]) {
+        formErrors.push({
+          errorValue: "",
+          field: key,
+          messageKey: "empty",
+        });
+      }
     }
 
     if (Boolean(formErrors.length)) {
@@ -75,12 +76,12 @@ export default async (props: MessageCreateProps) => {
       return revalidatePath("/");
     }
 
-    const links = link ? [{ url: link, label: "" }] : [];
+    const links = link ? [link] : [];
     const next: ApiMessageState = Object.assign({}, props.state, {
       links,
-      content,
-      subject,
-      submittedEmailAt: dayjs().toISOString(),
+      ...required,
+      richText,
+      submittedContentAt: dayjs().toISOString(),
       paymentRequestId,
     });
 
@@ -97,12 +98,16 @@ export default async (props: MessageCreateProps) => {
   }
 
   const subjectError = errors.find((error) => error.field === "subject");
-  const messageError = errors.find((error) => error.field === "message");
+  const excerptError = errors.find((error) => error.field === "excerpt");
+  const plainTextError = errors.find((error) => error.field === "plainText");
+  const richTextError = errors.find((error) => error.field === "richText");
 
   return (
     <>
       <form action={submit}>
         <h1 className="govie-heading-l">{t("title")}</h1>
+
+        {/* Subject */}
         <div
           className={
             subjectError
@@ -132,33 +137,90 @@ export default async (props: MessageCreateProps) => {
           />
         </div>
 
+        {/* Excerpt */}
         <div
           className={
-            messageError
+            excerptError
+              ? "govie-form-group govie-form-group--error"
+              : "govie-form-group"
+          }
+        >
+          <h3>
+            <label htmlFor="excerpt" className="govie-label--s govie-label--l">
+              {t("excerptLabel")}
+            </label>
+          </h3>
+          <textarea
+            id="excerpt"
+            name="excerpt"
+            className="govie-textarea"
+            rows={5}
+            defaultValue={props.state.excerpt}
+          ></textarea>
+        </div>
+
+        {/* Rich text (html) */}
+        <div
+          className={
+            richTextError
               ? "govie-form-group govie-form-group--error"
               : "govie-form-group"
           }
         >
           <h1 className="govie-label-wrapper">
-            <label htmlFor="message" className="govie-label--s govie-label--l">
-              {t("message")}
+            <label htmlFor="richText" className="govie-label--s govie-label--l">
+              {t("richTextLabel")}
             </label>
           </h1>
-          {messageError && (
+          {richTextError && (
             <p id="input-field-error" className="govie-error-message">
               <span className="govie-visually-hidden">Error:</span>
-              {tError(messageError.messageKey, {
-                field: tError(`fields.${messageError.field}`),
+              {tError(richTextError.messageKey, {
+                field: tError(`fields.${richTextError.field}`),
                 indArticleCheck: "",
               })}
             </p>
           )}
           <textarea
-            id="message"
-            name="message"
+            id="richText"
+            name="richText"
             className="govie-textarea"
-            rows={5}
-            defaultValue={props.state.content}
+            rows={15}
+            defaultValue={props.state.richText}
+          ></textarea>
+        </div>
+
+        {/* Plain text */}
+        <div
+          className={
+            plainTextError
+              ? "govie-form-group govie-form-group--error"
+              : "govie-form-group"
+          }
+        >
+          <h1 className="govie-label-wrapper">
+            <label
+              htmlFor="plainText"
+              className="govie-label--s govie-label--l"
+            >
+              {t("plainTextLabel")}
+            </label>
+          </h1>
+          {plainTextError && (
+            <p id="input-field-error" className="govie-error-message">
+              <span className="govie-visually-hidden">Error:</span>
+              {tError(plainTextError.messageKey, {
+                field: tError(`fields.${plainTextError.field}`),
+                indArticleCheck: "",
+              })}
+            </p>
+          )}
+          <textarea
+            id="plainText"
+            name="plainText"
+            className="govie-textarea"
+            rows={15}
+            defaultValue={props.state.plainText}
           ></textarea>
         </div>
 
@@ -171,7 +233,7 @@ export default async (props: MessageCreateProps) => {
             id="link"
             name="link"
             className="govie-input"
-            defaultValue={props.state.links.at(0)?.url ?? ""}
+            defaultValue={props.state.links.at(0) ?? ""}
           />
         </div>
 

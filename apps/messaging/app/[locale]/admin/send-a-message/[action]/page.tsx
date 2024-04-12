@@ -3,58 +3,75 @@ import { api } from "messages";
 import { ApiMessageState, getCurrentStep } from "../../../../utils/messaging";
 import { PgSessions } from "auth/sessions";
 import ComposeMessageMeta from "./ComposeMessageMeta";
-import EmailForm from "./EmailForm";
-import EmailPreview from "./EmailPreview";
-import EmailRecipients from "./EmailRecipients";
+import ContentForm from "./ContentForm";
+import EmailPreview from "./Preview";
+import Recipients from "./Recipients";
 import ScheduleForm from "./ScheduleForm";
 import SuccessForm from "./SuccessForm";
+import TemplateForm from "./TemplateForm";
+
+const metaSlug = "meta";
+const contentSlug = "content";
+const previewSlug = "preview";
+const recipientsSlug = "recipients";
+const scheduleSlug = "schedule";
+const successSlug = "success";
+const templateSlug = "template";
 
 const next = { key: null, isStepValid: true };
 const rules: Parameters<typeof getCurrentStep<ApiMessageState>>[0] = [
   // First meta selection step
   (state) =>
-    Boolean(state.submittedMetaAt) ? next : { key: "meta", isStepValid: true },
+    Boolean(state.submittedMetaAt)
+      ? next
+      : { key: metaSlug, isStepValid: true },
 
-  // All transportation steps
+  // Template
+  (state) =>
+    Boolean(
+      state.templateMetaId &&
+        !Boolean(Object.keys(state.templateInterpolations).length),
+    )
+      ? { key: templateSlug, isStepValid: false }
+      : next,
+
+  // Content
   (state) => {
-    for (const transportation of state.transportations) {
-      if (transportation === "email") {
-        // Completed email details form?
-        if (!state.submittedEmailAt) {
-          return {
-            key: "email",
-            isStepValid: Boolean(state.subject && state.content),
-          };
-        }
-
-        // Confirmed email preview?
-        if (!state.confirmedEmailAt) {
-          return { key: "email-preview", isStepValid: true };
-        }
-
-        // Added all recipients
-        if (!state.confirmedEmailRecipientsAt) {
-          return {
-            key: "email-recipients",
-            isStepValid: Boolean(state.emailRecipients.length),
-          };
-        }
-      }
-
-      // if transportation == sms ... eg
+    if (state.submittedContentAt) {
+      return next;
     }
 
-    return next;
+    return {
+      key: contentSlug,
+      isStepValid: Boolean(state.subject && state.plainText && state.excerpt),
+    };
+  },
+
+  // Preview
+  (state) => {
+    if (state.confirmedContentAt) {
+      return next;
+    }
+    return { key: previewSlug, isStepValid: true };
+  },
+
+  // Receients
+  (state) => {
+    if (state.confirmedRecipientsAt) {
+      return next;
+    }
+
+    return { key: recipientsSlug, isStepValid: Boolean(state.userIds.length) };
   },
 
   // Schedule
   (state) =>
     Boolean(state.confirmedScheduleAt)
       ? next
-      : { key: "schedule", isStepValid: Boolean(state.schedule) },
+      : { key: scheduleSlug, isStepValid: Boolean(state.schedule) },
 
   // Success
-  () => ({ key: "success", isStepValid: true }),
+  () => ({ key: successSlug, isStepValid: true }),
 ];
 
 const urlStateHandler = (url: string, key: string) => (Cmp: JSX.Element) => {
@@ -74,7 +91,7 @@ export default async (props: {
   const step = getCurrentStep<ApiMessageState>(rules, state);
   const maybe = urlStateHandler(urlAction, step.key || "");
   switch (step.key) {
-    case "meta":
+    case metaSlug:
       return maybe(
         <ComposeMessageMeta
           state={state}
@@ -83,16 +100,25 @@ export default async (props: {
           disabledSubmit={!step.isStepValid}
         />,
       );
-    case "email":
+    case templateSlug:
       return maybe(
-        <EmailForm
+        <TemplateForm
           state={state}
           userId={userId}
           stateId={stateId}
           disabledSubmit={!step.isStepValid}
         />,
       );
-    case "email-preview":
+    case contentSlug:
+      return maybe(
+        <ContentForm
+          state={state}
+          userId={userId}
+          stateId={stateId}
+          disabledSubmit={!step.isStepValid}
+        />,
+      );
+    case previewSlug:
       return maybe(
         <EmailPreview
           state={state}
@@ -101,15 +127,15 @@ export default async (props: {
           disabledSubmit={!step.isStepValid}
         />,
       );
-    case "email-recipients":
+    case recipientsSlug:
       return maybe(
-        <EmailRecipients state={state} userId={userId} stateId={stateId} />,
+        <Recipients state={state} userId={userId} stateId={stateId} />,
       );
-    case "schedule":
+    case scheduleSlug:
       return maybe(
         <ScheduleForm state={state} userId={userId} stateId={stateId} />,
       );
-    case "success":
+    case successSlug:
       return maybe(
         <SuccessForm state={state} userId={userId} stateId={stateId} />,
       );
