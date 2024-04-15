@@ -22,7 +22,7 @@ export default async (props: MessageCreateProps) => {
   async function goBack() {
     "use server";
 
-    const next = Object.assign({}, props.state, { confirmedContentAt: "" });
+    const next = Object.assign({}, props.state, { submittedContentAt: "" });
     await api.upsertMessageState(next, props.userId, props.stateId);
     revalidatePath("/");
   }

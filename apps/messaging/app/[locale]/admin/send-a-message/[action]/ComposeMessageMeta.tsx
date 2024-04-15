@@ -1,8 +1,7 @@
 import dayjs from "dayjs";
 import { api, apistub } from "messages";
 import { revalidatePath } from "next/cache";
-import { MessageCreateProps } from "../../../../utils/messaging";
-import { PgSessions } from "auth/sessions";
+import { MessageCreateProps, MessageType } from "../../../../utils/messaging";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 
@@ -34,7 +33,6 @@ export default async (props: MessageCreateProps) => {
       props.stateId,
     );
 
-    console.log("We good?");
     revalidatePath("/");
   }
 
@@ -117,35 +115,35 @@ export default async (props: MessageCreateProps) => {
         <div className="govie-radios govie-radios--small ">
           <div className="govie-radios__item">
             <input
-              id="message"
+              id={MessageType.Message}
               name="messageType"
               type="radio"
-              value="message"
+              value={MessageType.Message}
               className="govie-radios__input"
               defaultChecked={
                 !props.state.messageType ||
-                props.state.messageType === "message"
+                props.state.messageType === MessageType.Message
               }
             />
             <label
               className="govie-label--s govie-radios__label"
-              htmlFor="message"
+              htmlFor={MessageType.Message}
             >
               {t("message")}
             </label>
           </div>
           <div className="govie-radios__item">
             <input
-              id="event"
+              id={MessageType.Event}
               name="messageType"
               type="radio"
-              value="event"
+              value={MessageType.Event}
               className="govie-radios__input"
-              defaultChecked={props.state.messageType === "event"}
+              defaultChecked={props.state.messageType === MessageType.Event}
             />
             <label
               className="govie-label--s govie-radios__label"
-              htmlFor="event"
+              htmlFor={MessageType.Event}
             >
               {t("event")}
             </label>

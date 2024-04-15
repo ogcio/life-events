@@ -3,11 +3,11 @@
     "sendMessage": "Send a message",
     "messages": "Messages",
     "settings": "Settings",
-    "emailTemplate": "Email templates"
+    "templates": "Message templates"
   },
-  "EmailTemplates": {
+  "MessageTemplates": {
     "menu": {
-      "templates": "Email templates",
+      "templates": "Message templates",
       "addTemplate": "Add new template"
     },
     "title": "Email Templates",
@@ -93,6 +93,16 @@
       "backLink": "Back to message",
       "tableRecipientsHeader": "Recipients",
       "tableRemoveButtonText": "Remove"
+    },
+    "TemplateForm": {
+      "title": "Template {name}",
+      "subjectLabel": "Subject",
+      "excerptLabel": "Excerpt",
+      "richTextLabel": "Rich text",
+      "plainTextLabel": "Plain text",
+      "variablesLabel": "Variables",
+      "continueButtonText": "Continue to preview",
+      "back": "Back"
     },
     "ScheduleForm": {
       "title": "Schedule message",

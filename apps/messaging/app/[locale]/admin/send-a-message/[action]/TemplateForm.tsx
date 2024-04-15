@@ -2,8 +2,10 @@ import { revalidatePath } from "next/cache";
 import { MessageCreateProps } from "../../../../utils/messaging";
 import { api, apistub } from "messages";
 import BackButton from "./BackButton";
+import { getTranslations } from "next-intl/server";
 
 export default async (props: MessageCreateProps) => {
+  const t = await getTranslations("sendAMessage.TemplateForm");
   async function action(formData: FormData) {
     "use server";
 
@@ -54,28 +56,28 @@ export default async (props: MessageCreateProps) => {
     <>
       <h1>
         <span className="govie-heading-l">
-          Template {template?.templateName}
+          {t("title", { name: template?.templateName })}
         </span>
       </h1>
-      <label className="govie-label--s">Subject</label>
+      <label className="govie-label--s">{t("subjectLabel")}</label>
       <p className="govie-body">{template?.subject}</p>
 
-      <label className="govie-label--s">Excerpt</label>
+      <label className="govie-label--s">{t("excerptLabel")}</label>
       <p className="govie-body">{template?.excerpt}</p>
 
-      <label className="govie-label--s">Rich text</label>
+      <label className="govie-label--s">{t("richTextLabel")}</label>
       <p className="govie-body">{template?.richText}</p>
 
-      <label className="govie-label--s">Plain text</label>
+      <label className="govie-label--s">{t("plainTextLabel")}</label>
       <p className="govie-body">{template?.plainText}</p>
 
       <hr />
 
       <h3>
-        <span className="govie-heading-s">Variables</span>
+        <span className="govie-heading-s">{t("variablesLabel")}</span>
       </h3>
       <form action={action}>
-        {template.fields?.map((field) => (
+        {template?.fields?.map((field) => (
           <div
             key={field.fieldName}
             className={
@@ -84,34 +86,23 @@ export default async (props: MessageCreateProps) => {
                 : "govie-form-group govie-form-group--error"
             }
           >
-            {false && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {/* {props.error} */}
-              </p>
-            )}
             <label htmlFor="host" className="govie-label--s">
               {field.fieldName}
             </label>
             <div className="govie-hint" id="input-field-hint">
               {field.fieldType}
             </div>
-            <input
-              // id={}
-              type="text"
-              name={field.fieldName}
-              className="govie-input"
-            />
+            <input type="text" name={field.fieldName} className="govie-input" />
           </div>
         ))}
 
         <button className="govie-button" type="submit">
-          Continue to preview
+          {t("continueButtonText")}
         </button>
       </form>
 
       <form action={goBack}>
-        <BackButton>Back</BackButton>
+        <BackButton>{t("back")}</BackButton>
       </form>
     </>
   );

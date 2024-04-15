@@ -28,11 +28,8 @@ const rules: Parameters<typeof getCurrentStep<ApiMessageState>>[0] = [
 
   // Template
   (state) =>
-    Boolean(
-      state.templateMetaId &&
-        !Boolean(Object.keys(state.templateInterpolations).length),
-    )
-      ? { key: templateSlug, isStepValid: false }
+    Boolean(state.templateMetaId && !state.submittedContentAt)
+      ? { key: templateSlug, isStepValid: true }
       : next,
 
   // Content
