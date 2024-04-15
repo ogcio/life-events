@@ -1,20 +1,26 @@
-import { RedirectType, redirect } from "next/navigation";
+import { RedirectType, notFound, redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
 import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
+import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 
 async function getPaymentDetails(
   userId: string,
   paymentId: string,
   amount?: number,
 ) {
-  const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-      paymentId,
-    )
-  ).data;
+  let details;
+  try {
+    details = (
+      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+        paymentId,
+      )
+    ).data;
+  } catch (err) {
+    console.log(err);
+  }
 
   if (!details) return undefined;
 
@@ -43,7 +49,7 @@ async function confirmPayment(
   await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdPatch(
     transactionId,
     {
-      status: "confirmed",
+      status: TransactionStatuses.Pending,
     },
   );
 
@@ -78,7 +84,7 @@ export default async function Bank(params: {
   );
 
   if (!paymentDetails) {
-    return <h1 className="govie-heading-l">Payment details not found</h1>;
+    notFound();
   }
 
   //TODO: In production, we want to avoid collisions on the DB
@@ -144,17 +150,9 @@ export default async function Bank(params: {
             </dt>
           </div>
           <div className="govie-summary-list__row">
-            <dt className="govie-summary-list__key">{t("summary.sortCode")}</dt>
+            <dt className="govie-summary-list__key">{t("summary.iban")}</dt>
             <dt className="govie-summary-list__value">
-              {paymentDetails.providerData.sortCode}
-            </dt>
-          </div>
-          <div className="govie-summary-list__row">
-            <dt className="govie-summary-list__key">
-              {t("summary.accountHolderName")}
-            </dt>
-            <dt className="govie-summary-list__value">
-              {paymentDetails.providerData.accountNumber}
+              {paymentDetails.providerData.iban}
             </dt>
           </div>
           <div className="govie-summary-list__row">

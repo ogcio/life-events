@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import ProviderStatusTag from "./ProviderStatusTag";
+import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
-import buildApiClient from "../../../../../client/index";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 
 export default async () => {
@@ -10,10 +10,9 @@ export default async () => {
 
   const { userId } = await PgSessions.get();
 
-  const providers = (await buildApiClient(userId).providers.apiV1ProvidersGet())
-    .data;
+  const { data: providers } = await new Payments(userId).getProviders();
 
-  if (providers.length === 0) {
+  if (!providers || providers.length === 0) {
     return (
       <EmptyStatus
         title={t("empty.title")}

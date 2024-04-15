@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { getRealAmount } from "../../../../utils";
 import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
+import notFound from "../../../../not-found";
 
 async function getPaymentDetails(
   paymentId: string,
@@ -12,11 +13,16 @@ async function getPaymentDetails(
   amount?: number,
   customAmount?: number,
 ) {
-  const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-      paymentId,
-    )
-  ).data;
+  let details;
+  try {
+    details = (
+      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
+        paymentId,
+      )
+    ).data;
+  } catch (err) {
+    console.log(err);
+  }
 
   if (!details) return undefined;
 
@@ -66,7 +72,7 @@ export default async function Bank(props: {
   const { userId } = await PgSessions.get();
   const t = await getTranslations("Common");
   if (!props.searchParams?.paymentId) {
-    return <h1>{t("notFound")}</h1>;
+    return notFound();
   }
 
   const amount = props.searchParams.amount
@@ -89,7 +95,10 @@ export default async function Bank(props: {
     amount,
     customAmount,
   );
-  if (!details) return <h1>{t("notFound")}</h1>;
+
+  if (!details) {
+    return notFound();
+  }
 
   const { paymentDetails, paymentRequest } = details;
 

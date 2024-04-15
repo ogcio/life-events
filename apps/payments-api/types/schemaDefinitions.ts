@@ -106,6 +106,26 @@ export type ParamsWithPaymentRequestId = Static<
 >;
 
 /**
+ * Transaction status
+ */
+export enum TransactionStatusesEnum {
+  Initiated = "initiated",
+  Pending = "pending",
+  Succeeded = "succeeded",
+  Cancelled = "cancelled",
+  Failed = "failed",
+}
+
+export const TransactionStatuses = Type.Union([
+  Type.Literal("initiated"),
+  Type.Literal("pending"),
+  Type.Literal("succeeded"),
+  Type.Literal("cancelled"),
+  Type.Literal("failed"),
+]);
+export type TransactionStatuses = Static<typeof TransactionStatuses>;
+
+/**
  * Transactions types
  */
 
@@ -113,7 +133,7 @@ export const FullTransaction = Type.Object({
   transactionId: Type.String(),
   paymentRequestId: Type.String(),
   extPaymentId: Type.String(),
-  status: Type.String(),
+  status: Type.String(), // TODO: Change to TransactionStatuses
   integrationReference: Type.String(),
   amount: Type.Number(),
   paymentProviderId: Type.String(),

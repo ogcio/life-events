@@ -1,6 +1,6 @@
 import { Page, expect } from "@playwright/test";
 import { test } from "../fixtures/test";
-import { mockAccountNumber, mockSortCode } from "../utils/mocks";
+import { mockIban } from "../utils/mocks";
 import { paymentSetupUrl, providersUrl } from "../utils/constants";
 import { ProvidersPage } from "../pages/providers/ProvidersPage";
 
@@ -32,18 +32,17 @@ test.describe("Manual bank transfer provider", () => {
 
     await expect(
       page.getByRole("heading", {
-        name: "Edit Manual Bank Transfer payment provider",
+        name: "Edit Manual Bank Transfer Payment Provider",
       }),
     ).toBeVisible();
-    const sortCodeInput = await page.getByRole("textbox", {
-      name: /Bank sort code/,
+    const ibanInput = await page.getByRole("textbox", {
+      name: /IBAN/,
     });
-    await expect(sortCodeInput).toHaveValue(mockSortCode);
-    const accountNumberInput = await page.getByRole("textbox", {
-      name: /Bank account number/,
+    await expect(ibanInput).toHaveValue(mockIban);
+    const nameInput = await page.getByRole("textbox", {
+      name: "Name",
+      exact: true,
     });
-    await expect(accountNumberInput).toHaveValue(mockAccountNumber);
-    const nameInput = await page.getByRole("textbox", { name: /Name/ });
     await expect(nameInput).toHaveValue(providerName);
     await nameInput.clear();
     const newProviderName = `${providerName} edited`;

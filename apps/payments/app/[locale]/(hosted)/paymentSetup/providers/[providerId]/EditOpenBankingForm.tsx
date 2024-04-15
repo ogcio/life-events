@@ -19,12 +19,10 @@ export default async ({ provider }: Props) => {
     const { userId } = await PgSessions.get();
 
     const providerName = formData.get("provider_name") as string;
-    const sortCode = formData.get("sort_code");
-    const accountNumber = formData.get("account_number");
+    const iban = formData.get("iban");
     const accountHolderName = formData.get("account_holder_name");
     const providerData = {
-      sortCode,
-      accountNumber,
+      iban,
       accountHolderName,
     };
 
@@ -46,8 +44,7 @@ export default async ({ provider }: Props) => {
       <OpenBankingFields
         providerName={provider.name}
         accountHolderName={provider.data.accountHolderName}
-        sortCode={provider.data.sortCode}
-        accountNumber={provider.data.accountNumber}
+        iban={provider.data.iban}
       />
     </EditProviderForm>
   );

@@ -10,8 +10,7 @@ export const seedProviders = (pool, userId) => {
       "banktransfer",
       "connected",
       JSON.stringify({
-        sortCode: "123456",
-        accountNumber: "12345678",
+        iban: "IE29AIBK93115212345678",
         accountHolderName: "Lorem Ipsum",
       }),
     ],
@@ -26,8 +25,7 @@ export const seedProviders = (pool, userId) => {
       "openbanking",
       "connected",
       JSON.stringify({
-        sortCode: "123456",
-        accountNumber: "12345678",
+        iban: "IE29AIBK93115212345678",
         accountHolderName: "Lorem Ipsum",
       }),
     ],
