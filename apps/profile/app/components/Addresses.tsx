@@ -88,12 +88,14 @@ export default async () => {
               <div style={{ display: "flex" }}>
                 <Link
                   href={routes.addresses.editAddress.path(data.address_id)}
+                  className="govie-link"
                   style={{ marginRight: "20px" }}
                 >
                   {t("edit")}
                 </Link>
                 <Link
                   href={routes.addresses.removeAddress.path(data.address_id)}
+                  className="govie-link"
                 >
                   {t("remove")}
                 </Link>

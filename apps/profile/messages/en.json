@@ -95,7 +95,8 @@
     "confirmRemoveAddress": "Are you sure you want to remove the address below?",
     "remove": "Remove address",
     "editAddress": "Edit address",
-    "save": "Save changes",
+    "save": "Save",
+    "saveChanges": " Save changes",
     "cancel": "Cancel"
   },
   "NotFound": {

@@ -258,7 +258,7 @@ export default async (params: NextPageProps) => {
               className="govie-button"
               style={{ marginBottom: 0 }}
             >
-              {t("save")}
+              {t("saveChanges")}
             </button>
             <button
               type="button"
