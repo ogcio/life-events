@@ -9,9 +9,12 @@ export class AddOpenBankingProviderPage {
   private readonly confirmButton: Locator;
 
   constructor(public readonly page: Page) {
-    this.nameInput = this.page.getByRole("textbox", { name: /Name/ });
+    this.nameInput = this.page.getByRole("textbox", {
+      name: "Name",
+      exact: true,
+    });
     this.accountHolderNameInput = this.page.getByRole("textbox", {
-      name: "Bank account holder name",
+      name: "Bank Account Holder Name",
     });
     this.ibanInput = this.page.getByRole("textbox", {
       name: "IBAN",
