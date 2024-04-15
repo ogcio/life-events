@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 import { notFound } from "next/navigation";
+import { TransactionStatuses } from "../../../../../../types/TransactionStatuses";
 
 async function getTransactionDetails(transactionId: string) {
   const { userId } = await PgSessions.get();
@@ -30,7 +31,7 @@ async function confirmTransaction(transactionId: string) {
   await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdPatch(
     transactionId,
     {
-      status: "completed",
+      status: TransactionStatuses.Succeeded,
     },
   );
 
@@ -99,13 +100,14 @@ export default async function ({ params: { transactionId } }) {
         </div>
       </dl>
 
-      {details.providerType && details.status === "confirmed" && (
-        <form action={confirm}>
-          <button className="govie-button govie-button--primary">
-            {tRequest("transactionFound")}
-          </button>
-        </form>
-      )}
+      {details.providerType &&
+        details.status === TransactionStatuses.Pending && (
+          <form action={confirm}>
+            <button className="govie-button govie-button--primary">
+              {tRequest("transactionFound")}
+            </button>
+          </form>
+        )}
     </div>
   );
 }
