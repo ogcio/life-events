@@ -35,8 +35,8 @@ async function getUserEntitlements() {
       firstName,
       lastName,
       type: "drivingLicence",
-      issue_date: "10/09/2018",
-      expiry_date: "10/09/2028",
+      issue_date: "15/11/2022",
+      expiry_date: "15/11/2032",
       document_number: "MURPH0523",
     },
     {

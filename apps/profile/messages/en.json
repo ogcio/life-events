@@ -102,5 +102,28 @@
     "title": "Not Found",
     "description": " Sorry, the requested resource could not be found",
     "return-home": "Return Home"
+  },
+  "DrivingLicenceDetails": {
+    "title": "Driving licence details",
+    "name": "Name",
+    "datePlaceOfBirth": "Date and Place of Birth",
+    "issueDate": "Date of issue",
+    "expiryDate": "Date of expiry",
+    "issuedBy": "Issued by",
+    "driverNumber": "Driver number",
+    "licenceNumber": "Licence number",
+    "address": "Address",
+    "vehicleCategories": "Vehicle categories",
+    "back": "Back"
+  },
+  "BirthCertificateDetails": {
+    "title": "Birth certificate details",
+    "name": "Name",
+    "dateOfBirth": "Date of birth",
+    "placeOfBirth": "Place of birth",
+    "issueDate": "Date of issue",
+    "motherName": "Mother's name",
+    "certificateNumber": "Certificate number",
+    "back": "Back"
   }
 }
