@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS user_details(
     date_of_birth DATE NOT NULL,
     ppsn TEXT NOT NULL,
     gender TEXT NOT NULL,
-    phone TEXT NOT NULL, 
+    phone TEXT NOT NULL,
     email TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

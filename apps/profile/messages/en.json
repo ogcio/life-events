@@ -32,12 +32,15 @@
     "ppsn": "PPSN",
     "clickToReveal": "Click to reveal",
     "reveal": "Reveal",
+    "hide": "Hide",
     "gender": "Gender",
     "male": "Male",
     "female": "Female",
     "contactDetails": "Contact details",
     "telephone": "<red>*</red> Phone",
-    "email": "<red>*</red> Email"
+    "email": "<red>*</red> Email",
+    "save": "Save changes",
+    "cancel": "Cancel"
   },
   "Addresses": {
     "addresses": "Addresses",
@@ -52,6 +55,8 @@
     "preFillFormData": "Pre-fill form data",
     "consentText": "I consent to using the above data to pre-fill forms",
     "dvaTitle": "How will DVA use my data?",
-    "dvaText": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    "dvaText": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    "save": "Save changes",
+    "cancel": "Cancel"
   }
 }
