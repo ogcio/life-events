@@ -8,17 +8,22 @@ const ajv = new Ajv({
 
 ajv.addKeyword({
   keyword: "validator",
-  compile: (schema, parentSchema) => {
-    return function validate(data) {
+  compile: (schema, parentSchema, x) => {
+    return function validate(data: any, info: any) {
       (validate as any).errors = [
         {
           keyword: "validator",
-          message: "shoud be authenticated.",
-          params: { keyword: "validator" },
+          message: "some test error.",
+          params: {
+            keyword: "validator",
+            field: info.parentDataProperty,
+          },
         },
       ];
+      console.log(parentSchema);
       console.log(schema);
       console.log(data);
+      console.log(info.parentDataProperty);
       return false;
     };
   },

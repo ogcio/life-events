@@ -9,17 +9,6 @@ import {
   UpdateProvider,
 } from "../../types/schemaDefinitions";
 
-const isTest = [
-  function validate(data: string) {
-    console.log("$$$", data);
-
-    return true;
-  },
-  function errorMessage(schema, parentSchema, data) {
-    return `${data} is not a valid geolocation point. [lat,lng] format is required.`;
-  },
-];
-
 export default async function providers(app: FastifyInstance) {
   app.post<{ Body: CreateProvider; Reply: { id: string } }>(
     "/",

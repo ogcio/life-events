@@ -12,17 +12,23 @@ export default async () => {
   async function handleSubmit(formData: FormData) {
     "use server";
 
-    await new Payments(userId).createProvider({
-      name: formData.get("provider_name") as string,
-      type: "openbanking",
-      data: {
-        iban: formData.get("iban"),
-        accountNumber: formData.get("account_number"),
-        accountHolderName: formData.get("account_holder_name"),
-      },
-    });
+    try {
+      const res = await new Payments(userId).createProvider({
+        name: formData.get("provider_name") as string,
+        type: "openbanking",
+        data: {
+          iban: formData.get("iban"),
+          accountNumber: formData.get("account_number"),
+          accountHolderName: formData.get("account_holder_name"),
+        },
+      });
+      console.log(res);
+    } catch (err) {
+      console.log(">>>>>>>>>>>>>>>>>>>>>>>>");
+      console.log(err);
+    }
 
-    redirect("./");
+    // redirect("./");
   }
 
   return (
