@@ -31,7 +31,6 @@ export default async (props: MessageCreateProps) => {
       submittedContentAt: new Date().toISOString(),
     };
     const next = Object.assign({}, props.state, update);
-    console.log(next);
     await api.upsertMessageState(next, props.userId, props.stateId);
     revalidatePath("/");
   }
