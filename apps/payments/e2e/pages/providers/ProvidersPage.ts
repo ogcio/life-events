@@ -10,7 +10,7 @@ export class ProvidersPage {
 
   constructor(public readonly page: Page) {
     this.createNewAccountBtn = this.page.getByRole("button", {
-      name: "New account",
+      name: "Create payment provider",
     });
   }
 
@@ -51,7 +51,7 @@ export class ProvidersPage {
   }
 
   async createOpenBankingProvider(name: string) {
-    await this.page.getByRole("button", { name: "Select Openbanking" }).click();
+    await this.page.getByRole("button", { name: "Select OpenBanking" }).click();
     const addOpenBankingProviderPage = new AddOpenBankingProviderPage(
       this.page,
     );
