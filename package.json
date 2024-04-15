@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build:ds": "npm run build --workspace=design-system",
-    "init-dev": "node scripts/init-env.mjs",
+    "init-env": "node scripts/init-env.mjs",
     "start:services": "concurrently --kill-others \"npm run dev --workspace=mock-api\" \"npm run dev --workspace=web\" \"npm run dev --workspace=payments\" \"npm run dev --workspace=messaging\" \"npm run dev --workspace=payments-api\" \"npm run dev --workspace=profile\"",
     "start:docker": "docker-compose down &&  DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans -d",
     "start": "npm run init-dev && npm run start:docker && concurrently \"npm run start:services\" \"sleep 5 && npm run migrate\"",
