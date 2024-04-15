@@ -387,7 +387,7 @@ export default async (props: { params: NextPageProps }) => {
   const t = await getTranslations("AddressForm");
   const { userId, firstName, lastName, email } = await PgSessions.get();
   const userData = { userId, firstName, lastName, email };
-  console.log("== USER ID ===", userId);
+
   const searchUrl = new URLSearchParams(searchParams);
   const isManualForm = searchUrl.get(searchParamKeys.formType) === "manual";
   let Form = isManualForm

@@ -93,7 +93,10 @@
     "eirecode": "Eirecode",
     "back": "Back",
     "confirmRemoveAddress": "Are you sure you want to remove the address below?",
-    "remove": "Remove address"
+    "remove": "Remove address",
+    "editAddress": "Edit address",
+    "save": "Save changes",
+    "cancel": "Cancel"
   },
   "NotFound": {
     "title": "Not Found",
