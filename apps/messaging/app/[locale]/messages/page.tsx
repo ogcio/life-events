@@ -11,7 +11,6 @@ export default async (props: { searchParams: any }) => {
   const { email, userId } = await PgSessions.get();
   const params = new URLSearchParams(props.searchParams);
 
-  console.log({ userId });
   const messages = await apistub.messages.getAll(userId);
 
   async function searchAction(formData: FormData) {
