@@ -23,23 +23,14 @@ paths:
               properties:
                 name:
                   type: string
+                  validator: Test
                 type:
-                  anyOf:
-                    - type: string
-                      enum:
-                        - banktransfer
-                    - type: string
-                      enum:
-                        - openbanking
-                    - type: string
-                      enum:
-                        - stripe
-                data: {}
-              required:
-                - name
-                - type
-                - data
-        required: true
+                  type: string
+                data:
+                  type: object
+                  properties:
+                    iban:
+                      type: string
       responses:
         "200":
           description: Default Response

@@ -9,6 +9,17 @@ import {
   UpdateProvider,
 } from "../../types/schemaDefinitions";
 
+const isTest = [
+  function validate(data: string) {
+    console.log("$$$", data);
+
+    return true;
+  },
+  function errorMessage(schema, parentSchema, data) {
+    return `${data} is not a valid geolocation point. [lat,lng] format is required.`;
+  },
+];
+
 export default async function providers(app: FastifyInstance) {
   app.post<{ Body: CreateProvider; Reply: { id: string } }>(
     "/",
@@ -16,7 +27,27 @@ export default async function providers(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
-        body: CreateProvider,
+        // body: CreateProvider,
+        body: {
+          type: "object",
+          properties: {
+            name: {
+              type: "string",
+              validator: "Test",
+            },
+            type: {
+              type: "string",
+            },
+            data: {
+              type: "object",
+              properties: {
+                iban: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
         response: {
           200: Type.Object({
             id: Type.String(),

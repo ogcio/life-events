@@ -13,6 +13,7 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
+import customValidators from "./validators";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,6 +22,10 @@ dotenv.config();
 
 export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
+
+  app.setValidatorCompiler(({ schema, method, url, httpPart }) => {
+    return customValidators(schema);
+  });
 
   app.register(authPlugin);
   app.register(fastifyEnv, {
