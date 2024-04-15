@@ -14,7 +14,6 @@ async function getAddress(addressId: string) {
     town: string;
     county: string;
     eirecode: string;
-    updated_at: string;
   }>(
     `SELECT address_line1, address_line2, town, county, eirecode FROM user_addresses WHERE user_id = $1 AND address_id = $2`,
     [userId, addressId],

@@ -23,7 +23,7 @@ async function submitAction(formData: FormData) {
     await postgres.pgpool.query(
       `
           UPDATE user_details
-          SET consent_to_prefill_data = $1
+          SET consent_to_prefill_data = $1, updated_at = now()
           WHERE user_id = $2
         `,
       [isUserConsenting, userId],
