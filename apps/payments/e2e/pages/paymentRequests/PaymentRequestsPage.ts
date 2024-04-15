@@ -32,7 +32,7 @@ export class PaymentRequestsPage {
     await createPaymentRequestPage.create(paymentRequest);
 
     await expect(
-      this.page.getByRole("heading", { name: "Payment details" }),
+      this.page.getByRole("heading", { name: "Payment request details" }),
     ).toBeVisible({ timeout: 10000 });
   }
 
