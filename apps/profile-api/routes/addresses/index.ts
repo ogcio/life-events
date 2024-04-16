@@ -7,27 +7,18 @@ import {
   ProvidersList,
   Provider,
   UpdateProvider,
+  AddressesList,
 } from "../../types/schemaDefinitions";
 
 export default async function addresses(app: FastifyInstance) {
-  app.get<{ Reply: ProvidersList }>(
+  app.get<{ Reply: AddressesList }>(
     "/",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Addresses"],
         response: {
-          200: Type.Array(
-            Type.Union([
-              Type.Object({
-                id: Type.String(),
-                name: Type.String(),
-                type: Type.String(),
-                data: Type.Any(),
-                status: Type.String(),
-              }),
-            ]),
-          ),
+          200: AddressesList,
         },
       },
     },
@@ -35,16 +26,7 @@ export default async function addresses(app: FastifyInstance) {
       const userId = request.user?.id;
 
       const result = await app.pg.query(
-        `
-              SELECT
-                provider_id as id,
-                provider_name as name,
-                provider_type as type,
-                provider_data as data,
-                status
-              FROM payment_providers
-              WHERE user_id = $1
-            `,
+        `SELECT address_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date, updated_at FROM user_addresses WHERE user_id = $1`,
         [userId],
       );
 
