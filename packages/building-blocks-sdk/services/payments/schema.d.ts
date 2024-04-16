@@ -180,33 +180,13 @@ export interface paths {
           providerId: string;
         };
       };
-      requestBody?: {
+      requestBody: {
         content: {
-          "application/json":
-            | {
-                name: string;
-                data: {
-                  iban: string;
-                  accountHolderName: string;
-                };
-                status: "connected" | "disconnected";
-              }
-            | {
-                name: string;
-                data: {
-                  livePublishableKey: string;
-                  liveSecretKey: string;
-                };
-                status: "connected" | "disconnected";
-              }
-            | {
-                name: string;
-                data: {
-                  merchantCode: string;
-                  installationId: string;
-                };
-                status: "connected" | "disconnected";
-              };
+          "application/json": {
+            name: string;
+            data: Record<string, never>;
+            status: "connected" | "disconnected";
+          };
         };
       };
       responses: {

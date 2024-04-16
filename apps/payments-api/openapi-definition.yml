@@ -277,113 +277,26 @@ paths:
         content:
           application/json:
             schema:
-              anyOf:
-                - type: object
-                  properties:
-                    name:
-                      type: string
-                    data:
-                      type: object
-                      properties:
-                        iban:
-                          validator: IBANValidator
-                          type: string
-                        accountHolderName:
-                          type: string
-                      required:
-                        - iban
-                        - accountHolderName
-                    status:
-                      anyOf:
-                        - type: string
-                          enum:
-                            - connected
-                        - type: string
-                          enum:
-                            - disconnected
-                  required:
-                    - name
-                    - data
-                    - status
-                - type: object
-                  properties:
-                    name:
-                      type: string
-                    data:
-                      type: object
-                      properties:
-                        iban:
-                          validator: IBANValidator
-                          type: string
-                        accountHolderName:
-                          type: string
-                      required:
-                        - iban
-                        - accountHolderName
-                    status:
-                      anyOf:
-                        - type: string
-                          enum:
-                            - connected
-                        - type: string
-                          enum:
-                            - disconnected
-                  required:
-                    - name
-                    - data
-                    - status
-                - type: object
-                  properties:
-                    name:
-                      type: string
-                    data:
-                      type: object
-                      properties:
-                        livePublishableKey:
-                          type: string
-                        liveSecretKey:
-                          type: string
-                      required:
-                        - livePublishableKey
-                        - liveSecretKey
-                    status:
-                      anyOf:
-                        - type: string
-                          enum:
-                            - connected
-                        - type: string
-                          enum:
-                            - disconnected
-                  required:
-                    - name
-                    - data
-                    - status
-                - type: object
-                  properties:
-                    name:
-                      type: string
-                    data:
-                      type: object
-                      properties:
-                        merchantCode:
-                          type: string
-                        installationId:
-                          type: string
-                      required:
-                        - merchantCode
-                        - installationId
-                    status:
-                      anyOf:
-                        - type: string
-                          enum:
-                            - connected
-                        - type: string
-                          enum:
-                            - disconnected
-                  required:
-                    - name
-                    - data
-                    - status
+              type: object
+              properties:
+                name:
+                  type: string
+                data:
+                  type: object
+                  properties: {}
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - connected
+                    - type: string
+                      enum:
+                        - disconnected
+              required:
+                - name
+                - data
+                - status
+        required: true
       parameters:
         - schema:
             type: string

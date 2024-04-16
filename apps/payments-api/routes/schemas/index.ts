@@ -100,7 +100,13 @@ export type CreateWorldpayProvider = Static<typeof CreateWorldpayProvider>;
 export const ProvidersList = Type.Union([Type.Array(Provider)]);
 export type ProvidersList = Static<typeof ProvidersList>;
 
-export const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
+// TEMPORARILY CREATE NEW TYPE WITHOUT VALIDATIONS.
+export const UpdateProvider = Type.Object({
+  name: Type.String(),
+  data: Type.Object({}),
+  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+});
+// export const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
 export type UpdateProvider = Static<typeof UpdateProvider>;
 
 export const ParamsWithProviderId = Type.Object({
