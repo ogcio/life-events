@@ -25,7 +25,6 @@ In order to run the setup you must:
 
 - Clone the repo
 - if you have nvm installed run `nvm use`, otherwise ensure you're running Node LTS
-- Copy `.env.sample` to `.env` and update the variables for all apps
 - run `npm run build:ds` to build the design system.
 - run `npm start` to start the supporting docker services and run our services in 'dev' mode. If the docker services are already running you can just run `npm run start:services`
 
