@@ -37,6 +37,7 @@ export default async function transactions(app: FastifyInstance) {
             t.status,
             t.user_data as "userData",
             pr.title,
+            pr.payment_request_id as "paymentRequestId",
             t.ext_payment_id as "extPaymentId",
             t.amount,
             t.updated_at as "updatedAt",

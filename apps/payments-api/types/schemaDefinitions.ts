@@ -165,6 +165,7 @@ export const TransactionDetails = Type.Composite([
   Type.Object({
     providerName: Type.String(),
     providerType: Type.String(),
+    paymentRequestId: Type.String(),
   }),
 ]);
 export type TransactionDetails = Static<typeof TransactionDetails>;
