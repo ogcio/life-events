@@ -32,14 +32,17 @@ test.describe("Manual bank transfer provider", () => {
 
     await expect(
       page.getByRole("heading", {
-        name: "Edit Manual Bank Transfer payment provider",
+        name: "Edit Manual Bank Transfer Payment Provider",
       }),
     ).toBeVisible();
     const ibanInput = await page.getByRole("textbox", {
       name: /IBAN/,
     });
     await expect(ibanInput).toHaveValue(mockIban);
-    const nameInput = await page.getByRole("textbox", { name: /Name/ });
+    const nameInput = await page.getByRole("textbox", {
+      name: "Name",
+      exact: true,
+    });
     await expect(nameInput).toHaveValue(providerName);
     await nameInput.clear();
     const newProviderName = `${providerName} edited`;
