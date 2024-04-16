@@ -14,6 +14,114 @@ export interface paths {
       };
     };
   };
+  "/api/v1/providers/banktransfer": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            /** @enum {string} */
+            type: "banktransfer";
+            data: {
+              iban: string;
+              accountHolderName: string;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/providers/openbanking": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            /** @enum {string} */
+            type: "openbanking";
+            data: {
+              iban: string;
+              accountHolderName: string;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/providers/stripe": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            /** @enum {string} */
+            type: "stripe";
+            data: {
+              livePublishableKey: string;
+              liveSecretKey: string;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/providers/worldpay": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            /** @enum {string} */
+            type: "worldpay";
+            data: {
+              merchantCode: string;
+              installationId: string;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/providers/": {
     get: {
       responses: {
@@ -27,27 +135,6 @@ export interface paths {
               data: unknown;
               status: string;
             }[];
-          };
-        };
-      };
-    };
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            type: "banktransfer" | "openbanking" | "stripe";
-            data: unknown;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
           };
         };
       };
@@ -74,7 +161,7 @@ export interface paths {
           };
         };
         /** @description Default Response */
-        404: {
+        400: {
           content: {
             "application/json": {
               statusCode: number;
@@ -93,13 +180,33 @@ export interface paths {
           providerId: string;
         };
       };
-      requestBody: {
+      requestBody?: {
         content: {
-          "application/json": {
-            name: string;
-            data: unknown;
-            status: "connected" | "disconnected";
-          };
+          "application/json":
+            | {
+                name: string;
+                data: {
+                  iban: string;
+                  accountHolderName: string;
+                };
+                status: "connected" | "disconnected";
+              }
+            | {
+                name: string;
+                data: {
+                  livePublishableKey: string;
+                  liveSecretKey: string;
+                };
+                status: "connected" | "disconnected";
+              }
+            | {
+                name: string;
+                data: {
+                  merchantCode: string;
+                  installationId: string;
+                };
+                status: "connected" | "disconnected";
+              };
         };
       };
       responses: {

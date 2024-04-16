@@ -13,7 +13,8 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
-import customValidators from "./validators";
+import schemaValidators from "./routes/schemas/validations";
+import { STATUS_CODES } from "http";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,8 +24,8 @@ dotenv.config();
 export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
 
-  app.setValidatorCompiler(({ schema, method, url, httpPart }) => {
-    return customValidators(schema);
+  app.setValidatorCompiler(({ schema }) => {
+    return schemaValidators(schema);
   });
 
   app.register(authPlugin);
@@ -75,9 +76,18 @@ export async function build(opts?: FastifyServerOptions) {
 
   app.setErrorHandler((error, request, reply) => {
     app.log.error(error);
-    if (error instanceof Error && error.name !== "error") {
-      console.log(JSON.stringify(error), undefined, 2);
-      reply.send(error);
+    if (
+      error instanceof Error &&
+      (error.name !== "error" || !!error.validation)
+    ) {
+      reply.status(error.statusCode || 500).send({
+        error: STATUS_CODES[error.statusCode || 500],
+        message: error.message,
+        name: error.name,
+        validation: error.validation,
+        validationContext: error.validationContext,
+        statusCode: error.statusCode || 500,
+      });
       return;
     }
     reply.code(500).type("application/json").send({ error });

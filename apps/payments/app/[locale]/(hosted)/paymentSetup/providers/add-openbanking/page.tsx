@@ -13,18 +13,18 @@ export default async () => {
     "use server";
 
     try {
-      const res = await new Payments(userId).createProvider({
+      const res = await new Payments(userId).createOpenBankingProvider({
         name: formData.get("provider_name") as string,
         type: "openbanking",
         data: {
-          iban: formData.get("iban"),
-          accountNumber: formData.get("account_number"),
-          accountHolderName: formData.get("account_holder_name"),
+          iban: (formData.get("iban") as string).replaceAll(" ", ""),
+          accountHolderName: formData.get("account_holder_name") as string,
         },
       });
-      console.log(res);
+      console.log("TTTTTTTTTT");
+      console.log("userid", userId);
+      console.log(JSON.stringify(res));
     } catch (err) {
-      console.log(">>>>>>>>>>>>>>>>>>>>>>>>");
       console.log(err);
     }
 

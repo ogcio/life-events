@@ -12,12 +12,12 @@ export default async () => {
   async function handleSubmit(formData: FormData) {
     "use server";
 
-    await new Payments(userId).createProvider({
+    await new Payments(userId).createStripeProvider({
       name: formData.get("provider_name") as string,
       type: "stripe",
       data: {
-        liveSecretKey: formData.get("live_secret_key"),
-        livePublishableKey: formData.get("live_publishable_key"),
+        liveSecretKey: formData.get("live_secret_key") as string,
+        livePublishableKey: formData.get("live_publishable_key") as string,
       },
     });
 

@@ -6,9 +6,7 @@ const formatQueryResult = async <T, O>(
 ) => {
   try {
     const result = await promise;
-    console.log("XXX");
-    console.log(JSON.stringify(result), undefined, 2);
-    return { data: result.data, error: null };
+    return { data: result.data, error: result.error };
   } catch (error) {
     return { data: undefined, error };
   }
@@ -38,11 +36,41 @@ export class Payments {
     return formatQueryResult(this.client.GET("/api/v1/providers/"));
   }
 
-  async createProvider(
-    data: paths["/api/v1/providers/"]["post"]["requestBody"]["content"]["application/json"],
+  async createBankTransferProvider(
+    data: paths["/api/v1/providers/banktransfer"]["post"]["requestBody"]["content"]["application/json"],
   ) {
     return formatQueryResult(
-      this.client.POST("/api/v1/providers/", {
+      this.client.POST("/api/v1/providers/banktransfer", {
+        body: data,
+      }),
+    );
+  }
+
+  async createOpenBankingProvider(
+    data: paths["/api/v1/providers/openbanking"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/providers/openbanking", {
+        body: data,
+      }),
+    );
+  }
+
+  async createStripeProvider(
+    data: paths["/api/v1/providers/stripe"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/providers/stripe", {
+        body: data,
+      }),
+    );
+  }
+
+  async createWorldpayProvider(
+    data: paths["/api/v1/providers/worldpay"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/providers/worldpay", {
         body: data,
       }),
     );
