@@ -1,7 +1,7 @@
 import { PgSessions } from "auth/sessions";
-import dayjs from "dayjs";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { formatDate } from "../../../../utils";
 
 async function getBirthCertificateeDetails(_id: string) {
   const { firstName, lastName } = await PgSessions.get();
@@ -19,7 +19,7 @@ async function getBirthCertificateeDetails(_id: string) {
 export default async ({ id }: { id: string }) => {
   const t = await getTranslations("BirthCertificateDetails");
   const data = await getBirthCertificateeDetails(id);
-  const dob = dayjs(data.date_of_birth).format("DD/MM/YYYY");
+
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">
       <h1 className="govie-heading-m">{t("title")}</h1>
@@ -35,7 +35,9 @@ export default async ({ id }: { id: string }) => {
             <th className="govie-table__header" scope="row">
               {t("dateOfBirth")}
             </th>
-            <td className="govie-table__cell">{dob}</td>
+            <td className="govie-table__cell">
+              {formatDate(data.date_of_birth)}
+            </td>
           </tr>
           <tr className="govie-tcpable__row">
             <th className="govie-table__header" scope="row">

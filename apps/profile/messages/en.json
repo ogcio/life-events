@@ -17,7 +17,16 @@
       "addressSecondLine": "address second line",
       "town": "town",
       "eirecode": "eirecode",
-      "county": "county"
+      "county": "county",
+      "day": "day",
+      "month": "month",
+      "year": "year",
+      "moveInDay": "day",
+      "moveInMonth": "month",
+      "moveInYear": "year",
+      "moveOutDay": "day",
+      "moveOutMonth": "month",
+      "moveOutYear": "year"
     }
   },
   "AboutMe": {
@@ -97,7 +106,13 @@
     "editAddress": "Edit address",
     "save": "Save",
     "saveChanges": " Save changes",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "selectDatesFormTitle": "Select your move in and move out dates",
+    "moveInDate": "Move in date",
+    "moveOutDate": "Move out date",
+    "day": "Day",
+    "month": "Month",
+    "year": "Year"
   },
   "NotFound": {
     "title": "Not Found",

@@ -3,7 +3,7 @@ import { NextPageProps } from "../../../../../types";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { PgSessions } from "auth/sessions";
-import { postgres } from "../../../../utils";
+import { formatDate, postgres } from "../../../../utils";
 
 async function getAddress(addressId: string) {
   const { userId } = await PgSessions.get();
@@ -14,8 +14,10 @@ async function getAddress(addressId: string) {
     town: string;
     county: string;
     eirecode: string;
+    move_in_date: string;
+    move_out_date: string;
   }>(
-    `SELECT address_line1, address_line2, town, county, eirecode FROM user_addresses WHERE user_id = $1 AND address_id = $2`,
+    `SELECT address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date FROM user_addresses WHERE user_id = $1 AND address_id = $2`,
     [userId, addressId],
   );
 
@@ -89,6 +91,18 @@ export default async (params: NextPageProps) => {
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("eirecode")}</dt>
               <dd className="govie-summary-list__value">{address.eirecode}</dd>
+            </div>
+            <div className="govie-summary-list__row">
+              <dt className="govie-summary-list__key">{t("moveInDate")}</dt>
+              <dd className="govie-summary-list__value">
+                {address.move_in_date ? formatDate(address.move_in_date) : ""}
+              </dd>
+            </div>
+            <div className="govie-summary-list__row">
+              <dt className="govie-summary-list__key">{t("moveOutDate")}</dt>
+              <dd className="govie-summary-list__value">
+                {address.move_out_date ? formatDate(address.move_out_date) : ""}
+              </dd>
             </div>
           </dl>
           <button
