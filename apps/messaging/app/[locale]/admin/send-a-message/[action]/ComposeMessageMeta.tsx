@@ -6,7 +6,6 @@ import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 
 export default async (props: MessageCreateProps) => {
-  console.log(JSON.stringify(headers()));
   const t = await getTranslations("sendAMessage.ComposeMessageMeta");
   async function submit(formData: FormData) {
     "use server";

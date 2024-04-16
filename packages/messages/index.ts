@@ -159,12 +159,6 @@ export const mailApi = {
           pass: password,
         },
       });
-      console.log("Vi forsoker skicka mail", {
-        fromAddress,
-        recipients,
-        subject,
-        body,
-      });
 
       return transporter.sendMail({
         from: fromAddress, // "noreply@dev.blocks.gov.ie", //username,
