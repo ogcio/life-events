@@ -1,50 +1,62 @@
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
-import OpenBankingFields from "./OpenBankingFields";
+import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 import { Payments } from "building-blocks-sdk";
+import getRequestConfig from "../../../../../../i18n";
+import { getValidationErrors } from "../../../../../utils";
+import OpenBankingForm from "./OpenBankingForm";
 
-export default async () => {
+type Props = {
+  params: {
+    locale: string;
+  };
+};
+
+export default async (props: Props) => {
   const t = await getTranslations("PaymentSetup.AddOpenbanking");
+  const { messages } = await getRequestConfig({ locale: props.params.locale });
 
   const { userId } = await PgSessions.get();
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(
+    prevState: FormData,
+    formData: FormData,
+  ): Promise<{
+    errors: {
+      [key: string]: string;
+    };
+  }> {
     "use server";
+    const validation = {
+      errors: {},
+    };
 
-    try {
-      const res = await new Payments(userId).createOpenBankingProvider({
-        name: formData.get("provider_name") as string,
-        type: "openbanking",
-        data: {
-          iban: (formData.get("iban") as string).replaceAll(" ", ""),
-          accountHolderName: formData.get("account_holder_name") as string,
-        },
-      });
-      console.log("TTTTTTTTTT");
-      console.log("userid", userId);
-      console.log(JSON.stringify(res));
-    } catch (err) {
-      console.log(err);
+    const result = await new Payments(userId).createOpenBankingProvider({
+      name: formData.get("provider_name") as string,
+      type: "openbanking",
+      data: {
+        iban: (formData.get("iban") as string).replaceAll(" ", ""),
+        accountHolderName: formData.get("account_holder_name") as string,
+      },
+    });
+
+    if (result.data && !result.error) {
+      redirect("./");
     }
 
-    // redirect("./");
+    if (result.error.validation) {
+      validation.errors = getValidationErrors(result.error.validation);
+    }
+
+    return validation;
   }
 
   return (
-    <form action={handleSubmit}>
-      <legend className="govie-fieldset__legend govie-fieldset__legend--m">
-        <h1 className="govie-fieldset__heading">{t("title")}</h1>
-      </legend>
-      <OpenBankingFields />
-      <button
-        id="button"
-        type="submit"
-        data-module="govie-button"
-        className="govie-button"
-      >
-        {t("confirm")}
-      </button>
-    </form>
+    <NextIntlClientProvider
+      messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
+    >
+      <OpenBankingForm action={handleSubmit} />
+    </NextIntlClientProvider>
   );
 };
