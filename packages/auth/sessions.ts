@@ -146,7 +146,7 @@ export async function getUsers() {
     .then((res) => res.rows);
 }
 
-export async function getUsersFor(ids: string[]) {
+export async function getUsersForIds(ids: string[]) {
   const args = ids.map((_, i) => `$${i + 1}`).join(", ");
 
   return pgpool

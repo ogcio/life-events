@@ -3,7 +3,7 @@ import { send as twilioSend } from "./strategies/twilio/index";
 import nodemailer from "nodemailer";
 import { TableMessage } from "./types/mesages";
 import { randomUUID } from "crypto";
-import { PgSessions, getUsersFor } from "auth/sessions";
+import { PgSessions, getUsersForIds } from "auth/sessions";
 // In case we need to do it, we can replace this with another provider
 // We just need to keep the same SendEmail interface
 export const send = twilioSend;
@@ -365,7 +365,7 @@ export const apistub = {
        * We can also use "high" "medium" "low" and forever be stuck with three options. Hard to extend naturally.. "medium-high", "almost-low" ?
        */
 
-      const users = await getUsersFor(body.userIds);
+      const users = await getUsersForIds(body.userIds);
 
       if (!Boolean(users?.length)) {
         // 4/500?
@@ -532,7 +532,6 @@ export const apistub = {
               ? utils.postgresArrayify(body.preferredTransports)
               : null,
           ];
-          console.log("kompis?", values);
 
           const valuesSize = values.length;
 
@@ -591,7 +590,7 @@ export const apistub = {
             values ${valuesByLang[lang].args.map((arr) => `(${arr.join(", ")})`).join(", ")}
           `;
 
-            await pgpool.query(messageQuery, valuesByLang[lang].values);
+            await client.query(messageQuery, valuesByLang[lang].values);
           }
           await client.query("COMMIT");
         } catch (err) {
