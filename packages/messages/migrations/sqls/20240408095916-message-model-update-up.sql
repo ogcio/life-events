@@ -1,8 +1,8 @@
 /* Replace with your SQL commands */
 
 drop table messages;
-drop table email_templates;
 drop table email_template_translations;
+drop table email_templates;
 
 
 create table messages (
