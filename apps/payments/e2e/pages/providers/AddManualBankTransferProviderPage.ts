@@ -9,7 +9,10 @@ export class AddManualBankTransferProviderPage {
   private readonly confirmButton: Locator;
 
   constructor(public readonly page: Page) {
-    this.nameInput = this.page.getByRole("textbox", { name: /Name/ });
+    this.nameInput = this.page.getByRole("textbox", {
+      name: "Name",
+      exact: true,
+    });
     this.accountHolderNameInput = this.page.getByRole("textbox", {
       name: "Bank account holder name",
     });
