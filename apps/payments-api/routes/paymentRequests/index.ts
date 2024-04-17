@@ -8,7 +8,7 @@ import {
   PaymentRequest,
   PaymentRequestDetails,
   Transaction,
-} from "../../types/schemaDefinitions";
+} from "../schemas";
 
 export default async function paymentRequests(app: FastifyInstance) {
   app.get<{ Reply: PaymentRequest[] }>(
