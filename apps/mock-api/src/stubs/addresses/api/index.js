@@ -1,7 +1,8 @@
 import { faker } from "@faker-js/faker";
 
-const addresses = [...new Array(5000)].map(() =>
-  faker.location.streetAddress({ useFullAddress: true }),
+const addresses = [...new Array(5000)].map(
+  () =>
+    `${faker.location.streetAddress({ useFullAddress: true })}, ${faker.location.city()}, ${faker.location.county()}, ${faker.location.zipCode()}`,
 );
 
 export default async function (app) {

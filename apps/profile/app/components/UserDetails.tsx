@@ -94,7 +94,7 @@ async function submitAction(formData: FormData) {
     await postgres.pgpool.query(
       `
         UPDATE user_details
-        SET ${setClause}
+        SET ${setClause}, updated_at = now()
         WHERE user_id = $${keys.length + 1}
       `,
       [...values, userId],
@@ -183,7 +183,7 @@ export default async () => {
       await postgres.pgpool.query(
         `
             UPDATE user_details
-            SET ppsn_visible = $1
+            SET ppsn_visible = $1, updated_at = now()
             WHERE user_id = $2
           `,
         [!isPPSNVisible, userId],
@@ -482,14 +482,6 @@ export default async () => {
           style={{ marginBottom: 0 }}
         >
           {t("save")}
-        </button>
-        <button
-          type="button"
-          data-module="govie-button"
-          className="govie-button govie-button--secondary"
-          style={{ marginBottom: 0 }}
-        >
-          {t("cancel")}
         </button>
       </div>
     </form>
