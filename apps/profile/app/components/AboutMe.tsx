@@ -6,7 +6,7 @@ import Entitlements from "./Entitlements";
 import Consent from "./Consent";
 
 const Line = () => (
-  <hr style={{ marginBottom: "30px", color: ds.colours.ogcio.midGrey }} />
+  <hr className="govie-section-break govie-section-break--visible govie-section-break--l"></hr>
 );
 
 export default async () => {

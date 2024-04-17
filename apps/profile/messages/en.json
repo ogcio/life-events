@@ -116,7 +116,7 @@
   },
   "NotFound": {
     "title": "Not Found",
-    "description": " Sorry, the requested resource could not be found",
+    "description": "Sorry, the requested resource could not be found",
     "return-home": "Return Home"
   },
   "DrivingLicenceDetails": {
