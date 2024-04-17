@@ -11,7 +11,22 @@
     "invalidField": "Enter {indArticleCheck, select, an {an} other {a}} valid {field}",
     "fields": {
       "email": "email address",
-      "phone": "phone number"
+      "phone": "phone number",
+      "address": "address",
+      "addressFirstLine": "address first line",
+      "addressSecondLine": "address second line",
+      "town": "town",
+      "eirecode": "eirecode",
+      "county": "county",
+      "day": "day",
+      "month": "month",
+      "year": "year",
+      "moveInDay": "day",
+      "moveInMonth": "month",
+      "moveInYear": "year",
+      "moveOutDay": "day",
+      "moveOutMonth": "month",
+      "moveOutYear": "year"
     }
   },
   "AboutMe": {
@@ -45,11 +60,23 @@
   "Addresses": {
     "addresses": "Addresses",
     "addAddress": "Add new address",
-    "noAddresses": "No addresses available"
+    "noAddresses": "No addresses available",
+    "lastUpdated": "Last updated",
+    "edit": "Edit",
+    "remove": "Remove"
   },
   "Entitlements": {
     "entitlements": "Entitlements",
-    "noEntitlements": "No entitlements available"
+    "noEntitlements": "No entitlements available",
+    "drivingLicence": "Driving Licence",
+    "birthCertificate": "Birth Certificate",
+    "drivingLicence-number": "Licence number",
+    "birthCertificate-number": "Birth Certificate number",
+    "firstName": "First Name(s)",
+    "lastName": "Last Name(s)",
+    "issueDate": "Issue date",
+    "expiryDate": "Expiration date",
+    "view": "View"
   },
   "Consent": {
     "preFillFormData": "Pre-fill form data",
@@ -58,5 +85,61 @@
     "dvaText": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     "save": "Save changes",
     "cancel": "Cancel"
+  },
+  "AddressForm": {
+    "newAddress": "Enter your new address",
+    "addressSearchTitle": "Address search",
+    "searchHint": "Enter an Eircode or street (for example, F91 DK74 or Ballincar Heights)",
+    "findAddress": "Find address",
+    "error": "Error",
+    "notListedTextLink": "Address not listed - Enter manually",
+    "selectHint": "Choose your address from the drop-down list",
+    "continueWithAddress": "Continue with this address",
+    "firstLineOfAddress": "Address line 1",
+    "secondLineOfAddress": "Address line 2",
+    "town": "Town",
+    "county": "County",
+    "eirecode": "Eirecode",
+    "back": "Back",
+    "confirmRemoveAddress": "Are you sure you want to remove the address below?",
+    "remove": "Remove address",
+    "editAddress": "Edit address",
+    "save": "Save",
+    "saveChanges": " Save changes",
+    "cancel": "Cancel",
+    "selectDatesFormTitle": "Select your move in and move out dates",
+    "moveInDate": "Move in date",
+    "moveOutDate": "Move out date",
+    "day": "Day",
+    "month": "Month",
+    "year": "Year"
+  },
+  "NotFound": {
+    "title": "Not Found",
+    "description": "Sorry, the requested resource could not be found",
+    "return-home": "Return Home"
+  },
+  "DrivingLicenceDetails": {
+    "title": "Driving licence details",
+    "name": "Name",
+    "datePlaceOfBirth": "Date and Place of Birth",
+    "issueDate": "Date of issue",
+    "expiryDate": "Date of expiry",
+    "issuedBy": "Issued by",
+    "driverNumber": "Driver number",
+    "licenceNumber": "Licence number",
+    "address": "Address",
+    "vehicleCategories": "Vehicle categories",
+    "back": "Back"
+  },
+  "BirthCertificateDetails": {
+    "title": "Birth certificate details",
+    "name": "Name",
+    "dateOfBirth": "Date of birth",
+    "placeOfBirth": "Place of birth",
+    "issueDate": "Date of issue",
+    "motherName": "Mother's name",
+    "certificateNumber": "Certificate number",
+    "back": "Back"
   }
 }
