@@ -5,8 +5,7 @@ import { PgSessions } from "auth/sessions";
 export default async () => {
   const { publicServant } = await PgSessions.get();
 
-  if (publicServant)
-    return redirect(routeDefinitions.paymentSetup.slug, RedirectType.replace);
+  if (!publicServant) return notFound();
 
-  return notFound();
+  return redirect(routeDefinitions.paymentSetup.slug, RedirectType.replace);
 };
