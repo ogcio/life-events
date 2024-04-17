@@ -16,7 +16,7 @@ export default async () => {
   const t = await getTranslations("Addresses");
   const { userId } = await PgSessions.get();
 
-  const { data: addresses = [] } = await new Profile(userId).getAddresses();
+  const { data: addresses } = await new Profile(userId).getAddresses();
 
   // Addresses sorted by move in date or updated at date if move in date not set
   const sortByDates = (a: Address, b: Address) => {
