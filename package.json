@@ -21,7 +21,7 @@
     "migrate": "npm run migrate --workspace=web && npm run migrate --workspace=payments && npm run migrate --workspace=messages && npm run migrate --workspace=profile",
     "migrate:web": "npm run migrate --workspace=web",
     "migrate:payments": "npm run migrate --workspace=payments",
-    "migrate:messages": "npm run migrate --workspace=messages",
+    "migrate:messaging": "npm run migrate --workspace=messages",
     "migrate:profile": "npm run migrate --workspace=profile",
     "start:docs": "cd documentation && npm run start",
     "kill-services": "sudo lsof -ti:8000,8001,3000,3001,3002,3003 | xargs sudo kill -9"

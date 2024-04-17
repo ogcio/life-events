@@ -1,19 +1,25 @@
 import { redirect } from "next/navigation";
-import BankTransferFields from "../add-banktransfer/BankTransferFields";
-import EditProviderForm from "./EditProviderForm";
 import type { BankTransferProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import buildApiClient from "../../../../../../client/index";
+import getRequestConfig from "../../../../../../i18n";
+import BankTransferForm from "../add-banktransfer/BankTransferForm";
+import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 
 type Props = {
   provider: BankTransferProvider;
+  locale: string;
 };
 
-export default async ({ provider }: Props) => {
+export default async ({ provider, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddBankTransfer");
+  const { messages } = await getRequestConfig({ locale });
 
-  async function updateProvider(formData: FormData) {
+  async function updateProvider(
+    prev: FormData,
+    formData: FormData,
+  ): Promise<{ errors: { [key: string]: string } }> {
     "use server";
 
     const { userId } = await PgSessions.get();
@@ -39,13 +45,17 @@ export default async ({ provider }: Props) => {
   }
 
   return (
-    <EditProviderForm provider={provider} updateProviderAction={updateProvider}>
-      <h1 className="govie-heading-l">{t("editTitle")}</h1>
-      <BankTransferFields
-        providerName={provider.name}
-        accountHolderName={provider.data.accountHolderName}
-        iban={provider.data.iban}
+    <NextIntlClientProvider
+      messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
+    >
+      <BankTransferForm
+        action={updateProvider}
+        defaultState={{
+          providerName: provider.name,
+          accountHolderName: provider.data.accountHolderName,
+          iban: provider.data.iban,
+        }}
       />
-    </EditProviderForm>
+    </NextIntlClientProvider>
   );
 };

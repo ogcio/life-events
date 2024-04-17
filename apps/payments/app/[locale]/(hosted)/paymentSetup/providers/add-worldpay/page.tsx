@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
-import buildApiClient from "../../../../../../client/index";
+import { Payments } from "building-blocks-sdk";
 import WorldpayFields from "./WorldpayFields";
 
 export default async () => {
@@ -12,12 +12,12 @@ export default async () => {
   async function handleSubmit(formData: FormData) {
     "use server";
 
-    await buildApiClient(userId).providers.apiV1ProvidersPost({
+    await new Payments(userId).createWorldpayProvider({
       name: formData.get("provider_name") as string,
       type: "worldpay",
       data: {
-        merchantCode: formData.get("merchant_code"),
-        installationId: formData.get("installation_id"),
+        merchantCode: formData.get("merchant_code") as string,
+        installationId: formData.get("installation_id") as string,
       },
     });
 

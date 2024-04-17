@@ -31,3 +31,17 @@ export const getRealAmount = ({
 
   return amount;
 };
+
+export const getValidationErrors = (
+  validations: any[],
+): Record<string, string> => {
+  return validations.reduce((errors, validation) => {
+    switch (validation.keyword) {
+      case "invalid": {
+        errors[validation.params.field] = validation.message;
+      }
+    }
+
+    return errors;
+  }, {});
+};
