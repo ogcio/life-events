@@ -11,9 +11,10 @@
   },
   "scripts": {
     "build:ds": "npm run build --workspace=design-system",
+    "init-env": "node scripts/init-env.mjs",
     "start:services": "concurrently --kill-others \"npm run dev --workspace=mock-api\" \"npm run dev --workspace=web\" \"npm run dev --workspace=payments\" \"npm run dev --workspace=messaging\" \"npm run dev --workspace=payments-api\" \"npm run dev --workspace=profile\" \"npm run dev --workspace=profile-api\"",
     "start:docker": "docker-compose down &&  DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans -d",
-    "start": "npm run start:docker && concurrently \"npm run start:services\" \"sleep 5 && npm run migrate\"",
+    "start": "npm run init-env && npm run start:docker && concurrently \"npm run start:services\" \"sleep 5 && npm run migrate\"",
     "reset-docker": "docker-compose down && docker system prune -a -f && docker builder prune -f && docker image prune -f",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "(command -v husky && husky) || true",
