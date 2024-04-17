@@ -9,10 +9,11 @@ import buildApiClient from "../../../../../../client/index";
 type Props = {
   params: {
     providerId: string;
+    locale: string;
   };
 };
 
-export default async ({ params: { providerId } }: Props) => {
+export default async ({ params: { providerId, locale } }: Props) => {
   const { userId } = await PgSessions.get();
   let provider;
   try {
@@ -34,7 +35,7 @@ export default async ({ params: { providerId } }: Props) => {
   }
 
   if (provider.type === "banktransfer") {
-    return <EditBankTransferForm provider={provider} />;
+    return <EditBankTransferForm provider={provider} locale={locale} />;
   }
 
   if (provider.type === "stripe") {
