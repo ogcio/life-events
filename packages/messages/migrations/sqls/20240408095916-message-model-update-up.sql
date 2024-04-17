@@ -56,5 +56,6 @@ create table message_template_contents (
 create table message_template_variables (
     template_meta_id uuid not null,
     field_name text not null,
-    field_type text not null
+    field_type text not null,
+    primary key(template_meta_id, field_name)
 );
