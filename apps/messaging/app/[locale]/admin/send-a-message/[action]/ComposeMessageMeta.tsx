@@ -1,20 +1,20 @@
 import dayjs from "dayjs";
-import { api } from "messages";
+import { api, apistub } from "messages";
 import { revalidatePath } from "next/cache";
-import { MessageCreateProps } from "../../../../utils/messaging";
-import { useTranslations } from "next-intl";
+import { MessageCreateProps, MessageType } from "../../../../utils/messaging";
+import { getTranslations } from "next-intl/server";
+import { headers } from "next/headers";
 
-export default (props: MessageCreateProps) => {
-  const t = useTranslations("sendAMessage.ComposeMessageMeta");
+export default async (props: MessageCreateProps) => {
+  const t = await getTranslations("sendAMessage.ComposeMessageMeta");
   async function submit(formData: FormData) {
     "use server";
 
-    const transportations: string[] = [];
+    const preferredTransportations: string[] = [];
 
-    // Let's omit the choice until we have a more fine grained specification what happens if you just want to send a message within the message block
-    // if (Boolean(formData.get("email"))) {
-    transportations.push("email");
-    // }
+    if (Boolean(formData.get("email"))) {
+      preferredTransportations.push("email");
+    }
 
     const messageType = formData.get("messageType")?.toString();
     if (!messageType) {
@@ -24,8 +24,9 @@ export default (props: MessageCreateProps) => {
     await api.upsertMessageState(
       Object.assign({}, props.state, {
         submittedMetaAt: dayjs().toISOString(),
-        transportations,
+        transportations: preferredTransportations,
         messageType,
+        templateMetaId: formData.get("templateMetaId")?.toString(),
       }),
       props.userId,
       props.stateId,
@@ -33,6 +34,10 @@ export default (props: MessageCreateProps) => {
 
     revalidatePath("/");
   }
+
+  const templates = await apistub.templates.getAll(
+    headers().get("x-next-intl-locale") ?? "en",
+  );
 
   return (
     <form action={submit}>
@@ -109,37 +114,64 @@ export default (props: MessageCreateProps) => {
         <div className="govie-radios govie-radios--small ">
           <div className="govie-radios__item">
             <input
-              id="message"
+              id={MessageType.Message}
               name="messageType"
               type="radio"
-              value="message"
+              value={MessageType.Message}
               className="govie-radios__input"
-              defaultChecked
+              defaultChecked={
+                !props.state.messageType ||
+                props.state.messageType === MessageType.Message
+              }
             />
             <label
               className="govie-label--s govie-radios__label"
-              htmlFor="message"
+              htmlFor={MessageType.Message}
             >
               {t("message")}
             </label>
           </div>
           <div className="govie-radios__item">
             <input
-              id="event"
+              id={MessageType.Event}
               name="messageType"
               type="radio"
-              value="event"
+              value={MessageType.Event}
               className="govie-radios__input"
+              defaultChecked={props.state.messageType === MessageType.Event}
             />
             <label
               className="govie-label--s govie-radios__label"
-              htmlFor="event"
+              htmlFor={MessageType.Event}
             >
               {t("event")}
             </label>
           </div>
         </div>
       </div>
+
+      <hr />
+
+      {Boolean(templates.length) ? (
+        <div className="govie-form-group">
+          <h3>
+            <span className="govie-heading-s">
+              {t("chooseTemplateHeading")}
+            </span>
+          </h3>
+          <select className="govie-select" name="templateMetaId">
+            <option value="">{t("emptyTemplateOption")}</option>
+            {templates.map((template) => (
+              <option
+                key={template.templateMetaId}
+                value={template.templateMetaId}
+              >
+                {template.templateName}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
 
       <button className="govie-button" type="submit">
         {t("submitText")}

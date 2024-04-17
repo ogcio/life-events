@@ -1,34 +1,112 @@
 import { Static, Type } from "@sinclair/typebox";
 
 /**
+ * Provider Data types
+ */
+
+export const OpenBankingData = Type.Object({
+  iban: Type.String({ validator: "IBANValidator" }),
+  accountHolderName: Type.String(),
+});
+export type OpenBankingData = Static<typeof OpenBankingData>;
+
+export const BankTransferData = Type.Object({
+  iban: Type.String({ validator: "IBANValidator" }),
+  accountHolderName: Type.String(),
+});
+export type BankTransferData = Static<typeof BankTransferData>;
+
+export const StripeData = Type.Object({
+  livePublishableKey: Type.String(),
+  liveSecretKey: Type.String(),
+});
+export type StripeData = Static<typeof StripeData>;
+
+export const WorldpayData = Type.Object({
+  merchantCode: Type.String(),
+  installationId: Type.String(),
+});
+export type WorldpayData = Static<typeof WorldpayData>;
+
+/**
  * Providers types
  */
 
+export const BankTransferProvider = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  type: Type.Literal("banktransfer"),
+  data: BankTransferData,
+  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+});
+
+export const OpenBankingProvider = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  type: Type.Literal("openbanking"),
+  data: OpenBankingData,
+  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+});
+
+export const StripeProvider = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  type: Type.Literal("stripe"),
+  data: StripeData,
+  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+});
+
+export const WorldpayProvider = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  type: Type.Literal("worldpay"),
+  data: WorldpayData,
+  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+});
+
 export const Provider = Type.Union([
-  Type.Object({
-    id: Type.String(),
-    name: Type.String(),
-    type: Type.Union([
-      Type.Literal("banktransfer"),
-      Type.Literal("openbanking"),
-      Type.Literal("stripe"),
-    ]),
-    data: Type.Any(),
-    status: Type.Union([
-      Type.Literal("connected"),
-      Type.Literal("disconnected"),
-    ]),
-  }),
+  BankTransferProvider,
+  OpenBankingProvider,
+  StripeProvider,
+  WorldpayProvider,
 ]);
 export type Provider = Static<typeof Provider>;
 
-export const CreateProvider = Type.Omit(Provider, ["id", "status"]);
-export type CreateProvider = Static<typeof CreateProvider>;
+export const CreateBankTransferProvider = Type.Omit(BankTransferProvider, [
+  "id",
+  "status",
+]);
+export type CreateBankTransferProvider = Static<
+  typeof CreateBankTransferProvider
+>;
+
+export const CreateOpenBankingProvider = Type.Omit(OpenBankingProvider, [
+  "id",
+  "status",
+]);
+export type CreateOpenBankingProvider = Static<
+  typeof CreateOpenBankingProvider
+>;
+
+export const CreateStripeProvider = Type.Omit(StripeProvider, ["id", "status"]);
+export type CreateStripeProvider = Static<typeof CreateStripeProvider>;
+
+export const CreateWorldpayProvider = Type.Omit(WorldpayProvider, [
+  "id",
+  "status",
+]);
+export type CreateWorldpayProvider = Static<typeof CreateWorldpayProvider>;
 
 export const ProvidersList = Type.Union([Type.Array(Provider)]);
 export type ProvidersList = Static<typeof ProvidersList>;
 
-export const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
+// TEMPORARILY CREATE NEW TYPE WITHOUT VALIDATIONS.
+export const UpdateProvider = Type.Object({
+  name: Type.String(),
+  data: Type.Object({}),
+  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+});
+// export const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
 export type UpdateProvider = Static<typeof UpdateProvider>;
 
 export const ParamsWithProviderId = Type.Object({

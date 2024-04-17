@@ -4,10 +4,9 @@ import {
   CreateTransactionBody,
   ParamsWithTransactionId,
   TransactionDetails,
-  TransactionStatuses,
   TransactionStatusesEnum,
   UpdateTransactionBody,
-} from "../../types/schemaDefinitions";
+} from "../schemas";
 import { Type } from "@sinclair/typebox";
 
 export default async function transactions(app: FastifyInstance) {
