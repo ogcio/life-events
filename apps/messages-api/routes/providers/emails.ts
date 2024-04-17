@@ -1,8 +1,7 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { EmailProvider, mailService } from "./services";
-import { OurHttpError } from "../../tmp_utils";
-import { apiError } from "../../utils";
+import { buildApiError } from "../../utils";
 
 const tags = ["Providers - Emails"];
 
@@ -75,20 +74,25 @@ export default async function emails(app: FastifyInstance) {
           200: Type.Object({
             data: EmailProviderType,
           }),
+          404: { $ref: "HttpError" },
           500: { $ref: "HttpError" },
         },
       },
     },
     async function handler(request, reply) {
-      const data = await _mailService.getProvider(request.params.providerId);
-      if (!data) {
-        reply.statusCode = 500;
-        return {
-          statusCode: 500,
-          message: "failed to get email provider",
-        };
+      try {
+        const data = await _mailService.getProvider(request.params.providerId);
+        if (!data) {
+          const error = buildApiError("email provider not found", 404);
+          reply.statusCode = error.statusCode;
+          return error;
+        }
+        return { data };
+      } catch (err) {
+        app.log.error(err);
+        const error = buildApiError("failed to get email provider", 500);
+        return error;
       }
-      return { data };
     },
   );
   app.post<CreateEmailProvider>(
@@ -111,10 +115,7 @@ export default async function emails(app: FastifyInstance) {
     async function handler(request, reply) {
       const id = await _mailService.createProvider(request.body);
       if (!id) {
-        const error: OurHttpError = {
-          message: "failed to create provider",
-          statusCode: 500,
-        };
+        const error = buildApiError("failed to create provider", 500);
         reply.statusCode = error.statusCode;
         return error;
       }
@@ -138,10 +139,7 @@ export default async function emails(app: FastifyInstance) {
         await _mailService.updateProvier(request.body);
       } catch (err) {
         app.log.error(err);
-        const error: OurHttpError = {
-          message: "failed to update email provider",
-          statusCode: 500,
-        };
+        const error = buildApiError("failed to update email provider", 500);
         reply.statusCode = error.statusCode;
         return error;
       }
@@ -164,7 +162,7 @@ export default async function emails(app: FastifyInstance) {
         await _mailService.deleteProvider(request.params.providerId);
       } catch (err) {
         app.log.error(err);
-        const error = apiError("failed to delete provider", 500);
+        const error = buildApiError("failed to delete provider", 500);
         reply.statusCode = error.statusCode;
         return error;
       }

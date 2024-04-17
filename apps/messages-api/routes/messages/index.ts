@@ -47,9 +47,11 @@ export default async function messages(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Messages"],
-        querystring: Type.Object({
-          type: Type.Optional(Type.String()),
-        }),
+        querystring: Type.Optional(
+          Type.Object({
+            type: Type.Optional(Type.String()),
+          }),
+        ),
         response: {
           200: Type.Object({
             data: Type.Array(
@@ -66,7 +68,7 @@ export default async function messages(app: FastifyInstance) {
               }),
             ),
           }),
-          400: HttpError,
+          400: { $ref: "HttpError" },
         },
       },
     },
@@ -226,6 +228,15 @@ export default async function messages(app: FastifyInstance) {
               paymentRequestId: Type.Optional(Type.String({ format: "uuid" })),
             }),
           ),
+          template: Type.Optional(
+            Type.Object({
+              id: Type.String({ format: "uuid" }),
+              interpolations: Type.Record(Type.String(), Type.String()),
+            }),
+          ),
+          preferredTransports: Type.Array(Type.String()),
+          userIds: Type.Array(Type.String({ format: "uuid" })),
+          security: Type.String(),
         }),
         response: {
           "4xx": { $ref: "HttpError" },

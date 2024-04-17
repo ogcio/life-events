@@ -44,11 +44,87 @@ export class Messages {
     });
   }
 
-  // async createMessage(data: paths["/api/v1/messages/"]["post"]) {
-  //   return formatQueryResult(
-  //     this.client.POST("/api/v1/messages/", {
-  //       body: data,
-  //     }),
-  //   );
-  // }
+  async createMessage(
+    data: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/messages/", {
+        body: data,
+      }),
+    );
+  }
+
+  async getTemplates(
+    lang?: paths["/api/v1/templates/"]["get"]["parameters"]["query"]["lang"],
+  ) {
+    return this.client.GET("/api/v1/templates/", {
+      params: { query: { lang: lang ?? "en" } },
+    });
+  }
+
+  async getTemplate(
+    params: paths["/api/v1/templates/{templateId}"]["get"]["parameters"],
+  ) {
+    return this.client.GET("/api/v1/templates/{templateId}", { params });
+  }
+
+  async createTemplate(
+    body: paths["/api/v1/templates/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return this.client.POST("/api/v1/templates/", { body });
+  }
+
+  async updateTemplate(
+    templateId: paths["/api/v1/templates/{templateId}"]["put"]["parameters"]["path"]["templateId"],
+    body: paths["/api/v1/templates/{templateId}"]["put"]["requestBody"]["content"]["application/json"],
+  ) {
+    return this.client.PUT("/api/v1/templates/{templateId}", {
+      params: { path: { templateId } },
+      body,
+    });
+  }
+
+  async deleteTemplate(
+    templateId: paths["/api/v1/templates/{templateId}"]["delete"]["parameters"]["path"]["templateId"],
+  ) {
+    return this.client.DELETE("/api/v1/templates/{templateId}", {
+      params: { path: { templateId } },
+    });
+  }
+
+  async getEmailProviders() {
+    return this.client.GET("/api/v1/providers/emails/");
+  }
+
+  async getEmailProvider(
+    providerId: paths["/api/v1/providers/emails/{providerId}"]["get"]["parameters"]["path"]["providerId"],
+  ) {
+    return this.client.GET("/api/v1/providers/emails/{providerId}", {
+      params: { path: { providerId } },
+    });
+  }
+
+  async createEmailProvider(
+    body: paths["/api/v1/providers/emails/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return this.client.POST("/api/v1/providers/emails/", { body });
+  }
+
+  async updateEmailProvider(
+    providerId: paths["/api/v1/providers/emails/{providerId}"]["put"]["parameters"]["path"]["providerId"],
+    body: paths["/api/v1/providers/emails/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
+  ) {
+    return this.client.PUT("/api/v1/providers/emails/{providerId}", {
+      params: { path: { providerId } },
+      body,
+    });
+  }
+
+  async deleteEmailProvider(
+    providerId: paths["/api/v1/providers/emails/{providerId}"]["delete"]["parameters"]["path"]["providerId"],
+  ) {
+    return this.client.DELETE("/api/v1/providers/emails/{providerId}", {
+      params: { path: { providerId } },
+    });
+  }
 }

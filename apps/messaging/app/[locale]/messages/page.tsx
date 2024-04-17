@@ -1,17 +1,16 @@
 import { PgSessions } from "auth/sessions";
-import { api, apistub } from "messages";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import ds from "design-system";
+import { Messages } from "building-blocks-sdk";
 
 export default async (props: { searchParams: any }) => {
   const t = await getTranslations("Messages");
-  const { email, userId } = await PgSessions.get();
-  const params = new URLSearchParams(props.searchParams);
+  const { userId } = await PgSessions.get();
 
-  const messages = await apistub.messages.getAll(userId);
+  const { data: messages } = await new Messages(userId).getMessages();
 
   async function searchAction(formData: FormData) {
     "use server";
@@ -66,7 +65,7 @@ export default async (props: { searchParams: any }) => {
           </tr>
         </thead>
         <tbody className="govie-table__body">
-          {messages.map((msg) => (
+          {messages?.data?.map((msg) => (
             <tr key={msg.id} className="govie-table__row">
               <th
                 className="govie-table__cell govie-!-font-weight-regular"

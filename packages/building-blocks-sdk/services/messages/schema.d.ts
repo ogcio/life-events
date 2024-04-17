@@ -43,19 +43,13 @@ export interface paths {
         /** @description Default Response */
         400: {
           content: {
-            "application/json": {
-              statusCode: number;
-              code: string;
-              error: string;
-              message: string;
-              time: string;
-            };
+            "application/json": components["schemas"]["def-0"];
           };
         };
       };
     };
     post: {
-      requestBody?: {
+      requestBody: {
         content: {
           "application/json": {
             message?: {
@@ -69,6 +63,16 @@ export interface paths {
               /** Format: uuid */
               paymentRequestId?: string;
             };
+            template?: {
+              /** Format: uuid */
+              id: string;
+              interpolations: {
+                [key: string]: string;
+              };
+            };
+            preferredTransports: string[];
+            userIds: string[];
+            security: string;
           };
         };
       };
@@ -122,6 +126,289 @@ export interface paths {
           content: {
             "application/json": components["schemas"]["def-0"];
           };
+        };
+      };
+    };
+  };
+  "/api/v1/providers/emails/": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                host: string;
+                port: number;
+                username: string;
+                password: string;
+                throttle?: number;
+                fromAddress: string;
+              }[];
+            };
+          };
+        };
+      };
+    };
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            host: string;
+            port: number;
+            username: string;
+            password: string;
+            throttle?: number;
+            fromAddress: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        201: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/providers/emails/{providerId}": {
+    get: {
+      parameters: {
+        path: {
+          providerId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                host: string;
+                port: number;
+                username: string;
+                password: string;
+                throttle?: number;
+                fromAddress: string;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        path: {
+          providerId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            host: string;
+            port: number;
+            username: string;
+            password: string;
+            throttle?: number;
+            fromAddress: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        path: {
+          providerId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/templates/": {
+    get: {
+      parameters: {
+        query: {
+          lang: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                templateMetaId: string;
+                lang: string;
+                templateName: string;
+              }[];
+            };
+          };
+        };
+      };
+    };
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            contents: {
+              templateName: string;
+              lang: string;
+              subject: string;
+              excerpt: string;
+              plainText: string;
+              richText: string;
+            }[];
+            variables: {
+              name: string;
+              type: string;
+            }[];
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        201: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/templates/{templateId}": {
+    get: {
+      parameters: {
+        query: {
+          lang: string;
+        };
+        path: {
+          templateId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                templateName: string;
+                subject: string;
+                excerpt: string;
+                plainText: string;
+                richText: string;
+                fields: {
+                  fieldName: string;
+                  fieldType: string;
+                }[];
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        path: {
+          templateId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            contents: {
+              /** Format: uuid */
+              id: string;
+              templateName: string;
+              lang: string;
+              subject: string;
+              excerpt: string;
+              plainText: string;
+              richText: string;
+            }[];
+            variables: {
+              name: string;
+              type: string;
+            }[];
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        path: {
+          templateId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
         };
       };
     };

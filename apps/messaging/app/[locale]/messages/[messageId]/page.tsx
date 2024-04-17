@@ -1,12 +1,20 @@
 import { PgSessions } from "auth/sessions";
-import { apistub } from "messages";
+import { Messages } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 export default async (props: { params: { messageId: string } }) => {
   const t = await getTranslations("Message");
-  const message = await apistub.messages.getOne(props.params.messageId);
-  if (!message) {
+
+  const { userId } = await PgSessions.get();
+
+  const { data, error } = await new Messages(userId).getMessage(
+    props.params.messageId,
+  );
+
+  const message = data?.data;
+
+  if (error || !message) {
     throw notFound();
   }
 
@@ -19,10 +27,9 @@ export default async (props: { params: { messageId: string } }) => {
     );
   }
 
-  const { userId } = await PgSessions.get();
-
   let paymentUrl: URL | undefined;
   let didPayThePayment = false;
+
   if (message.paymentRequestId) {
     paymentUrl = new URL("en/paymentRequest/pay", process.env.PAYMENTS_URL);
     paymentUrl.searchParams.append("id", userId);
