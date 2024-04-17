@@ -3,11 +3,11 @@ FROM base-deps as deps
 WORKDIR /app
 
 COPY ./package*.json /app/
-COPY ./apps/messages-api/package*.json /app/apps/messages-api/
+COPY ./apps/messaging-api/package*.json /app/apps/messaging-api/
 
 RUN npm ci
 
-COPY ./apps/messages-api/ /app/apps/messages-api/
+COPY ./apps/messaging-api/ /app/apps/messaging-api/
 
 FROM deps AS builder
 WORKDIR /app
@@ -17,4 +17,4 @@ ENV LOG_LEVEL=trace
 
 EXPOSE 8001
 
-CMD [ "npm", "--prefix", "apps/messages-api",  "run", "dev" ]
+CMD [ "npm", "--prefix", "apps/messaging-api",  "run", "dev" ]
