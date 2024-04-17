@@ -65,7 +65,7 @@ export default async (props: { searchParams: any }) => {
           </tr>
         </thead>
         <tbody className="govie-table__body">
-          {messages?.data?.map((msg) => (
+          {messages?.map((msg) => (
             <tr key={msg.id} className="govie-table__row">
               <th
                 className="govie-table__cell govie-!-font-weight-regular"

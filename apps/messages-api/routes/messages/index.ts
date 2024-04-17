@@ -4,6 +4,7 @@ import { HttpError } from "../../types/httpErrors";
 import { OurHttpError, utils } from "../../tmp_utils";
 import { randomUUID } from "crypto";
 import { mailService } from "../providers/services";
+import { organisationId } from "../../utils";
 
 interface GetAllMessages {
   Querystring: {
@@ -245,7 +246,8 @@ export default async function messages(app: FastifyInstance) {
       },
     },
     async function handler(request, reply) {
-      const { message, template, preferredTransports, security } = request.body;
+      const { message, template, preferredTransports, security, userIds } =
+        request.body;
       if (!message && !template) {
         reply.statusCode = 400;
         return {
@@ -253,10 +255,6 @@ export default async function messages(app: FastifyInstance) {
           message: "body must contain either a message or a template object",
         };
       }
-
-      // Temp variables
-      const users = ["8bbad040-cc08-432c-82de-c6341d4b5ff9"];
-      const organisationId = randomUUID().toString();
 
       let mailSubject: string | undefined;
       let mailBody: string | undefined;
@@ -296,7 +294,7 @@ export default async function messages(app: FastifyInstance) {
         const originalValueSize = values.length;
 
         let i = originalValueSize + 1;
-        for (const userId of users) {
+        for (const userId of userIds) {
           args.push(
             `(${[...new Array(originalValueSize)].map((_, i) => `$${i + 1}`)}, $${i})`,
           );
@@ -483,7 +481,7 @@ export default async function messages(app: FastifyInstance) {
 
         void mailService(app).sendMails(
           providerId,
-          ["ludwig.thurfjell@nearform.com"],
+          ["ludwig.thurfjell@nearform.com"], // There's no api to get users atm?
           mailSubject,
           mailBody,
         );

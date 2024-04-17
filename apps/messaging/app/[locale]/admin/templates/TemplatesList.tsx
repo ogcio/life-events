@@ -12,14 +12,11 @@ async function deleteEmailTemplateAction(formData: FormData) {
   revalidatePath("/");
 }
 
-export default async (props: any) => {
-  console.log("props bro", { props });
+export default async () => {
   const t = await getTranslations("MessageTemplates");
   const { userId } = await PgSessions.get();
 
-  const { data } = await new Messages(userId).getTemplates();
-
-  const templates = data?.data;
+  const { data: templates } = await new Messages(userId).getTemplates();
 
   return (
     <table className="govie-table">

@@ -151,6 +151,18 @@ export interface paths {
             };
           };
         };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
       };
     };
     post: {
@@ -177,6 +189,12 @@ export interface paths {
                 id: string;
               };
             };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
           };
         };
         /** @description Default Response */
@@ -215,6 +233,12 @@ export interface paths {
           };
         };
         /** @description Default Response */
+        404: {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
         500: {
           content: {
             "application/json": components["schemas"]["def-0"];
@@ -245,8 +269,16 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
-        200: {
-          content: never;
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
         };
       };
     };
@@ -258,7 +290,13 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
-        500: {
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
           content: {
             "application/json": components["schemas"]["def-0"];
           };
@@ -269,8 +307,8 @@ export interface paths {
   "/api/v1/templates/": {
     get: {
       parameters: {
-        query: {
-          lang: string;
+        query?: {
+          lang?: string;
         };
       };
       responses: {
@@ -285,6 +323,18 @@ export interface paths {
                 templateName: string;
               }[];
             };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
           };
         };
       };
@@ -322,6 +372,12 @@ export interface paths {
         };
         /** @description Default Response */
         "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
           content: {
             "application/json": components["schemas"]["def-0"];
           };
@@ -364,6 +420,12 @@ export interface paths {
             "application/json": components["schemas"]["def-0"];
           };
         };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
       };
     };
     put: {
@@ -394,8 +456,16 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
-        200: {
-          content: never;
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
         };
       };
     };
@@ -407,8 +477,16 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
-        200: {
-          content: never;
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
         };
       };
     };

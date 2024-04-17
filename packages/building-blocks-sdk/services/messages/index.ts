@@ -32,40 +32,61 @@ export class Messages {
     this.client.use(authMiddleware);
   }
 
-  async getMessages() {
-    return this.client.GET("/api/v1/messages/");
+  async getMessages(type?: string) {
+    const { error, data } = await this.client.GET("/api/v1/messages/", {
+      params: {
+        query: { type },
+      },
+    });
+
+    return { error, data: data?.data };
   }
 
   async getMessage(
     messageId: paths["/api/v1/messages/{messageId}"]["get"]["parameters"]["path"]["messageId"],
   ) {
-    return this.client.GET("/api/v1/messages/{messageId}", {
-      params: { path: { messageId } },
-    });
+    const { data, error } = await this.client.GET(
+      "/api/v1/messages/{messageId}",
+      {
+        params: { path: { messageId } },
+      },
+    );
+
+    return { error, data: data?.data };
   }
 
   async createMessage(
-    data: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"],
+    body: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"],
   ) {
-    return formatQueryResult(
-      this.client.POST("/api/v1/messages/", {
-        body: data,
-      }),
-    );
+    const { error } = await this.client.POST("/api/v1/messages/", {
+      body,
+    });
+
+    return { error };
   }
 
-  async getTemplates(
-    lang?: paths["/api/v1/templates/"]["get"]["parameters"]["query"]["lang"],
-  ) {
-    return this.client.GET("/api/v1/templates/", {
+  async getTemplates(lang?: string) {
+    const { error, data } = await this.client.GET("/api/v1/templates/", {
       params: { query: { lang: lang ?? "en" } },
     });
+
+    return { error, data: data?.data };
   }
 
   async getTemplate(
-    params: paths["/api/v1/templates/{templateId}"]["get"]["parameters"],
+    templateId: paths["/api/v1/templates/{templateId}"]["get"]["parameters"]["path"]["templateId"],
+    lang: paths["/api/v1/templates/{templateId}"]["get"]["parameters"]["query"]["lang"],
   ) {
-    return this.client.GET("/api/v1/templates/{templateId}", { params });
+    const { data, error } = await this.client.GET(
+      "/api/v1/templates/{templateId}",
+      {
+        params: {
+          path: { templateId },
+          query: { lang },
+        },
+      },
+    );
+    return { data: data?.data, error };
   }
 
   async createTemplate(
@@ -78,53 +99,80 @@ export class Messages {
     templateId: paths["/api/v1/templates/{templateId}"]["put"]["parameters"]["path"]["templateId"],
     body: paths["/api/v1/templates/{templateId}"]["put"]["requestBody"]["content"]["application/json"],
   ) {
-    return this.client.PUT("/api/v1/templates/{templateId}", {
+    const { error } = await this.client.PUT("/api/v1/templates/{templateId}", {
       params: { path: { templateId } },
       body,
     });
+    return { error };
   }
 
   async deleteTemplate(
     templateId: paths["/api/v1/templates/{templateId}"]["delete"]["parameters"]["path"]["templateId"],
   ) {
-    return this.client.DELETE("/api/v1/templates/{templateId}", {
-      params: { path: { templateId } },
-    });
+    const { error } = await this.client.DELETE(
+      "/api/v1/templates/{templateId}",
+      {
+        params: { path: { templateId } },
+      },
+    );
+    return { error };
   }
 
   async getEmailProviders() {
-    return this.client.GET("/api/v1/providers/emails/");
+    const { error, data } = await this.client.GET("/api/v1/providers/emails/");
+
+    return { error, data: data?.data };
   }
 
   async getEmailProvider(
     providerId: paths["/api/v1/providers/emails/{providerId}"]["get"]["parameters"]["path"]["providerId"],
   ) {
-    return this.client.GET("/api/v1/providers/emails/{providerId}", {
-      params: { path: { providerId } },
-    });
+    const { data, error } = await this.client.GET(
+      "/api/v1/providers/emails/{providerId}",
+      {
+        params: { path: { providerId } },
+      },
+    );
+
+    return { error, data: data?.data };
   }
 
   async createEmailProvider(
     body: paths["/api/v1/providers/emails/"]["post"]["requestBody"]["content"]["application/json"],
   ) {
-    return this.client.POST("/api/v1/providers/emails/", { body });
+    const { data, error } = await this.client.POST(
+      "/api/v1/providers/emails/",
+      { body },
+    );
+
+    return { error, data: data?.data };
   }
 
   async updateEmailProvider(
     providerId: paths["/api/v1/providers/emails/{providerId}"]["put"]["parameters"]["path"]["providerId"],
     body: paths["/api/v1/providers/emails/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
   ) {
-    return this.client.PUT("/api/v1/providers/emails/{providerId}", {
-      params: { path: { providerId } },
-      body,
-    });
+    const { error } = await this.client.PUT(
+      "/api/v1/providers/emails/{providerId}",
+      {
+        params: { path: { providerId } },
+        body,
+      },
+    );
+
+    return { error };
   }
 
   async deleteEmailProvider(
     providerId: paths["/api/v1/providers/emails/{providerId}"]["delete"]["parameters"]["path"]["providerId"],
   ) {
-    return this.client.DELETE("/api/v1/providers/emails/{providerId}", {
-      params: { path: { providerId } },
-    });
+    const { error } = await this.client.DELETE(
+      "/api/v1/providers/emails/{providerId}",
+      {
+        params: { path: { providerId } },
+      },
+    );
+
+    return { error };
   }
 }

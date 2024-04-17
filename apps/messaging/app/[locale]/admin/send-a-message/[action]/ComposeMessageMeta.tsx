@@ -1,9 +1,11 @@
 import dayjs from "dayjs";
-import { api, apistub } from "messages";
+import { api } from "messages";
 import { revalidatePath } from "next/cache";
 import { MessageCreateProps, MessageType } from "../../../../utils/messaging";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
+import { Messages } from "building-blocks-sdk";
+import { PgSessions } from "auth/sessions";
 
 export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.ComposeMessageMeta");
@@ -35,7 +37,8 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const templates = await apistub.templates.getAll(
+  const { userId } = await PgSessions.get();
+  const { data: templates } = await new Messages(userId).getTemplates(
     headers().get("x-next-intl-locale") ?? "en",
   );
 
@@ -152,7 +155,7 @@ export default async (props: MessageCreateProps) => {
 
       <hr />
 
-      {Boolean(templates.length) ? (
+      {Boolean(templates?.length) ? (
         <div className="govie-form-group">
           <h3>
             <span className="govie-heading-s">
@@ -161,7 +164,7 @@ export default async (props: MessageCreateProps) => {
           </h3>
           <select className="govie-select" name="templateMetaId">
             <option value="">{t("emptyTemplateOption")}</option>
-            {templates.map((template) => (
+            {templates?.map((template) => (
               <option
                 key={template.templateMetaId}
                 value={template.templateMetaId}

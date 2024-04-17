@@ -8,11 +8,9 @@ export default async (props: { params: { messageId: string } }) => {
 
   const { userId } = await PgSessions.get();
 
-  const { data, error } = await new Messages(userId).getMessage(
+  const { data: message, error } = await new Messages(userId).getMessage(
     props.params.messageId,
   );
-
-  const message = data?.data;
 
   if (error || !message) {
     throw notFound();

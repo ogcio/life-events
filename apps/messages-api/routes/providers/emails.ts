@@ -56,6 +56,8 @@ export default async function emails(app: FastifyInstance) {
           200: Type.Object({
             data: Type.Array(EmailProviderType),
           }),
+          "4xx": { $ref: "HttpError" },
+          "5xx": { $ref: "HttpError" },
         },
       },
     },
@@ -64,6 +66,7 @@ export default async function emails(app: FastifyInstance) {
       return { data };
     },
   );
+
   app.get<GetEmailProvider>(
     "/:providerId",
     {
@@ -95,6 +98,7 @@ export default async function emails(app: FastifyInstance) {
       }
     },
   );
+
   app.post<CreateEmailProvider>(
     "/",
     {
@@ -108,6 +112,7 @@ export default async function emails(app: FastifyInstance) {
               id: Type.String({ format: "uuid" }),
             }),
           }),
+          "4xx": { $ref: "HttpError" },
           "5xx": { $ref: "HttpError" },
         },
       },
@@ -125,6 +130,7 @@ export default async function emails(app: FastifyInstance) {
       return { data };
     },
   );
+
   app.put<UpdateEmailProvider>(
     "/:providerId",
     {
@@ -132,6 +138,10 @@ export default async function emails(app: FastifyInstance) {
       schema: {
         tags,
         body: EmailProviderType,
+        response: {
+          "4xx": { $ref: "HttpError" },
+          "5xx": { $ref: "HttpError" },
+        },
       },
     },
     async function handler(request, reply) {
@@ -153,7 +163,8 @@ export default async function emails(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          500: { $ref: "HttpError" },
+          "4xx": { $ref: "HttpError" },
+          "5xx": { $ref: "HttpError" },
         },
       },
     },

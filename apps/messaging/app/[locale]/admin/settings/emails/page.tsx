@@ -1,3 +1,5 @@
+import { PgSessions } from "auth/sessions";
+import { Messages } from "building-blocks-sdk";
 import { mailApi } from "messages";
 import { pgpool } from "messages/dbConnection";
 import { useTranslations } from "next-intl";
@@ -15,14 +17,18 @@ const EmailProviderTable = ({
     "use server";
     const id = formData.get("id")?.toString();
 
-    await pgpool.query(
-      `
-      DELETE FROM email_providers WHERE id = $1
-    `,
-      [id],
-    );
-    revalidatePath("/");
+    const { userId } = await PgSessions.get();
+
+    if (id) {
+      const { error } = await new Messages(userId).deleteEmailProvider(id);
+      if (error) {
+        // error handling
+      }
+
+      revalidatePath("/");
+    }
   }
+
   return (
     <table className="govie-table">
       <thead className="govie-table__head">
@@ -91,7 +97,7 @@ const EmailProviderTable = ({
   );
 };
 
-export default async (props: any) => {
+export default async () => {
   const t = await getTranslations("settings.Emails");
   const emailProviders = await mailApi.providers();
   return (

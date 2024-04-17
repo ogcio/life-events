@@ -83,7 +83,7 @@ export default async function templates(app: FastifyInstance) {
       schema: {
         querystring: Type.Optional(
           Type.Object({
-            lang: Type.String({ default: "en" }),
+            lang: Type.Optional(Type.String()),
           }),
         ),
         tags,
@@ -91,6 +91,8 @@ export default async function templates(app: FastifyInstance) {
           200: Type.Object({
             data: Type.Array(TemplateListType),
           }),
+          "4xx": { $ref: "HttpError" },
+          "5xx": { $ref: "HttpError" },
         },
       },
     },
@@ -118,6 +120,7 @@ export default async function templates(app: FastifyInstance) {
       return { data };
     },
   );
+
   app.get<GetTemplate>(
     "/:templateId",
     {
@@ -146,6 +149,7 @@ export default async function templates(app: FastifyInstance) {
             }),
           }),
           404: { $ref: "HttpError" },
+          "5xx": { $ref: "HttpError" },
         },
       },
     },
@@ -228,6 +232,7 @@ export default async function templates(app: FastifyInstance) {
       return { data: template };
     },
   );
+
   app.post<CreateTemplate>(
     "/",
     {
@@ -245,6 +250,7 @@ export default async function templates(app: FastifyInstance) {
         }),
         response: {
           "5xx": { $ref: "HttpError" },
+          "4xx": { $ref: "HttpError" },
           201: Type.Object({
             data: Type.Object({
               id: Type.String({ format: "uuid" }),
@@ -374,6 +380,10 @@ export default async function templates(app: FastifyInstance) {
             }),
           ),
         }),
+        response: {
+          "4xx": { $ref: "HttpError" },
+          "5xx": { $ref: "HttpError" },
+        },
       },
     },
     async function handleUpdate(request, reply) {
@@ -463,6 +473,10 @@ export default async function templates(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags,
+        response: {
+          "4xx": { $ref: "HttpError" },
+          "5xx": { $ref: "HttpError" },
+        },
       },
     },
     async function handleDelete(request, reply) {

@@ -263,6 +263,18 @@ paths:
                         - fromAddress
                 required:
                   - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
     post:
       tags: *a1
       requestBody:
@@ -311,6 +323,12 @@ paths:
                       - id
                 required:
                   - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
         5XX:
           description: Default Response
           content:
@@ -417,8 +435,18 @@ paths:
           name: providerId
           required: true
       responses:
-        "200":
+        4XX:
           description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
     delete:
       tags: *a1
       parameters:
@@ -428,7 +456,13 @@ paths:
           name: providerId
           required: true
       responses:
-        "500":
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
           description: Default Response
           content:
             application/json:
@@ -440,11 +474,10 @@ paths:
         - Templates
       parameters:
         - schema:
-            default: en
             type: string
           in: query
           name: lang
-          required: true
+          required: false
       responses:
         "200":
           description: Default Response
@@ -471,6 +504,18 @@ paths:
                         - templateName
                 required:
                   - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
     post:
       tags: *a2
       requestBody:
@@ -543,6 +588,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/def-0"
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
   /api/v1/templates/{templateId}:
     get:
       tags: *a2
@@ -601,6 +652,12 @@ paths:
                 required:
                   - data
         "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
           description: Default Response
           content:
             application/json:
@@ -665,8 +722,18 @@ paths:
           name: templateId
           required: true
       responses:
-        "200":
+        4XX:
           description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
     delete:
       tags: *a2
       parameters:
@@ -676,5 +743,15 @@ paths:
           name: templateId
           required: true
       responses:
-        "200":
+        4XX:
           description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
