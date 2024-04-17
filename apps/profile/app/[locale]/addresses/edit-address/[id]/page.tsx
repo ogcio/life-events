@@ -11,12 +11,15 @@ import { Profile } from "building-blocks-sdk";
 async function editAddress(formData: FormData) {
   "use server";
 
-  const { userId } = await PgSessions.get();
-
   const addressId = formData.get("addressId")?.toString();
+  const userId = formData.get("userId")?.toString();
 
   if (!addressId) {
     throw Error("Address id not found");
+  }
+
+  if (!userId) {
+    throw Error("User id not found");
   }
 
   const errors: form.Error[] = [];
@@ -233,6 +236,7 @@ export default async (params: NextPageProps) => {
       <div className="govie-grid-column-two-thirds">
         <form action={editAddress}>
           <input type="hidden" name="addressId" defaultValue={addressId} />
+          <input type="hidden" name="userId" defaultValue={userId} />
           <h1 className="govie-heading-l">{t("editAddress")}</h1>
           <fieldset className="govie-fieldset">
             <div

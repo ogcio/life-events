@@ -32,7 +32,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send(result.rows);
       } catch (error) {
-        app.httpErrors.internalServerError((error as Error).message);
+        throw app.httpErrors.internalServerError((error as Error).message);
       }
     },
   );
@@ -84,7 +84,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        app.httpErrors.internalServerError((error as Error).message);
+        throw app.httpErrors.internalServerError((error as Error).message);
       }
     },
   );
@@ -131,9 +131,9 @@ export default async function addresses(app: FastifyInstance) {
         tags: ["Addresses"],
         body: UpdateAddress,
         response: {
-          200: Type.Object({
-            ok: Type.Boolean(),
-          }),
+          200: Type.Object({}),
+          404: HttpError,
+          500: HttpError,
         },
       },
     },
@@ -151,11 +151,12 @@ export default async function addresses(app: FastifyInstance) {
       } = request.body;
 
       try {
-        await app.pg.query(
+        const result = await app.pg.query(
           `
         UPDATE user_addresses
         SET address_line1 = $3, address_line2 = $4, town = $5, county = $6, eirecode = $7, move_in_date = $8, move_out_date = $9, updated_at = now()
         WHERE user_id = $1 AND address_id = $2
+        RETURNING  address_id as id
     `,
           [
             userId,
@@ -170,10 +171,52 @@ export default async function addresses(app: FastifyInstance) {
           ],
         );
 
+        if (!result?.rows.length) {
+          throw app.httpErrors.notFound("The address was not found");
+        }
+
         reply.send();
-      } catch (err) {
-        app.log.error((err as Error).message);
+      } catch (error) {
+        throw app.httpErrors.internalServerError((error as Error).message);
       }
+    },
+  );
+
+  app.delete<{ Reply: {} | Error; Params: ParamsWithAddressId }>(
+    "/:addressId",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Addresses"],
+        response: {
+          200: Type.Object({}),
+          404: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { addressId } = request.params;
+
+      let result;
+      try {
+        result = await app.pg.query(
+          ` DELETE FROM user_addresses
+            WHERE user_id = $1 AND address_id = $2
+            RETURNING address_id as id
+          `,
+          [userId, addressId],
+        );
+      } catch (error) {
+        throw app.httpErrors.internalServerError((error as Error).message);
+      }
+
+      if (!result?.rows.length) {
+        throw app.httpErrors.notFound("The address was not found");
+      }
+
+      reply.send();
     },
   );
 }

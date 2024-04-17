@@ -65,4 +65,12 @@ export class Profile {
       }),
     );
   }
+
+  async deleteAddress(addressId: string) {
+    return formatQueryResult(
+      this.client.DELETE("/api/v1/addresses/{addressId}", {
+        params: { path: { addressId } },
+      }),
+    );
+  }
 }
