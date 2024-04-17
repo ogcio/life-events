@@ -20,41 +20,25 @@ export type Address = Static<typeof Address>;
 export const AddressesList = Type.Array(Address);
 export type AddressesList = Static<typeof AddressesList>;
 
-/**
- * Providers types
- */
-
-export const Provider = Type.Union([
-  Type.Object({
-    id: Type.String(),
-    name: Type.String(),
-    type: Type.Union([
-      Type.Literal("banktransfer"),
-      Type.Literal("openbanking"),
-      Type.Literal("stripe"),
-    ]),
-    data: Type.Any(),
-    status: Type.Union([
-      Type.Literal("connected"),
-      Type.Literal("disconnected"),
-    ]),
-  }),
-]);
-export type Provider = Static<typeof Provider>;
-
-export const CreateProvider = Type.Omit(Provider, ["id", "status"]);
-export type CreateProvider = Static<typeof CreateProvider>;
-
-export const ProvidersList = Type.Union([Type.Array(Provider)]);
-export type ProvidersList = Static<typeof ProvidersList>;
-
-export const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
-export type UpdateProvider = Static<typeof UpdateProvider>;
-
-export const ParamsWithProviderId = Type.Object({
-  providerId: Type.String(),
+export const CreateAddress = Type.Object({
+  address_line1: Type.String(),
+  address_line2: Type.Optional(Type.String()),
+  town: Type.String(),
+  county: Type.String(),
+  eirecode: Type.String(),
+  move_in_date: Type.Optional(Type.String()),
+  move_out_date: Type.Optional(Type.String()),
 });
-export type ParamsWithProviderId = Static<typeof ParamsWithProviderId>;
+
+export type CreateAddress = Static<typeof CreateAddress>;
+
+export const ParamsWithAddressId = Type.Object({
+  addressId: Type.String(),
+});
+export type ParamsWithAddressId = Static<typeof ParamsWithAddressId>;
+
+export const UpdateAddress = CreateAddress;
+export type UpdateAddress = Static<typeof UpdateAddress>;
 
 /**
  * Payment requests types

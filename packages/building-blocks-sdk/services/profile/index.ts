@@ -27,7 +27,7 @@ export class Profile {
     };
 
     this.client = createClient<paths>({
-      baseUrl: process.env.PAYMENTS_BACKEND_URL,
+      baseUrl: process.env.PROFILE_BACKEND_URL,
     });
     this.client.use(authMiddleware);
   }
@@ -36,13 +36,33 @@ export class Profile {
     return formatQueryResult(this.client.GET("/api/v1/addresses/"));
   }
 
-  //   async createProvider(
-  //     data: paths["/api/v1/providers/"]["post"]["requestBody"]["content"]["application/json"],
-  //   ) {
-  //     return formatQueryResult(
-  //       this.client.POST("/api/v1/providers/", {
-  //         body: data,
-  //       }),
-  //     );
-  //   }
+  async getAddress(addressId: string) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/addresses/{addressId}", {
+        params: { path: { addressId } },
+      }),
+    );
+  }
+
+  async createAddress(
+    data: paths["/api/v1/addresses/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/addresses/", {
+        body: data,
+      }),
+    );
+  }
+
+  async updateAddress(
+    addressId: string,
+    data: paths["/api/v1/addresses/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.PUT("/api/v1/addresses/{addressId}", {
+        params: { path: { addressId } },
+        body: data,
+      }),
+    );
+  }
 }

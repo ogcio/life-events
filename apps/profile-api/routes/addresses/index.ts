@@ -2,12 +2,11 @@ import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
 import {
-  CreateProvider,
-  ParamsWithProviderId,
-  ProvidersList,
-  Provider,
-  UpdateProvider,
   AddressesList,
+  CreateAddress,
+  Address,
+  ParamsWithAddressId,
+  UpdateAddress,
 } from "../../types/schemaDefinitions";
 
 export default async function addresses(app: FastifyInstance) {
@@ -25,127 +24,156 @@ export default async function addresses(app: FastifyInstance) {
     async (request, reply) => {
       const userId = request.user?.id;
 
-      const result = await app.pg.query(
-        `SELECT address_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date, updated_at FROM user_addresses WHERE user_id = $1`,
-        [userId],
-      );
+      try {
+        const result = await app.pg.query(
+          `SELECT address_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date, updated_at FROM user_addresses WHERE user_id = $1`,
+          [userId],
+        );
 
-      reply.send(result.rows);
+        reply.send(result.rows);
+      } catch (error) {
+        app.httpErrors.internalServerError((error as Error).message);
+      }
     },
   );
 
-  //   app.post<{ Body: CreateProvider; Reply: { id: string } }>(
-  //     "/",
-  //     {
-  //       preValidation: app.verifyUser,
-  //       schema: {
-  //         tags: ["Addresses"],
-  //         body: CreateProvider,
-  //         response: {
-  //           200: Type.Object({
-  //             id: Type.String(),
-  //           }),
-  //         },
-  //       },
-  //     },
-  //     async (request, reply) => {
-  //       const userId = request.user?.id;
-  //       const { name, type, data } = request.body;
+  app.post<{ Body: CreateAddress; Reply: { id: string } }>(
+    "/",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Addresses"],
+        body: CreateAddress,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const {
+        address_line1,
+        address_line2,
+        town,
+        county,
+        eirecode,
+        move_in_date,
+        move_out_date,
+      } = request.body;
 
-  //       const result = await app.pg.query(
-  //         `
-  //         INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-  //         VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
-  //             `,
-  //         [userId, name, type, "connected", data],
-  //       );
+      try {
+        const result = await app.pg.query(
+          `
+            INSERT INTO user_addresses (user_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date)
+            VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+            RETURNING address_id as id
+        `,
+          [
+            userId,
+            address_line1,
+            address_line2,
+            town,
+            county,
+            eirecode,
+            move_in_date,
+            move_out_date,
+          ],
+        );
 
-  //       reply.send({ id: result.rows[0].id });
-  //     },
-  //   );
+        reply.send({ id: result.rows[0].id });
+      } catch (error) {
+        app.httpErrors.internalServerError((error as Error).message);
+      }
+    },
+  );
 
-  //   app.get<{ Reply: Provider | Error; Params: ParamsWithProviderId }>(
-  //     "/:providerId",
-  //     {
-  //       preValidation: app.verifyUser,
-  //       schema: {
-  //         tags: ["Addresses"],
-  //         response: {
-  //           200: Type.Object({
-  //             id: Type.String(),
-  //             name: Type.String(),
-  //             type: Type.String(),
-  //             data: Type.Any(),
-  //             status: Type.String(),
-  //           }),
-  //           400: HttpError,
-  //         },
-  //       },
-  //     },
-  //     async (request, reply) => {
-  //       const userId = request.user?.id;
-  //       const { providerId } = request.params;
+  app.get<{ Reply: Address | Error; Params: ParamsWithAddressId }>(
+    "/:addressId",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Addresses"],
+        response: {
+          200: Address,
+          400: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { addressId } = request.params;
 
-  //       let result;
-  //       try {
-  //         result = await app.pg.query(
-  //           `
-  //           SELECT
-  //             provider_id as id,
-  //             provider_name as name,
-  //             provider_type as type,
-  //             provider_data as data,
-  //             status
-  //           FROM payment_providers
-  //           WHERE provider_id = $1
-  //           AND user_id = $2
-  //           `,
-  //           [providerId, userId],
-  //         );
-  //       } catch (err) {
-  //         app.log.error((err as Error).message);
-  //       }
+      let result;
+      try {
+        result = await app.pg.query(
+          `SELECT address_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date, updated_at FROM user_addresses WHERE user_id = $1 AND address_id = $2`,
+          [userId, addressId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
 
-  //       if (!result?.rows.length) {
-  //         throw app.httpErrors.notFound("The requested provider was not found");
-  //       }
+      if (!result?.rows.length) {
+        throw app.httpErrors.notFound("The requested address was not found");
+      }
 
-  //       reply.send(result.rows[0]);
-  //     },
-  //   );
+      reply.send(result.rows[0]);
+    },
+  );
 
-  //   app.put<{ Body: UpdateProvider; Params: ParamsWithProviderId }>(
-  //     "/:providerId",
-  //     {
-  //       preValidation: app.verifyUser,
-  //       schema: {
-  //         tags: ["Providers"],
-  //         body: UpdateProvider,
-  //         response: {
-  //           200: Type.Object({
-  //             ok: Type.Boolean(),
-  //           }),
-  //         },
-  //       },
-  //     },
-  //     async (request, reply) => {
-  //       const userId = request.user?.id;
-  //       const { providerId } = request.params;
-  //       const { name, data, status } = request.body;
+  app.put<{ Body: UpdateAddress; Params: ParamsWithAddressId }>(
+    "/:addressId",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Addresses"],
+        body: UpdateAddress,
+        response: {
+          200: Type.Object({
+            ok: Type.Boolean(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { addressId } = request.params;
+      const {
+        address_line1,
+        address_line2,
+        town,
+        county,
+        eirecode,
+        move_in_date,
+        move_out_date,
+      } = request.body;
 
-  //       await app.pg.query(
-  //         `
-  //           UPDATE payment_providers
-  //           SET provider_name = $1,
-  //             provider_data = $2,
-  //             status = $3
-  //           WHERE provider_id = $4
-  //           AND user_id = $5
-  //         `,
-  //         [name, data, status, providerId, userId],
-  //       );
+      try {
+        await app.pg.query(
+          `
+        UPDATE user_addresses
+        SET address_line1 = $3, address_line2 = $4, town = $5, county = $6, eirecode = $7, move_in_date = $8, move_out_date = $9, updated_at = now()
+        WHERE user_id = $1 AND address_id = $2
+    `,
+          [
+            userId,
+            addressId,
+            address_line1,
+            address_line2,
+            town,
+            county,
+            eirecode,
+            move_in_date,
+            move_out_date,
+          ],
+        );
 
-  //       reply.send();
-  //     },
-  //   );
+        reply.send();
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+    },
+  );
 }

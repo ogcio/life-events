@@ -21,11 +21,15 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
+              address_id: string;
+              address_line1: string;
+              address_line2: string;
+              town: string;
+              county: string;
+              eirecode: string;
+              updated_at: string;
+              move_in_date: string;
+              move_out_date: string;
             }[];
           };
         };
@@ -35,9 +39,13 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            name: string;
-            type: "banktransfer" | "openbanking" | "stripe";
-            data: unknown;
+            address_line1: string;
+            address_line2?: string;
+            town: string;
+            county: string;
+            eirecode: string;
+            move_in_date?: string;
+            move_out_date?: string;
           };
         };
       };
@@ -53,11 +61,11 @@ export interface paths {
       };
     };
   };
-  "/api/v1/addresses/{providerId}": {
+  "/api/v1/addresses/{addressId}": {
     get: {
       parameters: {
         path: {
-          providerId: string;
+          addressId: string;
         };
       };
       responses: {
@@ -65,11 +73,15 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
+              address_id: string;
+              address_line1: string;
+              address_line2: string;
+              town: string;
+              county: string;
+              eirecode: string;
+              updated_at: string;
+              move_in_date: string;
+              move_out_date: string;
             };
           };
         };
@@ -90,215 +102,19 @@ export interface paths {
     put: {
       parameters: {
         path: {
-          providerId: string;
+          addressId: string;
         };
       };
       requestBody: {
         content: {
           "application/json": {
-            name: string;
-            data: unknown;
-            status: "connected" | "disconnected";
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              ok: boolean;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/entitlements/": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
-            }[];
-          };
-        };
-      };
-    };
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            type: "banktransfer" | "openbanking" | "stripe";
-            data: unknown;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/entitlements/{providerId}": {
-    get: {
-      parameters: {
-        path: {
-          providerId: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        400: {
-          content: {
-            "application/json": {
-              statusCode: number;
-              code: string;
-              error: string;
-              message: string;
-              time: string;
-            };
-          };
-        };
-      };
-    };
-    put: {
-      parameters: {
-        path: {
-          providerId: string;
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            data: unknown;
-            status: "connected" | "disconnected";
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              ok: boolean;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/user-details/": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
-            }[];
-          };
-        };
-      };
-    };
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            type: "banktransfer" | "openbanking" | "stripe";
-            data: unknown;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/user-details/{providerId}": {
-    get: {
-      parameters: {
-        path: {
-          providerId: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        400: {
-          content: {
-            "application/json": {
-              statusCode: number;
-              code: string;
-              error: string;
-              message: string;
-              time: string;
-            };
-          };
-        };
-      };
-    };
-    put: {
-      parameters: {
-        path: {
-          providerId: string;
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            data: unknown;
-            status: "connected" | "disconnected";
+            address_line1: string;
+            address_line2?: string;
+            town: string;
+            county: string;
+            eirecode: string;
+            move_in_date?: string;
+            move_out_date?: string;
           };
         };
       };

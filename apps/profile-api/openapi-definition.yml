@@ -1,0 +1,214 @@
+openapi: 3.0.3
+info:
+  title: OGCIO Profile API
+  description: API for OGCIO Profile Service
+  version: 0.1.0
+components:
+  schemas: {}
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/addresses/:
+    get:
+      tags:
+        - Addresses
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    address_id:
+                      type: string
+                    address_line1:
+                      type: string
+                    address_line2:
+                      type: string
+                    town:
+                      type: string
+                    county:
+                      type: string
+                    eirecode:
+                      type: string
+                    updated_at:
+                      type: string
+                    move_in_date:
+                      type: string
+                    move_out_date:
+                      type: string
+                  required:
+                    - address_id
+                    - address_line1
+                    - address_line2
+                    - town
+                    - county
+                    - eirecode
+                    - updated_at
+                    - move_in_date
+                    - move_out_date
+    post:
+      tags:
+        - Addresses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address_line1:
+                  type: string
+                address_line2:
+                  type: string
+                town:
+                  type: string
+                county:
+                  type: string
+                eirecode:
+                  type: string
+                move_in_date:
+                  type: string
+                move_out_date:
+                  type: string
+              required:
+                - address_line1
+                - town
+                - county
+                - eirecode
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+  /api/v1/addresses/{addressId}:
+    get:
+      tags:
+        - Addresses
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: addressId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address_id:
+                    type: string
+                  address_line1:
+                    type: string
+                  address_line2:
+                    type: string
+                  town:
+                    type: string
+                  county:
+                    type: string
+                  eirecode:
+                    type: string
+                  updated_at:
+                    type: string
+                  move_in_date:
+                    type: string
+                  move_out_date:
+                    type: string
+                required:
+                  - address_id
+                  - address_line1
+                  - address_line2
+                  - town
+                  - county
+                  - eirecode
+                  - updated_at
+                  - move_in_date
+                  - move_out_date
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+    put:
+      tags:
+        - Addresses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address_line1:
+                  type: string
+                address_line2:
+                  type: string
+                town:
+                  type: string
+                county:
+                  type: string
+                eirecode:
+                  type: string
+                move_in_date:
+                  type: string
+                move_out_date:
+                  type: string
+              required:
+                - address_line1
+                - town
+                - county
+                - eirecode
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: addressId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                  - ok
+tags:
+  - name: Providers

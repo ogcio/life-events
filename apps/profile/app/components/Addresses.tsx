@@ -3,18 +3,8 @@ import { formatDate, postgres, routes } from "../utils";
 import { PgSessions } from "auth/sessions";
 import ds from "design-system";
 import { Link } from "../utils/navigation";
-
-type Address = {
-  address_id: string;
-  address_line1: string;
-  address_line2: string;
-  town: string;
-  county: string;
-  eirecode: string;
-  updated_at: string;
-  move_in_date: string;
-  move_out_date: string;
-};
+import { Profile } from "building-blocks-sdk";
+import { Address } from "../../types/addresses";
 
 const AddressLine = ({ value }: { value: string }) => (
   <p className="govie-body" style={{ marginBottom: "5px" }}>
@@ -22,24 +12,11 @@ const AddressLine = ({ value }: { value: string }) => (
   </p>
 );
 
-async function getUserAddresses() {
-  const { userId } = await PgSessions.get();
-
-  const res = await postgres.pgpool.query<Address>(
-    `SELECT address_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date, updated_at FROM user_addresses WHERE user_id = $1`,
-    [userId],
-  );
-
-  if (res.rows.length > 0) {
-    return res.rows;
-  }
-
-  return [];
-}
-
 export default async () => {
   const t = await getTranslations("Addresses");
-  const addresses = await getUserAddresses();
+  const { userId } = await PgSessions.get();
+
+  const { data: addresses = [] } = await new Profile(userId).getAddresses();
 
   // Addresses sorted by move in date or updated at date if move in date not set
   const sortByDates = (a: Address, b: Address) => {
