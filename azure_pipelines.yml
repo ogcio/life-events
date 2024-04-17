@@ -15,7 +15,7 @@ parameters:
 
   - name: envBranches
     type: object
-    default: ["refs/heads/dev", "refs/heads/sta", "refs/heads/uat", "refs/heads/feat/improve-pipeline"]
+    default: ["refs/heads/dev", "refs/heads/sta", "refs/heads/uat"]
 
 variables:
   - template: pipeline-variables/dev.yml
