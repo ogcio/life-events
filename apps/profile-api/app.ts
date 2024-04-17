@@ -37,7 +37,7 @@ export async function build(opts?: FastifyServerOptions) {
       },
       tags: [
         {
-          name: "Providers",
+          name: "Addresses",
         },
       ],
     },
