@@ -4,9 +4,9 @@ import { PgSessions } from "auth/sessions";
 import { api, buildNotificationService } from "messages";
 
 export default async () => {
-  const { email } = await PgSessions.get();
+  const { userId } = await PgSessions.get();
 
-  const unreadNotificationsCount = await api.getUnreadMessageCount(email);
+  const unreadNotificationsCount = await api.getUnreadMessageCount(userId);
 
   return (
     <>

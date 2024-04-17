@@ -5,7 +5,7 @@ import OpenEventStatusImage from "./components/OpenEventStatusImage";
 import { renewDriverLicenceRules } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { postgres, routes, workflow } from "../../utils";
 import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
-import { api } from "messages";
+import { api, apistub } from "messages";
 import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/OrderBirthCertificate";
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
@@ -122,13 +122,12 @@ export default async () => {
   const t = await getTranslations("MyLifeEvents");
   const [flow] = await Promise.all([getFlows(), getEvents()]);
 
-  const { email } = await PgSessions.get();
-  const messageEvents = await api.getMessages(email, {
-    page: 1,
-    search: "",
-    size: 10,
-    type: "event",
-  });
+  const { userId } = await PgSessions.get();
+
+  const messageEvents = await apistub.messages.getAll(
+    userId,
+    new URLSearchParams({ type: "event" }),
+  );
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1, gap: "2.5rem" }}>
@@ -149,16 +148,14 @@ export default async () => {
               <Link
                 className="govie-link"
                 href={
-                  new URL(
-                    `messages/${msg.messageId}`,
-                    process.env.MESSAGES_HOST_URL,
-                  ).href
+                  new URL(`messages/${msg.id}`, process.env.MESSAGES_HOST_URL)
+                    .href
                 }
               >
                 {msg.subject}
               </Link>
               <p className="govie-body" style={{ margin: "unset" }}>
-                {msg.content}
+                {msg.excerpt}
               </p>
               <hr className="govie-section-break govie-section-break--visible" />
             </li>
