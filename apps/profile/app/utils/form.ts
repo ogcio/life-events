@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { pgpool } from "./postgres";
 
 export type Error = {
@@ -14,9 +15,99 @@ export const errorTranslationKeys = {
 export const fieldTranslationKeys = {
   email: "email",
   phone: "phone",
+  address: "address",
+  addressFirstLine: "address first line",
+  addressSecondLine: "address second line",
+  town: "town",
+  eirecode: "eirecode",
+  county: "county",
+  day: "day",
+  month: "month",
+  year: "year",
+  moveInDay: "moveInDay",
+  moveInMonth: "moveInMonth",
+  moveInYear: "moveInYear",
+  moveOutDay: "moveOutDay",
+  moveOutMonth: "moveOutMonth",
+  moveOutYear: "moveOutYear",
 };
 
 export const validation = {
+  dateErrors(
+    year: { field: string; value?: number },
+    month: { field: string; value?: number },
+    day: { field: string; value?: number },
+  ): Error[] {
+    const formErrors: Error[] = [];
+    if (!day?.value) {
+      formErrors.push({
+        field: day.field,
+        messageKey: errorTranslationKeys.empty,
+        errorValue: "",
+      });
+    }
+
+    if (!month?.value) {
+      formErrors.push({
+        field: month.field,
+        messageKey: errorTranslationKeys.empty,
+        errorValue: "",
+      });
+    }
+
+    if (!year.value) {
+      formErrors.push({
+        field: year.field,
+        messageKey: errorTranslationKeys.empty,
+        errorValue: "",
+      });
+    }
+
+    // If we have all of the values, we can determine wether they are acceptable..
+    if (day.value && month.value && year.value) {
+      const isValidMonth = month.value <= 12 && month.value > 0;
+      const isValidYear =
+        year.value > 1900 && year.value <= new Date().getUTCFullYear();
+
+      if (!isValidMonth) {
+        formErrors.push(
+          {
+            field: month.field,
+            messageKey: errorTranslationKeys.invalidField,
+            errorValue: month.value?.toString() || "",
+          },
+          {
+            // impossible to validate a day without month
+            errorValue: day.value.toString() || "",
+            field: day.field,
+            messageKey: errorTranslationKeys.invalidField,
+          },
+        );
+      }
+
+      if (!isValidYear) {
+        formErrors.push({
+          field: year.field,
+          messageKey: errorTranslationKeys.invalidField,
+          errorValue: year.value?.toString() || "",
+        });
+      }
+
+      // Actual day validation
+      if (isValidMonth && isValidYear) {
+        const date = dayjs(`${year.value}-${month.value}`);
+
+        if (day.value > date.daysInMonth() || day.value < 0) {
+          formErrors.push({
+            field: day.field,
+            messageKey: errorTranslationKeys.invalidField,
+            errorValue: day.value?.toString() || "",
+          });
+        }
+      }
+    }
+    return formErrors;
+  },
   stringNotEmpty(field: string, value?: string): Error[] {
     return !value?.length
       ? [
