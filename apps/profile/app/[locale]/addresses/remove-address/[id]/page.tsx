@@ -1,9 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { NextPageProps } from "../../../../../types";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { PgSessions } from "auth/sessions";
 import { formatDate, postgres } from "../../../../utils";
+import { redirect } from "../../../../utils/navigation";
 
 async function getAddress(addressId: string) {
   const { userId } = await PgSessions.get();

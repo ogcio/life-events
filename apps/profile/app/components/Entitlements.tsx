@@ -2,7 +2,7 @@ import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { postgres, routes } from "../utils";
 import ds from "design-system";
-import Link from "next/link";
+import { Link } from "../utils/navigation";
 
 async function getUserEntitlements() {
   const { firstName, lastName, userId } = await PgSessions.get();

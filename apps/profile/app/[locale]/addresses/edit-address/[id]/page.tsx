@@ -1,11 +1,11 @@
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { form, postgres } from "../../../../utils";
 import { NextPageProps } from "../../../../../types";
 import { revalidatePath } from "next/cache";
-import Link from "next/link";
 import dayjs from "dayjs";
+import { Link, redirect } from "../../../../utils/navigation";
 
 async function getAddress(addressId: string) {
   const { userId } = await PgSessions.get();
