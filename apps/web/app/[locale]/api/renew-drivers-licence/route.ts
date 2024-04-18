@@ -4,7 +4,7 @@ import { pgpool } from "../../../utils/postgres";
 import { driving } from "../../../utils/routes";
 import { temporaryMockUtils } from "messages";
 import { PgSessions } from "auth/sessions";
-import { Messages } from "building-blocks-sdk";
+import { Messaging } from "building-blocks-sdk";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
   const paymentTemplateIdPlaceholder =
     await temporaryMockUtils.autoPaymentTemplateId();
 
-  const messagingClient = new Messages(userId);
+  const messagingClient = new Messaging(userId);
   // This is for demonstrational purposes.
   if (paymentTemplateIdPlaceholder) {
     void messagingClient.createMessage({

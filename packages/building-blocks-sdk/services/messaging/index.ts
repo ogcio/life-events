@@ -1,18 +1,7 @@
-import createClient, { FetchResponse, type Middleware } from "openapi-fetch";
+import createClient, { type Middleware } from "openapi-fetch";
 import type { paths } from "./schema";
 
-const formatQueryResult = async <T, O>(
-  promise: Promise<FetchResponse<T, O>>,
-) => {
-  try {
-    const result = await promise;
-    return { data: result.data, error: null };
-  } catch (error) {
-    return { data: undefined, error };
-  }
-};
-
-export class Messages {
+export class Messaging {
   private client: ReturnType<typeof createClient<paths>>;
   constructor(authToken: string) {
     const authMiddleware: Middleware = {

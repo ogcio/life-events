@@ -8,7 +8,7 @@ import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
 import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/OrderBirthCertificate";
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
-import { Messages } from "building-blocks-sdk";
+import { Messaging } from "building-blocks-sdk";
 
 const eventRules = {
   [workflow.keys.orderEHIC]: orderEHICRules,
@@ -124,7 +124,7 @@ export default async () => {
 
   const { userId } = await PgSessions.get();
 
-  const { data: messageEvents } = await new Messages(userId).getMessages(
+  const { data: messageEvents } = await new Messaging(userId).getMessages(
     "event",
   );
 
