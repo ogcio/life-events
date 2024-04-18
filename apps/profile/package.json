@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "auth": "*",
-    "building-blocks-sdk": "^0.0.1",
+    "building-blocks-sdk": "*",
     "dayjs": "^1.11.10",
     "db-migrate": "^0.11.14",
     "db-migrate-pg": "^1.5.2",
