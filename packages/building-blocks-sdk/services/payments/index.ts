@@ -97,6 +97,20 @@ export class Payments {
     );
   }
 
+  async getPaymentRequestPublicInfo(
+    requestId: paths["/api/v1/requests/{requestId}/public-info"]["get"]["parameters"]["path"]["requestId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/requests/{requestId}/public-info", {
+        params: {
+          path: {
+            requestId,
+          },
+        },
+      }),
+    );
+  }
+
   /**
    * TRANSACTIONS
    */

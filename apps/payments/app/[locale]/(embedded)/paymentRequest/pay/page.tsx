@@ -9,7 +9,7 @@ import {
 import { notFound, redirect } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
-import buildApiClient from "../../../../../client/index";
+import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 
 type Props = {
@@ -29,9 +29,7 @@ type Props = {
 async function getPaymentRequestDetails(paymentId: string) {
   const { userId } = await PgSessions.get();
   const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-      paymentId,
-    )
+    await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
   ).data;
 
   if (!details) {
