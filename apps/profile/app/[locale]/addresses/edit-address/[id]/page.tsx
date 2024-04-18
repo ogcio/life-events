@@ -1,56 +1,41 @@
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { form, postgres } from "../../../../utils";
+import { form } from "../../../../utils";
 import { NextPageProps } from "../../../../../types";
 import { revalidatePath } from "next/cache";
 import dayjs from "dayjs";
 import { Link, redirect } from "../../../../utils/navigation";
-
-async function getAddress(addressId: string) {
-  const { userId } = await PgSessions.get();
-  const res = await postgres.pgpool.query<{
-    address_id: string;
-    address_line1: string;
-    address_line2: string;
-    town: string;
-    county: string;
-    eirecode: string;
-    move_in_date: string;
-    move_out_date: string;
-  }>(
-    `SELECT address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date FROM user_addresses WHERE user_id = $1 AND address_id = $2`,
-    [userId, addressId],
-  );
-
-  return res.rows[0];
-}
+import { Profile } from "building-blocks-sdk";
 
 async function editAddress(formData: FormData) {
   "use server";
 
-  const { userId } = await PgSessions.get();
-
   const addressId = formData.get("addressId")?.toString();
+  const userId = formData.get("userId")?.toString();
 
   if (!addressId) {
     throw Error("Address id not found");
   }
 
-  const errors: form.Error[] = [];
-  const addressFirst = formData.get("addressFirst");
-  const addressSecond = formData.get("addressSecond");
-  const town = formData.get("town");
-  const county = formData.get("county");
-  const eirecode = formData.get("eirecode");
-  const moveInDay = formData.get("moveInDay");
-  const moveInMonth = formData.get("moveInMonth");
-  const moveInYear = formData.get("moveInYear");
-  const moveOutDay = formData.get("moveOutDay");
-  const moveOutMonth = formData.get("moveOutMonth");
-  const moveOutYear = formData.get("moveOutYear");
+  if (!userId) {
+    throw Error("User id not found");
+  }
 
-  if (!addressFirst?.toString().length) {
+  const errors: form.Error[] = [];
+  const addressFirst = formData.get("addressFirst")?.toString();
+  const addressSecond = formData.get("addressSecond")?.toString();
+  const town = formData.get("town")?.toString();
+  const county = formData.get("county")?.toString();
+  const eirecode = formData.get("eirecode")?.toString();
+  const moveInDay = formData.get("moveInDay")?.toString();
+  const moveInMonth = formData.get("moveInMonth")?.toString();
+  const moveInYear = formData.get("moveInYear")?.toString();
+  const moveOutDay = formData.get("moveOutDay")?.toString();
+  const moveOutMonth = formData.get("moveOutMonth")?.toString();
+  const moveOutYear = formData.get("moveOutYear")?.toString();
+
+  if (!addressFirst) {
     errors.push({
       messageKey: form.errorTranslationKeys.empty,
       errorValue: "",
@@ -58,7 +43,7 @@ async function editAddress(formData: FormData) {
     });
   }
 
-  if (!town?.toString()) {
+  if (!town) {
     errors.push({
       messageKey: form.errorTranslationKeys.empty,
       errorValue: "",
@@ -66,7 +51,7 @@ async function editAddress(formData: FormData) {
     });
   }
 
-  if (!county?.toString()) {
+  if (!county) {
     errors.push({
       messageKey: form.errorTranslationKeys.empty,
       errorValue: "",
@@ -74,7 +59,7 @@ async function editAddress(formData: FormData) {
     });
   }
 
-  if (!eirecode?.toString()) {
+  if (!eirecode) {
     errors.push({
       messageKey: form.errorTranslationKeys.empty,
       errorValue: "",
@@ -87,15 +72,15 @@ async function editAddress(formData: FormData) {
       ...form.validation.dateErrors(
         {
           field: form.fieldTranslationKeys.moveInYear,
-          value: parseInt(moveInYear?.toString() || ""),
+          value: parseInt(moveInYear || ""),
         },
         {
           field: form.fieldTranslationKeys.moveInMonth,
-          value: parseInt(moveInMonth?.toString() || ""),
+          value: parseInt(moveInMonth || ""),
         },
         {
           field: form.fieldTranslationKeys.moveInDay,
-          value: parseInt(moveInDay?.toString() || ""),
+          value: parseInt(moveInDay || ""),
         },
       ),
     );
@@ -106,15 +91,15 @@ async function editAddress(formData: FormData) {
       ...form.validation.dateErrors(
         {
           field: form.fieldTranslationKeys.moveOutYear,
-          value: parseInt(moveOutYear?.toString() || ""),
+          value: parseInt(moveOutYear || ""),
         },
         {
           field: form.fieldTranslationKeys.moveOutMonth,
-          value: parseInt(moveOutMonth?.toString() || ""),
+          value: parseInt(moveOutMonth || ""),
         },
         {
           field: form.fieldTranslationKeys.moveOutDay,
-          value: parseInt(moveOutDay?.toString() || ""),
+          value: parseInt(moveOutDay || ""),
         },
       ),
     );
@@ -125,38 +110,38 @@ async function editAddress(formData: FormData) {
     return revalidatePath("/");
   }
 
-  let moveInDate: Date | null = null;
+  let moveInDate: string | undefined;
   if (moveInDay && moveInMonth && moveInYear) {
-    moveInDate = new Date(
-      `${moveInYear?.toString()}-${moveInMonth?.toString()}-${moveInDay?.toString()}`,
-    );
+    moveInDate = dayjs()
+      .year(Number(moveInYear))
+      .month(Number(moveInMonth) - 1)
+      .date(Number(moveInDay))
+      .startOf("day")
+      .toISOString();
   }
 
-  let moveOutDate: Date | null = null;
+  let moveOutDate: string | undefined;
   if (moveOutDay && moveOutMonth && moveOutYear) {
-    moveOutDate = new Date(
-      `${moveOutYear?.toString()}-${moveOutMonth?.toString()}-${moveOutDay?.toString()}`,
-    );
+    moveOutDate = dayjs()
+      .year(Number(moveOutYear))
+      .month(Number(moveOutMonth) - 1)
+      .date(Number(moveOutDay))
+      .startOf("day")
+      .toISOString();
   }
 
-  await postgres.pgpool.query(
-    `
-        UPDATE user_addresses
-        SET address_line1 = $3, address_line2 = $4, town = $5, county = $6, eirecode = $7, move_in_date = $8, move_out_date = $9, updated_at = now()
-        WHERE user_id = $1 AND address_id = $2
-    `,
-    [
-      userId,
-      addressId,
-      addressFirst,
-      addressSecond,
-      town,
-      county,
-      eirecode,
-      moveInDate,
-      moveOutDate,
-    ],
-  );
+  if (addressFirst && town && county && eirecode) {
+    new Profile(userId).updateAddress(addressId, {
+      address_line1: addressFirst,
+      address_line2: addressSecond,
+      town: town,
+      county: county,
+      eirecode: eirecode,
+      move_in_date: moveInDate,
+      move_out_date: moveOutDate,
+    });
+  }
+
   redirect("/");
 }
 
@@ -176,7 +161,7 @@ export default async (params: NextPageProps) => {
     throw notFound();
   }
 
-  const address = await getAddress(addressId);
+  const { data: address } = await new Profile(userId).getAddress(addressId);
 
   if (!address) {
     throw notFound();
@@ -251,6 +236,7 @@ export default async (params: NextPageProps) => {
       <div className="govie-grid-column-two-thirds">
         <form action={editAddress}>
           <input type="hidden" name="addressId" defaultValue={addressId} />
+          <input type="hidden" name="userId" defaultValue={userId} />
           <h1 className="govie-heading-l">{t("editAddress")}</h1>
           <fieldset className="govie-fieldset">
             <div

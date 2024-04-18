@@ -1,3 +1,5 @@
+import { TransactionStatuses } from "../types/TransactionStatuses";
+
 export function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-IE", {
     style: "currency",
@@ -44,4 +46,21 @@ export const getValidationErrors = (
 
     return errors;
   }, {});
+};
+
+export const mapTransactionStatusColorClassName = (status: string) => {
+  switch (status) {
+    case TransactionStatuses.Initiated:
+      return "govie-tag--blue";
+    case TransactionStatuses.Pending:
+      return "govie-tag--yellow";
+    case TransactionStatuses.Succeeded:
+      return "govie-tag--green";
+    case TransactionStatuses.Cancelled:
+      return "govie-tag--red";
+    case TransactionStatuses.Failed:
+      return "govie-tag--red";
+    default:
+      return "";
+  }
 };

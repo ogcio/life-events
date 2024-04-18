@@ -3,6 +3,8 @@ import { FormProps } from "./page";
 import { form, postgres } from "../../../utils";
 import { revalidatePath } from "next/cache";
 import { Link, redirect } from "../../../utils/navigation";
+import { Profile } from "building-blocks-sdk";
+import dayjs from "dayjs";
 
 export async function SelectForm(props: FormProps) {
   const t = await getTranslations("AddressForm");
@@ -72,18 +74,24 @@ export async function SelectForm(props: FormProps) {
       return revalidatePath("/");
     }
 
-    let moveInDate: Date | null = null;
+    let moveInDate: string | undefined;
     if (moveInDay && moveInMonth && moveInYear) {
-      moveInDate = new Date(
-        `${moveInYear?.toString()}-${moveInMonth?.toString()}-${moveInDay?.toString()}`,
-      );
+      moveInDate = dayjs()
+        .year(Number(moveInYear))
+        .month(Number(moveInMonth) - 1)
+        .date(Number(moveInDay))
+        .startOf("day")
+        .toISOString();
     }
 
-    let moveOutDate: Date | null = null;
+    let moveOutDate: string | undefined;
     if (moveOutDay && moveOutMonth && moveOutYear) {
-      moveOutDate = new Date(
-        `${moveOutYear?.toString()}-${moveOutMonth?.toString()}-${moveOutDay?.toString()}`,
-      );
+      moveOutDate = dayjs()
+        .year(Number(moveOutYear))
+        .month(Number(moveOutMonth) - 1)
+        .date(Number(moveOutDay))
+        .startOf("day")
+        .toISOString();
     }
 
     const userExistsQuery = await postgres.pgpool.query(
@@ -110,21 +118,14 @@ export async function SelectForm(props: FormProps) {
         .toString()
         .split(",");
 
-      await postgres.pgpool.query(
-        `
-            INSERT INTO user_addresses (user_id, address_line1, town, county, eirecode, move_in_date, move_out_date)
-            VALUES($1, $2, $3, $4, $5, $6, $7)
-        `,
-        [
-          userId,
-          addressFirst.trim(),
-          town.trim(),
-          county.trim(),
-          eirecode.trim(),
-          moveInDate,
-          moveOutDate,
-        ],
-      );
+      new Profile(userId).createAddress({
+        address_line1: addressFirst.trim(),
+        town: town.trim(),
+        county: county.trim(),
+        eirecode: eirecode.trim(),
+        move_in_date: moveInDate?.toString(),
+        move_out_date: moveOutDate?.toString(),
+      });
     }
 
     redirect("/");

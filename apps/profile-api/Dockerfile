@@ -1,0 +1,20 @@
+FROM base-deps as deps
+
+WORKDIR /app
+
+COPY ./package*.json /app/
+COPY ./apps/profile-api/package*.json /app/apps/profile-api/
+
+RUN npm ci
+
+COPY ./apps/profile-api/ /app/apps/profile-api/
+
+FROM deps AS builder
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV LOG_LEVEL=trace
+
+EXPOSE 8003
+
+CMD [ "npm", "--prefix", "apps/profile-api",  "run", "dev" ]
