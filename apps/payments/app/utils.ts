@@ -48,17 +48,19 @@ export const getValidationErrors = (
   }, {});
 };
 
-export const mapTransactionStatusColor = (status: TransactionStatuses) => {
+export const mapTransactionStatusColorClassName = (status: string) => {
   switch (status) {
     case TransactionStatuses.Initiated:
-      return "blue";
+      return "govie-tag--blue";
     case TransactionStatuses.Pending:
-      return "yellow";
+      return "govie-tag--yellow";
     case TransactionStatuses.Succeeded:
-      return "green";
+      return "govie-tag--green";
     case TransactionStatuses.Cancelled:
-      return "red";
+      return "govie-tag--red";
     case TransactionStatuses.Failed:
-      return "red";
+      return "govie-tag--red";
+    default:
+      return "";
   }
 };
