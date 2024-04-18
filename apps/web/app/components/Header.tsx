@@ -7,7 +7,11 @@ import { headers } from "next/headers";
 import "./Header.css";
 import HamburgerIcon from "./HamburgerIcon";
 
-export default () => {
+type THeaderProps = {
+  showSidebarToggle: boolean;
+};
+
+export default ({ showSidebarToggle }: THeaderProps) => {
   const t = useTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
@@ -42,7 +46,7 @@ export default () => {
               gap: "15px",
             }}
           >
-            <HamburgerIcon />
+            {showSidebarToggle && <HamburgerIcon />}
 
             <a
               href="/"

@@ -46,42 +46,36 @@ export default (props: Props) => {
       </li>
 
       <>
-        {props.options.map((option) => {
-          console.log("path sel", props.selected.includes(option.key));
-
-          return (
-            <li
-              key={`lem_${option.url}`}
-              tabIndex={0}
-              onClick={() => {
-                props.clickCallback(option.key);
+        {props.options.map((option) => (
+          <li
+            key={`lem_${option.url}`}
+            tabIndex={0}
+            onClick={() => {
+              props.clickCallback(option.key);
+            }}
+          >
+            <Link
+              className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
+              href={option.url}
+              style={{
+                margin: "unset",
+                paddingLeft: "12px",
+                width: "100%",
+                display: "flex",
+                justifyContent: "flex-start",
+                background: props.selected.includes(option.key) ? tintGold : "",
               }}
             >
-              <Link
-                className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
-                href={option.url}
-                style={{
-                  margin: "unset",
-                  paddingLeft: "12px",
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  background: props.selected.includes(option.key)
-                    ? tintGold
-                    : "",
-                }}
-              >
-                <Icon
-                  // make option typeof the icons
-                  icon={option.icon as any}
-                  className="govie-button__icon-left"
-                  color={ds.colours.ogcio.darkGreen}
-                />
-                {option.label}
-              </Link>
-            </li>
-          );
-        })}
+              <Icon
+                // make option typeof the icons
+                icon={option.icon as any}
+                className="govie-button__icon-left"
+                color={ds.colours.ogcio.darkGreen}
+              />
+              {option.label}
+            </Link>
+          </li>
+        ))}
       </>
     </ol>
   );
