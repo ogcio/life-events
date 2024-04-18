@@ -33,6 +33,18 @@ export interface paths {
             }[];
           };
         };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
       };
     };
     post: {
@@ -55,6 +67,18 @@ export interface paths {
           content: {
             "application/json": {
               id: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
             };
           };
         };
@@ -86,7 +110,19 @@ export interface paths {
           };
         };
         /** @description Default Response */
-        400: {
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
           content: {
             "application/json": {
               statusCode: number;
@@ -155,6 +191,120 @@ export interface paths {
       parameters: {
         path: {
           addressId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": Record<string, never>;
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/entitlements/": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              firstname: string;
+              lastname: string;
+              type: string;
+              issue_date: string;
+              expiry_date?: string;
+              document_number: string;
+            }[];
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/user-details/": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              firstname: string;
+              lastname: string;
+              email: string;
+              title: string;
+              date_of_birth?: string;
+              ppsn: string;
+              ppsn_visible: boolean;
+              gender: string;
+              phone: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+    put: {
+      requestBody?: {
+        content: {
+          "application/json": {
+            firstname?: string;
+            lastname?: string;
+            email?: string;
+            title?: string;
+            date_of_birth?: string;
+            ppsn?: string;
+            ppsn_visible?: boolean;
+            gender?: string;
+            phone?: string;
+          };
         };
       };
       responses: {

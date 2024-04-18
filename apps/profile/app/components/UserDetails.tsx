@@ -1,17 +1,21 @@
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
-import { pgpool } from "../utils/postgres";
 import dayjs from "dayjs";
 import ds from "design-system";
 import { form, postgres } from "../utils";
 import { revalidatePath } from "next/cache";
+import { Profile } from "building-blocks-sdk";
 
 async function submitAction(formData: FormData) {
   "use server";
 
-  const { userId } = await PgSessions.get();
-
   const formErrors: form.Error[] = [];
+
+  const userId = formData.get("userId")?.toString();
+
+  if (!userId) {
+    throw Error("User id not found");
+  }
 
   const phone = formData.get("phone")?.toString();
   formErrors.push(
@@ -33,18 +37,18 @@ async function submitAction(formData: FormData) {
   const monthOfBirth = formData.get("monthOfBirth");
   const yearOfBirth = formData.get("yearOfBirth");
 
-  const dateOfBirth = new Date(
-    Number(yearOfBirth),
-    Number(monthOfBirth) - 1,
-    Number(dayOfBirth),
-  );
+  const dateOfBirth = dayjs()
+    .year(Number(yearOfBirth))
+    .month(Number(monthOfBirth) - 1)
+    .date(Number(dayOfBirth))
+    .startOf("day")
+    .toISOString();
 
   let data = {
-    user_id: userId,
     date_of_birth: dateOfBirth,
     title: "",
-    firstName: "",
-    lastName: "",
+    firstname: "",
+    lastname: "",
     ppsn: "",
     ppsn_visible: false,
     gender: "",
@@ -61,8 +65,8 @@ async function submitAction(formData: FormData) {
     if (
       [
         "title",
-        "firstName",
-        "lastName",
+        "firstname",
+        "lastname",
         "ppsn",
         "gender",
         "phone",
@@ -83,23 +87,11 @@ async function submitAction(formData: FormData) {
     [userId],
   );
 
-  const keys = Object.keys(data);
-  const values = Object.values(data);
-
   if (currentDataResults.rows.length > 0) {
-    const setClause = keys
-      .map((key, index) => `${key} = $${index + 1}`)
-      .join(", ");
-
-    await postgres.pgpool.query(
-      `
-        UPDATE user_details
-        SET ${setClause}, updated_at = now()
-        WHERE user_id = $${keys.length + 1}
-      `,
-      [...values, userId],
-    );
+    await new Profile(userId).updateUserDetails(data);
   } else {
+    const keys = Object.keys(data);
+    const values = Object.values(data);
     const columns = keys.join(", ");
     const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
 
@@ -113,39 +105,6 @@ async function submitAction(formData: FormData) {
   }
 }
 
-async function getUserDetails() {
-  const { firstName, lastName, email, userId } = await PgSessions.get();
-
-  const res = await pgpool.query<{
-    title: string;
-    date_of_birth: string;
-    ppsn: string;
-    ppsn_visible: boolean;
-    gender: string;
-    phone: string;
-  }>(
-    `SELECT title, date_of_birth, ppsn, ppsn_visible, gender, phone FROM user_details WHERE user_id = $1`,
-    [userId],
-  );
-
-  const { title, date_of_birth, ppsn, ppsn_visible, gender, phone } =
-    res.rows[0] || {};
-
-  return {
-    userId,
-    firstName,
-    lastName,
-    email,
-    /** the defaults below should eventually be removed as the data should never be null */
-    title: title || "Mr",
-    date_of_birth: date_of_birth || new Date("1990-01-01T00:00:00Z"),
-    ppsn: ppsn || "9876543W",
-    ppsn_visible: ppsn_visible || false,
-    gender: gender || "male",
-    phone: phone || "01234567891",
-  };
-}
-
 export default async () => {
   const t = await getTranslations("UserDetails");
   const errorT = await getTranslations("FormErrors");
@@ -153,10 +112,18 @@ export default async () => {
 
   const red = ds.colours.ogcio.red;
 
+  const { userId } = await PgSessions.get();
+
+  const { data } = await new Profile(userId).getUserDetails();
+
+  if (!data) {
+    // log some error here
+    return <p className="govie-body">{t("userNotFound")}</p>;
+  }
+
   const {
-    userId,
-    firstName,
-    lastName,
+    firstname,
+    lastname,
     email,
     title,
     date_of_birth,
@@ -164,7 +131,7 @@ export default async () => {
     ppsn_visible,
     gender,
     phone,
-  } = await getUserDetails();
+  } = data;
 
   async function togglePPSN() {
     "use server";
@@ -180,21 +147,17 @@ export default async () => {
 
     if (userExistsQuery.rows.length > 0) {
       const isPPSNVisible = userExistsQuery.rows[0].ppsn_visible;
-      await postgres.pgpool.query(
-        `
-            UPDATE user_details
-            SET ppsn_visible = $1, updated_at = now()
-            WHERE user_id = $2
-          `,
-        [!isPPSNVisible, userId],
-      );
+
+      await new Profile(userId).updateUserDetails({
+        ppsn_visible: !isPPSNVisible,
+      });
     } else {
       await postgres.pgpool.query(
         `
             INSERT INTO user_details (user_id, ppsn_visible, firstname, lastname, email)
             VALUES ($1, TRUE, $2, $3, $4)
           `,
-        [userId, firstName, lastName, email],
+        [userId, firstname, lastname, email],
       );
     }
 
@@ -218,6 +181,7 @@ export default async () => {
 
   return (
     <form action={submitAction}>
+      <input type="hidden" name="userId" defaultValue={userId} />
       <h2 className="govie-heading-m">{t("name")}</h2>
       <div
         className="govie-form-group"
@@ -248,11 +212,11 @@ export default async () => {
           <input
             type="text"
             id="firstName-field"
-            name="firstName"
+            name="firstname"
             className="govie-input"
             aria-labelledby="firstName-field-hint"
             readOnly
-            defaultValue={firstName}
+            defaultValue={firstname}
             style={{ pointerEvents: "none" }}
           />
         </div>
@@ -263,11 +227,11 @@ export default async () => {
           <input
             type="text"
             id="lastName-field"
-            name="lastName"
+            name="lastname"
             className="govie-input"
             aria-labelledby="lastName-field-hint"
             readOnly
-            defaultValue={lastName}
+            defaultValue={lastname}
             style={{ pointerEvents: "none" }}
           />
         </div>

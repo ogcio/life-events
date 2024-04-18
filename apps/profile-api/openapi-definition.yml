@@ -53,6 +53,29 @@ paths:
                     - updated_at
                     - move_in_date
                     - move_out_date
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
     post:
       tags:
         - Addresses
@@ -94,6 +117,29 @@ paths:
                     type: string
                 required:
                   - id
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
   /api/v1/addresses/{addressId}:
     get:
       tags:
@@ -140,7 +186,30 @@ paths:
                   - updated_at
                   - move_in_date
                   - move_out_date
-        "400":
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+        "500":
           description: Default Response
           content:
             application/json:
@@ -315,5 +384,205 @@ paths:
                   - error
                   - message
                   - time
+  /api/v1/entitlements/:
+    get:
+      tags:
+        - Entitlements
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    firstname:
+                      type: string
+                    lastname:
+                      type: string
+                    type:
+                      type: string
+                    issue_date:
+                      type: string
+                    expiry_date:
+                      type: string
+                    document_number:
+                      type: string
+                  required:
+                    - firstname
+                    - lastname
+                    - type
+                    - issue_date
+                    - document_number
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+  /api/v1/user-details/:
+    get:
+      tags:
+        - UserDetails
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  firstname:
+                    type: string
+                  lastname:
+                    type: string
+                  email:
+                    type: string
+                  title:
+                    type: string
+                  date_of_birth:
+                    type: string
+                  ppsn:
+                    type: string
+                  ppsn_visible:
+                    type: boolean
+                  gender:
+                    type: string
+                  phone:
+                    type: string
+                required:
+                  - firstname
+                  - lastname
+                  - email
+                  - title
+                  - ppsn
+                  - ppsn_visible
+                  - gender
+                  - phone
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+    put:
+      tags:
+        - UserDetails
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                email:
+                  type: string
+                title:
+                  type: string
+                date_of_birth:
+                  type: string
+                ppsn:
+                  type: string
+                ppsn_visible:
+                  type: boolean
+                gender:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
 tags:
+  - name: UserDetails
   - name: Addresses
+  - name: Entitlements

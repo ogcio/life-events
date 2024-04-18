@@ -56,7 +56,7 @@ export class Profile {
 
   async updateAddress(
     addressId: string,
-    data: paths["/api/v1/addresses/"]["post"]["requestBody"]["content"]["application/json"],
+    data: paths["/api/v1/addresses/{addressId}"]["put"]["requestBody"]["content"]["application/json"],
   ) {
     return formatQueryResult(
       this.client.PUT("/api/v1/addresses/{addressId}", {
@@ -70,6 +70,30 @@ export class Profile {
     return formatQueryResult(
       this.client.DELETE("/api/v1/addresses/{addressId}", {
         params: { path: { addressId } },
+      }),
+    );
+  }
+
+  async getEntitlements() {
+    return formatQueryResult(this.client.GET("/api/v1/entitlements/"));
+  }
+
+  async getUserDetails() {
+    return formatQueryResult(this.client.GET("/api/v1/user-details/"));
+  }
+
+  async updateUserDetails(
+    data?: NonNullable<
+      paths["/api/v1/user-details/"]["put"]["requestBody"]
+    >["content"]["application/json"],
+  ) {
+    if (!data || Object.keys(data).length === 0) {
+      return;
+    }
+
+    return formatQueryResult(
+      this.client.PUT("/api/v1/user-details/", {
+        body: data,
       }),
     );
   }

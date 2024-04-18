@@ -1,57 +1,17 @@
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
-import { postgres, routes } from "../utils";
+import { routes } from "../utils";
 import ds from "design-system";
 import { Link } from "../utils/navigation";
-
-async function getUserEntitlements() {
-  const { firstName, lastName, userId } = await PgSessions.get();
-
-  const res = await postgres.pgpool.query<{
-    type: string;
-    issue_date: string;
-    expiry_date: string;
-    document_number: string;
-    entitlementFirstName: string;
-    entitlementLastName: string;
-  }>(
-    `SELECT type, issue_date, expiry_date, document_number, firstName as entitlementFirstName, lastName as entitlementLastName FROM user_entitlements WHERE user_id = $1`,
-    [userId],
-  );
-
-  if (res.rows.length > 0) {
-    return res.rows.map((row) => {
-      return {
-        ...row,
-        firstName: row.entitlementFirstName,
-        lastName: row.entitlementLastName,
-      };
-    });
-  }
-
-  /** the defaults below are for demo purposes only given we cannot load any real user entitlements at the moment */
-  return [
-    {
-      firstName,
-      lastName,
-      type: "drivingLicence",
-      issue_date: "15/11/2022",
-      expiry_date: "15/11/2032",
-      document_number: "MURPH0523",
-    },
-    {
-      firstName,
-      lastName,
-      type: "birthCertificate",
-      issue_date: "02/01/1990",
-      document_number: "0523789",
-    },
-  ];
-}
+import { Profile } from "building-blocks-sdk";
 
 export default async () => {
   const t = await getTranslations("Entitlements");
-  const entitlements = await getUserEntitlements();
+  const { userId } = await PgSessions.get();
+  const { data: entitlements = [] } = await new Profile(
+    userId,
+  ).getEntitlements();
+
   return (
     <>
       <h2 className="govie-heading-m">{t("entitlements")}</h2>

@@ -37,7 +37,13 @@ export async function build(opts?: FastifyServerOptions) {
       },
       tags: [
         {
+          name: "UserDetails",
+        },
+        {
           name: "Addresses",
+        },
+        {
+          name: "Entitlements",
         },
       ],
     },

@@ -18,6 +18,7 @@ export default async function addresses(app: FastifyInstance) {
         tags: ["Addresses"],
         response: {
           200: AddressesList,
+          500: HttpError,
         },
       },
     },
@@ -48,6 +49,7 @@ export default async function addresses(app: FastifyInstance) {
           200: Type.Object({
             id: Type.String(),
           }),
+          500: HttpError,
         },
       },
     },
@@ -97,7 +99,8 @@ export default async function addresses(app: FastifyInstance) {
         tags: ["Addresses"],
         response: {
           200: Address,
-          400: HttpError,
+          404: HttpError,
+          500: HttpError,
         },
       },
     },
