@@ -3,7 +3,7 @@ import { HttpError } from "../../types/httpErrors";
 import { UpdateUser, UserDetails } from "../../types/schemaDefinitions";
 import { Type } from "@sinclair/typebox";
 
-export default async function entitlements(app: FastifyInstance) {
+export default async function userDetails(app: FastifyInstance) {
   app.get<{ Reply: UserDetails | Error }>(
     "/",
     {
