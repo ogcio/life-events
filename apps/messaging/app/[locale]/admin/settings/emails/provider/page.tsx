@@ -1,5 +1,6 @@
 import { PgSessions } from "auth/sessions";
-import { mailApi, temporaryMockUtils } from "messages";
+import { Messaging } from "building-blocks-sdk";
+import { temporaryMockUtils } from "messages";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
@@ -46,8 +47,6 @@ const ProviderInput = (props: {
 );
 
 export default async (props: { searchParams: { id: string } }) => {
-  // const t = await getTranslations("settings.EmailProvider");
-  // const errorT = await getTranslations("formError")
   const [t, errorT] = await Promise.all([
     getTranslations("settings.EmailProvider"),
     getTranslations("formErrors"),
@@ -80,8 +79,8 @@ export default async (props: { searchParams: { id: string } }) => {
       }
     }
 
+    const { userId } = await PgSessions.get();
     if (formErrors.length) {
-      const { userId } = await PgSessions.get();
       await temporaryMockUtils.createErrors(
         formErrors,
         userId,
@@ -95,8 +94,10 @@ export default async (props: { searchParams: { id: string } }) => {
       return;
     }
 
+    const messagesClient = new Messaging(userId);
+
     if (!id) {
-      await mailApi.createProvider({
+      await messagesClient.createEmailProvider({
         name,
         host,
         username,
@@ -106,7 +107,7 @@ export default async (props: { searchParams: { id: string } }) => {
         throttle,
       });
     } else {
-      await mailApi.updateProvider({
+      await messagesClient.updateEmailProvider(id, {
         host,
         port,
         id,
@@ -120,11 +121,11 @@ export default async (props: { searchParams: { id: string } }) => {
     redirect(new URL("admin/settings/emails", process.env.HOST_URL).href);
   }
 
-  const data = props.searchParams.id
-    ? await mailApi.provider(props.searchParams.id)
-    : undefined;
-
   const { userId } = await PgSessions.get();
+  const { data } = await new Messaging(userId).getEmailProvider(
+    props.searchParams.id,
+  );
+
   const errors = await temporaryMockUtils.getErrors(
     userId,
     props.searchParams.id || defaultErrorStateId,
