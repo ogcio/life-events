@@ -856,5 +856,44 @@ paths:
                   - error
                   - message
                   - time
+  /api/v1/transactions/generatePaymentIntentId:
+    get:
+      tags:
+        - Transactions
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  intentId:
+                    type: string
+                required:
+                  - intentId
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
 tags:
   - name: Providers

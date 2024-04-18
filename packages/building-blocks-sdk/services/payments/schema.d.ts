@@ -417,6 +417,7 @@ export interface paths {
               };
               providerName: string;
               providerType: string;
+              paymentRequestId: string;
             };
           };
         };
@@ -485,6 +486,32 @@ export interface paths {
         };
         /** @description Default Response */
         500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/transactions/generatePaymentIntentId": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              intentId: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        400: {
           content: {
             "application/json": {
               statusCode: number;

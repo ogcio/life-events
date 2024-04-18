@@ -80,6 +80,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: ["PaymentRequests"],
+        params: ParamsWithPaymentRequestId,
         response: {
           200: Type.Object({
             paymentRequestId: Type.String(),
