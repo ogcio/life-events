@@ -1,8 +1,8 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { EmailProvider, mailService } from "./services";
-import { buildApiError } from "../../utils";
-
+import { utils } from "../../utils";
+const { buildApiError } = utils;
 const tags = ["Providers - Emails"];
 
 interface GetEmailProvider {

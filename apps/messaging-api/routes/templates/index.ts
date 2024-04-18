@@ -1,8 +1,8 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
-import { buildApiError, organisationId } from "../../utils";
+import { utils, organisationId } from "../../utils";
 const tags = ["Templates"];
-
+const { buildApiError } = utils;
 interface CreateTemplate {
   Body: {
     contents: {

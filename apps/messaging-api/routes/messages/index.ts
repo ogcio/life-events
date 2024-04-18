@@ -1,10 +1,9 @@
 import { FastifyInstance } from "fastify";
-import { Static, Type } from "@sinclair/typebox";
-import { HttpError } from "../../types/httpErrors";
-import { OurHttpError, utils } from "../../tmp_utils";
+import { Type } from "@sinclair/typebox";
+
 import { randomUUID } from "crypto";
 import { mailService } from "../providers/services";
-import { organisationId } from "../../utils";
+import { utils, organisationId } from "../../utils";
 
 interface GetAllMessages {
   Querystring: {
@@ -124,15 +123,9 @@ export default async function messages(app: FastifyInstance) {
 
         return { data };
       } catch (err) {
-        // I guess we're gonna do some reporting with these errors?
-        const error: Static<typeof HttpError> = {
-          code: "no idea what this is supposed to be",
-          error: "failed to fetch messages",
-          message: "idk bro",
-          statusCode: 500,
-          time: new Date().toISOString(),
-        };
-        throw app.httpErrors.internalServerError(error.message);
+        const error = utils.buildApiError("failed to get all messages", 500);
+        reply.statusCode = error.statusCode;
+        return error;
       }
     },
   );
@@ -167,9 +160,6 @@ export default async function messages(app: FastifyInstance) {
     },
     async function handler(request, reply) {
       const userId = request.user?.id;
-      if (!userId) {
-        throw app.httpErrors.unauthorized();
-      }
 
       const data = await app.pg
         .query<{
@@ -197,12 +187,9 @@ export default async function messages(app: FastifyInstance) {
         .then((res) => res.rows.at(0));
 
       if (!data) {
-        reply.statusCode = 404;
-        const errorStruct: OurHttpError = {
-          statusCode: 404,
-          message: "no message found",
-        };
-        return errorStruct;
+        const error = utils.buildApiError("no mesage found", 404);
+        reply.statusCode = error.statusCode;
+        return error;
       }
 
       return { data };
@@ -249,11 +236,12 @@ export default async function messages(app: FastifyInstance) {
       const { message, template, preferredTransports, security, userIds } =
         request.body;
       if (!message && !template) {
-        reply.statusCode = 400;
-        return {
-          statusCode: 400,
-          message: "body must contain either a message or a template object",
-        };
+        const error = utils.buildApiError(
+          "body must contain either a message or a template object",
+          400,
+        );
+        reply.statusCode = error.statusCode;
+        return error;
       }
 
       let mailSubject: string | undefined;
@@ -345,13 +333,15 @@ export default async function messages(app: FastifyInstance) {
           .then((res) => res.rows);
 
         if (!templateContents.length) {
-          reply.statusCode = 400;
-          return {
-            statusCode: 400,
-            message: `no template for id ${template.id}`,
-          };
+          const error = utils.buildApiError(
+            `no template for id ${template.id}`,
+            400,
+          );
+          reply.statusCode = error.statusCode;
+          return error;
         }
 
+        // No users preference api (yet). Use this code when it's available
         // const languagesToConsider = users.reduce(
         //   utils.reduceUserLang,
         //   new Set<string>(),
@@ -425,7 +415,7 @@ export default async function messages(app: FastifyInstance) {
           };
 
           const client = await app.pg.connect();
-          let error: OurHttpError | undefined;
+          let error: ReturnType<typeof utils.buildApiError> | undefined;
           try {
             await client.query("BEGIN");
             for (const lang of Object.keys(valuesByLang)) {
