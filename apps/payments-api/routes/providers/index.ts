@@ -92,12 +92,15 @@ export default async function providers(app: FastifyInstance) {
       const userId = request.user?.id;
       const { name, type, data } = request.body;
 
+      const providerSecretsHandler = providerSecretsHandlersFactory(type);
+      const cypheredData = providerSecretsHandler.getCypheredData(data);
+
       const result = await app.pg.query(
         `
         INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
         VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
             `,
-        [userId, name, type, "connected", data],
+        [userId, name, type, "connected", cypheredData],
       );
 
       reply.send({ id: result.rows[0].id });
