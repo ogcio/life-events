@@ -7,6 +7,12 @@ import { RedirectType, redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { pgpool } from "../utils/postgres";
 import FeedbackBanner from "../components/FeedbackBanner";
+import { getAllEnabledFlags, isFeatureFlagEnabled } from "feature-flags/utils";
+import {
+  getEnabledOptions,
+  menuOptions,
+} from "./[event]/components/Menu/options";
+import SidebarWrapper from "./[event]/components/SidebarWrapper";
 
 export default async function RootLayout({
   children,
@@ -15,7 +21,7 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const { userId } = await PgSessions.get();
+  const { userId, firstName, lastName } = await PgSessions.get();
 
   const result = await pgpool.query<{ isInitialized: boolean }>(
     `SELECT EXISTS (SELECT 1 FROM user_consents WHERE user_id = $1 AND agreement = 'storeUserData' LIMIT 1) AS "isInitialized"`,
@@ -31,6 +37,28 @@ export default async function RootLayout({
     redirect(url.href, RedirectType.replace);
   }
 
+  const showEventsMenu = await isFeatureFlagEnabled("eventsMenu");
+
+  let SidebarComponent;
+  if (showEventsMenu) {
+    const userName = [firstName, lastName].join(" ");
+
+    const enabledEntries = await getAllEnabledFlags(
+      menuOptions.map((o) => o.key),
+    );
+
+    const options = getEnabledOptions(locale, enabledEntries);
+    SidebarComponent = (
+      <SidebarWrapper
+        userName={userName}
+        ppsn="TUV1234123"
+        selected={path || ""}
+        options={options}
+        locale={locale}
+      />
+    );
+  }
+
   return (
     <html lang={locale}>
       <body
@@ -42,6 +70,7 @@ export default async function RootLayout({
           flexDirection: "column",
         }}
       >
+        {SidebarComponent}
         <Header />
         {/* All designs are made for 1440 px  */}
         <div
