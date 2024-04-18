@@ -719,6 +719,8 @@ paths:
                     type: string
                   providerType:
                     type: string
+                  paymentRequestId:
+                    type: string
                 required:
                   - transactionId
                   - status
@@ -729,6 +731,7 @@ paths:
                   - userData
                   - providerName
                   - providerType
+                  - paymentRequestId
         "404":
           description: Default Response
           content:

@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
-import { form } from "../../../utils";
+import { form, routes } from "../../../utils";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { FormProps } from "./page";
+import { redirect } from "../../../utils/navigation";
 
 export async function SearchForm(props: FormProps) {
   const { userId } = props.userData;
@@ -30,7 +30,9 @@ export async function SearchForm(props: FormProps) {
     }
 
     if (searchQuery) {
-      redirect("?adr=" + searchQuery);
+      redirect(
+        `/${routes.addresses.newAddress.path()}${"?adr="}${searchQuery}`,
+      );
     }
   }
 

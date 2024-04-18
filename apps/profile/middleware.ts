@@ -1,11 +1,15 @@
 import createMiddleware from "next-intl/middleware";
 import { NextRequest } from "next/server";
-const locales = ["en", "ga"];
+
+export const locales = ["en", "ga"] as const;
+export const localePrefix = "always"; // Default
 
 export default function (request: NextRequest) {
-  const nextResponse = createMiddleware({ locales, defaultLocale: "en" })(
-    request,
-  );
+  const nextResponse = createMiddleware({
+    locales,
+    defaultLocale: "en",
+    localePrefix,
+  })(request);
 
   nextResponse.headers.append("x-pathname", request.nextUrl.pathname);
 

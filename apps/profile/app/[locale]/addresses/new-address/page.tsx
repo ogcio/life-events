@@ -1,10 +1,10 @@
 import { NextPageProps } from "../../../../types";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 import { PgSessions } from "auth/sessions";
 import { SearchForm } from "./SearchForm";
 import { ManualAddressForm } from "./ManualAddressForm";
 import { SelectForm } from "./SelectForm";
+import { Link } from "../../../utils/navigation";
 
 export type FormProps = {
   userData: {

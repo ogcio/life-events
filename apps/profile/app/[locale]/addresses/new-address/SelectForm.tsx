@@ -1,9 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { FormProps } from "./page";
 import { form, postgres } from "../../../utils";
-import { redirect } from "next/navigation";
-import Link from "next/link";
 import { revalidatePath } from "next/cache";
+import { Link, redirect } from "../../../utils/navigation";
 
 export async function SelectForm(props: FormProps) {
   const t = await getTranslations("AddressForm");
