@@ -70,7 +70,6 @@ export default async function paymentRequests(app: FastifyInstance) {
         [userId],
       );
 
-
       reply.send(result.rows);
     },
   );
