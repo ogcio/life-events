@@ -3,6 +3,7 @@ import { FormProps } from "./page";
 import { form, postgres } from "../../../utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "../../../utils/navigation";
+import { Profile } from "building-blocks-sdk";
 
 export async function ManualAddressForm(props: FormProps) {
   const { userId, firstName, lastName, email } = props.userData;
@@ -13,13 +14,13 @@ export async function ManualAddressForm(props: FormProps) {
   async function submitAction(formData: FormData) {
     "use server";
     const errors: form.Error[] = [];
-    const addressFirst = formData.get("addressFirst");
-    const addressSecond = formData.get("addressSecond");
-    const town = formData.get("town");
-    const county = formData.get("county");
-    const eirecode = formData.get("eirecode");
+    const addressFirst = formData.get("addressFirst")?.toString();
+    const addressSecond = formData.get("addressSecond")?.toString();
+    const town = formData.get("town")?.toString();
+    const county = formData.get("county")?.toString();
+    const eirecode = formData.get("eirecode")?.toString();
 
-    if (!addressFirst?.toString().length) {
+    if (!addressFirst) {
       errors.push({
         messageKey: form.errorTranslationKeys.empty,
         errorValue: "",
@@ -27,7 +28,7 @@ export async function ManualAddressForm(props: FormProps) {
       });
     }
 
-    if (!town?.toString()) {
+    if (!town) {
       errors.push({
         messageKey: form.errorTranslationKeys.empty,
         errorValue: "",
@@ -35,7 +36,7 @@ export async function ManualAddressForm(props: FormProps) {
       });
     }
 
-    if (!county?.toString()) {
+    if (!county) {
       errors.push({
         messageKey: form.errorTranslationKeys.empty,
         errorValue: "",
@@ -43,7 +44,7 @@ export async function ManualAddressForm(props: FormProps) {
       });
     }
 
-    if (!eirecode?.toString()) {
+    if (!eirecode) {
       errors.push({
         messageKey: form.errorTranslationKeys.empty,
         errorValue: "",
@@ -75,15 +76,17 @@ export async function ManualAddressForm(props: FormProps) {
       );
     }
 
-    await postgres.pgpool.query(
-      `
-            INSERT INTO user_addresses (user_id, address_line1, address_line2, town, county, eirecode)
-            VALUES($1, $2, $3, $4, $5, $6)
-        `,
-      [userId, addressFirst, addressSecond, town, county, eirecode],
-    );
+    if (addressFirst && town && county && eirecode) {
+      new Profile(userId).createAddress({
+        address_line1: addressFirst,
+        address_line2: addressSecond,
+        town: town,
+        county: county,
+        eirecode: eirecode,
+      });
 
-    redirect("/");
+      redirect("/");
+    }
   }
 
   const addressFirstLineError = errors.rows.find(

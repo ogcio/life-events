@@ -3,44 +3,25 @@ import { NextPageProps } from "../../../../../types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PgSessions } from "auth/sessions";
-import { formatDate, postgres } from "../../../../utils";
+import { formatDate } from "../../../../utils";
 import { redirect } from "../../../../utils/navigation";
-
-async function getAddress(addressId: string) {
-  const { userId } = await PgSessions.get();
-  const res = await postgres.pgpool.query<{
-    address_id: string;
-    address_line1: string;
-    address_line2: string;
-    town: string;
-    county: string;
-    eirecode: string;
-    move_in_date: string;
-    move_out_date: string;
-  }>(
-    `SELECT address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date FROM user_addresses WHERE user_id = $1 AND address_id = $2`,
-    [userId, addressId],
-  );
-
-  return res.rows[0];
-}
+import { Profile } from "building-blocks-sdk";
 
 async function removeAddress(formData: FormData) {
   "use server";
 
   const addressId = formData.get("addressId")?.toString();
+  const userId = formData.get("userId")?.toString();
 
   if (!addressId) {
     throw Error("Address id not found");
   }
 
-  await postgres.pgpool.query<{ addressId: string }>(
-    `
-    DELETE FROM user_addresses
-    WHERE address_id = $1
-  `,
-    [addressId],
-  );
+  if (!userId) {
+    throw Error("User id not found");
+  }
+
+  new Profile(userId).deleteAddress(addressId);
 
   redirect("/");
 }
@@ -48,12 +29,13 @@ async function removeAddress(formData: FormData) {
 export default async (params: NextPageProps) => {
   const t = await getTranslations("AddressForm");
   const { id: addressId } = params.params;
+  const { userId } = await PgSessions.get();
 
   if (!addressId) {
     throw notFound();
   }
 
-  const address = await getAddress(addressId);
+  const { data: address } = await new Profile(userId).getAddress(addressId);
 
   if (!address) {
     throw notFound();
@@ -62,6 +44,7 @@ export default async (params: NextPageProps) => {
     <div className="govie-grid-row">
       <form action={removeAddress}>
         <input type="hidden" name="addressId" defaultValue={addressId} />
+        <input type="hidden" name="userId" defaultValue={userId} />
         <div className="govie-grid-column-two-thirds">
           <h1 className="govie-heading-m">{t("confirmRemoveAddress")}</h1>
           <dl className="govie-summary-list">
