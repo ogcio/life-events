@@ -263,3 +263,8 @@ export const ParamsWithTransactionId = Type.Object({
   transactionId: Type.String(),
 });
 export type ParamsWithTransactionId = Static<typeof ParamsWithTransactionId>;
+
+export const PaymentIntentId = Type.Object({
+  intentId: Type.String(),
+});
+export type PaymentIntentId = Static<typeof PaymentIntentId>;

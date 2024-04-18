@@ -3,6 +3,7 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreateTransactionBody,
   ParamsWithTransactionId,
+  PaymentIntentId,
   TransactionDetails,
   TransactionStatusesEnum,
   UpdateTransactionBody,
@@ -148,6 +149,51 @@ export default async function transactions(app: FastifyInstance) {
       }
 
       reply.send({ transactionId: result.rows[0].transactionId });
+    },
+  );
+
+  app.get<{
+    Reply: PaymentIntentId | Error;
+  }>(
+    "/generatePaymentIntentId",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Transactions"],
+        response: {
+          200: PaymentIntentId,
+          400: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      let result;
+      let execNr = 0;
+      const maxTry = process.env.PAYMENT_INTENTID_MAX_TRY_GENERATION
+        ? parseInt(process.env.PAYMENT_INTENTID_MAX_TRY_GENERATION)
+        : 20;
+      const len = process.env.PAYMENT_INTENTID_LENGTH
+        ? parseInt(process.env.PAYMENT_INTENTID_LENGTH)
+        : 6;
+
+      do {
+        if (execNr > maxTry) {
+          throw app.httpErrors.notFound("Unique intentId generation failed");
+        }
+
+        result = await app.pg.query(
+          `SELECT "intentId" FROM UPPER(LEFT(md5(random()::text), $1)) AS "intentId"
+              WHERE "intentId" NOT IN (
+                SELECT ext_payment_id 
+                FROM payment_transactions
+              )`,
+          [len],
+        );
+
+        execNr++;
+      } while (result.rowCount === 0);
+
+      reply.send(result.rows[0]);
     },
   );
 }
