@@ -2,9 +2,9 @@
 import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
+
 /**
- * Utility script to automatically create .env files based on .env.sample file
- *
+ * Utility script to initialize Logto locally
  */
 
 const IMAGE_MODES = {
@@ -12,6 +12,9 @@ const IMAGE_MODES = {
   REMOTE: 'remote'
 }
 
+// Why using env variables instead of params?
+// Because in this way each user can personalize its own scenario without
+// having to update package.json
 const LOGTO_PARENT_FOLDER_PATH = process.env.LOGTO_PARENT_FOLDER_PATH ?? undefined;
 const LOGTO_FOLDER_NAME = process.env.LOGTO_FOLDER_NAME ?? 'logto';
 const LOGTO_REPO_URL = process.env.LOGTO_REPO_URL ?? 'git@github.com:ogcio/logto.git';
