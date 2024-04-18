@@ -1,3 +1,5 @@
+import { TransactionStatuses } from "../types/TransactionStatuses";
+
 export function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-IE", {
     style: "currency",
@@ -44,4 +46,19 @@ export const getValidationErrors = (
 
     return errors;
   }, {});
+};
+
+export const mapTransactionStatusColor = (status: TransactionStatuses) => {
+  switch (status) {
+    case TransactionStatuses.Initiated:
+      return "blue";
+    case TransactionStatuses.Pending:
+      return "yellow";
+    case TransactionStatuses.Succeeded:
+      return "green";
+    case TransactionStatuses.Cancelled:
+      return "red";
+    case TransactionStatuses.Failed:
+      return "red";
+  }
 };
