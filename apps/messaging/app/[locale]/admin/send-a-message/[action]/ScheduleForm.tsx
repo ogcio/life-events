@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { useTranslations } from "next-intl";
-import { Messages } from "building-blocks-sdk";
+import { Messaging } from "building-blocks-sdk";
 
 export default (props: MessageCreateProps) => {
   const t = useTranslations("sendAMessage.ScheduleForm");
@@ -18,7 +18,7 @@ export default (props: MessageCreateProps) => {
       props.stateId,
     );
 
-    const messagesClient = new Messages(props.userId);
+    const messagesClient = new Messaging(props.userId);
     let message: Parameters<typeof messagesClient.createMessage>[0]["message"];
     let template: Parameters<
       typeof messagesClient.createMessage

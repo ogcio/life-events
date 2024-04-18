@@ -1,5 +1,5 @@
 import { PgSessions } from "auth/sessions";
-import { Messages } from "building-blocks-sdk";
+import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
@@ -8,7 +8,7 @@ export default async (props: { params: { messageId: string } }) => {
 
   const { userId } = await PgSessions.get();
 
-  const { data: message, error } = await new Messages(userId).getMessage(
+  const { data: message, error } = await new Messaging(userId).getMessage(
     props.params.messageId,
   );
 

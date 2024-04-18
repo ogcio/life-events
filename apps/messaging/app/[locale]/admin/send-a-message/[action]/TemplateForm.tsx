@@ -4,7 +4,7 @@ import { api } from "messages";
 import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
-import { Messages } from "building-blocks-sdk";
+import { Messaging } from "building-blocks-sdk";
 import { headers } from "next/headers";
 
 export default async (props: MessageCreateProps) => {
@@ -50,7 +50,7 @@ export default async (props: MessageCreateProps) => {
   }
 
   const { userId } = await PgSessions.get();
-  const { data: template } = await new Messages(userId).getTemplate(
+  const { data: template } = await new Messaging(userId).getTemplate(
     props.state.templateMetaId,
     headers().get("x-next-intl-locale") ?? "en",
   );

@@ -1,5 +1,5 @@
 import { PgSessions } from "auth/sessions";
-import { Messages } from "building-blocks-sdk";
+import { Messaging } from "building-blocks-sdk";
 import { mailApi } from "messages";
 import { pgpool } from "messages/dbConnection";
 import { useTranslations } from "next-intl";
@@ -20,7 +20,7 @@ const EmailProviderTable = ({
     const { userId } = await PgSessions.get();
 
     if (id) {
-      const { error } = await new Messages(userId).deleteEmailProvider(id);
+      const { error } = await new Messaging(userId).deleteEmailProvider(id);
       if (error) {
         // error handling
       }

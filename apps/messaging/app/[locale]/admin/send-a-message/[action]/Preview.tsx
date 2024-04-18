@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
-import { Messages } from "building-blocks-sdk";
+import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 import { headers } from "next/headers";
 
@@ -33,7 +33,7 @@ export default async (props: MessageCreateProps) => {
 
   const { userId } = await PgSessions.get();
   const template = props.state.templateMetaId
-    ? await new Messages(userId).getTemplate(
+    ? await new Messaging(userId).getTemplate(
         props.state.templateMetaId,
         headers().get("x-next-intl-locale") ?? "en",
       )

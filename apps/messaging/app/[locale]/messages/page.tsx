@@ -4,13 +4,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import ds from "design-system";
-import { Messages } from "building-blocks-sdk";
+import { Messaging } from "building-blocks-sdk";
 
 export default async (props: { searchParams: any }) => {
   const t = await getTranslations("Messages");
   const { userId } = await PgSessions.get();
 
-  const { data: messages } = await new Messages(userId).getMessages();
+  const { data: messages } = await new Messaging(userId).getMessages();
 
   async function searchAction(formData: FormData) {
     "use server";

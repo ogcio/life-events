@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { deleteEmailTemplate } from "messages";
 import Link from "next/link";
-import { Messages } from "building-blocks-sdk";
+import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 
 async function deleteEmailTemplateAction(formData: FormData) {
@@ -16,7 +16,7 @@ export default async () => {
   const t = await getTranslations("MessageTemplates");
   const { userId } = await PgSessions.get();
 
-  const { data: templates } = await new Messages(userId).getTemplates();
+  const { data: templates } = await new Messaging(userId).getTemplates();
 
   return (
     <table className="govie-table">

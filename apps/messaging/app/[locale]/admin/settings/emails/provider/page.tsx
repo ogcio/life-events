@@ -1,5 +1,5 @@
 import { PgSessions } from "auth/sessions";
-import { Messages } from "building-blocks-sdk";
+import { Messaging } from "building-blocks-sdk";
 import { temporaryMockUtils } from "messages";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
@@ -94,7 +94,7 @@ export default async (props: { searchParams: { id: string } }) => {
       return;
     }
 
-    const messagesClient = new Messages(userId);
+    const messagesClient = new Messaging(userId);
 
     if (!id) {
       await messagesClient.createEmailProvider({
@@ -122,7 +122,7 @@ export default async (props: { searchParams: { id: string } }) => {
   }
 
   const { userId } = await PgSessions.get();
-  const { data } = await new Messages(userId).getEmailProvider(
+  const { data } = await new Messaging(userId).getEmailProvider(
     props.searchParams.id,
   );
 
