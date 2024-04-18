@@ -6,6 +6,7 @@ import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 import { notFound } from "next/navigation";
 import { TransactionStatuses } from "../../../../../../types/TransactionStatuses";
+import Link from "next/link";
 
 async function getTransactionDetails(transactionId: string) {
   const { userId } = await PgSessions.get();
@@ -58,7 +59,9 @@ export default async function ({ params: { transactionId } }) {
       <dl className="govie-summary-list">
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("requestTitle")}</dt>
-          <dt className="govie-summary-list__value">{details.title}</dt>
+          <Link href={`/paymentSetup/requests/${details.paymentRequestId}`}>
+            <dt className="govie-summary-list__value">{details.title}</dt>
+          </Link>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("amount")}</dt>
