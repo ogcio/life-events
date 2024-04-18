@@ -370,6 +370,53 @@ export interface paths {
       };
     };
   };
+  "/api/v1/requests/{requestId}/public-info": {
+    get: {
+      parameters: {
+        path: {
+          requestId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              paymentRequestId: string;
+              title: string;
+              description: string;
+              amount: number;
+              reference: string;
+              providers: {
+                userId: string;
+                id: string;
+                name: string;
+                type: string;
+                status: string;
+                data: unknown;
+                createdAt: string;
+              }[];
+              redirectUrl: string;
+              allowAmountOverride: boolean;
+              allowCustomAmount: boolean;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/requests/{requestId}/transactions": {
     get: {
       parameters: {

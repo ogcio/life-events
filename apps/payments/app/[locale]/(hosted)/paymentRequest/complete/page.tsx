@@ -5,9 +5,9 @@ import {
   getInternalStatus,
   getPaymentIntent,
 } from "../../../../integration/stripe";
-import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
+import { Payments } from "building-blocks-sdk";
 
 type Props = {
   searchParams:
@@ -48,9 +48,7 @@ async function updateTransaction(extPaymentId: string, status: string) {
 async function getRequestDetails(requestId: string) {
   const { userId } = await PgSessions.get();
   const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-      requestId,
-    )
+    await new Payments(userId).getPaymentRequestPublicInfo(requestId)
   ).data;
 
   return details;
@@ -81,7 +79,7 @@ export default async function Page(props: Props) {
 
       status = mappedStatus;
     } else {
-      notFound();
+      return notFound();
     }
   }
 
@@ -89,6 +87,10 @@ export default async function Page(props: Props) {
   const requestDetail = await getRequestDetails(
     transactionDetail.payment_request_id,
   );
+
+  if (!requestDetail) {
+    return notFound();
+  }
 
   const returnUrl = new URL(requestDetail.redirectUrl);
   returnUrl.searchParams.append(
