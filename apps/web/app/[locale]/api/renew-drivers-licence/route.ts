@@ -2,8 +2,9 @@ import { NextRequest } from "next/server";
 import { redirect } from "next/navigation";
 import { pgpool } from "../../../utils/postgres";
 import { driving } from "../../../utils/routes";
-import { api, apistub, temporaryMockUtils } from "messages";
+import { temporaryMockUtils } from "messages";
 import { PgSessions } from "auth/sessions";
+import { Messages } from "building-blocks-sdk";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -26,9 +27,10 @@ export async function GET(request: NextRequest) {
   const paymentTemplateIdPlaceholder =
     await temporaryMockUtils.autoPaymentTemplateId();
 
+  const messagingClient = new Messages(userId);
   // This is for demonstrational purposes.
   if (paymentTemplateIdPlaceholder) {
-    void apistub.messages.post({
+    void messagingClient.createMessage({
       preferredTransports: [],
       security: "high",
       userIds: [userId],
@@ -48,7 +50,7 @@ export async function GET(request: NextRequest) {
     await temporaryMockUtils.autoSuccessfulTemplateId();
 
   if (eventSuccessTemplateIdPlaceholder) {
-    void apistub.messages.post({
+    void messagingClient.createMessage({
       preferredTransports: [],
       security: "high",
       userIds: [userId],
