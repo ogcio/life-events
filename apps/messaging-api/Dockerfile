@@ -15,6 +15,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
-EXPOSE 8001
+EXPOSE 8002
 
 CMD [ "npm", "--prefix", "apps/messaging-api",  "run", "dev" ]
