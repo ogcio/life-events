@@ -3,7 +3,7 @@ import { NextPageProps } from "../../../../../types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PgSessions } from "auth/sessions";
-import { formatDate, postgres } from "../../../../utils";
+import { formatDate } from "../../../../utils";
 import { redirect } from "../../../../utils/navigation";
 import { Profile } from "building-blocks-sdk";
 

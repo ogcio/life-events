@@ -1,7 +1,7 @@
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { form, postgres } from "../../../../utils";
+import { form } from "../../../../utils";
 import { NextPageProps } from "../../../../../types";
 import { revalidatePath } from "next/cache";
 import dayjs from "dayjs";
