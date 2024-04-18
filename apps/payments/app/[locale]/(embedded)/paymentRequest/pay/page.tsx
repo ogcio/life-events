@@ -67,6 +67,10 @@ export default async function Page(props: Props) {
 
   if (!details) return notFound();
 
+  if (!details.providers.length) {
+    return <h1 className="govie-heading-l">{t("errorNotReady")}</h1>;
+  }
+
   const hasOpenBanking = details.providers.some(
     ({ type }) => type === "openbanking",
   );

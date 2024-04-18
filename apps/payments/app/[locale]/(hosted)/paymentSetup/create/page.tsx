@@ -14,9 +14,9 @@ async function createPayment(userId: string, formData: FormData) {
     formData.get("stripe-account")?.toString(),
   ].filter((provider): provider is string => !!provider);
 
-  if (!providers.length) {
-    throw new Error("Failed to create payment");
-  }
+  // if (!providers.length) {
+  //   throw new Error("Failed to create payment");
+  // }
 
   const data = {
     title: formData.get("title") as string,
