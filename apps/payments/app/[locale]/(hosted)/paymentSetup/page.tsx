@@ -1,12 +1,13 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
-import { getUserTransactionDetails } from "./db";
 import {
   formatCurrency,
   mapTransactionStatusColorClassName,
 } from "../../../utils";
+
 import { EmptyStatus } from "../../../components/EmptyStatus";
+import { Payments } from "building-blocks-sdk";
 
 export default async function () {
   const [t, { userId }] = await Promise.all([
@@ -14,7 +15,7 @@ export default async function () {
     PgSessions.get(),
   ]);
 
-  const transactions = await getUserTransactionDetails(userId);
+  const transactions = (await new Payments(userId).getTransactions()).data;
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
@@ -27,7 +28,7 @@ export default async function () {
         }}
       >
         <h1 className="govie-heading-m">{t("title")}</h1>
-        {transactions.length === 0 ? (
+        {transactions?.length === 0 ? (
           <EmptyStatus
             title={t("emptyPaymentsList.title")}
             description={t("emptyPaymentsList.description")}
@@ -65,8 +66,8 @@ export default async function () {
               </tr>
             </thead>
             <tbody className="govie-table__body">
-              {transactions.map((trx) => (
-                <tr className="govie-table__row" key={trx.transaction_id}>
+              {transactions?.map((trx) => (
+                <tr className="govie-table__row" key={trx.transactionId}>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     <strong
                       className={`govie-tag ${mapTransactionStatusColorClassName(trx.status)} govie-body-s`}
@@ -76,7 +77,7 @@ export default async function () {
                     </strong>
                   </td>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    {new Date(trx.updated_at).toLocaleDateString()}
+                    {new Date(trx.updatedAt).toLocaleDateString()}
                   </td>
 
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
@@ -87,7 +88,7 @@ export default async function () {
                   </td>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     <Link
-                      href={`paymentSetup/transaction/${trx.transaction_id}`}
+                      href={`paymentSetup/transaction/${trx.transactionId}`}
                     >
                       {t("table.details")}
                     </Link>

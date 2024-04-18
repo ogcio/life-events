@@ -5,6 +5,7 @@ import {
   ParamsWithTransactionId,
   PaymentIntentId,
   TransactionDetails,
+  Transactions,
   TransactionStatusesEnum,
   UpdateTransactionBody,
 } from "../schemas";
@@ -60,6 +61,49 @@ export default async function transactions(app: FastifyInstance) {
       }
 
       reply.send(result.rows[0]);
+    },
+  );
+
+  app.get<{
+    Reply: Transactions | Error;
+  }>(
+    "/",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Transactions"],
+        response: {
+          200: Transactions,
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+
+      let result;
+      try {
+        result = await app.pg.query(
+          `SELECT
+            t.transaction_id as "transactionId",
+            t.status,
+            t.user_data as "userData",
+            pr.title,
+            pr.payment_request_id as "paymentRequestId",
+            t.ext_payment_id as "extPaymentId",
+            t.amount,
+            t.updated_at as "updatedAt",
+            pp.provider_name as "providerName",
+            pp.provider_type as "providerType"
+          FROM payment_transactions t
+          INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.user_id = $1
+          JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id`,
+          [userId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+      reply.send(result?.rows);
     },
   );
 

@@ -248,6 +248,9 @@ export const TransactionDetails = Type.Composite([
 ]);
 export type TransactionDetails = Static<typeof TransactionDetails>;
 
+export const Transactions = Type.Array(TransactionDetails);
+export type Transactions = Static<typeof Transactions>;
+
 export const UpdateTransactionBody = Type.Pick(Transaction, ["status"]);
 export type UpdateTransactionBody = Static<typeof UpdateTransactionBody>;
 

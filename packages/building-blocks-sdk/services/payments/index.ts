@@ -115,6 +115,10 @@ export class Payments {
    * TRANSACTIONS
    */
 
+  async getTransactions() {
+    return formatQueryResult(this.client.GET("/api/v1/transactions/"));
+  }
+
   async updateTransaction(
     transactionId: paths["/api/v1/transactions/{transactionId}"]["patch"]["parameters"]["path"]["transactionId"],
     data: paths["/api/v1/transactions/{transactionId}"]["patch"]["requestBody"]["content"]["application/json"],
