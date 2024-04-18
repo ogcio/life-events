@@ -2,7 +2,7 @@ import React from "react";
 import { getTranslations } from "next-intl/server";
 import {
   formatCurrency,
-  mapTransactionStatusColor,
+  mapTransactionStatusColorClassName,
 } from "../../../../../utils";
 import dayjs from "dayjs";
 import { PgSessions } from "auth/sessions";
@@ -70,7 +70,7 @@ export default async function ({ params: { requestId } }) {
                   <tr className="govie-table__row" key={trx.transactionId}>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                       <strong
-                        className={`govie-tag govie-tag--${mapTransactionStatusColor(trx.status)} govie-body-s`}
+                        className={`govie-tag ${mapTransactionStatusColorClassName(trx.status)} govie-body-s`}
                         style={{ marginBottom: "0px" }}
                       >
                         {trx.status}
