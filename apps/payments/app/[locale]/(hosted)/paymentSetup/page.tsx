@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
 import { getUserTransactionDetails } from "./db";
-import { formatCurrency } from "../../../utils";
+import { formatCurrency, mapTransactionStatusColor } from "../../../utils";
 import { EmptyStatus } from "../../../components/EmptyStatus";
 
 export default async function () {
@@ -66,7 +66,7 @@ export default async function () {
                 <tr className="govie-table__row" key={trx.transaction_id}>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     <strong
-                      className="govie-tag govie-tag--green govie-body-s"
+                      className={`govie-tag govie-tag--${mapTransactionStatusColor(trx.status)} govie-body-s`}
                       style={{ marginBottom: "0px" }}
                     >
                       {trx.status}
