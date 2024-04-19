@@ -97,9 +97,27 @@ export class Payments {
     );
   }
 
+  async getPaymentRequestPublicInfo(
+    requestId: paths["/api/v1/requests/{requestId}/public-info"]["get"]["parameters"]["path"]["requestId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/requests/{requestId}/public-info", {
+        params: {
+          path: {
+            requestId,
+          },
+        },
+      }),
+    );
+  }
+
   /**
    * TRANSACTIONS
    */
+
+  async getTransactions() {
+    return formatQueryResult(this.client.GET("/api/v1/transactions/"));
+  }
 
   async updateTransaction(
     transactionId: paths["/api/v1/transactions/{transactionId}"]["patch"]["parameters"]["path"]["transactionId"],

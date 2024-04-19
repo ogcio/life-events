@@ -25,16 +25,20 @@ In order to run the setup you must:
 
 - Clone the repo
 - if you have nvm installed run `nvm use`, otherwise ensure you're running Node LTS
-- run `npm run build:ds` to build the design system.
+- ensure that `docker` is running
 - run `npm start` to start the supporting docker services and run our services in 'dev' mode. If the docker services are already running you can just run `npm run start:services`
 
 Service URLs
 
-- web (Life events portal) - `localhost:3000`
-- payments - `localhost:3001`
-- messages - `localhost:3002`
-- profile - `localhost:3003`
-- mock-api - `localhost:8000`
+| Service Name             | URL                     |
+|--------------------------|-------------------------|
+| web (Life events portal) | `http://localhost:3000` |
+| payments                 | `http://localhost:3001` |
+| messages                 | `http://localhost:3002` |
+| profile                  | `http://localhost:3003` |
+| mock-api                 | `http://localhost:8000` |
+| logto admin console      | `http://localhost:3302` |
+| logto apis               | `http://localhost:3301` |
 
 ## Localisation
 

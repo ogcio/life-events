@@ -202,6 +202,7 @@
     "choose": "Choose payment method",
     "confirm": "Confirm method",
     "title": "Pay your fee",
+    "errorNotReady": "This payment form is not enabled yet to recieve any payments.",
     "toPay": "Total to pay",
     "payByBank": "Pay by bank app",
     "payByBankDescription": "Make a direct payment securely from your bank app - no card needed",
