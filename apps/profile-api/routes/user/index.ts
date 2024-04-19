@@ -7,7 +7,7 @@ import {
 } from "../../types/schemaDefinitions";
 import { Type } from "@sinclair/typebox";
 
-export default async function userDetails(app: FastifyInstance) {
+export default async function user(app: FastifyInstance) {
   app.get<{ Reply: UserDetails | Error }>(
     "/",
     {
