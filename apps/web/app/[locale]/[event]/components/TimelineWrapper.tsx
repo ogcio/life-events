@@ -3,12 +3,12 @@ import ds from "design-system";
 
 import Timeline from "./Timeline";
 
-type TTimelineWrapperProps = {
+type TimelineWrapperProps = {
   messsages: AbstractIntlMessages;
   username: string;
 };
 
-export default ({ messsages, username }: TTimelineWrapperProps) => {
+export default ({ messsages, username }: TimelineWrapperProps) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 
   return (

@@ -4,14 +4,14 @@ import styles from "./Sidebar.module.css";
 import useClientSide from "../hooks/useClientSide";
 import { useEffect } from "react";
 
-type TSidebarProps = {
+type SidebarProps = {
   params: { locale: string };
   open: boolean;
   children: React.ReactNode;
   toggleSidebar: (open: boolean) => void;
 };
 
-export default ({ params, children, open, toggleSidebar }: TSidebarProps) => {
+export default ({ params, children, open, toggleSidebar }: SidebarProps) => {
   const mounted = useClientSide();
 
   useEffect(() => {
