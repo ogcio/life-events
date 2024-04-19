@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build:ds": "npm run build --workspace=design-system",
+    "update-env": "MODE=update node scripts/init-env.mjs",
     "init:packages": "npm i",
     "init:ds": "[ -d packages/design-system/dist ] || npm run build:ds", 
     "init:env": "node scripts/init-env.mjs",
