@@ -13,7 +13,9 @@ async function getPaymentDetails(
 ) {
   let details;
   try {
-    details = (await new Payments(userId).getPaymentRequest(paymentId)).data;
+    details = (
+      await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
+    ).data;
   } catch (err) {
     console.log(err);
   }

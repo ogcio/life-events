@@ -67,3 +67,8 @@
   mask-image: url("../assets/icons/search.svg");
   -webkit-mask-image: url("../assets/icons/search.svg");
 }
+
+.ds-icon-hamburger-menu {
+  mask-image: url("../assets/icons/hamburgerMenu.svg");
+  -webkit-mask-image: url("../assets/icons/hamburgerMenu.svg");
+}
