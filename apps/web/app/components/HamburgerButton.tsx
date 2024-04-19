@@ -3,8 +3,17 @@ import ds from "design-system/";
 
 export default () => {
   return (
-    <div
-      style={{ cursor: "pointer" }}
+    <button
+      aria-label="events-menu"
+      style={{
+        cursor: "pointer",
+        background: "none",
+        color: "inherit",
+        border: "none",
+        padding: 0,
+        font: "inherit",
+        outline: "inherit",
+      }}
       onClick={() => {
         window.dispatchEvent(new Event("toggleSidebar"));
       }}
@@ -15,6 +24,6 @@ export default () => {
         heigth={12}
         width={18}
       />
-    </div>
+    </button>
   );
 };

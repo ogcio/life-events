@@ -5,7 +5,7 @@ import UserIcon from "./UserIcon";
 import { useTranslations } from "next-intl";
 import { headers } from "next/headers";
 import "./Header.css";
-import HamburgerIcon from "./HamburgerIcon";
+import HamburgerButton from "./HamburgerButton";
 
 type THeaderProps = {
   showSidebarToggle: boolean;
@@ -46,7 +46,7 @@ export default ({ showSidebarToggle }: THeaderProps) => {
               gap: "15px",
             }}
           >
-            {showSidebarToggle && <HamburgerIcon />}
+            {showSidebarToggle && <HamburgerButton />}
 
             <a
               href="/"
