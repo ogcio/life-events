@@ -8,7 +8,7 @@ export default () => {
   const t = useTranslations("PaymentSetup.menu");
 
   return (
-    <ol className="govie-list govie-list--spaced" style={{ width: "200px" }}>
+    <ol className="govie-list govie-list--spaced" style={{ minWidth: "200px" }}>
       <li tabIndex={0}>
         <Link
           className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"

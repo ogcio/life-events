@@ -5,10 +5,10 @@ import OpenEventStatusImage from "./components/OpenEventStatusImage";
 import { renewDriverLicenceRules } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { postgres, routes, workflow } from "../../utils";
 import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
-import { api } from "messages";
 import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/OrderBirthCertificate";
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
+import { Messaging } from "building-blocks-sdk";
 
 const eventRules = {
   [workflow.keys.orderEHIC]: orderEHICRules,
@@ -122,20 +122,18 @@ export default async () => {
   const t = await getTranslations("MyLifeEvents");
   const [flow] = await Promise.all([getFlows(), getEvents()]);
 
-  const { email } = await PgSessions.get();
-  const messageEvents = await api.getMessages(email, {
-    page: 1,
-    search: "",
-    size: 10,
-    type: "event",
-  });
+  const { userId } = await PgSessions.get();
+
+  const { data: messageEvents } = await new Messaging(userId).getMessages(
+    "event",
+  );
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1, gap: "2.5rem" }}>
       <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
         <div className="govie-heading-l">{t("lifeEvents")}</div>
         <ul className="govie-list">
-          {messageEvents.map((msg) => (
+          {messageEvents?.map((msg) => (
             <li
               key={msg.subject}
               style={{
@@ -149,16 +147,14 @@ export default async () => {
               <Link
                 className="govie-link"
                 href={
-                  new URL(
-                    `messages/${msg.messageId}`,
-                    process.env.MESSAGES_HOST_URL,
-                  ).href
+                  new URL(`messages/${msg.id}`, process.env.MESSAGES_HOST_URL)
+                    .href
                 }
               >
                 {msg.subject}
               </Link>
               <p className="govie-body" style={{ margin: "unset" }}>
-                {msg.content}
+                {msg.excerpt}
               </p>
               <hr className="govie-section-break govie-section-break--visible" />
             </li>

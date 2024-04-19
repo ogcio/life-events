@@ -4,17 +4,25 @@ import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
+import { notFound } from "next/navigation";
+import { TransactionStatuses } from "../../../../../../types/TransactionStatuses";
+import Link from "next/link";
 
 async function getTransactionDetails(transactionId: string) {
   const { userId } = await PgSessions.get();
+  let details;
 
-  const detauils = (
-    await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdGet(
-      transactionId,
-    )
-  ).data;
+  try {
+    details = (
+      await buildApiClient(
+        userId,
+      ).transactions.apiV1TransactionsTransactionIdGet(transactionId)
+    ).data;
+  } catch (err) {
+    console.log(err);
+  }
 
-  return detauils;
+  return details;
 }
 
 async function confirmTransaction(transactionId: string) {
@@ -24,7 +32,7 @@ async function confirmTransaction(transactionId: string) {
   await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdPatch(
     transactionId,
     {
-      status: "completed",
+      status: TransactionStatuses.Succeeded,
     },
   );
 
@@ -38,16 +46,22 @@ export default async function ({ params: { transactionId } }) {
     getTranslations("PaymentSetup.Request"),
   ]);
 
+  if (!details) {
+    notFound();
+  }
+
   const confirm = confirmTransaction.bind(null, transactionId);
 
   return (
     <div>
-      <h1 className="govie-heading-l">{t("transactionDetails")}</h1>
+      <h1 className="govie-heading-l">{t("paymentDetails")}</h1>
 
       <dl className="govie-summary-list">
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("requestTitle")}</dt>
-          <dt className="govie-summary-list__value">{details.title}</dt>
+          <Link href={`/paymentSetup/requests/${details.paymentRequestId}`}>
+            <dt className="govie-summary-list__value">{details.title}</dt>
+          </Link>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("amount")}</dt>
@@ -89,13 +103,14 @@ export default async function ({ params: { transactionId } }) {
         </div>
       </dl>
 
-      {details.providerType && details.status === "confirmed" && (
-        <form action={confirm}>
-          <button className="govie-button govie-button--primary">
-            {tRequest("transactionFound")}
-          </button>
-        </form>
-      )}
+      {details.providerType &&
+        details.status === TransactionStatuses.Pending && (
+          <form action={confirm}>
+            <button className="govie-button govie-button--primary">
+              {tRequest("transactionFound")}
+            </button>
+          </form>
+        )}
     </div>
   );
 }

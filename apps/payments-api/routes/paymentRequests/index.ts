@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
-import { httpErrors } from "@fastify/sensible";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreatePaymentRequest,
@@ -9,7 +8,7 @@ import {
   PaymentRequest,
   PaymentRequestDetails,
   Transaction,
-} from "../../types/schemaDefinitions";
+} from "../schemas";
 
 export default async function paymentRequests(app: FastifyInstance) {
   app.get<{ Reply: PaymentRequest[] }>(
@@ -51,18 +50,21 @@ export default async function paymentRequests(app: FastifyInstance) {
           pr.description,
           pr.amount,
           pr.reference,
-          json_agg(json_build_object(
-              'userId', pp.user_id,
-              'id', pp.provider_id,
-              'name', pp.provider_name,
-              'type', pp.provider_type,
-              'status', pp.status,
-              'data', pp.provider_data,
-              'createdAt', pp.created_at
-          )) as providers
+          CASE 
+              WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
+                  'userId', pp.user_id,
+                  'id', pp.provider_id,
+                  'name', pp.provider_name,
+                  'type', pp.provider_type,
+                  'status', pp.status,
+                  'data', pp.provider_data,
+                  'createdAt', pp.created_at
+              ))
+            ELSE '[]'::json
+            END as providers
         from payment_requests pr
-        join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-        join payment_providers pp on ppr.provider_id = pp.provider_id
+        left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
+        left join payment_providers pp on ppr.provider_id = pp.provider_id
         where pr.user_id = $1
         group by pr.payment_request_id`,
         [userId],
@@ -81,6 +83,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: ["PaymentRequests"],
+        params: ParamsWithPaymentRequestId,
         response: {
           200: Type.Object({
             paymentRequestId: Type.String(),
@@ -111,38 +114,124 @@ export default async function paymentRequests(app: FastifyInstance) {
       const userId = request.user?.id;
       const { requestId } = request.params;
 
-      const result = await app.pg.query(
-        `SELECT pr.title,
-            pr.payment_request_id as "paymentRequestId",
-            pr.description,
-            pr.amount,
-            json_agg(json_build_object(
-              'userId', pp.user_id,
-              'id', pp.provider_id,
-              'name', pp.provider_name,
-              'type', pp.provider_type,
-              'status', pp.status,
-              'data', pp.provider_data,
-              'createdAt', pp.created_at
-            )) as providers,
-            pr.reference,
-            pr.redirect_url as "redirectUrl",
-            pr.allow_amount_override AS "allowAmountOverride",
-            pr.allow_custom_amount AS "allowCustomAmount"
-        FROM payment_requests pr
-        JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
-        JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
-        WHERE pr.payment_request_id = $1
-          AND pr.user_id = $2
-        GROUP BY pr.payment_request_id`,
-        [requestId, userId],
-      );
-
-      if (!result.rowCount) {
-        reply.send(
-          httpErrors.notFound("The requested payment request was not found"),
+      let result;
+      try {
+        result = await app.pg.query(
+          `SELECT pr.title,
+              pr.payment_request_id as "paymentRequestId",
+              pr.description,
+              pr.amount,
+              CASE 
+                WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
+                    'userId', pp.user_id,
+                    'id', pp.provider_id,
+                    'name', pp.provider_name,
+                    'type', pp.provider_type,
+                    'status', pp.status,
+                    'data', pp.provider_data,
+                    'createdAt', pp.created_at
+                ))
+              ELSE '[]'::json
+              END as providers,
+              pr.reference,
+              pr.redirect_url as "redirectUrl",
+              pr.allow_amount_override AS "allowAmountOverride",
+              pr.allow_custom_amount AS "allowCustomAmount"
+          FROM payment_requests pr
+          LEFT JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
+          LEFT JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
+          WHERE pr.payment_request_id = $1
+            AND pr.user_id = $2
+          GROUP BY pr.payment_request_id`,
+          [requestId, userId],
         );
-        return;
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      if (!result?.rowCount) {
+        throw app.httpErrors.notFound(
+          "The requested payment request was not found",
+        );
+      }
+
+      reply.send(result.rows[0]);
+    },
+  );
+
+  app.get<{
+    Reply: PaymentRequestDetails | Error;
+    Params: ParamsWithPaymentRequestId;
+  }>(
+    "/:requestId/public-info",
+    {
+      schema: {
+        tags: ["PaymentRequests"],
+        params: ParamsWithPaymentRequestId,
+        response: {
+          200: Type.Object({
+            paymentRequestId: Type.String(),
+            title: Type.String(),
+            description: Type.String(),
+            amount: Type.Number(),
+            reference: Type.String(),
+            providers: Type.Array(
+              Type.Object({
+                userId: Type.String(),
+                id: Type.String(),
+                name: Type.String(),
+                type: Type.String(),
+                status: Type.String(),
+                data: Type.Any(),
+                createdAt: Type.String(),
+              }),
+            ),
+            redirectUrl: Type.String(),
+            allowAmountOverride: Type.Boolean(),
+            allowCustomAmount: Type.Boolean(),
+          }),
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { requestId } = request.params;
+
+      let result;
+      try {
+        result = await app.pg.query(
+          `SELECT pr.title,
+              pr.payment_request_id as "paymentRequestId",
+              pr.description,
+              pr.amount,
+              json_agg(json_build_object(
+                'userId', pp.user_id,
+                'id', pp.provider_id,
+                'name', pp.provider_name,
+                'type', pp.provider_type,
+                'status', pp.status,
+                'data', pp.provider_data,
+                'createdAt', pp.created_at
+              )) as providers,
+              pr.reference,
+              pr.redirect_url as "redirectUrl",
+              pr.allow_amount_override AS "allowAmountOverride",
+              pr.allow_custom_amount AS "allowCustomAmount"
+          FROM payment_requests pr
+          JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
+          JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
+          WHERE pr.payment_request_id = $1
+          GROUP BY pr.payment_request_id`,
+          [requestId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      if (!result?.rowCount) {
+        throw app.httpErrors.notFound(
+          "The requested payment request was not found",
+        );
       }
 
       reply.send(result.rows[0]);
@@ -205,6 +294,10 @@ export default async function paymentRequests(app: FastifyInstance) {
 
           const sqlData = [paymentRequestId, ...providers];
 
+          if (!providers.length) {
+            return paymentRequestId;
+          }
+
           const queryValues = providers
             .map((_, index) => {
               return `($${index + 2}, $1, true)`;
@@ -227,7 +320,7 @@ export default async function paymentRequests(app: FastifyInstance) {
 
         reply.send({ id: result });
       } catch (error) {
-        reply.send(httpErrors.internalServerError((error as Error).message));
+        throw app.httpErrors.internalServerError((error as Error).message);
       }
     },
   );
@@ -309,7 +402,7 @@ export default async function paymentRequests(app: FastifyInstance) {
 
         reply.send({ id: paymentRequestId });
       } catch (error) {
-        reply.send(httpErrors.internalServerError((error as Error).message));
+        throw app.httpErrors.internalServerError((error as Error).message);
       }
     },
   );
@@ -334,18 +427,20 @@ export default async function paymentRequests(app: FastifyInstance) {
       const userId = request.user?.id;
       const { requestId } = request.params;
 
-      const transactions = await app.pg.query(
-        `select transaction_id from payment_transactions where payment_request_id = $1`,
-        [requestId],
-      );
-
-      if (transactions.rowCount) {
-        reply.send(
-          httpErrors.internalServerError(
-            "Payment request with existing transactions cannot be deleted",
-          ),
+      let transactions;
+      try {
+        transactions = await app.pg.query(
+          `select transaction_id from payment_transactions where payment_request_id = $1`,
+          [requestId],
         );
-        return;
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      if (transactions?.rowCount) {
+        throw app.httpErrors.internalServerError(
+          "Payment request with existing transactions cannot be deleted",
+        );
       }
 
       try {
@@ -365,15 +460,15 @@ export default async function paymentRequests(app: FastifyInstance) {
           );
 
           if (deleted.rowCount === 0) {
-            const error = httpErrors.notFound("Payment request was not found");
-            throw error;
+            throw app.httpErrors.notFound("Payment request was not found");
           }
         });
       } catch (error) {
         if (error instanceof Error && error.name !== "error") {
-          reply.send(error);
+          throw error;
         }
-        reply.send(httpErrors.internalServerError((error as Error).message));
+
+        throw app.httpErrors.internalServerError((error as Error).message);
       }
 
       reply.send();
@@ -394,20 +489,28 @@ export default async function paymentRequests(app: FastifyInstance) {
     async (request, reply) => {
       const { requestId } = request.params;
 
-      const result = await app.pg.query(
-        `SELECT
-          t.transaction_id as "transactionId",
-          t.status,
-          pr.title,
-          pt.amount,
-          t.updated_at as "updatedAt"
-        FROM payment_transactions t
-        INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
-        INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
-        WHERE pr.payment_request_id = $1
-        ORDER BY t.updated_at DESC`,
-        [requestId],
-      );
+      let result;
+      try {
+        result = await app.pg.query(
+          `SELECT
+            t.transaction_id as "transactionId",
+            t.status,
+            pr.title,
+            pt.amount,
+            t.updated_at as "updatedAt"
+          FROM payment_transactions t
+          INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+          INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
+          WHERE pr.payment_request_id = $1
+          ORDER BY t.updated_at DESC`,
+          [requestId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+        throw app.httpErrors.notFound(
+          "Transactions not found for the requested payment request",
+        );
+      }
 
       reply.send(result.rows);
     },

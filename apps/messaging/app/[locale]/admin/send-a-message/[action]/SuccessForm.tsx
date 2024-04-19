@@ -7,11 +7,15 @@ export default (props: MessageCreateProps) => {
   const t = useTranslations("sendAMessage.SuccessForm");
   async function action() {
     "use server";
-    props.stateId &&
-      (await api.deleteMessageState(props.userId, props.stateId));
 
     redirect("/send-a-message", RedirectType.replace);
   }
+
+  // Lets silently delete the state since we're done.
+  if (props.stateId) {
+    api.deleteMessageState(props.userId, props.stateId);
+  }
+
   return (
     <>
       <h1 className="govie-heading-l">{t("title")}</h1>

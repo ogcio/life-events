@@ -30,7 +30,7 @@ test.describe("Stripe provider", () => {
     await row.getByRole("link", { name: "edit" }).click({ force: true });
 
     await expect(
-      page.getByRole("heading", { name: "Edit Stripe payment provider" }),
+      page.getByRole("heading", { name: "Edit Stripe Payment Provider" }),
     ).toBeVisible();
     const pubKeyInput = await page.getByRole("textbox", {
       name: "Live Publishable Key",
@@ -40,7 +40,10 @@ test.describe("Stripe provider", () => {
       name: "Live Secret Key",
     });
     await expect(secretKeyInput).toHaveValue(mockStripeSecretKey);
-    const nameInput = await page.getByRole("textbox", { name: /Name/ });
+    const nameInput = await page.getByRole("textbox", {
+      name: "Name",
+      exact: true,
+    });
     await expect(nameInput).toHaveValue(providerName);
     await nameInput.clear();
     const newProviderName = `${providerName} edited`;

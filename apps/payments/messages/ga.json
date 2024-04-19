@@ -51,10 +51,8 @@
       "nameHint": "Give a name to this payment provider to help you recognize it",
       "accountHolderName": "Bank account holder name",
       "accountHolderNameHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "sortCode": "Bank sort code",
-      "sortCodeHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "accountNumber": "Bank account number",
-      "accountNumberHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "iban": "IBAN",
+      "ibanHint": "Enter your International Bank Account Number (IBAN) for secure transactions.",
       "confirm": "Confirm"
     },
     "AddBankTransfer": {
@@ -64,10 +62,8 @@
       "nameHint": "Give a name to this payment provider to help you recognize it",
       "accountHolderName": "Bank account holder name",
       "accountHolderNameHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "sortCode": "Bank sort code",
-      "sortCodeHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
-      "accountNumber": "Bank account number",
-      "accountNumberHint": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat. Pharetra nulla tincidunt.",
+      "iban": "IBAN",
+      "ibanHint": "Enter your International Bank Account Number (IBAN) for secure transactions.",
       "confirm": "Confirm"
     },
     "Payments": {

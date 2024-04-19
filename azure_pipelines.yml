@@ -2,7 +2,6 @@ trigger:
   - dev
   - uat
   - sta
-  - feat/improve-pipeline
 
 pr:
   branches:
@@ -12,11 +11,11 @@ pr:
 parameters:
   - name: services
     type: object
-    default: ["web", "mock-api", "payments", "messaging", "payments-api", "profile"]
+    default: ["web", "mock-api", "payments", "messaging", "messaging-api", "payments-api", "profile", "profile-api"]
 
   - name: envBranches
     type: object
-    default: ["refs/heads/dev", "refs/heads/sta", "refs/heads/uat", "refs/heads/feat/improve-pipeline"]
+    default: ["refs/heads/dev", "refs/heads/sta", "refs/heads/uat"]
 
 variables:
   - template: pipeline-variables/dev.yml
@@ -149,3 +148,10 @@ stages:
             sourceImageTag: $(Build.BuildId)
             pushTag: $(Build.SourceBranchName)
             repositoryName: life-events-${{ serviceName }}
+        - task: AWSCLI@1
+          inputs:
+            awsCredentials: $(awsServiceConnection)
+            regionName: $(awsRegion)
+            awsCommand: 'ecs'
+            awsSubCommand: 'update-service'
+            awsArguments: '--force-new-deployment --cluster life-events-ecs --service ${{ serviceName }}-service'

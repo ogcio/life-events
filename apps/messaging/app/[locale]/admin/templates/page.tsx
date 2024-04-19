@@ -3,11 +3,11 @@ import TemplatesList from "./TemplatesList";
 import { redirect } from "next/navigation";
 
 export default async () => {
-  const t = await getTranslations("EmailTemplates");
+  const t = await getTranslations("MessageTemplates");
 
   async function addAction() {
     "use server";
-    redirect(new URL("templates/add", process.env.HOST_URL).href);
+    redirect(new URL("admin/templates/add", process.env.HOST_URL).href);
   }
 
   return (

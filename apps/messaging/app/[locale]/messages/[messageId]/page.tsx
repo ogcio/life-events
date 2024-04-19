@@ -1,26 +1,33 @@
 import { PgSessions } from "auth/sessions";
-import { api } from "messages";
+import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 export default async (props: { params: { messageId: string } }) => {
   const t = await getTranslations("Message");
-  const message = await api.getMessage(props.params.messageId);
-  if (!message) {
-    throw notFound();
-  }
-
-  let href = "";
-  if (message.link) {
-    href = message.link.includes("http")
-      ? message.link
-      : `https://${message.link}`;
-  }
 
   const { userId } = await PgSessions.get();
 
+  const { data: message, error } = await new Messaging(userId).getMessage(
+    props.params.messageId,
+  );
+
+  if (error || !message) {
+    throw notFound();
+  }
+
+  const href: string[] = [];
+  if (message.links?.length) {
+    href.push(
+      ...message.links.map((link) =>
+        link.includes("http") ? link : `https://${link}`,
+      ),
+    );
+  }
+
   let paymentUrl: URL | undefined;
   let didPayThePayment = false;
+
   if (message.paymentRequestId) {
     paymentUrl = new URL("en/paymentRequest/pay", process.env.PAYMENTS_URL);
     paymentUrl.searchParams.append("id", userId);
@@ -43,7 +50,8 @@ export default async (props: { params: { messageId: string } }) => {
   return (
     <>
       <h1 className="govie-heading-l">{message.subject}</h1>
-      <p className="govie-body">{message.content}</p>
+      <p className="govie-body">{message.excerpt}</p>
+      <p className="govie-body">{message.plainText}</p>
       {Boolean(message.paymentRequestId) ? (
         didPayThePayment ? (
           <p className="govie-inset-text">{t("paymentSuccess")}</p>
@@ -57,10 +65,14 @@ export default async (props: { params: { messageId: string } }) => {
         )
       ) : null}
 
-      {Boolean(href) && (
-        <a className="govie-link" href={href}>
-          {href}
-        </a>
+      {Boolean(href.length) && (
+        <>
+          {href.map((url) => (
+            <a key={url} className="govie-link" href={url}>
+              {href}
+            </a>
+          ))}
+        </>
       )}
     </>
   );

@@ -2,8 +2,9 @@ import { NextRequest } from "next/server";
 import { redirect } from "next/navigation";
 import { pgpool } from "../../../utils/postgres";
 import { driving } from "../../../utils/routes";
-import { api, temporaryMockUtils } from "messages";
+import { temporaryMockUtils } from "messages";
 import { PgSessions } from "auth/sessions";
+import { Messaging } from "building-blocks-sdk";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -26,33 +27,41 @@ export async function GET(request: NextRequest) {
   const paymentTemplateIdPlaceholder =
     await temporaryMockUtils.autoPaymentTemplateId();
 
+  const messagingClient = new Messaging(userId);
   // This is for demonstrational purposes.
   if (paymentTemplateIdPlaceholder) {
-    await api.pushMessageByTemplate(
-      paymentTemplateIdPlaceholder,
-      {
-        pay: pay ? (+pay / 100).toString() : "0",
-        date: new Date().toDateString(),
-        ref: transactionId || "failed",
-        reason: "Drivers licence renewal",
+    void messagingClient.createMessage({
+      preferredTransports: [],
+      security: "high",
+      userIds: [userId],
+      template: {
+        id: paymentTemplateIdPlaceholder,
+        interpolations: {
+          pay: pay ? (+pay / 100).toString() : "0",
+          date: new Date().toDateString(),
+          ref: transactionId || "failed",
+          reason: "Drivers licence renewal",
+        },
       },
-      [email],
-      "message",
-      [],
-    );
+    });
   }
 
   const eventSuccessTemplateIdPlaceholder =
     await temporaryMockUtils.autoSuccessfulTemplateId();
 
   if (eventSuccessTemplateIdPlaceholder) {
-    await api.pushMessageByTemplate(
-      eventSuccessTemplateIdPlaceholder,
-      { event: "Drivers licence renewal", date: new Date().toDateString() },
-      [email],
-      "message",
-      [],
-    );
+    void messagingClient.createMessage({
+      preferredTransports: [],
+      security: "high",
+      userIds: [userId],
+      template: {
+        id: eventSuccessTemplateIdPlaceholder,
+        interpolations: {
+          event: "Drivers licence renewal",
+          date: new Date().toDateString(),
+        },
+      },
+    });
   }
 
   return redirect(

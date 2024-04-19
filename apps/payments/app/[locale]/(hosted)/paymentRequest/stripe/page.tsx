@@ -4,17 +4,22 @@ import { createPaymentIntent } from "../../../../integration/stripe";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
+import { notFound } from "next/navigation";
+import { Payments } from "building-blocks-sdk";
 
 async function getPaymentDetails(
   userId: string,
   paymentId: string,
   amount?: string,
 ) {
-  const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-      paymentId,
-    )
-  ).data;
+  let details;
+  try {
+    details = (
+      await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
+    ).data;
+  } catch (err) {
+    console.log(err);
+  }
 
   if (!details) return undefined;
 
@@ -65,7 +70,7 @@ export default async function Card(props: {
   );
 
   if (!paymentDetails) {
-    return <h1 className="govie-heading-l">Payment details not found</h1>;
+    notFound();
   }
 
   const { client_secret, id: paymentIntentId } =

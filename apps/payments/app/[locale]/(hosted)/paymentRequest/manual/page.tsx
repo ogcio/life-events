@@ -1,20 +1,22 @@
-import { RedirectType, redirect } from "next/navigation";
+import { RedirectType, notFound, redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
-import buildApiClient from "../../../../../client/index";
+import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
+import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 
 async function getPaymentDetails(
   userId: string,
   paymentId: string,
   amount?: number,
 ) {
-  const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-      paymentId,
-    )
-  ).data;
+  let details;
+  try {
+    details = (await new Payments(userId).getPaymentRequest(paymentId)).data;
+  } catch (err) {
+    console.log(err);
+  }
 
   if (!details) return undefined;
 
@@ -40,14 +42,30 @@ async function confirmPayment(
 ) {
   "use server";
 
-  await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdPatch(
-    transactionId,
-    {
-      status: "confirmed",
-    },
-  );
+  await new Payments(userId).updateTransaction(transactionId, {
+    status: TransactionStatuses.Pending,
+  });
 
   redirect(redirectUrl, RedirectType.replace);
+}
+
+async function generatePaymentIntentId(userId: string): Promise<string> {
+  "use server";
+
+  let result;
+
+  try {
+    result = await new Payments(userId).generatePaymentIntentId();
+  } catch (err) {
+    console.log(err);
+  }
+
+  if (!result.data.intentId || result.error) {
+    // Handle edge case when intentId was not possible to generate
+    throw new Error("Payment intentId was not possible to generate.");
+  }
+
+  return result.data.intentId;
 }
 
 export default async function Bank(params: {
@@ -78,14 +96,10 @@ export default async function Bank(params: {
   );
 
   if (!paymentDetails) {
-    return <h1 className="govie-heading-l">Payment details not found</h1>;
+    notFound();
   }
 
-  //TODO: In production, we want to avoid collisions on the DB
-  const paymentIntentId = Math.random()
-    .toString(36)
-    .substring(2, 8)
-    .toUpperCase();
+  const paymentIntentId = await generatePaymentIntentId(userId);
 
   const userInfo = {
     name: params.searchParams.name,
@@ -93,7 +107,7 @@ export default async function Bank(params: {
   };
 
   const transactionId = (
-    await buildApiClient(userId).transactions.apiV1TransactionsPost({
+    await new Payments(userId).createTransaction({
       paymentRequestId: params.searchParams.paymentId,
       extPaymentId: paymentIntentId,
       integrationReference: params.searchParams.integrationRef,
@@ -101,7 +115,7 @@ export default async function Bank(params: {
       paymentProviderId: paymentDetails.providerId,
       userData: userInfo,
     })
-  ).data.transactionId;
+  ).data?.transactionId;
 
   const paymentMade = confirmPayment.bind(
     this,
@@ -144,17 +158,9 @@ export default async function Bank(params: {
             </dt>
           </div>
           <div className="govie-summary-list__row">
-            <dt className="govie-summary-list__key">{t("summary.sortCode")}</dt>
+            <dt className="govie-summary-list__key">{t("summary.iban")}</dt>
             <dt className="govie-summary-list__value">
-              {paymentDetails.providerData.sortCode}
-            </dt>
-          </div>
-          <div className="govie-summary-list__row">
-            <dt className="govie-summary-list__key">
-              {t("summary.accountHolderName")}
-            </dt>
-            <dt className="govie-summary-list__value">
-              {paymentDetails.providerData.accountNumber}
+              {paymentDetails.providerData.iban}
             </dt>
           </div>
           <div className="govie-summary-list__row">

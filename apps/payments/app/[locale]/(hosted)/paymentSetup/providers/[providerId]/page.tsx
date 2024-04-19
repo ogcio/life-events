@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import EditOpenBankingForm from "./EditOpenBankingForm";
 import EditBankTransferForm from "./EditBankTransferForm";
 import EditStripeForm from "./EditStripeForm";
@@ -9,10 +9,11 @@ import { getUser } from "../../../../../../libraries/auth";
 type Props = {
   params: {
     providerId: string;
+    locale: string;
   };
 };
 
-export default async ({ params: { providerId } }: Props) => {
+export default async ({ params: { providerId, locale } }: Props) => {
   const user = await getUser();
 
   const provider = (
@@ -22,7 +23,7 @@ export default async ({ params: { providerId } }: Props) => {
   ).data;
 
   if (!provider) {
-    redirect("/paymentSetup/providers");
+    notFound();
   }
 
   if (provider.type === "openbanking") {
@@ -30,7 +31,7 @@ export default async ({ params: { providerId } }: Props) => {
   }
 
   if (provider.type === "banktransfer") {
-    return <EditBankTransferForm provider={provider} />;
+    return <EditBankTransferForm provider={provider} locale={locale} />;
   }
 
   if (provider.type === "stripe") {

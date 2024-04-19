@@ -3,15 +3,13 @@ import { getTranslations } from "next-intl/server";
 type Props = {
   providerName?: string;
   accountHolderName?: string;
-  sortCode?: string;
-  accountNumber?: string;
+  iban?: string;
 };
 
 export default async ({
   providerName = "",
   accountHolderName = "",
-  sortCode = "",
-  accountNumber = "",
+  iban = "",
 }: Props) => {
   const t = await getTranslations("PaymentSetup.AddBankTransfer");
 
@@ -43,30 +41,21 @@ export default async ({
           defaultValue={accountHolderName}
         />
       </div>
-      <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="sort_code">
-          {t("sortCode")}{" "}
+      <div className="govie-form-group govie-form-group--error">
+        <label className="govie-label--s" htmlFor="iban">
+          {t("iban")}{" "}
         </label>
-        <div className="govie-hint">{t("sortCodeHint")}</div>
+        <div className="govie-hint">{t("ibanHint")}</div>
+        <p className="govie-error-message">
+          <span className="govie-visually-hidden">Error:</span> Enter a page
+          name
+        </p>
         <input
           type="text"
-          id="sort_code"
-          name="sort_code"
-          className="govie-input"
-          defaultValue={sortCode}
-        />
-      </div>
-      <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="account_number">
-          {t("accountNumber")}{" "}
-        </label>
-        <div className="govie-hint">{t("accountNumberHint")}</div>
-        <input
-          type="text"
-          id="account_number"
-          name="account_number"
-          className="govie-input"
-          defaultValue={accountNumber}
+          id="iban"
+          name="iban"
+          className="govie-input govie-input--error"
+          defaultValue={iban}
         />
       </div>
     </div>

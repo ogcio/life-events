@@ -4,6 +4,7 @@ import { createUser } from "./users";
 import { buildPgPool as buildAuthPool } from "auth/sessions";
 import dotenv from "dotenv";
 import { seedPaymentRequest } from "./request";
+import { TransactionStatuses } from "../../types/TransactionStatuses";
 dotenv.config();
 
 const pgpool = new Pool({
@@ -33,7 +34,7 @@ const seed = async () => {
     amount: 1000,
     redirectUrl: "https://www.google.com",
     allowAmountOverride: false,
-    status: "initiated",
+    status: TransactionStatuses.Initiated,
     allowCustomAmount: false,
   });
 };

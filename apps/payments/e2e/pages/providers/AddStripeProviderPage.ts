@@ -12,7 +12,10 @@ export class AddStripeProviderPage {
   private readonly confirmButton: Locator;
 
   constructor(public readonly page: Page) {
-    this.nameInput = this.page.getByRole("textbox", { name: /Name/ });
+    this.nameInput = this.page.getByRole("textbox", {
+      name: "Name",
+      exact: true,
+    });
     this.publishableKey = this.page.getByRole("textbox", {
       name: "Live Publishable Key",
     });

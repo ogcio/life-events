@@ -1,18 +1,27 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import ProviderStatusTag from "./ProviderStatusTag";
-import buildApiClient from "../../../../../client/index";
 import { getUser } from "../../../../../libraries/auth";
 
-export default async () => {
-  const t = useTranslations("PaymentSetup.Providers.table");
-  const user = await getUser();
-  const providers = (
-    await buildApiClient(user.accessToken).providers.apiV1ProvidersGet()
-  ).data;
+import { Payments } from "building-blocks-sdk";
+import { EmptyStatus } from "../../../../components/EmptyStatus";
 
-  if (providers.length === 0) {
-    return <p className="govie-body">{t("emptyMessage")}</p>;
+export default async () => {
+  const t = useTranslations("PaymentSetup.Providers");
+
+  const user = await getUser();
+
+  const { data: providers } = await new Payments(
+    user.accessToken,
+  ).getProviders();
+
+  if (!providers || providers.length === 0) {
+    return (
+      <EmptyStatus
+        title={t("empty.title")}
+        description={t("empty.description")}
+      />
+    );
   }
 
   return (
@@ -20,19 +29,19 @@ export default async () => {
       <thead className="govie-table__head">
         <tr className="govie-table__row">
           <th scope="col" className="govie-table__header">
-            {t("provider")}
+            {t("table.provider")}
           </th>
           <th scope="col" className="govie-table__header">
-            {t("status")}
+            {t("table.status")}
           </th>
           <th scope="col" className="govie-table__header">
-            {t("account")}
+            {t("table.account")}
           </th>
           <th
             scope="col"
             className="govie-table__header govie-table__header--numeric"
           >
-            {t("actions")}
+            {t("table.actions")}
           </th>
         </tr>
       </thead>
@@ -49,7 +58,7 @@ export default async () => {
               {provider.name}
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s govie-table__header--numeric">
-              <Link href={`providers/${provider.id}`}>{t("edit")}</Link>
+              <Link href={`providers/${provider.id}`}>{t("table.edit")}</Link>
             </td>
           </tr>
         ))}

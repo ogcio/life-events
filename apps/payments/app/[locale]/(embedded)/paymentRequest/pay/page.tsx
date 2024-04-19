@@ -6,10 +6,10 @@ import {
   getRealAmount,
   stringToAmount,
 } from "../../../../utils";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
-import buildApiClient from "../../../../../client/index";
+import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 
 type Props = {
@@ -29,9 +29,7 @@ type Props = {
 async function getPaymentRequestDetails(paymentId: string) {
   const { userId } = await PgSessions.get();
   const details = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-      paymentId,
-    )
+    await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
   ).data;
 
   if (!details) {
@@ -53,14 +51,9 @@ async function selectCustomAmount(requestId: string, formData: FormData) {
   );
 }
 
-const NotFound = async () => {
-  const t = await getTranslations("Common");
-  return <h1 className="govie-heading-l">{t("notFound")}</h1>;
-};
-
 export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
-    return <NotFound />;
+    return notFound();
 
   const [details, t, tCommon] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId),
@@ -70,7 +63,11 @@ export default async function Page(props: Props) {
 
   const { messages } = await getRequestConfig({ locale: props.params.locale });
 
-  if (!details) return <NotFound />;
+  if (!details) return notFound();
+
+  if (!details.providers.length) {
+    return <h1 className="govie-heading-l">{t("errorNotReady")}</h1>;
+  }
 
   const hasOpenBanking = details.providers.some(
     ({ type }) => type === "openbanking",

@@ -1,25 +1,117 @@
 import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
-import { httpErrors } from "@fastify/sensible";
 import { HttpError } from "../../types/httpErrors";
 import {
-  CreateProvider,
   ParamsWithProviderId,
   ProvidersList,
   Provider,
   UpdateProvider,
-} from "../../types/schemaDefinitions";
+  CreateBankTransferProvider,
+  CreateOpenBankingProvider,
+  CreateStripeProvider,
+  CreateWorldpayProvider,
+} from "../schemas";
 import { permissions } from "../../plugins/logtoAuth";
 
 export default async function providers(app: FastifyInstance) {
-  app.post<{ Body: CreateProvider; Reply: { id: string } }>(
-    "/",
+  app.post<{ Body: CreateBankTransferProvider; Reply: { id: string } }>(
+    "/banktransfer",
     {
       preValidation: (req, res) =>
         app.checkPermission(req, res, [permissions.READ_PAYMENT]),
       schema: {
         tags: ["Providers"],
-        body: CreateProvider,
+        body: CreateBankTransferProvider,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { name, type, data } = request.body;
+
+      const result = await app.pg.query(
+        `
+        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+            `,
+        [userId, name, type, "connected", data],
+      );
+
+      reply.send({ id: result.rows[0].id });
+    },
+  );
+
+  app.post<{ Body: CreateOpenBankingProvider; Reply: { id: string } }>(
+    "/openbanking",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Providers"],
+        body: CreateOpenBankingProvider,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { name, type, data } = request.body;
+
+      const result = await app.pg.query(
+        `
+        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+            `,
+        [userId, name, type, "connected", data],
+      );
+
+      reply.send({ id: result.rows[0].id });
+    },
+  );
+
+  app.post<{ Body: CreateStripeProvider; Reply: { id: string } }>(
+    "/stripe",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Providers"],
+        body: CreateStripeProvider,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { name, type, data } = request.body;
+
+      const result = await app.pg.query(
+        `
+        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+            `,
+        [userId, name, type, "connected", data],
+      );
+
+      reply.send({ id: result.rows[0].id });
+    },
+  );
+
+  app.post<{ Body: CreateWorldpayProvider; Reply: { id: string } }>(
+    "/worldpay",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Providers"],
+        body: CreateWorldpayProvider,
         response: {
           200: Type.Object({
             id: Type.String(),
@@ -100,7 +192,7 @@ export default async function providers(app: FastifyInstance) {
             data: Type.Any(),
             status: Type.String(),
           }),
-          404: HttpError,
+          400: HttpError,
         },
       },
     },
@@ -108,24 +200,28 @@ export default async function providers(app: FastifyInstance) {
       const userId = request.user?.id;
       const { providerId } = request.params;
 
-      const result = await app.pg.query(
-        `
-        SELECT
-          provider_id as id,
-          provider_name as name,
-          provider_type as type,
-          provider_data as data,
-          status
-        FROM payment_providers
-        WHERE provider_id = $1
-        AND user_id = $2
-        `,
-        [providerId, userId],
-      );
+      let result;
+      try {
+        result = await app.pg.query(
+          `
+          SELECT
+            provider_id as id,
+            provider_name as name,
+            provider_type as type,
+            provider_data as data,
+            status
+          FROM payment_providers
+          WHERE provider_id = $1
+          AND user_id = $2
+          `,
+          [providerId, userId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
 
-      if (!result.rows.length) {
-        reply.send(httpErrors.notFound("The requested provider was not found"));
-        return;
+      if (!result?.rows.length) {
+        throw app.httpErrors.notFound("The requested provider was not found");
       }
 
       reply.send(result.rows[0]);

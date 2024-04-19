@@ -1,12 +1,14 @@
 import { FastifyInstance } from "fastify";
-import { httpErrors } from "@fastify/sensible";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreateTransactionBody,
   ParamsWithTransactionId,
+  PaymentIntentId,
   TransactionDetails,
+  Transactions,
+  TransactionStatusesEnum,
   UpdateTransactionBody,
-} from "../../types/schemaDefinitions";
+} from "../schemas";
 import { Type } from "@sinclair/typebox";
 
 export default async function transactions(app: FastifyInstance) {
@@ -28,32 +30,80 @@ export default async function transactions(app: FastifyInstance) {
     async (request, reply) => {
       const { transactionId } = request.params;
 
-      const result = await app.pg.query(
-        `SELECT
-          t.transaction_id as "transactionId",
-          t.status,
-          t.user_data as "userData",
-          pr.title,
-          t.ext_payment_id as "extPaymentId",
-          t.amount,
-          t.updated_at as "updatedAt",
-          pp.provider_name as "providerName",
-          pp.provider_type as "providerType"
-        FROM payment_transactions t
-        LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
-        JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
-        WHERE t.transaction_id = $1`,
-        [transactionId],
-      );
-
-      if (!result.rowCount) {
-        reply.send(
-          httpErrors.notFound("The requested transaction was not found"),
+      let result;
+      try {
+        result = await app.pg.query(
+          `SELECT
+            t.transaction_id as "transactionId",
+            t.status,
+            t.user_data as "userData",
+            pr.title,
+            pr.payment_request_id as "paymentRequestId",
+            t.ext_payment_id as "extPaymentId",
+            t.amount,
+            t.updated_at as "updatedAt",
+            pp.provider_name as "providerName",
+            pp.provider_type as "providerType"
+          FROM payment_transactions t
+          LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+          JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
+          WHERE t.transaction_id = $1`,
+          [transactionId],
         );
-        return;
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      if (!result?.rowCount) {
+        throw app.httpErrors.notFound(
+          "The requested transaction was not found",
+        );
       }
 
       reply.send(result.rows[0]);
+    },
+  );
+
+  app.get<{
+    Reply: Transactions | Error;
+  }>(
+    "/",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Transactions"],
+        response: {
+          200: Transactions,
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+
+      let result;
+      try {
+        result = await app.pg.query(
+          `SELECT
+            t.transaction_id as "transactionId",
+            t.status,
+            t.user_data as "userData",
+            pr.title,
+            pr.payment_request_id as "paymentRequestId",
+            t.ext_payment_id as "extPaymentId",
+            t.amount,
+            t.updated_at as "updatedAt",
+            pp.provider_name as "providerName",
+            pp.provider_type as "providerType"
+          FROM payment_transactions t
+          INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.user_id = $1
+          JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id`,
+          [userId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+      reply.send(result?.rows);
     },
   );
 
@@ -122,7 +172,7 @@ export default async function transactions(app: FastifyInstance) {
         `
         insert into payment_transactions
           (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_data)
-          values ($1, $2, $3, $4, 'pending', now(), now(), $5, $6)
+          values ($1, $2, $3, $4, $5, now(), now(), $6, $7)
           returning transaction_id as "transactionId";
         `,
         [
@@ -130,19 +180,64 @@ export default async function transactions(app: FastifyInstance) {
           extPaymentId,
           integrationReference,
           amount,
+          TransactionStatusesEnum.Initiated,
           paymentProviderId,
           userData,
         ],
       );
 
       if (result.rowCount !== 1) {
-        reply.send(
-          httpErrors.internalServerError("Cannot create payment transactions"),
+        throw app.httpErrors.internalServerError(
+          "Cannot create payment transactions",
         );
-        return;
       }
 
       reply.send({ transactionId: result.rows[0].transactionId });
+    },
+  );
+
+  app.get<{
+    Reply: PaymentIntentId | Error;
+  }>(
+    "/generatePaymentIntentId",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Transactions"],
+        response: {
+          200: PaymentIntentId,
+          400: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      let result;
+      let execNr = 0;
+      const maxTry = process.env.PAYMENT_INTENTID_MAX_TRY_GENERATION
+        ? parseInt(process.env.PAYMENT_INTENTID_MAX_TRY_GENERATION)
+        : 20;
+      const len = process.env.PAYMENT_INTENTID_LENGTH
+        ? parseInt(process.env.PAYMENT_INTENTID_LENGTH)
+        : 6;
+
+      do {
+        if (execNr > maxTry) {
+          throw app.httpErrors.notFound("Unique intentId generation failed");
+        }
+
+        result = await app.pg.query(
+          `SELECT "intentId" FROM UPPER(LEFT(md5(random()::text), $1)) AS "intentId"
+              WHERE "intentId" NOT IN (
+                SELECT ext_payment_id 
+                FROM payment_transactions
+              )`,
+          [len],
+        );
+
+        execNr++;
+      } while (result.rowCount === 0);
+
+      reply.send(result.rows[0]);
     },
   );
 }

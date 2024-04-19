@@ -1,21 +1,16 @@
 import { PgSessions } from "auth/sessions";
-import { api } from "messages";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import ds from "design-system";
+import { Messaging } from "building-blocks-sdk";
 
 export default async (props: { searchParams: any }) => {
   const t = await getTranslations("Messages");
-  const { email } = await PgSessions.get();
-  const params = new URLSearchParams(props.searchParams);
+  const { userId } = await PgSessions.get();
 
-  const messages = await api.getMessages(email, {
-    search: params.get("search")?.toString() || "",
-    page: 1,
-    size: 10,
-  });
+  const { data: messages } = await new Messaging(userId).getMessages();
 
   async function searchAction(formData: FormData) {
     "use server";
@@ -70,8 +65,8 @@ export default async (props: { searchParams: any }) => {
           </tr>
         </thead>
         <tbody className="govie-table__body">
-          {messages.map((msg) => (
-            <tr key={msg.messageId} className="govie-table__row">
+          {messages?.map((msg) => (
+            <tr key={msg.id} className="govie-table__row">
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
@@ -82,7 +77,7 @@ export default async (props: { searchParams: any }) => {
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {msg.type}
+                {msg.messageType}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
@@ -94,8 +89,7 @@ export default async (props: { searchParams: any }) => {
               >
                 <Link
                   href={
-                    new URL(`/messages/${msg.messageId}`, process.env.HOST_URL)
-                      .href
+                    new URL(`/messages/${msg.id}`, process.env.HOST_URL).href
                   }
                 >
                   {msg.subject}

@@ -1,8 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
-import { deleteEmailTemplate, getEmailTemplates } from "messages";
+import { deleteEmailTemplate } from "messages";
 import Link from "next/link";
-import { languages } from "../../../utils/messaging";
+import { Messaging } from "building-blocks-sdk";
+import { PgSessions } from "auth/sessions";
 
 async function deleteEmailTemplateAction(formData: FormData) {
   "use server";
@@ -12,8 +13,10 @@ async function deleteEmailTemplateAction(formData: FormData) {
 }
 
 export default async () => {
-  const t = await getTranslations("EmailTemplates");
-  const templates = await getEmailTemplates(languages.EN);
+  const t = await getTranslations("MessageTemplates");
+  const { userId } = await PgSessions.get();
+
+  const { data: templates } = await new Messaging(userId).getTemplates();
 
   return (
     <table className="govie-table">
@@ -22,9 +25,6 @@ export default async () => {
           <th scope="col" className="govie-table__header">
             {t("list.name")}
           </th>
-          <th scope="col" className="govie-table__header">
-            {t("list.subject")}
-          </th>
 
           <th scope="col" className="govie-table__header">
             {t("list.actions.label")}
@@ -32,19 +32,20 @@ export default async () => {
         </tr>
       </thead>
       <tbody className="govie-table__body">
-        {templates.map((template) => (
-          <tr className="govie-table__row" key={template.id}>
+        {templates?.map((template) => (
+          <tr className="govie-table__row" key={template.templateMetaId}>
             <th className="govie-table__header" scope="row">
-              {template.name}
-            </th>
-            <th className="govie-table__header" scope="row">
-              {template.subject}
+              {template.templateName}
             </th>
 
             <td className="govie-table__cell">
               <div style={{ display: "flex", gap: "10px" }}>
                 <form action={deleteEmailTemplateAction}>
-                  <input name="id" type="hidden" value={template.id} />
+                  <input
+                    name="id"
+                    type="hidden"
+                    value={template.templateMetaId}
+                  />
                   <button
                     id="button"
                     data-module="govie-button"
@@ -55,8 +56,8 @@ export default async () => {
                   </button>
                 </form>
                 <Link
-                  href={`/templates/edit?${new URLSearchParams({
-                    id: template.id,
+                  href={`/admin/templates/edit?${new URLSearchParams({
+                    id: template.templateMetaId,
                   }).toString()}`}
                 >
                   <button

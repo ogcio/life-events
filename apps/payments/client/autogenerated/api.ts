@@ -123,37 +123,37 @@ export interface ApiV1ProvidersPostRequestType {}
 /**
  *
  * @export
- * @interface ApiV1ProvidersProviderIdGet404Response
+ * @interface ApiV1ProvidersProviderIdGet400Response
  */
-export interface ApiV1ProvidersProviderIdGet404Response {
+export interface ApiV1ProvidersProviderIdGet400Response {
   /**
    *
    * @type {number}
-   * @memberof ApiV1ProvidersProviderIdGet404Response
+   * @memberof ApiV1ProvidersProviderIdGet400Response
    */
   statusCode: number;
   /**
    *
    * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet404Response
+   * @memberof ApiV1ProvidersProviderIdGet400Response
    */
   code: string;
   /**
    *
    * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet404Response
+   * @memberof ApiV1ProvidersProviderIdGet400Response
    */
   error: string;
   /**
    *
    * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet404Response
+   * @memberof ApiV1ProvidersProviderIdGet400Response
    */
   message: string;
   /**
    *
    * @type {string}
-   * @memberof ApiV1ProvidersProviderIdGet404Response
+   * @memberof ApiV1ProvidersProviderIdGet400Response
    */
   time: string;
 }

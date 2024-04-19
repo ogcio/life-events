@@ -1,5 +1,6 @@
 import { PgSessions } from "auth/sessions";
-import { mailApi, temporaryMockUtils } from "messages";
+import { Messaging } from "building-blocks-sdk";
+import { temporaryMockUtils } from "messages";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
@@ -10,6 +11,7 @@ const defaultErrorStateId = "email_provider_form";
 const ProviderInput = (props: {
   id: string;
   label: string;
+  hint?: string;
   defaultValue?: string | number;
   error?: string;
 }) => (
@@ -29,6 +31,11 @@ const ProviderInput = (props: {
     <label htmlFor="host" className="govie-label--s">
       {props.label}
     </label>
+    {props.hint && (
+      <div className="govie-hint" id="input-field-hint">
+        {props.hint}
+      </div>
+    )}
     <input
       id={props.id}
       type="text"
@@ -40,8 +47,6 @@ const ProviderInput = (props: {
 );
 
 export default async (props: { searchParams: { id: string } }) => {
-  // const t = await getTranslations("settings.EmailProvider");
-  // const errorT = await getTranslations("formError")
   const [t, errorT] = await Promise.all([
     getTranslations("settings.EmailProvider"),
     getTranslations("formErrors"),
@@ -55,15 +60,17 @@ export default async (props: { searchParams: { id: string } }) => {
     const port = Number(formData.get("port")?.toString());
     const username = formData.get("username")?.toString();
     const password = formData.get("password")?.toString();
+    const fromAddress = formData.get("fromAddress")?.toString();
+    const throttle = Number(formData.get("throttle")?.toString()) || undefined;
 
     const id = formData.get("id")?.toString();
 
     const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] =
       [];
 
-    const o = { name, host, port, username, password };
-    for (const field of Object.keys(o)) {
-      if (!o[field]) {
+    const required = { name, host, port, username, password, fromAddress };
+    for (const field of Object.keys(required)) {
+      if (!required[field]) {
         formErrors.push({
           errorValue: "",
           field,
@@ -72,8 +79,8 @@ export default async (props: { searchParams: { id: string } }) => {
       }
     }
 
+    const { userId } = await PgSessions.get();
     if (formErrors.length) {
-      const { userId } = await PgSessions.get();
       await temporaryMockUtils.createErrors(
         formErrors,
         userId,
@@ -83,30 +90,42 @@ export default async (props: { searchParams: { id: string } }) => {
     }
 
     // Just for ts type assertions, at this point this is always false.
-    if (!name || !host || !username || !password || !port) {
+    if (!name || !host || !username || !password || !port || !fromAddress) {
       return;
     }
 
+    const messagesClient = new Messaging(userId);
+
     if (!id) {
-      await mailApi.createProvider({ name, host, username, password, port });
+      await messagesClient.createEmailProvider({
+        name,
+        host,
+        username,
+        password,
+        port,
+        fromAddress,
+        throttle,
+      });
     } else {
-      await mailApi.updateProvider({
+      await messagesClient.updateEmailProvider(id, {
         host,
         port,
         id,
         name,
         password,
         username,
+        fromAddress,
+        throttle,
       });
     }
     redirect(new URL("admin/settings/emails", process.env.HOST_URL).href);
   }
 
-  const data = props.searchParams.id
-    ? await mailApi.provider(props.searchParams.id)
-    : undefined;
-
   const { userId } = await PgSessions.get();
+  const { data } = await new Messaging(userId).getEmailProvider(
+    props.searchParams.id,
+  );
+
   const errors = await temporaryMockUtils.getErrors(
     userId,
     props.searchParams.id || defaultErrorStateId,
@@ -117,11 +136,17 @@ export default async (props: { searchParams: { id: string } }) => {
   const portError = errors.find((error) => error.field === "port");
   const usernameError = errors.find((error) => error.field === "username");
   const passwordError = errors.find((error) => error.field === "password");
+  const throttleError = errors.find((error) => error.field === "throttle");
+  const fromAddressError = errors.find(
+    (error) => error.field === "fromAddress",
+  );
 
   return (
     <>
       <h1>
-        <span className="govie-heading-l">{t("title")}</span>
+        <span className="govie-heading-l">
+          {data?.id ? t("titleUpdate") : t("titleAdd")}
+        </span>
       </h1>
       <form action={submitAction}>
         <input name="id" value={props.searchParams.id} type="hidden" />
@@ -189,6 +214,34 @@ export default async (props: { searchParams: { id: string } }) => {
             })
           }
         />
+
+        <ProviderInput
+          id="fromAddress"
+          label={t("fromAddressLabel")}
+          defaultValue={data?.fromAddress}
+          error={
+            fromAddressError &&
+            errorT(fromAddressError.messageKey, {
+              field: errorT(`fields.${fromAddressError.field}`),
+              indArticleCheck: "",
+            })
+          }
+        />
+
+        <ProviderInput
+          id="throttle"
+          label={t("throttleLabel")}
+          hint={t("throttleHint")}
+          defaultValue={data?.throttle}
+          error={
+            throttleError &&
+            errorT(throttleError.messageKey, {
+              field: errorT(`fields.${throttleError.field}`),
+              indArticleCheck: "",
+            })
+          }
+        />
+
         <button className="govie-button" type="submit">
           {props.searchParams.id ? t("updateButton") : t("createButton")}
         </button>
