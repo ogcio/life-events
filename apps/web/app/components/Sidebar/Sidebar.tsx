@@ -2,7 +2,7 @@
 
 import styles from "./Sidebar.module.css";
 import useClientSide from "../hooks/useClientSide";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 type TSidebarProps = {
   params: { locale: string };

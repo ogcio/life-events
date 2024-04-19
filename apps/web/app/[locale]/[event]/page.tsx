@@ -5,7 +5,6 @@ import AboutMe from "./AboutMe";
 
 import { PgSessions } from "auth/sessions";
 
-import WithEventMenu from "./components/WithEventMenu";
 import { routes, web } from "../../utils";
 import { notFound } from "next/navigation";
 import Birth from "./Birth";

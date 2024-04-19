@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ds from "design-system";
+import styles from "./LifeEventsMenu.module.scss";
 
 const Icon = ds.Icon;
 
@@ -22,9 +23,8 @@ export default (props: Props) => {
 
   return (
     <ol
-      className="govie-list govie-list--spaced"
+      className={["govie-list govie-list--spaced", styles.events].join(" ")}
       style={{
-        width: "200px",
         height: "100%",
         display: "flex",
         flexDirection: "column",
