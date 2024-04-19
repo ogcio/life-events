@@ -32,6 +32,9 @@ export class Payments {
     this.client.use(authMiddleware);
   }
 
+  /**
+   * PROVIDERS
+   */
   async getProviders() {
     return formatQueryResult(this.client.GET("/api/v1/providers/"));
   }
@@ -73,6 +76,78 @@ export class Payments {
       this.client.POST("/api/v1/providers/worldpay", {
         body: data,
       }),
+    );
+  }
+
+  /**
+   * PAYMENT REQUESTS
+   */
+
+  async getPaymentRequest(
+    requestId: paths["/api/v1/requests/{requestId}"]["get"]["parameters"]["path"]["requestId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/requests/{requestId}", {
+        params: {
+          path: {
+            requestId,
+          },
+        },
+      }),
+    );
+  }
+
+  async getPaymentRequestPublicInfo(
+    requestId: paths["/api/v1/requests/{requestId}/public-info"]["get"]["parameters"]["path"]["requestId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/requests/{requestId}/public-info", {
+        params: {
+          path: {
+            requestId,
+          },
+        },
+      }),
+    );
+  }
+
+  /**
+   * TRANSACTIONS
+   */
+
+  async getTransactions() {
+    return formatQueryResult(this.client.GET("/api/v1/transactions/"));
+  }
+
+  async updateTransaction(
+    transactionId: paths["/api/v1/transactions/{transactionId}"]["patch"]["parameters"]["path"]["transactionId"],
+    data: paths["/api/v1/transactions/{transactionId}"]["patch"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.PATCH("/api/v1/transactions/{transactionId}", {
+        params: {
+          path: {
+            transactionId,
+          },
+        },
+        body: data,
+      }),
+    );
+  }
+
+  async createTransaction(
+    data: paths["/api/v1/transactions/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/transactions/", {
+        body: data,
+      }),
+    );
+  }
+
+  async generatePaymentIntentId() {
+    return formatQueryResult(
+      this.client.GET("/api/v1/transactions/generatePaymentIntentId"),
     );
   }
 }

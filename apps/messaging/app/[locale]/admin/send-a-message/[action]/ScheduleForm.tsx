@@ -1,10 +1,10 @@
-import { api, apistub } from "messages";
+import { api } from "messages";
 import { MessageCreateProps } from "../../../../utils/messaging";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { useTranslations } from "next-intl";
-import { SecurityLevel } from "messages/types/mesages";
+import { Messaging } from "building-blocks-sdk";
 
 export default (props: MessageCreateProps) => {
   const t = useTranslations("sendAMessage.ScheduleForm");
@@ -18,8 +18,11 @@ export default (props: MessageCreateProps) => {
       props.stateId,
     );
 
-    let message: Parameters<typeof apistub.messages.post>[0]["message"];
-    let template: Parameters<typeof apistub.messages.post>[0]["template"];
+    const messagesClient = new Messaging(props.userId);
+    let message: Parameters<typeof messagesClient.createMessage>[0]["message"];
+    let template: Parameters<
+      typeof messagesClient.createMessage
+    >[0]["template"];
 
     if (props.state.templateMetaId) {
       template = {
@@ -29,20 +32,17 @@ export default (props: MessageCreateProps) => {
     } else {
       message = {
         excerpt: props.state.excerpt,
-        lang: "en",
         links: props.state.links,
         messageName: "",
-        organisationId: "",
         plainText: props.state.plainText,
         richText: props.state.richText,
-        securityLevel: props.state.securityLevel as SecurityLevel,
         subject: props.state.subject,
         threadName: props.state.threadName,
         paymentRequestId: props.state.paymentRequestId,
       };
     }
 
-    await apistub.messages.post({
+    await messagesClient.createMessage({
       message,
       template,
       preferredTransports: props.state.transportations,

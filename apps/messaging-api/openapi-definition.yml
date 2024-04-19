@@ -1,0 +1,757 @@
+openapi: 3.0.3
+info:
+  title: OGCIO Messaging API
+  description: API for OGCIO Messaging Service
+  version: 0.1.0
+components:
+  schemas:
+    def-0:
+      type: object
+      properties:
+        statusCode:
+          type: number
+        code:
+          type: string
+        error:
+          type: string
+        message:
+          type: string
+      title: HttpError
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/messages/:
+    get:
+      tags:
+        - Messages
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: type
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        subject:
+                          type: string
+                        excerpt:
+                          type: string
+                        plainText:
+                          type: string
+                        richText:
+                          type: string
+                        links:
+                          type: array
+                          items:
+                            type: string
+                        createdAt:
+                          type: string
+                        messageType:
+                          type: string
+                        paymentRequestId:
+                          type: string
+                      required:
+                        - id
+                        - subject
+                        - excerpt
+                        - plainText
+                        - richText
+                        - links
+                        - createdAt
+                        - messageType
+                required:
+                  - data
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+    post:
+      tags:
+        - Messages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: object
+                  properties:
+                    threadName:
+                      type: string
+                    messageName:
+                      type: string
+                    subject:
+                      type: string
+                    excerpt:
+                      type: string
+                    richText:
+                      type: string
+                    plainText:
+                      type: string
+                    links:
+                      type: array
+                      items:
+                        type: string
+                    paymentRequestId:
+                      format: uuid
+                      type: string
+                  required:
+                    - messageName
+                    - subject
+                    - excerpt
+                    - richText
+                    - plainText
+                    - links
+                template:
+                  type: object
+                  properties:
+                    id:
+                      format: uuid
+                      type: string
+                    interpolations:
+                      type: object
+                      additionalProperties:
+                        type: string
+                  required:
+                    - id
+                    - interpolations
+                preferredTransports:
+                  type: array
+                  items:
+                    type: string
+                userIds:
+                  type: array
+                  items:
+                    format: uuid
+                    type: string
+                security:
+                  type: string
+              required:
+                - preferredTransports
+                - userIds
+                - security
+        required: true
+      responses:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+  /api/v1/messages/{messageId}:
+    get:
+      tags:
+        - Messages
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: messageId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      subject:
+                        type: string
+                      excerpt:
+                        type: string
+                      plainText:
+                        type: string
+                      richText:
+                        type: string
+                      links:
+                        type: array
+                        items:
+                          type: string
+                      paymentRequestId:
+                        type: string
+                    required:
+                      - subject
+                      - excerpt
+                      - plainText
+                      - richText
+                      - links
+                required:
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+  /api/v1/providers/emails/:
+    get:
+      tags: &a1
+        - Providers - Emails
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          format: uuid
+                          type: string
+                        name:
+                          type: string
+                        host:
+                          type: string
+                        port:
+                          type: number
+                        username:
+                          type: string
+                        password:
+                          type: string
+                        throttle:
+                          type: number
+                        fromAddress:
+                          type: string
+                      required:
+                        - id
+                        - name
+                        - host
+                        - port
+                        - username
+                        - password
+                        - fromAddress
+                required:
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+    post:
+      tags: *a1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                host:
+                  type: string
+                port:
+                  type: number
+                username:
+                  type: string
+                password:
+                  type: string
+                throttle:
+                  type: number
+                fromAddress:
+                  type: string
+              required:
+                - name
+                - host
+                - port
+                - username
+                - password
+                - fromAddress
+        required: true
+      responses:
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        format: uuid
+                        type: string
+                    required:
+                      - id
+                required:
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+  /api/v1/providers/emails/{providerId}:
+    get:
+      tags: *a1
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        format: uuid
+                        type: string
+                      name:
+                        type: string
+                      host:
+                        type: string
+                      port:
+                        type: number
+                      username:
+                        type: string
+                      password:
+                        type: string
+                      throttle:
+                        type: number
+                      fromAddress:
+                        type: string
+                    required:
+                      - id
+                      - name
+                      - host
+                      - port
+                      - username
+                      - password
+                      - fromAddress
+                required:
+                  - data
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+    put:
+      tags: *a1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  format: uuid
+                  type: string
+                name:
+                  type: string
+                host:
+                  type: string
+                port:
+                  type: number
+                username:
+                  type: string
+                password:
+                  type: string
+                throttle:
+                  type: number
+                fromAddress:
+                  type: string
+              required:
+                - id
+                - name
+                - host
+                - port
+                - username
+                - password
+                - fromAddress
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+    delete:
+      tags: *a1
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+  /api/v1/templates/:
+    get:
+      tags: &a2
+        - Templates
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: lang
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        templateMetaId:
+                          format: uuid
+                          type: string
+                        lang:
+                          type: string
+                        templateName:
+                          type: string
+                      required:
+                        - templateMetaId
+                        - lang
+                        - templateName
+                required:
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+    post:
+      tags: *a2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contents:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      templateName:
+                        type: string
+                      lang:
+                        type: string
+                      subject:
+                        type: string
+                      excerpt:
+                        type: string
+                      plainText:
+                        type: string
+                      richText:
+                        type: string
+                    required:
+                      - templateName
+                      - lang
+                      - subject
+                      - excerpt
+                      - plainText
+                      - richText
+                variables:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+                    required:
+                      - name
+                      - type
+              required:
+                - contents
+                - variables
+        required: true
+      responses:
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        format: uuid
+                        type: string
+                    required:
+                      - id
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+  /api/v1/templates/{templateId}:
+    get:
+      tags: *a2
+      parameters:
+        - schema:
+            default: en
+            type: string
+          in: query
+          name: lang
+          required: true
+        - schema:
+            type: string
+          in: path
+          name: templateId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      templateName:
+                        type: string
+                      subject:
+                        type: string
+                      excerpt:
+                        type: string
+                      plainText:
+                        type: string
+                      richText:
+                        type: string
+                      fields:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            fieldName:
+                              type: string
+                            fieldType:
+                              type: string
+                          required:
+                            - fieldName
+                            - fieldType
+                    required:
+                      - templateName
+                      - subject
+                      - excerpt
+                      - plainText
+                      - richText
+                      - fields
+                required:
+                  - data
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+    put:
+      tags: *a2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contents:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        format: uuid
+                        type: string
+                      templateName:
+                        type: string
+                      lang:
+                        type: string
+                      subject:
+                        type: string
+                      excerpt:
+                        type: string
+                      plainText:
+                        type: string
+                      richText:
+                        type: string
+                    required:
+                      - id
+                      - templateName
+                      - lang
+                      - subject
+                      - excerpt
+                      - plainText
+                      - richText
+                variables:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+                    required:
+                      - name
+                      - type
+              required:
+                - contents
+                - variables
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: templateId
+          required: true
+      responses:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+    delete:
+      tags: *a2
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: templateId
+          required: true
+      responses:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"

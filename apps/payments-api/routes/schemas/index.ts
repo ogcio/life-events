@@ -248,6 +248,9 @@ export const TransactionDetails = Type.Composite([
 ]);
 export type TransactionDetails = Static<typeof TransactionDetails>;
 
+export const Transactions = Type.Array(TransactionDetails);
+export type Transactions = Static<typeof Transactions>;
+
 export const UpdateTransactionBody = Type.Pick(Transaction, ["status"]);
 export type UpdateTransactionBody = Static<typeof UpdateTransactionBody>;
 
@@ -263,3 +266,8 @@ export const ParamsWithTransactionId = Type.Object({
   transactionId: Type.String(),
 });
 export type ParamsWithTransactionId = Static<typeof ParamsWithTransactionId>;
+
+export const PaymentIntentId = Type.Object({
+  intentId: Type.String(),
+});
+export type PaymentIntentId = Static<typeof PaymentIntentId>;

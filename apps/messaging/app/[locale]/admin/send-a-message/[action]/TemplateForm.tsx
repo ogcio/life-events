@@ -1,8 +1,11 @@
 import { revalidatePath } from "next/cache";
 import { MessageCreateProps } from "../../../../utils/messaging";
-import { api, apistub } from "messages";
+import { api } from "messages";
 import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
+import { PgSessions } from "auth/sessions";
+import { Messaging } from "building-blocks-sdk";
+import { headers } from "next/headers";
 
 export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.TemplateForm");
@@ -46,9 +49,10 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const template = await apistub.templates.get(
+  const { userId } = await PgSessions.get();
+  const { data: template } = await new Messaging(userId).getTemplate(
     props.state.templateMetaId,
-    "en",
+    headers().get("x-next-intl-locale") ?? "en",
   );
 
   return (

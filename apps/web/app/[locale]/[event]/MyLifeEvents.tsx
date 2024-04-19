@@ -5,10 +5,10 @@ import OpenEventStatusImage from "./components/OpenEventStatusImage";
 import { renewDriverLicenceRules } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { postgres, routes, workflow } from "../../utils";
 import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
-import { api, apistub } from "messages";
 import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/OrderBirthCertificate";
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
+import { Messaging } from "building-blocks-sdk";
 
 const eventRules = {
   [workflow.keys.orderEHIC]: orderEHICRules,
@@ -124,9 +124,8 @@ export default async () => {
 
   const { userId } = await PgSessions.get();
 
-  const messageEvents = await apistub.messages.getAll(
-    userId,
-    new URLSearchParams({ type: "event" }),
+  const { data: messageEvents } = await new Messaging(userId).getMessages(
+    "event",
   );
 
   return (
@@ -134,7 +133,7 @@ export default async () => {
       <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
         <div className="govie-heading-l">{t("lifeEvents")}</div>
         <ul className="govie-list">
-          {messageEvents.map((msg) => (
+          {messageEvents?.map((msg) => (
             <li
               key={msg.subject}
               style={{
