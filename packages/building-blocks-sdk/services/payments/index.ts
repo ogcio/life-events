@@ -20,8 +20,7 @@ export class Payments {
         // Send temporarly the user id as auth token
         req.headers.set("x-user-id", authToken);
 
-        // Once the logto integration is complete, we will send the real auth token
-        //req.headers.set("Authorization", `Bearer ${authToken}`);
+        req.headers.set("Authorization", `Bearer ${authToken}`);
         return req;
       },
     };

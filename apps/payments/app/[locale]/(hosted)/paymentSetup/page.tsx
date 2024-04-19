@@ -15,9 +15,8 @@ export default async function () {
     getUser(),
   ]);
 
-  console.log(user);
-
-  const transactions = []; //(await new Payments(userId).getTransactions()).data;
+  const transactions = (await new Payments(user.accessToken).getTransactions())
+    .data;
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>

@@ -32,7 +32,7 @@ const checkPermission = async (
 
     // Sub is the user ID, used for user identification
     const { scope, sub } = payload as { scope: string; sub: string };
-
+    console.log("User Permissions: ", scope);
     for (const permission of requiredPermissions) {
       if (!scope.includes(permission)) {
         rep.code(403).send({ message: "Forbidden" });

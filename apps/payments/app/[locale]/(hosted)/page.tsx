@@ -10,9 +10,9 @@ type Props = {
 
 export default async (props: Props) => {
   const path = `${props.params.locale}/${routeDefinitions.paymentSetup.slug}`;
-  const { publicServant } = await PgSessions.get();
+  // const { publicServant } = await PgSessions.get();
 
-  if (publicServant) return redirect(path, RedirectType.replace);
+  // if (publicServant) return redirect(path, RedirectType.replace);
 
   //TODO: Build the citizen homepage content
   return <h1>Welcome citizen...</h1>;
