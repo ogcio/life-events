@@ -46,7 +46,7 @@ export default async () => {
                     {t("firstName")}:
                   </dt>
                   <dd className="govie-summary-list__value">
-                    <strong>{data.firstName}</strong>
+                    <strong>{data.firstname}</strong>
                   </dd>
                 </div>
                 <div className="govie-summary-list__row">
@@ -57,7 +57,7 @@ export default async () => {
                     {t("lastName")}:
                   </dt>
                   <dd className="govie-summary-list__value">
-                    <strong>{data.lastName}</strong>
+                    <strong>{data.lastname}</strong>
                   </dd>
                 </div>
                 <div className="govie-summary-list__row">

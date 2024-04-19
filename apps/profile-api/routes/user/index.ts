@@ -34,6 +34,7 @@ export default async function userDetails(app: FastifyInstance) {
         ppsn_visible: false,
         gender: "male",
         phone: "01234567891",
+        consent_to_prefill_data: false,
       };
 
       let result;
@@ -59,6 +60,9 @@ export default async function userDetails(app: FastifyInstance) {
                 : defaultData.ppsn_visible,
             gender: data.gender || defaultData.gender,
             phone: data.phone || defaultData.phone,
+            consent_to_prefill_data:
+              data.consent_to_prefill_data ||
+              defaultData.consent_to_prefill_data,
           };
 
           return reply.send(dataWithDefaults);
