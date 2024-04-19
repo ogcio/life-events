@@ -15,8 +15,11 @@ export const providerSecretsHandlersFactory = (type: ProviderType) => {
       throw new Error(`Unsupported provider type: ${type}`);
   }
 };
-
-class StripeProviderSecretsHandler {
+interface IProviderSecretsHandler {
+  getCypheredData(data: any): any;
+  getClearTextData(data: any): any;
+}
+class StripeProviderSecretsHandler implements IProviderSecretsHandler {
   private cryptographyService: CryptographyService;
 
   constructor() {
@@ -42,7 +45,7 @@ class StripeProviderSecretsHandler {
   }
 }
 
-class BankTransferSecretsHandler {
+class BankTransferSecretsHandler implements IProviderSecretsHandler {
   getCypheredData(data: any) {
     return data;
   }
@@ -52,7 +55,7 @@ class BankTransferSecretsHandler {
   }
 }
 
-class OpenBankingSecretsHandler {
+class OpenBankingSecretsHandler implements IProviderSecretsHandler {
   getCypheredData(data: any) {
     return data;
   }
