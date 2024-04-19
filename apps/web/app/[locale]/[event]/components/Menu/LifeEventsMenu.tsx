@@ -10,7 +10,7 @@ type Props = {
   options: {
     key: string;
     url: string;
-    icon: IconProps["icon"];
+    icon: string;
     label: string;
   }[];
   selected: string;
@@ -69,7 +69,7 @@ export default (props: Props) => {
               }}
             >
               <Icon
-                icon={option.icon}
+                icon={option.icon as IconProps["icon"]}
                 className="govie-button__icon-left"
                 color={ds.colours.ogcio.darkGreen}
               />
