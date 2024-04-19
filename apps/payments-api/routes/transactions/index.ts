@@ -80,7 +80,6 @@ export default async function transactions(app: FastifyInstance) {
     },
     async (request, reply) => {
       const userId = request.user?.id;
-      console.log(">>>", "API - get transations - userId", userId);
 
       let result;
       try {
@@ -101,11 +100,6 @@ export default async function transactions(app: FastifyInstance) {
           INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
           JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id`,
           [userId],
-        );
-        console.log(
-          ">>>",
-          "API - get transations - result",
-          JSON.stringify(result, undefined, 2),
         );
       } catch (err) {
         app.log.error((err as Error).message);
