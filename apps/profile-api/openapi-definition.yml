@@ -439,10 +439,10 @@ paths:
                   - error
                   - message
                   - time
-  /api/v1/user-details/:
+  /api/v1/user/:
     get:
       tags:
-        - UserDetails
+        - User
       responses:
         "200":
           description: Default Response
@@ -501,9 +501,76 @@ paths:
                   - error
                   - message
                   - time
+    post:
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                email:
+                  type: string
+                title:
+                  type: string
+                date_of_birth:
+                  type: string
+                ppsn:
+                  type: string
+                ppsn_visible:
+                  type: boolean
+                gender:
+                  type: string
+                phone:
+                  type: string
+              required:
+                - firstname
+                - lastname
+                - email
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
     put:
       tags:
-        - UserDetails
+        - User
       requestBody:
         content:
           application/json:
@@ -583,6 +650,6 @@ paths:
                   - message
                   - time
 tags:
-  - name: UserDetails
+  - name: User
   - name: Addresses
   - name: Entitlements

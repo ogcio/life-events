@@ -78,13 +78,23 @@ export class Profile {
     return formatQueryResult(this.client.GET("/api/v1/entitlements/"));
   }
 
-  async getUserDetails() {
-    return formatQueryResult(this.client.GET("/api/v1/user-details/"));
+  async getUser() {
+    return formatQueryResult(this.client.GET("/api/v1/user/"));
   }
 
-  async updateUserDetails(
+  async createUser(
+    data: paths["/api/v1/user/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/user/", {
+        body: data,
+      }),
+    );
+  }
+
+  async updateUser(
     data?: NonNullable<
-      paths["/api/v1/user-details/"]["put"]["requestBody"]
+      paths["/api/v1/user/"]["put"]["requestBody"]
     >["content"]["application/json"],
   ) {
     if (!data || Object.keys(data).length === 0) {
@@ -92,7 +102,7 @@ export class Profile {
     }
 
     return formatQueryResult(
-      this.client.PUT("/api/v1/user-details/", {
+      this.client.PUT("/api/v1/user/", {
         body: data,
       }),
     );

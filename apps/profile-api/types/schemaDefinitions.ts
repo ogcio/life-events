@@ -76,6 +76,24 @@ export const UserDetails = Type.Object({
 
 export type UserDetails = Static<typeof UserDetails>;
 
+/* Only firstname, lastname and email are required to create a user right now because 
+ those are the only fields we always have access to via the current auth session -
+ to be revised when we integrate with GOV ID
+ */
+export const CreateUser = Type.Object({
+  firstname: Type.String(),
+  lastname: Type.String(),
+  email: Type.String(),
+  title: Type.Optional(Type.String()),
+  date_of_birth: Type.Optional(Type.String()),
+  ppsn: Type.Optional(Type.String()),
+  ppsn_visible: Type.Optional(Type.Boolean()),
+  gender: Type.Optional(Type.String()),
+  phone: Type.Optional(Type.String()),
+});
+
+export type CreateUser = Static<typeof CreateUser>;
+
 export const UpdateUser = Type.Object({
   firstname: Type.Optional(Type.String()),
   lastname: Type.Optional(Type.String()),

@@ -79,29 +79,12 @@ async function submitAction(formData: FormData) {
     iterResult = formIterator.next();
   }
 
-  const currentDataResults = await postgres.pgpool.query(
-    `
-      SELECT * FROM user_details
-      WHERE user_id = $1
-  `,
-    [userId],
-  );
+  const currentDataResults = await new Profile(userId).getUser();
 
-  if (currentDataResults.rows.length > 0) {
-    await new Profile(userId).updateUserDetails(data);
+  if (currentDataResults.data) {
+    await new Profile(userId).updateUser(data);
   } else {
-    const keys = Object.keys(data);
-    const values = Object.values(data);
-    const columns = keys.join(", ");
-    const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
-
-    await postgres.pgpool.query(
-      `
-        INSERT INTO user_details (${columns})
-        VALUES (${placeholders})
-      `,
-      values,
-    );
+    await new Profile(userId).createUser(data);
   }
 }
 
@@ -114,7 +97,7 @@ export default async () => {
 
   const { userId } = await PgSessions.get();
 
-  const { data } = await new Profile(userId).getUserDetails();
+  const { data } = await new Profile(userId).getUser();
 
   if (!data) {
     // log some error here
@@ -136,29 +119,16 @@ export default async () => {
   async function togglePPSN() {
     "use server";
 
-    const userExistsQuery = await postgres.pgpool.query(
-      `
-        SELECT ppsn_visible
-        FROM user_details
-        WHERE user_id = $1
-      `,
-      [userId],
-    );
+    const userExistsQuery = await new Profile(userId).getUser();
 
-    if (userExistsQuery.rows.length > 0) {
-      const isPPSNVisible = userExistsQuery.rows[0].ppsn_visible;
+    if (userExistsQuery.data) {
+      const isPPSNVisible = userExistsQuery.data.ppsn_visible;
 
-      await new Profile(userId).updateUserDetails({
+      await new Profile(userId).updateUser({
         ppsn_visible: !isPPSNVisible,
       });
     } else {
-      await postgres.pgpool.query(
-        `
-            INSERT INTO user_details (user_id, ppsn_visible, firstname, lastname, email)
-            VALUES ($1, TRUE, $2, $3, $4)
-          `,
-        [userId, firstname, lastname, email],
-      );
+      await new Profile(userId).createUser({ firstname, lastname, email });
     }
 
     revalidatePath("/");

@@ -1,6 +1,10 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
-import { UpdateUser, UserDetails } from "../../types/schemaDefinitions";
+import {
+  CreateUser,
+  UpdateUser,
+  UserDetails,
+} from "../../types/schemaDefinitions";
 import { Type } from "@sinclair/typebox";
 
 export default async function userDetails(app: FastifyInstance) {
@@ -9,7 +13,7 @@ export default async function userDetails(app: FastifyInstance) {
     {
       preValidation: app.verifyUser,
       schema: {
-        tags: ["UserDetails"],
+        tags: ["User"],
         response: {
           200: UserDetails,
           500: HttpError,
@@ -69,12 +73,56 @@ export default async function userDetails(app: FastifyInstance) {
     },
   );
 
+  /* Only firstname, lastname and email are required to create a user right now because 
+ those are the only fields we always have access to via the current auth session -
+ to be revised when we integrate with GOV ID
+ */
+  app.post<{ Body: CreateUser; Reply: { id: string } }>(
+    "/",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["User"],
+        body: CreateUser,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      try {
+        const keys = Object.keys(request.body);
+        const values = Object.values(request.body);
+        const columns = keys.join(", ");
+        const placeholders = values
+          .map((_, index) => `$${index + 1}`)
+          .join(", ");
+
+        const result = await app.pg.query(
+          `
+            INSERT INTO user_details (${columns})
+            VALUES (${placeholders})
+            RETURNING user_id as id
+          `,
+          values,
+        );
+
+        reply.send({ id: result.rows[0].id });
+      } catch (error) {
+        throw app.httpErrors.internalServerError((error as Error).message);
+      }
+    },
+  );
+
   app.put<{ Body: UpdateUser }>(
     "/",
     {
       preValidation: app.verifyUser,
       schema: {
-        tags: ["UserDetails"],
+        tags: ["User"],
         body: UpdateUser,
         response: {
           200: Type.Object({}),

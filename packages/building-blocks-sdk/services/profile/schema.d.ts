@@ -258,7 +258,7 @@ export interface paths {
       };
     };
   };
-  "/api/v1/user-details/": {
+  "/api/v1/user/": {
     get: {
       responses: {
         /** @description Default Response */
@@ -323,6 +323,45 @@ export interface paths {
               error: string;
               message: string;
               time: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            firstname: string;
+            lastname: string;
+            email: string;
+            title?: string;
+            date_of_birth?: string;
+            ppsn?: string;
+            ppsn_visible?: boolean;
+            gender?: string;
+            phone?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
             };
           };
         };
