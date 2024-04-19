@@ -80,6 +80,7 @@ export default async function transactions(app: FastifyInstance) {
     },
     async (request, reply) => {
       const userId = request.user?.id;
+      console.log(">>>", "API - get transations - userId", userId);
 
       let result;
       try {
@@ -97,8 +98,14 @@ export default async function transactions(app: FastifyInstance) {
             pp.provider_type as "providerType"
           FROM payment_transactions t
           INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.user_id = $1
+          INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
           JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id`,
           [userId],
+        );
+        console.log(
+          ">>>",
+          "API - get transations - result",
+          JSON.stringify(result, undefined, 2),
         );
       } catch (err) {
         app.log.error((err as Error).message);
