@@ -7,17 +7,27 @@ import path from "path";
  *
  */
 
+const updateMode = process.env.MODE === "update";
+
 function copyEnvFiles(paths) {
   for (const currentPath of paths) {
     if (fs.existsSync(path.join(currentPath, ".env.sample"))) {
-      if (fs.existsSync(path.join(currentPath, ".env"))) {
-        console.log(`${currentPath} already has .env file, ignoring...`);
-      } else {
+      if (updateMode) {
         fs.copyFileSync(
           path.join(currentPath, ".env.sample"),
           path.join(currentPath, ".env"),
         );
         console.log(`.env file created in ${currentPath}`);
+      } else {
+        if (fs.existsSync(path.join(currentPath, ".env"))) {
+          console.log(`${currentPath} already has .env file, ignoring...`);
+        } else {
+          fs.copyFileSync(
+            path.join(currentPath, ".env.sample"),
+            path.join(currentPath, ".env"),
+          );
+          console.log(`.env file created in ${currentPath}`);
+        }
       }
     }
   }
