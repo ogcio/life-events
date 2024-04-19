@@ -39,12 +39,6 @@ export default async (props: web.NextPageProps) => {
 
   const Component = componentsMap[props.params.event];
 
-  const enabledEntries = await getAllEnabledFlags(
-    menuOptions.map((o) => o.key),
-  );
-
-  const options = getEnabledOptions(props.params.locale, enabledEntries);
-
   const messages = await getMessages({ locale: props.params.locale });
   const timelineMessages = messages.Timeline as AbstractIntlMessages;
 

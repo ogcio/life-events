@@ -14,65 +14,73 @@ export const menuOptions = [
     key: "events",
     icon: "events",
     url: routes.events.slug,
-    label: "Events",
+    label: "events",
   },
   {
     key: "about-me",
     icon: "about",
     url: routes.aboutMe.slug,
-    label: "About me",
+    label: "aboutMe",
   },
   {
     key: "birth",
     icon: "birth",
     url: routes.birth.slug,
-    label: "Birth",
+    label: "birth",
   },
   {
     key: "health",
     icon: "health",
     url: routes.health.slug,
-    label: "Health",
+    label: "health",
   },
   {
     key: "driving",
     icon: "driving",
     url: routes.driving.slug,
-    label: "Driving",
+    label: "driving",
   },
   {
     key: "employment",
     icon: "employment",
     url: routes.employment.slug,
-    label: "Employment",
+    label: "employment",
   },
   {
     key: "business",
     icon: "business",
     url: routes.business.slug,
-    label: "Starting a business",
+    label: "business",
   },
   {
     key: "housing",
     icon: "housing",
     url: routes.housing.slug,
-    label: "Housing",
+    label: "housing",
   },
   {
     key: "death",
     icon: "death",
     url: routes.death.slug,
-    label: "Death",
+    label: "death",
   },
 ];
 
-export function getEnabledOptions(locale: string, enabledPaths: string[]) {
+export function getEnabledOptions(
+  locale: string,
+  enabledPaths: string[],
+  t: (key: string) => string,
+) {
   const enabledOptions: MenuOption[] = [];
 
   for (const option of menuOptions) {
     const enabled = enabledPaths.find((ep) => ep === option.key);
     if (enabled) {
-      enabledOptions.push({ ...option, url: url(locale, option.url) });
+      enabledOptions.push({
+        ...option,
+        url: url(locale, option.url),
+        label: t(option.label),
+      });
     }
   }
 

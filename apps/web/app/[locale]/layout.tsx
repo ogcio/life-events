@@ -14,6 +14,7 @@ import {
   menuOptions,
 } from "./[event]/components/Menu/options";
 import SidebarWrapper from "./[event]/components/SidebarWrapper";
+import { getTranslations } from "next-intl/server";
 
 export default async function RootLayout({
   children,
@@ -47,8 +48,9 @@ export default async function RootLayout({
     const enabledEntries = await getAllEnabledFlags(
       menuOptions.map((o) => o.key),
     );
+    const t = await getTranslations("EventsMenu");
 
-    const options = getEnabledOptions(locale, enabledEntries);
+    const options = getEnabledOptions(locale, enabledEntries, t);
     SidebarComponent = (
       <SidebarWrapper
         userName={userName}
