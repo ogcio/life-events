@@ -72,6 +72,7 @@ export const UserDetails = Type.Object({
   ppsn_visible: Type.Boolean(),
   gender: Type.String(),
   phone: Type.String(),
+  consent_to_prefill_data: Type.Boolean(),
 });
 
 export type UserDetails = Static<typeof UserDetails>;
@@ -90,6 +91,7 @@ export const CreateUser = Type.Object({
   ppsn_visible: Type.Optional(Type.Boolean()),
   gender: Type.Optional(Type.String()),
   phone: Type.Optional(Type.String()),
+  consent_to_prefill_data: Type.Optional(Type.Boolean()),
 });
 
 export type CreateUser = Static<typeof CreateUser>;
@@ -104,6 +106,7 @@ export const UpdateUser = Type.Object({
   ppsn_visible: Type.Optional(Type.Boolean()),
   gender: Type.Optional(Type.String()),
   phone: Type.Optional(Type.String()),
+  consent_to_prefill_data: Type.Optional(Type.Boolean()),
 });
 
 export type UpdateUser = Static<typeof UpdateUser>;

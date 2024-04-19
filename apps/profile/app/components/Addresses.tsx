@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { formatDate, postgres, routes } from "../utils";
+import { formatDate, routes } from "../utils";
 import { PgSessions } from "auth/sessions";
 import ds from "design-system";
 import { Link } from "../utils/navigation";

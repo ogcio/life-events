@@ -469,6 +469,8 @@ paths:
                     type: string
                   phone:
                     type: string
+                  consent_to_prefill_data:
+                    type: boolean
                 required:
                   - firstname
                   - lastname
@@ -478,6 +480,7 @@ paths:
                   - ppsn_visible
                   - gender
                   - phone
+                  - consent_to_prefill_data
         "500":
           description: Default Response
           content:
@@ -528,6 +531,8 @@ paths:
                   type: string
                 phone:
                   type: string
+                consent_to_prefill_data:
+                  type: boolean
               required:
                 - firstname
                 - lastname
@@ -595,6 +600,8 @@ paths:
                   type: string
                 phone:
                   type: string
+                consent_to_prefill_data:
+                  type: boolean
       responses:
         "200":
           description: Default Response

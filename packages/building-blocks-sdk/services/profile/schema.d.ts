@@ -274,6 +274,7 @@ export interface paths {
               ppsn_visible: boolean;
               gender: string;
               phone: string;
+              consent_to_prefill_data: boolean;
             };
           };
         };
@@ -304,6 +305,7 @@ export interface paths {
             ppsn_visible?: boolean;
             gender?: string;
             phone?: string;
+            consent_to_prefill_data?: boolean;
           };
         };
       };
@@ -353,6 +355,7 @@ export interface paths {
             ppsn_visible?: boolean;
             gender?: string;
             phone?: string;
+            consent_to_prefill_data?: boolean;
           };
         };
       };

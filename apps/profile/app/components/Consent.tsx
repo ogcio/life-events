@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { postgres } from "../utils";
 import { PgSessions } from "auth/sessions";
+import { Profile } from "building-blocks-sdk";
 
 async function submitAction(formData: FormData) {
   "use server";
@@ -10,32 +11,19 @@ async function submitAction(formData: FormData) {
   const consentToPrefillData = formData.get("consentToPrefillData");
   const isUserConsenting = consentToPrefillData === "on";
 
-  const userExistsQuery = await postgres.pgpool.query(
-    `
-    SELECT 1
-    FROM user_details
-    WHERE user_id = $1
-    `,
-    [userId],
-  );
+  const userExistsQuery = await new Profile(userId).getUser();
 
-  if (userExistsQuery.rows.length > 0) {
-    await postgres.pgpool.query(
-      `
-          UPDATE user_details
-          SET consent_to_prefill_data = $1, updated_at = now()
-          WHERE user_id = $2
-        `,
-      [isUserConsenting, userId],
-    );
+  if (userExistsQuery.data) {
+    await new Profile(userId).updateUser({
+      consent_to_prefill_data: isUserConsenting,
+    });
   } else {
-    await postgres.pgpool.query(
-      `
-          INSERT INTO user_details (user_id, consent_to_prefill_data, firstname, lastname, email)
-          VALUES ($1, $2, $3, $4, $5)
-        `,
-      [userId, isUserConsenting, firstName, lastName, email],
-    );
+    await new Profile(userId).createUser({
+      consent_to_prefill_data: isUserConsenting,
+      firstname: firstName,
+      lastname: lastName,
+      email,
+    });
   }
 }
 
