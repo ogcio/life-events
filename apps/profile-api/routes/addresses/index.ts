@@ -175,7 +175,11 @@ export default async function addresses(app: FastifyInstance) {
         );
 
         if (!result?.rows.length) {
-          throw app.httpErrors.notFound("The address was not found");
+          const error = app.httpErrors.notFound("The address was not found");
+          error.statusCode = 404;
+          error.code = "NOT_FOUND";
+
+          throw error;
         }
 
         reply.send();
@@ -216,7 +220,11 @@ export default async function addresses(app: FastifyInstance) {
       }
 
       if (!result?.rows.length) {
-        throw app.httpErrors.notFound("The address was not found");
+        const error = app.httpErrors.notFound("The address was not found");
+        error.statusCode = 404;
+        error.code = "NOT_FOUND";
+
+        throw error;
       }
 
       reply.send();

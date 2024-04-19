@@ -79,9 +79,9 @@ async function submitAction(formData: FormData) {
     iterResult = formIterator.next();
   }
 
-  const currentDataResults = await new Profile(userId).getUser();
+  const { data: currentDataResults } = await new Profile(userId).getUser();
 
-  if (currentDataResults.data) {
+  if (currentDataResults) {
     await new Profile(userId).updateUser(data);
   } else {
     await new Profile(userId).createUser(data);
@@ -97,12 +97,28 @@ export default async () => {
 
   const { userId } = await PgSessions.get();
 
-  const { data } = await new Profile(userId).getUser();
+  const { data, error } = await new Profile(userId).getUser();
 
-  if (!data) {
-    // log some error here
-    return <p className="govie-body">{t("userNotFound")}</p>;
+  if (error) {
+    // Redirect to error page or handle the error as needed
   }
+
+  /**  NOTE: the defaults below are for demo purposes only given we don't have access to real user data yet */
+  const defaultData = {
+    firstname: "Name",
+    lastname: "Surname",
+    email: "test@email.com",
+    title: "Mr",
+    date_of_birth: String(new Date("1990-01-01T00:00:00Z")),
+    ppsn: "9876543W",
+    ppsn_visible: false,
+    gender: "male",
+    phone: "01234567891",
+    consent_to_prefill_data: false,
+  };
+
+  //Temporarily use default data if user is not found or no data is returned
+  const userData = data || defaultData;
 
   const {
     firstname,
@@ -114,7 +130,7 @@ export default async () => {
     ppsn_visible,
     gender,
     phone,
-  } = data;
+  } = userData;
 
   async function togglePPSN() {
     "use server";

@@ -6,7 +6,7 @@ const formatQueryResult = async <T, O>(
 ) => {
   try {
     const result = await promise;
-    return { data: result.data, error: null };
+    return { data: result.data, error: result.error };
   } catch (error) {
     return { data: undefined, error };
   }

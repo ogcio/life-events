@@ -279,6 +279,18 @@ export interface paths {
           };
         };
         /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+        /** @description Default Response */
         500: {
           content: {
             "application/json": {
