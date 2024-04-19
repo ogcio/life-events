@@ -4,11 +4,13 @@ import styles from "./LifeEventsMenu.module.scss";
 
 const Icon = ds.Icon;
 
+type IconProps = React.ComponentProps<typeof ds.Icon>;
+
 type Props = {
   options: {
     key: string;
     url: string;
-    icon: string;
+    icon: IconProps["icon"];
     label: string;
   }[];
   selected: string;
@@ -67,8 +69,7 @@ export default (props: Props) => {
               }}
             >
               <Icon
-                // make option typeof the icons
-                icon={option.icon as any}
+                icon={option.icon}
                 className="govie-button__icon-left"
                 color={ds.colours.ogcio.darkGreen}
               />

@@ -39,8 +39,6 @@ export default async (props: web.NextPageProps) => {
 
   const Component = componentsMap[props.params.event];
 
-  // const showEventsMenu = await isFeatureFlagEnabled("eventsMenu");
-
   const enabledEntries = await getAllEnabledFlags(
     menuOptions.map((o) => o.key),
   );
