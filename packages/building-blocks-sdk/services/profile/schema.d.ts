@@ -158,7 +158,9 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": Record<string, never>;
+            "application/json": {
+              id: string;
+            };
           };
         };
         /** @description Default Response */
@@ -197,7 +199,9 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": Record<string, never>;
+            "application/json": {
+              id: string;
+            };
           };
         };
         /** @description Default Response */
@@ -325,7 +329,9 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": Record<string, never>;
+            "application/json": {
+              id: string;
+            };
           };
         };
         /** @description Default Response */

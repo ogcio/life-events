@@ -41,7 +41,7 @@ export default async function user(app: FastifyInstance) {
       let result;
       try {
         result = await app.pg.query(
-          `SELECT title, firstName, lastName, date_of_birth, ppsn, ppsn_visible, gender, email, phone FROM user_details WHERE user_id = $1`,
+          `SELECT title, firstName, lastName, date_of_birth, ppsn, ppsn_visible, gender, email, phone, consent_to_prefill_data FROM user_details WHERE user_id = $1`,
           [userId],
         );
       } catch (err) {
@@ -132,7 +132,9 @@ export default async function user(app: FastifyInstance) {
         tags: ["User"],
         body: UpdateUser,
         response: {
-          200: Type.Object({}),
+          200: Type.Object({
+            id: Type.String(),
+          }),
           404: HttpError,
           500: HttpError,
         },
@@ -170,7 +172,7 @@ export default async function user(app: FastifyInstance) {
         throw error;
       }
 
-      reply.send();
+      reply.send({ id: result.rows[0].id });
     },
   );
 }

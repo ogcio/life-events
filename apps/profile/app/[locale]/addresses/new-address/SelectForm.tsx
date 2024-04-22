@@ -94,14 +94,24 @@ export async function SelectForm(props: FormProps) {
         .toISOString();
     }
 
-    const userExistsQuery = await new Profile(userId).getUser();
+    const { data: userExistsQuery, error } = await new Profile(
+      userId,
+    ).getUser();
 
-    if (!userExistsQuery.data) {
-      await new Profile(userId).createUser({
+    if (error) {
+      //handle error
+    }
+
+    if (!userExistsQuery) {
+      const { error } = await new Profile(userId).createUser({
         firstname: firstName,
         lastname: lastName,
         email,
       });
+
+      if (error) {
+        //handle error
+      }
     }
 
     if (selectedAddress) {
@@ -109,7 +119,7 @@ export async function SelectForm(props: FormProps) {
         .toString()
         .split(",");
 
-      new Profile(userId).createAddress({
+      const { error } = await new Profile(userId).createAddress({
         address_line1: addressFirst.trim(),
         town: town.trim(),
         county: county.trim(),
@@ -117,6 +127,10 @@ export async function SelectForm(props: FormProps) {
         move_in_date: moveInDate?.toString(),
         move_out_date: moveOutDate?.toString(),
       });
+
+      if (error) {
+        //handle error
+      }
     }
 
     redirect("/");

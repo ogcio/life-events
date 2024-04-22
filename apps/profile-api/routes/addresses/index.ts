@@ -138,7 +138,9 @@ export default async function addresses(app: FastifyInstance) {
         tags: ["Addresses"],
         body: UpdateAddress,
         response: {
-          200: Type.Object({}),
+          200: Type.Object({
+            id: Type.String(),
+          }),
           404: HttpError,
           500: HttpError,
         },
@@ -186,7 +188,7 @@ export default async function addresses(app: FastifyInstance) {
           throw error;
         }
 
-        reply.send();
+        reply.send({ id: result.rows[0].id });
       } catch (error) {
         throw app.httpErrors.internalServerError((error as Error).message);
       }
@@ -200,7 +202,9 @@ export default async function addresses(app: FastifyInstance) {
       schema: {
         tags: ["Addresses"],
         response: {
-          200: Type.Object({}),
+          200: Type.Object({
+            id: Type.String(),
+          }),
           404: HttpError,
           500: HttpError,
         },
@@ -231,7 +235,7 @@ export default async function addresses(app: FastifyInstance) {
         throw error;
       }
 
-      reply.send();
+      reply.send({ id: result.rows[0].id });
     },
   );
 }

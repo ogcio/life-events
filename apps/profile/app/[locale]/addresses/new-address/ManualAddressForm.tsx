@@ -60,21 +60,29 @@ export async function ManualAddressForm(props: FormProps) {
     const userExistsQuery = await new Profile(userId).getUser();
 
     if (!userExistsQuery.data) {
-      new Profile(userId).createUser({
+      const { error } = await new Profile(userId).createUser({
         firstname: firstName,
         lastname: lastName,
         email,
       });
+
+      if (error) {
+        //handle error
+      }
     }
 
     if (addressFirst && town && county && eirecode) {
-      new Profile(userId).createAddress({
+      const { error } = await new Profile(userId).createAddress({
         address_line1: addressFirst,
         address_line2: addressSecond,
         town: town,
         county: county,
         eirecode: eirecode,
       });
+
+      if (error) {
+        //handle error
+      }
 
       redirect("/");
     }

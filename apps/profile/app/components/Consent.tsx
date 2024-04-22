@@ -11,35 +11,45 @@ async function submitAction(formData: FormData) {
   const consentToPrefillData = formData.get("consentToPrefillData");
   const isUserConsenting = consentToPrefillData === "on";
 
-  const userExistsQuery = await new Profile(userId).getUser();
+  const { data: userExistsQuery, error } = await new Profile(userId).getUser();
 
-  if (userExistsQuery.data) {
-    await new Profile(userId).updateUser({
+  if (error) {
+    //handle error
+  }
+
+  if (userExistsQuery) {
+    const result = await new Profile(userId).updateUser({
       consent_to_prefill_data: isUserConsenting,
     });
+
+    if (result?.error) {
+      //handle error
+    }
   } else {
-    await new Profile(userId).createUser({
+    const { error } = await new Profile(userId).createUser({
       consent_to_prefill_data: isUserConsenting,
       firstname: firstName,
       lastname: lastName,
       email,
     });
+
+    if (error) {
+      //handle error
+    }
   }
 }
 
 async function getConsentData() {
   const { userId } = await PgSessions.get();
 
-  const res = await postgres.pgpool.query<{
-    consent_to_prefill_data: boolean;
-  }>(`SELECT consent_to_prefill_data FROM user_details WHERE user_id = $1`, [
-    userId,
-  ]);
+  const { data, error } = await new Profile(userId).getUser();
 
-  const { consent_to_prefill_data } = res.rows[0] || {};
+  if (error) {
+    //handle error
+  }
 
   return {
-    consentToPrefillData: consent_to_prefill_data || false,
+    consentToPrefillData: data?.consent_to_prefill_data || false,
   };
 }
 

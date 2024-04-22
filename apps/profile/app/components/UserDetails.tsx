@@ -79,12 +79,27 @@ async function submitAction(formData: FormData) {
     iterResult = formIterator.next();
   }
 
-  const { data: currentDataResults } = await new Profile(userId).getUser();
+  const { data: currentDataResults, error } = await new Profile(
+    userId,
+  ).getUser();
+
+  if (error) {
+    //handle error
+    return;
+  }
 
   if (currentDataResults) {
-    await new Profile(userId).updateUser(data);
+    const result = await new Profile(userId).updateUser(data);
+
+    if (result?.error) {
+      //handle error
+    }
   } else {
-    await new Profile(userId).createUser(data);
+    const { error } = await new Profile(userId).createUser(data);
+
+    if (error) {
+      //handle error
+    }
   }
 }
 
@@ -100,7 +115,7 @@ export default async () => {
   const { data, error } = await new Profile(userId).getUser();
 
   if (error) {
-    // Redirect to error page or handle the error as needed
+    // handle error
   }
 
   /**  NOTE: the defaults below are for demo purposes only given we don't have access to real user data yet */
@@ -135,16 +150,31 @@ export default async () => {
   async function togglePPSN() {
     "use server";
 
-    const userExistsQuery = await new Profile(userId).getUser();
+    const { data: userExistsQuery, error } = await new Profile(
+      userId,
+    ).getUser();
 
-    if (userExistsQuery.data) {
-      const isPPSNVisible = userExistsQuery.data.ppsn_visible;
+    if (error) {
+      //handle error
+      return;
+    }
+
+    if (userExistsQuery) {
+      const isPPSNVisible = userExistsQuery.ppsn_visible;
 
       await new Profile(userId).updateUser({
         ppsn_visible: !isPPSNVisible,
       });
     } else {
-      await new Profile(userId).createUser({ firstname, lastname, email });
+      const { error } = await new Profile(userId).createUser({
+        firstname,
+        lastname,
+        email,
+      });
+
+      if (error) {
+        //handle error
+      }
     }
 
     revalidatePath("/");

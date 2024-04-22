@@ -274,7 +274,11 @@ paths:
             application/json:
               schema:
                 type: object
-                properties: {}
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
         "404":
           description: Default Response
           content:
@@ -337,7 +341,11 @@ paths:
             application/json:
               schema:
                 type: object
-                properties: {}
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
         "404":
           description: Default Response
           content:
@@ -632,7 +640,11 @@ paths:
             application/json:
               schema:
                 type: object
-                properties: {}
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
         "404":
           description: Default Response
           content:

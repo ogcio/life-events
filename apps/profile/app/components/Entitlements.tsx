@@ -8,9 +8,13 @@ import { Profile } from "building-blocks-sdk";
 export default async () => {
   const t = await getTranslations("Entitlements");
   const { userId } = await PgSessions.get();
-  const { data: entitlements = [] } = await new Profile(
+  const { data: entitlements = [], error } = await new Profile(
     userId,
   ).getEntitlements();
+
+  if (error) {
+    //handle error
+  }
 
   return (
     <>
