@@ -370,6 +370,53 @@ export interface paths {
       };
     };
   };
+  "/api/v1/requests/{requestId}/public-info": {
+    get: {
+      parameters: {
+        path: {
+          requestId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              paymentRequestId: string;
+              title: string;
+              description: string;
+              amount: number;
+              reference: string;
+              providers: {
+                userId: string;
+                id: string;
+                name: string;
+                type: string;
+                status: string;
+                data: unknown;
+                createdAt: string;
+              }[];
+              redirectUrl: string;
+              allowAmountOverride: boolean;
+              allowCustomAmount: boolean;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/requests/{requestId}/transactions": {
     get: {
       parameters: {
@@ -417,6 +464,7 @@ export interface paths {
               };
               providerName: string;
               providerType: string;
+              paymentRequestId: string;
             };
           };
         };
@@ -458,6 +506,42 @@ export interface paths {
     };
   };
   "/api/v1/transactions/": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              transactionId: string;
+              status: string;
+              amount: number;
+              updatedAt: string;
+              title: string;
+              extPaymentId: string;
+              userData: {
+                name: string;
+                email: string;
+              };
+              providerName: string;
+              providerType: string;
+              paymentRequestId: string;
+            }[];
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
     post: {
       requestBody: {
         content: {
@@ -485,6 +569,32 @@ export interface paths {
         };
         /** @description Default Response */
         500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/transactions/generatePaymentIntentId": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              intentId: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        400: {
           content: {
             "application/json": {
               statusCode: number;

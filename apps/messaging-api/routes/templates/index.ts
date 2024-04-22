@@ -333,7 +333,6 @@ export default async function templates(app: FastifyInstance) {
         for (const content of contents) {
           const { excerpt, lang, templateName, plainText, richText, subject } =
             content;
-
           await client.query(
             `
             insert into message_template_contents(

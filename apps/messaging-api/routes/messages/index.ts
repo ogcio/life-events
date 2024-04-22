@@ -429,7 +429,6 @@ export default async function messages(app: FastifyInstance) {
           try {
             await client.query("BEGIN");
             for (const lang of Object.keys(valuesByLang)) {
-              const args = valuesByLang[lang];
               let messageQuery = `
               insert into messages(
                 subject,

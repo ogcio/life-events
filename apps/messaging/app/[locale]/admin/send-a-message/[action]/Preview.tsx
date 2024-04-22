@@ -44,29 +44,29 @@ export default async (props: MessageCreateProps) => {
 
   const interpolationKeys = Object.keys(interpolations);
 
-  const richText = template
+  const richText = template?.data
     ? interpolationKeys.reduce(
         utils.interpolationReducer(interpolations),
-        template.richText,
+        template.data.richText,
       )
     : props.state.richText;
-  const plainText = template
+  const plainText = template?.data
     ? interpolationKeys.reduce(
         utils.interpolationReducer(interpolations),
-        template.plainText,
+        template.data.plainText,
       )
     : props.state.plainText;
-  const subject = template
+  const subject = template?.data
     ? interpolationKeys.reduce(
         utils.interpolationReducer(interpolations),
-        template.subject,
+        template.data.subject,
       )
     : props.state.subject;
 
-  const excerpt = template
+  const excerpt = template?.data
     ? interpolationKeys.reduce(
         utils.interpolationReducer(interpolations),
-        template.excerpt,
+        template.data.excerpt,
       )
     : props.state.excerpt;
 

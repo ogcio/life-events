@@ -1,6 +1,9 @@
 import React from "react";
 import { getTranslations } from "next-intl/server";
-import { formatCurrency } from "../../../../../utils";
+import {
+  formatCurrency,
+  mapTransactionStatusColorClassName,
+} from "../../../../../utils";
 import dayjs from "dayjs";
 import { PgSessions } from "auth/sessions";
 import { RequestDetails } from "./RequestDetails";
@@ -23,6 +26,13 @@ export default async function ({ params: { requestId } }) {
   } catch (err) {
     console.log(err);
   }
+
+  console.log(">>>", "FE - request / userId", userId);
+  console.log(
+    ">>>",
+    "FE - request / transactions",
+    JSON.stringify(transactions, undefined, 2),
+  );
 
   return (
     <div>
@@ -67,7 +77,7 @@ export default async function ({ params: { requestId } }) {
                   <tr className="govie-table__row" key={trx.transactionId}>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                       <strong
-                        className="govie-tag govie-tag--green govie-body-s"
+                        className={`govie-tag ${mapTransactionStatusColorClassName(trx.status)} govie-body-s`}
                         style={{ marginBottom: "0px" }}
                       >
                         {trx.status}

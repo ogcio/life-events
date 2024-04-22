@@ -2,7 +2,7 @@ import { RedirectType, notFound, redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
 import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../utils";
-import buildApiClient from "../../../../../client/index";
+import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 
@@ -14,9 +14,7 @@ async function getPaymentDetails(
   let details;
   try {
     details = (
-      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-        paymentId,
-      )
+      await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
     ).data;
   } catch (err) {
     console.log(err);
@@ -46,14 +44,30 @@ async function confirmPayment(
 ) {
   "use server";
 
-  await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdPatch(
-    transactionId,
-    {
-      status: TransactionStatuses.Pending,
-    },
-  );
+  await new Payments(userId).updateTransaction(transactionId, {
+    status: TransactionStatuses.Pending,
+  });
 
   redirect(redirectUrl, RedirectType.replace);
+}
+
+async function generatePaymentIntentId(userId: string): Promise<string> {
+  "use server";
+
+  let result;
+
+  try {
+    result = await new Payments(userId).generatePaymentIntentId();
+  } catch (err) {
+    console.log(err);
+  }
+
+  if (!result.data.intentId || result.error) {
+    // Handle edge case when intentId was not possible to generate
+    throw new Error("Payment intentId was not possible to generate.");
+  }
+
+  return result.data.intentId;
 }
 
 export default async function Bank(params: {
@@ -87,11 +101,7 @@ export default async function Bank(params: {
     notFound();
   }
 
-  //TODO: In production, we want to avoid collisions on the DB
-  const paymentIntentId = Math.random()
-    .toString(36)
-    .substring(2, 8)
-    .toUpperCase();
+  const paymentIntentId = await generatePaymentIntentId(userId);
 
   const userInfo = {
     name: params.searchParams.name,
@@ -99,7 +109,7 @@ export default async function Bank(params: {
   };
 
   const transactionId = (
-    await buildApiClient(userId).transactions.apiV1TransactionsPost({
+    await new Payments(userId).createTransaction({
       paymentRequestId: params.searchParams.paymentId,
       extPaymentId: paymentIntentId,
       integrationReference: params.searchParams.integrationRef,
@@ -107,7 +117,7 @@ export default async function Bank(params: {
       paymentProviderId: paymentDetails.providerId,
       userData: userInfo,
     })
-  ).data.transactionId;
+  ).data?.transactionId;
 
   const paymentMade = confirmPayment.bind(
     this,

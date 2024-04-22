@@ -52,7 +52,7 @@ export default async (props: MessageCreateProps) => {
   const { userId } = await PgSessions.get();
   const templateResult = (
     await new Messaging(userId).getTemplate(props.state.templateMetaId)
-  ).data;
+  )?.data;
 
   const template = templateResult?.contents.find(
     (x) => x.lang === headers().get("x-next-intl-locale") ?? "en",
