@@ -63,12 +63,10 @@ export default async function Bank(props: {
         integrationRef: string;
         amount?: string;
         customAmount?: string;
-        name: string;
-        email: string;
       }
     | undefined;
 }) {
-  const { userId } = await PgSessions.get();
+  const { userId, firstName, lastName, email } = await PgSessions.get();
   const t = await getTranslations("Common");
   if (!props.searchParams?.paymentId) {
     return notFound();
@@ -82,15 +80,10 @@ export default async function Bank(props: {
     ? parseFloat(props.searchParams.customAmount)
     : undefined;
 
-  const userInfo = {
-    name: props.searchParams.name,
-    email: props.searchParams.email,
-  };
-
   const details = await getPaymentDetails(
     props.searchParams.paymentId,
     userId,
-    userInfo,
+    { email, name: `${firstName} ${lastName}` },
     amount,
     customAmount,
   );
@@ -107,7 +100,7 @@ export default async function Bank(props: {
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: userInfo,
+    userData: { email, name: `${firstName} ${lastName}` },
   });
 
   const returnUri = new URL(

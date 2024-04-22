@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 
-function redirectToPaymentUrl(
+async function redirectToPaymentUrl(
   settings: {
     paymentId: string;
     integrationRef: string;
@@ -16,30 +16,24 @@ function redirectToPaymentUrl(
   // Since this will be embedded in an iframe, we need to redirect the parent window
   // We cannot do it using the Next.js router
   // We need to use window.parent.location.href
-  window.parent.location.href = getPaymentUrl({
+  window.parent.location.href = await getPaymentUrl({
     ...settings,
     type: event.target.type.value,
-    email: event.target.email.value,
-    name: event.target.name.value,
   });
 }
 
-function getPaymentUrl({
+async function getPaymentUrl({
   paymentId,
   type,
   integrationRef,
   amount,
   customAmount,
-  name,
-  email,
 }: {
   paymentId: string;
   type: string;
   integrationRef: string;
   amount?: number;
   customAmount?: number;
-  name: string;
-  email: string;
 }) {
   const url = new URL(
     `/paymentRequest/${type}`,
@@ -47,8 +41,6 @@ function getPaymentUrl({
   );
   url.searchParams.set("paymentId", paymentId);
   url.searchParams.set("integrationRef", integrationRef);
-  url.searchParams.set("name", name);
-  url.searchParams.set("email", email);
   if (amount) {
     url.searchParams.set("amount", amount.toString());
   }
@@ -79,35 +71,6 @@ export default function ({
   return (
     <form onSubmit={redirectToPayment} style={{ marginTop: "20px" }}>
       <div className="govie-form-group">
-        <h2 className="govie-heading-l">{t("addInfo")}</h2>
-        <div className="govie-form-group">
-          <div className="govie-hint" id="name-hint">
-            {t("name")}
-          </div>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            className="govie-input"
-            aria-describedby="name-hint"
-            required
-            style={{ maxWidth: "500px" }}
-          />
-        </div>
-        <div className="govie-form-group">
-          <div className="govie-hint" id="email-hint">
-            {t("email")}
-          </div>
-          <input
-            type="text"
-            id="email"
-            name="email"
-            className="govie-input"
-            aria-describedby="email-hint"
-            required
-            style={{ maxWidth: "500px" }}
-          />
-        </div>
         <h2 className="govie-heading-l">{t("choose")}</h2>
 
         <div
