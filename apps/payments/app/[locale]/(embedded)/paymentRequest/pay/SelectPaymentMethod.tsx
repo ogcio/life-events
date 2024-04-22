@@ -7,7 +7,6 @@ async function redirectToPaymentUrl(
     integrationRef: string;
     amount?: number;
     customAmount?: number;
-    userId: string;
   },
   event,
 ) {
@@ -33,14 +32,12 @@ async function getPaymentUrl({
   customAmount,
   name,
   email,
-  userId,
 }: {
   paymentId: string;
   type: string;
   integrationRef: string;
   amount?: number;
   customAmount?: number;
-  userId: string;
   name: string;
   email: string;
 }) {
@@ -50,7 +47,6 @@ async function getPaymentUrl({
   );
   url.searchParams.set("paymentId", paymentId);
   url.searchParams.set("integrationRef", integrationRef);
-  url.searchParams.set("userId", userId);
   url.searchParams.set("name", name);
   url.searchParams.set("email", email);
   if (amount) {
@@ -79,7 +75,6 @@ export default function ({
     integrationRef: referenceId,
     amount: urlAmount,
     customAmount,
-    userId: user.userId,
   });
 
   return (

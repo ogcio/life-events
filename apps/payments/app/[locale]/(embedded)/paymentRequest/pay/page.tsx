@@ -179,7 +179,7 @@ export default async function Page(props: Props) {
             referenceId={props.searchParams.id}
             urlAmount={urlAmount}
             customAmount={customAmount}
-            user={{ userId, userName: `${firstName} ${lastName}`, userEmail }}
+            user={{ userName: `${firstName} ${lastName}`, userEmail }}
           />
         </NextIntlClientProvider>
       </div>
