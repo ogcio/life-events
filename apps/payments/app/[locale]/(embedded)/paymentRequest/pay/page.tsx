@@ -26,8 +26,7 @@ type Props = {
     | undefined;
 };
 
-async function getPaymentRequestDetails(paymentId: string) {
-  const { userId } = await PgSessions.get();
+async function getPaymentRequestDetails(paymentId: string, userId: string) {
   const details = (
     await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
   ).data;
@@ -55,8 +54,10 @@ export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return notFound();
 
+  const { userId } = await PgSessions.get();
+
   const [details, t, tCommon] = await Promise.all([
-    getPaymentRequestDetails(props.searchParams.paymentId),
+    getPaymentRequestDetails(props.searchParams.paymentId, userId),
     getTranslations("PayPaymentRequest"),
     getTranslations("Common"),
   ]);
