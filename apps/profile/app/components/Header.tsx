@@ -124,6 +124,7 @@ export default () => {
                   pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/en/" + path, process.env.HOST_URL).href}
+                prefetch={false}
               >
                 English
               </Link>
@@ -140,6 +141,7 @@ export default () => {
                   pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/ga/" + path, process.env.HOST_URL).href}
+                prefetch={false}
               >
                 Gealic
               </Link>

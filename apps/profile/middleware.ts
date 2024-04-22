@@ -17,5 +17,6 @@ export default function (request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!static|api|health|_next/static|_next/image|favicon.ico).*)"],
+  // matcher: ["/((?!static|api|health|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/", "/(en|ga)/:path*"],
 };
