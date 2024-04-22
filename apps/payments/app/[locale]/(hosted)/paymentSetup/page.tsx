@@ -17,9 +17,12 @@ export default async function () {
 
   console.log(JSON.stringify(user, null, 2));
 
-  const transactions = (await new Payments(user.accessToken).getTransactions())
-    .data;
+  const userInfo = user.userInfo;
+  const firstOrgId = userInfo?.organizations?.[0] as string;
+  const orgToken = user?.organizationTokens?.[firstOrgId] as string;
+  console.log("orgToken", orgToken);
 
+  const transactions = (await new Payments(orgToken).getTransactions()).data;
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
       <section

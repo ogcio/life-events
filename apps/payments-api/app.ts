@@ -32,7 +32,9 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(checkPermissionsPlugin, {
     jwkEndpoint: "http://localhost:3301/oidc/jwks",
     oidcEndpoint: "http://localhost:3301/oidc",
-    currentApiResourceIndicator: "http://localhost:8001/",
+    // currentApiResourceIndicator: "http://localhost:8001/",
+    // Use the organization urn instead of the API resource indicator
+    currentApiResourceIndicator: "urn:logto:organization:zvme15p2zrgg9p7kmztnt",
   });
   // app.register(logtoAuthPlugin);
 
