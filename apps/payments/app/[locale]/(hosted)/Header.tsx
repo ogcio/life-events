@@ -1,7 +1,14 @@
 import Link from "next/link";
 import ds from "design-system/";
+import { getUser } from "../../../libraries/auth";
 
-export default () => {
+export default async () => {
+  let user;
+
+  if (process.env.USE_LOGTO_AUTH) {
+    user = await getUser();
+  }
+
   return (
     <header role="banner" data-module="govie-header" className="govie-header">
       <div
@@ -89,8 +96,19 @@ export default () => {
             alignItems: "center",
           }}
         >
-          <div className="govie-!-font-size-27">
-            <strong>PROTOTYPE</strong>
+          <div className="govie-!-font-size-12">
+            {process.env.USE_LOGTO_AUTH ? (
+              <>
+                Logto enabled{" "}
+                {user && user.isAuthenticated ? (
+                  <>{user.id + " - " + user.claims.name}</>
+                ) : (
+                  <>Not logged in</>
+                )}
+              </>
+            ) : (
+              <strong>PROTOTYPE</strong>
+            )}
           </div>
           <Link href="/logout" prefetch={false} style={{ float: "right" }}>
             <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={35} />
