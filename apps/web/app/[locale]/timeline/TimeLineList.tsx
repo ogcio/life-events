@@ -1,18 +1,8 @@
-"use client";
 import { TimeLineData } from "./Timeline";
-import { useEffect, useState } from "react";
 import MonthsCards from "./MonthsCards";
 
-export default ({ timeLineData }: { timeLineData?: TimeLineData }) => {
-  const [reversedTimeLine, setReversedTimeline] = useState<
-    TimeLineData["data"]
-  >([]);
-
-  useEffect(() => {
-    if (timeLineData?.data) {
-      setReversedTimeline([...timeLineData.data].reverse());
-    }
-  }, [timeLineData]);
+export default ({ timeLineData }: { timeLineData: TimeLineData }) => {
+  const reversedTimeLine = [...timeLineData.data].reverse();
 
   return (
     <>
