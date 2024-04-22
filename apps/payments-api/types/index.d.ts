@@ -21,7 +21,7 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     verifyUser: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
-    checkPermission: (
+    checkPermissions: (
       req: FastifyRequest,
       rep: FastifyReply,
       requiredPermissions: Permission[],

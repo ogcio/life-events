@@ -1,7 +1,7 @@
 {
   "name": "api-auth",
   "version": "0.0.1",
-  "description": "",
+  "private": true,
   "dependencies": {
     "fastify-plugin": "^4.5.1",
     "jose": "^5.2.4"

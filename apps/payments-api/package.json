@@ -16,6 +16,7 @@
       "../../packages/auth/src/**/*",
       "../../packages/feature-flags/src/**/*",
       "../../packages/messages/src/**/*",
+      "../../packages/api-auth/**/*",
       "./**/*"
     ],
     "ext": "ts,json",
@@ -36,6 +37,7 @@
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.16",
     "auth": "*",
+    "api-auth": "*",
     "dotenv": "^16.4.5",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",

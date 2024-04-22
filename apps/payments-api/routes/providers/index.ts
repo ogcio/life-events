@@ -18,7 +18,7 @@ export default async function providers(app: FastifyInstance) {
     "/banktransfer",
     {
       preValidation: (req, res) =>
-        app.checkPermission(req, res, [permissions.READ_PAYMENT]),
+        app.checkPermissions(req, res, [permissions.READ_PAYMENT]),
       schema: {
         tags: ["Providers"],
         body: CreateBankTransferProvider,
@@ -139,7 +139,7 @@ export default async function providers(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermission(req, res, [permissions.READ_PAYMENT]),
+        app.checkPermissions(req, res, [permissions.READ_PAYMENT]),
       schema: {
         tags: ["Providers"],
         response: {
@@ -181,7 +181,7 @@ export default async function providers(app: FastifyInstance) {
     "/:providerId",
     {
       preValidation: (req, res) =>
-        app.checkPermission(req, res, [permissions.READ_PAYMENT]),
+        app.checkPermissions(req, res, [permissions.READ_PAYMENT]),
       schema: {
         tags: ["Providers"],
         response: {
@@ -232,7 +232,7 @@ export default async function providers(app: FastifyInstance) {
     "/:providerId",
     {
       preValidation: (req, res) =>
-        app.checkPermission(req, res, [permissions.READ_PAYMENT]),
+        app.checkPermissions(req, res, [permissions.READ_PAYMENT]),
       schema: {
         tags: ["Providers"],
         body: UpdateProvider,

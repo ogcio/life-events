@@ -69,7 +69,7 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: (req, res) => app.checkPermission(req, res, []),
+      preValidation: (req, res) => app.checkPermissions(req, res, []),
       schema: {
         tags: ["Transactions"],
         response: {

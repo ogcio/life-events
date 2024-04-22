@@ -6,7 +6,6 @@ import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import dotenv from "dotenv";
 import { envSchema } from "./config";
 import authPlugin from "./plugins/auth";
-import logtoAuthPlugin from "./plugins/logtoAuth";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import fs from "fs";
@@ -16,6 +15,7 @@ import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
 import { STATUS_CODES } from "http";
+import checkPermissionsPlugin from "./plugins/api-auth";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -29,8 +29,14 @@ export async function build(opts?: FastifyServerOptions) {
     return schemaValidators(schema);
   });
 
+  app.register(checkPermissionsPlugin, {
+    jwkEndpoint: "http://localhost:3301/oidc/jwks",
+    oidcEndpoint: "http://localhost:3301/oidc",
+    currentApiResourceIndicator: "http://localhost:8001/",
+  });
+  // app.register(logtoAuthPlugin);
+
   app.register(authPlugin);
-  app.register(logtoAuthPlugin);
   app.register(fastifyEnv, {
     schema: envSchema,
     dotenv: true,

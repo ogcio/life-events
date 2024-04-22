@@ -1,5 +1,7 @@
+// TODO: Move this into api-auth package
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import fp from "fastify-plugin";
 
 const extractBearerToken = (authHeader: string) => {
   const [type, token] = authHeader.split(" ");
@@ -39,7 +41,7 @@ export const checkPermissions = async (
 ) => {
   const token = extractBearerToken(authHeader);
   const payload = await decodeLogtoToken(token, config);
-
+  console.log("LOGTO Payload:", payload);
   const { scope, sub } = payload as { scope: string; sub: string };
   for (const permission of requiredPermissions) {
     if (!scope.includes(permission)) {
@@ -59,12 +61,11 @@ export type CheckPermissionsPluginOpts = {
 export const checkPermissionsPlugin = (
   app: FastifyInstance,
   opts: CheckPermissionsPluginOpts,
-  done: any,
+  done: () => void,
 ) => {
   app.decorate(
     "checkPermissions",
     async (req: FastifyRequest, rep: FastifyReply, permissions: string[]) => {
-      console.log("Checking permissions...");
       const authHeader = req.headers.authorization;
       if (!authHeader) {
         rep.status(401).send({ message: "Unauthorized" });
@@ -79,3 +80,7 @@ export const checkPermissionsPlugin = (
   );
   done();
 };
+
+export default fp(checkPermissionsPlugin, {
+  name: "authPlugin",
+});
