@@ -94,7 +94,7 @@ export default function ({
             type="text"
             id="name"
             name="name"
-            value={user.userName}
+            defaultValue={user.userName}
             className="govie-input"
             aria-describedby="name-hint"
             required
@@ -109,7 +109,7 @@ export default function ({
             type="text"
             id="email"
             name="email"
-            value={user.userEmail}
+            defaultValue={user.userEmail}
             className="govie-input"
             aria-describedby="email-hint"
             required
