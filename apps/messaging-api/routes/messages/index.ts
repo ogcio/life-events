@@ -351,10 +351,13 @@ export default async function messages(app: FastifyInstance) {
           utils.templateFilter(languagesToConsider),
         );
 
+        // Each sub array of args is the full list of eg. [$1, $2, $5] per user/message. Goal is to join to a "($1,$2), ($1,$3) ..." string
         const valuesByLang: Record<
           string,
           { args: string[][]; values: (string | null)[]; initSize: number }
         > = {};
+
+        // The interpolations will come from a table once we set to create a message from a scheduler
         const interpolations = template.interpolations;
         const interpolationKeys = Object.keys(interpolations);
         const interpolationReducer = utils.interpolationReducer(interpolations);
@@ -391,7 +394,7 @@ export default async function messages(app: FastifyInstance) {
             richText,
             plainText,
             template.lang,
-            randomUUID().toString(), /// organisation id
+            organisationId,
             security,
             subject, // message name, no idea what we're supposed to put here...
             subject, //thread name, no idea how this correlates with a template
@@ -414,11 +417,19 @@ export default async function messages(app: FastifyInstance) {
             initSize: valuesSize,
           };
 
+          let i = valuesByLang[template.lang].initSize;
+          for (const userid of userIds) {
+            valuesByLang[template.lang].values.push(userid);
+            valuesByLang[template.lang].args.push([...baseargs, `$${i + 1}`]);
+            i += 1;
+          }
+
           const client = await app.pg.connect();
           let error: ReturnType<typeof utils.buildApiError> | undefined;
           try {
             await client.query("BEGIN");
             for (const lang of Object.keys(valuesByLang)) {
+              const args = valuesByLang[lang];
               let messageQuery = `
               insert into messages(
                 subject,

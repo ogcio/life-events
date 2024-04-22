@@ -50,9 +50,12 @@ export default async (props: MessageCreateProps) => {
   }
 
   const { userId } = await PgSessions.get();
-  const { data: template } = await new Messaging(userId).getTemplate(
-    props.state.templateMetaId,
-    headers().get("x-next-intl-locale") ?? "en",
+  const templateResult = (
+    await new Messaging(userId).getTemplate(props.state.templateMetaId)
+  ).data;
+
+  const template = templateResult?.contents.find(
+    (x) => x.lang === headers().get("x-next-intl-locale") ?? "en",
   );
 
   return (
@@ -80,7 +83,7 @@ export default async (props: MessageCreateProps) => {
         <span className="govie-heading-s">{t("variablesLabel")}</span>
       </h3>
       <form action={action}>
-        {template?.fields?.map((field) => (
+        {templateResult?.fields?.map((field) => (
           <div
             key={field.fieldName}
             className={
