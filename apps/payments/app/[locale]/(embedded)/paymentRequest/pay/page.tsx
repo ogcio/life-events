@@ -54,12 +54,7 @@ export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return notFound();
 
-  const {
-    userId,
-    firstName,
-    lastName,
-    email: userEmail,
-  } = await PgSessions.get();
+  const { userId } = await PgSessions.get();
 
   const [details, t, tCommon] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId, userId),
@@ -179,7 +174,6 @@ export default async function Page(props: Props) {
             referenceId={props.searchParams.id}
             urlAmount={urlAmount}
             customAmount={customAmount}
-            user={{ userName: `${firstName} ${lastName}`, userEmail }}
           />
         </NextIntlClientProvider>
       </div>
