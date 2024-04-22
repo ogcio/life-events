@@ -162,9 +162,13 @@ export default async () => {
     if (userExistsQuery) {
       const isPPSNVisible = userExistsQuery.ppsn_visible;
 
-      await new Profile(userId).updateUser({
+      const result = await new Profile(userId).updateUser({
         ppsn_visible: !isPPSNVisible,
       });
+
+      if (result?.error) {
+        //handle error
+      }
     } else {
       const { error } = await new Profile(userId).createUser({
         firstname,

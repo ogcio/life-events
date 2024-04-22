@@ -57,9 +57,15 @@ export async function ManualAddressForm(props: FormProps) {
       return revalidatePath("/");
     }
 
-    const userExistsQuery = await new Profile(userId).getUser();
+    const { data: userExistsQuery, error } = await new Profile(
+      userId,
+    ).getUser();
 
-    if (!userExistsQuery.data) {
+    if (error) {
+      //handle error
+    }
+
+    if (!userExistsQuery) {
       const { error } = await new Profile(userId).createUser({
         firstname: firstName,
         lastname: lastName,
