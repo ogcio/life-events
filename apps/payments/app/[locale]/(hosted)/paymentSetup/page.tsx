@@ -15,6 +15,8 @@ export default async function () {
     getUser(),
   ]);
 
+  console.log(JSON.stringify(user, null, 2));
+
   const transactions = (await new Payments(user.accessToken).getTransactions())
     .data;
 
