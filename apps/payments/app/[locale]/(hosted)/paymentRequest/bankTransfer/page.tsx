@@ -5,6 +5,7 @@ import { getRealAmount } from "../../../../utils";
 import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 import notFound from "../../../../not-found";
+import { Payments } from "building-blocks-sdk";
 
 async function getPaymentDetails(
   paymentId: string,
@@ -16,9 +17,7 @@ async function getPaymentDetails(
   let details;
   try {
     details = (
-      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-        paymentId,
-      )
+      await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
     ).data;
   } catch (err) {
     console.log(err);

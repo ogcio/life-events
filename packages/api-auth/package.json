@@ -1,0 +1,13 @@
+{
+  "name": "api-auth",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "fastify-plugin": "^4.5.1",
+    "jose": "^5.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "20.10.4",
+    "typescript": "5.3.3"
+  }
+}
