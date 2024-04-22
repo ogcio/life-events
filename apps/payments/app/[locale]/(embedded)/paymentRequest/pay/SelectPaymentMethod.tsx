@@ -1,12 +1,13 @@
 "use client";
 import { useTranslations } from "next-intl";
 
-function redirectToPaymentUrl(
+async function redirectToPaymentUrl(
   settings: {
     paymentId: string;
     integrationRef: string;
     amount?: number;
     customAmount?: number;
+    userId: string;
   },
   event,
 ) {
@@ -16,7 +17,7 @@ function redirectToPaymentUrl(
   // Since this will be embedded in an iframe, we need to redirect the parent window
   // We cannot do it using the Next.js router
   // We need to use window.parent.location.href
-  window.parent.location.href = getPaymentUrl({
+  window.parent.location.href = await getPaymentUrl({
     ...settings,
     type: event.target.type.value,
     email: event.target.email.value,
@@ -24,7 +25,7 @@ function redirectToPaymentUrl(
   });
 }
 
-function getPaymentUrl({
+async function getPaymentUrl({
   paymentId,
   type,
   integrationRef,
@@ -32,12 +33,14 @@ function getPaymentUrl({
   customAmount,
   name,
   email,
+  userId,
 }: {
   paymentId: string;
   type: string;
   integrationRef: string;
   amount?: number;
   customAmount?: number;
+  userId: string;
   name: string;
   email: string;
 }) {
@@ -47,6 +50,7 @@ function getPaymentUrl({
   );
   url.searchParams.set("paymentId", paymentId);
   url.searchParams.set("integrationRef", integrationRef);
+  url.searchParams.set("userId", userId);
   url.searchParams.set("name", name);
   url.searchParams.set("email", email);
   if (amount) {
@@ -66,6 +70,7 @@ export default function ({
   referenceId,
   urlAmount,
   customAmount,
+  user,
 }) {
   const t = useTranslations();
 
@@ -74,6 +79,7 @@ export default function ({
     integrationRef: referenceId,
     amount: urlAmount,
     customAmount,
+    userId: user.userId,
   });
 
   return (
@@ -88,6 +94,7 @@ export default function ({
             type="text"
             id="name"
             name="name"
+            value={user.userName}
             className="govie-input"
             aria-describedby="name-hint"
             required
@@ -102,6 +109,7 @@ export default function ({
             type="text"
             id="email"
             name="email"
+            value={user.userEmail}
             className="govie-input"
             aria-describedby="email-hint"
             required
