@@ -217,6 +217,7 @@ export const FullTransaction = Type.Object({
   paymentProviderId: Type.String(),
   createdAt: Type.String(),
   updatedAt: Type.String(),
+  userId: Type.String(),
   userData: Type.Object({
     name: Type.String(),
     email: Type.String(),
@@ -239,7 +240,7 @@ export type Transaction = Static<typeof Transaction>;
 
 export const TransactionDetails = Type.Composite([
   Transaction,
-  Type.Pick(FullTransaction, ["extPaymentId", "userData"]),
+  Type.Pick(FullTransaction, ["extPaymentId", "userId", "userData"]),
   Type.Object({
     providerName: Type.String(),
     providerType: Type.String(),
@@ -259,6 +260,7 @@ export const CreateTransactionBody = Type.Omit(FullTransaction, [
   "status",
   "createdAt",
   "updatedAt",
+  "userId",
 ]);
 export type CreateTransactionBody = Static<typeof CreateTransactionBody>;
 

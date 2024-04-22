@@ -458,6 +458,7 @@ export interface paths {
               updatedAt: string;
               title: string;
               extPaymentId: string;
+              userId: string;
               userData: {
                 name: string;
                 email: string;
@@ -518,6 +519,7 @@ export interface paths {
               updatedAt: string;
               title: string;
               extPaymentId: string;
+              userId: string;
               userData: {
                 name: string;
                 email: string;
@@ -551,6 +553,7 @@ export interface paths {
             integrationReference: string;
             amount: number;
             paymentProviderId: string;
+            userId: string;
             userData: {
               name: string;
               email: string;
