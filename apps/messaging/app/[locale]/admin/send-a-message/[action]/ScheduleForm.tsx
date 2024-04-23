@@ -10,13 +10,6 @@ export default (props: MessageCreateProps) => {
   const t = useTranslations("sendAMessage.ScheduleForm");
   async function submit() {
     "use server";
-    await api.upsertMessageState(
-      Object.assign({}, props.state, {
-        confirmedScheduleAt: dayjs().toISOString(),
-      }),
-      props.userId,
-      props.stateId,
-    );
 
     const messagesClient = new Messaging(props.userId);
     let message: Parameters<typeof messagesClient.createMessage>[0]["message"];
@@ -42,6 +35,7 @@ export default (props: MessageCreateProps) => {
       };
     }
 
+    // TODO deconstruct error and handle
     await messagesClient.createMessage({
       message,
       template,
@@ -49,6 +43,14 @@ export default (props: MessageCreateProps) => {
       userIds: props.state.userIds,
       security: "high",
     });
+
+    await api.upsertMessageState(
+      Object.assign({}, props.state, {
+        confirmedScheduleAt: dayjs().toISOString(),
+      }),
+      props.userId,
+      props.stateId,
+    );
 
     revalidatePath("/");
   }
