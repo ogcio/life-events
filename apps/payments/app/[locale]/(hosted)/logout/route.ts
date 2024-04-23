@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 import { PgSessions } from "auth/sessions";
 
-export async function GET(request: Request) {
+export async function GET() {
   const sessionCookie = cookies().get("sessionId");
   if (sessionCookie) {
     PgSessions.delete(sessionCookie.value);
