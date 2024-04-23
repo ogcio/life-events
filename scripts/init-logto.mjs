@@ -12,15 +12,29 @@ const IMAGE_MODES = {
   REMOTE: 'remote'
 }
 
+const getVarValue = (envVarName, defaultValue) => {
+  if (!process.env[envVarName] || process.env[envVarName].length === 0) {
+    return defaultValue;
+  }
+
+  return process.env[envVarName];
+};
+
 // Why using env variables instead of params?
 // Because in this way each user can personalize its own scenario without
 // having to update package.json
-const LOGTO_PARENT_FOLDER_PATH = process.env.LOGTO_PARENT_FOLDER_PATH ?? undefined;
-const LOGTO_FOLDER_NAME = process.env.LOGTO_FOLDER_NAME ?? 'logto';
-const LOGTO_REPO_URL = process.env.LOGTO_REPO_URL ?? 'git@github.com:ogcio/logto.git';
-const LOGTO_BRANCH_NAME = process.env.LOGTO_BRANCH_NAME ?? 'dev';
-const LOGTO_IMAGE_MODE = process.env.LOGTO_IMAGE_MODE ?? IMAGE_MODES.LOCAL;
-const LOGTO_PULL_BRANCH = Boolean(process.env.LOGTO_PULL_BRANCH ?? 'true');
+const LOGTO_PARENT_FOLDER_PATH = getVarValue(
+  "LOGTO_PARENT_FOLDER_PATH",
+  undefined,
+);
+const LOGTO_FOLDER_NAME = getVarValue("LOGTO_FOLDER_NAME", "logto");
+const LOGTO_REPO_URL = getVarValue(
+  "LOGTO_REPO_URL",
+  "git@github.com:ogcio/logto.git",
+);
+const LOGTO_BRANCH_NAME = getVarValue("LOGTO_BRANCH_NAME", "dev");
+const LOGTO_IMAGE_MODE = getVarValue("LOGTO_IMAGE_MODE", IMAGE_MODES.LOCAL);
+const LOGTO_PULL_BRANCH = Boolean(getVarValue("LOGTO_PULL_BRANCH", 'true'));
 
 const initializeLogto = () => {
   if(LOGTO_IMAGE_MODE === IMAGE_MODES.REMOTE) {
