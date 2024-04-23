@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import { postgres } from "../utils";
 import { PgSessions } from "auth/sessions";
 import { Profile } from "building-blocks-sdk";
 

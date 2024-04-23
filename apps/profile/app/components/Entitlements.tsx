@@ -2,8 +2,8 @@ import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { routes } from "../utils";
 import ds from "design-system";
-import { Link } from "../utils/navigation";
 import { Profile } from "building-blocks-sdk";
+import Link from "next/link";
 
 export default async () => {
   const t = await getTranslations("Entitlements");

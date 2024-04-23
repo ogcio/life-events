@@ -2,9 +2,9 @@ import { getTranslations } from "next-intl/server";
 import { formatDate, routes } from "../utils";
 import { PgSessions } from "auth/sessions";
 import ds from "design-system";
-import { Link } from "../utils/navigation";
 import { Profile } from "building-blocks-sdk";
 import { Address } from "../../types/addresses";
+import Link from "next/link";
 
 const AddressLine = ({ value }: { value: string }) => (
   <p className="govie-body" style={{ marginBottom: "5px" }}>

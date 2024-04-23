@@ -2,7 +2,7 @@ import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import dayjs from "dayjs";
 import ds from "design-system";
-import { form, postgres } from "../utils";
+import { form } from "../utils";
 import { revalidatePath } from "next/cache";
 import { Profile } from "building-blocks-sdk";
 
@@ -28,7 +28,7 @@ async function submitAction(formData: FormData) {
   );
 
   if (formErrors.length) {
-    await form.insertErrors(formErrors, userId);
+    await form.insertErrors(formErrors, userId, "user");
 
     return revalidatePath("/");
   }
@@ -189,7 +189,7 @@ export default async () => {
   const monthOfBirth = dob.month() + 1;
   const yearOfBirth = dob.year();
 
-  const errors = await form.getErrorsQuery(userId);
+  const errors = await form.getErrorsQuery(userId, "user");
 
   const phoneError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.phone,

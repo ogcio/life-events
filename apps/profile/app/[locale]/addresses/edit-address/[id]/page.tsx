@@ -1,7 +1,7 @@
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { form } from "../../../../utils";
+import { form, routes } from "../../../../utils";
 import { NextPageProps } from "../../../../../types";
 import { revalidatePath } from "next/cache";
 import dayjs from "dayjs";
@@ -39,7 +39,7 @@ async function editAddress(formData: FormData) {
     errors.push({
       messageKey: form.errorTranslationKeys.empty,
       errorValue: "",
-      field: form.fieldTranslationKeys.addressFirstLine,
+      field: form.fieldTranslationKeys.address_first_line,
     });
   }
 
@@ -106,7 +106,7 @@ async function editAddress(formData: FormData) {
   }
 
   if (errors.length) {
-    await form.insertErrors(errors, userId);
+    await form.insertErrors(errors, userId, routes.addresses.editAddress.slug);
     return revalidatePath("/");
   }
 
@@ -158,7 +158,10 @@ export default async (params: NextPageProps) => {
   const { userId } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
-  const errors = await form.getErrorsQuery(userId);
+  const errors = await form.getErrorsQuery(
+    userId,
+    routes.addresses.editAddress.slug,
+  );
   const { id: addressId } = params.params;
 
   if (!addressId) {
@@ -175,7 +178,7 @@ export default async (params: NextPageProps) => {
   }
 
   const addressFirstLineError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.addressFirstLine,
+    (row) => row.field === form.fieldTranslationKeys.address_first_line,
   );
 
   const townError = errors.rows.find(

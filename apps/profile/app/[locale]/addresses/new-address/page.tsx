@@ -1,48 +1,84 @@
 import { NextPageProps } from "../../../../types";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
-import { SearchForm } from "./SearchForm";
-import { ManualAddressForm } from "./ManualAddressForm";
-import { SelectForm } from "./SelectForm";
-import { Link } from "../../../utils/navigation";
-
-export type FormProps = {
-  userData: {
-    userId: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  addressQuery: string;
-};
-
-const searchParamKeys = { address: "adr", formType: "t" };
+import Link from "next/link";
+import { form, routes } from "../../../utils";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export default async (params: NextPageProps) => {
-  const { searchParams } = params;
-
   const t = await getTranslations("AddressForm");
   const { userId, firstName, lastName, email } = await PgSessions.get();
-  const userData = { userId, firstName, lastName, email };
+  const errorT = await getTranslations("FormErrors");
+  const errors = await form.getErrorsQuery(
+    userId,
+    routes.addresses.newAddress.slug,
+  );
 
-  const searchUrl = new URLSearchParams(searchParams);
-  const isManualForm = searchUrl.get(searchParamKeys.formType) === "manual";
-  const isSelectForm = searchUrl?.get(searchParamKeys.address);
+  async function searchAction(formData: FormData) {
+    "use server";
 
-  let Form = isManualForm
-    ? ManualAddressForm
-    : isSelectForm
-      ? SelectForm
-      : SearchForm;
+    const searchQuery = formData.get("newAddress");
+
+    if (!searchQuery?.toString().length) {
+      await form.insertErrors(
+        [
+          {
+            messageKey: form.errorTranslationKeys.empty,
+            errorValue: "",
+            field: form.fieldTranslationKeys.address,
+          },
+        ],
+        userId,
+        routes.addresses.newAddress.slug,
+      );
+      return revalidatePath("/");
+    }
+
+    if (searchQuery) {
+      redirect(
+        `/${routes.addresses.selectAddress.path()}${"?adr="}${searchQuery}`,
+      );
+    }
+  }
+
+  const addressError = errors.rows.at(0);
 
   return (
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds">
         <h1 className="govie-heading-l">{t("newAddress")}</h1>
-        <Form
-          addressQuery={searchUrl?.get(searchParamKeys.address) ?? ""}
-          userData={userData}
-        />
+        <form action={searchAction}>
+          <h2 className="govie-heading-m">{t("addressSearchTitle")}</h2>
+          <div
+            className={`govie-form-group ${
+              addressError ? "govie-form-group--error" : ""
+            }`.trim()}
+          >
+            <div className="govie-hint" id="input-field-hint">
+              {t("searchHint")}
+            </div>
+            {addressError && (
+              <p id="input-field-error" className="govie-error-message">
+                <span className="govie-visually-hidden">{t("error")}</span>
+                {errorT(addressError.messageKey, {
+                  field: errorT("fields.address"),
+                  indArticleCheck: "an",
+                })}
+              </p>
+            )}
+            <input
+              type="text"
+              id={"newAddress"}
+              name={"newAddress"}
+              className="govie-input"
+              aria-describedby="input-field-hint"
+            />
+          </div>
+          <button className="govie-button" style={{ marginBottom: 0 }}>
+            {t("findAddress")}
+          </button>
+        </form>
         <div style={{ margin: "30px 0" }}>
           <Link href={"/"} className="govie-back-link">
             {t("back")}

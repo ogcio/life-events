@@ -34,4 +34,16 @@ export const addresses = {
       return `${addresses.slug}/${addresses.removeAddress.slug}/${id}`;
     },
   },
+  selectAddress: {
+    slug: "select-address",
+    path() {
+      return `${addresses.slug}/${addresses.selectAddress.slug}`;
+    },
+  },
+  manualAddress: {
+    slug: "manual-address",
+    path() {
+      return `${addresses.slug}/${addresses.manualAddress.slug}`;
+    },
+  },
 };
