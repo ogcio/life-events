@@ -65,7 +65,9 @@
     "noAddresses": "No addresses available",
     "lastUpdated": "Last updated",
     "edit": "Edit",
-    "remove": "Remove"
+    "remove": "Remove",
+    "owner": "Owner",
+    "renting": "Rental"
   },
   "Entitlements": {
     "entitlements": "Entitlements",

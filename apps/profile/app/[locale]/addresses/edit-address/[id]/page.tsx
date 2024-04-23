@@ -131,7 +131,7 @@ async function editAddress(formData: FormData) {
   }
 
   if (addressFirst && town && county && eirecode) {
-    const { error } = await new Profile(userId).updateAddress(addressId, {
+    const result = await new Profile(userId).updateAddress(addressId, {
       address_line1: addressFirst,
       address_line2: addressSecond,
       town: town,
@@ -141,7 +141,7 @@ async function editAddress(formData: FormData) {
       move_out_date: moveOutDate,
     });
 
-    if (error) {
+    if (result?.error) {
       //handle error
     }
   }

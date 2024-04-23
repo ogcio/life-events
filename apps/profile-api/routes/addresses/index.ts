@@ -27,7 +27,7 @@ export default async function addresses(app: FastifyInstance) {
 
       try {
         const result = await app.pg.query(
-          `SELECT address_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date, updated_at FROM user_addresses WHERE user_id = $1`,
+          `SELECT address_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date, is_primary, ownership_status, updated_at FROM user_addresses WHERE user_id = $1`,
           [userId],
         );
 
@@ -111,7 +111,7 @@ export default async function addresses(app: FastifyInstance) {
       let result;
       try {
         result = await app.pg.query(
-          `SELECT address_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date, updated_at FROM user_addresses WHERE user_id = $1 AND address_id = $2`,
+          `SELECT address_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date, is_primary, ownership_status, updated_at FROM user_addresses WHERE user_id = $1 AND address_id = $2`,
           [userId, addressId],
         );
       } catch (err) {

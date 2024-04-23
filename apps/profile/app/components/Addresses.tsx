@@ -88,6 +88,26 @@ export default async () => {
               <AddressLine value={data.town} />
               <AddressLine value={data.county} />
               <AddressLine value={data.eirecode} />
+              {data.ownership_status && (
+                <div>
+                  <p>
+                    <span style={{ marginRight: "20px" }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="16"
+                        fill="none"
+                      >
+                        <path
+                          d="m8.824 3.374 4.411 3.97v6.891h-1.764V8.941H6.176v5.294H4.412v-6.89l4.412-3.971Zm0-2.374L0 8.941h2.647V16h5.294v-5.294h1.765V16H15V8.941h2.647"
+                          fill="#004D44"
+                        />
+                      </svg>
+                    </span>
+                    <span>{t(`${data.ownership_status}`)}</span>
+                  </p>
+                </div>
+              )}
               {data.move_in_date && (
                 <div>
                   <p>

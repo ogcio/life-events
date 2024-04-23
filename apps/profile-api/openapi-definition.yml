@@ -43,6 +43,10 @@ paths:
                       type: string
                     move_out_date:
                       type: string
+                    is_primary:
+                      type: boolean
+                    ownership_status:
+                      type: string
                   required:
                     - address_id
                     - address_line1
@@ -51,8 +55,6 @@ paths:
                     - county
                     - eirecode
                     - updated_at
-                    - move_in_date
-                    - move_out_date
         "500":
           description: Default Response
           content:
@@ -176,6 +178,10 @@ paths:
                     type: string
                   move_out_date:
                     type: string
+                  is_primary:
+                    type: boolean
+                  ownership_status:
+                    type: string
                 required:
                   - address_id
                   - address_line1
@@ -184,8 +190,6 @@ paths:
                   - county
                   - eirecode
                   - updated_at
-                  - move_in_date
-                  - move_out_date
         "404":
           description: Default Response
           content:

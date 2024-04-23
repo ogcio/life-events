@@ -56,8 +56,13 @@ export class Profile {
 
   async updateAddress(
     addressId: string,
-    data: paths["/api/v1/addresses/{addressId}"]["put"]["requestBody"]["content"]["application/json"],
+    data: NonNullable<
+      paths["/api/v1/addresses/{addressId}"]["put"]["requestBody"]
+    >["content"]["application/json"],
   ) {
+    if (!data || Object.keys(data).length === 0) {
+      return;
+    }
     return formatQueryResult(
       this.client.PUT("/api/v1/addresses/{addressId}", {
         params: { path: { addressId } },

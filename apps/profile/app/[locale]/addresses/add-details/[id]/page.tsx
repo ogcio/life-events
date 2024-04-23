@@ -77,12 +77,11 @@ export default async (params: NextPageProps) => {
     }
     console.log({ isOwner, isPrimaryAddress });
     if (isOwner !== undefined && isPrimaryAddress !== undefined) {
-      console.log("== UPDATING ADDRESS ===", userId);
-      const { error } = await new Profile(userId).updateAddress(addressId, {
-        ownership_status: isOwner ? "owner" : "renting",
+      const result = await new Profile(userId).updateAddress(addressId, {
+        ownership_status: isOwner === "true" ? "owner" : "renting",
         is_primary: Boolean(isPrimaryAddress),
       });
-      if (error) {
+      if (result?.error) {
         //handle error
       }
     }

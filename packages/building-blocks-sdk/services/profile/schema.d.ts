@@ -28,8 +28,10 @@ export interface paths {
               county: string;
               eirecode: string;
               updated_at: string;
-              move_in_date: string;
-              move_out_date: string;
+              move_in_date?: string;
+              move_out_date?: string;
+              is_primary?: boolean;
+              ownership_status?: string;
             }[];
           };
         };
@@ -104,8 +106,10 @@ export interface paths {
               county: string;
               eirecode: string;
               updated_at: string;
-              move_in_date: string;
-              move_out_date: string;
+              move_in_date?: string;
+              move_out_date?: string;
+              is_primary?: boolean;
+              ownership_status?: string;
             };
           };
         };

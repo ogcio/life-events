@@ -11,8 +11,10 @@ export const Address = Type.Object({
   county: Type.String(),
   eirecode: Type.String(),
   updated_at: Type.String(),
-  move_in_date: Type.String(),
-  move_out_date: Type.String(),
+  move_in_date: Type.Optional(Type.String()),
+  move_out_date: Type.Optional(Type.String()),
+  is_primary: Type.Optional(Type.Boolean()),
+  ownership_status: Type.Optional(Type.String()),
 });
 
 export type Address = Static<typeof Address>;
