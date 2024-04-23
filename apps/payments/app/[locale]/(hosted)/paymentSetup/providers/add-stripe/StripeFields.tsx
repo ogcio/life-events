@@ -47,7 +47,7 @@ export default async ({
         </label>
         <div className="govie-hint">{t("liveSecretKeyHint")}</div>
         <input
-          type="text"
+          type="password"
           id="live_secret_key"
           name="live_secret_key"
           className="govie-input"
