@@ -76,10 +76,7 @@ const initializeErrorHandler = (server: FastifyInstance): void => {
 // just without unwanted log entries
 const initializeNotFoundHandler = (server: FastifyInstance): void => {
   server.setNotFoundHandler((request: FastifyRequest, reply: FastifyReply) => {
-    const { url, method } = request.raw;
-    const message = `Route ${method}:${url} not found`;
-
-    const error = createError("FST_ERR_NOT_FOUND", message, 404)();
+    const error = createError("FST_ERR_NOT_FOUND", "Not Found", 404)();
     setLoggingContext({
       error,
     });
