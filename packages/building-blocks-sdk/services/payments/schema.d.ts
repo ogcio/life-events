@@ -122,6 +122,33 @@ export interface paths {
       };
     };
   };
+  "/api/v1/providers/realex": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            /** @enum {string} */
+            type: "realex";
+            data: {
+              merchantId: string;
+              sharedSecret: string;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/providers/": {
     get: {
       responses: {
@@ -553,7 +580,6 @@ export interface paths {
             integrationReference: string;
             amount: number;
             paymentProviderId: string;
-            userId: string;
             userData: {
               name: string;
               email: string;

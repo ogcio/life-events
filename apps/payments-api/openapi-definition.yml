@@ -185,6 +185,49 @@ paths:
                     type: string
                 required:
                   - id
+  /api/v1/providers/realex:
+    post:
+      tags:
+        - Providers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - realex
+                data:
+                  type: object
+                  properties:
+                    merchantId:
+                      type: string
+                    sharedSecret:
+                      type: string
+                  required:
+                    - merchantId
+                    - sharedSecret
+              required:
+                - name
+                - type
+                - data
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
   /api/v1/providers/:
     get:
       tags:

@@ -79,6 +79,16 @@ export class Payments {
     );
   }
 
+  async createRealexProvider(
+    data: paths["/api/v1/providers/realex"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/providers/realex", {
+        body: data,
+      }),
+    );
+  }
+
   /**
    * PAYMENT REQUESTS
    */

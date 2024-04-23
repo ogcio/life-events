@@ -10,6 +10,7 @@ import {
   CreateOpenBankingProvider,
   CreateStripeProvider,
   CreateWorldpayProvider,
+  CreateRealexProvider,
 } from "../schemas";
 import { providerSecretsHandlersFactory } from "../../services/providersSecretsService";
 
@@ -114,6 +115,39 @@ export default async function providers(app: FastifyInstance) {
       schema: {
         tags: ["Providers"],
         body: CreateWorldpayProvider,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { name, type, data } = request.body;
+
+      const providerSecretsHandler = providerSecretsHandlersFactory(type);
+      const cypheredData = providerSecretsHandler.getCypheredData(data);
+
+      const result = await app.pg.query(
+        `
+        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+            `,
+        [userId, name, type, "connected", cypheredData],
+      );
+
+      reply.send({ id: result.rows[0].id });
+    },
+  );
+
+  app.post<{ Body: CreateRealexProvider; Reply: { id: string } }>(
+    "/realex",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Providers"],
+        body: CreateRealexProvider,
         response: {
           200: Type.Object({
             id: Type.String(),
