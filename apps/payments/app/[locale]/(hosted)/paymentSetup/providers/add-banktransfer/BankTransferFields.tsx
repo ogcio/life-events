@@ -41,20 +41,16 @@ export default async ({
           defaultValue={accountHolderName}
         />
       </div>
-      <div className="govie-form-group govie-form-group--error">
+      <div className="govie-form-group">
         <label className="govie-label--s" htmlFor="iban">
           {t("iban")}{" "}
         </label>
         <div className="govie-hint">{t("ibanHint")}</div>
-        <p className="govie-error-message">
-          <span className="govie-visually-hidden">Error:</span> Enter a page
-          name
-        </p>
         <input
           type="text"
           id="iban"
           name="iban"
-          className="govie-input govie-input--error"
+          className="govie-input"
           defaultValue={iban}
         />
       </div>
