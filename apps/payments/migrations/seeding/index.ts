@@ -26,7 +26,7 @@ const seed = async () => {
   await seedPaymentRequest(pgpool, {
     openBankingProviderId: openBanking.rows[0].provider_id,
     manualBankTransferProviderId: manualBankTransfer.rows[0].provider_id,
-    stripeProviderId: stripe.rows[0].provider_id,
+    stripeProviderId: stripe.data!.id,
     userId,
     title: "Test Payment Request",
     description: "Description",

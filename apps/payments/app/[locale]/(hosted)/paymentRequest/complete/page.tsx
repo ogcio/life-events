@@ -1,22 +1,17 @@
-import { getTranslations } from "next-intl/server";
 import { pgpool } from "../../../../dbConnection";
 import { RedirectType, notFound, redirect } from "next/navigation";
-import {
-  getInternalStatus,
-  getPaymentIntent,
-} from "../../../../integration/stripe";
+import { getInternalStatus } from "../../../../integration/stripe";
 import { PgSessions } from "auth/sessions";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { Payments } from "building-blocks-sdk";
 
 type Props = {
-  searchParams:
-    | {
-        error?: string | undefined;
-        payment_id?: string;
-        payment_intent?: string;
-      }
-    | undefined;
+  searchParams: {
+    error?: string | undefined;
+    payment_id?: string;
+    payment_intent?: string;
+    redirect_status?: string;
+  };
 };
 
 async function updateTransaction(extPaymentId: string, status: string) {
@@ -55,32 +50,26 @@ async function getRequestDetails(requestId: string) {
 }
 
 export default async function Page(props: Props) {
-  const t = await getTranslations("Common");
-
-  let extPaymentId = props.searchParams?.payment_id ?? "";
+  const { payment_id, payment_intent, redirect_status, error } =
+    props.searchParams;
+  let extPaymentId = payment_id ?? "";
   let status = TransactionStatuses.Succeeded;
 
-  if (props.searchParams?.error) {
+  if (error) {
     status = TransactionStatuses.Failed;
   }
 
-  if (!extPaymentId) {
-    if (props.searchParams?.payment_intent) {
-      const paymentIntent = await getPaymentIntent(
-        props.searchParams!.payment_intent,
-      );
-      extPaymentId = paymentIntent.id;
+  if (!extPaymentId && payment_intent && redirect_status) {
+    extPaymentId = payment_intent;
 
-      const mappedStatus = getInternalStatus(paymentIntent.status);
-
-      if (!mappedStatus) {
-        throw new Error("Invalid payment intent status recieved!");
-      }
-
-      status = mappedStatus;
-    } else {
-      return notFound();
+    const mappedStatus = getInternalStatus(redirect_status);
+    if (!mappedStatus) {
+      throw new Error("Invalid payment intent status recieved!");
     }
+
+    status = mappedStatus;
+  } else {
+    return notFound();
   }
 
   const transactionDetail = await updateTransaction(extPaymentId, status);

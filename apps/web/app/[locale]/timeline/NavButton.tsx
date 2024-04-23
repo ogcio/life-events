@@ -1,21 +1,21 @@
-export default ({
-  disabled,
-  onClick,
-  transform,
-}: {
+import Link from "next/link";
+
+type ButtonProps = {
+  url: string;
   disabled: boolean;
   transform: boolean;
-  onClick: () => void;
-}) => {
-  return (
+};
+
+export default ({ disabled, transform, url }: ButtonProps) => {
+  const ButtonContent = (
     <button
-      onClick={onClick}
       disabled={disabled}
       style={{
         display: "flex",
         alignItems: "center",
         height: "25px",
         width: "25px",
+        cursor: disabled ? "initial" : "pointer",
       }}
     >
       <svg
@@ -32,4 +32,20 @@ export default ({
       </svg>
     </button>
   );
+
+  if (!disabled) {
+    return (
+      <Link
+        style={{
+          display: "inline-block",
+          cursor: "cursor",
+        }}
+        href={url}
+      >
+        {ButtonContent}
+      </Link>
+    );
+  }
+
+  return ButtonContent;
 };

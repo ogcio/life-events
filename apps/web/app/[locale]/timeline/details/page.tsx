@@ -9,7 +9,7 @@ export default async (props: web.NextPageProps) => {
   const { firstName, lastName } = await PgSessions.get();
 
   const userName = [firstName, lastName].join(" ");
-  const searchParams = props.searchParams;
+  const searchParams = new URLSearchParams(props.searchParams);
   const locale = props.params.locale;
 
   return (
@@ -30,11 +30,7 @@ export default async (props: web.NextPageProps) => {
         }}
       >
         <Link
-          href={
-            searchParams?.view
-              ? `/timeline?${searchParams?.view || "grid"}=true`
-              : `/${locale}/events`
-          }
+          href={`/${locale}/timeline?${searchParams.toString()}`}
           className="govie-back-link"
           style={{ marginTop: "0" }}
         >
