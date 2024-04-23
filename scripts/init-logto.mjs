@@ -20,6 +20,7 @@ const LOGTO_FOLDER_NAME = process.env.LOGTO_FOLDER_NAME ?? 'logto';
 const LOGTO_REPO_URL = process.env.LOGTO_REPO_URL ?? 'git@github.com:ogcio/logto.git';
 const LOGTO_BRANCH_NAME = process.env.LOGTO_BRANCH_NAME ?? 'dev';
 const LOGTO_IMAGE_MODE = process.env.LOGTO_IMAGE_MODE ?? IMAGE_MODES.LOCAL;
+const LOGTO_PULL_BRANCH = Boolean(process.env.LOGTO_PULL_BRANCH ?? 'true');
 
 const initializeLogto = () => {
   if(LOGTO_IMAGE_MODE === IMAGE_MODES.REMOTE) {
@@ -31,6 +32,7 @@ const initializeLogto = () => {
 
 const localImageMode = () => {
   const logtoFolderPath = cloneLogto();
+  pullLocalLogto(logtoFolderPath);
   runLocalLogto(logtoFolderPath);
 }
 
@@ -53,6 +55,21 @@ const cloneLogto = () => {
   console.log('Logto repository cloned');
 
   return fullPath;
+}
+
+const pullLocalLogto = (fullPath) => {
+  if(!LOGTO_PULL_BRANCH) {
+    return;
+  }
+
+  console.log(`Pulling local Logto`);
+
+  execSync(`git checkout ${LOGTO_BRANCH_NAME} && git pull`, {
+    stdio: [0, 1, 2],
+    cwd: fullPath
+  });
+
+  console.log('Local Logto updated');
 }
 
 const runLocalLogto = (fullPath) => {
