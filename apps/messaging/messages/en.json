@@ -30,6 +30,22 @@
       }
     }
   },
+  "MessageTemplate": {
+    "createNewTemplateHeader": "Create a new template",
+    "instructionParagraph": "Dynamic template variables are defined by '{{variable}}'.",
+    "add": "Add",
+    "emptyDefaultTemplateLangOption": "Select language...",
+    "templateNameLabel": "Template name",
+    "templateNameHint": "No interpolation supported in the template name",
+    "subjectLabel": "Subject",
+    "excerptLabel": "Excerpt",
+    "plainTextLabel": "Plain text",
+    "templateFieldsHeading": "Dynamic template field descriptions",
+    "saveButton": "Save",
+    "updateTemplateButton": "Update template",
+    "createTemplateButton": "Create template",
+    "backLink": "Back"
+  },
   "FeedbackBanner": {
     "tag": "prototype",
     "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."

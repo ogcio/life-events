@@ -238,10 +238,9 @@ export default async function templates(app: FastifyInstance) {
 
         if (
           fieldName &&
-          fieldType &&
           !template.fields.some((field) => field.fieldName === fieldName)
         ) {
-          template.fields.push({ fieldName, fieldType });
+          template.fields.push({ fieldName, fieldType: fieldType ?? "" });
         }
       }
 
