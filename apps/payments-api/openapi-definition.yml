@@ -798,6 +798,8 @@ paths:
                     type: string
                   extPaymentId:
                     type: string
+                  userId:
+                    type: string
                   userData:
                     type: object
                     properties:
@@ -821,6 +823,7 @@ paths:
                   - updatedAt
                   - title
                   - extPaymentId
+                  - userId
                   - userData
                   - providerName
                   - providerType
@@ -902,6 +905,8 @@ paths:
                       type: string
                     extPaymentId:
                       type: string
+                    userId:
+                      type: string
                     userData:
                       type: object
                       properties:
@@ -925,6 +930,7 @@ paths:
                     - updatedAt
                     - title
                     - extPaymentId
+                    - userId
                     - userData
                     - providerName
                     - providerType

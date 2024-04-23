@@ -6,12 +6,14 @@ export default ({
   hint,
   defaultValue,
   error,
+  autoComplete = "on",
 }: {
   name: string;
   label: string;
   hint?: string;
   defaultValue?: string;
   error?: string;
+  autoComplete?: "off" | "on";
 }) => {
   return (
     <div className={`govie-form-group ${error && "govie-form-group--error"}`}>
@@ -31,6 +33,7 @@ export default ({
         name={name}
         className="govie-input"
         defaultValue={defaultValue}
+        autoComplete={autoComplete}
       />
     </div>
   );

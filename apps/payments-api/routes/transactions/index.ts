@@ -36,6 +36,7 @@ export default async function transactions(app: FastifyInstance) {
           `SELECT
             t.transaction_id as "transactionId",
             t.status,
+            t.user_id as "userId",
             t.user_data as "userData",
             pr.title,
             pr.payment_request_id as "paymentRequestId",
@@ -80,7 +81,6 @@ export default async function transactions(app: FastifyInstance) {
     },
     async (request, reply) => {
       const userId = request.user?.id;
-      console.log(">>>", "API - get transations - userId", userId);
 
       let result;
       try {
@@ -88,6 +88,7 @@ export default async function transactions(app: FastifyInstance) {
           `SELECT
             t.transaction_id as "transactionId",
             t.status,
+            t.user_id as "userId",
             t.user_data as "userData",
             pr.title,
             pr.payment_request_id as "paymentRequestId",
@@ -101,11 +102,6 @@ export default async function transactions(app: FastifyInstance) {
           INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
           JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id`,
           [userId],
-        );
-        console.log(
-          ">>>",
-          "API - get transations - result",
-          JSON.stringify(result, undefined, 2),
         );
       } catch (err) {
         app.log.error((err as Error).message);
@@ -166,6 +162,7 @@ export default async function transactions(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const userId = request.user?.id;
       const {
         paymentRequestId,
         extPaymentId,
@@ -177,10 +174,10 @@ export default async function transactions(app: FastifyInstance) {
 
       const result = await app.pg.query(
         `
-        insert into payment_transactions
-          (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_data)
-          values ($1, $2, $3, $4, $5, now(), now(), $6, $7)
-          returning transaction_id as "transactionId";
+        INSERT INTO payment_transactions
+          (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_id, user_data)
+          VALUES ($1, $2, $3, $4, $5, now(), now(), $6, $7, $8)
+          RETURNING transaction_id as "transactionId";
         `,
         [
           paymentRequestId,
@@ -189,6 +186,7 @@ export default async function transactions(app: FastifyInstance) {
           amount,
           TransactionStatusesEnum.Initiated,
           paymentProviderId,
+          userId,
           userData,
         ],
       );

@@ -16,12 +16,7 @@ export default async function () {
   ]);
 
   const transactions = (await new Payments(userId).getTransactions()).data;
-  console.log(">>>", "FE - userId", userId);
-  console.log(
-    ">>>",
-    "FE - transactions",
-    JSON.stringify(transactions, undefined, 2),
-  );
+
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
       <section

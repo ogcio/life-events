@@ -35,7 +35,7 @@ export default async ({ params: { providerId, locale } }: Props) => {
   }
 
   if (provider.type === "banktransfer") {
-    return <EditBankTransferForm provider={provider} locale={locale} />;
+    return <EditBankTransferForm provider={provider} />;
   }
 
   if (provider.type === "stripe") {

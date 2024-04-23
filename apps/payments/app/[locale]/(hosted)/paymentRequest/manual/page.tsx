@@ -76,12 +76,10 @@ export default async function Bank(params: {
         paymentId: string;
         integrationRef: string;
         amount?: string;
-        name: string;
-        email: string;
       }
     | undefined;
 }) {
-  const { userId } = await PgSessions.get();
+  const { userId, email, firstName, lastName } = await PgSessions.get();
   if (!params.searchParams?.paymentId) {
     redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
   }
@@ -103,11 +101,6 @@ export default async function Bank(params: {
 
   const paymentIntentId = await generatePaymentIntentId(userId);
 
-  const userInfo = {
-    name: params.searchParams.name,
-    email: params.searchParams.email,
-  };
-
   const transactionId = (
     await new Payments(userId).createTransaction({
       paymentRequestId: params.searchParams.paymentId,
@@ -115,7 +108,8 @@ export default async function Bank(params: {
       integrationReference: params.searchParams.integrationRef,
       amount: paymentDetails.amount,
       paymentProviderId: paymentDetails.providerId,
-      userData: userInfo,
+      userId,
+      userData: { email, name: `${firstName} ${lastName}` },
     })
   ).data?.transactionId;
 
