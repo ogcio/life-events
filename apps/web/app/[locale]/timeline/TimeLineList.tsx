@@ -1,7 +1,13 @@
 import { TimeLineData } from "./Timeline";
 import MonthsCards from "./MonthsCards";
 
-export default ({ timeLineData }: { timeLineData: TimeLineData }) => {
+export default ({
+  timeLineData,
+  searchParams,
+}: {
+  timeLineData: TimeLineData;
+  searchParams: URLSearchParams;
+}) => {
   const reversedTimeLine = [...timeLineData.data].reverse();
 
   return (
@@ -18,7 +24,11 @@ export default ({ timeLineData }: { timeLineData: TimeLineData }) => {
                 <p style={{ marginTop: 0 }}>{year}</p>
               </div>
               <div style={{ flex: "1" }}>
-                <MonthsCards months={months} view={"list"} />
+                <MonthsCards
+                  months={months}
+                  view={"list"}
+                  searchParams={searchParams}
+                />
               </div>
             </div>
           );

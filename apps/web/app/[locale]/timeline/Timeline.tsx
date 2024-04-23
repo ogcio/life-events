@@ -80,7 +80,10 @@ export default async ({
             searchParams={searchParams}
           />
         ) : (
-          <TimeLineList timeLineData={timeLineData} />
+          <TimeLineList
+            timeLineData={timeLineData}
+            searchParams={searchParams}
+          />
         )}
       </div>
     </>

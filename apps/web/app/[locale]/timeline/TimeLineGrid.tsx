@@ -114,7 +114,11 @@ export default async ({ timeLineData, searchParams }: TimeLineGridProps) => {
                   {year === dayjs().year() ? <strong>{year}</strong> : year}
                 </p>
               </div>
-              <MonthsCards months={months} view={"grid"} />
+              <MonthsCards
+                months={months}
+                view={"grid"}
+                searchParams={searchParams}
+              />
             </div>
           );
         })}
