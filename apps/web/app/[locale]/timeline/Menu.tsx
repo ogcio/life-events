@@ -2,7 +2,7 @@ import ds from "design-system";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import submitQuery_ from "./actions/submitQuery";
 
 const Icon = ds.Icon;
 
@@ -23,6 +23,8 @@ export default async ({
   const newSearchParams = new URLSearchParams(searchParams);
 
   const searchQuery = searchParams.get("searchQuery") || "";
+
+  const submitQuery = submitQuery_.bind(null, path, searchParams);
 
   const checkboxes = categories.map((service: string, index: number) => {
     let services = searchParams.get("services")?.split(",") || [];
@@ -98,18 +100,7 @@ export default async ({
       </li>
       <li>
         <div className="govie-form-group" style={{ marginBottom: "15px" }}>
-          <form
-            action={async (formData) => {
-              "use server";
-              const searchQuery =
-                formData.get("search-query")?.toString() || "";
-
-              const newSearchParams = new URLSearchParams(searchParams);
-              newSearchParams.set("searchQuery", searchQuery);
-
-              redirect(`${path}?${newSearchParams.toString()}`);
-            }}
-          >
+          <form action={submitQuery}>
             <div className="govie-input__wrapper">
               <input
                 type="text"
