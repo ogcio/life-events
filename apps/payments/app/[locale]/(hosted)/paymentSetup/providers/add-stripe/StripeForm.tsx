@@ -54,6 +54,7 @@ export default ({
           hint={t("liveSecretKeyHint")}
           error={state.errors.liveSecretKey}
           defaultValue={state.defaultState?.liveSecretKey}
+          autoComplete="off"
         />
       </div>
       <button

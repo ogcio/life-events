@@ -52,6 +52,7 @@ export default async ({
           name="live_secret_key"
           className="govie-input"
           defaultValue={liveSecretKey}
+          autoComplete="off"
         />
       </div>
     </div>

@@ -2,10 +2,6 @@ import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { PgSessions } from "auth/sessions";
-import { RedirectType, redirect } from "next/navigation";
-import { headers } from "next/headers";
-import { pgpool } from "../utils/postgres";
 import FeedbackBanner from "../components/FeedbackBanner";
 
 export default async function RootLayout({
