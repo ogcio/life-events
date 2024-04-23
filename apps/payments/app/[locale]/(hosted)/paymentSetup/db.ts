@@ -1,5 +1,3 @@
-import { getUserInfoById } from "auth/sessions";
-import { pgpool } from "../../../dbConnection";
 import { PaymentRequestDO } from "../../../../types/common";
 
 export type PaymentRequestDetails = Pick<
