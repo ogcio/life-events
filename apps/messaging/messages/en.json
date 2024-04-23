@@ -34,6 +34,8 @@
     "createNewTemplateHeader": "Create a new template",
     "instructionParagraph": "Dynamic template variables are defined by '{{variable}}'.",
     "add": "Add",
+    "addLanguageLanel": "Add a language",
+    "addLanguageHint": "Creates a new page to fill in template data for another language. All current progress is saved.",
     "emptyDefaultTemplateLangOption": "Select language...",
     "templateNameLabel": "Template name",
     "templateNameHint": "No interpolation supported in the template name",
