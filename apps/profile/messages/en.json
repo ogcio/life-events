@@ -55,7 +55,8 @@
     "telephone": "<red>*</red> Phone",
     "email": "<red>*</red> Email",
     "save": "Save changes",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "userNotFound": "User not found"
   },
   "Addresses": {
     "addresses": "Addresses",

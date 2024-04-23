@@ -37,7 +37,13 @@ export async function build(opts?: FastifyServerOptions) {
       },
       tags: [
         {
+          name: "User",
+        },
+        {
           name: "Addresses",
+        },
+        {
+          name: "Entitlements",
         },
       ],
     },
@@ -62,20 +68,36 @@ export async function build(opts?: FastifyServerOptions) {
     database: process.env.POSTGRES_DB_NAME,
   });
 
+  app.setErrorHandler((error, _request, reply) => {
+    app.log.error(error);
+    if (error instanceof Error && error.name !== "error") {
+      reply
+        .code(error.statusCode || 500)
+        .type("application/json")
+        .send({
+          message: error.message,
+          error,
+          code: error.code || "INTERNAL_SERVER_ERROR",
+          statusCode: error.statusCode || 500,
+          time: new Date().toISOString(),
+        });
+      return;
+    }
+
+    reply.code(500).type("application/json").send({
+      message: error.message,
+      error: "Internal Server Error",
+      code: "INTERNAL_SERVER_ERROR",
+      statusCode: 500,
+      time: new Date().toISOString(),
+    });
+  });
+
   app.register(healthCheck);
 
   app.register(routes, { prefix: "/api/v1" });
 
   app.register(sensible);
-
-  app.setErrorHandler((error, request, reply) => {
-    app.log.error(error);
-    if (error instanceof Error && error.name !== "error") {
-      reply.type("application/json").send({ error });
-      return;
-    }
-    reply.code(500).type("application/json").send({ error });
-  });
 
   return app;
 }
