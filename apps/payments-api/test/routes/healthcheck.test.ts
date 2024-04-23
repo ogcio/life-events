@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert";
-import { build } from "../app";
+import { build } from "../../app";
 
 test("healthCheck", async (t) => {
   const app = await build();
