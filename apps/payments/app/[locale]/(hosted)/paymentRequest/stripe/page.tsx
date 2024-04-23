@@ -48,12 +48,10 @@ export default async function Card(props: {
         paymentId: string;
         integrationRef: string;
         amount?: string;
-        name: string;
-        email: string;
       }
     | undefined;
 }) {
-  const { userId } = await PgSessions.get();
+  const { userId, email, firstName, lastName } = await PgSessions.get();
   const messages = await getMessages({ locale: props.params.locale });
   const stripeMessages =
     (await messages.PayStripe) as unknown as AbstractIntlMessages;
@@ -76,18 +74,13 @@ export default async function Card(props: {
   const { client_secret, id: paymentIntentId } =
     await createPaymentIntent(paymentDetails);
 
-  const userInfo = {
-    name: props.searchParams.name,
-    email: props.searchParams.email,
-  };
-
   await buildApiClient(userId).transactions.apiV1TransactionsPost({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentIntentId,
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: userInfo,
+    userData: { email, name: `${firstName} ${lastName}` },
   });
 
   const returnUri = new URL(

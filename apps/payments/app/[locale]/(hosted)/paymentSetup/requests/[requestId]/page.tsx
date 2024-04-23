@@ -27,13 +27,6 @@ export default async function ({ params: { requestId } }) {
     console.log(err);
   }
 
-  console.log(">>>", "FE - request / userId", userId);
-  console.log(
-    ">>>",
-    "FE - request / transactions",
-    JSON.stringify(transactions, undefined, 2),
-  );
-
   return (
     <div>
       <RequestDetails requestId={requestId} />
