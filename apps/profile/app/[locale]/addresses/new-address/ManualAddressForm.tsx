@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { FormProps } from "./page";
-import { form, postgres } from "../../../utils";
+import { form } from "../../../utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "../../../utils/navigation";
 import { Profile } from "building-blocks-sdk";
@@ -57,33 +57,38 @@ export async function ManualAddressForm(props: FormProps) {
       return revalidatePath("/");
     }
 
-    const userExistsQuery = await postgres.pgpool.query(
-      `
-          SELECT 1
-          FROM user_details
-          WHERE user_id = $1
-          `,
-      [userId],
-    );
+    const { data: userExistsQuery, error } = await new Profile(
+      userId,
+    ).getUser();
 
-    if (!userExistsQuery.rows.length) {
-      await postgres.pgpool.query(
-        `
-                  INSERT INTO user_details (user_id, firstname, lastname, email)
-                  VALUES ($1, $2, $3, $4)
-                `,
-        [userId, firstName, lastName, email],
-      );
+    if (error) {
+      //handle error
+    }
+
+    if (!userExistsQuery) {
+      const { error } = await new Profile(userId).createUser({
+        firstname: firstName,
+        lastname: lastName,
+        email,
+      });
+
+      if (error) {
+        //handle error
+      }
     }
 
     if (addressFirst && town && county && eirecode) {
-      new Profile(userId).createAddress({
+      const { error } = await new Profile(userId).createAddress({
         address_line1: addressFirst,
         address_line2: addressSecond,
         town: town,
         county: county,
         eirecode: eirecode,
       });
+
+      if (error) {
+        //handle error
+      }
 
       redirect("/");
     }
