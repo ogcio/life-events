@@ -6,7 +6,7 @@ const formatQueryResult = async <T, O>(
 ) => {
   try {
     const result = await promise;
-    return { data: result.data, error: null };
+    return { data: result.data, error: result.error };
   } catch (error) {
     return { data: undefined, error };
   }
@@ -56,7 +56,7 @@ export class Profile {
 
   async updateAddress(
     addressId: string,
-    data: paths["/api/v1/addresses/"]["post"]["requestBody"]["content"]["application/json"],
+    data: paths["/api/v1/addresses/{addressId}"]["put"]["requestBody"]["content"]["application/json"],
   ) {
     return formatQueryResult(
       this.client.PUT("/api/v1/addresses/{addressId}", {
@@ -70,6 +70,40 @@ export class Profile {
     return formatQueryResult(
       this.client.DELETE("/api/v1/addresses/{addressId}", {
         params: { path: { addressId } },
+      }),
+    );
+  }
+
+  async getEntitlements() {
+    return formatQueryResult(this.client.GET("/api/v1/entitlements/"));
+  }
+
+  async getUser() {
+    return formatQueryResult(this.client.GET("/api/v1/user/"));
+  }
+
+  async createUser(
+    data: paths["/api/v1/user/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/user/", {
+        body: data,
+      }),
+    );
+  }
+
+  async updateUser(
+    data?: NonNullable<
+      paths["/api/v1/user/"]["put"]["requestBody"]
+    >["content"]["application/json"],
+  ) {
+    if (!data || Object.keys(data).length === 0) {
+      return;
+    }
+
+    return formatQueryResult(
+      this.client.PUT("/api/v1/user/", {
+        body: data,
       }),
     );
   }

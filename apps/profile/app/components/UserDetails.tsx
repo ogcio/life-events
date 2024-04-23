@@ -1,17 +1,21 @@
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
-import { pgpool } from "../utils/postgres";
 import dayjs from "dayjs";
 import ds from "design-system";
 import { form, postgres } from "../utils";
 import { revalidatePath } from "next/cache";
+import { Profile } from "building-blocks-sdk";
 
 async function submitAction(formData: FormData) {
   "use server";
 
-  const { userId } = await PgSessions.get();
-
   const formErrors: form.Error[] = [];
+
+  const userId = formData.get("userId")?.toString();
+
+  if (!userId) {
+    throw Error("User id not found");
+  }
 
   const phone = formData.get("phone")?.toString();
   formErrors.push(
@@ -33,18 +37,18 @@ async function submitAction(formData: FormData) {
   const monthOfBirth = formData.get("monthOfBirth");
   const yearOfBirth = formData.get("yearOfBirth");
 
-  const dateOfBirth = new Date(
-    Number(yearOfBirth),
-    Number(monthOfBirth) - 1,
-    Number(dayOfBirth),
-  );
+  const dateOfBirth = dayjs()
+    .year(Number(yearOfBirth))
+    .month(Number(monthOfBirth) - 1)
+    .date(Number(dayOfBirth))
+    .startOf("day")
+    .toISOString();
 
   let data = {
-    user_id: userId,
     date_of_birth: dateOfBirth,
     title: "",
-    firstName: "",
-    lastName: "",
+    firstname: "",
+    lastname: "",
     ppsn: "",
     ppsn_visible: false,
     gender: "",
@@ -61,8 +65,8 @@ async function submitAction(formData: FormData) {
     if (
       [
         "title",
-        "firstName",
-        "lastName",
+        "firstname",
+        "lastname",
         "ppsn",
         "gender",
         "phone",
@@ -75,75 +79,28 @@ async function submitAction(formData: FormData) {
     iterResult = formIterator.next();
   }
 
-  const currentDataResults = await postgres.pgpool.query(
-    `
-      SELECT * FROM user_details
-      WHERE user_id = $1
-  `,
-    [userId],
-  );
-
-  const keys = Object.keys(data);
-  const values = Object.values(data);
-
-  if (currentDataResults.rows.length > 0) {
-    const setClause = keys
-      .map((key, index) => `${key} = $${index + 1}`)
-      .join(", ");
-
-    await postgres.pgpool.query(
-      `
-        UPDATE user_details
-        SET ${setClause}, updated_at = now()
-        WHERE user_id = $${keys.length + 1}
-      `,
-      [...values, userId],
-    );
-  } else {
-    const columns = keys.join(", ");
-    const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
-
-    await postgres.pgpool.query(
-      `
-        INSERT INTO user_details (${columns})
-        VALUES (${placeholders})
-      `,
-      values,
-    );
-  }
-}
-
-async function getUserDetails() {
-  const { firstName, lastName, email, userId } = await PgSessions.get();
-
-  const res = await pgpool.query<{
-    title: string;
-    date_of_birth: string;
-    ppsn: string;
-    ppsn_visible: boolean;
-    gender: string;
-    phone: string;
-  }>(
-    `SELECT title, date_of_birth, ppsn, ppsn_visible, gender, phone FROM user_details WHERE user_id = $1`,
-    [userId],
-  );
-
-  const { title, date_of_birth, ppsn, ppsn_visible, gender, phone } =
-    res.rows[0] || {};
-
-  return {
+  const { data: currentDataResults, error } = await new Profile(
     userId,
-    firstName,
-    lastName,
-    email,
-    /** the defaults below should eventually be removed as the data should never be null */
-    title: title || "Mr",
-    date_of_birth: date_of_birth || new Date("1990-01-01T00:00:00Z"),
-    ppsn: ppsn || "9876543W",
-    ppsn_visible: ppsn_visible || false,
-    gender: gender || "male",
-    phone: phone || "01234567891",
-  };
+  ).getUser();
+
+  if (error) {
+    //handle error
+    return;
+  }
+
+  if (currentDataResults) {
+    const result = await new Profile(userId).updateUser(data);
+
+    if (result?.error) {
+      //handle error
+    }
+  } else {
+    const { error } = await new Profile(userId).createUser(data);
+
+    if (error) {
+      //handle error
+    }
+  }
 }
 
 export default async () => {
@@ -153,10 +110,34 @@ export default async () => {
 
   const red = ds.colours.ogcio.red;
 
+  const { userId } = await PgSessions.get();
+
+  const { data, error } = await new Profile(userId).getUser();
+
+  if (error) {
+    // handle error
+  }
+
+  /**  NOTE: the defaults below are for demo purposes only given we don't have access to real user data yet */
+  const defaultData = {
+    firstname: "Name",
+    lastname: "Surname",
+    email: "test@email.com",
+    title: "Mr",
+    date_of_birth: String(new Date("1990-01-01T00:00:00Z")),
+    ppsn: "9876543W",
+    ppsn_visible: false,
+    gender: "male",
+    phone: "01234567891",
+    consent_to_prefill_data: false,
+  };
+
+  //Temporarily use default data if user is not found or no data is returned
+  const userData = data || defaultData;
+
   const {
-    userId,
-    firstName,
-    lastName,
+    firstname,
+    lastname,
     email,
     title,
     date_of_birth,
@@ -164,38 +145,40 @@ export default async () => {
     ppsn_visible,
     gender,
     phone,
-  } = await getUserDetails();
+  } = userData;
 
   async function togglePPSN() {
     "use server";
 
-    const userExistsQuery = await postgres.pgpool.query(
-      `
-        SELECT ppsn_visible
-        FROM user_details
-        WHERE user_id = $1
-      `,
-      [userId],
-    );
+    const { data: userExistsQuery, error } = await new Profile(
+      userId,
+    ).getUser();
 
-    if (userExistsQuery.rows.length > 0) {
-      const isPPSNVisible = userExistsQuery.rows[0].ppsn_visible;
-      await postgres.pgpool.query(
-        `
-            UPDATE user_details
-            SET ppsn_visible = $1, updated_at = now()
-            WHERE user_id = $2
-          `,
-        [!isPPSNVisible, userId],
-      );
+    if (error) {
+      //handle error
+      return;
+    }
+
+    if (userExistsQuery) {
+      const isPPSNVisible = userExistsQuery.ppsn_visible;
+
+      const result = await new Profile(userId).updateUser({
+        ppsn_visible: !isPPSNVisible,
+      });
+
+      if (result?.error) {
+        //handle error
+      }
     } else {
-      await postgres.pgpool.query(
-        `
-            INSERT INTO user_details (user_id, ppsn_visible, firstname, lastname, email)
-            VALUES ($1, TRUE, $2, $3, $4)
-          `,
-        [userId, firstName, lastName, email],
-      );
+      const { error } = await new Profile(userId).createUser({
+        firstname,
+        lastname,
+        email,
+      });
+
+      if (error) {
+        //handle error
+      }
     }
 
     revalidatePath("/");
@@ -218,6 +201,7 @@ export default async () => {
 
   return (
     <form action={submitAction}>
+      <input type="hidden" name="userId" defaultValue={userId} />
       <h2 className="govie-heading-m">{t("name")}</h2>
       <div
         className="govie-form-group"
@@ -248,11 +232,11 @@ export default async () => {
           <input
             type="text"
             id="firstName-field"
-            name="firstName"
+            name="firstname"
             className="govie-input"
             aria-labelledby="firstName-field-hint"
             readOnly
-            defaultValue={firstName}
+            defaultValue={firstname}
             style={{ pointerEvents: "none" }}
           />
         </div>
@@ -263,11 +247,11 @@ export default async () => {
           <input
             type="text"
             id="lastName-field"
-            name="lastName"
+            name="lastname"
             className="govie-input"
             aria-labelledby="lastName-field-hint"
             readOnly
-            defaultValue={lastName}
+            defaultValue={lastname}
             style={{ pointerEvents: "none" }}
           />
         </div>
