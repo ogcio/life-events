@@ -1,12 +1,12 @@
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { form, routes } from "../../../../utils";
 import { NextPageProps } from "../../../../../types";
 import { revalidatePath } from "next/cache";
 import dayjs from "dayjs";
-import { Link, redirect } from "../../../../utils/navigation";
 import { Profile } from "building-blocks-sdk";
+import Link from "next/link";
 
 async function editAddress(formData: FormData) {
   "use server";

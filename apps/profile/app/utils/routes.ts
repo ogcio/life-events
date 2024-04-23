@@ -17,7 +17,7 @@ export const entitlements = {
 export const addresses = {
   slug: "addresses",
   newAddress: {
-    slug: "new-address",
+    slug: "search-address",
     path() {
       return `${addresses.slug}/${addresses.newAddress.slug}`;
     },
@@ -44,6 +44,12 @@ export const addresses = {
     slug: "manual-address",
     path() {
       return `${addresses.slug}/${addresses.manualAddress.slug}`;
+    },
+  },
+  addDetails: {
+    slug: "add-details",
+    path(id: string) {
+      return `${addresses.slug}/${addresses.addDetails.slug}/${id}`;
     },
   },
 };

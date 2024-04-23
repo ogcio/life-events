@@ -9,6 +9,7 @@
   "FormErrors": {
     "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
     "invalidField": "Enter {indArticleCheck, select, an {an} other {a}} valid {field}",
+    "emptySelection": "Please select an option",
     "fields": {
       "email": "email address",
       "phone": "phone number",
@@ -113,7 +114,13 @@
     "moveOutDate": "Move out date",
     "day": "Day",
     "month": "Month",
-    "year": "Year"
+    "year": "Year",
+    "yes": "Yes",
+    "no": "No",
+    "owner": "Owner",
+    "renting": "Renting",
+    "ownerOrRenting": "Are you the owner of the property at the address above or are you renting?",
+    "isPrimaryResidence": "Is the property at the address above your primary residence?"
   },
   "NotFound": {
     "title": "Not Found",

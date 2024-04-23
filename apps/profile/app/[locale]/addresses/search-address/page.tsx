@@ -6,7 +6,7 @@ import { form, routes } from "../../../utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export default async (params: NextPageProps) => {
+export default async () => {
   const t = await getTranslations("AddressForm");
   const { userId, firstName, lastName, email } = await PgSessions.get();
   const errorT = await getTranslations("FormErrors");

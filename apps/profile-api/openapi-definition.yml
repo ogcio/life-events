@@ -255,12 +255,10 @@ paths:
                   type: string
                 move_out_date:
                   type: string
-              required:
-                - address_line1
-                - town
-                - county
-                - eirecode
-        required: true
+                is_primary:
+                  type: boolean
+                ownership_status:
+                  type: string
       parameters:
         - schema:
             type: string

@@ -106,9 +106,8 @@ async function createAddress(formData: FormData) {
     await form.insertErrors(
       errors,
       userId,
-      `${routes.addresses.newAddress.slug}?t=manual`,
+      routes.addresses.manualAddress.slug,
     );
-    console.log("== REVALIDATING ==");
     return revalidatePath("/");
   }
 
@@ -151,7 +150,7 @@ async function createAddress(formData: FormData) {
   }
 
   if (addressFirst && town && county && eirecode) {
-    const { error } = await new Profile(userId).createAddress({
+    const { data, error } = await new Profile(userId).createAddress({
       address_line1: addressFirst,
       address_line2: addressSecond,
       town: town,
@@ -165,21 +164,29 @@ async function createAddress(formData: FormData) {
       //handle error
     }
 
-    redirect("/");
+    if (data) {
+      redirect(`/${routes.addresses.addDetails.path(data.id)}`);
+    } else {
+      redirect("/");
+    }
   }
+}
+
+async function cancelAction() {
+  "use server";
+  redirect("/");
 }
 
 export default async () => {
   const { userId, firstName, lastName, email } = await PgSessions.get();
-  //const { userId, firstName, lastName, email } = props.userData;
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
 
   const errors = await form.getErrorsQuery(
     userId,
-    `${routes.addresses.newAddress.slug}?t=manual`,
+    routes.addresses.manualAddress.slug,
   );
-  console.log("=== ERRORS ===", errors.rows);
+  console.log("=== MANUAL FORM ERRORS ===", errors.rows);
   const addressFirstLineError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.address_first_line,
   );
@@ -187,7 +194,7 @@ export default async () => {
   const townError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.town,
   );
-  console.log("== TOWN ERROR ==", townError);
+
   const countyError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.county,
   );
@@ -224,11 +231,6 @@ export default async () => {
   moveOutYearError && moveOutDateErrors.push(moveOutYearError);
   moveOutMonthError && moveOutDateErrors.push(moveOutMonthError);
   moveOutDayError && moveOutDateErrors.push(moveOutDayError);
-  console.log(
-    "==MMOVE IN DATE ERROR ==",
-    moveInDateErrors,
-    Boolean(moveInDateErrors.length),
-  );
 
   return (
     <div className="govie-grid-row">
@@ -518,9 +520,31 @@ export default async () => {
               </div>
             </div>
           </div>
-          <button className="govie-button" style={{ marginBottom: 0 }}>
-            {t("continueWithAddress")}
-          </button>
+          <div
+            style={{
+              display: "flex",
+              gap: "20px",
+              alignItems: "center",
+              marginBottom: "30px",
+            }}
+          >
+            <button
+              type="submit"
+              data-module="govie-button"
+              className="govie-button"
+              style={{ marginBottom: 0 }}
+            >
+              {t("continueWithAddress")}
+            </button>
+            <button
+              data-module="govie-button"
+              className="govie-button govie-button--secondary"
+              style={{ marginBottom: 0 }}
+              formAction={cancelAction}
+            >
+              {t("cancel")}
+            </button>
+          </div>
         </form>
         <div style={{ margin: "30px 0" }}>
           <Link href={"/"} className="govie-back-link">

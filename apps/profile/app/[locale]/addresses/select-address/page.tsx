@@ -123,7 +123,7 @@ export default async (params: NextPageProps) => {
         .toString()
         .split(",");
 
-      const { error } = await new Profile(userId).createAddress({
+      const { data, error } = await new Profile(userId).createAddress({
         address_line1: addressFirst.trim(),
         town: town.trim(),
         county: county.trim(),
@@ -134,6 +134,10 @@ export default async (params: NextPageProps) => {
 
       if (error) {
         //handle error
+      }
+
+      if (data) {
+        redirect(`/${routes.addresses.addDetails.path(data.id)}`);
       }
     }
 

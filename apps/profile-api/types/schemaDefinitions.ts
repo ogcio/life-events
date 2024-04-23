@@ -37,7 +37,18 @@ export const ParamsWithAddressId = Type.Object({
 });
 export type ParamsWithAddressId = Static<typeof ParamsWithAddressId>;
 
-export const UpdateAddress = CreateAddress;
+export const UpdateAddress = Type.Object({
+  address_line1: Type.Optional(Type.String()),
+  address_line2: Type.Optional(Type.String()),
+  town: Type.Optional(Type.String()),
+  county: Type.Optional(Type.String()),
+  eirecode: Type.Optional(Type.String()),
+  move_in_date: Type.Optional(Type.String()),
+  move_out_date: Type.Optional(Type.String()),
+  is_primary: Type.Optional(Type.Boolean()),
+  ownership_status: Type.Optional(Type.String()),
+});
+
 export type UpdateAddress = Static<typeof UpdateAddress>;
 
 /**

@@ -149,35 +149,23 @@ export default async function addresses(app: FastifyInstance) {
     async (request, reply) => {
       const userId = request.user?.id;
       const { addressId } = request.params;
-      const {
-        address_line1,
-        address_line2,
-        town,
-        county,
-        eirecode,
-        move_in_date,
-        move_out_date,
-      } = request.body;
+
+      const keys = Object.keys(request.body);
+      const values = Object.values(request.body);
+
+      const setClause = keys
+        .map((key, index) => `${key} = $${index + 3}`)
+        .join(", ");
 
       try {
         const result = await app.pg.query(
           `
-        UPDATE user_addresses
-        SET address_line1 = $3, address_line2 = $4, town = $5, county = $6, eirecode = $7, move_in_date = $8, move_out_date = $9, updated_at = now()
-        WHERE user_id = $1 AND address_id = $2
-        RETURNING  address_id as id
-    `,
-          [
-            userId,
-            addressId,
-            address_line1,
-            address_line2,
-            town,
-            county,
-            eirecode,
-            move_in_date,
-            move_out_date,
-          ],
+            UPDATE user_addresses
+            SET ${setClause}, updated_at = now()
+            WHERE user_id = $1 AND address_id = $2
+            RETURNING  address_id as id
+          `,
+          [userId, addressId, ...values],
         );
 
         if (!result?.rows.length) {

@@ -16,8 +16,8 @@ export const fieldTranslationKeys = {
   email: "email",
   phone: "phone",
   address: "address",
-  address_first_line: "address_first_line",
-  address_second_line: "address_second_line",
+  address_first_line: "addressFirstLine",
+  address_second_line: "addressSecondLine",
   town: "town",
   eirecode: "eirecode",
   county: "county",
@@ -30,6 +30,8 @@ export const fieldTranslationKeys = {
   moveOutDay: "moveOutDay",
   moveOutMonth: "moveOutMonth",
   moveOutYear: "moveOutYear",
+  isOwner: "owner",
+  isPrimaryAddress: "primaryAddress",
 };
 
 export const validation = {

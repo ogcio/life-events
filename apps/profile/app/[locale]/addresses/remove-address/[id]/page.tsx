@@ -1,10 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { NextPageProps } from "../../../../../types";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { PgSessions } from "auth/sessions";
 import { formatDate } from "../../../../utils";
-import { redirect } from "../../../../utils/navigation";
 import { Profile } from "building-blocks-sdk";
 
 async function removeAddress(formData: FormData) {
