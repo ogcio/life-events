@@ -22,14 +22,36 @@ export default async () => {
       <div
         className="govie-header__container govie-width-container"
         // all designs are made for 1440px
-        style={{ maxWidth: "1440px" }}
+        style={{
+          maxWidth: "1440px",
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          height: "80px",
+          boxSizing: "border-box",
+        }}
       >
-        <div className="govie-header__logo">
-          <a
-            href={new URL("/", process.env.HOST_URL).href}
-            className="govie-header__link govie-header__link--homepage"
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "15px",
+            }}
           >
-            <span className="govie-header__logotype">
+            <a
+              href="/"
+              className="govie-header__link govie-header__link--homepage"
+              style={{ display: "block" }}
+            >
               <svg
                 width="110"
                 height="40"
@@ -38,7 +60,7 @@ export default async () => {
                 xmlns="http://www.w3.org/2000/svg"
                 aria-hidden="true"
                 focusable="false"
-                className="govie-header__logotype-full"
+                style={{ verticalAlign: "bottom" }}
               >
                 <path
                   d="M28.9872 0.00119403C28.8652 6.41911 28.8 13.0161 28.8 19.7552C28.8 26.4943 28.8652 33.0913 28.9872 39.5093C29.0398 39.5093 29.0918 39.5104 29.1444 39.5104C29.197 39.5104 29.2491 39.5093 29.3017 39.5093C29.4236 33.0913 29.4888 26.4943 29.4888 19.7552C29.4888 13.0161 29.4236 6.41911 29.3017 0.00119403C29.2491 0.00119403 29.197 0 29.1444 0C29.0918 0 29.0398 0.000597015 28.9872 0.00119403Z"
@@ -94,18 +116,10 @@ export default async () => {
                 </defs>
               </svg>
               <span className="govie-visually-hidden">gov.ie</span>
-            </span>
-          </a>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div className="govie-!-font-size-27">
-            <strong>{t("title")}</strong>
+            </a>
+            <div className="govie-!-font-size-24">
+              <strong>{t("title")}</strong>
+            </div>
           </div>
           <div
             style={{
