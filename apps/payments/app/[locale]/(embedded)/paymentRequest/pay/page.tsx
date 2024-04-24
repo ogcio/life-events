@@ -22,6 +22,7 @@ type Props = {
         id: string;
         amount?: string;
         customAmount?: string;
+        embed?: string;
       }
     | undefined;
 };
@@ -55,6 +56,8 @@ export default async function Page(props: Props) {
     return notFound();
 
   const { userId } = await PgSessions.get();
+
+  const embed = props.searchParams?.embed === "true";
 
   const [details, t, tCommon] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId, userId),
