@@ -57,6 +57,7 @@
       "openbankingDescription": "Utilize OpenBanking for secure and direct bank payments, offering your customers a convenient way to pay directly from their bank accounts without needing to enter payment details.",
       "stripeDescription": "Incorporate Stripe to accept payments via credit card, Apple Pay, Google Pay, and more. Benefit from Stripe's comprehensive payment infrastructure and fraud prevention tools.",
       "worldpayDescription": "Connect with WorldPay for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
+      "realexDescription": "Connect with Realex for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
       "selectHint": "Choose the type of payment provider",
       "label": "Payment Provider",
       "banktransfer": "Manual Bank Transfer",
@@ -64,6 +65,7 @@
       "openbanking": "OpenBanking",
       "stripe": "Stripe",
       "worldpay": "WorldPay",
+      "realex": "Realex",
       "continue": "Continue",
       "select": "Select"
     },
@@ -109,6 +111,17 @@
       "merchantCodeHint": "This is the unique identifier assigned to your Worldpay account. It's used to ensure that payments are sent to the correct merchant account.",
       "installationId": "Installation Id",
       "installationIdHint": "Your specific installation ID from Worldpay, required for integrating your payment gateway with the web application. This ties the payments to your account.",
+      "confirm": "Confirm"
+    },
+    "AddRealex": {
+      "title": "Add Realex Payment Provider",
+      "editTitle": "Edit Realex Payment Provider",
+      "name": "Name",
+      "nameHint": "Create a name for this Realex configuration to easily identify it among your payment options, such as 'Main Site Payments' or 'Event Registrations'.",
+      "merchantId": "Merchant Id",
+      "merchantIdHint": "This is the unique identifier assigned to your Realex account. It's used to ensure that payments are sent to the correct merchant account.",
+      "sharedSecret": "Shared secret",
+      "sharedSecretHint": "This is the Shared Secret from Realex, required for integrating your payment gateway with the web application. This ties the payments to your account.",
       "confirm": "Confirm"
     },
     "Payments": {
@@ -190,7 +203,8 @@
           "openbanking": "OpenBanking Account",
           "banktransfer": "Manual Bank Transfer Account",
           "stripe": "Stripe Account",
-          "worldpay": "Worldpay Account"
+          "worldpay": "Worldpay Account",
+          "realex": "Realex Account"
         },
         "reference": "Reference",
         "amount": "Amount",

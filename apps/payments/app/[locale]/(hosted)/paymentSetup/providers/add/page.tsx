@@ -33,6 +33,11 @@ export default async () => {
         description={t("worldpayDescription")}
         href={"add-worldpay"}
       /> */}
+      <ProviderTypeCard
+        title={t("realex")}
+        description={t("realexDescription")}
+        href={"add-realex"}
+      />
     </div>
   );
 };

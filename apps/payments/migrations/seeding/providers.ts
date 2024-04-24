@@ -42,6 +42,15 @@ export const seedProviders = (pool, userId) => {
     },
   });
 
+  const realex = new Payments(userId).createRealexProvider({
+    name: "Realex provider",
+    type: "realex",
+    data: {
+      merchantId: process.env.REALEX_MERCHANT_ID ?? "",
+      sharedSecret: process.env.REALEX_SHARED_SECRET ?? "",
+    },
+  });
+
   // TODO: add worldpay with merchantCode and installationId
-  return Promise.all([manualBankTransfer, openBanking, stripe]);
+  return Promise.all([manualBankTransfer, openBanking, stripe, realex]);
 };
