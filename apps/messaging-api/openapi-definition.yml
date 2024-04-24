@@ -599,12 +599,6 @@ paths:
       tags: *a2
       parameters:
         - schema:
-            default: en
-            type: string
-          in: query
-          name: lang
-          required: true
-        - schema:
             type: string
           in: path
           name: templateId
@@ -620,16 +614,30 @@ paths:
                   data:
                     type: object
                     properties:
-                      templateName:
-                        type: string
-                      subject:
-                        type: string
-                      excerpt:
-                        type: string
-                      plainText:
-                        type: string
-                      richText:
-                        type: string
+                      contents:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            templateName:
+                              type: string
+                            subject:
+                              type: string
+                            excerpt:
+                              type: string
+                            plainText:
+                              type: string
+                            richText:
+                              type: string
+                            lang:
+                              type: string
+                          required:
+                            - templateName
+                            - subject
+                            - excerpt
+                            - plainText
+                            - richText
+                            - lang
                       fields:
                         type: array
                         items:
@@ -643,11 +651,7 @@ paths:
                             - fieldName
                             - fieldType
                     required:
-                      - templateName
-                      - subject
-                      - excerpt
-                      - plainText
-                      - richText
+                      - contents
                       - fields
                 required:
                   - data
