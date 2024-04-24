@@ -1,18 +1,35 @@
-import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
-import RealexFields from "./RealexFields";
+import getRequestConfig from "../../../../../../i18n";
+import { getValidationErrors } from "../../../../../utils";
+import RealexForm from "./RealexForm";
+import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 
-export default async () => {
-  const t = await getTranslations("PaymentSetup.AddRealex");
+type Props = {
+  params: {
+    locale: string;
+  };
+};
+
+export default async (props: Props) => {
+  const { messages } = await getRequestConfig({ locale: props.params.locale });
 
   const { userId } = await PgSessions.get();
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(
+    prevState: FormData,
+    formData: FormData,
+  ): Promise<{
+    errors: {
+      [key: string]: string;
+    };
+  }> {
     "use server";
 
-    await new Payments(userId).createRealexProvider({
+    const validation = { errors: {} };
+
+    const result = await new Payments(userId).createRealexProvider({
       name: formData.get("provider_name") as string,
       type: "realex",
       data: {
@@ -21,23 +38,20 @@ export default async () => {
       },
     });
 
-    redirect("./");
+    if (result.data && !result.error) redirect("./");
+
+    if (result.error.validation) {
+      validation.errors = getValidationErrors(result.error.validation);
+    }
+
+    return validation;
   }
 
   return (
-    <form action={handleSubmit}>
-      <legend className="govie-fieldset__legend govie-fieldset__legend--m">
-        <h1 className="govie-fieldset__heading">{t("title")}</h1>
-      </legend>
-      <RealexFields />
-      <button
-        id="button"
-        type="submit"
-        data-module="govie-button"
-        className="govie-button"
-      >
-        {t("confirm")}
-      </button>
-    </form>
+    <NextIntlClientProvider
+      messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
+    >
+      <RealexForm action={handleSubmit} />
+    </NextIntlClientProvider>
   );
 };

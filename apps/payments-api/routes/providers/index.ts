@@ -298,6 +298,32 @@ export default async function providers(app: FastifyInstance) {
       const { providerId } = request.params;
       const { name, data, status } = request.body;
 
+      let provider;
+      try {
+        provider = await app.pg.query(
+          `
+          SELECT
+            provider_id as id,
+            provider_type as type
+          FROM payment_providers
+          WHERE provider_id = $1
+          AND user_id = $2
+          `,
+          [providerId, userId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      if (!provider?.rows.length) {
+        throw app.httpErrors.notFound("The requested provider was not found");
+      }
+
+      const providerSecretsHandler = providerSecretsHandlersFactory(
+        provider.rows[0].type,
+      );
+      const cypheredData = providerSecretsHandler.getCypheredData(data);
+
       await app.pg.query(
         `
           UPDATE payment_providers
@@ -307,7 +333,7 @@ export default async function providers(app: FastifyInstance) {
           WHERE provider_id = $4
           AND user_id = $5
         `,
-        [name, data, status, providerId, userId],
+        [name, cypheredData, status, providerId, userId],
       );
 
       reply.send();

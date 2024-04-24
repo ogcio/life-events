@@ -89,6 +89,22 @@ export class Payments {
     );
   }
 
+  async updateProvider(
+    providerId: paths["/api/v1/providers/{providerId}"]["put"]["parameters"]["path"]["providerId"],
+    data: paths["/api/v1/providers/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.PUT("/api/v1/providers/{providerId}", {
+        params: {
+          path: {
+            providerId,
+          },
+        },
+        body: data,
+      }),
+    );
+  }
+
   /**
    * PAYMENT REQUESTS
    */

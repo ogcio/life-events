@@ -44,7 +44,7 @@ export type CommonProvider = {
   id: string;
   name: string;
   userId?: string;
-  status: string;
+  status: "connected" | "disconnected";
   type: string;
   createdAt: string;
 };

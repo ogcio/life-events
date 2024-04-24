@@ -4,7 +4,7 @@ import type { RealexProvider, RealexData } from "../types";
 import { getTranslations } from "next-intl/server";
 import RealexFields from "../add-realex/RealexFields";
 import { PgSessions } from "auth/sessions";
-import buildApiClient from "../../../../../../client/index";
+import { Payments } from "building-blocks-sdk";
 
 type Props = {
   provider: RealexProvider;
@@ -18,22 +18,19 @@ export default async ({ provider }: Props) => {
 
     const { userId } = await PgSessions.get();
 
-    const providerName = formData.get("provider_name") as string;
-    const merchantId = formData.get("merchant_is");
-    const sharedSecret = formData.get("shared_secret");
+    const providerName = formData.get("provider_name") as unknown as string;
+    const merchantId = formData.get("merchant_id") as unknown as string;
+    const sharedSecret = formData.get("shared_secret") as unknown as string;
     const providerData = {
       merchantId,
       sharedSecret,
     };
 
-    await buildApiClient(userId).providers.apiV1ProvidersProviderIdPut(
-      provider.id,
-      {
-        name: providerName,
-        data: providerData,
-        status: provider.status,
-      },
-    );
+    await new Payments(userId).updateProvider(provider.id, {
+      name: providerName,
+      data: providerData,
+      status: provider.status,
+    });
 
     redirect("./");
   }
