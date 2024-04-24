@@ -40,6 +40,7 @@ const paths = [
   ...fs
     .readdirSync(path.join(process.cwd(), "packages"))
     .map((p) => path.join(process.cwd(), "packages", p)),
+  process.cwd(),
 ];
 
 copyEnvFiles(paths);
