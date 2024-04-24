@@ -4,11 +4,9 @@ import UserIcon from "./UserIcon";
 import { getUser } from "../../../libraries/auth";
 import { headers } from "next/headers";
 import "./Header.css";
-import { getTranslations } from "next-intl/server";
 
 export default async () => {
   let user;
-  const t = await getTranslations("Header");
 
   if (process.env.USE_LOGTO_AUTH) {
     user = await getUser();
@@ -118,7 +116,7 @@ export default async () => {
               <span className="govie-visually-hidden">gov.ie</span>
             </a>
             <div className="govie-!-font-size-24">
-              <strong>{t("title")}</strong>
+              <strong>Payments</strong>
             </div>
           </div>
           <div
@@ -131,7 +129,7 @@ export default async () => {
             }}
           >
             <div className="govie-!-font-size-12">
-              {process.env.USE_LOGTO_AUTH ? (
+              {process.env.USE_LOGTO_AUTH && (
                 <>
                   Logto enabled{" "}
                   {user && user.isAuthenticated ? (
@@ -140,8 +138,6 @@ export default async () => {
                     <>Not logged in</>
                   )}
                 </>
-              ) : (
-                <strong className="tttest">PROTOTYPE</strong>
               )}
             </div>
 
