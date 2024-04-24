@@ -4,10 +4,12 @@ WORKDIR /app
 
 COPY ./package*.json /app/
 COPY ./apps/payments-api/package*.json /app/apps/payments-api/
+COPY ./packages/api-auth/package*.json /app/packages/api-auth/
 
 RUN npm ci
 
 COPY ./apps/payments-api/ /app/apps/payments-api/
+COPY ./packages/api-auth/ /app/packages/api-auth/
 
 FROM deps AS builder
 WORKDIR /app

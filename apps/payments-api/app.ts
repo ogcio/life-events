@@ -15,6 +15,7 @@ import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
 import { STATUS_CODES } from "http";
+import apiAuthPlugin from "api-auth";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -33,6 +34,17 @@ export async function build(opts?: FastifyServerOptions) {
     schema: envSchema,
     dotenv: true,
   });
+
+  // Warning, this is still experimental
+  // and may not work as expected depending on your current local configuration
+  if (process.env.USE_LOGTO_AUTH) {
+    app.register(apiAuthPlugin, {
+      jwkEndpoint: process.env.LOGTO_JWK_ENDPOINT as string,
+      oidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT as string,
+      currentApiResourceIndicator: process.env
+        .LOGTO_API_RESOURCE_INDICATOR as string,
+    });
+  }
 
   app.register(fastifySwagger, {
     openapi: {
