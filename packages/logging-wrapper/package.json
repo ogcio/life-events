@@ -2,7 +2,7 @@
   "name": "logging-wrapper",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "TAP_RCFILE=tap.yml tap",
     "build": "tsc -p tsconfig.json",

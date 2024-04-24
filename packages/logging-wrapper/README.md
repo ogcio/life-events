@@ -4,13 +4,16 @@ This logging wrapper goal is to standardize the records written by our services.
 
 ## How to
 
-To use this package two steps are needed:
-- use the `getLoggingConfiguration()` method to get the configuration for the `fastify` server.
+To use this package three steps are needed:
+- add `"logging-wrapper": "*",` to your dependencies
+
+- use the `getLoggingConfiguration()` method to get the configuration for the `fastify` server
 ```
 const server = fastify({
     ...getLoggingConfiguration()
 });
 ```
+
 - after the server is initialized, invoke the `initializeLoggingHooks(server)` to setup the needed `fastify` hooks
 ```
 initializeLoggingHooks(server);
