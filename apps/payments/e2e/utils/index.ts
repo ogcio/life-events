@@ -15,6 +15,7 @@ export const providerPaymentMethodMap: Record<ProviderType, PaymentMethod> = {
   banktransfer: "banktransfer",
   openbanking: "openbanking",
   worldpay: "card",
+  realex: "card",
 };
 
 export const paymentMethodCheckboxLabelMap: Record<
@@ -31,4 +32,5 @@ export const providerTypeAccountLabelMap: Record<ProviderType, string> = {
   banktransfer: "Manual Bank Transfer Account",
   openbanking: "OpenBanking Account",
   worldpay: "Worldpay Account",
+  realex: "Realex Account",
 };
