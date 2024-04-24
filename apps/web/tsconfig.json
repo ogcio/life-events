@@ -17,6 +17,9 @@
         "name": "next"
       }
     ],
+    "paths": {
+      "@data/*": ["./app/data/*"]
+    },
     "strictNullChecks": true
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],

@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import Link from "next/link";
 import submitQuery_ from "./actions/submitQuery";
+import SearchForm from "./SearchForm";
 
 const Icon = ds.Icon;
 
@@ -23,10 +24,6 @@ export default async ({
   const categories = ["driving", "employment", "housing"];
 
   const newSearchParams = new URLSearchParams(searchParams);
-
-  const searchQuery = searchParams.get("searchQuery") || "";
-
-  const submitQuery = submitQuery_.bind(null, path, searchParams);
 
   const checkboxes = categories.map((service: string, index: number) => {
     let services = searchParams.get("services")?.split(",") || [];
@@ -102,29 +99,7 @@ export default async ({
       </li>
       <li>
         <div className="govie-form-group" style={{ marginBottom: "15px" }}>
-          <form action={submitQuery}>
-            <div className="govie-input__wrapper">
-              <input
-                type="text"
-                id="search-query"
-                name="search-query"
-                className="govie-input"
-                placeholder={t("searchEvent")}
-                defaultValue={searchQuery}
-              />
-              {/* allows submit via enter key */}
-              <input type="submit" hidden />
-
-              <button
-                type="submit"
-                className="govie-input__suffix"
-                style={{ cursor: "pointer" }}
-                aria-label={t("search")}
-              >
-                <Icon icon={"search"} color={ds.colours.ogcio.darkGreen} />
-              </button>
-            </div>
-          </form>
+          <SearchForm searchParams={searchParams} />
         </div>
         <div className="govie-form-group" style={{ marginBottom: "15px" }}>
           <fieldset className="govie-fieldset">
