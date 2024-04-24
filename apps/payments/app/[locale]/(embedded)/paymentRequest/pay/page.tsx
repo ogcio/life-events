@@ -11,6 +11,9 @@ import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
 import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
+import Header from "../../../(hosted)/Header";
+import Footer from "../../../(hosted)/Footer";
+import { Fragment } from "react";
 
 type Props = {
   params: {
@@ -105,7 +108,7 @@ export default async function Page(props: Props) {
     props.searchParams?.paymentId,
   );
 
-  return (
+  const content = (
     <div
       style={{
         display: "flex",
@@ -181,5 +184,47 @@ export default async function Page(props: Props) {
         </NextIntlClientProvider>
       </div>
     </div>
+  );
+
+  if (embed)
+    return (
+      <body
+        style={{
+          margin: "unset",
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {content}
+      </body>
+    );
+
+  /**
+   * The body tag must be rendered on the page to avoid wrapping the content in other wrappers
+   * and to make the content fit the windows' height.
+   */
+  return (
+    <body
+      style={{
+        margin: "unset",
+        minHeight: "100vh",
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Header />
+      {/* All designs are made for 1440 px  */}
+      <div
+        className="govie-width-container"
+        style={{ maxWidth: "1440px", width: "100%" }}
+      >
+        <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
+          {content}
+        </div>
+      </div>
+      <Footer />
+    </body>
   );
 }
