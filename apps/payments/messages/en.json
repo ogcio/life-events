@@ -10,6 +10,13 @@
     "title": "Nothing to show...",
     "description": "The current list is empty"
   },
+  "FeedbackBanner": {
+    "tag": "prototype",
+    "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
+  },
+  "Header": {
+    "title": "Payments"
+  },
   "PaymentSetup": {
     "menu": {
       "payments": "Payments",
