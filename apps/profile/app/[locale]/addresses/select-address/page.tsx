@@ -201,7 +201,11 @@ export default async (params: NextPageProps) => {
               addressError ? "govie-form-group--error" : ""
             }`.trim()}
           >
-            <label className="govie-hint" id="input-field-hint">
+            <label
+              className="govie-hint"
+              id="input-field-hint"
+              style={{ display: "block" }}
+            >
               {t("selectHint")}
             </label>
             {addressError && (

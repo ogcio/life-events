@@ -67,7 +67,8 @@
     "edit": "Edit",
     "remove": "Remove",
     "owner": "Owner",
-    "renting": "Rental"
+    "renting": "Rental",
+    "primaryResidence": "Primary residence"
   },
   "Entitlements": {
     "entitlements": "Entitlements",

@@ -75,11 +75,11 @@ export default async (params: NextPageProps) => {
       await form.insertErrors(errors, userId, routes.addresses.addDetails.slug);
       return revalidatePath("/");
     }
-    console.log({ isOwner, isPrimaryAddress });
+
     if (isOwner !== undefined && isPrimaryAddress !== undefined) {
       const result = await new Profile(userId).updateAddress(addressId, {
         ownership_status: isOwner === "true" ? "owner" : "renting",
-        is_primary: Boolean(isPrimaryAddress),
+        is_primary: isPrimaryAddress === "true" ? true : false,
       });
       if (result?.error) {
         //handle error

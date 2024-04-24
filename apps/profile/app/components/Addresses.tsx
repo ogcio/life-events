@@ -83,6 +83,25 @@ export default async () => {
               }}
               key={data.address_id}
             >
+              {data.is_primary && (
+                <div
+                  style={{
+                    backgroundColor: ds.colours.ogcio.blue,
+                    maxWidth: "fit-content",
+                  }}
+                >
+                  <p
+                    className="govie-body-s"
+                    style={{
+                      textTransform: "uppercase",
+                      color: ds.colours.ogcio.white,
+                      padding: "2px 4px",
+                    }}
+                  >
+                    {t("primaryResidence")}
+                  </p>
+                </div>
+              )}
               <AddressLine value={data.address_line1} />
               {data.address_line2 && <AddressLine value={data.address_line2} />}
               <AddressLine value={data.town} />
@@ -108,6 +127,26 @@ export default async () => {
                   </p>
                 </div>
               )}
+              {/* {data.move_in_date && data.move_out_date && (
+                <div>
+                  <p>
+                    <span style={{ marginRight: "20px" }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="17"
+                        fill="none"
+                      >
+                        <path
+                          d="M17.107.5c.493 0 .893.396.893.883v14.234a.883.883 0 0 1-.263.622.906.906 0 0 1-.63.261H.893a.9.9 0 0 1-.632-.259.877.877 0 0 1-.261-.624V1.383A.883.883 0 0 1 .263.76.906.906 0 0 1 .893.5h16.214ZM16.2 2.278H1.8v12.444h14.4V2.278Zm-1.8 8.889v1.777H3.6v-1.777h10.8ZM9 4.056v5.333H3.6V4.056H9Zm5.4 3.555V9.39h-3.6V7.61h3.6ZM7.2 5.833H5.4v1.778h1.8V5.833Zm7.2-1.777v1.777h-3.6V4.056h3.6Z"
+                          fill="#004D44"
+                        />
+                      </svg>
+                    </span>
+                    <span>{t(`${data.ownership_status}`)}</span>
+                  </p>
+                </div>
+              )} */}
               {data.move_in_date && (
                 <div>
                   <p>
