@@ -5,17 +5,21 @@ import {
   formatCurrency,
   mapTransactionStatusColorClassName,
 } from "../../../utils";
-
+import { getUser } from "../../../../libraries/auth";
 import { EmptyStatus } from "../../../components/EmptyStatus";
 import { Payments } from "building-blocks-sdk";
 
 export default async function () {
-  const [t, { userId }] = await Promise.all([
-    getTranslations("PaymentSetup.Payments"),
-    PgSessions.get(),
-  ]);
+  const t = await getTranslations("PaymentSetup.Payments");
+  let transactions;
 
-  const transactions = (await new Payments(userId).getTransactions()).data;
+  if (process.env.USE_LOGTO_AUTH) {
+    const user = await getUser();
+    transactions = (await new Payments(user.id).getTransactions()).data;
+  } else {
+    const { userId } = await PgSessions.get();
+    transactions = (await new Payments(userId).getTransactions()).data;
+  }
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>

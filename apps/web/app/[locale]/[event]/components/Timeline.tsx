@@ -201,7 +201,7 @@ export default () => {
         </div>
       </div>
       <Link
-        href={`/timeline?grid=true`}
+        href={`/timeline?viewMode=grid`}
         className="govie-button"
         style={{ width: "100%", lineHeight: "normal" }}
       >
