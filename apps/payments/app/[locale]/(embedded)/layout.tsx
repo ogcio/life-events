@@ -8,18 +8,6 @@ export default function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  return (
-    <html lang={locale}>
-      <body
-        style={{
-          margin: "unset",
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <div>{children}</div>
-      </body>
-    </html>
-  );
+  // Since queryParams are not passed to the layout, the body element was moved into the page definition.
+  return <html lang={locale}>{children}</html>;
 }
