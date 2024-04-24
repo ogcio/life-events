@@ -19,27 +19,32 @@ const getSecretKey = async (
   return provider.data.liveSecretKey;
 };
 
-const getStripeInstance = async (providerId: string) => {
-  try {
-    const { userId } = await PgSessions.get();
-    const sk = await getSecretKey(providerId, userId);
-    return new s(sk);
-  } catch (error) {
-    // for now, just fallback to our own credentials
-  } finally {
-    const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-    if (!STRIPE_SECRET_KEY) throw new Error("Stripe secret key not found");
-    return new s(STRIPE_SECRET_KEY);
-  }
-};
+const getStripeInstance = async (sk: string) => new s(sk);
 
 export async function createPaymentIntent(paymentRequest: PaymentRequest) {
-  const providerId = getStripeProviderId(paymentRequest);
-  const stripe = await getStripeInstance(providerId);
-  return await stripe.paymentIntents.create({
-    amount: paymentRequest.amount,
-    currency: "EUR",
-  });
+  try {
+    const providerId = getStripeProviderId(paymentRequest);
+    const { userId } = await PgSessions.get();
+    const sk = await getSecretKey(providerId, userId);
+    const stripe = await getStripeInstance(sk);
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: paymentRequest.amount,
+      currency: "EUR",
+    });
+    return { paymentIntent, providerKeysValid: true };
+  } catch (error) {
+    // for now fallback to use our own key
+    const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+    if (!STRIPE_SECRET_KEY) throw new Error("Stripe secret key not found");
+    const stripe = await getStripeInstance(STRIPE_SECRET_KEY);
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: paymentRequest.amount,
+      currency: "EUR",
+    });
+    return { paymentIntent, providerKeysValid: false };
+  }
 }
 
 export function getInternalStatus(status: string) {
