@@ -21,13 +21,12 @@ import createError, { FastifyError } from "@fastify/error";
 const hyperidInstance = hyperid({ fixedLength: true, urlSafe: true });
 
 const buildErrorResponse = (error: FastifyError, request: FastifyRequest) => ({
-  errors: [
-    {
-      code: parseErrorClass(error),
-      detail: error.message,
-      request_id: request.id,
-    },
-  ],
+  code: parseErrorClass(error),
+  detail: error.message,
+  request_id: request.id,
+  name: error.name,
+  validation: error.validation,
+  validationContext: error.validationContext,
 });
 
 // The error handler below is the same as the original one in Fastify,

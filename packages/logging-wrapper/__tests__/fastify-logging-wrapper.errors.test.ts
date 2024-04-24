@@ -1,6 +1,11 @@
 import { LogErrorClasses } from "../src/logging-wrapper-entities";
 import { t } from "tap";
-import { initializeServer, runErrorTest } from "./helpers/fastify-test-helpers";
+import {
+  DEFAULT_CONTENT_TYPE,
+  DEFAULT_METHOD,
+  initializeServer,
+  runErrorTest,
+} from "./helpers/fastify-test-helpers";
 
 t.test("Error data are correctly set", async () => {
   const { server, loggingDestination } = initializeServer();
@@ -76,5 +81,30 @@ t.test("Not found route logs expected values", async () => {
     expectedFastifyCode: "FST_ERR_NOT_FOUND",
   });
 
+  t.end();
+});
+
+t.test("Response has the expected format", async () => {
+  const { server } = initializeServer();
+  t.teardown(() => server.close());
+  const path = "/error";
+  const inputHeaders = { accept: DEFAULT_CONTENT_TYPE };
+  const response = await server.inject({
+    method: DEFAULT_METHOD,
+    url: path,
+    query: { status_code: "422", error_message: "A validation error" },
+    headers: inputHeaders,
+  });
+
+  t.ok(typeof response !== "undefined");
+  t.equal(response.statusCode, 422);
+  const jsonBody = response.json();
+  t.type(jsonBody.request_id, "string");
+  delete jsonBody.request_id;
+  t.same(jsonBody, {
+    code: "VALIDATION_ERROR",
+    detail: "A validation error",
+    name: "FastifyError",
+  });
   t.end();
 });
