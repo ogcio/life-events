@@ -531,9 +531,9 @@ export default async function messages(app: FastifyInstance) {
             );
 
             try {
-              void service.Send(transportationExcerpt, transportationSubject, [
-                "+46703835834",
-              ]);
+              // void service.Send(transportationExcerpt, transportationSubject, [
+              //   PHONENUMBERS HERE....
+              // ]);
             } catch (err) {
               app.log.error(err, "sms");
             }
