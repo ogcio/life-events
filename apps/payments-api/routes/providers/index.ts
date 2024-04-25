@@ -10,7 +10,9 @@ import {
   CreateOpenBankingProvider,
   CreateStripeProvider,
   CreateWorldpayProvider,
+  CreateRealexProvider,
 } from "../schemas";
+import { providerSecretsHandlersFactory } from "../../services/providersSecretsService";
 
 export default async function providers(app: FastifyInstance) {
   app.post<{ Body: CreateBankTransferProvider; Reply: { id: string } }>(
@@ -91,12 +93,15 @@ export default async function providers(app: FastifyInstance) {
       const userId = request.user?.id;
       const { name, type, data } = request.body;
 
+      const providerSecretsHandler = providerSecretsHandlersFactory(type);
+      const cypheredData = providerSecretsHandler.getCypheredData(data);
+
       const result = await app.pg.query(
         `
         INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
         VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
             `,
-        [userId, name, type, "connected", data],
+        [userId, name, type, "connected", cypheredData],
       );
 
       reply.send({ id: result.rows[0].id });
@@ -121,12 +126,48 @@ export default async function providers(app: FastifyInstance) {
       const userId = request.user?.id;
       const { name, type, data } = request.body;
 
+      const providerSecretsHandler = providerSecretsHandlersFactory(type);
+      const cypheredData = providerSecretsHandler.getCypheredData(data);
+
       const result = await app.pg.query(
         `
         INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
         VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
             `,
-        [userId, name, type, "connected", data],
+        [userId, name, type, "connected", cypheredData],
+      );
+
+      reply.send({ id: result.rows[0].id });
+    },
+  );
+
+  app.post<{ Body: CreateRealexProvider; Reply: { id: string } }>(
+    "/realex",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Providers"],
+        body: CreateRealexProvider,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { name, type, data } = request.body;
+
+      const providerSecretsHandler = providerSecretsHandlersFactory(type);
+      const cypheredData = providerSecretsHandler.getCypheredData(data);
+
+      const result = await app.pg.query(
+        `
+        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+            `,
+        [userId, name, type, "connected", cypheredData],
       );
 
       reply.send({ id: result.rows[0].id });
@@ -170,6 +211,13 @@ export default async function providers(app: FastifyInstance) {
         `,
         [userId],
       );
+
+      for (const provider of result.rows) {
+        const providerSecretsHandler = providerSecretsHandlersFactory(
+          provider.type,
+        );
+        provider.data = providerSecretsHandler.getClearTextData(provider.data);
+      }
 
       reply.send(result.rows);
     },
@@ -221,7 +269,13 @@ export default async function providers(app: FastifyInstance) {
         throw app.httpErrors.notFound("The requested provider was not found");
       }
 
-      reply.send(result.rows[0]);
+      const provider = result.rows[0];
+      const providerSecretsHandler = providerSecretsHandlersFactory(
+        provider.type,
+      );
+      provider.data = providerSecretsHandler.getClearTextData(provider.data);
+
+      reply.send(provider);
     },
   );
 
@@ -244,6 +298,32 @@ export default async function providers(app: FastifyInstance) {
       const { providerId } = request.params;
       const { name, data, status } = request.body;
 
+      let provider;
+      try {
+        provider = await app.pg.query(
+          `
+          SELECT
+            provider_id as id,
+            provider_type as type
+          FROM payment_providers
+          WHERE provider_id = $1
+          AND user_id = $2
+          `,
+          [providerId, userId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      if (!provider?.rows.length) {
+        throw app.httpErrors.notFound("The requested provider was not found");
+      }
+
+      const providerSecretsHandler = providerSecretsHandlersFactory(
+        provider.rows[0].type,
+      );
+      const cypheredData = providerSecretsHandler.getCypheredData(data);
+
       await app.pg.query(
         `
           UPDATE payment_providers
@@ -253,7 +333,7 @@ export default async function providers(app: FastifyInstance) {
           WHERE provider_id = $4
           AND user_id = $5
         `,
-        [name, data, status, providerId, userId],
+        [name, cypheredData, status, providerId, userId],
       );
 
       reply.send();

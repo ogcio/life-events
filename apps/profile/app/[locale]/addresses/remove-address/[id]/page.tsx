@@ -21,7 +21,11 @@ async function removeAddress(formData: FormData) {
     throw Error("User id not found");
   }
 
-  new Profile(userId).deleteAddress(addressId);
+  const { error } = await new Profile(userId).deleteAddress(addressId);
+
+  if (error) {
+    //handle error
+  }
 
   redirect("/");
 }

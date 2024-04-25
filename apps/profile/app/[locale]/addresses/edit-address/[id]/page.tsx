@@ -131,7 +131,7 @@ async function editAddress(formData: FormData) {
   }
 
   if (addressFirst && town && county && eirecode) {
-    new Profile(userId).updateAddress(addressId, {
+    const { error } = await new Profile(userId).updateAddress(addressId, {
       address_line1: addressFirst,
       address_line2: addressSecond,
       town: town,
@@ -140,6 +140,10 @@ async function editAddress(formData: FormData) {
       move_in_date: moveInDate,
       move_out_date: moveOutDate,
     });
+
+    if (error) {
+      //handle error
+    }
   }
 
   redirect("/");
@@ -161,9 +165,12 @@ export default async (params: NextPageProps) => {
     throw notFound();
   }
 
-  const { data: address } = await new Profile(userId).getAddress(addressId);
+  const { data: address, error } = await new Profile(userId).getAddress(
+    addressId,
+  );
 
-  if (!address) {
+  if (!address || error) {
+    //handle other errors
     throw notFound();
   }
 

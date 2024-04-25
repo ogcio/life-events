@@ -18,6 +18,7 @@ export default async function addresses(app: FastifyInstance) {
         tags: ["Addresses"],
         response: {
           200: AddressesList,
+          500: HttpError,
         },
       },
     },
@@ -48,6 +49,7 @@ export default async function addresses(app: FastifyInstance) {
           200: Type.Object({
             id: Type.String(),
           }),
+          500: HttpError,
         },
       },
     },
@@ -97,7 +99,8 @@ export default async function addresses(app: FastifyInstance) {
         tags: ["Addresses"],
         response: {
           200: Address,
-          400: HttpError,
+          404: HttpError,
+          500: HttpError,
         },
       },
     },
@@ -116,7 +119,11 @@ export default async function addresses(app: FastifyInstance) {
       }
 
       if (!result?.rows.length) {
-        throw app.httpErrors.notFound("The requested address was not found");
+        const error = app.httpErrors.notFound("Address not found");
+        error.statusCode = 404;
+        error.code = "NOT_FOUND";
+
+        throw error;
       }
 
       reply.send(result.rows[0]);
@@ -131,7 +138,9 @@ export default async function addresses(app: FastifyInstance) {
         tags: ["Addresses"],
         body: UpdateAddress,
         response: {
-          200: Type.Object({}),
+          200: Type.Object({
+            id: Type.String(),
+          }),
           404: HttpError,
           500: HttpError,
         },
@@ -172,10 +181,14 @@ export default async function addresses(app: FastifyInstance) {
         );
 
         if (!result?.rows.length) {
-          throw app.httpErrors.notFound("The address was not found");
+          const error = app.httpErrors.notFound("Address not found");
+          error.statusCode = 404;
+          error.code = "NOT_FOUND";
+
+          throw error;
         }
 
-        reply.send();
+        reply.send({ id: result.rows[0].id });
       } catch (error) {
         throw app.httpErrors.internalServerError((error as Error).message);
       }
@@ -189,7 +202,9 @@ export default async function addresses(app: FastifyInstance) {
       schema: {
         tags: ["Addresses"],
         response: {
-          200: Type.Object({}),
+          200: Type.Object({
+            id: Type.String(),
+          }),
           404: HttpError,
           500: HttpError,
         },
@@ -213,10 +228,14 @@ export default async function addresses(app: FastifyInstance) {
       }
 
       if (!result?.rows.length) {
-        throw app.httpErrors.notFound("The address was not found");
+        const error = app.httpErrors.notFound("Address not found");
+        error.statusCode = 404;
+        error.code = "NOT_FOUND";
+
+        throw error;
       }
 
-      reply.send();
+      reply.send({ id: result.rows[0].id });
     },
   );
 }

@@ -29,6 +29,7 @@ async function getState(userId: string) {
   return await pgpool
     .query<{ state: State }>(
       `
+
   select state from message_template_states
   where user_id = $1
 `,

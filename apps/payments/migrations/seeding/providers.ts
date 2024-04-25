@@ -1,3 +1,5 @@
+import { Payments } from "building-blocks-sdk";
+
 export const seedProviders = (pool, userId) => {
   console.log("Seeding providers");
 
@@ -31,36 +33,24 @@ export const seedProviders = (pool, userId) => {
     ],
   );
 
-  const stripe = pool.query(
-    `INSERT INTO payment_providers(user_id, provider_name, provider_type, status, provider_data) 
-     VALUES($1, $2, $3, $4, $5) returning provider_id`,
-    [
-      userId,
-      "Stripe provider",
-      "stripe",
-      "connected",
-      JSON.stringify({
-        livePublishableKey: "foo",
-        liveSecretKey: "bar",
-      }),
-    ],
-  );
+  const stripe = new Payments(userId).createStripeProvider({
+    name: "Stripe provider",
+    type: "stripe",
+    data: {
+      liveSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
+      livePublishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "",
+    },
+  });
 
-  const worldpay = pool.query(
-    `INSERT INTO payment_providers(user_id, provider_name, provider_type, status, provider_data) 
-     VALUES($1, $2, $3, $4, $5)`,
-    [
-      userId,
-      "Worldpay provider",
-      "worldpay",
-      "connected",
-      JSON.stringify({
-        merchantCode: "foo",
-        installationId: "foo",
-      }),
-    ],
-  );
+  const realex = new Payments(userId).createRealexProvider({
+    name: "Realex provider",
+    type: "realex",
+    data: {
+      merchantId: process.env.REALEX_MERCHANT_ID ?? "",
+      sharedSecret: process.env.REALEX_SHARED_SECRET ?? "",
+    },
+  });
 
-  // TODO: add worldpay
-  return Promise.all([manualBankTransfer, openBanking, stripe]);
+  // TODO: add worldpay with merchantCode and installationId
+  return Promise.all([manualBankTransfer, openBanking, stripe, realex]);
 };

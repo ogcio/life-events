@@ -122,6 +122,33 @@ export interface paths {
       };
     };
   };
+  "/api/v1/providers/realex": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            /** @enum {string} */
+            type: "realex";
+            data: {
+              merchantId: string;
+              sharedSecret: string;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/providers/": {
     get: {
       responses: {
@@ -184,7 +211,12 @@ export interface paths {
         content: {
           "application/json": {
             name: string;
-            data: Record<string, never>;
+            data:
+              | components["schemas"]["openBankingData"]
+              | components["schemas"]["bankTransferData"]
+              | components["schemas"]["stripeData"]
+              | components["schemas"]["worldpayData"]
+              | components["schemas"]["realexData"];
             status: "connected" | "disconnected";
           };
         };
@@ -458,6 +490,7 @@ export interface paths {
               updatedAt: string;
               title: string;
               extPaymentId: string;
+              userId: string;
               userData: {
                 name: string;
                 email: string;
@@ -518,6 +551,7 @@ export interface paths {
               updatedAt: string;
               title: string;
               extPaymentId: string;
+              userId: string;
               userData: {
                 name: string;
                 email: string;
@@ -613,7 +647,28 @@ export interface paths {
 export type webhooks = Record<string, never>;
 
 export interface components {
-  schemas: {};
+  schemas: {
+    openBankingData: {
+      iban: string;
+      accountHolderName: string;
+    };
+    bankTransferData: {
+      iban: string;
+      accountHolderName: string;
+    };
+    stripeData: {
+      livePublishableKey: string;
+      liveSecretKey: string;
+    };
+    worldpayData: {
+      merchantCode: string;
+      installationId: string;
+    };
+    realexData: {
+      merchantId: string;
+      sharedSecret: string;
+    };
+  };
   responses: never;
   parameters: never;
   requestBodies: never;
