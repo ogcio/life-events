@@ -34,6 +34,8 @@ async function editAddress(formData: FormData) {
   const moveOutDay = formData.get("moveOutDay")?.toString();
   const moveOutMonth = formData.get("moveOutMonth")?.toString();
   const moveOutYear = formData.get("moveOutYear")?.toString();
+  const isOwner = formData.get("isOwner")?.toString();
+  const isPrimaryAddress = formData.get("isPrimaryAddress")?.toString();
 
   if (!addressFirst) {
     errors.push({
@@ -105,6 +107,22 @@ async function editAddress(formData: FormData) {
     );
   }
 
+  if (isOwner === undefined) {
+    errors.push({
+      messageKey: form.errorTranslationKeys.emptySelection,
+      errorValue: "",
+      field: form.fieldTranslationKeys.isOwner,
+    });
+  }
+
+  if (isPrimaryAddress === undefined) {
+    errors.push({
+      messageKey: form.errorTranslationKeys.emptySelection,
+      errorValue: "",
+      field: form.fieldTranslationKeys.isPrimaryAddress,
+    });
+  }
+
   if (errors.length) {
     await form.insertErrors(errors, userId, routes.addresses.editAddress.slug);
     return revalidatePath("/");
@@ -130,7 +148,14 @@ async function editAddress(formData: FormData) {
       .toISOString();
   }
 
-  if (addressFirst && town && county && eirecode) {
+  if (
+    addressFirst &&
+    town &&
+    county &&
+    eirecode &&
+    isOwner &&
+    isPrimaryAddress
+  ) {
     const result = await new Profile(userId).updateAddress(addressId, {
       address_line1: addressFirst,
       address_line2: addressSecond,
@@ -139,6 +164,8 @@ async function editAddress(formData: FormData) {
       eirecode: eirecode,
       move_in_date: moveInDate,
       move_out_date: moveOutDate,
+      ownership_status: isOwner === "true" ? "owner" : "renting",
+      is_primary: isPrimaryAddress === "true" ? true : false,
     });
 
     if (result?.error) {
@@ -240,6 +267,14 @@ export default async (params: NextPageProps) => {
   const moveOutYear = address.move_out_date
     ? dayjs(address.move_out_date).year()
     : "";
+
+  const isOwnerError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.isOwner,
+  );
+
+  const isPrimaryAddressError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.isPrimaryAddress,
+  );
 
   return (
     <div className="govie-grid-row">
@@ -549,6 +584,117 @@ export default async (params: NextPageProps) => {
                           : moveOutYear
                       }
                     />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className={`govie-form-group ${
+                isOwnerError ? "govie-form-group--error" : ""
+              }`.trim()}
+            >
+              <h2 className="govie-heading-m">{t("ownerOrRenting")}</h2>
+              {isOwnerError && (
+                <p className="govie-error-message">
+                  <span className="govie-visually-hidden">{t("error")}:</span>
+                  {errorT(isOwnerError.messageKey)}
+                </p>
+              )}
+              <div
+                data-module="govie-radios"
+                className="govie-radios govie-radios--large govie-radios--inline"
+              >
+                <div
+                  className="govie-radios__item"
+                  style={{ marginBottom: "30px", paddingLeft: 0 }}
+                >
+                  <div className="govie-radios__item">
+                    <input
+                      id="isOwner-yes"
+                      name="isOwner"
+                      type="radio"
+                      value="true"
+                      className="govie-radios__input"
+                      defaultChecked={address.ownership_status === "owner"}
+                    />
+                    <label
+                      className="govie-label--s govie-radios__label"
+                      htmlFor="isOwner-yes"
+                    >
+                      {t("owner")}
+                    </label>
+                  </div>
+                  <div className="govie-radios__item">
+                    <input
+                      id="isOwner-no"
+                      name="isOwner"
+                      type="radio"
+                      value="false"
+                      className="govie-radios__input"
+                      defaultChecked={address.ownership_status === "renting"}
+                    />
+                    <label
+                      className="govie-label--s govie-radios__label"
+                      htmlFor="isOwner-no"
+                    >
+                      {t("renting")}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              className={`govie-form-group ${
+                isPrimaryAddressError ? "govie-form-group--error" : ""
+              }`.trim()}
+            >
+              <h2 className="govie-heading-m">{t("isPrimaryResidence")}</h2>
+              {isPrimaryAddressError && (
+                <p className="govie-error-message">
+                  <span className="govie-visually-hidden">Error:</span>
+                  {errorT(isPrimaryAddressError.messageKey)}
+                </p>
+              )}
+              <div
+                data-module="govie-radios"
+                className="govie-radios govie-radios--large govie-radios--inline"
+              >
+                <div
+                  className="govie-radios__item"
+                  style={{ marginBottom: "30px", paddingLeft: 0 }}
+                >
+                  <div className="govie-radios__item">
+                    <input
+                      id="isPrimaryAddress-yes"
+                      name="isPrimaryAddress"
+                      type="radio"
+                      value="true"
+                      className="govie-radios__input"
+                      defaultChecked={address.is_primary}
+                    />
+                    <label
+                      className="govie-label--s govie-radios__label"
+                      htmlFor="isPrimaryAddress-yes"
+                    >
+                      {t("yes")}
+                    </label>
+                  </div>
+                  <div className="govie-radios__item">
+                    <input
+                      id="isPrimaryAddress-no"
+                      name="isPrimaryAddress"
+                      type="radio"
+                      value="false"
+                      className="govie-radios__input"
+                      defaultChecked={!address.is_primary}
+                    />
+                    <label
+                      className="govie-label--s govie-radios__label"
+                      htmlFor="isPrimaryAddress-no"
+                    >
+                      {t("no")}
+                    </label>
                   </div>
                 </div>
               </div>

@@ -68,7 +68,11 @@
     "remove": "Remove",
     "owner": "Owner",
     "renting": "Rental",
-    "primaryResidence": "Primary residence"
+    "primaryResidence": "Primary residence",
+    "years": "years",
+    "year": "year",
+    "months": "months",
+    "month": "month"
   },
   "Entitlements": {
     "entitlements": "Entitlements",

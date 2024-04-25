@@ -5,12 +5,7 @@ import ds from "design-system";
 import { Profile } from "building-blocks-sdk";
 import { Address } from "../../types/addresses";
 import Link from "next/link";
-
-const AddressLine = ({ value }: { value: string }) => (
-  <p className="govie-body" style={{ marginBottom: "5px" }}>
-    {value}
-  </p>
-);
+import dayjs from "dayjs";
 
 export default async () => {
   const t = await getTranslations("Addresses");
@@ -40,6 +35,39 @@ export default async () => {
     } else {
       return -1; // a should come before b
     }
+  };
+
+  const calculateTenancyDuration = async (
+    move_in_date: Address["move_in_date"],
+    move_out_date: Address["move_out_date"],
+  ) => {
+    if (!move_in_date || !move_out_date) {
+      return;
+    }
+
+    const start = dayjs(move_in_date);
+    const end = dayjs(move_out_date);
+
+    const monthsDiff = end.diff(start, "month");
+
+    const years = Math.floor(monthsDiff / 12);
+    const months = monthsDiff % 12;
+
+    const translatedYears = years > 1 ? t("years") : t("year");
+    const translatedMonths = months > 1 ? t("months") : t("month");
+
+    let result = "";
+    if (years > 0) {
+      result += `${years} ${translatedYears}`;
+    }
+    if (months > 0) {
+      if (years > 0) {
+        result += ", ";
+      }
+      result += `${months} ${translatedMonths}`;
+    }
+
+    return result;
   };
 
   const sortedAddresses = addresses.sort(sortByDates);
@@ -102,14 +130,16 @@ export default async () => {
                   </p>
                 </div>
               )}
-              <AddressLine value={data.address_line1} />
-              {data.address_line2 && <AddressLine value={data.address_line2} />}
-              <AddressLine value={data.town} />
-              <AddressLine value={data.county} />
-              <AddressLine value={data.eirecode} />
-              {data.ownership_status && (
-                <div>
-                  <p>
+              <ul className="govie-list">
+                <li>{data.address_line1}</li>
+                {data.address_line2 && <li>{data.address_line2}</li>}
+                <li> {data.town} </li>
+                <li>{data.county} </li>
+                <li>{data.eirecode} </li>
+              </ul>
+              <ul className="govie-list">
+                {data.ownership_status && (
+                  <li>
                     <span style={{ marginRight: "20px" }}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -124,12 +154,10 @@ export default async () => {
                       </svg>
                     </span>
                     <span>{t(`${data.ownership_status}`)}</span>
-                  </p>
-                </div>
-              )}
-              {/* {data.move_in_date && data.move_out_date && (
-                <div>
-                  <p>
+                  </li>
+                )}
+                {data.move_in_date && data.move_out_date && (
+                  <li>
                     <span style={{ marginRight: "20px" }}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -143,13 +171,19 @@ export default async () => {
                         />
                       </svg>
                     </span>
-                    <span>{t(`${data.ownership_status}`)}</span>
-                  </p>
-                </div>
-              )} */}
-              {data.move_in_date && (
-                <div>
-                  <p>
+                    <span>
+                      {calculateTenancyDuration(
+                        data.move_in_date,
+                        data.move_out_date,
+                      )}
+                    </span>
+                  </li>
+                )}
+              </ul>
+
+              <ul className="govie-list">
+                {data.move_in_date && (
+                  <li>
                     <span style={{ marginRight: "20px" }}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -168,12 +202,10 @@ export default async () => {
                       </svg>
                     </span>
                     <span>{formatDate(data.move_in_date)}</span>
-                  </p>
-                </div>
-              )}
-              {data.move_out_date && (
-                <div>
-                  <p>
+                  </li>
+                )}
+                {data.move_out_date && (
+                  <li>
                     <span style={{ marginRight: "20px" }}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -192,9 +224,9 @@ export default async () => {
                       </svg>
                     </span>
                     <span>{formatDate(data.move_out_date)}</span>
-                  </p>
-                </div>
-              )}
+                  </li>
+                )}
+              </ul>
               <div style={{ display: "flex", margin: "30px 0" }}>
                 <Link
                   href={routes.addresses.editAddress.path(data.address_id)}
