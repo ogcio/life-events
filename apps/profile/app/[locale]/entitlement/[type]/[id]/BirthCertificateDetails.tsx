@@ -1,7 +1,7 @@
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { formatDate } from "../../../../utils";
-import { Link } from "../../../../utils/navigation";
+import Link from "next/link";
 
 async function getBirthCertificateeDetails(_id: string) {
   const { firstName, lastName } = await PgSessions.get();
