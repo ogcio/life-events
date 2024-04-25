@@ -8,7 +8,13 @@ import MonthsCards from "./MonthsCards";
 
 const grey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 30);
 
-export default ({ timeLineData }: { timeLineData?: TimeLineData }) => {
+export default ({
+  timeLineData,
+  locale,
+}: {
+  timeLineData?: TimeLineData;
+  locale: string;
+}) => {
   const data = timeLineData?.data || [];
   const [visibleYears, setVisibleYears] = useState<TimeLineData["data"]>([]);
 
@@ -103,7 +109,7 @@ export default ({ timeLineData }: { timeLineData?: TimeLineData }) => {
                   {year === dayjs().year() ? <strong>{year}</strong> : year}
                 </p>
               </div>
-              <MonthsCards months={months} view={"grid"} />
+              <MonthsCards months={months} view={"grid"} locale={locale} />
             </div>
           );
         })}

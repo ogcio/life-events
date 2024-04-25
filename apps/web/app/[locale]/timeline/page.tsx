@@ -21,7 +21,11 @@ export default async (props: web.NextPageProps) => {
       }}
     >
       <NextIntlClientProvider messages={timelineMessages}>
-        <Timeline userName={userName} searchParams={props.searchParams} />
+        <Timeline
+          userName={userName}
+          searchParams={props.searchParams}
+          locale={props.params.locale}
+        />
       </NextIntlClientProvider>
     </div>
   );

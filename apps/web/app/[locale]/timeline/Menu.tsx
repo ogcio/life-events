@@ -10,11 +10,13 @@ export default ({
   handleCategoryChange,
   handleSearchChange,
   searchEvent,
+  locale,
 }: {
   userName: string;
   handleCategoryChange: (value: string) => void;
   handleSearchChange: (value: string) => void;
   searchEvent: () => void;
+  locale: string;
 }) => {
   const t = useTranslations();
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
@@ -52,7 +54,7 @@ export default ({
       }}
     >
       <Link
-        href="/events"
+        href={`/${locale}/events`}
         className="govie-back-link"
         style={{ marginTop: "0" }}
       >

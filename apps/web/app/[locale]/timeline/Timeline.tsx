@@ -38,9 +38,11 @@ export type GroupedEvents = {
 export default ({
   userName,
   searchParams,
+  locale,
 }: {
   userName: string;
   searchParams: NextPageProps["searchParams"];
+  locale: string;
 }) => {
   const t = useTranslations();
   const [services, setServices] = useState<string[]>([]);
@@ -106,6 +108,7 @@ export default ({
           handleSearchChange={handleSearchChange}
           handleCategoryChange={handleServiceChange}
           searchEvent={searchEvent}
+          locale={locale}
         />
       </div>
       <div style={{ width: "100%" }}>
@@ -122,9 +125,9 @@ export default ({
           </p>
         </div>
         {showGrid ? (
-          <TimeLineGrid timeLineData={timeLineData} />
+          <TimeLineGrid timeLineData={timeLineData} locale={locale} />
         ) : (
-          <TimeLineList timeLineData={timeLineData} />
+          <TimeLineList timeLineData={timeLineData} locale={locale} />
         )}
       </div>
     </>

@@ -32,7 +32,7 @@ export default async (props: web.NextPageProps) => {
         <Link
           href={
             searchParams?.view
-              ? `/timeline?${searchParams?.view || "grid"}=true`
+              ? `/${locale}/timeline?${searchParams?.view || "grid"}=true`
               : `/${locale}/events`
           }
           className="govie-back-link"

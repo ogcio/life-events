@@ -3,7 +3,13 @@ import { TimeLineData } from "./Timeline";
 import { useEffect, useState } from "react";
 import MonthsCards from "./MonthsCards";
 
-export default ({ timeLineData }: { timeLineData?: TimeLineData }) => {
+export default ({
+  timeLineData,
+  locale,
+}: {
+  timeLineData?: TimeLineData;
+  locale: string;
+}) => {
   const [reversedTimeLine, setReversedTimeline] = useState<
     TimeLineData["data"]
   >([]);
@@ -28,7 +34,7 @@ export default ({ timeLineData }: { timeLineData?: TimeLineData }) => {
                 <p style={{ marginTop: 0 }}>{year}</p>
               </div>
               <div style={{ flex: "1" }}>
-                <MonthsCards months={months} view={"list"} />
+                <MonthsCards months={months} view={"list"} locale={locale} />
               </div>
             </div>
           );

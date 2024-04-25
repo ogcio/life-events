@@ -9,9 +9,10 @@ import HamburgerButton from "./HamburgerButton";
 
 type THeaderProps = {
   showSidebarToggle: boolean;
+  locale: string;
 };
 
-export default ({ showSidebarToggle }: THeaderProps) => {
+export default ({ showSidebarToggle, locale }: THeaderProps) => {
   const t = useTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
@@ -137,6 +138,7 @@ export default ({ showSidebarToggle }: THeaderProps) => {
                   pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/en/" + path, process.env.HOST_URL).href}
+                prefetch={false}
               >
                 English
               </Link>
@@ -153,11 +155,12 @@ export default ({ showSidebarToggle }: THeaderProps) => {
                   pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/ga/" + path, process.env.HOST_URL).href}
+                prefetch={false}
               >
                 Gealic
               </Link>
             </div>
-            <NotificationsLink />
+            <NotificationsLink locale={locale} />
             <UserIcon />
 
             <Link href="/logout" prefetch={false} style={{ display: "flex" }}>

@@ -11,7 +11,7 @@ const Icon = ds.Icon;
 const darkGrey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 80);
 const midGrey = ds.colours.ogcio.midGrey;
 
-export default () => {
+export default ({ locale }: { locale: string }) => {
   const t = useTranslations();
   const [service, setService] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -184,9 +184,7 @@ export default () => {
                             </div>
                           ))}
                           <Link
-                            href={{
-                              pathname: "/timeline/details",
-                            }}
+                            href={`/${locale}/timeline/details`}
                             className="govie-link govie-body-s"
                           >
                             <span>{t("details")}</span>
@@ -201,7 +199,7 @@ export default () => {
         </div>
       </div>
       <Link
-        href={`/timeline?grid=true`}
+        href={`/${locale}/timeline?grid=true`}
         className="govie-button"
         style={{ width: "100%", lineHeight: "normal" }}
       >

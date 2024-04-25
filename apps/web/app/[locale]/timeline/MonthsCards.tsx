@@ -11,7 +11,15 @@ const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 const opaque = ds.hexToRgba(ds.colours.ogcio.gold, 5);
 const darkGrey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 80);
 
-export default ({ months, view }: { months: Month[]; view: string }) => {
+export default ({
+  months,
+  view,
+  locale,
+}: {
+  months: Month[];
+  view: string;
+  locale: string;
+}) => {
   const t = useTranslations();
   return months.map((monthObject) => {
     const { events } = monthObject;
@@ -68,10 +76,10 @@ export default ({ months, view }: { months: Month[]; view: string }) => {
               <div style={{ textAlign: "right" }}>
                 <Link
                   href={{
-                    pathname: "/timeline/details",
+                    pathname: `/${locale}/timeline/details`,
                     query: { view },
                   }}
-                  className="govie-link"
+                  className="govie-body-s govie-link"
                 >
                   <span>{t("details")}</span>
                 </Link>
