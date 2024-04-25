@@ -1,11 +1,11 @@
-"use client";
-import { useEffect, useState } from "react";
 import Menu from "./Menu";
 import Link from "next/link";
 import TimeLineGrid from "./TimeLineGrid";
 import { NextPageProps } from "../../utils/web";
 import TimeLineList from "./TimeLineList";
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { headers } from "next/headers";
 
 type Event = {
   service: string;
@@ -35,98 +35,77 @@ export type GroupedEvents = {
   [service: string]: Event[];
 };
 
-export default ({
+export default async ({
   userName,
   searchParams,
+  timeLineData,
 }: {
   userName: string;
-  searchParams: NextPageProps["searchParams"];
+  searchParams: URLSearchParams;
+  timeLineData: TimeLineData;
 }) => {
-  const t = useTranslations();
-  const [services, setServices] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [timeLineData, setTimeLineData] = useState<TimeLineData>();
+  const t = await getTranslations("Timeline");
+  const path = headers().get("x-pathname")?.toString() || "";
 
-  const fetchTimelineData = async () => {
-    const queryParams = new URLSearchParams({
-      startDate: "2018-01-01",
-      endDate: "2025-12-31",
-      services: services.join(","),
-      searchQuery,
-    });
-
-    const timelineResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/timeline/?${queryParams}`,
-    );
-
-    const responseData = await timelineResponse.json();
-
-    setTimeLineData(responseData);
-  };
-
-  useEffect(() => {
-    fetchTimelineData();
-  }, []);
-
-  useEffect(() => {
-    if (services.length || !searchQuery.length) {
-      fetchTimelineData();
-    }
-  }, [services.length, searchQuery]);
-
-  const handleServiceChange = (selectedService: string) => {
-    setServices((prevServices) => {
-      if (prevServices.includes(selectedService)) {
-        return prevServices.filter((item) => item !== selectedService);
-      } else {
-        return [...prevServices, selectedService];
-      }
-    });
-  };
-
-  const handleSearchChange = (value) => {
-    if (value.length) {
-      setSearchQuery(value);
-    } else {
-      setSearchQuery("");
-    }
-  };
-
-  const searchEvent = () => {
-    fetchTimelineData();
-  };
-
-  const showGrid = Boolean(searchParams?.grid) || false;
+  const showGrid = searchParams.get("viewMode") === "grid";
 
   return (
     <>
       <div>
-        <Menu
-          userName={userName}
-          handleSearchChange={handleSearchChange}
-          handleCategoryChange={handleServiceChange}
-          searchEvent={searchEvent}
-        />
+        <Menu userName={userName} searchParams={searchParams} />
       </div>
       <div style={{ width: "100%" }}>
         <div style={{ textAlign: "right" }}>
           <p className="govie-body-s">
             {t("view")}:{" "}
-            <Link href="?list=true" className="govie-link">
-              {t("list")}
-            </Link>{" "}
+            <ViewButton
+              label={t("list")}
+              searchParams={searchParams}
+              mode={"list"}
+              path={path}
+            />{" "}
             |{" "}
-            <Link href="?grid=true" className="govie-link">
-              {t("grid")}
-            </Link>
+            <ViewButton
+              label={t("grid")}
+              searchParams={searchParams}
+              mode={"grid"}
+              path={path}
+            />
           </p>
         </div>
+
         {showGrid ? (
-          <TimeLineGrid timeLineData={timeLineData} />
+          <TimeLineGrid
+            timeLineData={timeLineData}
+            searchParams={searchParams}
+          />
         ) : (
-          <TimeLineList timeLineData={timeLineData} />
+          <TimeLineList
+            timeLineData={timeLineData}
+            searchParams={searchParams}
+          />
         )}
       </div>
     </>
+  );
+};
+
+const ViewButton = ({
+  searchParams,
+  label,
+  mode,
+  path,
+}: {
+  searchParams: URLSearchParams;
+  label: string;
+  mode: "grid" | "list";
+  path: string;
+}) => {
+  const newSearchParams = new URLSearchParams(searchParams);
+  newSearchParams.set("viewMode", mode);
+  return (
+    <Link href={`${path}?${newSearchParams.toString()}`} className="govie-link">
+      {label}
+    </Link>
   );
 };

@@ -5,6 +5,7 @@ import EditBankTransferForm from "./EditBankTransferForm";
 import EditStripeForm from "./EditStripeForm";
 import EditWorldpayForm from "./EditWorldpayForm";
 import buildApiClient from "../../../../../../client/index";
+import EditRealexForm from "./EditRealexForm";
 
 type Props = {
   params: {
@@ -44,6 +45,10 @@ export default async ({ params: { providerId, locale } }: Props) => {
 
   if (provider.type === "worldpay") {
     return <EditWorldpayForm provider={provider} />;
+  }
+
+  if (provider.type === "realex") {
+    return <EditRealexForm provider={provider} />;
   }
 
   redirect("/paymentsetup/providers");

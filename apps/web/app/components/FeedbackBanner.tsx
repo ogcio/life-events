@@ -13,7 +13,7 @@ export default () => {
             mail: (chunks) => (
               <a
                 className="govie-link"
-                href="mailto:tiago.ramos@nearform.com?Feedback"
+                href="mailto:tiago.ramos@nearform.com?subject=Feedback"
               >
                 {chunks}
               </a>
