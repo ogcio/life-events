@@ -19,6 +19,7 @@ interface GetMessage {
 
 interface CreateMessage {
   Body: {
+    messageType: string;
     message?: {
       threadName?: string;
       messageName: string;
@@ -27,6 +28,7 @@ interface CreateMessage {
       richText: string;
       plainText: string;
       links: string[];
+      lang: string;
       paymentRequestId?: string;
     };
     template?: {
@@ -72,7 +74,7 @@ export default async function messages(app: FastifyInstance) {
         },
       },
     },
-    async function (request, reply) {
+    async function getMessagesHandler(request, reply) {
       // Validation?
       const userId = request.user?.id;
 
@@ -158,7 +160,7 @@ export default async function messages(app: FastifyInstance) {
         },
       },
     },
-    async function handler(request, reply) {
+    async function getMessageHandler(request, reply) {
       const userId = request.user?.id;
 
       const data = await app.pg
@@ -213,6 +215,7 @@ export default async function messages(app: FastifyInstance) {
               richText: Type.String(),
               plainText: Type.String(),
               links: Type.Array(Type.String()),
+              lang: Type.String(),
               paymentRequestId: Type.Optional(Type.String({ format: "uuid" })),
             }),
           ),
@@ -225,6 +228,7 @@ export default async function messages(app: FastifyInstance) {
           preferredTransports: Type.Array(Type.String()),
           userIds: Type.Array(Type.String({ format: "uuid" })),
           security: Type.String(),
+          messageType: Type.String(),
         }),
         response: {
           "4xx": { $ref: "HttpError" },
@@ -232,9 +236,15 @@ export default async function messages(app: FastifyInstance) {
         },
       },
     },
-    async function handler(request, reply) {
-      const { message, template, preferredTransports, security, userIds } =
-        request.body;
+    async function createMessageHandler(request, reply) {
+      const {
+        message,
+        template,
+        preferredTransports,
+        security,
+        userIds,
+        messageType,
+      } = request.body;
       if (!message && !template) {
         const error = utils.buildApiError(
           "body must contain either a message or a template object",
@@ -258,6 +268,7 @@ export default async function messages(app: FastifyInstance) {
           plainText,
           richText,
           subject,
+          lang,
         } = message;
         transportationSubject = message.subject;
         transportationBody = message.richText ?? message.plainText;
@@ -280,6 +291,8 @@ export default async function messages(app: FastifyInstance) {
           messageName,
           threadName || null,
           paymentRequestId || null,
+          messageType,
+          lang,
         );
         const originalValueSize = values.length;
 
@@ -305,6 +318,8 @@ export default async function messages(app: FastifyInstance) {
                 message_name,
                 thread_name,
                 payment_request_id,
+                message_type,
+                lang,
                 user_id
             )
             values ${args.join(", ")}
@@ -387,7 +402,7 @@ export default async function messages(app: FastifyInstance) {
           );
 
           transportationSubject = subject;
-          transportationBody = richText ?? plainText;
+          transportationBody = richText || plainText;
           transportationExcerpt = excerpt;
 
           // Values for each language insert
@@ -404,6 +419,7 @@ export default async function messages(app: FastifyInstance) {
             preferredTransports
               ? utils.postgresArrayify(preferredTransports)
               : null,
+            messageType,
           ];
 
           const valuesSize = values.length;
@@ -444,6 +460,7 @@ export default async function messages(app: FastifyInstance) {
                 message_name,
                 thread_name,
                 preferred_transports,
+                message_type,
                 user_id
               )
               values ${valuesByLang[lang].args.map((arr) => `(${arr.join(", ")})`).join(", ")}
@@ -472,11 +489,9 @@ export default async function messages(app: FastifyInstance) {
         }
       }
 
-      console.log("Kommer vi hit ner? ", preferredTransports);
       for (const transport of preferredTransports) {
         if (transport === "email") {
           if (!transportationSubject) {
-            //|| !mailBody) {
             console.error("no subject");
             continue;
           }
@@ -484,9 +499,8 @@ export default async function messages(app: FastifyInstance) {
           const providerId =
             await mailService(app).getFirstOrEtherealMailProvider();
 
-          app.log.debug(providerId, JSON.stringify(providerId));
           try {
-            await mailService(app).sendMails(
+            void mailService(app).sendMails(
               providerId,
               ["ludwig.thurfjell@nearform.com"], // There's no api to get users atm?
               transportationSubject,
@@ -504,9 +518,9 @@ export default async function messages(app: FastifyInstance) {
           const config = await app.pg.pool
             .query<{ config: unknown }>(
               `
-        select config from sms_providers
-        limit 1
-      `,
+              select config from sms_providers
+              limit 1
+            `,
             )
             .then((res) => res.rows.at(0)?.config);
 
@@ -517,7 +531,7 @@ export default async function messages(app: FastifyInstance) {
             );
 
             try {
-              await service.Send(transportationExcerpt, transportationSubject, [
+              void service.Send(transportationExcerpt, transportationSubject, [
                 "+46703835834",
               ]);
             } catch (err) {

@@ -96,6 +96,7 @@ export default async () => {
   const { userId } = await PgSessions.get();
   const sdk = new Messaging(userId);
   const { data: smsProviders } = await sdk.getSmsProviders();
+
   if (!smsProviders) {
     return notFound();
   }
@@ -104,9 +105,6 @@ export default async () => {
       <h1>
         <span className="govie-heading-l">{t("title")}</span>
       </h1>
-      <h3>
-        <span className="govie-heading-m">{t("providersSubtitle")}</span>
-      </h3>
 
       <Link className="govie-link" href="sms/provider">
         {t("addProviderLink")}

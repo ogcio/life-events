@@ -50,17 +50,17 @@ export default async function sms(app: FastifyInstance) {
         },
       },
     },
-    async function getSmsProviderHandler(request, reply) {
+    async function getProviders(request, reply) {
       try {
         const providers = await app.pg.pool
           .query<{ id: string; name: string; type: string }>(
             `
         select id, provider_name as "name", (config ->> 'type') as "type" from
         sms_providers
-        where organisation_id = $1
+        -- where organisation_id = $1
         order by provider_name
         `,
-            [organisationId],
+            // [organisationId],
           )
           .then((res) => res.rows);
         return { data: providers };
@@ -93,7 +93,7 @@ export default async function sms(app: FastifyInstance) {
         },
       },
     },
-    async function getOneHandler(request, reply) {
+    async function getProvder(request, reply) {
       const providerId = request.params.providerId;
       try {
         const provider = await app.pg.pool
@@ -104,9 +104,11 @@ export default async function sms(app: FastifyInstance) {
             provider_name as "name", 
             config
         from sms_providers
-        where id = $1 and organisation_id = $2
+        where id = $1 
+        -- and organisation_id = $2
       `,
-            [providerId, organisationId],
+            // [providerId, organisationId],
+            [providerId],
           )
           .then((res) => res.rows.at(0));
 

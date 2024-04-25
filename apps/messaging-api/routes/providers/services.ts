@@ -110,6 +110,7 @@ export function mailService(app: FastifyInstance) {
       try {
         const provider = await this.getProvider(providerId);
 
+        console.log("PROVIDER", JSON.stringify(provider, null, 4));
         if (!provider) {
           return;
         }
@@ -126,7 +127,7 @@ export function mailService(app: FastifyInstance) {
           },
         });
 
-        return await Promise.allSettled(
+        return Promise.allSettled(
           recipients.map((email) =>
             transporter.sendMail({
               from: fromAddress, // "noreply@dev.blocks.gov.ie", //username,

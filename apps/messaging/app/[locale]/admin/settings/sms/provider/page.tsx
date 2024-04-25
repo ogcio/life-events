@@ -5,6 +5,7 @@ import { pgpool } from "messages/dbConnection";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { FormElement } from "../../emails/provider/page";
+import Link from "next/link";
 
 type AwsProviderConfig = {
   accessKey: string;
@@ -138,10 +139,27 @@ export default async (props: { searchParams?: { id: string } }) => {
         </span>
       </h1>
       <form action={submitProviderType}>
-        <select name="providerType">
-          <option>AWS</option>
-        </select>
-        <button>Select</button>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "fit-content",
+          }}
+        >
+          <label className="govie-label--s" htmlFor="providerType">
+            {t("selectProviderLabel")}
+          </label>
+          <select
+            className="govie-select"
+            name="providerType"
+            id="providerType"
+          >
+            <option>AWS</option>
+          </select>
+          <button className="govie-button">
+            {t("submitProviderTypeSelect")}
+          </button>
+        </div>
       </form>
       <form action={submitAction}>
         <input name="id" value={props.searchParams?.id} type="hidden" />
@@ -192,6 +210,9 @@ export default async (props: { searchParams?: { id: string } }) => {
           {props.searchParams?.id ? t("submitUpdate") : t("submitCreate")}
         </button>
       </form>
+      <Link href="/admin/settings/sms" className="govie-back-link">
+        {t("backLink")}
+      </Link>
     </>
   );
 };

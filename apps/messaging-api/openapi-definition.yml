@@ -111,6 +111,8 @@ paths:
                       type: array
                       items:
                         type: string
+                    lang:
+                      type: string
                     paymentRequestId:
                       format: uuid
                       type: string
@@ -121,6 +123,7 @@ paths:
                     - richText
                     - plainText
                     - links
+                    - lang
                 template:
                   type: object
                   properties:
@@ -145,10 +148,13 @@ paths:
                     type: string
                 security:
                   type: string
+                messageType:
+                  type: string
               required:
                 - preferredTransports
                 - userIds
                 - security
+                - messageType
         required: true
       responses:
         4XX:

@@ -60,6 +60,7 @@ export interface paths {
               richText: string;
               plainText: string;
               links: string[];
+              lang: string;
               /** Format: uuid */
               paymentRequestId?: string;
             };
@@ -73,6 +74,7 @@ export interface paths {
             preferredTransports: string[];
             userIds: string[];
             security: string;
+            messageType: string;
           };
         };
       };
