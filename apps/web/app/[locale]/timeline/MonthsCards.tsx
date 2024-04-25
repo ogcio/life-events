@@ -3,7 +3,7 @@ import { formatDate } from "../../utils/web";
 import { GroupedEvents, Month } from "./Timeline";
 import ds from "design-system";
 import dayjs from "dayjs";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 const Icon = ds.Icon;
 
@@ -11,16 +11,14 @@ const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 const opaque = ds.hexToRgba(ds.colours.ogcio.gold, 5);
 const darkGrey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 80);
 
-export default ({
-  months,
-  view,
-  locale,
-}: {
+type MonthsCardProps = {
   months: Month[];
-  view: string;
+  searchParams: URLSearchParams;
   locale: string;
-}) => {
-  const t = useTranslations();
+};
+
+export default async ({ months, searchParams, locale }: MonthsCardProps) => {
+  const t = await getTranslations("Timeline");
   return months.map((monthObject) => {
     const { events } = monthObject;
     const groupedEvents: GroupedEvents = events.reduce((grouped, event) => {
@@ -77,7 +75,7 @@ export default ({
                 <Link
                   href={{
                     pathname: `/${locale}/timeline/details`,
-                    query: { view },
+                    query: searchParams.toString(),
                   }}
                   className="govie-body-s govie-link"
                 >

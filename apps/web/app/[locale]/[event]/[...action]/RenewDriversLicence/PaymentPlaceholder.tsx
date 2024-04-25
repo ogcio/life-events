@@ -26,6 +26,7 @@ export default async (props: { flow: string; userId: string }) => {
   const paymentsUrl = getUrlForPaymentAPI("/paymentRequest/pay");
   paymentsUrl.searchParams.set("paymentId", paymentRequestId);
   paymentsUrl.searchParams.set("id", `${props.userId}:${props.flow}`);
+  paymentsUrl.searchParams.set("embed", "true");
 
   return (
     <div id="payments-container" style={{ minHeight: "760px" }}>

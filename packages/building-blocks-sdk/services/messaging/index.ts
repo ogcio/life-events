@@ -64,14 +64,14 @@ export class Messaging {
 
   async getTemplate(
     templateId: paths["/api/v1/templates/{templateId}"]["get"]["parameters"]["path"]["templateId"],
-    lang: paths["/api/v1/templates/{templateId}"]["get"]["parameters"]["query"]["lang"],
   ) {
     const { data, error } = await this.client.GET(
       "/api/v1/templates/{templateId}",
       {
         params: {
-          path: { templateId },
-          query: { lang },
+          path: {
+            templateId,
+          },
         },
       },
     );

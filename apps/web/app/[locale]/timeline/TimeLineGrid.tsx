@@ -1,55 +1,69 @@
-"use client";
 import ds from "design-system";
 import dayjs from "dayjs";
 import NavButton from "./NavButton";
 import { TimeLineData } from "./Timeline";
-import { useEffect, useState } from "react";
 import MonthsCards from "./MonthsCards";
+import { getTranslations } from "next-intl/server";
+import { headers } from "next/headers";
 
 const grey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 30);
 
-export default ({
-  timeLineData,
-  locale,
-}: {
-  timeLineData?: TimeLineData;
+type TimeLineGridProps = {
+  timeLineData: TimeLineData;
+  searchParams: URLSearchParams;
   locale: string;
-}) => {
-  const data = timeLineData?.data || [];
-  const [visibleYears, setVisibleYears] = useState<TimeLineData["data"]>([]);
+};
 
-  useEffect(() => {
-    if (timeLineData?.data) {
-      const { data } = timeLineData;
-      setVisibleYears([
-        data[data.length - 3],
-        data[data.length - 2],
-        data[data.length - 1],
-      ]);
-    }
-  }, [timeLineData]);
+export default async ({
+  timeLineData,
+  searchParams,
+  locale,
+}: TimeLineGridProps) => {
+  const t = await getTranslations("Timeline");
 
-  const goBack = () => {
-    const currentIndex = data.findIndex((year) => year === visibleYears[0]);
-    if (currentIndex > 0) {
-      setVisibleYears([
-        data[currentIndex - 1],
-        data[currentIndex],
-        data[currentIndex + 1],
-      ]);
-    }
-  };
+  const data = timeLineData.data || [];
 
-  const goForward = () => {
-    const currentIndex = data.findIndex((year) => year === visibleYears[2]);
-    if (currentIndex < data.length - 1) {
-      setVisibleYears([
-        data[currentIndex - 1],
-        data[currentIndex],
-        data[currentIndex + 1],
-      ]);
-    }
-  };
+  const path = headers().get("x-pathname")?.toString();
+
+  let referenceYearString = searchParams.get("referenceYear");
+  let referenceYear = Number(referenceYearString);
+  if (isNaN(referenceYear)) {
+    referenceYear = data[data.length - 2].year;
+  }
+
+  const referenceYearIndex = data.findIndex(
+    ({ year }) => year === referenceYear,
+  );
+
+  const visibleYearsData =
+    referenceYearIndex !== -1
+      ? [
+          data[referenceYearIndex - 1],
+          data[referenceYearIndex],
+          data[referenceYearIndex + 1],
+        ]
+      : [data[data.length - 3], data[data.length - 2], data[data.length - 1]];
+
+  const prevButtonsSearchParams = new URLSearchParams(searchParams);
+  let prevButtonEnabled = false;
+  if (
+    visibleYearsData[0]?.year &&
+    visibleYearsData[0].year > timeLineData?.minYear
+  ) {
+    prevButtonEnabled = true;
+    prevButtonsSearchParams.set("referenceYear", `${visibleYearsData[0].year}`);
+  }
+
+  const nexButtonSearchParams = new URLSearchParams(searchParams);
+  let nextButtonEnabled = false;
+
+  if (
+    visibleYearsData[2]?.year &&
+    visibleYearsData[2].year < timeLineData?.maxYear
+  ) {
+    nextButtonEnabled = true;
+    nexButtonSearchParams.set("referenceYear", `${visibleYearsData[2].year}`);
+  }
 
   return (
     <>
@@ -71,17 +85,13 @@ export default ({
         >
           <div style={{ height: "25px" }}>
             <NavButton
-              disabled={
-                visibleYears[0]?.year
-                  ? visibleYears[0]?.year === timeLineData?.minYear
-                  : true
-              }
-              onClick={() => goBack()}
+              disabled={!prevButtonEnabled}
               transform={false}
+              url={`${path}?${prevButtonsSearchParams.toString()}`}
             />
           </div>
         </div>
-        {visibleYears?.map((yearData) => {
+        {visibleYearsData?.map((yearData) => {
           if (!yearData) {
             return;
           }
@@ -109,7 +119,11 @@ export default ({
                   {year === dayjs().year() ? <strong>{year}</strong> : year}
                 </p>
               </div>
-              <MonthsCards months={months} view={"grid"} locale={locale} />
+              <MonthsCards
+                months={months}
+                searchParams={searchParams}
+                locale={locale}
+              />
             </div>
           );
         })}
@@ -123,13 +137,8 @@ export default ({
         >
           <div style={{ height: "25px" }}>
             <NavButton
-              disabled={
-                visibleYears[visibleYears.length - 1]?.year
-                  ? visibleYears[visibleYears.length - 1].year ===
-                    timeLineData?.maxYear
-                  : true
-              }
-              onClick={() => goForward()}
+              disabled={!nextButtonEnabled}
+              url={`${path}?${nexButtonSearchParams.toString()}`}
               transform={true}
             />
           </div>
