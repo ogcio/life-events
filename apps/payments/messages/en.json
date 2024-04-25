@@ -20,7 +20,7 @@
   "MyPayments": {
     "title": "My Payments",
     "empty": {
-      "title": "Your payment history is empty.",
+      "title": "There are no payments.",
       "description": "You have not made any payments yet."
     },
     "table": {
