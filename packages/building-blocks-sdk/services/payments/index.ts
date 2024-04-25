@@ -145,6 +145,18 @@ export class Payments {
     return formatQueryResult(this.client.GET("/api/v1/transactions/"));
   }
 
+  async getTransactionDetails(transactionId: string) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/transactions/{transactionId}", {
+        params: {
+          path: {
+            transactionId,
+          },
+        },
+      }),
+    );
+  }
+
   async updateTransaction(
     transactionId: paths["/api/v1/transactions/{transactionId}"]["patch"]["parameters"]["path"]["transactionId"],
     data: paths["/api/v1/transactions/{transactionId}"]["patch"]["requestBody"]["content"]["application/json"],
@@ -175,5 +187,13 @@ export class Payments {
     return formatQueryResult(
       this.client.GET("/api/v1/transactions/generatePaymentIntentId"),
     );
+  }
+
+  /**
+   * Citizen
+   */
+
+  async getCitizenTransactions() {
+    return formatQueryResult(this.client.GET("/api/v1/citizen/transactions"));
   }
 }

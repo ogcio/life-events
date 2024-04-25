@@ -462,7 +462,12 @@ export interface paths {
           content: {
             "application/json": {
               transactionId: string;
-              status: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
               amount: number;
               updatedAt: string;
               title: string;
@@ -485,7 +490,12 @@ export interface paths {
           content: {
             "application/json": {
               transactionId: string;
-              status: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
               amount: number;
               updatedAt: string;
               title: string;
@@ -524,7 +534,12 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            status: string;
+            status:
+              | "initiated"
+              | "pending"
+              | "succeeded"
+              | "cancelled"
+              | "failed";
           };
         };
       };
@@ -546,7 +561,12 @@ export interface paths {
           content: {
             "application/json": {
               transactionId: string;
-              status: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
               amount: number;
               updatedAt: string;
               title: string;
@@ -629,6 +649,41 @@ export interface paths {
         };
         /** @description Default Response */
         400: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/citizen/transactions": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              transactionId: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
+              title: string;
+              updatedAt: string;
+              amount: number;
+            }[];
+          };
+        };
+        /** @description Default Response */
+        404: {
           content: {
             "application/json": {
               statusCode: number;
