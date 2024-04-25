@@ -8,9 +8,13 @@ export const providerSecretsHandlersFactory = (type: ProviderType) => {
     case "stripe":
       return new StripeProviderSecretsHandler();
     case "banktransfer":
-      return new BankTransferSecretsHandler();
+      return new BankTransferProviderSecretsHandler();
     case "openbanking":
-      return new OpenBankingSecretsHandler();
+      return new OpenBankingProviderSecretsHandler();
+    case "worldpay":
+      return new WorldPayProviderSecretsHandler();
+    case "realex":
+      return new RealexProviderSecretsHandler();
     default:
       throw new Error(`Unsupported provider type: ${type}`);
   }
@@ -45,7 +49,7 @@ class StripeProviderSecretsHandler implements IProviderSecretsHandler {
   }
 }
 
-class BankTransferSecretsHandler implements IProviderSecretsHandler {
+class BankTransferProviderSecretsHandler implements IProviderSecretsHandler {
   getCypheredData(data: any) {
     return data;
   }
@@ -55,12 +59,63 @@ class BankTransferSecretsHandler implements IProviderSecretsHandler {
   }
 }
 
-class OpenBankingSecretsHandler implements IProviderSecretsHandler {
+class OpenBankingProviderSecretsHandler implements IProviderSecretsHandler {
   getCypheredData(data: any) {
     return data;
   }
 
   getClearTextData(data: any) {
+    return data;
+  }
+}
+
+class WorldPayProviderSecretsHandler implements IProviderSecretsHandler {
+  private cryptographyService: CryptographyService;
+
+  constructor() {
+    this.cryptographyService = new CryptographyService();
+  }
+
+  getCypheredData(data: any) {
+    const encryptedMerchantCode = this.cryptographyService.encrypt(
+      data.merchantCode,
+    );
+    data.encryptedMerchantCode = encryptedMerchantCode;
+    delete data.merchantCode;
+    return data;
+  }
+
+  getClearTextData(data: any) {
+    const decryptedMerchantCode = this.cryptographyService.decrypt(
+      data.encryptedMerchantCode,
+    );
+    data.merchantCode = decryptedMerchantCode;
+    delete data.encryptedMerchantCode;
+    return data;
+  }
+}
+class RealexProviderSecretsHandler implements IProviderSecretsHandler {
+  private cryptographyService: CryptographyService;
+
+  constructor() {
+    this.cryptographyService = new CryptographyService();
+  }
+
+  getCypheredData(data: any) {
+    const encryptedSharedSecret = this.cryptographyService.encrypt(
+      data.sharedSecret,
+    );
+    data.encryptedSharedSecret = encryptedSharedSecret;
+    delete data.sharedSecret;
+    return data;
+  }
+
+  getClearTextData(data: any) {
+    const decryptedSecretKey = this.cryptographyService.decrypt(
+      data.encryptedSharedSecret,
+    );
+    data.sharedSecret = decryptedSecretKey;
+    delete data.encryptedSharedSecret;
     return data;
   }
 }

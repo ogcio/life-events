@@ -127,19 +127,19 @@ export default async function templates(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags,
-        querystring: Type.Optional(
-          Type.Object({
-            lang: Type.String({ default: "en" }),
-          }),
-        ),
         response: {
           200: Type.Object({
             data: Type.Object({
-              templateName: Type.String(),
-              subject: Type.String(),
-              excerpt: Type.String(),
-              plainText: Type.String(),
-              richText: Type.String(),
+              contents: Type.Array(
+                Type.Object({
+                  templateName: Type.String(),
+                  subject: Type.String(),
+                  excerpt: Type.String(),
+                  plainText: Type.String(),
+                  richText: Type.String(),
+                  lang: Type.String(),
+                }),
+              ),
               fields: Type.Array(
                 Type.Object({
                   fieldName: Type.String(),
@@ -164,6 +164,7 @@ export default async function templates(app: FastifyInstance) {
           excerpt: string;
           plainText: string;
           richText: string;
+          lang: string;
           fieldName?: string;
           fieldType?: string;
         }>(
@@ -174,27 +175,32 @@ export default async function templates(app: FastifyInstance) {
               excerpt,
               plain_text as "plainText",
               rich_text as "richText",
+              lang,
               v.field_name as "fieldName",
               v.field_type as "fieldType"
             from message_template_meta m
             join message_template_contents c on c.template_meta_id = m.id
             left join message_template_variables v on v.template_meta_id = m.id
-            where m.id = $1 and c.lang = $2
+            where m.id = $1
       `,
-          [templateId, lang],
+          [templateId],
         )
         .then((res) => res.rows);
 
-      let template:
-        | Partial<{
-            templateName: string;
-            subject: string;
-            excerpt: string;
-            plainText: string;
-            richText: string;
-            fields: { fieldName: string; fieldType: string }[];
-          }>
-        | undefined;
+      let template: {
+        contents: {
+          templateName: string;
+          subject: string;
+          excerpt: string;
+          plainText: string;
+          richText: string;
+          lang: string;
+        }[];
+        fields: { fieldName: string; fieldType: string }[];
+      } = {
+        contents: [],
+        fields: [],
+      };
 
       for (const row of templateMeta) {
         const {
@@ -205,25 +211,40 @@ export default async function templates(app: FastifyInstance) {
           templateName,
           fieldName,
           fieldType,
+          lang,
         } = row;
-        if (!template) {
-          template = {};
-        }
-        template.excerpt = excerpt;
-        template.plainText = plainText;
-        template.richText = richText;
-        template.subject = subject;
-        template.templateName = templateName;
 
-        if (fieldName && fieldType) {
-          if (!template.fields) {
-            template.fields = [];
-          }
-          template.fields.push({ fieldName, fieldType });
+        const content = template.contents?.find(
+          (content) => content.lang === lang,
+        );
+
+        if (content) {
+          content.excerpt = excerpt;
+          content.excerpt = excerpt;
+          content.plainText = plainText;
+          content.richText = richText;
+          content.subject = subject;
+          content.templateName = templateName;
+        } else {
+          template.contents.push({
+            excerpt,
+            lang,
+            plainText,
+            richText,
+            subject,
+            templateName,
+          });
+        }
+
+        if (
+          fieldName &&
+          !template.fields.some((field) => field.fieldName === fieldName)
+        ) {
+          template.fields.push({ fieldName, fieldType: fieldType ?? "" });
         }
       }
 
-      if (!template) {
+      if (!template.contents.length) {
         const error = buildApiError("no template found", 404);
         reply.statusCode = error.statusCode;
         return error;

@@ -8,12 +8,12 @@ export default (props: MessageCreateProps) => {
   async function action() {
     "use server";
 
-    redirect("/send-a-message", RedirectType.replace);
+    redirect("/send-a-message/meta", RedirectType.replace);
   }
 
   // Lets silently delete the state since we're done.
   if (props.stateId) {
-    api.deleteMessageState(props.userId, props.stateId);
+    void api.deleteMessageState(props.userId, props.stateId);
   }
 
   return (

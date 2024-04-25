@@ -8,7 +8,8 @@ import { PgSessions } from "auth/sessions";
 async function deleteEmailTemplateAction(formData: FormData) {
   "use server";
   const id = formData.get("id") as string;
-  await deleteEmailTemplate(id);
+  const { userId } = await PgSessions.get();
+  await new Messaging(userId).deleteTemplate(id);
   revalidatePath("/");
 }
 
@@ -56,8 +57,9 @@ export default async () => {
                   </button>
                 </form>
                 <Link
-                  href={`/admin/templates/edit?${new URLSearchParams({
+                  href={`/admin/templates/template?${new URLSearchParams({
                     id: template.templateMetaId,
+                    lang: "en",
                   }).toString()}`}
                 >
                   <button

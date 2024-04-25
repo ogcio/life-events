@@ -3,6 +3,7 @@ export const providerTypes = [
   "banktransfer",
   "stripe",
   "worldpay",
+  "realex",
 ] as const;
 export type ProviderType = (typeof providerTypes)[number];
 export type ProviderStatus = "connected" | "disconnected";
@@ -27,41 +28,50 @@ export type WorldpayData = {
   installationId: string;
 };
 
+export type RealexData = {
+  merchantId: string;
+  sharedSecret: string;
+};
+
 export type ProviderData =
   | OpenBankingData
   | BankTransferData
   | StripeData
-  | WorldpayData;
+  | WorldpayData
+  | RealexData;
 
 export type CommonProvider = {
   id: string;
   name: string;
   userId?: string;
-  status: string;
+  status: "connected" | "disconnected";
+  type: string;
+  createdAt: string;
 };
 
 export type StripeProvider = CommonProvider & {
-  type: string;
   data: StripeData;
 };
 
 export type OpenBankingProvider = CommonProvider & {
-  type: string;
   data: OpenBankingData;
 };
 
 export type BankTransferProvider = CommonProvider & {
-  type: string;
   data: BankTransferData;
 };
 
 export type WorldpayProvider = CommonProvider & {
-  type: string;
   data: WorldpayData;
+};
+
+export type RealexProvider = CommonProvider & {
+  data: RealexData;
 };
 
 export type Provider =
   | StripeProvider
   | OpenBankingProvider
   | BankTransferProvider
-  | WorldpayProvider;
+  | WorldpayProvider
+  | RealexProvider;
