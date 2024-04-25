@@ -211,12 +211,7 @@ export interface paths {
         content: {
           "application/json": {
             name: string;
-            data:
-              | components["schemas"]["openBankingData"]
-              | components["schemas"]["bankTransferData"]
-              | components["schemas"]["stripeData"]
-              | components["schemas"]["worldpayData"]
-              | components["schemas"]["realexData"];
+            data: Record<string, never>;
             status: "connected" | "disconnected";
           };
         };
@@ -702,28 +697,7 @@ export interface paths {
 export type webhooks = Record<string, never>;
 
 export interface components {
-  schemas: {
-    openBankingData: {
-      iban: string;
-      accountHolderName: string;
-    };
-    bankTransferData: {
-      iban: string;
-      accountHolderName: string;
-    };
-    stripeData: {
-      livePublishableKey: string;
-      liveSecretKey: string;
-    };
-    worldpayData: {
-      merchantCode: string;
-      installationId: string;
-    };
-    realexData: {
-      merchantId: string;
-      sharedSecret: string;
-    };
-  };
+  schemas: {};
   responses: never;
   parameters: never;
   requestBodies: never;
