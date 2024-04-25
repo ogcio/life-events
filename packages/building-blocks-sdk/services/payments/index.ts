@@ -196,4 +196,16 @@ export class Payments {
   async getCitizenTransactions() {
     return formatQueryResult(this.client.GET("/api/v1/citizen/transactions"));
   }
+
+  async getCitizenTransactionDetails(transactionId: string) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/citizen/transactions/{transactionId}", {
+        params: {
+          path: {
+            transactionId,
+          },
+        },
+      }),
+    );
+  }
 }

@@ -44,4 +44,59 @@ export default async function citizen(app: FastifyInstance) {
       reply.send(result?.rows);
     },
   );
+
+  app.get<{
+    Reply: TransactionDetails | Error;
+    Params: ParamsWithTransactionId;
+  }>(
+    "/transactions/:transactionId",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Transactions"],
+        response: {
+          200: TransactionDetails,
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { transactionId } = request.params;
+      const userId = request.user?.id;
+
+      let result;
+      try {
+        result = await app.pg.query(
+          `SELECT
+            t.transaction_id as "transactionId",
+            t.status,
+            t.user_id as "userId",
+            t.user_data as "userData",
+            pr.title,
+            pr.payment_request_id as "paymentRequestId",
+            t.ext_payment_id as "extPaymentId",
+            t.amount,
+            t.updated_at as "updatedAt",
+            pp.provider_name as "providerName",
+            pp.provider_type as "providerType"
+          FROM payment_transactions t
+          LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+          JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
+          WHERE t.transaction_id = $1
+            AND t.user_id = $2`,
+          [transactionId, userId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      if (!result?.rowCount) {
+        throw app.httpErrors.notFound(
+          "The requested transaction was not found",
+        );
+      }
+
+      reply.send(result.rows[0]);
+    },
+  );
 }

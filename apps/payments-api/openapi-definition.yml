@@ -1240,5 +1240,103 @@ paths:
                   - error
                   - message
                   - time
+  /api/v1/citizen/transactions/{transactionId}:
+    get:
+      tags:
+        - Transactions
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: transactionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactionId:
+                    type: string
+                  status:
+                    anyOf:
+                      - type: string
+                        enum:
+                          - initiated
+                      - type: string
+                        enum:
+                          - pending
+                      - type: string
+                        enum:
+                          - succeeded
+                      - type: string
+                        enum:
+                          - cancelled
+                      - type: string
+                        enum:
+                          - failed
+                  amount:
+                    type: number
+                  updatedAt:
+                    type: string
+                  title:
+                    type: string
+                  extPaymentId:
+                    type: string
+                  userId:
+                    type: string
+                  userData:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      email:
+                        type: string
+                    required:
+                      - name
+                      - email
+                  providerName:
+                    type: string
+                  providerType:
+                    type: string
+                  paymentRequestId:
+                    type: string
+                required:
+                  - transactionId
+                  - status
+                  - amount
+                  - updatedAt
+                  - title
+                  - extPaymentId
+                  - userId
+                  - userData
+                  - providerName
+                  - providerType
+                  - paymentRequestId
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
 tags:
   - name: Providers

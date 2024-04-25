@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
 import { getUser } from "../../../../../../libraries/auth";
-import notFound from "../../../../../not-found";
+import { notFound } from "next/navigation";
 import { formatCurrency } from "../../../../../utils";
 import dayjs from "dayjs";
 
@@ -17,7 +17,7 @@ export default async function ({ params: { transactionId } }) {
   }
 
   const details = (
-    await new Payments(userId).getTransactionDetails(transactionId)
+    await new Payments(userId).getCitizenTransactionDetails(transactionId)
   ).data;
 
   if (!details) {
