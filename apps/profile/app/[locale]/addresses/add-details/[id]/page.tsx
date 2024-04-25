@@ -13,11 +13,11 @@ const AddressLine = ({ value }: { value: string }) => (
   </p>
 );
 
-export default async (params: NextPageProps) => {
+export default async (props: NextPageProps) => {
   const { userId } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
-  const { id: addressId } = params.params;
+  const { id: addressId, locale } = props.params;
 
   if (!addressId) {
     throw notFound();
@@ -86,7 +86,7 @@ export default async (params: NextPageProps) => {
       }
     }
 
-    redirect("/");
+    redirect(`/${locale}`);
   }
 
   async function cancelAction() {
@@ -100,7 +100,7 @@ export default async (params: NextPageProps) => {
     if (error) {
       //handle error
     }
-    redirect("/");
+    redirect(`/${locale}`);
   }
 
   return (

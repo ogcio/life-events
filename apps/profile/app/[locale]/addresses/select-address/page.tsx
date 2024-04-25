@@ -9,8 +9,11 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { NextPageProps } from "../../../../types";
 
-export default async (params: NextPageProps) => {
-  const { searchParams } = params;
+export default async (props: NextPageProps) => {
+  const {
+    searchParams,
+    params: { locale },
+  } = props;
   const { userId, firstName, lastName, email } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
@@ -141,11 +144,11 @@ export default async (params: NextPageProps) => {
       }
 
       if (data) {
-        redirect(`/${routes.addresses.addDetails.path(data.id)}`);
+        redirect(`/${locale}/${routes.addresses.addDetails.path(data.id)}`);
       }
     }
 
-    redirect("/");
+    redirect(`/${locale}`);
   }
 
   const urlParams = new URLSearchParams({ q: searchParams?.adr || "" });
@@ -404,12 +407,12 @@ export default async (params: NextPageProps) => {
         </form>
         <Link
           className="govie-link"
-          href={`/${routes.addresses.manualAddress.path()}`}
+          href={`/${locale}/${routes.addresses.manualAddress.path()}`}
         >
           {t("notListedTextLink")}
         </Link>
         <div style={{ margin: "30px 0" }}>
-          <Link href={"/"} className="govie-back-link">
+          <Link href={`/${locale}`} className="govie-back-link">
             {t("back")}
           </Link>
         </div>

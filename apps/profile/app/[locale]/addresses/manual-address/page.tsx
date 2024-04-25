@@ -6,187 +6,191 @@ import dayjs from "dayjs";
 import { redirect } from "next/navigation";
 import { PgSessions } from "auth/sessions";
 import Link from "next/link";
+import { NextPageProps } from "../../../../types";
 
-async function createAddress(formData: FormData) {
-  "use server";
-
-  const errors: form.Error[] = [];
-  const userId = formData.get("userId")?.toString();
-  const firstname = formData.get("firstname")?.toString();
-  const lastname = formData.get("lastname")?.toString();
-  const email = formData.get("email")?.toString();
-
-  if (!userId || !firstname || !lastname || !email) {
-    throw Error("Missing user data");
-  }
-
-  const addressFirst = formData.get("addressFirst")?.toString();
-  const addressSecond = formData.get("addressSecond")?.toString();
-  const town = formData.get("town")?.toString();
-  const county = formData.get("county")?.toString();
-  const eirecode = formData.get("eirecode")?.toString();
-  const moveInDay = formData.get("moveInDay");
-  const moveInMonth = formData.get("moveInMonth");
-  const moveInYear = formData.get("moveInYear");
-  const moveOutDay = formData.get("moveOutDay");
-  const moveOutMonth = formData.get("moveOutMonth");
-  const moveOutYear = formData.get("moveOutYear");
-
-  if (!addressFirst) {
-    errors.push({
-      messageKey: form.errorTranslationKeys.empty,
-      errorValue: "",
-      field: form.fieldTranslationKeys.address_first_line,
-    });
-  }
-
-  if (!town) {
-    errors.push({
-      messageKey: form.errorTranslationKeys.empty,
-      errorValue: "",
-      field: form.fieldTranslationKeys.town,
-    });
-  }
-
-  if (!county) {
-    errors.push({
-      messageKey: form.errorTranslationKeys.empty,
-      errorValue: "",
-      field: form.fieldTranslationKeys.county,
-    });
-  }
-
-  if (!eirecode) {
-    errors.push({
-      messageKey: form.errorTranslationKeys.empty,
-      errorValue: "",
-      field: form.fieldTranslationKeys.eirecode,
-    });
-  }
-
-  if (moveInDay || moveInMonth || moveInYear) {
-    errors.push(
-      ...form.validation.dateErrors(
-        {
-          field: form.fieldTranslationKeys.moveInYear,
-          value: parseInt(moveInYear?.toString() || ""),
-        },
-        {
-          field: form.fieldTranslationKeys.moveInMonth,
-          value: parseInt(moveInMonth?.toString() || ""),
-        },
-        {
-          field: form.fieldTranslationKeys.moveInDay,
-          value: parseInt(moveInDay?.toString() || ""),
-        },
-      ),
-    );
-  }
-
-  if (moveOutDay || moveOutMonth || moveOutYear) {
-    errors.push(
-      ...form.validation.dateErrors(
-        {
-          field: form.fieldTranslationKeys.moveOutYear,
-          value: parseInt(moveOutYear?.toString() || ""),
-        },
-        {
-          field: form.fieldTranslationKeys.moveOutMonth,
-          value: parseInt(moveOutMonth?.toString() || ""),
-        },
-        {
-          field: form.fieldTranslationKeys.moveOutDay,
-          value: parseInt(moveOutDay?.toString() || ""),
-        },
-      ),
-    );
-  }
-
-  if (errors.length) {
-    await form.insertErrors(
-      errors,
-      userId,
-      routes.addresses.manualAddress.slug,
-    );
-    return revalidatePath("/");
-  }
-
-  let moveInDate: string | undefined;
-  if (moveInDay && moveInMonth && moveInYear) {
-    moveInDate = dayjs()
-      .year(Number(moveInYear))
-      .month(Number(moveInMonth) - 1)
-      .date(Number(moveInDay))
-      .startOf("day")
-      .toISOString();
-  }
-
-  let moveOutDate: string | undefined;
-  if (moveOutDay && moveOutMonth && moveOutYear) {
-    moveOutDate = dayjs()
-      .year(Number(moveOutYear))
-      .month(Number(moveOutMonth) - 1)
-      .date(Number(moveOutDay))
-      .startOf("day")
-      .toISOString();
-  }
-
-  const { data: userExistsQuery, error } = await new Profile(userId).getUser();
-
-  if (error) {
-    //handle error
-  }
-
-  if (!userExistsQuery) {
-    const { error } = await new Profile(userId).createUser({
-      firstname,
-      lastname,
-      email,
-    });
-
-    if (error) {
-      //handle error
-    }
-  }
-
-  if (addressFirst && town && county && eirecode) {
-    const { data, error } = await new Profile(userId).createAddress({
-      address_line1: addressFirst,
-      address_line2: addressSecond,
-      town: town,
-      county: county,
-      eirecode: eirecode,
-      move_in_date: moveInDate,
-      move_out_date: moveOutDate,
-    });
-
-    if (error) {
-      //handle error
-    }
-
-    if (data) {
-      redirect(`/${routes.addresses.addDetails.path(data.id)}`);
-    } else {
-      redirect("/");
-    }
-  }
-}
-
-async function cancelAction() {
-  "use server";
-  redirect("/");
-}
-
-export default async () => {
+export default async (props: NextPageProps) => {
   const { userId, firstName, lastName, email } = await PgSessions.get();
+  const { locale } = props.params;
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
+
+  async function createAddress(formData: FormData) {
+    "use server";
+
+    const errors: form.Error[] = [];
+    const userId = formData.get("userId")?.toString();
+    const firstname = formData.get("firstname")?.toString();
+    const lastname = formData.get("lastname")?.toString();
+    const email = formData.get("email")?.toString();
+
+    if (!userId || !firstname || !lastname || !email) {
+      throw Error("Missing user data");
+    }
+
+    const addressFirst = formData.get("addressFirst")?.toString();
+    const addressSecond = formData.get("addressSecond")?.toString();
+    const town = formData.get("town")?.toString();
+    const county = formData.get("county")?.toString();
+    const eirecode = formData.get("eirecode")?.toString();
+    const moveInDay = formData.get("moveInDay");
+    const moveInMonth = formData.get("moveInMonth");
+    const moveInYear = formData.get("moveInYear");
+    const moveOutDay = formData.get("moveOutDay");
+    const moveOutMonth = formData.get("moveOutMonth");
+    const moveOutYear = formData.get("moveOutYear");
+
+    if (!addressFirst) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.address_first_line,
+      });
+    }
+
+    if (!town) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.town,
+      });
+    }
+
+    if (!county) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.county,
+      });
+    }
+
+    if (!eirecode) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.eirecode,
+      });
+    }
+
+    if (moveInDay || moveInMonth || moveInYear) {
+      errors.push(
+        ...form.validation.dateErrors(
+          {
+            field: form.fieldTranslationKeys.moveInYear,
+            value: parseInt(moveInYear?.toString() || ""),
+          },
+          {
+            field: form.fieldTranslationKeys.moveInMonth,
+            value: parseInt(moveInMonth?.toString() || ""),
+          },
+          {
+            field: form.fieldTranslationKeys.moveInDay,
+            value: parseInt(moveInDay?.toString() || ""),
+          },
+        ),
+      );
+    }
+
+    if (moveOutDay || moveOutMonth || moveOutYear) {
+      errors.push(
+        ...form.validation.dateErrors(
+          {
+            field: form.fieldTranslationKeys.moveOutYear,
+            value: parseInt(moveOutYear?.toString() || ""),
+          },
+          {
+            field: form.fieldTranslationKeys.moveOutMonth,
+            value: parseInt(moveOutMonth?.toString() || ""),
+          },
+          {
+            field: form.fieldTranslationKeys.moveOutDay,
+            value: parseInt(moveOutDay?.toString() || ""),
+          },
+        ),
+      );
+    }
+
+    if (errors.length) {
+      await form.insertErrors(
+        errors,
+        userId,
+        routes.addresses.manualAddress.slug,
+      );
+      return revalidatePath("/");
+    }
+
+    let moveInDate: string | undefined;
+    if (moveInDay && moveInMonth && moveInYear) {
+      moveInDate = dayjs()
+        .year(Number(moveInYear))
+        .month(Number(moveInMonth) - 1)
+        .date(Number(moveInDay))
+        .startOf("day")
+        .toISOString();
+    }
+
+    let moveOutDate: string | undefined;
+    if (moveOutDay && moveOutMonth && moveOutYear) {
+      moveOutDate = dayjs()
+        .year(Number(moveOutYear))
+        .month(Number(moveOutMonth) - 1)
+        .date(Number(moveOutDay))
+        .startOf("day")
+        .toISOString();
+    }
+
+    const { data: userExistsQuery, error } = await new Profile(
+      userId,
+    ).getUser();
+
+    if (error) {
+      //handle error
+    }
+
+    if (!userExistsQuery) {
+      const { error } = await new Profile(userId).createUser({
+        firstname,
+        lastname,
+        email,
+      });
+
+      if (error) {
+        //handle error
+      }
+    }
+
+    if (addressFirst && town && county && eirecode) {
+      const { data, error } = await new Profile(userId).createAddress({
+        address_line1: addressFirst,
+        address_line2: addressSecond,
+        town: town,
+        county: county,
+        eirecode: eirecode,
+        move_in_date: moveInDate,
+        move_out_date: moveOutDate,
+      });
+
+      if (error) {
+        //handle error
+      }
+
+      if (data) {
+        redirect(`/${locale}/${routes.addresses.addDetails.path(data.id)}`);
+      } else {
+        redirect(`/${locale}`);
+      }
+    }
+  }
+
+  async function cancelAction() {
+    "use server";
+    redirect(`/${locale}`);
+  }
 
   const errors = await form.getErrorsQuery(
     userId,
     routes.addresses.manualAddress.slug,
   );
-  console.log("=== MANUAL FORM ERRORS ===", errors.rows);
+
   const addressFirstLineError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.address_first_line,
   );
@@ -547,7 +551,7 @@ export default async () => {
           </div>
         </form>
         <div style={{ margin: "30px 0" }}>
-          <Link href={"/"} className="govie-back-link">
+          <Link href={`/${locale}`} className="govie-back-link">
             {t("back")}
           </Link>
         </div>

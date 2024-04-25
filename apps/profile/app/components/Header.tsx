@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import "./Header.css";
 import UserIcon from "./UserIcon";
 
-export default () => {
+export default ({ locale }: { locale: string }) => {
   const t = useTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
@@ -34,8 +34,8 @@ export default () => {
         >
           <div style={{ display: "flex", alignItems: "center" }}>
             <div style={{ paddingRight: "15px" }}>
-              <a
-                href="/"
+              <Link
+                href={`/${locale}`}
                 className="govie-header__link govie-header__link--homepage"
                 style={{ display: "block" }}
               >
@@ -103,7 +103,7 @@ export default () => {
                   </defs>
                 </svg>
                 <span className="govie-visually-hidden">gov.ie</span>
-              </a>
+              </Link>
             </div>
             <div className="govie-!-font-size-24">
               <strong>{t("myLifeEvents")}</strong>
@@ -124,6 +124,7 @@ export default () => {
                   pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/en/" + path, process.env.HOST_URL).href}
+                prefetch={false}
               >
                 English
               </Link>
@@ -140,6 +141,7 @@ export default () => {
                   pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/ga/" + path, process.env.HOST_URL).href}
+                prefetch={false}
               >
                 Gealic
               </Link>

@@ -16,7 +16,7 @@ async function getBirthCertificateeDetails(_id: string) {
   };
 }
 
-export default async ({ id }: { id: string }) => {
+export default async ({ id, locale }: { id: string; locale: string }) => {
   const t = await getTranslations("BirthCertificateDetails");
   const data = await getBirthCertificateeDetails(id);
 
@@ -66,7 +66,7 @@ export default async ({ id }: { id: string }) => {
         </tbody>
       </table>
       <div style={{ margin: "30px 0" }}>
-        <Link href={"/"} className="govie-back-link">
+        <Link href={`/${locale}`} className="govie-back-link">
           {t("back")}
         </Link>
       </div>

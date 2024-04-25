@@ -5,7 +5,7 @@ import ds from "design-system";
 import { Profile } from "building-blocks-sdk";
 import Link from "next/link";
 
-export default async () => {
+export default async ({ locale }: { locale: string }) => {
   const t = await getTranslations("Entitlements");
   const { userId } = await PgSessions.get();
   const { data: entitlements = [], error } = await new Profile(
@@ -104,7 +104,7 @@ export default async () => {
               </dl>
               <Link
                 className="govie-link"
-                href={routes.entitlements[data.type].path(data.document_number)}
+                href={`/${locale}/${routes.entitlements[data.type].path(data.document_number)}`}
               >
                 {t("view")}
               </Link>

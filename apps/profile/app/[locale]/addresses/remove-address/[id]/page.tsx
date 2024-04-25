@@ -6,33 +6,33 @@ import { PgSessions } from "auth/sessions";
 import { formatDate } from "../../../../utils";
 import { Profile } from "building-blocks-sdk";
 
-async function removeAddress(formData: FormData) {
-  "use server";
-
-  const addressId = formData.get("addressId")?.toString();
-  const userId = formData.get("userId")?.toString();
-
-  if (!addressId) {
-    throw Error("Address id not found");
-  }
-
-  if (!userId) {
-    throw Error("User id not found");
-  }
-
-  const { error } = await new Profile(userId).deleteAddress(addressId);
-
-  if (error) {
-    //handle error
-  }
-
-  redirect("/");
-}
-
-export default async (params: NextPageProps) => {
+export default async (props: NextPageProps) => {
   const t = await getTranslations("AddressForm");
-  const { id: addressId } = params.params;
+  const { id: addressId, locale } = props.params;
   const { userId } = await PgSessions.get();
+
+  async function removeAddress(formData: FormData) {
+    "use server";
+
+    const addressId = formData.get("addressId")?.toString();
+    const userId = formData.get("userId")?.toString();
+
+    if (!addressId) {
+      throw Error("Address id not found");
+    }
+
+    if (!userId) {
+      throw Error("User id not found");
+    }
+
+    const { error } = await new Profile(userId).deleteAddress(addressId);
+
+    if (error) {
+      //handle error
+    }
+
+    redirect(`/${locale}`);
+  }
 
   if (!addressId) {
     throw notFound();
@@ -100,7 +100,7 @@ export default async (params: NextPageProps) => {
             {t("remove")}
           </button>
           <div style={{ margin: "30px 0" }}>
-            <Link href={"/"} className="govie-back-link">
+            <Link href={`/${locale}`} className="govie-back-link">
               {t("back")}
             </Link>
           </div>
