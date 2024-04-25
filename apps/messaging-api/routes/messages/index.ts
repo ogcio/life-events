@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
 
-import { randomUUID } from "crypto";
 import { mailService } from "../providers/services";
 import { utils, organisationId } from "../../utils";
+import { awsSnsSmsService } from "../../services/sms/aws";
 
 interface GetAllMessages {
   Querystring: {
@@ -244,8 +244,9 @@ export default async function messages(app: FastifyInstance) {
         return error;
       }
 
-      let mailSubject: string | undefined;
-      let mailBody: string | undefined;
+      let transportationSubject: string | undefined;
+      let transportationBody: string | undefined;
+      let transportationExcerpt: string | undefined;
 
       if (message) {
         const {
@@ -258,8 +259,9 @@ export default async function messages(app: FastifyInstance) {
           richText,
           subject,
         } = message;
-        mailSubject = message.subject;
-        mailBody = message.richText ?? message.plainText;
+        transportationSubject = message.subject;
+        transportationBody = message.richText ?? message.plainText;
+        transportationExcerpt = message.excerpt;
 
         const values: (string | null)[] = [];
         const args: string[] = [];
@@ -384,8 +386,9 @@ export default async function messages(app: FastifyInstance) {
             template.excerpt,
           );
 
-          mailSubject = subject;
-          mailBody = richText ?? plainText;
+          transportationSubject = subject;
+          transportationBody = richText ?? plainText;
+          transportationExcerpt = excerpt;
 
           // Values for each language insert
           const values = [
@@ -466,25 +469,62 @@ export default async function messages(app: FastifyInstance) {
           }
 
           reply.statusCode = 201;
-          return;
         }
       }
 
-      if (preferredTransports.includes("email")) {
-        if (!mailSubject || !mailBody) {
-          console.error("no subject or body");
-          return;
+      console.log("Kommer vi hit ner? ", preferredTransports);
+      for (const transport of preferredTransports) {
+        if (transport === "email") {
+          if (!transportationSubject) {
+            //|| !mailBody) {
+            console.error("no subject");
+            continue;
+          }
+
+          const providerId =
+            await mailService(app).getFirstOrEtherealMailProvider();
+
+          app.log.debug(providerId, JSON.stringify(providerId));
+          try {
+            await mailService(app).sendMails(
+              providerId,
+              ["ludwig.thurfjell@nearform.com"], // There's no api to get users atm?
+              transportationSubject,
+              transportationBody ?? "",
+            );
+          } catch (err) {
+            app.log.error(err, "email");
+          }
+        } else if (transport === "sms") {
+          if (!transportationExcerpt || !transportationSubject) {
+            continue;
+          }
+
+          // todo proper query
+          const config = await app.pg.pool
+            .query<{ config: unknown }>(
+              `
+        select config from sms_providers
+        limit 1
+      `,
+            )
+            .then((res) => res.rows.at(0)?.config);
+
+          if (utils.isSmsAwsConfig(config)) {
+            const service = awsSnsSmsService(
+              config.accessKey,
+              config.secretAccessKey,
+            );
+
+            try {
+              await service.Send(transportationExcerpt, transportationSubject, [
+                "+46703835834",
+              ]);
+            } catch (err) {
+              app.log.error(err, "sms");
+            }
+          }
         }
-
-        const providerId =
-          await mailService(app).getFirstOrEtherealMailProvider();
-
-        void mailService(app).sendMails(
-          providerId,
-          ["ludwig.thurfjell@nearform.com"], // There's no api to get users atm?
-          mailSubject,
-          mailBody,
-        );
       }
     },
   );

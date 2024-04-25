@@ -468,9 +468,227 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/def-0"
-  /api/v1/templates/:
+  /api/v1/providers/sms/:
     get:
       tags: &a2
+        - Providers - SMS
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          format: uuid
+                          type: string
+                        name:
+                          type: string
+                        type:
+                          type: string
+                      required:
+                        - id
+                        - name
+                        - type
+                required:
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+    post:
+      tags: *a2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                config:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    accessKey:
+                      type: string
+                    secretAccessKey:
+                      type: string
+                    region:
+                      type: string
+                  required:
+                    - type
+                    - accessKey
+                    - secretAccessKey
+                    - region
+              required:
+                - name
+                - config
+        required: true
+      responses:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+  /api/v1/providers/sms/{providerId}:
+    get:
+      tags: *a2
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        format: uuid
+                        type: string
+                      name:
+                        type: string
+                      config:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                          accessKey:
+                            type: string
+                          secretAccessKey:
+                            type: string
+                          region:
+                            type: string
+                        required:
+                          - type
+                          - accessKey
+                          - secretAccessKey
+                          - region
+                    required:
+                      - id
+                      - name
+                      - config
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+    put:
+      tags: *a2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  format: uuid
+                  type: string
+                name:
+                  type: string
+                config:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    accessKey:
+                      type: string
+                    secretAccessKey:
+                      type: string
+                    region:
+                      type: string
+                  required:
+                    - type
+                    - accessKey
+                    - secretAccessKey
+                    - region
+              required:
+                - id
+                - name
+                - config
+        required: true
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+    delete:
+      tags: *a2
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+  /api/v1/templates/:
+    get:
+      tags: &a3
         - Templates
       parameters:
         - schema:
@@ -517,7 +735,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     post:
-      tags: *a2
+      tags: *a3
       requestBody:
         content:
           application/json:
@@ -596,7 +814,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/templates/{templateId}:
     get:
-      tags: *a2
+      tags: *a3
       parameters:
         - schema:
             type: string
@@ -668,7 +886,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     put:
-      tags: *a2
+      tags: *a3
       requestBody:
         content:
           application/json:
@@ -739,7 +957,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     delete:
-      tags: *a2
+      tags: *a3
       parameters:
         - schema:
             type: string

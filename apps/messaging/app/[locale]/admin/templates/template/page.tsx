@@ -29,7 +29,7 @@ async function getState(userId: string) {
   return await pgpool
     .query<{ state: State }>(
       `
-  select state from message_template_state
+  select state from message_template_states
   where user_id = $1
 `,
       [userId],
@@ -40,11 +40,11 @@ async function getState(userId: string) {
 async function setState(userId: string, state: State) {
   await pgpool.query(
     `
-       insert into message_template_state(user_id, state)
+       insert into message_template_states(user_id, state)
        values($1, $2)
        on conflict(user_id) do update
-       set state = message_template_state.state || $2
-       where message_template_state.user_id = $1
+       set state = message_template_states.state || $2
+       where message_template_states.user_id = $1
       `,
     [userId, state],
   );
@@ -176,11 +176,11 @@ export default async (props: {
 
     await pgpool.query(
       `
-     insert into message_template_state(user_id, state)
+     insert into message_template_states(user_id, state)
      values($1, $2)
      on conflict(user_id) do update
-     set state = message_template_state.state || $2
-     where message_template_state.user_id = $1
+     set state = message_template_states.state || $2
+     where message_template_states.user_id = $1
     `,
       [userId, state],
     );
@@ -246,7 +246,7 @@ export default async (props: {
 
     await pgpool.query(
       `
-        delete from message_template_state where user_id = $1
+        delete from message_template_states where user_id = $1
         `,
       [userId],
     );
@@ -266,7 +266,7 @@ export default async (props: {
     const { userId } = await PgSessions.get();
     await pgpool.query(
       `
-        delete from message_template_state where user_id = $1
+        delete from message_template_states where user_id = $1
         `,
       [userId],
     );
@@ -279,7 +279,7 @@ export default async (props: {
   const state = await pgpool
     .query<{ state: State }>(
       `
-    select state from message_template_state
+    select state from message_template_states
     where user_id = $1
   `,
       [userId],
