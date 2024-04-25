@@ -8,6 +8,18 @@ import CopyLink from "./CopyBtn";
 import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 
+async function showDeleteModal() {
+  "use server";
+
+  redirect("?action=delete");
+}
+
+async function closeDeleteModal() {
+  "use server";
+
+  redirect("?");
+}
+
 async function deletePaymentRequest(requestId: string, userId: string) {
   "use server";
 
@@ -28,7 +40,13 @@ async function hasTransactions(requestId: string, userId: string) {
   return transactions.length > 0;
 }
 
-export const RequestDetails = async ({ requestId }: { requestId: string }) => {
+export const RequestDetails = async ({
+  requestId,
+  action,
+}: {
+  requestId: string;
+  action: string | undefined;
+}) => {
   const { userId } = await PgSessions.get();
   let details;
 
@@ -54,6 +72,7 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
     details.paymentRequestId,
     userId,
   );
+
   // Cannot delete the payment request if we already have transactions
   const disableDeleteButton = await hasTransactions(requestId, userId);
 
@@ -65,6 +84,76 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
 
   return (
     <>
+      {action === "delete" && (
+        <div className="govie-modal">
+          <div className="govie-modal--overlay"></div>
+          <div
+            className="govie-modal--content"
+            style={{ position: "absolute" }}
+          >
+            <form>
+              <div className="govie-modal--close-button-container">
+                <span data-module="govie-tooltip">
+                  <button
+                    data-module="govie-icon-button"
+                    className="govie-icon-button"
+                    formAction={closeDeleteModal}
+                  >
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
+                        fill="#505A5F"
+                      ></path>
+                    </svg>
+                    <span className="govie-visually-hidden">Close</span>
+                  </button>
+                  <span className="govie-tooltip govie-tooltip--undefined">
+                    Close
+                  </span>
+                </span>
+              </div>
+              <h1 className="govie-heading-s">This is a semantic title</h1>
+              <p className="govie-body">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </p>
+              <p className="govie-body">
+                Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                cupidatat non proident, sunt in culpa qui officia deserunt
+                mollit anim id est laborum.
+              </p>
+              <div className="govie-modal--buttons">
+                <button
+                  id="cancel button"
+                  data-module="govie-button"
+                  className="govie-button govie-button--medium govie-button--outlined"
+                  formAction={closeDeleteModal}
+                >
+                  Cancel Action
+                </button>
+                <button
+                  id="confirm button"
+                  data-module="govie-button"
+                  className="govie-button govie-button--medium "
+                  formAction={deletePR}
+                >
+                  Primary Action
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div
         style={{
           display: "flex",
@@ -95,7 +184,7 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
               </button>
             </Tooltip>
           ) : (
-            <form action={deletePR}>
+            <form action={showDeleteModal}>
               <button className="govie-button govie-button--tertiary">
                 {tCommon("delete")}
               </button>
