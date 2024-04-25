@@ -86,7 +86,7 @@ export default async () => {
           data-module="govie-button"
           className="govie-button govie-button--secondary"
           style={{ display: "flex", alignItems: "center" }}
-          href={routes.addresses.newAddress.path()}
+          href={routes.addresses.searchAddress.path()}
         >
           {t("addAddress")}
         </Link>

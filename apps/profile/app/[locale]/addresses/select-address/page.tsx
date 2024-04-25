@@ -74,7 +74,11 @@ export default async (params: NextPageProps) => {
     }
 
     if (errors.length) {
-      await form.insertErrors(errors, userId, "select-form");
+      await form.insertErrors(
+        errors,
+        userId,
+        routes.addresses.selectAddress.slug,
+      );
       return revalidatePath("/");
     }
 
@@ -155,7 +159,10 @@ export default async (params: NextPageProps) => {
     <option key={addr}>{addr}</option>
   ));
 
-  const errors = await form.getErrorsQuery(userId, "select-form");
+  const errors = await form.getErrorsQuery(
+    userId,
+    routes.addresses.selectAddress.slug,
+  );
 
   const addressError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.address,

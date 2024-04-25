@@ -16,10 +16,10 @@ export const entitlements = {
 
 export const addresses = {
   slug: "addresses",
-  newAddress: {
+  searchAddress: {
     slug: "search-address",
     path() {
-      return `${addresses.slug}/${addresses.newAddress.slug}`;
+      return `${addresses.slug}/${addresses.searchAddress.slug}`;
     },
   },
   editAddress: {

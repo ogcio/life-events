@@ -1,4 +1,3 @@
-import { NextPageProps } from "../../../../types";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import Link from "next/link";
@@ -8,11 +7,11 @@ import { redirect } from "next/navigation";
 
 export default async () => {
   const t = await getTranslations("AddressForm");
-  const { userId, firstName, lastName, email } = await PgSessions.get();
+  const { userId } = await PgSessions.get();
   const errorT = await getTranslations("FormErrors");
   const errors = await form.getErrorsQuery(
     userId,
-    routes.addresses.newAddress.slug,
+    routes.addresses.searchAddress.slug,
   );
 
   async function searchAction(formData: FormData) {
@@ -30,7 +29,7 @@ export default async () => {
           },
         ],
         userId,
-        routes.addresses.newAddress.slug,
+        routes.addresses.searchAddress.slug,
       );
       return revalidatePath("/");
     }
