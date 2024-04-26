@@ -18,6 +18,10 @@ export default async (props: MessageCreateProps) => {
       preferredTransportations.push("email");
     }
 
+    if (Boolean(formData.get("sms"))) {
+      preferredTransportations.push("sms");
+    }
+
     const messageType = formData.get("messageType")?.toString();
     if (!messageType) {
       return;
@@ -80,7 +84,6 @@ export default async (props: MessageCreateProps) => {
                 name="sms"
                 type="checkbox"
                 value="sms"
-                disabled
               />
               <label
                 className="govie-label--s govie-checkboxes__label"
