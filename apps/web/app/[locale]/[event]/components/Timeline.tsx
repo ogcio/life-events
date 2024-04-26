@@ -4,7 +4,7 @@ import ds from "design-system";
 import { GroupedEvents, TimeLineData } from "../../timeline/Timeline";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import getTimelineData from "@data/getTimelineData";
+import getTimelineData from "@/data/getTimelineData";
 import EventTypeSelector from "./EventTypeSelector";
 import submitQuery_ from "../../timeline/actions/submitQuery";
 import { headers } from "next/headers";

@@ -1,7 +1,6 @@
 FROM base-deps as deps
 
 WORKDIR /app
-ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
 COPY ./package*.json /app/
@@ -23,12 +22,23 @@ COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 FROM deps AS builder
 WORKDIR /app
 ARG NEXT_PUBLIC_API_ENDPOINT
-ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
 
 RUN npm run build --workspace=apps/web
 
+from base-deps as runner
+
+WORKDIR /app
+
+ARG NEXT_PUBLIC_API_ENDPOINT
+ENV LOG_LEVEL=trace
+ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
+ENV NODE_ENV=production
+
+COPY --from=builder /app/apps/web/.next/standalone ./
+COPY --from=builder /app/apps/web/.next/static ./.next/static
+
 EXPOSE 3000
 
-CMD [ "npm", "--prefix", "apps/web",  "start" ]
+CMD HOSTNAME="0.0.0.0" node apps/web/server.js
