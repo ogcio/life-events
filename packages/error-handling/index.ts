@@ -2,7 +2,12 @@ import { FastifyInstance } from "fastify";
 import { initializeErrorHandler } from "./src/initialize-error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 
-export const initializeErrorHandling = (server: FastifyInstance): void => {
+export const initializeErrorHandling = (
+  server: FastifyInstance,
+  initializeLoggingHooksToo: boolean,
+): void => {
   initializeErrorHandler(server);
-  initializeLoggingHooks(server);
+  if (initializeLoggingHooksToo) {
+    initializeLoggingHooks(server);
+  }
 };
