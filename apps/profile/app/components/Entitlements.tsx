@@ -37,7 +37,7 @@ export default async () => {
                 padding: "40px",
                 boxSizing: "border-box",
               }}
-              key={data.document_number}
+              key={data.documentNumber}
             >
               <h3 style={{ marginTop: 0 }}>{t(`${data.type}`)}</h3>
 
@@ -73,7 +73,7 @@ export default async () => {
                   </dt>
                   <dd className="govie-summary-list__value">
                     {" "}
-                    <strong>{data.document_number}</strong>
+                    <strong>{data.documentNumber}</strong>
                   </dd>
                 </div>
                 <div className="govie-summary-list__row">
@@ -85,10 +85,10 @@ export default async () => {
                   </dt>
                   <dd className="govie-summary-list__value">
                     {" "}
-                    <strong>{data.issue_date}</strong>
+                    <strong>{data.issueDate}</strong>
                   </dd>
                 </div>
-                {data.expiry_date && (
+                {data.expiryDate && (
                   <div className="govie-summary-list__row">
                     <dt
                       className="govie-summary-list__key"
@@ -97,14 +97,14 @@ export default async () => {
                       {t("expiryDate")}:
                     </dt>
                     <dd className="govie-summary-list__value">
-                      <strong>{data.expiry_date}</strong>
+                      <strong>{data.expiryDate}</strong>
                     </dd>
                   </div>
                 )}
               </dl>
               <Link
                 className="govie-link"
-                href={routes.entitlements[data.type].path(data.document_number)}
+                href={routes.entitlements[data.type].path(data.documentNumber)}
               >
                 {t("view")}
               </Link>

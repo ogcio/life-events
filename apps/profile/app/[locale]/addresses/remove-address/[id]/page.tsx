@@ -56,7 +56,7 @@ export default async (params: NextPageProps) => {
                 {t("firstLineOfAddress")}
               </dt>
               <dd className="govie-summary-list__value">
-                {address.address_line1}
+                {address.addressLine1}
               </dd>
             </div>
             <div className="govie-summary-list__row">
@@ -64,7 +64,7 @@ export default async (params: NextPageProps) => {
                 {t("secondLineOfAddress")}
               </dt>
               <dd className="govie-summary-list__value">
-                {address.address_line2}
+                {address.addressLine2}
               </dd>
             </div>
             <div className="govie-summary-list__row">
@@ -82,13 +82,13 @@ export default async (params: NextPageProps) => {
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("moveInDate")}</dt>
               <dd className="govie-summary-list__value">
-                {address.move_in_date ? formatDate(address.move_in_date) : ""}
+                {address.moveInDate ? formatDate(address.moveInDate) : ""}
               </dd>
             </div>
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("moveOutDate")}</dt>
               <dd className="govie-summary-list__value">
-                {address.move_out_date ? formatDate(address.move_out_date) : ""}
+                {address.moveOutDate ? formatDate(address.moveOutDate) : ""}
               </dd>
             </div>
           </dl>

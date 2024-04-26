@@ -7,6 +7,7 @@ import {
   Address,
   ParamsWithAddressId,
   UpdateAddress,
+  PatchAddress,
 } from "../../types/schemaDefinitions";
 
 export default async function addresses(app: FastifyInstance) {
@@ -27,7 +28,16 @@ export default async function addresses(app: FastifyInstance) {
 
       try {
         const result = await app.pg.query(
-          `SELECT address_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date, is_primary, ownership_status, updated_at FROM user_addresses WHERE user_id = $1`,
+          `SELECT address_id AS "addressId", 
+            address_line1 AS "addressLine1", 
+            address_line2 AS "addressLine2", 
+            town, county, eirecode, 
+            move_in_date AS "moveInDate", 
+            move_out_date AS "moveOutDate", 
+            is_primary AS "isPrimary", 
+            ownership_status AS "ownershipStatus", 
+            updated_at AS "updatedAt"
+            FROM user_addresses WHERE user_id = $1`,
           [userId],
         );
 
@@ -56,13 +66,13 @@ export default async function addresses(app: FastifyInstance) {
     async (request, reply) => {
       const userId = request.user?.id;
       const {
-        address_line1,
-        address_line2,
+        addressLine1,
+        addressLine2,
         town,
         county,
         eirecode,
-        move_in_date,
-        move_out_date,
+        moveInDate,
+        moveOutDate,
       } = request.body;
 
       try {
@@ -74,13 +84,13 @@ export default async function addresses(app: FastifyInstance) {
         `,
           [
             userId,
-            address_line1,
-            address_line2,
+            addressLine1,
+            addressLine2,
             town,
             county,
             eirecode,
-            move_in_date,
-            move_out_date,
+            moveInDate,
+            moveOutDate,
           ],
         );
 
@@ -111,7 +121,16 @@ export default async function addresses(app: FastifyInstance) {
       let result;
       try {
         result = await app.pg.query(
-          `SELECT address_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date, is_primary, ownership_status, updated_at FROM user_addresses WHERE user_id = $1 AND address_id = $2`,
+          `SELECT address_id "addressId", 
+            address_line1 AS "addressLine1", 
+            address_line2 AS "addressLine2", 
+            town, county, eirecode, 
+            move_in_date AS "moveInDate", 
+            move_out_date AS "moveOutDate", 
+            is_primary AS "isPrimary", 
+            ownership_status AS "ownershipStatus",
+            updated_at AS "updatedAt"
+           FROM user_addresses WHERE user_id = $1 AND address_id = $2`,
           [userId, addressId],
         );
       } catch (err) {
@@ -150,22 +169,93 @@ export default async function addresses(app: FastifyInstance) {
       const userId = request.user?.id;
       const { addressId } = request.params;
 
-      const keys = Object.keys(request.body);
-      const values = Object.values(request.body);
+      const columnsMapping: Record<keyof UpdateAddress, string> = {
+        addressLine1: "address_line1",
+        addressLine2: "address_line2",
+        town: "town",
+        county: "county",
+        eirecode: "eirecode",
+        moveInDate: "move_in_date",
+        moveOutDate: "move_out_date",
+        isPrimary: "is_primary",
+        ownershipStatus: "ownership_status",
+      };
 
-      const setClause = keys
-        .map((key, index) => `${key} = $${index + 3}`)
+      const values = [userId, addressId, ...Object.values(request.body)];
+      const setClauses = Object.keys(request.body)
+        .map(
+          (key, index) =>
+            `${columnsMapping[key as keyof typeof columnsMapping]} = $${index + 3}`,
+        )
         .join(", ");
 
       try {
         const result = await app.pg.query(
           `
+              UPDATE user_addresses
+              SET ${setClauses}, updated_at = now()
+              WHERE user_id = $1 AND address_id = $2
+              RETURNING  address_id as id
+            `,
+          values,
+        );
+
+        if (!result?.rows.length) {
+          const error = app.httpErrors.notFound("Address not found");
+          error.statusCode = 404;
+          error.code = "NOT_FOUND";
+
+          throw error;
+        }
+
+        reply.send({ id: result.rows[0].id });
+      } catch (error) {
+        throw app.httpErrors.internalServerError((error as Error).message);
+      }
+    },
+  );
+
+  app.patch<{ Body: PatchAddress; Params: ParamsWithAddressId }>(
+    "/:addressId",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Addresses"],
+        body: PatchAddress,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+          404: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { addressId } = request.params;
+
+      const columnsMapping: Record<keyof PatchAddress, string> = {
+        isPrimary: "is_primary",
+        ownershipStatus: "ownership_status",
+      };
+
+      const values = [userId, addressId, ...Object.values(request.body)];
+      const setClauses = Object.keys(request.body)
+        .map(
+          (key, index) =>
+            `${columnsMapping[key as keyof typeof columnsMapping]} = $${index + 3}`,
+        )
+        .join(", ");
+      try {
+        const result = await app.pg.query(
+          `
             UPDATE user_addresses
-            SET ${setClause}, updated_at = now()
+            SET ${setClauses}, updated_at = now()
             WHERE user_id = $1 AND address_id = $2
             RETURNING  address_id as id
           `,
-          [userId, addressId, ...values],
+          values,
         );
 
         if (!result?.rows.length) {

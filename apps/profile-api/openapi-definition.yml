@@ -25,11 +25,11 @@ paths:
                 items:
                   type: object
                   properties:
-                    address_id:
+                    addressId:
                       type: string
-                    address_line1:
+                    addressLine1:
                       type: string
-                    address_line2:
+                    addressLine2:
                       type: string
                     town:
                       type: string
@@ -37,24 +37,24 @@ paths:
                       type: string
                     eirecode:
                       type: string
-                    updated_at:
+                    updatedAt:
                       type: string
-                    move_in_date:
+                    moveInDate:
                       type: string
-                    move_out_date:
+                    moveOutDate:
                       type: string
-                    is_primary:
+                    isPrimary:
                       type: boolean
-                    ownership_status:
+                    ownershipStatus:
                       type: string
                   required:
-                    - address_id
-                    - address_line1
-                    - address_line2
+                    - addressId
+                    - addressLine1
+                    - addressLine2
                     - town
                     - county
                     - eirecode
-                    - updated_at
+                    - updatedAt
         "500":
           description: Default Response
           content:
@@ -87,9 +87,9 @@ paths:
             schema:
               type: object
               properties:
-                address_line1:
+                addressLine1:
                   type: string
-                address_line2:
+                addressLine2:
                   type: string
                 town:
                   type: string
@@ -97,12 +97,12 @@ paths:
                   type: string
                 eirecode:
                   type: string
-                move_in_date:
+                moveInDate:
                   type: string
-                move_out_date:
+                moveOutDate:
                   type: string
               required:
-                - address_line1
+                - addressLine1
                 - town
                 - county
                 - eirecode
@@ -160,11 +160,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  address_id:
+                  addressId:
                     type: string
-                  address_line1:
+                  addressLine1:
                     type: string
-                  address_line2:
+                  addressLine2:
                     type: string
                   town:
                     type: string
@@ -172,24 +172,24 @@ paths:
                     type: string
                   eirecode:
                     type: string
-                  updated_at:
+                  updatedAt:
                     type: string
-                  move_in_date:
+                  moveInDate:
                     type: string
-                  move_out_date:
+                  moveOutDate:
                     type: string
-                  is_primary:
+                  isPrimary:
                     type: boolean
-                  ownership_status:
+                  ownershipStatus:
                     type: string
                 required:
-                  - address_id
-                  - address_line1
-                  - address_line2
+                  - addressId
+                  - addressLine1
+                  - addressLine2
                   - town
                   - county
                   - eirecode
-                  - updated_at
+                  - updatedAt
         "404":
           description: Default Response
           content:
@@ -245,9 +245,9 @@ paths:
             schema:
               type: object
               properties:
-                address_line1:
+                addressLine1:
                   type: string
-                address_line2:
+                addressLine2:
                   type: string
                 town:
                   type: string
@@ -255,13 +255,98 @@ paths:
                   type: string
                 eirecode:
                   type: string
-                move_in_date:
+                moveInDate:
                   type: string
-                move_out_date:
+                moveOutDate:
                   type: string
-                is_primary:
+                isPrimary:
                   type: boolean
-                ownership_status:
+                ownershipStatus:
+                  type: string
+              required:
+                - addressLine1
+                - town
+                - county
+                - eirecode
+                - isPrimary
+                - ownershipStatus
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: addressId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+    patch:
+      tags:
+        - Addresses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isPrimary:
+                  type: boolean
+                ownershipStatus:
                   type: string
       parameters:
         - schema:
@@ -414,18 +499,18 @@ paths:
                       type: string
                     type:
                       type: string
-                    issue_date:
+                    issueDate:
                       type: string
-                    expiry_date:
+                    expiryDate:
                       type: string
-                    document_number:
+                    documentNumber:
                       type: string
                   required:
                     - firstname
                     - lastname
                     - type
-                    - issue_date
-                    - document_number
+                    - issueDate
+                    - documentNumber
         "500":
           description: Default Response
           content:
@@ -469,17 +554,17 @@ paths:
                     type: string
                   title:
                     type: string
-                  date_of_birth:
+                  dateOfBirth:
                     type: string
                   ppsn:
                     type: string
-                  ppsn_visible:
+                  ppsnVisible:
                     type: boolean
                   gender:
                     type: string
                   phone:
                     type: string
-                  consent_to_prefill_data:
+                  consentToPrefillData:
                     type: boolean
                 required:
                   - firstname
@@ -487,10 +572,10 @@ paths:
                   - email
                   - title
                   - ppsn
-                  - ppsn_visible
+                  - ppsnVisible
                   - gender
                   - phone
-                  - consent_to_prefill_data
+                  - consentToPrefillData
         "404":
           description: Default Response
           content:
@@ -554,17 +639,17 @@ paths:
                   type: string
                 title:
                   type: string
-                date_of_birth:
+                dateOfBirth:
                   type: string
                 ppsn:
                   type: string
-                ppsn_visible:
+                ppsnVisible:
                   type: boolean
                 gender:
                   type: string
                 phone:
                   type: string
-                consent_to_prefill_data:
+                consentToPrefillData:
                   type: boolean
               required:
                 - firstname
@@ -623,17 +708,99 @@ paths:
                   type: string
                 title:
                   type: string
-                date_of_birth:
+                dateOfBirth:
                   type: string
                 ppsn:
                   type: string
-                ppsn_visible:
+                ppsnVisible:
                   type: boolean
                 gender:
                   type: string
                 phone:
                   type: string
-                consent_to_prefill_data:
+                consentToPrefillData:
+                  type: boolean
+              required:
+                - firstname
+                - lastname
+                - email
+                - title
+                - dateOfBirth
+                - ppsn
+                - ppsnVisible
+                - gender
+                - phone
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+    patch:
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ppsnVisible:
+                  type: boolean
+                consentToPrefillData:
                   type: boolean
       responses:
         "200":

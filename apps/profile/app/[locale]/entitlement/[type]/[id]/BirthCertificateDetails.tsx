@@ -7,12 +7,12 @@ async function getBirthCertificateeDetails(_id: string) {
   const { firstName, lastName } = await PgSessions.get();
   return {
     name: `${firstName} ${lastName}`,
-    date_of_birth: new Date("1990-01-01T00:00:00Z"),
+    dateOfBirth: new Date("1990-01-01T00:00:00Z"),
     gender: "male",
-    place_of_birth: "Ireland",
-    mother_name: "Maria Murphy",
-    issue_date: "02/01/1990",
-    certificate_number: "0523789",
+    placeOfBirth: "Ireland",
+    motherName: "Maria Murphy",
+    issueDate: "02/01/1990",
+    certificateNumber: "0523789",
   };
 }
 
@@ -36,32 +36,32 @@ export default async ({ id }: { id: string }) => {
               {t("dateOfBirth")}
             </th>
             <td className="govie-table__cell">
-              {formatDate(data.date_of_birth)}
+              {formatDate(data.dateOfBirth)}
             </td>
           </tr>
           <tr className="govie-tcpable__row">
             <th className="govie-table__header" scope="row">
               {t("placeOfBirth")}
             </th>
-            <td className="govie-table__cell">{data.place_of_birth}</td>
+            <td className="govie-table__cell">{data.placeOfBirth}</td>
           </tr>
           <tr className="govie-table__row">
             <th className="govie-table__header" scope="row">
               {t("motherName")}
             </th>
-            <td className="govie-table__cell">{data.mother_name}</td>
+            <td className="govie-table__cell">{data.motherName}</td>
           </tr>
           <tr className="govie-table__row">
             <th className="govie-table__header" scope="row">
               {t("issueDate")}
             </th>
-            <td className="govie-table__cell">{data.issue_date}</td>
+            <td className="govie-table__cell">{data.issueDate}</td>
           </tr>
           <tr className="govie-table__row">
             <th className="govie-table__header" scope="row">
               {t("certificateNumber")}
             </th>
-            <td className="govie-table__cell">{data.certificate_number}</td>
+            <td className="govie-table__cell">{data.certificateNumber}</td>
           </tr>
         </tbody>
       </table>

@@ -7,12 +7,6 @@ import ds from "design-system";
 import { form, routes } from "../../../../utils";
 import { revalidatePath } from "next/cache";
 
-const AddressLine = ({ value }: { value: string }) => (
-  <p className="govie-body" style={{ marginBottom: "5px" }}>
-    {value}
-  </p>
-);
-
 export default async (params: NextPageProps) => {
   const { userId } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
@@ -77,9 +71,9 @@ export default async (params: NextPageProps) => {
     }
 
     if (isOwner !== undefined && isPrimaryAddress !== undefined) {
-      const result = await new Profile(userId).updateAddress(addressId, {
-        ownership_status: isOwner === "true" ? "owner" : "renting",
-        is_primary: isPrimaryAddress === "true" ? true : false,
+      const result = await new Profile(userId).patchAddress(addressId, {
+        ownershipStatus: isOwner === "true" ? "owner" : "renting",
+        isPrimary: isPrimaryAddress === "true" ? true : false,
       });
       if (result?.error) {
         //handle error
@@ -114,13 +108,13 @@ export default async (params: NextPageProps) => {
             marginBottom: "30px",
           }}
         >
-          <AddressLine value={address.address_line1} />
-          {address.address_line2 && (
-            <AddressLine value={address.address_line2} />
-          )}
-          <AddressLine value={address.town} />
-          <AddressLine value={address.county} />
-          <AddressLine value={address.eirecode} />
+          <ul className="govie-list">
+            <li>{address.addressLine1}</li>
+            {address.addressLine2 && <li>{address.addressLine2}</li>}
+            <li>{address.town}</li>
+            <li>{address.county}</li>
+            <li>{address.eirecode}</li>
+          </ul>
         </div>
         <form action={saveAddressDetails}>
           <h2 className="govie-heading-m">{t("ownerOrRenting")}</h2>
