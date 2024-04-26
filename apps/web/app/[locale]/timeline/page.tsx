@@ -43,6 +43,7 @@ export default async (props: web.NextPageProps) => {
         userName={userName}
         searchParams={queryParams}
         timeLineData={responseData}
+        locale={props.params.locale}
       />
     </div>
   );
