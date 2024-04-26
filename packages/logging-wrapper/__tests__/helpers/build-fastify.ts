@@ -20,7 +20,11 @@ export const buildFastify = (loggerDestination?: DestinationStream) => {
   server.get("/error", async (request, _reply) => {
     const parsed = request.query as { [x: string]: unknown };
     const requestedStatusCode = Number(parsed["status_code"] ?? "500");
-    const requestedMessage = parsed["error_message"] ?? "WHOOOPS";
+    const requestedMessage = String(parsed["error_message"] ?? "WHOOOPS");
+
+    if (!parsed["status_code"]) {
+      throw new Error(requestedMessage);
+    }
 
     throw createError(
       "CUSTOM_CODE",

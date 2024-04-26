@@ -14,6 +14,7 @@ import {
 import { LogLevel, PinoLoggerOptions } from "fastify/types/logger";
 
 const loggingContext: LoggingContext = {};
+const UNHANDLED_EXCEPTION_CODE = "UNHANDLED_EXCEPTION";
 
 export const getLoggingContext = (params: {
   includeError: boolean;
@@ -104,7 +105,7 @@ const parseLoggingError = (error: FastifyError): LoggingError => ({
   class: parseErrorClass(error),
   message: error.message,
   trace: error.stack,
-  code: error.code,
+  code: error.code ?? UNHANDLED_EXCEPTION_CODE,
 });
 
 export const getLoggerConfiguration = (

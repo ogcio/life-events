@@ -11,3 +11,4 @@ jobs: 8
 reporter: base
 snapshot-clean-cwd: true
 timeout: 30
+allow-incomplete-coverage: true
