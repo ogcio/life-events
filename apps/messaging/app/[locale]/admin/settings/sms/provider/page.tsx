@@ -55,7 +55,6 @@ export default async (props: { searchParams?: { id: string } }) => {
       const region = formData.get("region")?.toString();
 
       const required = { accessKey, secretAccessKey, name, region };
-      console.log(JSON.stringify(required));
       const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] =
         [];
 

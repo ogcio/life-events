@@ -110,8 +110,8 @@ export function mailService(app: FastifyInstance) {
       try {
         const provider = await this.getProvider(providerId);
 
-        console.log("PROVIDER", JSON.stringify(provider, null, 4));
         if (!provider) {
+          app.log.warn(null, "no provider");
           return;
         }
 
@@ -138,7 +138,7 @@ export function mailService(app: FastifyInstance) {
           ),
         );
       } catch (err) {
-        console.log(err);
+        app.log.error(err, "failed to send emails");
       }
     },
     // Temporary demonstrational util functions

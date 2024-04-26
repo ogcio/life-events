@@ -163,7 +163,6 @@ export default async (props: {
 
     state.fields = nextFields;
 
-    console.log(JSON.stringify(state, null, 4));
     await pgpool.query(
       `
      insert into message_template_states(user_id, state)
