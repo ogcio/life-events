@@ -21,11 +21,12 @@ const getSecretKey = async (
 
 const getStripeInstance = async (sk: string) => new s(sk);
 
-const callCreateIntentApi = async (stripe: s, amount: number) =>
-  await stripe.paymentIntents.create({
+const callCreateIntentApi = async (stripe: s, amount: number) => {
+  return stripe.paymentIntents.create({
     amount,
     currency: "EUR",
   });
+};
 
 export async function createPaymentIntent(paymentRequest: PaymentRequest) {
   try {
