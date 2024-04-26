@@ -17,6 +17,41 @@
   "Header": {
     "title": "Payments"
   },
+  "MyPayments": {
+    "title": "My Payments",
+    "empty": {
+      "title": "There are no payments.",
+      "description": "You have not made any payments yet."
+    },
+    "table": {
+      "status": "Status",
+      "date": "Date",
+      "paymentRequestTitle": "Payment Request Title",
+      "amount": "Amount",
+      "actions": "Actions"
+    },
+    "actions": {
+      "details": "Details"
+    },
+    "details": {
+      "paymentDetails": "Payment details",
+      "requestTitle": "Payment Request Title",
+      "amount": "Amount",
+      "lastUpdate": "Last update",
+      "status": "Status",
+      "providerType": "Provider type",
+      "providers": {
+        "openbanking": "Open Banking",
+        "banktransfer": "Bank Transfer",
+        "stripe": "Credit/Debit Card",
+        "realex": "Realex",
+        "worldpay": "WorldPay"
+      },
+      "payerName": "Payer name",
+      "payerEmail": "Payer email",
+      "referenceCode": "Payment reference code"
+    }
+  },
   "PaymentSetup": {
     "menu": {
       "payments": "Payments",
@@ -229,6 +264,7 @@
     "payByBankDescription": "Make a direct payment securely from your bank app - no card needed",
     "payByCard": "Credit/Debit card",
     "payByCardDescription": "Pay securely with your credit or debit card",
+    "payByRealexCardDescription": "Pay securely with your credit or debit card - powered by Realex",
     "payNow": "Pay now",
     "manualBankTransfer": "Manual Bank Transfer",
     "manualBankTransferDescription": "Make a manual bank transfer",

@@ -1,19 +1,20 @@
-import { RedirectType, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { MessageCreateProps } from "../../../../utils/messaging";
 import { api } from "messages";
-import { useTranslations } from "next-intl";
 
-export default (props: MessageCreateProps) => {
-  const t = useTranslations("sendAMessage.SuccessForm");
+import { getTranslations } from "next-intl/server";
+
+export default async (props: MessageCreateProps) => {
+  const t = await getTranslations("sendAMessage.SuccessForm");
   async function action() {
     "use server";
 
-    redirect("/send-a-message/meta", RedirectType.replace);
+    redirect("/admin/send-a-message");
   }
 
   // Lets silently delete the state since we're done.
   if (props.stateId) {
-    void api.deleteMessageState(props.userId, props.stateId);
+    await api.deleteMessageState(props.userId, props.stateId);
   }
 
   return (

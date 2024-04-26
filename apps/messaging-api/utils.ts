@@ -6,6 +6,12 @@ import { HttpErrors } from "@fastify/sensible";
 
 export type HttpError = Pick<HttpErrors["HttpError"], "statusCode" | "message">;
 
+type AwsSmsProviderConfig = {
+  secretAccessKey: string;
+  accessKey: string;
+  type: "AWS";
+};
+
 export const utils = {
   interpolationReducer: function (interpolations: Record<string, string>) {
     return function reducer(acc: string, key: string) {
@@ -45,5 +51,13 @@ export const utils = {
       message,
       statusCode,
     };
+  },
+  isSmsAwsConfig(config: unknown): config is AwsSmsProviderConfig {
+    const check = config as AwsSmsProviderConfig;
+    return Boolean(
+      check?.type === "AWS" &&
+        "accessKey" in check &&
+        "secretAccessKey" in check,
+    );
   },
 };
