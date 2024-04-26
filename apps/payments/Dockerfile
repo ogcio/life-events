@@ -9,8 +9,6 @@ COPY ./apps/payments/package*.json /app/apps/payments/
 COPY ./packages/feature-flags/package*.json /app/packages/feature-flags/
 COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
-COPY ./packages/logging-wrapper/package*.json /app/packages/logging-wrapper/
-
 
 RUN npm ci
 
