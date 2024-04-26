@@ -60,6 +60,7 @@ export interface paths {
               richText: string;
               plainText: string;
               links: string[];
+              lang: string;
               /** Format: uuid */
               paymentRequestId?: string;
             };
@@ -73,6 +74,7 @@ export interface paths {
             preferredTransports: string[];
             userIds: string[];
             security: string;
+            messageType: string;
           };
         };
       };
@@ -264,6 +266,164 @@ export interface paths {
             password: string;
             throttle?: number;
             fromAddress: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        path: {
+          providerId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/providers/sms/": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                type: string;
+              }[];
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            config: {
+              type: string;
+              accessKey: string;
+              secretAccessKey: string;
+              region: string;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/providers/sms/{providerId}": {
+    get: {
+      parameters: {
+        path: {
+          providerId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data?: {
+                /** Format: uuid */
+                id: string;
+                name: string;
+                config: {
+                  type: string;
+                  accessKey: string;
+                  secretAccessKey: string;
+                  region: string;
+                };
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        path: {
+          providerId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            config: {
+              type: string;
+              accessKey: string;
+              secretAccessKey: string;
+              region: string;
+            };
           };
         };
       };

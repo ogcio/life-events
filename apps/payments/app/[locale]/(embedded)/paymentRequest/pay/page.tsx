@@ -86,6 +86,8 @@ export default async function Page(props: Props) {
 
   const hasStripe = details.providers.some(({ type }) => type === "stripe");
 
+  const hasRealex = details.providers.some(({ type }) => type === "realex");
+
   const allowCustomAmount = details.allowCustomAmount;
 
   const urlAmount = props.searchParams.amount
@@ -176,6 +178,7 @@ export default async function Page(props: Props) {
             hasManualBanking={hasManualBanking}
             hasOpenBanking={hasOpenBanking}
             hasStripe={hasStripe}
+            hasRealex={hasRealex}
             paymentId={props.searchParams.paymentId}
             referenceId={props.searchParams.id}
             urlAmount={urlAmount}
