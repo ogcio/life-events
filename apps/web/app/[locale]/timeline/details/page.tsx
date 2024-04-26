@@ -30,7 +30,11 @@ export default async (props: web.NextPageProps) => {
         }}
       >
         <Link
-          href={`/${locale}/timeline?${searchParams.toString()}`}
+          href={
+            props.searchParams?.viewMode
+              ? `/${locale}/timeline?${searchParams.toString()}`
+              : `/${locale}/events`
+          }
           className="govie-back-link"
           style={{ marginTop: "0" }}
         >

@@ -49,8 +49,8 @@ export default ({ showSidebarToggle, locale }: THeaderProps) => {
           >
             {showSidebarToggle && <HamburgerButton />}
 
-            <a
-              href="/"
+            <Link
+              href={`/${locale}`}
               className="govie-header__link govie-header__link--homepage"
               style={{ display: "block" }}
             >
@@ -118,7 +118,7 @@ export default ({ showSidebarToggle, locale }: THeaderProps) => {
                 </defs>
               </svg>
               <span className="govie-visually-hidden">gov.ie</span>
-            </a>
+            </Link>
             <div className="govie-!-font-size-24">
               <strong>{t("myLifeEvents")}</strong>
             </div>
