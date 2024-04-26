@@ -68,7 +68,6 @@ function assignTemplateLiterals(set: Set<string>, s?: string) {
     current = xp.exec(scpy);
   }
 
-  // return [...stash];
 }
 
 export default async (props: {
