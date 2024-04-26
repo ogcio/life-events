@@ -19,7 +19,6 @@ COPY --from=design-system-container /app/packages/design-system/ /app/packages/d
 COPY ./packages/feature-flags/ /app/packages/feature-flags/
 COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
-COPY ./packages/logging-wrapper/ /app/packages/logging-wrapper/
 
 FROM deps AS builder
 WORKDIR /app
