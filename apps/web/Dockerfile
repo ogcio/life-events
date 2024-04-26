@@ -20,10 +20,8 @@ COPY ./packages/messages/ /app/packages/messages/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 
 FROM deps AS builder
+
 WORKDIR /app
-ARG NEXT_PUBLIC_API_ENDPOINT
-ENV LOG_LEVEL=trace
-ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
 
 RUN npm run build --workspace=apps/web
 
