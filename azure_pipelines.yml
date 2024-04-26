@@ -8,7 +8,7 @@ pr:
     include:
       - "*"
   autoCancel: true
-  drafts: false
+  drafts: true
 
 parameters:
   - name: services
