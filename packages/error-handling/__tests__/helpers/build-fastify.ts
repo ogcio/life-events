@@ -1,4 +1,4 @@
-import { createError } from "@fastify/error";
+import { FastifyError, createError } from "@fastify/error";
 import { pino, DestinationStream } from "pino";
 import fastify, { FastifyInstance } from "fastify";
 import { initializeErrorHandler } from "../../src/initialize-error-handler";
@@ -34,7 +34,7 @@ export const buildFastify = (
       "CUSTOM_CODE",
       requestedMessage as string,
       requestedStatusCode as number,
-    )();
+    )() as FastifyError & { headers: { [x: string]: unknown } };
 
     error.validation = [
       {
@@ -47,6 +47,8 @@ export const buildFastify = (
     ];
 
     error.validationContext = "body";
+
+    error.headers = { error_header: "value" };
 
     throw error;
   });
