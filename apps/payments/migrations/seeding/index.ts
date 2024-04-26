@@ -18,7 +18,7 @@ const pgpool = new Pool({
 const seed = async () => {
   const { rows: users } = await createUser(buildAuthPool());
   const userId = users[0].id;
-  const [manualBankTransfer, openBanking, stripe] = await seedProviders(
+  const [manualBankTransfer, openBanking, stripe, realex] = await seedProviders(
     pgpool,
     userId,
   );
@@ -27,6 +27,7 @@ const seed = async () => {
     openBankingProviderId: openBanking.rows[0].provider_id,
     manualBankTransferProviderId: manualBankTransfer.rows[0].provider_id,
     stripeProviderId: stripe.data!.id,
+    realexProviderId: realex.data!.id,
     userId,
     title: "Test Payment Request",
     description: "Description",

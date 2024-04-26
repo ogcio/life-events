@@ -8,19 +8,15 @@ import {
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
 import ds from "design-system/";
+import { PaymentRequest } from "../../../../../types/common";
+import { StripeData } from "../../paymentSetup/providers/types";
 
 type Props = {
   clientSecret?: string;
   returnUri: string;
+  paymentRequest: PaymentRequest;
+  providerKeysValid: boolean;
 };
-
-const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-
-if (!PUBLISHABLE_KEY) {
-  throw Error("Missing env var NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY");
-}
-
-const stripePromise = loadStripe(PUBLISHABLE_KEY);
 
 const appearance: Appearance = {
   theme: "stripe",
@@ -38,7 +34,12 @@ const appearance: Appearance = {
   },
 };
 
-export default function StripeHost({ clientSecret, returnUri }: Props) {
+export default function StripeHost({
+  clientSecret,
+  returnUri,
+  paymentRequest,
+  providerKeysValid,
+}: Props) {
   const options: StripeElementsOptions = useMemo(
     () => ({
       clientSecret,
@@ -46,6 +47,23 @@ export default function StripeHost({ clientSecret, returnUri }: Props) {
     }),
     [clientSecret],
   );
+
+  const stripePromise = useMemo(async () => {
+    let pk;
+    if (providerKeysValid) {
+      pk = (
+        paymentRequest.providers.find((p) => p.type === "stripe")!
+          .data as unknown as StripeData
+      ).livePublishableKey;
+    } else {
+      // for now we're using our own key if provider keys are not valid
+      const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+      if (!PUBLISHABLE_KEY)
+        throw Error("Missing env var NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY");
+      pk = PUBLISHABLE_KEY;
+    }
+    return loadStripe(pk);
+  }, [paymentRequest]);
 
   return (
     <div>
