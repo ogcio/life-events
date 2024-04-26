@@ -26,7 +26,7 @@ const buildErrorResponse = (error: FastifyError, request: FastifyRequest) => ({
 // I've opened an issue to fastify to ask them if we could avoid logging
 // those entries when disableRequestLogging is true
 // https://github.com/fastify/fastify/issues/5409
-export const initializeErrorHandler = (server: FastifyInstance): void => {
+export const setupErrorHandler = (server: FastifyInstance): void => {
   const setErrorHeaders = (
     error: null | {
       headers?: { [x: string]: string | number | string[] | undefined };

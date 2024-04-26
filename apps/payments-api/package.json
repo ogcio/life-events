@@ -17,7 +17,7 @@
       "../../packages/feature-flags/src/**/*",
       "../../packages/messages/src/**/*",
       "../../packages/logging-wrapper/src/**/*",
-      "../../packages/error-handling/src/**/*",
+      "../../packages/error-handler/src/**/*",
       "./**/*"
     ],
     "ext": "ts,json",
@@ -42,7 +42,7 @@
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
     "logging-wrapper": "*",
-    "error-handling": "*",
+    "error-handler": "*",
     "pg": "^8.11.3"
   },
   "devDependencies": {

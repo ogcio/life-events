@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify";
 import {
-  initializeErrorHandler,
   initializeNotFoundHandler,
+  setupErrorHandler,
 } from "./src/initialize-error-handler";
 
-export const initializeErrorHandling = (server: FastifyInstance): void => {
-  initializeErrorHandler(server);
+export const initializeErrorHandler = (server: FastifyInstance): void => {
+  setupErrorHandler(server);
   initializeNotFoundHandler(server);
 };

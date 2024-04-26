@@ -14,7 +14,7 @@ import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
-import { initializeErrorHandling } from "error-handling";
+import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,7 +25,7 @@ dotenv.config();
 export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
   initializeLoggingHooks(app);
-  initializeErrorHandling(app);
+  initializeErrorHandler(app);
 
   app.setValidatorCompiler(({ schema }) => {
     return schemaValidators(schema);

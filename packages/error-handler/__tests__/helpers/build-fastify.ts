@@ -1,13 +1,13 @@
 import { FastifyError, createError } from "@fastify/error";
 import { pino, DestinationStream } from "pino";
 import fastify, { FastifyInstance } from "fastify";
-import { initializeErrorHandling } from "../..";
+import { initializeErrorHandler } from "../..";
 
 export const buildFastify = (
   loggerDestination?: DestinationStream,
 ): FastifyInstance => {
   const server = fastify({ logger: pino({}, loggerDestination) });
-  initializeErrorHandling(server as unknown as FastifyInstance);
+  initializeErrorHandler(server as unknown as FastifyInstance);
 
   server.get("/error", async (request, _reply) => {
     const parsed = request.query as { [x: string]: unknown };
