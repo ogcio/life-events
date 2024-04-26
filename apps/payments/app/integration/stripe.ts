@@ -34,7 +34,10 @@ export async function createPaymentIntent(paymentRequest: PaymentRequest) {
     const sk = await getSecretKey(providerId, userId);
     const stripe = await getStripeInstance(sk);
 
-    const paymentIntent = callCreateIntentApi(stripe, paymentRequest.amount);
+    const paymentIntent = await callCreateIntentApi(
+      stripe,
+      paymentRequest.amount,
+    );
     return { paymentIntent, providerKeysValid: true };
   } catch (error) {
     // for now fallback to use our own key
@@ -42,7 +45,10 @@ export async function createPaymentIntent(paymentRequest: PaymentRequest) {
     if (!STRIPE_SECRET_KEY) throw new Error("Stripe secret key not found");
     const stripe = await getStripeInstance(STRIPE_SECRET_KEY);
 
-    const paymentIntent = callCreateIntentApi(stripe, paymentRequest.amount);
+    const paymentIntent = await callCreateIntentApi(
+      stripe,
+      paymentRequest.amount,
+    );
     return { paymentIntent, providerKeysValid: false };
   }
 }
