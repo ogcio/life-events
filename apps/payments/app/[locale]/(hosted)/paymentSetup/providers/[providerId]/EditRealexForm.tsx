@@ -28,7 +28,7 @@ export default async ({ provider }: Props) => {
 
     await new Payments(userId).updateProvider(provider.id, {
       name: providerName,
-      data: providerData,
+      data: providerData as unknown as any, // Temp fix, Typebox type must be fixed
       status: provider.status,
     });
 

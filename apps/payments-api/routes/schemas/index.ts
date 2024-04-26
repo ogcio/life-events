@@ -229,7 +229,7 @@ export const FullTransaction = Type.Object({
   transactionId: Type.String(),
   paymentRequestId: Type.String(),
   extPaymentId: Type.String(),
-  status: Type.String(), // TODO: Change to TransactionStatuses
+  status: TransactionStatuses,
   integrationReference: Type.String(),
   amount: Type.Number(),
   paymentProviderId: Type.String(),
@@ -291,3 +291,18 @@ export const PaymentIntentId = Type.Object({
   intentId: Type.String(),
 });
 export type PaymentIntentId = Static<typeof PaymentIntentId>;
+
+/**
+ * Citizen
+ */
+
+export const CitizenTransactions = Type.Array(
+  Type.Pick(Transaction, [
+    "transactionId",
+    "status",
+    "title",
+    "updatedAt",
+    "amount",
+  ]),
+);
+export type CitizenTransactions = Static<typeof CitizenTransactions>;
