@@ -21,6 +21,10 @@ initializeLoggingHooks(server);
 
 That's it! Just log as you usually do!
 
+## Docker
+
+Remember to copy the package to the container in your Dockerfile!
+
 ## Default records
 
 We will have 3 mandatory log entries that will be written for each request the service manages.
