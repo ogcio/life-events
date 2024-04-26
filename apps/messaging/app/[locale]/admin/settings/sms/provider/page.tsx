@@ -279,9 +279,11 @@ export default async (props: { searchParams?: { id: string } }) => {
             </FormElement>
           </>
         ) : null}
-        <button className="govie-button">
-          {props.searchParams?.id ? t("submitUpdate") : t("submitCreate")}
-        </button>
+        {state ?? data?.config.type ? (
+          <button className="govie-button">
+            {props.searchParams?.id ? t("submitUpdate") : t("submitCreate")}
+          </button>
+        ) : null}
       </form>
       <Link href="/admin/settings/sms" className="govie-back-link">
         {t("backLink")}
