@@ -152,7 +152,10 @@
       "port": "port",
       "username": "username",
       "password": "password",
-      "fromAddress": "from address"
+      "fromAddress": "from address",
+      "region": "region",
+      "accessKey": "access key",
+      "secretAccessKey": "secret access key"
     }
   },
   "settings": {
@@ -194,6 +197,7 @@
       "editLink": "Edit"
     },
     "SmsProvider": {
+      "titleAdd": "Add provider",
       "titleUpdate": "Update provider",
       "submitProviderTypeSelect": "Select",
       "nameLabel": "Name",

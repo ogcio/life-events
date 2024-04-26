@@ -6,12 +6,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { FormElement } from "../../emails/provider/page";
 import Link from "next/link";
+import { temporaryMockUtils } from "messages";
 
-type AwsProviderConfig = {
-  accessKey: string;
-  secretAccessKey: string;
-  region: string;
-};
+const awsErrorKey = "aws-provider-form";
+const providerTypeErrorKey = "provider-type";
 
 type AwsState = {
   name: string;
@@ -20,13 +18,6 @@ type AwsState = {
   secretAccessKey: string;
   region: string;
 };
-
-function isAws(config: unknown): config is AwsProviderConfig {
-  return Boolean(
-    (config as AwsProviderConfig)?.accessKey &&
-      (config as AwsProviderConfig)?.accessKey,
-  );
-}
 
 function isAwsState(state: unknown): state is AwsState {
   return (state as AwsState)?.type === "AWS";
@@ -58,12 +49,30 @@ export default async (props: { searchParams?: { id: string } }) => {
 
     const name = formData.get("name")?.toString();
 
-    // zzz..
     if (isAwsState(state)) {
       const secretAccessKey = formData.get("secretAccessKey")?.toString();
       const accessKey = formData.get("accessKey")?.toString();
       const region = formData.get("region")?.toString();
 
+      const required = { accessKey, secretAccessKey, name, region };
+      console.log(JSON.stringify(required));
+      const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] =
+        [];
+
+      for (const field of Object.keys(required)) {
+        if (!required[field]) {
+          formErrors.push({
+            errorValue: "",
+            field,
+            messageKey: "empty",
+          });
+        }
+      }
+
+      if (formErrors.length) {
+        await temporaryMockUtils.createErrors(formErrors, userId, awsErrorKey);
+        return revalidatePath("/");
+      }
       if (!accessKey || !secretAccessKey || !name || !region) {
         return;
       }
@@ -103,20 +112,33 @@ export default async (props: { searchParams?: { id: string } }) => {
 
   async function submitProviderType(formData: FormData) {
     "use server";
+    const { userId } = await PgSessions.get();
     const providerType = formData.get("providerType")?.toString();
 
-    if (providerType) {
-      const { userId } = await PgSessions.get();
-      await pgpool.query(
-        `
+    if (!providerType) {
+      await temporaryMockUtils.createErrors(
+        [
+          {
+            errorValue: "",
+            field: "providerType",
+            messageKey: "empty",
+          },
+        ],
+        userId,
+        providerTypeErrorKey,
+      );
+      return revalidatePath("/");
+    }
+
+    await pgpool.query(
+      `
             insert into sms_provider_states(user_id, state)
             values($1, $2)
             on conflict(user_id) do update
             set state = $2
         `,
-        [userId, { type: providerType }],
-      );
-    }
+      [userId, { type: providerType }],
+    );
 
     revalidatePath("/");
   }
@@ -130,7 +152,15 @@ export default async (props: { searchParams?: { id: string } }) => {
 
   const state = await getState(userId);
 
-  console.log(state);
+  const awsErrors = await temporaryMockUtils.getErrors(userId, awsErrorKey);
+
+  const nameError = awsErrors.find((error) => error.field === "name");
+  const accessKeyError = awsErrors.find((error) => error.field === "accessKey");
+  const secretAccessKeyError = awsErrors.find(
+    (error) => error.field === "secretAccessKey",
+  );
+  const regionError = awsErrors.find((error) => error.field === "region");
+
   return (
     <>
       <h1>
@@ -166,7 +196,18 @@ export default async (props: { searchParams?: { id: string } }) => {
         {isAwsState(state) ? (
           <>
             <h3>AWS</h3>
-            <FormElement id="name" label={t("nameLabel")}>
+            <FormElement
+              id="name"
+              label={t("nameLabel")}
+              error={
+                // assumes messageKey is only (empty)
+                nameError &&
+                terror(nameError.messageKey, {
+                  field: terror(`fields.${nameError.field}`),
+                  indArticleCheck: "",
+                })
+              }
+            >
               <input
                 id="name"
                 type="text"
@@ -175,7 +216,18 @@ export default async (props: { searchParams?: { id: string } }) => {
                 defaultValue={state.name ?? data?.name}
               />
             </FormElement>
-            <FormElement id="accessKey" label={t("accessKeyLabel")}>
+            <FormElement
+              id="accessKey"
+              label={t("accessKeyLabel")}
+              error={
+                // assumes messageKey is only (empty)
+                accessKeyError &&
+                terror(accessKeyError.messageKey, {
+                  field: terror(`fields.${accessKeyError.field}`),
+                  indArticleCheck: "an",
+                })
+              }
+            >
               <input
                 id="accessKey"
                 type="text"
@@ -184,7 +236,18 @@ export default async (props: { searchParams?: { id: string } }) => {
                 defaultValue={state.accessKey ?? data?.config.accessKey}
               />
             </FormElement>
-            <FormElement id="secretAccessKey" label={t("secretAccessKey")}>
+            <FormElement
+              id="secretAccessKey"
+              label={t("secretAccessKey")}
+              error={
+                // assumes messageKey is only (empty)
+                secretAccessKeyError &&
+                terror(secretAccessKeyError.messageKey, {
+                  field: terror(`fields.${secretAccessKeyError.field}`),
+                  indArticleCheck: "",
+                })
+              }
+            >
               <input
                 id="secretAccessKey"
                 type="text"
@@ -195,7 +258,18 @@ export default async (props: { searchParams?: { id: string } }) => {
                 }
               />
             </FormElement>
-            <FormElement id="region" label={t("region")}>
+            <FormElement
+              id="region"
+              label={t("region")}
+              error={
+                // assumes messageKey is only (empty)
+                regionError &&
+                terror(regionError.messageKey, {
+                  field: terror(`fields.${regionError.field}`),
+                  indArticleCheck: "",
+                })
+              }
+            >
               <input
                 id="region"
                 type="text"
