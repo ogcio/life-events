@@ -41,20 +41,12 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
       },
     );
   } else {
-    options.push(
-      {
-        key: routes.messages.slug,
-        label: t("messages"),
-        url: routes.messages.slug,
-        icon: "events",
-      },
-      {
-        key: routes.settings.slug,
-        label: t("settings"),
-        url: routes.settings.slug,
-        icon: "about",
-      },
-    );
+    options.push({
+      key: routes.messages.slug,
+      label: t("messages"),
+      url: routes.messages.slug,
+      icon: "events",
+    });
   }
   return options;
 };

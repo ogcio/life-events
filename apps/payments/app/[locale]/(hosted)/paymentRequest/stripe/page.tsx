@@ -71,12 +71,12 @@ export default async function Card(props: {
     notFound();
   }
 
-  const { client_secret, id: paymentIntentId } =
+  const { paymentIntent, providerKeysValid } =
     await createPaymentIntent(paymentDetails);
 
   await buildApiClient(userId).transactions.apiV1TransactionsPost({
     paymentRequestId: props.searchParams.paymentId,
-    extPaymentId: paymentIntentId,
+    extPaymentId: paymentIntent.id,
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
@@ -99,8 +99,10 @@ export default async function Card(props: {
     >
       <NextIntlClientProvider messages={stripeMessages}>
         <StripeHost
-          clientSecret={client_secret as string | undefined}
+          clientSecret={paymentIntent.client_secret as string | undefined}
           returnUri={returnUri}
+          paymentRequest={paymentDetails}
+          providerKeysValid={providerKeysValid}
         />
       </NextIntlClientProvider>
     </div>

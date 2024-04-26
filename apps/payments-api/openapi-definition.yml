@@ -4,61 +4,7 @@ info:
   description: API for OGCIO Payment Service
   version: 0.1.0
 components:
-  schemas: 
-    openBankingData:
-      type: object
-      properties:
-        iban:
-          type: string
-        accountHolderName:
-          type: string
-      required:
-        - iban
-        - accountHolderName
-
-    bankTransferData:
-      type: object
-      properties:
-        iban:
-          type: string
-        accountHolderName:
-          type: string
-      required:
-        - iban
-        - accountHolderName
-
-    stripeData:
-      type: object
-      properties:
-        livePublishableKey:
-          type: string
-        liveSecretKey:
-          type: string
-      required:
-        - livePublishableKey
-        - liveSecretKey
-
-    worldpayData:
-      type: object
-      properties:
-        merchantCode:
-          type: string
-        installationId:
-          type: string
-      required:
-        - merchantCode
-        - installationId
-
-    realexData:
-      type: object
-      properties:
-        merchantId:
-          type: string
-        sharedSecret:
-          type: string
-      required:
-        - merchantId
-        - sharedSecret
+  schemas: {}
 paths:
   /health:
     get:
@@ -379,12 +325,8 @@ paths:
                 name:
                   type: string
                 data:
-                  oneOf:
-                    - $ref: '#/components/schemas/openBankingData'
-                    - $ref: '#/components/schemas/bankTransferData'
-                    - $ref: '#/components/schemas/stripeData'
-                    - $ref: '#/components/schemas/worldpayData'
-                    - $ref: '#/components/schemas/realexData'
+                  type: object
+                  properties: {}
                 status:
                   anyOf:
                     - type: string
