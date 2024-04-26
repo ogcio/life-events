@@ -4,6 +4,7 @@ trigger:
   - sta
 
 pr:
+  autoCancel: true
   branches:
     include:
       - "*"
