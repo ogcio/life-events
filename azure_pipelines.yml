@@ -4,11 +4,10 @@ trigger:
   - sta
 
 pr:
+  autoCancel: true
   branches:
     include:
       - "*"
-  autoCancel: true
-  drafts: true
 
 parameters:
   - name: services
