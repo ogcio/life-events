@@ -9,7 +9,5 @@ export const getLoggingConfiguration = (
   loggerDestination?: DestinationStream,
 ): FastifyServerOptions => fastifyLoggingConfiguration(loggerDestination);
 
-export const initializeLoggingHooks = (
-  server: FastifyInstance,
-  overrideErrorHandler: boolean = true,
-): void => fastifyLoggingHooks(server, overrideErrorHandler);
+export const initializeLoggingHooks = (server: FastifyInstance): void =>
+  fastifyLoggingHooks(server);

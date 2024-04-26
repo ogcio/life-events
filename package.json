@@ -12,8 +12,9 @@
   "scripts": {
     "build:ds": "npm run build --workspace=design-system",
     "build:logging-wrapper": "npm run build --workspace=logging-wrapper",
+    "build:error-handling": "npm run build --workspace=error-handling",
     "update-env": "MODE=update node scripts/init-env.mjs",
-    "init:packages": "npm i && npm run build:logging-wrapper",
+    "init:packages": "npm i && npm run build:logging-wrapper && npm run build:error-handling",
     "init:ds": "[ -d packages/design-system/dist ] || npm run build:ds", 
     "init:env": "node scripts/init-env.mjs",
     "init:logto": "node scripts/init-logto.mjs",
