@@ -1,17 +1,21 @@
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
-export default () => (
-  <>
-    <div>
-      <Link className="govie-link" href="settings/emails">
-        Emails
+export default () => {
+  const t = useTranslations("settings.Page");
+  return (
+    <>
+      <div>
+        <Link className="govie-link" href="settings/emails">
+          {t("emailsLink")}
+        </Link>
+        <Link className="govie-link" href="settings/sms">
+          {t("smsLink")}
+        </Link>
+      </div>
+      <Link className="govie-back-link" href="/">
+        {t("backLink")}
       </Link>
-      <Link className="govie-link" href="settings/sms">
-        SMS
-      </Link>
-    </div>
-    <Link className="govie-back-link" href="/">
-      Back
-    </Link>
-  </>
-);
+    </>
+  );
+};

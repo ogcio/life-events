@@ -159,6 +159,11 @@
     }
   },
   "settings": {
+    "Page": {
+      "emailsLink": "Emails",
+      "smsLink": "SMS",
+      "backLink": "Back"
+    },
     "Emails": {
       "title": "Email",
       "nameTableHeader": "Name",
