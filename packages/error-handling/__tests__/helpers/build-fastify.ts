@@ -1,13 +1,13 @@
 import { FastifyError, createError } from "@fastify/error";
 import { pino, DestinationStream } from "pino";
 import fastify, { FastifyInstance } from "fastify";
-import { initializeErrorHandler } from "../../src/initialize-error-handler";
+import { initializeErrorHandling } from "../..";
 
 export const buildFastify = (
   loggerDestination?: DestinationStream,
 ): FastifyInstance => {
   const server = fastify({ logger: pino({}, loggerDestination) });
-  initializeErrorHandler(server as unknown as FastifyInstance);
+  initializeErrorHandling(server as unknown as FastifyInstance);
 
   server.get("/error", async (request, _reply) => {
     const parsed = request.query as { [x: string]: unknown };
@@ -27,14 +27,16 @@ export const buildFastify = (
 
   server.get("/validation", async (request, _reply) => {
     const parsed = request.query as { [x: string]: unknown };
-    const requestedStatusCode = Number(parsed["status_code"] ?? "500");
     const requestedMessage = String(parsed["error_message"] ?? "WHOOOPS");
 
     const error = createError(
       "CUSTOM_CODE",
       requestedMessage as string,
-      requestedStatusCode as number,
-    )() as FastifyError & { headers: { [x: string]: unknown } };
+      422,
+    )() as FastifyError & {
+      headers: { [x: string]: unknown };
+      status: number | undefined;
+    };
 
     error.validation = [
       {
@@ -45,10 +47,9 @@ export const buildFastify = (
         message: requestedMessage,
       },
     ];
-
     error.validationContext = "body";
-
     error.headers = { error_header: "value" };
+    error.status = 423;
 
     throw error;
   });

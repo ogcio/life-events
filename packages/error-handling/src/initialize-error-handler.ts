@@ -50,14 +50,11 @@ export const initializeErrorHandler = (server: FastifyInstance): void => {
       }
     }
     res.statusCode = statusCode;
+    reply.statusCode = res.statusCode;
   };
 
   server.setErrorHandler(function (error, request, reply) {
     setErrorHeaders(error, reply);
-    if (!reply.statusCode || reply.statusCode === 200) {
-      const statusCode = error.statusCode ?? 500;
-      reply.code(statusCode >= 400 ? statusCode : 500);
-    }
 
     reply.send(buildErrorResponse(error, request));
   });
