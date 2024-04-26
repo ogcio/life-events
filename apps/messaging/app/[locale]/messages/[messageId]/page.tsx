@@ -32,6 +32,7 @@ export default async (props: { params: { messageId: string } }) => {
     paymentUrl = new URL("en/paymentRequest/pay", process.env.PAYMENTS_URL);
     paymentUrl.searchParams.append("id", userId);
     paymentUrl.searchParams.append("paymentId", message.paymentRequestId);
+    paymentUrl.searchParams.append("embed", "true");
 
     const transactionUrl = new URL(
       "api/transactions",

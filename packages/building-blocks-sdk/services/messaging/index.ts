@@ -164,4 +164,56 @@ export class Messaging {
 
     return { error };
   }
+
+  async getSmsProviders() {
+    const { error, data } = await this.client.GET("/api/v1/providers/sms/");
+    return { error, data: data?.data };
+  }
+
+  async getSmsProvider(
+    providerId: paths["/api/v1/providers/sms/{providerId}"]["get"]["parameters"]["path"]["providerId"],
+  ) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/providers/sms/{providerId}",
+      {
+        params: {
+          path: { providerId },
+        },
+      },
+    );
+
+    return { error, data: data?.data };
+  }
+  async updateSmsProvider(
+    providerId: paths["/api/v1/providers/sms/{providerId}"]["put"]["parameters"]["path"]["providerId"],
+    body: paths["/api/v1/providers/sms/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
+  ) {
+    const { error } = await this.client.PUT(
+      "/api/v1/providers/sms/{providerId}",
+      { params: { path: { providerId } }, body },
+    );
+
+    return { error };
+  }
+
+  async createSmsProvider(
+    body: paths["/api/v1/providers/sms/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    const { error } = await this.client.POST("/api/v1/providers/sms/", {
+      body,
+    });
+
+    return { error };
+  }
+
+  async deleteSmsProvider(
+    providerId: paths["/api/v1/providers/sms/{providerId}"]["delete"]["parameters"]["path"]["providerId"],
+  ) {
+    const { error } = await this.client.DELETE(
+      "/api/v1/providers/sms/{providerId}",
+      { params: { path: { providerId } } },
+    );
+
+    return { error };
+  }
 }

@@ -152,10 +152,18 @@
       "port": "port",
       "username": "username",
       "password": "password",
-      "fromAddress": "from address"
+      "fromAddress": "from address",
+      "region": "region",
+      "accessKey": "access key",
+      "secretAccessKey": "secret access key"
     }
   },
   "settings": {
+    "Page": {
+      "emailsLink": "Emails",
+      "smsLink": "SMS",
+      "backLink": "Back"
+    },
     "Emails": {
       "title": "Email",
       "nameTableHeader": "Name",
@@ -182,6 +190,29 @@
       "backLink": "Back",
       "updateButton": "Update",
       "createButton": "Create"
+    },
+    "Sms": {
+      "addProviderLink": "Add provider",
+      "backLink": "Back",
+      "title": "Sms providers",
+      "nameTableHeader": "Name",
+      "typeTableHeader": "Type",
+      "actionTableHeader": "Action",
+      "deleteButton": "Delete",
+      "editLink": "Edit"
+    },
+    "SmsProvider": {
+      "titleAdd": "Add provider",
+      "titleUpdate": "Update provider",
+      "submitProviderTypeSelect": "Select",
+      "nameLabel": "Name",
+      "accessKeyLabel": "Access key",
+      "secretAccessKey": "Secret access key",
+      "region": "Region",
+      "submitUpdate": "Update",
+      "submitCreate": "Create",
+      "selectProviderLabel": "Select provider",
+      "backLink": "Back"
     }
   }
 }
