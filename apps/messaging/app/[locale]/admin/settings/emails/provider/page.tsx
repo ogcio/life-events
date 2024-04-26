@@ -5,85 +5,9 @@ import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FormElement } from "../../FormElement";
 
 const defaultErrorStateId = "email_provider_form";
-
-export const FormElement = ({
-  children,
-  error,
-  label,
-  id,
-  hint,
-}: React.PropsWithChildren<{
-  error?: string;
-  label: string;
-  id: string;
-  hint?: string;
-}>) => {
-  return (
-    <div
-      className={
-        !Boolean(error)
-          ? "govie-form-group"
-          : "govie-form-group govie-form-group--error"
-      }
-    >
-      {error && (
-        <p id="input-field-error" className="govie-error-message">
-          <span className="govie-visually-hidden">Error:</span>
-          {error}
-        </p>
-      )}
-      <label htmlFor={id} className="govie-label--s">
-        {label}
-      </label>
-      {hint && (
-        <div className="govie-hint" id="input-field-hint">
-          {hint}
-        </div>
-      )}
-      {children}
-    </div>
-  );
-};
-
-// export const ProviderInput = (props: {
-//   id: string;
-//   label: string;
-//   hint?: string;
-//   defaultValue?: string | number;
-//   error?: string;
-// }) => (
-//   <div
-//     className={
-//       !Boolean(props.error)
-//         ? "govie-form-group"
-//         : "govie-form-group govie-form-group--error"
-//     }
-//   >
-//     {props.error && (
-//       <p id="input-field-error" className="govie-error-message">
-//         <span className="govie-visually-hidden">Error:</span>
-//         {props.error}
-//       </p>
-//     )}
-//     <label htmlFor="host" className="govie-label--s">
-//       {props.label}
-//     </label>
-//     {props.hint && (
-//       <div className="govie-hint" id="input-field-hint">
-//         {props.hint}
-//       </div>
-//     )}
-//     <input
-//       id={props.id}
-//       type="text"
-//       name={props.id}
-//       className="govie-input"
-//       defaultValue={props.defaultValue}
-//     />
-//   </div>
-// );
 
 export default async (props: { searchParams: { id: string } }) => {
   const [t, errorT] = await Promise.all([

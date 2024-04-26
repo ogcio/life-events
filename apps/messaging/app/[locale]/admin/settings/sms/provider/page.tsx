@@ -4,9 +4,9 @@ import { getTranslations } from "next-intl/server";
 import { pgpool } from "messages/dbConnection";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { FormElement } from "../../emails/provider/page";
 import Link from "next/link";
 import { temporaryMockUtils } from "messages";
+import { FormElement } from "../../FormElement";
 
 const awsErrorKey = "aws-provider-form";
 const providerTypeErrorKey = "provider-type";
