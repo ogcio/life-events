@@ -59,17 +59,19 @@ export default async function Page(props: Props) {
     status = TransactionStatuses.Failed;
   }
 
-  if (!extPaymentId && payment_intent && redirect_status) {
-    extPaymentId = payment_intent;
+  if (!extPaymentId) {
+    if (payment_intent && redirect_status) {
+      extPaymentId = payment_intent;
 
-    const mappedStatus = getInternalStatus(redirect_status);
-    if (!mappedStatus) {
-      throw new Error("Invalid payment intent status recieved!");
+      const mappedStatus = getInternalStatus(redirect_status);
+      if (!mappedStatus) {
+        throw new Error("Invalid payment intent status recieved!");
+      }
+
+      status = mappedStatus;
+    } else {
+      return notFound();
     }
-
-    status = mappedStatus;
-  } else {
-    return notFound();
   }
 
   const transactionDetail = await updateTransaction(extPaymentId, status);
