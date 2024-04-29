@@ -6,7 +6,6 @@ import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import getTimelineData from "@/data/getTimelineData";
 import EventTypeSelector from "./EventTypeSelector";
-import submitQuery_ from "../../timeline/actions/submitQuery";
 import { headers } from "next/headers";
 import SearchForm from "../../timeline/SearchForm";
 
@@ -44,12 +43,6 @@ export default async ({ searchProps, messages, locale }: TimelineProps) => {
   const searchQuery = queryParams.get("searchQuery") || "";
 
   queryParams.set("searchQuery", searchQuery);
-
-  const submitQuery = submitQuery_.bind(
-    null,
-    path,
-    new URLSearchParams(searchProps),
-  );
 
   const timelineResponse = await getTimelineData(queryParams);
   const timelineData: TimeLineData = await timelineResponse.json();
