@@ -1,15 +1,23 @@
-import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import ds from "design-system";
 
 import Timeline from "./Timeline";
+import { AbstractIntlMessages } from "next-intl";
 
 type TimelineWrapperProps = {
-  messsages: AbstractIntlMessages;
   username: string;
   locale: string;
+  searchParams?: {
+    [key: string]: string;
+  };
+  messages: AbstractIntlMessages;
 };
 
-export default ({ messsages, username, locale }: TimelineWrapperProps) => {
+export default ({
+  username,
+  searchParams,
+  messages,
+  locale,
+}: TimelineWrapperProps) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 
   return (
@@ -36,9 +44,11 @@ export default ({ messsages, username, locale }: TimelineWrapperProps) => {
           {username}
         </label>
       </li>
-      <NextIntlClientProvider messages={messsages}>
-        <Timeline locale={locale} />
-      </NextIntlClientProvider>
+      <Timeline
+        locale={locale}
+        searchProps={searchParams}
+        messages={messages}
+      />
     </ol>
   );
 };
