@@ -1,5 +1,5 @@
 {
-  "name": "logging-wrapper",
+  "name": "error-handler",
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
@@ -15,7 +15,7 @@
   "dependencies": {
     "@fastify/error": "^3.4.1",
     "fastify": "^4.26.2",
-    "hyperid": "^3.2.0"
+    "logging-wrapper": "*"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
