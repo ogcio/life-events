@@ -131,7 +131,7 @@ export default () => {
                 }`.trim()}
                 href={new URL("/ga/" + path, process.env.HOST_URL).href}
               >
-                Gealic
+                Gaelic
               </Link>
             </div>
             <UserIcon />
