@@ -49,7 +49,6 @@ export default async (props: web.NextPageProps) => {
           gap: "2.5rem",
         }}
       >
-        {" "}
         <TimelineWrapper
           username={userName}
           searchParams={props.searchParams}

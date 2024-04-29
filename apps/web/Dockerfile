@@ -39,5 +39,4 @@ COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
 
 EXPOSE 3000
 
-# CMD HOSTNAME="0.0.0.0" node apps/web/server.js
 CMD [ "node", "apps/web/server.js" ]
