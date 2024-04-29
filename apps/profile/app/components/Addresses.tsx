@@ -7,7 +7,7 @@ import { Address } from "../../types/addresses";
 import Link from "next/link";
 import dayjs from "dayjs";
 
-export default async () => {
+export default async ({ locale }: { locale: string }) => {
   const t = await getTranslations("Addresses");
   const { userId } = await PgSessions.get();
 
@@ -84,7 +84,7 @@ export default async () => {
           data-module="govie-button"
           className="govie-button govie-button--secondary"
           style={{ display: "flex", alignItems: "center" }}
-          href={routes.addresses.searchAddress.path()}
+          href={`/${locale}/${routes.addresses.searchAddress.path()}`}
         >
           {t("addAddress")}
         </Link>
@@ -227,14 +227,14 @@ export default async () => {
               </ul>
               <div style={{ display: "flex", margin: "30px 0" }}>
                 <Link
-                  href={routes.addresses.editAddress.path(data.addressId)}
+                  href={`/${locale}/${routes.addresses.editAddress.path(data.addressId)}`}
                   className="govie-link"
                   style={{ marginRight: "20px" }}
                 >
                   {t("edit")}
                 </Link>
                 <Link
-                  href={routes.addresses.removeAddress.path(data.addressId)}
+                  href={`/${locale}/${routes.addresses.removeAddress.path(data.addressId)}`}
                   className="govie-link"
                 >
                   {t("remove")}
