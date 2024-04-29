@@ -28,7 +28,7 @@ export default async (props: NextPageProps) => {
     }
 
     const addressLine1 = formData.get("addressLine1")?.toString();
-    const addressSecond = formData.get("addressSecond")?.toString();
+    const addressLine2 = formData.get("addressLine2")?.toString();
     const town = formData.get("town")?.toString();
     const county = formData.get("county")?.toString();
     const eirecode = formData.get("eirecode")?.toString();
@@ -160,11 +160,11 @@ export default async (props: NextPageProps) => {
 
     if (addressLine1 && town && county && eirecode) {
       const { data, error } = await new Profile(userId).createAddress({
-        addressLine1: addressLine1,
-        addressLine2: addressSecond,
-        town: town,
-        county: county,
-        eirecode: eirecode,
+        addressLine1,
+        addressLine2,
+        town,
+        county,
+        eirecode,
         moveInDate,
         moveOutDate,
       });
@@ -276,8 +276,8 @@ export default async (props: NextPageProps) => {
             </label>
             <input
               type="text"
-              id="addressSecond"
-              name="addressSecond"
+              id="addressLine2"
+              name="addressLine2"
               className="govie-input"
             />
           </div>
