@@ -55,7 +55,7 @@ stages:
       jobs:  
       - template: pipeline-templates/build_service.yml
         parameters:
-          serviceBuildName: ${{ serviceName }}
+          serviceName: ${{ serviceName }}
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
@@ -65,3 +65,4 @@ stages:
         parameters:
           awsServiceConnection: $(awsServiceConnection)
           awsRegion: $(awsRegion)
+          serviceName: ${{ serviceName }}
