@@ -211,12 +211,7 @@ export interface paths {
         content: {
           "application/json": {
             name: string;
-            data:
-              | components["schemas"]["openBankingData"]
-              | components["schemas"]["bankTransferData"]
-              | components["schemas"]["stripeData"]
-              | components["schemas"]["worldpayData"]
-              | components["schemas"]["realexData"];
+            data: Record<string, never>;
             status: "connected" | "disconnected";
           };
         };
@@ -462,7 +457,12 @@ export interface paths {
           content: {
             "application/json": {
               transactionId: string;
-              status: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
               amount: number;
               updatedAt: string;
               title: string;
@@ -485,7 +485,12 @@ export interface paths {
           content: {
             "application/json": {
               transactionId: string;
-              status: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
               amount: number;
               updatedAt: string;
               title: string;
@@ -524,7 +529,12 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            status: string;
+            status:
+              | "initiated"
+              | "pending"
+              | "succeeded"
+              | "cancelled"
+              | "failed";
           };
         };
       };
@@ -546,7 +556,12 @@ export interface paths {
           content: {
             "application/json": {
               transactionId: string;
-              status: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
               amount: number;
               updatedAt: string;
               title: string;
@@ -642,33 +657,96 @@ export interface paths {
       };
     };
   };
+  "/api/v1/citizen/transactions": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              transactionId: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
+              title: string;
+              updatedAt: string;
+              amount: number;
+            }[];
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/citizen/transactions/{transactionId}": {
+    get: {
+      parameters: {
+        path: {
+          transactionId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              transactionId: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
+              amount: number;
+              updatedAt: string;
+              title: string;
+              extPaymentId: string;
+              userId: string;
+              userData: {
+                name: string;
+                email: string;
+              };
+              providerName: string;
+              providerType: string;
+              paymentRequestId: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
 
 export interface components {
-  schemas: {
-    openBankingData: {
-      iban: string;
-      accountHolderName: string;
-    };
-    bankTransferData: {
-      iban: string;
-      accountHolderName: string;
-    };
-    stripeData: {
-      livePublishableKey: string;
-      liveSecretKey: string;
-    };
-    worldpayData: {
-      merchantCode: string;
-      installationId: string;
-    };
-    realexData: {
-      merchantId: string;
-      sharedSecret: string;
-    };
-  };
+  schemas: {};
   responses: never;
   parameters: never;
   requestBodies: never;

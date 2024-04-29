@@ -14,6 +14,6 @@ export default async (props: Props) => {
 
   if (publicServant) return redirect(path, RedirectType.replace);
 
-  //TODO: Build the citizen homepage content
-  return <h1>Welcome citizen...</h1>;
+  const citizenPath = `${props.params.locale}/${routeDefinitions.citizen.transactions.path()}`;
+  return redirect(citizenPath, RedirectType.replace);
 };
