@@ -9,9 +9,11 @@ const Icon = ds.Icon;
 export default async ({
   userName,
   searchParams,
+  locale,
 }: {
   userName: string;
   searchParams: URLSearchParams;
+  locale: string;
 }) => {
   const t = await getTranslations("Timeline");
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
@@ -78,7 +80,7 @@ export default async ({
       }}
     >
       <Link
-        href="/events"
+        href={`/${locale}/events`}
         className="govie-back-link"
         style={{ marginTop: "0" }}
       >
