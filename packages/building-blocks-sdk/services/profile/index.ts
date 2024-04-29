@@ -1,8 +1,8 @@
 import createClient, { FetchResponse, type Middleware } from "openapi-fetch";
 import type { paths } from "./schema";
 
-const formatQueryResult = async <T, O>(
-  promise: Promise<FetchResponse<T, O>>,
+const formatQueryResult = async <T, O, Media extends `${string}/${string}`>(
+  promise: Promise<FetchResponse<T, O, Media>>,
 ) => {
   try {
     const result = await promise;

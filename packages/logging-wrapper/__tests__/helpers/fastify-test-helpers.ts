@@ -156,15 +156,17 @@ export const checkExpectedErrorEntry = (params: {
   errorClass: string;
   errorMessage: string;
   errorCode: string;
+  expectedLevelName?: string;
 }): void => {
   const parsed = parseLogEntry(params.errorLogEntry);
   params.inputMethod = params.inputMethod ?? DEFAULT_METHOD;
   params.inputScheme = params.inputScheme ?? DEFAULT_SCHEME;
   params.inputPath = params.inputPath ?? DEFAULT_PATH;
+  params.expectedLevelName = params.expectedLevelName ?? "ERROR";
   checkGenericEntryFields({
     parsedEntry: parsed,
-    expectedLevelName: "ERROR",
-    expectedMessage: LogMessages.Error,
+    expectedLevelName: params.expectedLevelName,
+    expectedMessage: "ERROR",
   });
   t.ok(typeof parsed.request !== "undefined");
   t.equal(parsed.request?.scheme, params.inputScheme);
@@ -183,7 +185,7 @@ export const checkExpectedErrorEntry = (params: {
 export const runErrorTest = async (params: {
   server: FastifyInstance;
   loggingDestination: TestingLoggerDestination;
-  inputStatusCode: string;
+  inputStatusCode?: string;
   errorMessage: string;
   expectedClass: LogErrorClasses;
   expectedStatusCode: number;
@@ -198,28 +200,33 @@ export const runErrorTest = async (params: {
     errorMessage,
     expectedClass,
     expectedStatusCode,
+    expectedErrorMessage,
   } = params;
   const path = params.path ?? "/error";
   const expectedFastifyCode = params.expectedFastifyCode ?? "CUSTOM_CODE";
   const inputHeaders = { accept: DEFAULT_CONTENT_TYPE };
+  const query: { error_message: string; status_code?: string } = {
+    error_message: errorMessage,
+  };
+  if (inputStatusCode) {
+    query.status_code = inputStatusCode;
+  }
+
   const response = await server.inject({
     method: DEFAULT_METHOD,
     url: path,
-    query: { status_code: inputStatusCode, error_message: errorMessage },
+    query,
     headers: inputHeaders,
   });
 
   t.ok(typeof response !== "undefined");
   t.equal(response.statusCode, expectedStatusCode);
   const loggedRecords = loggingDestination.getLoggedRecords();
-  t.equal(loggedRecords.length, 4);
+  t.equal(loggedRecords.length, 5);
   checkExpectedRequestEntry({
     requestLogEntry: loggedRecords[0],
     inputPath: path,
-    inputQueryParams: {
-      error_message: errorMessage,
-      status_code: inputStatusCode,
-    },
+    inputQueryParams: query,
     inputHeaders,
   });
   checkExpectedErrorEntry({
@@ -228,28 +235,26 @@ export const runErrorTest = async (params: {
     errorClass: expectedClass,
     errorMessage,
     errorCode: expectedFastifyCode,
-    inputQueryParams: {
-      error_message: errorMessage,
-      status_code: inputStatusCode,
-    },
+    inputQueryParams: query,
+    expectedLevelName: "ERROR",
   });
+
+  // Why not testing the entry at index 2?
+  // Because it is automatically written by Fastify
+  // Should be removed when the following issue will be solved
+  // https://github.com/fastify/fastify/issues/5409
+
   checkExpectedResponseEntry({
-    responseLogEntry: loggedRecords[2],
+    responseLogEntry: loggedRecords[3],
     inputPath: path,
-    inputQueryParams: {
-      error_message: errorMessage,
-      status_code: inputStatusCode,
-    },
+    inputQueryParams: query,
     responseStatusCode: Number(expectedStatusCode),
+    expectedMessage: expectedErrorMessage,
   });
-  console.log(loggedRecords[1]);
   checkExpectedApiTrackEntry({
-    apiTrackLogEntry: loggedRecords[3],
+    apiTrackLogEntry: loggedRecords[4],
     inputPath: path,
-    inputQueryParams: {
-      error_message: errorMessage,
-      status_code: inputStatusCode,
-    },
+    inputQueryParams: query,
     responseStatusCode: Number(expectedStatusCode),
     errorClass: expectedClass,
     errorMessage,

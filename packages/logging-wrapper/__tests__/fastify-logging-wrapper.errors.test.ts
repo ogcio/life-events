@@ -62,18 +62,17 @@ t.test("422 Validation Error route logs expected values", async () => {
   t.end();
 });
 
-t.test("Not found route logs expected values", async () => {
+t.test("Error without status code logs expected values", async () => {
   const { server, loggingDestination } = initializeServer();
   t.teardown(() => server.close());
   await runErrorTest({
     server,
     loggingDestination,
-    inputStatusCode: "404",
-    expectedStatusCode: 404,
-    errorMessage: "Not Found",
-    expectedClass: LogErrorClasses.RequestError,
-    path: "/this-path-must-not-exist",
-    expectedFastifyCode: "FST_ERR_NOT_FOUND",
+    inputStatusCode: undefined,
+    expectedStatusCode: 500,
+    errorMessage: "Unknown!",
+    expectedClass: LogErrorClasses.UnknownError,
+    expectedFastifyCode: "UNHANDLED_EXCEPTION",
   });
 
   t.end();
