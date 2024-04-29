@@ -52,6 +52,10 @@
       "referenceCode": "Payment reference code"
     }
   },
+  "Modal": {
+    "cancel": "Cancel",
+    "close": "Close"
+  },
   "PaymentSetup": {
     "menu": {
       "payments": "Payments",
@@ -251,7 +255,12 @@
       },
       "copyLink": "Copy",
       "goBack": "Back to payments",
-      "paymentLink": "Payment link"
+      "paymentLink": "Payment link",
+      "deleteModal": {
+        "title": "Delete Payment Request",
+        "description": "Are you sure you want to delete this payment request?",
+        "confirmLabel": "Delete"
+      }
     }
   },
   "PayPaymentRequest": {

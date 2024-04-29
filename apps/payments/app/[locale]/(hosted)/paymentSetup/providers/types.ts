@@ -5,6 +5,7 @@ export const providerTypes = [
   "worldpay",
   "realex",
 ] as const;
+
 export type ProviderType = (typeof providerTypes)[number];
 export type ProviderStatus = "connected" | "disconnected";
 

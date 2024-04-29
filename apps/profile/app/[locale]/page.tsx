@@ -1,7 +1,8 @@
 import Menu from "../components/Menu";
 import AboutMe from "../components/AboutMe";
+import { NextPageProps } from "../../types";
 
-export default () => {
+export default (props: NextPageProps) => {
   return (
     <div>
       <div
@@ -13,7 +14,7 @@ export default () => {
       >
         <Menu />
         <div className="govie-grid-column-two-thirds-from-desktop">
-          <AboutMe />
+          <AboutMe locale={props.params.locale} />
         </div>
       </div>
     </div>

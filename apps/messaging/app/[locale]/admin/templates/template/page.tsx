@@ -67,7 +67,6 @@ function assignTemplateLiterals(set: Set<string>, s?: string) {
     scpy = tmpl ? scpy.slice(scpy.indexOf(tmpl) + tmpl.length) : "";
     current = xp.exec(scpy);
   }
-
 }
 
 export default async (props: {
