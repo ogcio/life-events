@@ -1,10 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { NextPageProps } from "../../../../../types";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { PgSessions } from "auth/sessions";
 import { formatDate } from "../../../../utils";
-import { redirect } from "../../../../utils/navigation";
 import { Profile } from "building-blocks-sdk";
 
 async function removeAddress(formData: FormData) {
@@ -57,7 +56,7 @@ export default async (params: NextPageProps) => {
                 {t("firstLineOfAddress")}
               </dt>
               <dd className="govie-summary-list__value">
-                {address.address_line1}
+                {address.addressLine1}
               </dd>
             </div>
             <div className="govie-summary-list__row">
@@ -65,7 +64,7 @@ export default async (params: NextPageProps) => {
                 {t("secondLineOfAddress")}
               </dt>
               <dd className="govie-summary-list__value">
-                {address.address_line2}
+                {address.addressLine2}
               </dd>
             </div>
             <div className="govie-summary-list__row">
@@ -83,13 +82,13 @@ export default async (params: NextPageProps) => {
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("moveInDate")}</dt>
               <dd className="govie-summary-list__value">
-                {address.move_in_date ? formatDate(address.move_in_date) : ""}
+                {address.moveInDate ? formatDate(address.moveInDate) : ""}
               </dd>
             </div>
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("moveOutDate")}</dt>
               <dd className="govie-summary-list__value">
-                {address.move_out_date ? formatDate(address.move_out_date) : ""}
+                {address.moveOutDate ? formatDate(address.moveOutDate) : ""}
               </dd>
             </div>
           </dl>

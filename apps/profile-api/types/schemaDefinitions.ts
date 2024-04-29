@@ -4,15 +4,17 @@ import { Static, Type } from "@sinclair/typebox";
  * Addresses types
  */
 export const Address = Type.Object({
-  address_id: Type.String(),
-  address_line1: Type.String(),
-  address_line2: Type.String(),
+  addressId: Type.String(),
+  addressLine1: Type.String(),
+  addressLine2: Type.String(),
   town: Type.String(),
   county: Type.String(),
   eirecode: Type.String(),
-  updated_at: Type.String(),
-  move_in_date: Type.String(),
-  move_out_date: Type.String(),
+  updatedAt: Type.String(),
+  moveInDate: Type.Optional(Type.String()),
+  moveOutDate: Type.Optional(Type.String()),
+  isPrimary: Type.Optional(Type.Boolean()),
+  ownershipStatus: Type.Optional(Type.String()),
 });
 
 export type Address = Static<typeof Address>;
@@ -21,13 +23,13 @@ export const AddressesList = Type.Array(Address);
 export type AddressesList = Static<typeof AddressesList>;
 
 export const CreateAddress = Type.Object({
-  address_line1: Type.String(),
-  address_line2: Type.Optional(Type.String()),
+  addressLine1: Type.String(),
+  addressLine2: Type.Optional(Type.String()),
   town: Type.String(),
   county: Type.String(),
   eirecode: Type.String(),
-  move_in_date: Type.Optional(Type.String()),
-  move_out_date: Type.Optional(Type.String()),
+  moveInDate: Type.Optional(Type.String()),
+  moveOutDate: Type.Optional(Type.String()),
 });
 
 export type CreateAddress = Static<typeof CreateAddress>;
@@ -37,8 +39,26 @@ export const ParamsWithAddressId = Type.Object({
 });
 export type ParamsWithAddressId = Static<typeof ParamsWithAddressId>;
 
-export const UpdateAddress = CreateAddress;
+export const UpdateAddress = Type.Object({
+  addressLine1: Type.String(),
+  addressLine2: Type.Optional(Type.String()),
+  town: Type.String(),
+  county: Type.String(),
+  eirecode: Type.String(),
+  moveInDate: Type.Optional(Type.String()),
+  moveOutDate: Type.Optional(Type.String()),
+  isPrimary: Type.Boolean(),
+  ownershipStatus: Type.String(),
+});
+
 export type UpdateAddress = Static<typeof UpdateAddress>;
+
+export const PatchAddress = Type.Object({
+  isPrimary: Type.Optional(Type.Boolean()),
+  ownershipStatus: Type.Optional(Type.String()),
+});
+
+export type PatchAddress = Static<typeof PatchAddress>;
 
 /**
  * Entitlements types
@@ -48,9 +68,9 @@ export const Entitlement = Type.Object({
   firstname: Type.String(),
   lastname: Type.String(),
   type: Type.String(),
-  issue_date: Type.String(),
-  expiry_date: Type.Optional(Type.String()),
-  document_number: Type.String(),
+  issueDate: Type.String(),
+  expiryDate: Type.Optional(Type.String()),
+  documentNumber: Type.String(),
 });
 
 export type Entitlement = Static<typeof Entitlement>;
@@ -67,12 +87,12 @@ export const UserDetails = Type.Object({
   lastname: Type.String(),
   email: Type.String(),
   title: Type.String(),
-  date_of_birth: Type.Optional(Type.String()),
+  dateOfBirth: Type.Optional(Type.String()),
   ppsn: Type.String(),
-  ppsn_visible: Type.Boolean(),
+  ppsnVisible: Type.Boolean(),
   gender: Type.String(),
   phone: Type.String(),
-  consent_to_prefill_data: Type.Boolean(),
+  consentToPrefillData: Type.Boolean(),
 });
 
 export type UserDetails = Static<typeof UserDetails>;
@@ -86,27 +106,34 @@ export const CreateUser = Type.Object({
   lastname: Type.String(),
   email: Type.String(),
   title: Type.Optional(Type.String()),
-  date_of_birth: Type.Optional(Type.String()),
+  dateOfBirth: Type.Optional(Type.String()),
   ppsn: Type.Optional(Type.String()),
-  ppsn_visible: Type.Optional(Type.Boolean()),
+  ppsnVisible: Type.Optional(Type.Boolean()),
   gender: Type.Optional(Type.String()),
   phone: Type.Optional(Type.String()),
-  consent_to_prefill_data: Type.Optional(Type.Boolean()),
+  consentToPrefillData: Type.Optional(Type.Boolean()),
 });
 
 export type CreateUser = Static<typeof CreateUser>;
 
 export const UpdateUser = Type.Object({
-  firstname: Type.Optional(Type.String()),
-  lastname: Type.Optional(Type.String()),
-  email: Type.Optional(Type.String()),
-  title: Type.Optional(Type.String()),
-  date_of_birth: Type.Optional(Type.String()),
-  ppsn: Type.Optional(Type.String()),
-  ppsn_visible: Type.Optional(Type.Boolean()),
-  gender: Type.Optional(Type.String()),
-  phone: Type.Optional(Type.String()),
-  consent_to_prefill_data: Type.Optional(Type.Boolean()),
+  firstname: Type.String(),
+  lastname: Type.String(),
+  email: Type.String(),
+  title: Type.String(),
+  dateOfBirth: Type.String(),
+  ppsn: Type.String(),
+  ppsnVisible: Type.Boolean(),
+  gender: Type.String(),
+  phone: Type.String(),
+  consentToPrefillData: Type.Optional(Type.Boolean()),
 });
 
 export type UpdateUser = Static<typeof UpdateUser>;
+
+export const PatchUser = Type.Object({
+  ppsnVisible: Type.Optional(Type.Boolean()),
+  consentToPrefillData: Type.Optional(Type.Boolean()),
+});
+
+export type PatchUser = Static<typeof PatchUser>;
