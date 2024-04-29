@@ -61,31 +61,7 @@ stages:
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
       condition: and(succeeded(), eq(variables.pushArtefacts, true))
       jobs:
-      - job: Push
-        displayName: Push - ${{ serviceName }}
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-        - download: current
-          artifact: 'docker-${{ serviceName }}-$(Build.BuildId)'
-        - task: Docker@0
-          displayName: 'Retrieve docker image from artifacts'
-          inputs:
-            action: 'Run a Docker command'
-            customCommand: 'load -i $(Pipeline.Workspace)/docker-${{ serviceName }}-$(Build.BuildId)/image_${{ serviceName }}_$(Build.BuildId).tar'
-        - task: ECRPushImage@1
-          inputs:
-            awsCredentials: $(awsServiceConnection)
-            regionName: $(awsRegion)
-            imageSource: 'imagename'
-            sourceImageName: life-events-${{ serviceName }}
-            sourceImageTag: $(Build.BuildId)
-            pushTag: $(Build.SourceBranchName)
-            repositoryName: life-events-${{ serviceName }}
-        - task: AWSCLI@1
-          inputs:
-            awsCredentials: $(awsServiceConnection)
-            regionName: $(awsRegion)
-            awsCommand: 'ecs'
-            awsSubCommand: 'update-service'
-            awsArguments: '--force-new-deployment --cluster life-events-ecs --service ${{ serviceName }}-service'
+      - template: pipeline-templates/push_image.yml
+        parameters:
+          awsServiceConnection: $(awsServiceConnection)
+          awsRegion: $(awsRegion)
