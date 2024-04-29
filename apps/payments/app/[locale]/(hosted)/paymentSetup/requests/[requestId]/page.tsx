@@ -11,7 +11,10 @@ import Link from "next/link";
 import buildApiClient from "../../../../../../client/index";
 import { EmptyStatus } from "../../../../../components/EmptyStatus";
 
-export default async function ({ params: { requestId } }) {
+export default async function ({
+  params: { requestId },
+  searchParams: { action },
+}) {
   const t = await getTranslations("PaymentSetup.Request");
 
   const { userId } = await PgSessions.get();
@@ -29,7 +32,7 @@ export default async function ({ params: { requestId } }) {
 
   return (
     <div>
-      <RequestDetails requestId={requestId} />
+      <RequestDetails requestId={requestId} action={action} />
 
       <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
         <section
