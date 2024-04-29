@@ -10,9 +10,9 @@ import { NextPageProps } from "../../../../types";
 
 export default async (props: NextPageProps) => {
   const { userId, firstName, lastName, email } = await PgSessions.get();
-  const { locale } = props.params;
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
+  const { locale } = props.params;
 
   async function createAddress(formData: FormData) {
     "use server";
@@ -27,7 +27,7 @@ export default async (props: NextPageProps) => {
       throw Error("Missing user data");
     }
 
-    const addressFirst = formData.get("addressFirst")?.toString();
+    const addressLine1 = formData.get("addressLine1")?.toString();
     const addressSecond = formData.get("addressSecond")?.toString();
     const town = formData.get("town")?.toString();
     const county = formData.get("county")?.toString();
@@ -39,7 +39,7 @@ export default async (props: NextPageProps) => {
     const moveOutMonth = formData.get("moveOutMonth");
     const moveOutYear = formData.get("moveOutYear");
 
-    if (!addressFirst) {
+    if (!addressLine1) {
       errors.push({
         messageKey: form.errorTranslationKeys.empty,
         errorValue: "",
@@ -158,15 +158,15 @@ export default async (props: NextPageProps) => {
       }
     }
 
-    if (addressFirst && town && county && eirecode) {
+    if (addressLine1 && town && county && eirecode) {
       const { data, error } = await new Profile(userId).createAddress({
-        address_line1: addressFirst,
-        address_line2: addressSecond,
+        addressLine1: addressLine1,
+        addressLine2: addressSecond,
         town: town,
         county: county,
         eirecode: eirecode,
-        move_in_date: moveInDate,
-        move_out_date: moveOutDate,
+        moveInDate,
+        moveOutDate,
       });
 
       if (error) {
@@ -191,7 +191,7 @@ export default async (props: NextPageProps) => {
     routes.addresses.manualAddress.slug,
   );
 
-  const addressFirstLineError = errors.rows.find(
+  const addressLine1Error = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.address_first_line,
   );
 
@@ -247,31 +247,31 @@ export default async (props: NextPageProps) => {
           <input type="hidden" name="email" defaultValue={email} />
           <div
             className={`govie-form-group ${
-              addressFirstLineError ? "govie-form-group--error" : ""
+              addressLine1Error ? "govie-form-group--error" : ""
             }`.trim()}
           >
-            {addressFirstLineError && (
+            {addressLine1Error && (
               <p id="input-field-error" className="govie-error-message">
                 <span className="govie-visually-hidden">{t("error")}:</span>
-                {errorT(addressFirstLineError.messageKey, {
-                  field: errorT("fields.addressFirstLine"),
+                {errorT(addressLine1Error.messageKey, {
+                  field: errorT("fields.addressLine1Line"),
                   indArticleCheck: "an",
                 })}
               </p>
             )}
-            <label htmlFor="addressFirst" className="govie-label--s">
+            <label htmlFor="addressLine1" className="govie-label--s">
               {t("firstLineOfAddress")}
             </label>
             <input
               type="text"
-              id="addressFirst"
-              name="addressFirst"
+              id="addressLine1"
+              name="addressLine1"
               className="govie-input"
             />
           </div>
 
           <div className="govie-form-group">
-            <label htmlFor="addressFirst" className="govie-label--s">
+            <label htmlFor="addressLine1" className="govie-label--s">
               {t("secondLineOfAddress")}
             </label>
             <input

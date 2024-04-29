@@ -54,6 +54,23 @@ export class Profile {
     );
   }
 
+  async patchAddress(
+    addressId: string,
+    data: NonNullable<
+      paths["/api/v1/addresses/{addressId}"]["patch"]["requestBody"]
+    >["content"]["application/json"],
+  ) {
+    if (!data || Object.keys(data).length === 0) {
+      return;
+    }
+    return formatQueryResult(
+      this.client.PATCH("/api/v1/addresses/{addressId}", {
+        params: { path: { addressId } },
+        body: data,
+      }),
+    );
+  }
+
   async updateAddress(
     addressId: string,
     data: NonNullable<
@@ -98,8 +115,18 @@ export class Profile {
   }
 
   async updateUser(
+    data: paths["/api/v1/user/"]["put"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.PUT("/api/v1/user/", {
+        body: data,
+      }),
+    );
+  }
+
+  async patchUser(
     data?: NonNullable<
-      paths["/api/v1/user/"]["put"]["requestBody"]
+      paths["/api/v1/user/"]["patch"]["requestBody"]
     >["content"]["application/json"],
   ) {
     if (!data || Object.keys(data).length === 0) {
@@ -107,7 +134,7 @@ export class Profile {
     }
 
     return formatQueryResult(
-      this.client.PUT("/api/v1/user/", {
+      this.client.PATCH("/api/v1/user/", {
         body: data,
       }),
     );

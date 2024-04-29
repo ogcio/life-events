@@ -179,7 +179,7 @@ export default async function ({
             {t("form.redirectUrl")}
           </label>
           <input
-            type="url"
+            type="text"
             id="reference"
             name="redirect-url"
             className="govie-input"

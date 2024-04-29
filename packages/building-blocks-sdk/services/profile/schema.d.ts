@@ -21,17 +21,17 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              address_id: string;
-              address_line1: string;
-              address_line2: string;
+              addressId: string;
+              addressLine1: string;
+              addressLine2: string;
               town: string;
               county: string;
               eirecode: string;
-              updated_at: string;
-              move_in_date?: string;
-              move_out_date?: string;
-              is_primary?: boolean;
-              ownership_status?: string;
+              updatedAt: string;
+              moveInDate?: string;
+              moveOutDate?: string;
+              isPrimary?: boolean;
+              ownershipStatus?: string;
             }[];
           };
         };
@@ -53,13 +53,13 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            address_line1: string;
-            address_line2?: string;
+            addressLine1: string;
+            addressLine2?: string;
             town: string;
             county: string;
             eirecode: string;
-            move_in_date?: string;
-            move_out_date?: string;
+            moveInDate?: string;
+            moveOutDate?: string;
           };
         };
       };
@@ -99,17 +99,17 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              address_id: string;
-              address_line1: string;
-              address_line2: string;
+              addressId: string;
+              addressLine1: string;
+              addressLine2: string;
               town: string;
               county: string;
               eirecode: string;
-              updated_at: string;
-              move_in_date?: string;
-              move_out_date?: string;
-              is_primary?: boolean;
-              ownership_status?: string;
+              updatedAt: string;
+              moveInDate?: string;
+              moveOutDate?: string;
+              isPrimary?: boolean;
+              ownershipStatus?: string;
             };
           };
         };
@@ -148,15 +148,15 @@ export interface paths {
       requestBody?: {
         content: {
           "application/json": {
-            address_line1?: string;
-            address_line2?: string;
-            town?: string;
-            county?: string;
-            eirecode?: string;
-            move_in_date?: string;
-            move_out_date?: string;
-            is_primary?: boolean;
-            ownership_status?: string;
+            addressLine1: string;
+            addressLine2?: string;
+            town: string;
+            county: string;
+            eirecode: string;
+            moveInDate?: string;
+            moveOutDate?: string;
+            isPrimary: boolean;
+            ownershipStatus: string;
           };
         };
       };
@@ -236,6 +236,55 @@ export interface paths {
         };
       };
     };
+    patch: {
+      parameters: {
+        path: {
+          addressId: string;
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": {
+            isPrimary?: boolean;
+            ownershipStatus?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
   };
   "/api/v1/entitlements/": {
     get: {
@@ -247,9 +296,9 @@ export interface paths {
               firstname: string;
               lastname: string;
               type: string;
-              issue_date: string;
-              expiry_date?: string;
-              document_number: string;
+              issueDate: string;
+              expiryDate?: string;
+              documentNumber: string;
             }[];
           };
         };
@@ -279,12 +328,12 @@ export interface paths {
               lastname: string;
               email: string;
               title: string;
-              date_of_birth?: string;
+              dateOfBirth?: string;
               ppsn: string;
-              ppsn_visible: boolean;
+              ppsnVisible: boolean;
               gender: string;
               phone: string;
-              consent_to_prefill_data: boolean;
+              consentToPrefillData: boolean;
             };
           };
         };
@@ -315,19 +364,19 @@ export interface paths {
       };
     };
     put: {
-      requestBody?: {
+      requestBody: {
         content: {
           "application/json": {
-            firstname?: string;
-            lastname?: string;
-            email?: string;
-            title?: string;
-            date_of_birth?: string;
-            ppsn?: string;
-            ppsn_visible?: boolean;
-            gender?: string;
-            phone?: string;
-            consent_to_prefill_data?: boolean;
+            firstname: string;
+            lastname: string;
+            email: string;
+            title: string;
+            dateOfBirth: string;
+            ppsn: string;
+            ppsnVisible: boolean;
+            gender: string;
+            phone: string;
+            consentToPrefillData?: boolean;
           };
         };
       };
@@ -374,12 +423,12 @@ export interface paths {
             lastname: string;
             email: string;
             title?: string;
-            date_of_birth?: string;
+            dateOfBirth?: string;
             ppsn?: string;
-            ppsn_visible?: boolean;
+            ppsnVisible?: boolean;
             gender?: string;
             phone?: string;
-            consent_to_prefill_data?: boolean;
+            consentToPrefillData?: boolean;
           };
         };
       };
@@ -389,6 +438,50 @@ export interface paths {
           content: {
             "application/json": {
               id: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+    patch: {
+      requestBody?: {
+        content: {
+          "application/json": {
+            ppsnVisible?: boolean;
+            consentToPrefillData?: boolean;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
             };
           };
         };

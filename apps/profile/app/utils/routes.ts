@@ -49,7 +49,7 @@ export const addresses = {
   addDetails: {
     slug: "add-details",
     path(id: string) {
-      return `${addresses.slug}/${addresses.addDetails.slug}/${id}`;
+      return `${addresses.slug}/${id}/${addresses.addDetails.slug}`;
     },
   },
 };

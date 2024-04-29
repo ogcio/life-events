@@ -126,17 +126,17 @@ export default async (props: NextPageProps) => {
     }
 
     if (selectedAddress) {
-      const [addressFirst, town, county, eirecode] = selectedAddress
+      const [addressLine1, town, county, eirecode] = selectedAddress
         .toString()
         .split(",");
 
       const { data, error } = await new Profile(userId).createAddress({
-        address_line1: addressFirst.trim(),
+        addressLine1: addressLine1.trim(),
         town: town.trim(),
         county: county.trim(),
         eirecode: eirecode.trim(),
-        move_in_date: moveInDate?.toString(),
-        move_out_date: moveOutDate?.toString(),
+        moveInDate: moveInDate?.toString(),
+        moveOutDate: moveOutDate?.toString(),
       });
 
       if (error) {

@@ -50,4 +50,22 @@ export const routeDefinitions = {
       return `/${routeDefinitions.featureFlags.slug}`;
     },
   },
+  citizen: {
+    slug: "citizen",
+    path() {
+      return `${routeDefinitions.citizen.slug}`;
+    },
+    transactions: {
+      slug: "transactions",
+      path() {
+        return `${routeDefinitions.citizen.slug}/${routeDefinitions.citizen.transactions.slug}`;
+      },
+    },
+    transactionDetails: {
+      slug: "transactionDetails",
+      path(transactionId: string) {
+        return `${routeDefinitions.citizen.slug}/${routeDefinitions.citizen.transactions.slug}/${transactionId}`;
+      },
+    },
+  },
 };

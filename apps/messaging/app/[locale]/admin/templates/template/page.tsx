@@ -29,25 +29,13 @@ async function getState(userId: string) {
   return await pgpool
     .query<{ state: State }>(
       `
-  select state from message_template_state
+
+  select state from message_template_states
   where user_id = $1
 `,
       [userId],
     )
     .then((res) => res.rows.at(0)?.state);
-}
-
-async function setState(userId: string, state: State) {
-  await pgpool.query(
-    `
-       insert into message_template_state(user_id, state)
-       values($1, $2)
-       on conflict(user_id) do update
-       set state = message_template_state.state || $2
-       where message_template_state.user_id = $1
-      `,
-    [userId, state],
-  );
 }
 
 type Content = {
@@ -62,24 +50,23 @@ type State = {
   fields: { value: string; description: string }[];
 };
 
-function pluckTemplateLiterals(s?: string) {
+function assignTemplateLiterals(set: Set<string>, s?: string) {
   if (!s) {
-    return [];
+    return;
+    // return [];
   }
   let scpy = s;
   const xp = /{{([^}]+)}}/;
   let current = xp.exec(scpy);
-  const stash: string[] = [];
+  // const stash = new Set<string>();
   while (Boolean(current)) {
     const tostash = current?.at(1);
     const tmpl = current?.at(0);
-    tostash && stash.push(tostash);
+    tostash && set.add(tostash);
 
     scpy = tmpl ? scpy.slice(scpy.indexOf(tmpl) + tmpl.length) : "";
     current = xp.exec(scpy);
   }
-
-  return stash;
 }
 
 export default async (props: {
@@ -142,11 +129,11 @@ export default async (props: {
     });
 
     // These are fresh parsed from current form change
-    const formParsedTexts: string[] = [
-      ...pluckTemplateLiterals(subject),
-      ...pluckTemplateLiterals(excerpt),
-      ...pluckTemplateLiterals(plainText),
-    ];
+    const dynamicValuesSet = new Set<string>();
+    assignTemplateLiterals(dynamicValuesSet, subject);
+    assignTemplateLiterals(dynamicValuesSet, excerpt);
+    assignTemplateLiterals(dynamicValuesSet, plainText);
+    const formParsedTexts = [...dynamicValuesSet];
 
     const currentValues = state.fields.map((field) => field.value);
     const valuesToConsider = formParsedTexts.filter((parsed) =>
@@ -176,11 +163,11 @@ export default async (props: {
 
     await pgpool.query(
       `
-     insert into message_template_state(user_id, state)
+     insert into message_template_states(user_id, state)
      values($1, $2)
      on conflict(user_id) do update
-     set state = message_template_state.state || $2
-     where message_template_state.user_id = $1
+     set state = message_template_states.state || $2
+     where message_template_states.user_id = $1
     `,
       [userId, state],
     );
@@ -246,7 +233,7 @@ export default async (props: {
 
     await pgpool.query(
       `
-        delete from message_template_state where user_id = $1
+        delete from message_template_states where user_id = $1
         `,
       [userId],
     );
@@ -266,7 +253,7 @@ export default async (props: {
     const { userId } = await PgSessions.get();
     await pgpool.query(
       `
-        delete from message_template_state where user_id = $1
+        delete from message_template_states where user_id = $1
         `,
       [userId],
     );
@@ -279,7 +266,7 @@ export default async (props: {
   const state = await pgpool
     .query<{ state: State }>(
       `
-    select state from message_template_state
+    select state from message_template_states
     where user_id = $1
   `,
       [userId],

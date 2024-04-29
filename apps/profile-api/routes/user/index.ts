@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreateUser,
+  PatchUser,
   UpdateUser,
   UserDetails,
 } from "../../types/schemaDefinitions";
@@ -63,15 +64,15 @@ export default async function user(app: FastifyInstance) {
         lastname: data.lastname || defaultData.lastname,
         email: data.email || defaultData.email,
         title: data.title || defaultData.title,
-        date_of_birth: data.date_of_birth || defaultData.date_of_birth,
+        dateOfBirth: data.date_of_birth || defaultData.date_of_birth,
         ppsn: data.ppsn || defaultData.ppsn,
-        ppsn_visible:
+        ppsnVisible:
           data.ppsn_visible !== undefined
             ? data.ppsn_visible
             : defaultData.ppsn_visible,
         gender: data.gender || defaultData.gender,
         phone: data.phone || defaultData.phone,
-        consent_to_prefill_data:
+        consentToPrefillData:
           data.consent_to_prefill_data || defaultData.consent_to_prefill_data,
       };
 
@@ -143,22 +144,96 @@ export default async function user(app: FastifyInstance) {
     async (request, reply) => {
       const userId = request.user?.id;
       let result;
+
+      const columnsMapping: Record<keyof UpdateUser, string> = {
+        firstname: "firstname",
+        lastname: "lastname",
+        email: "email",
+        title: "title",
+        dateOfBirth: "date_of_birth",
+        ppsn: "ppsn",
+        ppsnVisible: "ppsn_visible",
+        gender: "gender",
+        phone: "phone",
+        consentToPrefillData: "consent_to_prefill_data",
+      };
+
+      const values = [userId, ...Object.values(request.body)];
+      const setClauses = Object.keys(request.body)
+        .map(
+          (key, index) =>
+            `${columnsMapping[key as keyof typeof columnsMapping]} = $${index + 2}`,
+        )
+        .join(", ");
+
       try {
-        const keys = Object.keys(request.body);
-        const values = Object.values(request.body);
-
-        const setClause = keys
-          .map((key, index) => `${key} = $${index + 1}`)
-          .join(", ");
-
         result = await app.pg.query(
           `
             UPDATE user_details
-            SET ${setClause}, updated_at = now()
-            WHERE user_id = $${keys.length + 1}
+            SET ${setClauses}, updated_at = now()
+            WHERE user_id = $1
             RETURNING user_id as id
           `,
-          [...values, userId],
+          values,
+        );
+      } catch (error) {
+        throw app.httpErrors.internalServerError((error as Error).message);
+      }
+
+      if (!result?.rows.length) {
+        const error = app.httpErrors.notFound("User not found");
+        error.statusCode = 404;
+        error.code = "USER_NOT_FOUND";
+
+        throw error;
+      }
+
+      reply.send({ id: result.rows[0].id });
+    },
+  );
+
+  app.patch<{ Body: PatchUser }>(
+    "/",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["User"],
+        body: PatchUser,
+        response: {
+          200: Type.Object({
+            id: Type.String(),
+          }),
+          404: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      let result;
+
+      const columnsMapping: Record<keyof PatchUser, string> = {
+        ppsnVisible: "ppsn_visible",
+        consentToPrefillData: "consent_to_prefill_data",
+      };
+
+      const values = [userId, ...Object.values(request.body)];
+      const setClauses = Object.keys(request.body)
+        .map(
+          (key, index) =>
+            `${columnsMapping[key as keyof typeof columnsMapping]} = $${index + 2}`,
+        )
+        .join(", ");
+
+      try {
+        result = await app.pg.query(
+          `
+            UPDATE user_details
+            SET ${setClauses}, updated_at = now()
+            WHERE user_id = $1
+            RETURNING user_id as id
+          `,
+          values,
         );
       } catch (error) {
         throw app.httpErrors.internalServerError((error as Error).message);
