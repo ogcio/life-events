@@ -11,9 +11,14 @@ const grey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 30);
 type TimeLineGridProps = {
   timeLineData: TimeLineData;
   searchParams: URLSearchParams;
+  locale: string;
 };
 
-export default async ({ timeLineData, searchParams }: TimeLineGridProps) => {
+export default async ({
+  timeLineData,
+  searchParams,
+  locale,
+}: TimeLineGridProps) => {
   const t = await getTranslations("Timeline");
 
   const data = timeLineData.data || [];
@@ -116,8 +121,8 @@ export default async ({ timeLineData, searchParams }: TimeLineGridProps) => {
               </div>
               <MonthsCards
                 months={months}
-                view={"grid"}
                 searchParams={searchParams}
+                locale={locale}
               />
             </div>
           );

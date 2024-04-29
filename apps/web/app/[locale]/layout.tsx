@@ -74,7 +74,7 @@ export default async function RootLayout({
         }}
       >
         {SidebarComponent}
-        <Header showSidebarToggle={showEventsMenu} />
+        <Header showSidebarToggle={showEventsMenu} locale={locale} />
         {/* All designs are made for 1440 px  */}
         <div
           className="govie-width-container"

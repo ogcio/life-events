@@ -14,10 +14,8 @@ import Employment from "./Employment";
 import StartingABusiness from "./StartingABusiness";
 import Housing from "./Housing";
 import Death from "./Death";
-import { getAllEnabledFlags, isFeatureFlagEnabled } from "feature-flags/utils";
-import { getMessages } from "next-intl/server";
-import { getEnabledOptions, menuOptions } from "./components/Menu/options";
 import TimelineWrapper from "./components/TimelineWrapper";
+import { getMessages } from "next-intl/server";
 import { AbstractIntlMessages } from "next-intl";
 
 const componentsMap = {
@@ -38,9 +36,9 @@ export default async (props: web.NextPageProps) => {
   const userName = [firstName, lastName].join(" ");
 
   const Component = componentsMap[props.params.event];
-
   const messages = await getMessages({ locale: props.params.locale });
   const timelineMessages = messages.Timeline as AbstractIntlMessages;
+  const locale = props.params.locale;
 
   if (Component) {
     return (
@@ -51,8 +49,13 @@ export default async (props: web.NextPageProps) => {
           gap: "2.5rem",
         }}
       >
-        <TimelineWrapper messsages={timelineMessages} username={userName} />
-        <Component />
+        <TimelineWrapper
+          username={userName}
+          searchParams={props.searchParams}
+          messages={timelineMessages}
+          locale={locale}
+        />
+        <Component locale={locale} />
       </div>
     );
   }
