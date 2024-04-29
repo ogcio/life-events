@@ -1,5 +1,3 @@
-parameters:
-  - name: 
 jobs:
   - job: BuildBaseContainer
     displayName: Build base container
