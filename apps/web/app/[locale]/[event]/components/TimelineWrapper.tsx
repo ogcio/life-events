@@ -6,9 +6,10 @@ import Timeline from "./Timeline";
 type TimelineWrapperProps = {
   messsages: AbstractIntlMessages;
   username: string;
+  locale: string;
 };
 
-export default ({ messsages, username }: TimelineWrapperProps) => {
+export default ({ messsages, username, locale }: TimelineWrapperProps) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 
   return (
@@ -36,7 +37,7 @@ export default ({ messsages, username }: TimelineWrapperProps) => {
         </label>
       </li>
       <NextIntlClientProvider messages={messsages}>
-        <Timeline />
+        <Timeline locale={locale} />
       </NextIntlClientProvider>
     </ol>
   );
