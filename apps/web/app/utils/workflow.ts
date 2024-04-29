@@ -222,12 +222,57 @@ export function emptyApplyJobseekersAllowance(): ApplyJobseekersAllowance {
   };
 }
 
+export type GetDigitalWallet = Base & {
+  userName: string;
+  sex: string;
+  dayOfBirth: string;
+  monthOfBirth: string;
+  yearOfBirth: string;
+  PPSN: string;
+  currentAddress: string;
+  currentAddressVerified: string;
+  timeAtAddress: string;
+  email: string;
+  mobile: string;
+  proofOfAddressRequest: string;
+  confirmedApplication: string;
+  rejectReason: string;
+  proofOfAddressFileId: string;
+  status: string;
+  submittedAt: string;
+};
+
+export function emptyGetDigitalWallet(): GetDigitalWallet {
+  return {
+    userName: "",
+    sex: "",
+    dayOfBirth: "",
+    monthOfBirth: "",
+    yearOfBirth: "",
+    PPSN: "",
+    currentAddress: "",
+    timeAtAddress: "",
+    currentAddressVerified: "",
+    email: "",
+    mobile: "",
+    proofOfAddressRequest: "",
+    confirmedApplication: "",
+    successfulAt: "",
+    rejectedAt: "",
+    rejectReason: "",
+    proofOfAddressFileId: "",
+    status: "",
+    submittedAt: "",
+  };
+}
+
 export type Workflow =
   | RenewDriversLicence
   | OrderEHIC
   | OrderBirthCertificate
   | NotifyDeath
-  | ApplyJobseekersAllowance;
+  | ApplyJobseekersAllowance
+  | GetDigitalWallet;
 
 // ===== workflow keys =====
 
@@ -255,6 +300,7 @@ export const keys = {
   housingBenefit: "housingBenefit",
   housingAssociationHomes: "housingAssociationHomes",
   housingOmbudsman: "housingOmbudsman",
+  getDigitalWallet: "getDigitalWallet",
 };
 
 // ===== categories =====
@@ -266,6 +312,7 @@ export const categories = {
   birth: "birth",
   employment: "employment",
   housing: "housing",
+  digitalWallet: "digital-wallet",
 };
 
 // ===== utils =====

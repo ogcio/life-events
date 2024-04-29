@@ -278,6 +278,46 @@ export const timeline = {
   slug: "timeline",
 };
 
+export const digitalWallet = {
+  slug: "digital-wallet",
+  getDigitalWallet: {
+    slug: "get-digital-wallet",
+    path() {
+      return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}`;
+    },
+    checkDetails: {
+      slug: "check-details",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.checkDetails.slug}`;
+      },
+    },
+    changeDetails: {
+      slug: "change-details",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.changeDetails.slug}`;
+      },
+    },
+    newAddress: {
+      slug: "new-address",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.newAddress.slug}`;
+      },
+    },
+    proofOfAddress: {
+      slug: "proof-of-address",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.proofOfAddress.slug}`;
+      },
+    },
+    applicationSuccess: {
+      slug: "application-success",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.applicationSuccess.slug}`;
+      },
+    },
+  },
+};
+
 export const category = {
   health,
   driving,
@@ -286,4 +326,5 @@ export const category = {
   employment,
   business,
   housing,
+  "digital-wallet": digitalWallet,
 };

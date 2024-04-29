@@ -7,6 +7,7 @@ import RenewLicenceUserDetails from "./RenewLicenceUserDetails";
 import OrderBirthCertificateUserDetails from "./OrderBirthCertificateUserDetails";
 import NotifyDeathDetails from "./NotifyDeathDetails";
 import ApplyJobseekersAllowanceDetails from "./ApplyJobseekersAllowanceDetails";
+import GetDigitalWalletDetails from "./GetDigitalWalletDetails";
 
 const isOrderEHICData = (
   flow: string,
@@ -35,6 +36,12 @@ const isApplyJobseekersAllowanceData = (
   flowData: workflow.Workflow,
 ): flowData is workflow.ApplyJobseekersAllowance =>
   flow === workflow.keys.applyJobseekersAllowance;
+
+const isGetDigitalWalletData = (
+  flow: string,
+  flowData: workflow.Workflow,
+): flowData is workflow.GetDigitalWallet =>
+  flow === workflow.keys.getDigitalWallet;
 
 export default async (props: { params: { params: string[] } }) => {
   const [flow, userId, action] = props.params.params;
@@ -115,6 +122,15 @@ export default async (props: { params: { params: string[] } }) => {
         flowData={data}
         userId={userId}
       />
+    );
+  }
+
+  if (
+    flow === workflow.keys.getDigitalWallet &&
+    isGetDigitalWalletData(flow, data)
+  ) {
+    return (
+      <GetDigitalWalletDetails flow={flow} flowData={data} userId={userId} />
     );
   }
 

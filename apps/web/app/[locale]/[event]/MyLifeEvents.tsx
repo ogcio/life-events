@@ -9,6 +9,7 @@ import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
 import { Messaging } from "building-blocks-sdk";
+import { getDigitalWalletRules } from "./[...action]/GetDigitalWallet/GetDigitalWallet";
 
 const eventRules = {
   [workflow.keys.orderEHIC]: orderEHICRules,
@@ -16,6 +17,7 @@ const eventRules = {
   [workflow.keys.orderBirthCertificate]: orderBirthCertificateRules,
   [workflow.keys.notifyDeath]: notifyDeathRules,
   [workflow.keys.applyJobseekersAllowance]: applyJobseekersAllowanceRules,
+  [workflow.keys.getDigitalWallet]: getDigitalWalletRules,
 };
 
 async function getEvents() {
@@ -41,6 +43,10 @@ async function getEvents() {
     {
       flowKey: workflow.keys.applyJobseekersAllowance,
       category: workflow.categories.employment,
+    },
+    {
+      flowKey: workflow.keys.getDigitalWallet,
+      category: workflow.categories.digitalWallet,
     },
   ]);
 }
