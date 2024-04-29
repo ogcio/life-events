@@ -53,42 +53,9 @@ stages:
         - securityScan
         - BuildDeps
       jobs:  
-      - job: Build
-        displayName: Build job - ${{ serviceName }}
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-        - download: current
-          artifact: 'docker-base-$(Build.BuildId)'
-        - task: Docker@0
-          displayName: 'Retrieve base docker image from artifacts'
-          inputs:
-            action: 'Run a Docker command'
-            customCommand: 'load -i $(Pipeline.Workspace)/docker-base-$(Build.BuildId)/image_base_$(Build.BuildId).tar'
-        - download: current
-          artifact: 'docker-design-system-$(Build.BuildId)'
-        - task: Docker@0
-          displayName: 'Retrieve base docker image from artifacts'
-          inputs:
-            action: 'Run a Docker command'
-            customCommand: 'load -i $(Pipeline.Workspace)/docker-design-system-$(Build.BuildId)/image_design_system_$(Build.BuildId).tar'
-        - task: Docker@2
-          displayName: Build - ${{ serviceName }}
-          inputs:
-            command: build
-            repository: life-events-${{ serviceName }}
-            dockerfile: apps/${{ serviceName }}/Dockerfile
-            buildContext: '$(Build.SourcesDirectory)'
-            arguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicApiEndpoint)"'
-        - task: Docker@0
-          displayName: 'Run a Docker command'
-          condition: eq(variables.pushArtefacts, true)
-          inputs:
-            action: 'Run a Docker command'
-            customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_${{ serviceName }}_$(Build.BuildId).tar life-events-${{ serviceName }}:$(Build.BuildId)'
-        - publish:  $(Build.ArtifactStagingDirectory)
-          condition: eq(variables.pushArtefacts, true)
-          artifact: 'docker-${{ serviceName }}-$(Build.BuildId)'
+      - template: pipeline-templates/build_service.yml
+        parameters:
+          serviceBuildName: ${{ serviceName }}
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}

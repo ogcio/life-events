@@ -1,0 +1,41 @@
+parameters:
+  - name: serviceBuildName
+    default: ""
+
+jobs:
+  - job: Build
+    displayName: Build job - ${{ parameters.serviceBuildName }}
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - download: current
+      artifact: 'docker-base-$(Build.BuildId)'
+    - task: Docker@0
+      displayName: 'Retrieve base docker image from artifacts'
+      inputs:
+        action: 'Run a Docker command'
+        customCommand: 'load -i $(Pipeline.Workspace)/docker-base-$(Build.BuildId)/image_base_$(Build.BuildId).tar'
+    - download: current
+      artifact: 'docker-design-system-$(Build.BuildId)'
+    - task: Docker@0
+      displayName: 'Retrieve base docker image from artifacts'
+      inputs:
+        action: 'Run a Docker command'
+        customCommand: 'load -i $(Pipeline.Workspace)/docker-design-system-$(Build.BuildId)/image_design_system_$(Build.BuildId).tar'
+    - task: Docker@2
+      displayName: Build - ${{ parameters.serviceBuildName }}
+      inputs:
+        command: build
+        repository: life-events-${{ parameters.serviceBuildName }}
+        dockerfile: apps/${{ parameters.serviceBuildName }}/Dockerfile
+        buildContext: '$(Build.SourcesDirectory)'
+        arguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicApiEndpoint)"'
+    - task: Docker@0
+      displayName: 'Run a Docker command'
+      condition: eq(variables.pushArtefacts, true)
+      inputs:
+        action: 'Run a Docker command'
+        customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_${{ parameters.serviceBuildName }}_$(Build.BuildId).tar life-events-${{ parameters.serviceBuildName }}:$(Build.BuildId)'
+    - publish:  $(Build.ArtifactStagingDirectory)
+      condition: eq(variables.pushArtefacts, true)
+      artifact: 'docker-${{ parameters.serviceBuildName }}-$(Build.BuildId)'
