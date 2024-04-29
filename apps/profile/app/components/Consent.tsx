@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import { postgres } from "../utils";
 import { PgSessions } from "auth/sessions";
 import { Profile } from "building-blocks-sdk";
 
@@ -18,8 +17,8 @@ async function submitAction(formData: FormData) {
   }
 
   if (userExistsQuery) {
-    const result = await new Profile(userId).updateUser({
-      consent_to_prefill_data: isUserConsenting,
+    const result = await new Profile(userId).patchUser({
+      consentToPrefillData: isUserConsenting,
     });
 
     if (result?.error) {
@@ -27,7 +26,7 @@ async function submitAction(formData: FormData) {
     }
   } else {
     const { error } = await new Profile(userId).createUser({
-      consent_to_prefill_data: isUserConsenting,
+      consentToPrefillData: isUserConsenting,
       firstname: firstName,
       lastname: lastName,
       email,
@@ -49,7 +48,7 @@ async function getConsentData() {
   }
 
   return {
-    consentToPrefillData: data?.consent_to_prefill_data || false,
+    consentToPrefillData: data?.consentToPrefillData || false,
   };
 }
 

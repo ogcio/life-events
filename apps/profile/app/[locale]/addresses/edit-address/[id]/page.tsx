@@ -1,12 +1,12 @@
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
-import { form } from "../../../../utils";
+import { notFound, redirect } from "next/navigation";
+import { form, routes } from "../../../../utils";
 import { NextPageProps } from "../../../../../types";
 import { revalidatePath } from "next/cache";
 import dayjs from "dayjs";
-import { Link, redirect } from "../../../../utils/navigation";
 import { Profile } from "building-blocks-sdk";
+import Link from "next/link";
 
 async function editAddress(formData: FormData) {
   "use server";
@@ -23,8 +23,8 @@ async function editAddress(formData: FormData) {
   }
 
   const errors: form.Error[] = [];
-  const addressFirst = formData.get("addressFirst")?.toString();
-  const addressSecond = formData.get("addressSecond")?.toString();
+  const addressLine1 = formData.get("addressLine1")?.toString();
+  const addressLine2 = formData.get("addressLine2")?.toString();
   const town = formData.get("town")?.toString();
   const county = formData.get("county")?.toString();
   const eirecode = formData.get("eirecode")?.toString();
@@ -34,12 +34,14 @@ async function editAddress(formData: FormData) {
   const moveOutDay = formData.get("moveOutDay")?.toString();
   const moveOutMonth = formData.get("moveOutMonth")?.toString();
   const moveOutYear = formData.get("moveOutYear")?.toString();
+  const isOwner = formData.get("isOwner")?.toString();
+  const isPrimaryAddress = formData.get("isPrimaryAddress")?.toString();
 
-  if (!addressFirst) {
+  if (!addressLine1) {
     errors.push({
       messageKey: form.errorTranslationKeys.empty,
       errorValue: "",
-      field: form.fieldTranslationKeys.addressFirstLine,
+      field: form.fieldTranslationKeys.address_first_line,
     });
   }
 
@@ -105,8 +107,24 @@ async function editAddress(formData: FormData) {
     );
   }
 
+  if (isOwner === undefined) {
+    errors.push({
+      messageKey: form.errorTranslationKeys.emptySelection,
+      errorValue: "",
+      field: form.fieldTranslationKeys.isOwner,
+    });
+  }
+
+  if (isPrimaryAddress === undefined) {
+    errors.push({
+      messageKey: form.errorTranslationKeys.emptySelection,
+      errorValue: "",
+      field: form.fieldTranslationKeys.isPrimaryAddress,
+    });
+  }
+
   if (errors.length) {
-    await form.insertErrors(errors, userId);
+    await form.insertErrors(errors, userId, routes.addresses.editAddress.slug);
     return revalidatePath("/");
   }
 
@@ -130,18 +148,27 @@ async function editAddress(formData: FormData) {
       .toISOString();
   }
 
-  if (addressFirst && town && county && eirecode) {
-    const { error } = await new Profile(userId).updateAddress(addressId, {
-      address_line1: addressFirst,
-      address_line2: addressSecond,
-      town: town,
-      county: county,
-      eirecode: eirecode,
-      move_in_date: moveInDate,
-      move_out_date: moveOutDate,
+  if (
+    addressLine1 &&
+    town &&
+    county &&
+    eirecode &&
+    isOwner &&
+    isPrimaryAddress
+  ) {
+    const result = await new Profile(userId).updateAddress(addressId, {
+      addressLine1,
+      addressLine2,
+      town,
+      county,
+      eirecode,
+      moveInDate,
+      moveOutDate,
+      ownershipStatus: isOwner === "true" ? "owner" : "renting",
+      isPrimary: isPrimaryAddress === "true" ? true : false,
     });
 
-    if (error) {
+    if (result?.error) {
       //handle error
     }
   }
@@ -158,7 +185,10 @@ export default async (params: NextPageProps) => {
   const { userId } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
-  const errors = await form.getErrorsQuery(userId);
+  const errors = await form.getErrorsQuery(
+    userId,
+    routes.addresses.editAddress.slug,
+  );
   const { id: addressId } = params.params;
 
   if (!addressId) {
@@ -174,8 +204,8 @@ export default async (params: NextPageProps) => {
     throw notFound();
   }
 
-  const addressFirstLineError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.addressFirstLine,
+  const addressLine1Error = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.address_first_line,
   );
 
   const townError = errors.rows.find(
@@ -218,25 +248,29 @@ export default async (params: NextPageProps) => {
   moveOutMonthError && moveOutDateErrors.push(moveOutMonthError);
   moveOutDayError && moveOutDateErrors.push(moveOutDayError);
 
-  const moveInDay = address.move_in_date
-    ? dayjs(address.move_in_date).date()
+  const moveInDay = address.moveInDate ? dayjs(address.moveInDate).date() : "";
+  const moveInMonth = address.moveInDate
+    ? dayjs(address.moveInDate).month() + 1
     : "";
-  const moveInMonth = address.move_in_date
-    ? dayjs(address.move_in_date).month() + 1
+  const moveInYear = address.moveInDate ? dayjs(address.moveInDate).year() : "";
+
+  const moveOutDay = address.moveOutDate
+    ? dayjs(address.moveOutDate).date()
     : "";
-  const moveInYear = address.move_in_date
-    ? dayjs(address.move_in_date).year()
+  const moveOutMonth = address.moveOutDate
+    ? dayjs(address.moveOutDate).month() + 1
+    : "";
+  const moveOutYear = address.moveOutDate
+    ? dayjs(address.moveOutDate).year()
     : "";
 
-  const moveOutDay = address.move_out_date
-    ? dayjs(address.move_out_date).date()
-    : "";
-  const moveOutMonth = address.move_out_date
-    ? dayjs(address.move_out_date).month() + 1
-    : "";
-  const moveOutYear = address.move_out_date
-    ? dayjs(address.move_out_date).year()
-    : "";
+  const isOwnerError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.isOwner,
+  );
+
+  const isPrimaryAddressError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.isPrimaryAddress,
+  );
 
   return (
     <div className="govie-grid-row">
@@ -248,40 +282,40 @@ export default async (params: NextPageProps) => {
           <fieldset className="govie-fieldset">
             <div
               className={`govie-form-group ${
-                addressFirstLineError ? "govie-form-group--error" : ""
+                addressLine1Error ? "govie-form-group--error" : ""
               }`.trim()}
             >
-              {addressFirstLineError && (
+              {addressLine1Error && (
                 <p id="input-field-error" className="govie-error-message">
                   <span className="govie-visually-hidden">{t("error")}:</span>
-                  {errorT(addressFirstLineError.messageKey, {
-                    field: errorT("fields.addressFirstLine"),
+                  {errorT(addressLine1Error.messageKey, {
+                    field: errorT("fields.addressLine1Line"),
                     indArticleCheck: "an",
                   })}
                 </p>
               )}
-              <label htmlFor="addressFirst" className="govie-label--s">
+              <label htmlFor="addressLine1" className="govie-label--s">
                 {t("firstLineOfAddress")}
               </label>
               <input
                 type="text"
-                id="addressFirst"
-                name="addressFirst"
+                id="addressLine1"
+                name="addressLine1"
                 className="govie-input"
-                defaultValue={address.address_line1}
+                defaultValue={address.addressLine1}
               />
             </div>
 
             <div className="govie-form-group">
-              <label htmlFor="addressFirst" className="govie-label--s">
+              <label htmlFor="addressLine1" className="govie-label--s">
                 {t("secondLineOfAddress")}
               </label>
               <input
                 type="text"
-                id="addressSecond"
-                name="addressSecond"
+                id="addressLine2"
+                name="addressLine2"
                 className="govie-input"
-                defaultValue={address.address_line2}
+                defaultValue={address.addressLine2}
               />
             </div>
 
@@ -546,6 +580,117 @@ export default async (params: NextPageProps) => {
                           : moveOutYear
                       }
                     />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className={`govie-form-group ${
+                isOwnerError ? "govie-form-group--error" : ""
+              }`.trim()}
+            >
+              <h2 className="govie-heading-m">{t("ownerOrRenting")}</h2>
+              {isOwnerError && (
+                <p className="govie-error-message">
+                  <span className="govie-visually-hidden">{t("error")}:</span>
+                  {errorT(isOwnerError.messageKey)}
+                </p>
+              )}
+              <div
+                data-module="govie-radios"
+                className="govie-radios govie-radios--large govie-radios--inline"
+              >
+                <div
+                  className="govie-radios__item"
+                  style={{ marginBottom: "30px", paddingLeft: 0 }}
+                >
+                  <div className="govie-radios__item">
+                    <input
+                      id="isOwner-yes"
+                      name="isOwner"
+                      type="radio"
+                      value="true"
+                      className="govie-radios__input"
+                      defaultChecked={address.ownershipStatus === "owner"}
+                    />
+                    <label
+                      className="govie-label--s govie-radios__label"
+                      htmlFor="isOwner-yes"
+                    >
+                      {t("owner")}
+                    </label>
+                  </div>
+                  <div className="govie-radios__item">
+                    <input
+                      id="isOwner-no"
+                      name="isOwner"
+                      type="radio"
+                      value="false"
+                      className="govie-radios__input"
+                      defaultChecked={address.ownershipStatus === "renting"}
+                    />
+                    <label
+                      className="govie-label--s govie-radios__label"
+                      htmlFor="isOwner-no"
+                    >
+                      {t("renting")}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              className={`govie-form-group ${
+                isPrimaryAddressError ? "govie-form-group--error" : ""
+              }`.trim()}
+            >
+              <h2 className="govie-heading-m">{t("isPrimaryResidence")}</h2>
+              {isPrimaryAddressError && (
+                <p className="govie-error-message">
+                  <span className="govie-visually-hidden">Error:</span>
+                  {errorT(isPrimaryAddressError.messageKey)}
+                </p>
+              )}
+              <div
+                data-module="govie-radios"
+                className="govie-radios govie-radios--large govie-radios--inline"
+              >
+                <div
+                  className="govie-radios__item"
+                  style={{ marginBottom: "30px", paddingLeft: 0 }}
+                >
+                  <div className="govie-radios__item">
+                    <input
+                      id="isPrimaryAddress-yes"
+                      name="isPrimaryAddress"
+                      type="radio"
+                      value="true"
+                      className="govie-radios__input"
+                      defaultChecked={address.isPrimary}
+                    />
+                    <label
+                      className="govie-label--s govie-radios__label"
+                      htmlFor="isPrimaryAddress-yes"
+                    >
+                      {t("yes")}
+                    </label>
+                  </div>
+                  <div className="govie-radios__item">
+                    <input
+                      id="isPrimaryAddress-no"
+                      name="isPrimaryAddress"
+                      type="radio"
+                      value="false"
+                      className="govie-radios__input"
+                      defaultChecked={!address.isPrimary}
+                    />
+                    <label
+                      className="govie-label--s govie-radios__label"
+                      htmlFor="isPrimaryAddress-no"
+                    >
+                      {t("no")}
+                    </label>
                   </div>
                 </div>
               </div>

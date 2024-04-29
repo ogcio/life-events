@@ -2,15 +2,10 @@ import { getTranslations } from "next-intl/server";
 import { formatDate, routes } from "../utils";
 import { PgSessions } from "auth/sessions";
 import ds from "design-system";
-import { Link } from "../utils/navigation";
 import { Profile } from "building-blocks-sdk";
 import { Address } from "../../types/addresses";
-
-const AddressLine = ({ value }: { value: string }) => (
-  <p className="govie-body" style={{ marginBottom: "5px" }}>
-    {value}
-  </p>
-);
+import Link from "next/link";
+import dayjs from "dayjs";
 
 export default async () => {
   const t = await getTranslations("Addresses");
@@ -26,20 +21,51 @@ export default async () => {
 
   // Addresses sorted by move in date or updated at date if move in date not set
   const sortByDates = (a: Address, b: Address) => {
-    const dateA = a.move_in_date ? new Date(a.move_in_date).getTime() : null;
-    const dateB = b.move_in_date ? new Date(b.move_in_date).getTime() : null;
+    const dateA = a.moveInDate ? new Date(a.moveInDate).getTime() : null;
+    const dateB = b.moveInDate ? new Date(b.moveInDate).getTime() : null;
 
     if (dateA !== null && dateB !== null) {
       return dateB - dateA;
     } else if (dateA === null && dateB === null) {
-      return (
-        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-      );
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     } else if (dateA === null) {
       return 1; // a should come after b
     } else {
       return -1; // a should come before b
     }
+  };
+
+  const calculateTenancyDuration = async (
+    move_in_date: Address["moveInDate"],
+    move_out_date: Address["moveOutDate"],
+  ) => {
+    if (!move_in_date || !move_out_date) {
+      return;
+    }
+
+    const start = dayjs(move_in_date);
+    const end = dayjs(move_out_date);
+
+    const monthsDiff = end.diff(start, "month");
+
+    const years = Math.floor(monthsDiff / 12);
+    const months = monthsDiff % 12;
+
+    const translatedYears = years > 1 ? t("years") : t("year");
+    const translatedMonths = months > 1 ? t("months") : t("month");
+
+    let result = "";
+    if (years > 0) {
+      result += `${years} ${translatedYears}`;
+    }
+    if (months > 0) {
+      if (years > 0) {
+        result += ", ";
+      }
+      result += `${months} ${translatedMonths}`;
+    }
+
+    return result;
   };
 
   const sortedAddresses = addresses.sort(sortByDates);
@@ -58,7 +84,7 @@ export default async () => {
           data-module="govie-button"
           className="govie-button govie-button--secondary"
           style={{ display: "flex", alignItems: "center" }}
-          href={routes.addresses.newAddress.path()}
+          href={routes.addresses.searchAddress.path()}
         >
           {t("addAddress")}
         </Link>
@@ -81,16 +107,81 @@ export default async () => {
                 padding: "40px",
                 boxSizing: "border-box",
               }}
-              key={data.address_id}
+              key={data.addressId}
             >
-              <AddressLine value={data.address_line1} />
-              {data.address_line2 && <AddressLine value={data.address_line2} />}
-              <AddressLine value={data.town} />
-              <AddressLine value={data.county} />
-              <AddressLine value={data.eirecode} />
-              {data.move_in_date && (
-                <div>
-                  <p>
+              {data.isPrimary && (
+                <div
+                  style={{
+                    backgroundColor: ds.colours.ogcio.blue,
+                    maxWidth: "fit-content",
+                  }}
+                >
+                  <p
+                    className="govie-body-s"
+                    style={{
+                      textTransform: "uppercase",
+                      color: ds.colours.ogcio.white,
+                      padding: "2px 4px",
+                    }}
+                  >
+                    {t("primaryResidence")}
+                  </p>
+                </div>
+              )}
+              <ul className="govie-list">
+                <li>{data.addressLine1}</li>
+                {data.addressLine2 && <li>{data.addressLine2}</li>}
+                <li> {data.town} </li>
+                <li>{data.county} </li>
+                <li>{data.eirecode} </li>
+              </ul>
+              <ul className="govie-list">
+                {data.ownershipStatus && (
+                  <li>
+                    <span style={{ marginRight: "20px" }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="16"
+                        fill="none"
+                      >
+                        <path
+                          d="m8.824 3.374 4.411 3.97v6.891h-1.764V8.941H6.176v5.294H4.412v-6.89l4.412-3.971Zm0-2.374L0 8.941h2.647V16h5.294v-5.294h1.765V16H15V8.941h2.647"
+                          fill="#004D44"
+                        />
+                      </svg>
+                    </span>
+                    <span>{t(`${data.ownershipStatus}`)}</span>
+                  </li>
+                )}
+                {data.moveInDate && data.moveOutDate && (
+                  <li>
+                    <span style={{ marginRight: "20px" }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="17"
+                        fill="none"
+                      >
+                        <path
+                          d="M17.107.5c.493 0 .893.396.893.883v14.234a.883.883 0 0 1-.263.622.906.906 0 0 1-.63.261H.893a.9.9 0 0 1-.632-.259.877.877 0 0 1-.261-.624V1.383A.883.883 0 0 1 .263.76.906.906 0 0 1 .893.5h16.214ZM16.2 2.278H1.8v12.444h14.4V2.278Zm-1.8 8.889v1.777H3.6v-1.777h10.8ZM9 4.056v5.333H3.6V4.056H9Zm5.4 3.555V9.39h-3.6V7.61h3.6ZM7.2 5.833H5.4v1.778h1.8V5.833Zm7.2-1.777v1.777h-3.6V4.056h3.6Z"
+                          fill="#004D44"
+                        />
+                      </svg>
+                    </span>
+                    <span>
+                      {calculateTenancyDuration(
+                        data.moveInDate,
+                        data.moveOutDate,
+                      )}
+                    </span>
+                  </li>
+                )}
+              </ul>
+
+              <ul className="govie-list">
+                {data.moveInDate && (
+                  <li>
                     <span style={{ marginRight: "20px" }}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -108,13 +199,11 @@ export default async () => {
                         />
                       </svg>
                     </span>
-                    <span>{formatDate(data.move_in_date)}</span>
-                  </p>
-                </div>
-              )}
-              {data.move_out_date && (
-                <div>
-                  <p>
+                    <span>{formatDate(data.moveInDate)}</span>
+                  </li>
+                )}
+                {data.moveOutDate && (
+                  <li>
                     <span style={{ marginRight: "20px" }}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -132,27 +221,27 @@ export default async () => {
                         />
                       </svg>
                     </span>
-                    <span>{formatDate(data.move_out_date)}</span>
-                  </p>
-                </div>
-              )}
+                    <span>{formatDate(data.moveOutDate)}</span>
+                  </li>
+                )}
+              </ul>
               <div style={{ display: "flex", margin: "30px 0" }}>
                 <Link
-                  href={routes.addresses.editAddress.path(data.address_id)}
+                  href={routes.addresses.editAddress.path(data.addressId)}
                   className="govie-link"
                   style={{ marginRight: "20px" }}
                 >
                   {t("edit")}
                 </Link>
                 <Link
-                  href={routes.addresses.removeAddress.path(data.address_id)}
+                  href={routes.addresses.removeAddress.path(data.addressId)}
                   className="govie-link"
                 >
                   {t("remove")}
                 </Link>
               </div>
               <p className="govie-body-s">
-                {t("lastUpdated")}: {formatDate(data.updated_at)}
+                {t("lastUpdated")}: {formatDate(data.updatedAt)}
               </p>
             </li>
           ))}
