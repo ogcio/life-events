@@ -77,9 +77,9 @@ export default async (props: NextPageProps) => {
     }
 
     if (isOwner !== undefined && isPrimaryAddress !== undefined) {
-      const result = await new Profile(userId).updateAddress(addressId, {
-        ownership_status: isOwner === "true" ? "owner" : "renting",
-        is_primary: isPrimaryAddress === "true" ? true : false,
+      const result = await new Profile(userId).patchAddress(addressId, {
+        ownershipStatus: isOwner === "true" ? "owner" : "renting",
+        isPrimary: isPrimaryAddress === "true" ? true : false,
       });
       if (result?.error) {
         //handle error
@@ -114,10 +114,8 @@ export default async (props: NextPageProps) => {
             marginBottom: "30px",
           }}
         >
-          <AddressLine value={address.address_line1} />
-          {address.address_line2 && (
-            <AddressLine value={address.address_line2} />
-          )}
+          <AddressLine value={address.addressLine1} />
+          {address.addressLine2 && <AddressLine value={address.addressLine2} />}
           <AddressLine value={address.town} />
           <AddressLine value={address.county} />
           <AddressLine value={address.eirecode} />

@@ -47,10 +47,6 @@ paths:
                       type: boolean
                     ownershipStatus:
                       type: string
-                    is_primary:
-                      type: boolean
-                    ownership_status:
-                      type: string
                   required:
                     - addressId
                     - addressLine1
@@ -185,10 +181,6 @@ paths:
                   isPrimary:
                     type: boolean
                   ownershipStatus:
-                    type: string
-                  is_primary:
-                    type: boolean
-                  ownership_status:
                     type: string
                 required:
                   - addressId

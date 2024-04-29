@@ -145,7 +145,7 @@ export interface paths {
           addressId: string;
         };
       };
-      requestBody?: {
+      requestBody: {
         content: {
           "application/json": {
             addressLine1: string;
