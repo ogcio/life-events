@@ -17,6 +17,41 @@
   "Header": {
     "title": "Payments"
   },
+  "MyPayments": {
+    "title": "My Payments",
+    "empty": {
+      "title": "There are no payments.",
+      "description": "You have not made any payments yet."
+    },
+    "table": {
+      "status": "Status",
+      "date": "Date",
+      "paymentRequestTitle": "Payment Request Title",
+      "amount": "Amount",
+      "actions": "Actions"
+    },
+    "actions": {
+      "details": "Details"
+    },
+    "details": {
+      "paymentDetails": "Payment details",
+      "requestTitle": "Payment Request Title",
+      "amount": "Amount",
+      "lastUpdate": "Last update",
+      "status": "Status",
+      "providerType": "Provider type",
+      "providers": {
+        "openbanking": "Open Banking",
+        "banktransfer": "Bank Transfer",
+        "stripe": "Credit/Debit Card",
+        "realex": "Realex",
+        "worldpay": "WorldPay"
+      },
+      "payerName": "Payer name",
+      "payerEmail": "Payer email",
+      "referenceCode": "Payment reference code"
+    }
+  },
   "PaymentSetup": {
     "menu": {
       "payments": "Payments",
