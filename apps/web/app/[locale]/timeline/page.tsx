@@ -1,6 +1,7 @@
 import { PgSessions } from "auth/sessions";
 import { web } from "../../utils";
 import Timeline, { TimeLineData } from "./Timeline";
+import getTimelineData from "../../data/getTimelineData";
 
 export default async (props: web.NextPageProps) => {
   const { firstName, lastName } = await PgSessions.get();
@@ -24,9 +25,7 @@ export default async (props: web.NextPageProps) => {
     queryParams.set("searchQuery", "");
   }
 
-  const timelineResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/timeline/?${queryParams}`,
-  );
+  const timelineResponse = await getTimelineData(queryParams);
 
   // HANDLE ERROR
   const responseData: TimeLineData = await timelineResponse.json();
@@ -43,6 +42,7 @@ export default async (props: web.NextPageProps) => {
         userName={userName}
         searchParams={queryParams}
         timeLineData={responseData}
+        locale={props.params.locale}
       />
     </div>
   );
