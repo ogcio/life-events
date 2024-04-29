@@ -20,7 +20,10 @@ export default async function entitlements(app: FastifyInstance) {
 
       try {
         const result = await app.pg.query(
-          `SELECT type, issue_date, expiry_date, document_number, firstname, lastname FROM user_entitlements WHERE user_id = $1`,
+          `SELECT type, issue_date AS "issueDate", 
+            expiry_date AS "expiryDate", 
+            document_number AS "documentNumber", 
+            firstname, lastname FROM user_entitlements WHERE user_id = $1`,
           [userId],
         );
 
@@ -34,16 +37,16 @@ export default async function entitlements(app: FastifyInstance) {
             firstname: "Name",
             lastname: "Surname",
             type: "drivingLicence",
-            issue_date: "15/11/2022",
-            expiry_date: "15/11/2032",
-            document_number: "MURPH0523",
+            issueDate: "15/11/2022",
+            expiryDate: "15/11/2032",
+            documentNumber: "MURPH0523",
           },
           {
             firstname: "Name",
             lastname: "Surname",
             type: "birthCertificate",
-            issue_date: "02/01/1990",
-            document_number: "0523789",
+            issueDate: "02/01/1990",
+            documentNumber: "0523789",
           },
         ];
       } catch (error) {

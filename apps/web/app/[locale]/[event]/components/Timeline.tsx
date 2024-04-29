@@ -1,64 +1,58 @@
-"use client";
 import Link from "next/link";
 import { formatDate } from "../../../utils/web";
 import ds from "design-system";
-import { useEffect, useState } from "react";
 import { GroupedEvents, TimeLineData } from "../../timeline/Timeline";
-import { useTranslations } from "next-intl";
+import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import getTimelineData from "@/data/getTimelineData";
+import EventTypeSelector from "./EventTypeSelector";
+import submitQuery_ from "../../timeline/actions/submitQuery";
+import { headers } from "next/headers";
+import SearchForm from "../../timeline/SearchForm";
 
 const Icon = ds.Icon;
 
 const darkGrey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 80);
 const midGrey = ds.colours.ogcio.midGrey;
 
-export default ({ locale }: { locale: string }) => {
-  const t = useTranslations();
-  const [service, setService] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [timeLineData, setTimeLineData] = useState<TimeLineData>();
-
-  const fetchTimelineData = async () => {
-    const queryParams = new URLSearchParams({
-      startDate: "2018-01-01",
-      endDate: "2025-12-31",
-      services: service,
-      searchQuery,
-    });
-
-    const timelineResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/api/timeline/?${queryParams}`,
-    );
-
-    const responseData = await timelineResponse.json();
-
-    setTimeLineData({ ...responseData, data: responseData.data.reverse() });
+type TimelineProps = {
+  searchProps?: {
+    [key: string]: string;
   };
+  locale: string;
+  messages: AbstractIntlMessages;
+};
 
-  useEffect(() => {
-    fetchTimelineData();
-  }, []);
+export default async ({ searchProps, messages, locale }: TimelineProps) => {
+  const path = headers().get("x-pathname")?.toString();
 
-  useEffect(() => {
-    if (service || !searchQuery.length) {
-      fetchTimelineData();
-    }
-  }, [service, searchQuery]);
+  const t = await getTranslations("Timeline");
 
-  const handleCategoryChange = (selectedService: string) => {
-    setService(selectedService);
-  };
+  const queryParams = new URLSearchParams(searchProps);
+  if (!queryParams.get("startData")) {
+    queryParams.set("startDate", "2018-01-01");
+  }
 
-  const handleSearchChange = (value) => {
-    if (value.length) {
-      setSearchQuery(value);
-    } else {
-      setSearchQuery("");
-    }
-  };
+  if (!queryParams.get("endDate")) {
+    queryParams.set("endDate", "2025-12-31");
+  }
 
-  const searchEvent = () => {
-    fetchTimelineData();
-  };
+  if (!queryParams.get("services")) {
+    queryParams.set("services", ["driving", "employment", "housing"].join(","));
+  }
+
+  const searchQuery = queryParams.get("searchQuery") || "";
+
+  queryParams.set("searchQuery", searchQuery);
+
+  const submitQuery = submitQuery_.bind(
+    null,
+    path,
+    new URLSearchParams(searchProps),
+  );
+
+  const timelineResponse = await getTimelineData(queryParams);
+  const timelineData: TimeLineData = await timelineResponse.json();
 
   return (
     <div style={{ height: "100" }}>
@@ -66,40 +60,13 @@ export default ({ locale }: { locale: string }) => {
         <p className="govie-heading-m">{t("title")}</p>
       </div>
       <div className="govie-form-group">
-        <select
-          className="govie-select"
-          id="default-select"
-          name="default-select"
-          style={{ minWidth: "initial", width: "100%" }}
-          onChange={(e) => handleCategoryChange(e.target.value.toLowerCase())}
-        >
-          <option value="">{t("allServices")}</option>
-          <option value="driving">{t("driving")}</option>
-          <option value="employment">{t("employment")}</option>
-          <option value="housing">{t("housing")}</option>
-        </select>
+        <NextIntlClientProvider messages={messages}>
+          <EventTypeSelector searchProps={searchProps} />
+        </NextIntlClientProvider>
       </div>
 
       <div className="govie-form-group">
-        <div className="govie-input__wrapper">
-          <input
-            type="text"
-            id="default-input"
-            name="default-input"
-            className="govie-input"
-            placeholder={t(`searchEvent`)}
-            onChange={(e) => handleSearchChange(e.target.value)}
-          />
-          <button
-            type="button"
-            className="govie-input__suffix"
-            style={{ cursor: "pointer" }}
-            onClick={() => searchEvent()}
-            aria-label={t(`search`)}
-          >
-            <Icon icon={"search"} color={ds.colours.ogcio.darkGreen} />
-          </button>
-        </div>
+        <SearchForm searchParams={new URLSearchParams(queryParams)} />
       </div>
       <div
         style={{
@@ -111,8 +78,8 @@ export default ({ locale }: { locale: string }) => {
         }}
       >
         <div style={{ borderLeft: "1px solid #B1B4B6", paddingLeft: "10px" }}>
-          {timeLineData?.data &&
-            timeLineData.data.map((yearObject) => {
+          {timelineData?.data &&
+            timelineData.data.reverse().map((yearObject) => {
               return yearObject.months.map((monthObject) => {
                 const { events } = monthObject;
                 const groupedEvents: GroupedEvents = events.reduce(

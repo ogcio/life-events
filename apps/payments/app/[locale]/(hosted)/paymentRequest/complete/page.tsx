@@ -83,7 +83,11 @@ export default async function Page(props: Props) {
     return notFound();
   }
 
-  const returnUrl = new URL(requestDetail.redirectUrl);
+  let url = requestDetail.redirectUrl.includes("://")
+    ? requestDetail.redirectUrl
+    : `http://${requestDetail.redirectUrl}`;
+
+  const returnUrl = new URL(url);
   returnUrl.searchParams.append(
     "transactionId",
     transactionDetail.transaction_id.toString(),
