@@ -4,9 +4,11 @@ import MonthsCards from "./MonthsCards";
 export default ({
   timeLineData,
   searchParams,
+  locale,
 }: {
   timeLineData: TimeLineData;
   searchParams: URLSearchParams;
+  locale: string;
 }) => {
   const reversedTimeLine = [...timeLineData.data].reverse();
 
@@ -26,8 +28,8 @@ export default ({
               <div style={{ flex: "1" }}>
                 <MonthsCards
                   months={months}
-                  view={"list"}
                   searchParams={searchParams}
+                  locale={locale}
                 />
               </div>
             </div>

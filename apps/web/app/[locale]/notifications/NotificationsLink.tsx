@@ -1,9 +1,9 @@
 import Link from "next/link";
 import ds from "design-system/";
 import { PgSessions } from "auth/sessions";
-import { api, buildNotificationService } from "messages";
+import { api } from "messages";
 
-export default async () => {
+export default async ({ locale }: { locale: string }) => {
   const { userId } = await PgSessions.get();
 
   const unreadNotificationsCount = await api.getUnreadMessageCount(userId);
@@ -11,7 +11,9 @@ export default async () => {
   return (
     <>
       <Link
-        href={new URL("/messages", process.env.MESSAGES_HOST_URL).href}
+        href={
+          new URL(`/${locale}/messages`, process.env.MESSAGES_HOST_URL).href
+        }
         style={{ display: "flex", position: "relative" }}
       >
         {unreadNotificationsCount > 0 && (
