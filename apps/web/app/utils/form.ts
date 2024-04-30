@@ -18,6 +18,8 @@ export const errorTranslationKeys = {
 };
 export const fieldTranslationKeys = {
   name: "name",
+  firstName: "firstName",
+  lastName: "lastName",
   email: "email",
   contactNumber: "contactNumber",
   day: "day",
@@ -33,6 +35,10 @@ export const fieldTranslationKeys = {
   PPSN: "PPSN",
   referenceNumber: "referenceNumber",
   deceasedSurname: "deceasedSurname",
+  appStoreEmail: "appStoreEmail",
+  myGovIdEmail: "myGovIdEmail",
+  govIEEmail: "govIEEmail",
+  lineManagerName: "lineManagerName",
 };
 
 export const validation = {

@@ -285,28 +285,16 @@ export const digitalWallet = {
     path() {
       return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}`;
     },
-    checkDetails: {
-      slug: "check-details",
+    beforeYouBegin: {
+      slug: "before-you-begin",
       path() {
-        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.checkDetails.slug}`;
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.beforeYouBegin.slug}`;
       },
     },
-    changeDetails: {
-      slug: "change-details",
+    apply: {
+      slug: "apply",
       path() {
-        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.changeDetails.slug}`;
-      },
-    },
-    newAddress: {
-      slug: "new-address",
-      path() {
-        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.newAddress.slug}`;
-      },
-    },
-    proofOfAddress: {
-      slug: "proof-of-address",
-      path() {
-        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.proofOfAddress.slug}`;
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.apply.slug}`;
       },
     },
     applicationSuccess: {

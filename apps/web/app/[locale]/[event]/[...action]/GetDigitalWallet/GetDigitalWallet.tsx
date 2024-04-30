@@ -2,42 +2,46 @@ import { notFound, redirect } from "next/navigation";
 import { web, workflow, routes } from "../../../../utils";
 import { PgSessions } from "auth/sessions";
 import FormLayout from "../../../../components/FormLayout";
-import SimpleDetailsForm from "./SimpleDetailsForm";
-import DetailsSummary from "./DetailsSummary";
-import AddressForm from "../shared/AddressForm";
-import ProofOfAddress from "../shared/ProofOfAddress";
+import ApplicationForm from "./ApplicationForm";
 import ApplicationSuccess from "./ApplicationSuccess";
+import BeforeYouBegin from "./BeforeYouBegin";
 
 export const getDigitalWalletRules: Parameters<
   typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
 >[0] = [
-  // Rule 1: Check if all personal details are populated
-  (params) => {
-    if (
-      Boolean(
-        params.currentAddress &&
-          params.dayOfBirth &&
-          params.monthOfBirth &&
-          params.yearOfBirth &&
-          params.userName &&
-          params.sex &&
-          params.email &&
-          params.mobile &&
-          params.timeAtAddress,
-      )
-    ) {
-      return { key: null, isStepValid: true };
-    }
-    return {
-      key: routes.digitalWallet.getDigitalWallet.checkDetails.slug,
-      isStepValid: false,
-    };
+  // Rule 1: Check if user has read the introduction
+  ({ hasReadIntro }) => {
+    return !hasReadIntro
+      ? {
+          key: routes.digitalWallet.getDigitalWallet.beforeYouBegin.slug,
+          isStepValid: true,
+        }
+      : {
+          key: null,
+          isStepValid: true,
+        };
   },
-  // Rule 2: Check if application is confirmed
+  //Rule 2: Check if all details are populated
+  (params) =>
+    Boolean(
+      params.firstName &&
+        params.lastName &&
+        params.appStoreEmail &&
+        params.myGovIdEmail &&
+        params.govIEEmail &&
+        params.lineManagerName &&
+        params.jobTitle,
+    )
+      ? { key: null, isStepValid: true }
+      : {
+          key: routes.digitalWallet.getDigitalWallet.apply.slug,
+          isStepValid: false,
+        },
+  // Rule 3: Check if application is confirmed
   ({ confirmedApplication }) =>
     !confirmedApplication
       ? {
-          key: routes.digitalWallet.getDigitalWallet.checkDetails.slug,
+          key: routes.digitalWallet.getDigitalWallet.apply.slug,
           isStepValid: true,
         }
       : {
@@ -59,13 +63,12 @@ type FormProps = {
   eventsPageHref: string;
 };
 
-const CheckDetailsStep: React.FC<FormProps> = ({
+const BeforeYouBeginStep: React.FC<FormProps> = ({
   stepSlug,
   actionSlug,
   nextSlug,
   data,
   userId,
-  isStepValid,
   eventsPageHref,
 }) => {
   return stepSlug === nextSlug ? (
@@ -74,11 +77,10 @@ const CheckDetailsStep: React.FC<FormProps> = ({
       step={stepSlug}
       backHref={eventsPageHref}
     >
-      <DetailsSummary
+      <BeforeYouBegin
         data={data}
         flow={workflow.keys.getDigitalWallet}
         userId={userId}
-        dataValid={isStepValid}
       />
     </FormLayout>
   ) : (
@@ -86,88 +88,29 @@ const CheckDetailsStep: React.FC<FormProps> = ({
   );
 };
 
-const ChangeDetailsStep: React.FC<FormProps> = ({
+const ApplyStep: React.FC<FormProps> = ({
   stepSlug,
   actionSlug,
+  nextSlug,
   data,
-  urlBase,
   userId,
-  baseActionHref,
+  eventsPageHref,
 }) => {
-  return (
+  return stepSlug === nextSlug ? (
     <FormLayout
-      action={{ slug: actionSlug, href: baseActionHref }}
+      action={{ slug: actionSlug }}
       step={stepSlug}
-      backHref={baseActionHref}
+      backHref={eventsPageHref}
     >
-      <SimpleDetailsForm
+      <ApplicationForm
         data={data}
         flow={workflow.keys.getDigitalWallet}
-        urlBase={urlBase}
         userId={userId}
+        urlBase={"/"}
       />
     </FormLayout>
-  );
-};
-
-const NewAddressStep: React.FC<FormProps> = ({
-  stepSlug,
-  actionSlug,
-  data,
-  searchParams,
-  userId,
-  baseActionHref,
-}) => {
-  return (
-    <FormLayout
-      action={{
-        slug: actionSlug,
-        href: baseActionHref,
-      }}
-      step={stepSlug}
-      backHref={baseActionHref}
-    >
-      <AddressForm
-        field={"currentAddress"}
-        searchParams={searchParams}
-        flow={workflow.keys.getDigitalWallet}
-        userId={userId}
-        data={data}
-        slug={routes.digitalWallet.getDigitalWallet.newAddress.slug}
-        category={workflow.categories.digitalWallet}
-        onSubmitRedirectSlug={
-          routes.digitalWallet.getDigitalWallet.proofOfAddress.slug
-        }
-        showWarning={true}
-      />
-    </FormLayout>
-  );
-};
-
-const ProofOfAddressStep: React.FC<FormProps> = ({
-  actionSlug,
-  baseActionHref,
-  stepSlug,
-  searchParams,
-  userId,
-}) => {
-  return (
-    <FormLayout
-      action={{
-        slug: actionSlug,
-        href: baseActionHref,
-      }}
-      step={stepSlug}
-      backHref={baseActionHref}
-    >
-      <ProofOfAddress
-        step={searchParams?.step}
-        flow={workflow.keys.getDigitalWallet}
-        userId={userId}
-        slug={routes.digitalWallet.getDigitalWallet.proofOfAddress.slug}
-        onSubmitRedirectSlug={baseActionHref}
-      />
-    </FormLayout>
+  ) : (
+    redirect(nextSlug || "")
   );
 };
 
@@ -189,11 +132,9 @@ const ApplicationSuccessStep: React.FC<FormProps> = ({
 };
 
 const FormComponentsMap = {
-  [routes.digitalWallet.getDigitalWallet.checkDetails.slug]: CheckDetailsStep,
-  [routes.digitalWallet.getDigitalWallet.changeDetails.slug]: ChangeDetailsStep,
-  [routes.digitalWallet.getDigitalWallet.newAddress.slug]: NewAddressStep,
-  [routes.digitalWallet.getDigitalWallet.proofOfAddress.slug]:
-    ProofOfAddressStep,
+  [routes.digitalWallet.getDigitalWallet.beforeYouBegin.slug]:
+    BeforeYouBeginStep,
+  [routes.digitalWallet.getDigitalWallet.apply.slug]: ApplyStep,
   [routes.digitalWallet.getDigitalWallet.applicationSuccess.slug]:
     ApplicationSuccessStep,
 };

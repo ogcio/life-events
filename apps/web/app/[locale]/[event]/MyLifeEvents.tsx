@@ -10,6 +10,7 @@ import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
 import { Messaging } from "building-blocks-sdk";
 import { getDigitalWalletRules } from "./[...action]/GetDigitalWallet/GetDigitalWallet";
+import { isFeatureFlagEnabled } from "feature-flags/utils";
 
 const eventRules = {
   [workflow.keys.orderEHIC]: orderEHICRules,
@@ -24,26 +25,27 @@ async function getEvents() {
   "use server";
 
   return Promise.resolve([
-    {
-      flowKey: workflow.keys.renewDriversLicence,
-      category: workflow.categories.driving,
-    },
-    {
-      flowKey: workflow.keys.orderEHIC,
-      category: workflow.categories.health,
-    },
-    {
-      flowKey: workflow.keys.orderBirthCertificate,
-      category: workflow.categories.birth,
-    },
-    {
-      flowKey: workflow.keys.notifyDeath,
-      category: workflow.categories.death,
-    },
-    {
-      flowKey: workflow.keys.applyJobseekersAllowance,
-      category: workflow.categories.employment,
-    },
+    // All the commented out events are now reachable via the burger menu
+    // {
+    //   flowKey: workflow.keys.renewDriversLicence,
+    //   category: workflow.categories.driving,
+    // },
+    // {
+    //   flowKey: workflow.keys.orderEHIC,
+    //   category: workflow.categories.health,
+    // },
+    // {
+    //   flowKey: workflow.keys.orderBirthCertificate,
+    //   category: workflow.categories.birth,
+    // },
+    // {
+    //   flowKey: workflow.keys.notifyDeath,
+    //   category: workflow.categories.death,
+    // },
+    // {
+    //   flowKey: workflow.keys.applyJobseekersAllowance,
+    //   category: workflow.categories.employment,
+    // },
     {
       flowKey: workflow.keys.getDigitalWallet,
       category: workflow.categories.digitalWallet,
@@ -101,7 +103,6 @@ async function getFlows() {
 
   const { userId } = await PgSessions.get();
 
-  // union the other flow types when we have them and add some type guard to figure out the pre/mid/post states
   const flowsQueryResult = await postgres.pgpool.query<
     { flow: string; category: string; data: workflow.Workflow },
     string[]
@@ -126,7 +127,7 @@ async function getFlows() {
 
 export default async ({ locale }) => {
   const t = await getTranslations("MyLifeEvents");
-  const [flow] = await Promise.all([getFlows(), getEvents()]);
+  const [flow, events] = await Promise.all([getFlows(), getEvents()]);
 
   const { userId } = await PgSessions.get();
 
@@ -134,39 +135,114 @@ export default async ({ locale }) => {
     "event",
   );
 
+  const digitalWalletEnabled = await isFeatureFlagEnabled("digitalWallet");
+
+  const showDigitalWalletOnboarding =
+    digitalWalletEnabled &&
+    !flow.find((el) => el.category === workflow.categories.digitalWallet);
+
+  const eventsToRender = events
+    .filter((event) => !flow.some((f) => f.flowKey === event.flowKey))
+    .map((event) => {
+      const flowTitle = event.flowKey + ".title.base";
+      const descriptionKey = event.flowKey + ".description.base";
+      return {
+        flowTitle,
+        flowKey: event.flowKey,
+        descriptionKey,
+        slug: routes.category[event.category][event.flowKey].path(),
+      };
+    });
+
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1, gap: "2.5rem" }}>
       <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
         <div className="govie-heading-l">{t("lifeEvents")}</div>
         <ul className="govie-list">
-          {messageEvents?.map((msg) => (
-            <li
-              key={msg.subject}
-              style={{
-                margin: "1rem",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-around",
-                gap: "1rem",
-              }}
-            >
-              <Link
-                className="govie-link"
-                href={
-                  new URL(
-                    `/${locale}/messages/${msg.id}`,
-                    process.env.MESSAGES_HOST_URL,
-                  ).href
-                }
+          {showDigitalWalletOnboarding &&
+            eventsToRender.map((evt) => (
+              <li
+                key={`le_${evt.flowKey}`}
+                style={{
+                  margin: "1rem 0",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-around",
+                  gap: "1rem",
+                }}
               >
-                {msg.subject}
-              </Link>
-              <p className="govie-body" style={{ margin: "unset" }}>
-                {msg.excerpt}
-              </p>
-              <hr className="govie-section-break govie-section-break--visible" />
-            </li>
-          ))}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div>
+                    <Link className="govie-link" href={evt.slug}>
+                      {t(evt.flowTitle)}
+                    </Link>
+                    <p
+                      className="govie-body"
+                      style={{ margin: "unset", marginTop: "16px" }}
+                    >
+                      {t(evt.descriptionKey, { date: "19th March" })}
+                    </p>
+                  </div>
+                  <div>
+                    <Link
+                      className="govie-link"
+                      href={evt.slug}
+                      aria-label={t(evt.flowTitle)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="10"
+                        height="13"
+                        fill="none"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="m0 0 5.753 6.5L0 13h4.247l4.78-5.4L10 6.5l-.974-1.1L4.247 0H0Z"
+                          fill="#2C55A2"
+                        />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+                <hr className="govie-section-break govie-section-break--visible" />
+              </li>
+            ))}
+          {!showDigitalWalletOnboarding &&
+            messageEvents?.map((msg) => (
+              <li
+                key={msg.subject}
+                style={{
+                  margin: "1rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-around",
+                  gap: "1rem",
+                }}
+              >
+                <Link
+                  className="govie-link"
+                  href={
+                    new URL(
+                      `/${locale}/messages/${msg.id}`,
+                      process.env.MESSAGES_HOST_URL,
+                    ).href
+                  }
+                >
+                  {msg.subject}
+                </Link>
+                <p className="govie-body" style={{ margin: "unset" }}>
+                  {msg.excerpt}
+                </p>
+                <hr className="govie-section-break govie-section-break--visible" />
+              </li>
+            ))}
         </ul>
       </section>
       <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>

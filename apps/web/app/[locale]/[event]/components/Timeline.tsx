@@ -6,9 +6,8 @@ import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import getTimelineData from "@/data/getTimelineData";
 import EventTypeSelector from "./EventTypeSelector";
-import submitQuery_ from "../../timeline/actions/submitQuery";
-import { headers } from "next/headers";
 import SearchForm from "../../timeline/SearchForm";
+import { isFeatureFlagEnabled } from "feature-flags/utils";
 
 const Icon = ds.Icon;
 
@@ -24,8 +23,10 @@ type TimelineProps = {
 };
 
 export default async ({ searchProps, messages, locale }: TimelineProps) => {
-  const path = headers().get("x-pathname")?.toString();
-
+  const showTimeline = await isFeatureFlagEnabled("timeline");
+  if (!showTimeline) {
+    return;
+  }
   const t = await getTranslations("Timeline");
 
   const queryParams = new URLSearchParams(searchProps);
@@ -44,12 +45,6 @@ export default async ({ searchProps, messages, locale }: TimelineProps) => {
   const searchQuery = queryParams.get("searchQuery") || "";
 
   queryParams.set("searchQuery", searchQuery);
-
-  const submitQuery = submitQuery_.bind(
-    null,
-    path,
-    new URLSearchParams(searchProps),
-  );
 
   const timelineResponse = await getTimelineData(queryParams);
   const timelineData: TimeLineData = await timelineResponse.json();

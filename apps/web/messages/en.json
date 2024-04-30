@@ -45,7 +45,9 @@
       "getDigitalWallet": "Digital Wallet application"
     },
     "reject": "Reject",
-    "get-digital-wallet": "Digital Wallet Onboarding"
+    "get-digital-wallet": "Digital Wallet Onboarding",
+    "before-you-begin": "Before you begin",
+    "apply": "Apply"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -296,6 +298,27 @@
     "change": "Change",
     "continue": "Confirm and submit application"
   },
+  "GetDigitalWallet": {
+    "BeforeYouBeginForm": {
+      "title": "Before you begin",
+      "subTitle": "Please have the following information ready to proceed:",
+      "appStoreEmailAddress": "Your Apple or Android app store email address",
+      "myGovIdEmailAddress": "Your MyGovID email address",
+      "govIEEmaildAddress": "Your gov.ie work email address",
+      "continue": "Continue"
+    },
+    "ApplicationForm": {
+      "title": "Apply for the Digital Wallet",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "lineManagerName": "Your line manager name",
+      "appStoreEmail": "Apple/Android app store email",
+      "myGovIdEmail": "myGovID email",
+      "govIEEmail": "Gov.ie work email",
+      "jobTitle": "Your job title",
+      "submitText": "Confirm and continue"
+    }
+  },
   "PaymentSuccessful": {
     "panelTitle": "Your payment was successful",
     "panelReferenceText": "Your reference number",
@@ -451,7 +474,7 @@
         "rejected": "Your application for a digital wallet is rejected"
       },
       "description": {
-        "base": "A line of text to support this statement",
+        "base": "Log into your Digital Wallet here",
         "pre": "A line of text to support this statement",
         "mid": "A line of text to support this statement",
         "post": "You should now have access to your Digital Wallet",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Sidebar from "../../../components/Sidebar/Sidebar";
-import LifeEventsMenu from "./Menu/LifeEventsMenu";
+import LifeEventsMenu from "./BurgerMenu/LifeEventsMenu";
 
 type TSidebarWrapperProps = {
   userName: string;

@@ -12,7 +12,7 @@ import { getAllEnabledFlags, isFeatureFlagEnabled } from "feature-flags/utils";
 import {
   getEnabledOptions,
   menuOptions,
-} from "./[event]/components/Menu/options";
+} from "./[event]/components/BurgerMenu/options";
 import SidebarWrapper from "./[event]/components/SidebarWrapper";
 import { getTranslations } from "next-intl/server";
 
