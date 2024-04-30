@@ -7,7 +7,7 @@ import { getTranslations } from "next-intl/server";
 import EventTypeSelector from "./EventTypeSelector";
 import { headers } from "next/headers";
 import SearchForm from "../../timeline/SearchForm";
-import { Timeline } from "building-blocks-sdk";
+import { Timeline as TimelineClient } from "building-blocks-sdk";
 
 const Icon = ds.Icon;
 
@@ -50,7 +50,7 @@ export default async ({
 
   queryParams.set("searchQuery", searchQuery);
 
-  const timelineData = await new Timeline(userId).getTimelineData(
+  const timelineData = await new TimelineClient(userId).getTimelineData(
     Object.fromEntries(queryParams),
   );
 

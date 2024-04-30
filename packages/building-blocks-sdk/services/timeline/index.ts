@@ -1,5 +1,16 @@
-import createClient, { type Middleware } from "openapi-fetch";
+import createClient, { FetchResponse, type Middleware } from "openapi-fetch";
 import type { paths } from "./schema";
+
+const formatQueryResult = async <T, O>(
+  promise: Promise<FetchResponse<T, O>>,
+) => {
+  try {
+    const result = await promise;
+    return { data: result.data, error: result.error };
+  } catch (error) {
+    return { data: undefined, error };
+  }
+};
 
 export class Timeline {
   private client: ReturnType<typeof createClient<paths>>;
@@ -24,12 +35,12 @@ export class Timeline {
   async getTimelineData(
     query?: paths["/api/v1/timeline/"]["get"]["parameters"]["query"],
   ) {
-    const { error, data } = await this.client.GET("/api/v1/timeline/", {
-      params: {
-        query,
-      },
-    });
-
-    return { error, data: data };
+    return formatQueryResult(
+      this.client.GET("/api/v1/timeline/", {
+        params: {
+          query,
+        },
+      }),
+    );
   }
 }
