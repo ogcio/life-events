@@ -44,6 +44,25 @@ Service URLs
 
 Translation files are stored in /web/messages. Localisation works on React server components and it uses [next-intl](https://next-intl-docs.vercel.app/)
 
+## Logto integration
+
+The only app that supports logto at the present time is payments. in order to allow using logto it is required to setup the following .env keys
+
+```
+LOGTO_APP_ID=logto_app_id
+LOGTO_ENDPOINT=http://localhost:3301/
+LOGTO_APP_SECRET=logto_app_secret
+LOGTO_COOKIE_SECRET=logto_cookie_secret
+LOGTO_BASE_URL=http://localhost:3001
+
+```
+
+To retrieve the ids and secrets you need to access the logto interface http://localhost:3302
+
+in the `Applications` section you can retrieve `LOGTO_APP_ID` and `LOGTO_APP_SECRET` for the application you are willing to configure.
+
+the `LOGTO_COOKIE_SECRET` can be retrieved in the `Signinig keys` section
+
 ## Docker build
 
 To build the images for the apps you have to build the base images before (following are the commands from the root folder)
