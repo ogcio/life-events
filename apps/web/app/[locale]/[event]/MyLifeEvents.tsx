@@ -135,11 +135,8 @@ export default async ({ locale }) => {
     "event",
   );
 
-  const digitalWalletEnabled = await isFeatureFlagEnabled("digitalWallet");
-
   const showDigitalWalletOnboarding =
-    digitalWalletEnabled &&
-    !flow.find((el) => el.category === workflow.categories.digitalWallet);
+    await isFeatureFlagEnabled("digitalWallet");
 
   const eventsToRender = events
     .filter((event) => !flow.some((f) => f.flowKey === event.flowKey))

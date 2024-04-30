@@ -46,16 +46,16 @@ export default async (props: {
             style={{ marginBottom: "30px" }}
           >
             <li>
-              <p style={{ marginBottom: "5px", fontWeight: "bold" }}>
-                {t("appStoreEmailAddress")}
-              </p>
-              <p style={{ marginTop: 0 }}>You can find this by going...</p>
-            </li>
-            <li>
               <p style={{ fontWeight: "bold" }}>{t("myGovIdEmailAddress")}</p>
             </li>
             <li>
               <p style={{ fontWeight: "bold" }}>{t("govIEEmaildAddress")}</p>
+            </li>
+            <li>
+              <p style={{ marginBottom: "5px", fontWeight: "bold" }}>
+                {t("appStoreEmailAddress")}
+              </p>
+              <p style={{ marginTop: 0 }}>You can find this by going...</p>
             </li>
           </ul>
           <button type="submit" className="govie-button">

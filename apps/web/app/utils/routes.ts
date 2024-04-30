@@ -291,10 +291,34 @@ export const digitalWallet = {
         return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.beforeYouBegin.slug}`;
       },
     },
-    apply: {
-      slug: "apply",
+    aboutYou: {
+      slug: "about-you",
       path() {
-        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.apply.slug}`;
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.aboutYou.slug}`;
+      },
+    },
+    yourEmployment: {
+      slug: "your-employment",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.yourEmployment.slug}`;
+      },
+    },
+    yourDevice: {
+      slug: "your-device",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.yourDevice.slug}`;
+      },
+    },
+    checkDetails: {
+      slug: "check-details",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.checkDetails.slug}`;
+      },
+    },
+    changeDetails: {
+      slug: "change-details",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.changeDetails.slug}`;
       },
     },
     applicationSuccess: {

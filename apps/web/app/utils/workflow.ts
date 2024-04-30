@@ -365,6 +365,14 @@ export async function getFlowData<T extends Workflow>(
     data.email = email;
   }
 
+  if ("firstName" in data) {
+    data.firstName = firstName;
+  }
+
+  if ("lastName" in data) {
+    data.lastName = lastName;
+  }
+
   if (flowResult.rowCount) {
     const [{ data: flowData }] = flowResult.rows;
     Object.assign(data, flowData);

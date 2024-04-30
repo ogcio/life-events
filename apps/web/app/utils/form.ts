@@ -39,6 +39,7 @@ export const fieldTranslationKeys = {
   myGovIdEmail: "myGovIdEmail",
   govIEEmail: "govIEEmail",
   lineManagerName: "lineManagerName",
+  jobTitle: "jobTitle",
 };
 
 export const validation = {
