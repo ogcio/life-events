@@ -67,7 +67,7 @@ stages:
           awsRegion: $(awsRegion)
           serviceName: ${{ serviceName }}
   - stage: Deploy_approval
-    displayName: Approval the deployment of all services to ECS
+    displayName: Approve the deployment of all services to ECS
     condition: and(succeeded(), eq(variables.pushArtefacts, true))
     dependsOn: 
     - ${{ each serviceName in parameters.services }}:
@@ -81,7 +81,7 @@ stages:
       - task: ManualValidation@0
         timeoutInMinutes: 5
         inputs:
-          instructions: 'Please validate the deployment of $(Build.SourceBranchName)'
+          instructions: 'Please confirm the deployment of $(Build.SourceBranchName)'
           onTimeout: 'reject'
   - ${{ each serviceName in parameters.services }}:
     - stage: Deploy_${{ replace(serviceName, '-', '_') }}
