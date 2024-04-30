@@ -88,3 +88,4 @@ stages:
         parameters:
           awsServiceConnection: $(awsServiceConnection)
           awsRegion: $(awsRegion)
+          serviceName: ${{ serviceName }}
