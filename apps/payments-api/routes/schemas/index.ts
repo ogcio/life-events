@@ -229,7 +229,7 @@ export const FullTransaction = Type.Object({
   transactionId: Type.String(),
   paymentRequestId: Type.String(),
   extPaymentId: Type.String(),
-  status: Type.String(), // TODO: Change to TransactionStatuses
+  status: TransactionStatuses,
   integrationReference: Type.String(),
   amount: Type.Number(),
   paymentProviderId: Type.String(),
@@ -292,6 +292,10 @@ export const PaymentIntentId = Type.Object({
 });
 export type PaymentIntentId = Static<typeof PaymentIntentId>;
 
+/**
+ * Realex integration types
+ */
+
 export const RealexPaymentObject = Type.Object({
   ACCOUNT: Type.String(),
   AMOUNT: Type.String(),
@@ -312,3 +316,18 @@ export const RealexPaymentObjectQueryParams = Type.Object({
 export type RealexPaymentObjectQueryParams = Static<
   typeof RealexPaymentObjectQueryParams
 >;
+
+/**
+ * Citizen
+ */
+
+export const CitizenTransactions = Type.Array(
+  Type.Pick(Transaction, [
+    "transactionId",
+    "status",
+    "title",
+    "updatedAt",
+    "amount",
+  ]),
+);
+export type CitizenTransactions = Static<typeof CitizenTransactions>;

@@ -12,7 +12,7 @@ The OGCIO design system requires a wrapper for usage within NextJS. This is done
 
 Most building blocks and 3rd party services are mocked in this mono-repo.
 
-Testing around RSC and RSA is still poorly supported. We use Playwright for e2e testing and Jest for unit testing. At the moment there isn't a solid integration testing library for async React components
+Testing around RSC and RSA is still poorly supported. We use Playwright for e2e testing and Tap for unit testing. At the moment there isn't a solid integration testing library for async React components
 
 ## Setup
 
@@ -31,7 +31,7 @@ In order to run the setup you must:
 Service URLs
 
 | Service Name             | URL                     |
-|--------------------------|-------------------------|
+| ------------------------ | ----------------------- |
 | web (Life events portal) | `http://localhost:3000` |
 | payments                 | `http://localhost:3001` |
 | messages                 | `http://localhost:3002` |
@@ -58,3 +58,18 @@ Then you can build the app image from the root folder
 ```
 docker build -t web-container:latest --file apps/web/Dockerfile .
 ```
+
+next.js has been configured to use `standalone` mode for the `web` app. If this is working as expected we will be adopting this change
+to other apps as well, for info about standalone mode, please refer to the [doc](https://nextjs.org/docs/pages/api-reference/next-config-js/output)
+in order to allow standalone mode to work with the monorepo, the experimental `outputFileTracingRoot` needs to be used.
+Once the build is done, only the standalone static app can be deployted to the docker runner image.
+the static folder needs to be moved under the app path after build as per Next.js docs:
+
+```
+Additionally, a minimal server.js file is also output which can be used instead of next start.
+This minimal server does not copy the public or .next/static folders by default as these should
+ideally be handled by a CDN instead, although these folders can be copied to the standalone/public
+and standalone/.next/static folders manually, after which server.js file will serve these automatically.
+```
+
+with standalone mode the app can be run with a plain `node server.js` command instead of relying on `npm` and `next`

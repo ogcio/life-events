@@ -16,8 +16,8 @@ export const fieldTranslationKeys = {
   email: "email",
   phone: "phone",
   address: "address",
-  addressFirstLine: "address first line",
-  addressSecondLine: "address second line",
+  address_first_line: "addressFirstLine",
+  address_second_line: "addressSecondLine",
   town: "town",
   eirecode: "eirecode",
   county: "county",
@@ -30,6 +30,8 @@ export const fieldTranslationKeys = {
   moveOutDay: "moveOutDay",
   moveOutMonth: "moveOutMonth",
   moveOutYear: "moveOutYear",
+  isOwner: "owner",
+  isPrimaryAddress: "primaryAddress",
 };
 
 export const validation = {
@@ -142,22 +144,27 @@ export const validation = {
   },
 };
 
-export async function insertErrors(formErrors: Error[], userId: string) {
+export async function insertErrors(
+  formErrors: Error[],
+  userId: string,
+  slug: string,
+) {
   "use server";
   let i = 1;
   const values: string[] = [];
   for (const _ of formErrors) {
-    values.push(`($1, $${1 + i}, $${2 + i}, $${3 + i})`);
+    values.push(`($1, $2, $${2 + i}, $${3 + i}, $${4 + i})`);
     i += 3;
   }
 
   await pgpool.query(
     `
-      INSERT INTO form_errors(user_id, field, error_message, error_value)
+      INSERT INTO form_errors(user_id, slug, field, error_message, error_value)
       VALUES ${values.join(", ")}
-  `,
+      `,
     [
       userId,
+      slug,
       ...formErrors
         .map((error) => [error.field, error.messageKey, error.errorValue])
         .flat(),
@@ -165,18 +172,20 @@ export async function insertErrors(formErrors: Error[], userId: string) {
   );
 }
 
-export async function getErrorsQuery(userId: string) {
+export async function getErrorsQuery(userId: string, slug: string) {
   "use server";
 
-  return pgpool.query<
+  const result = await pgpool.query<
     { field: string; messageKey: string; errorValue: string },
     string[]
   >(
     `
       DELETE FROM form_errors
-      WHERE user_id = $1
+      WHERE "user_id" = $1 AND "slug" = $2
       RETURNING field, error_message AS "messageKey", error_value AS "errorValue"
     `,
-    [userId],
+    [userId, slug],
   );
+
+  return result;
 }

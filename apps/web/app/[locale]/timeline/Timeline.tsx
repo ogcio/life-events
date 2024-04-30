@@ -1,9 +1,7 @@
 import Menu from "./Menu";
 import Link from "next/link";
 import TimeLineGrid from "./TimeLineGrid";
-import { NextPageProps } from "../../utils/web";
 import TimeLineList from "./TimeLineList";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 
@@ -39,10 +37,12 @@ export default async ({
   userName,
   searchParams,
   timeLineData,
+  locale,
 }: {
   userName: string;
   searchParams: URLSearchParams;
   timeLineData: TimeLineData;
+  locale: string;
 }) => {
   const t = await getTranslations("Timeline");
   const path = headers().get("x-pathname")?.toString() || "";
@@ -52,7 +52,7 @@ export default async ({
   return (
     <>
       <div>
-        <Menu userName={userName} searchParams={searchParams} />
+        <Menu userName={userName} searchParams={searchParams} locale={locale} />
       </div>
       <div style={{ width: "100%" }}>
         <div style={{ textAlign: "right" }}>
@@ -78,11 +78,13 @@ export default async ({
           <TimeLineGrid
             timeLineData={timeLineData}
             searchParams={searchParams}
+            locale={locale}
           />
         ) : (
           <TimeLineList
             timeLineData={timeLineData}
             searchParams={searchParams}
+            locale={locale}
           />
         )}
       </div>

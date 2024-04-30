@@ -16,10 +16,10 @@ export const entitlements = {
 
 export const addresses = {
   slug: "addresses",
-  newAddress: {
-    slug: "new-address",
+  searchAddress: {
+    slug: "search-address",
     path() {
-      return `${addresses.slug}/${addresses.newAddress.slug}`;
+      return `${addresses.slug}/${addresses.searchAddress.slug}`;
     },
   },
   editAddress: {
@@ -32,6 +32,24 @@ export const addresses = {
     slug: "remove-address",
     path(id: string) {
       return `${addresses.slug}/${addresses.removeAddress.slug}/${id}`;
+    },
+  },
+  selectAddress: {
+    slug: "select-address",
+    path() {
+      return `${addresses.slug}/${addresses.selectAddress.slug}`;
+    },
+  },
+  manualAddress: {
+    slug: "manual-address",
+    path() {
+      return `${addresses.slug}/${addresses.manualAddress.slug}`;
+    },
+  },
+  addDetails: {
+    slug: "add-details",
+    path(id: string) {
+      return `${addresses.slug}/${id}/${addresses.addDetails.slug}`;
     },
   },
 };
