@@ -83,3 +83,8 @@ stages:
         inputs:
           instructions: 'Please validate the deployment of $(Build.SourceBranchName)'
           onTimeout: 'reject'
+    - ${{ each serviceName in parameters.services }}:
+      - template: pipeline-templates/deploy_ecs.yml
+        parameters:
+          awsServiceConnection: $(awsServiceConnection)
+          awsRegion: $(awsRegion)
