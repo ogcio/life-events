@@ -4,11 +4,13 @@ import Link from "next/link";
 import { form, routes } from "../../../utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { NextPageProps } from "../../../../types";
 
-export default async () => {
+export default async (props: NextPageProps) => {
   const t = await getTranslations("AddressForm");
   const { userId } = await PgSessions.get();
   const errorT = await getTranslations("FormErrors");
+  const { locale } = props.params;
   const errors = await form.getErrorsQuery(
     userId,
     routes.addresses.searchAddress.slug,
@@ -36,7 +38,7 @@ export default async () => {
 
     if (searchQuery) {
       redirect(
-        `/${routes.addresses.selectAddress.path()}${"?adr="}${searchQuery}`,
+        `/${locale}/${routes.addresses.selectAddress.path()}${"?adr="}${searchQuery}`,
       );
     }
   }
@@ -79,7 +81,7 @@ export default async () => {
           </button>
         </form>
         <div style={{ margin: "30px 0" }}>
-          <Link href={"/"} className="govie-back-link">
+          <Link href={`/${locale}`} className="govie-back-link">
             {t("back")}
           </Link>
         </div>

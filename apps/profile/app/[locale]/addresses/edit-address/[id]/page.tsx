@@ -8,180 +8,7 @@ import dayjs from "dayjs";
 import { Profile } from "building-blocks-sdk";
 import Link from "next/link";
 
-async function editAddress(formData: FormData) {
-  "use server";
-
-  const addressId = formData.get("addressId")?.toString();
-  const userId = formData.get("userId")?.toString();
-
-  if (!addressId) {
-    throw Error("Address id not found");
-  }
-
-  if (!userId) {
-    throw Error("User id not found");
-  }
-
-  const errors: form.Error[] = [];
-  const addressLine1 = formData.get("addressLine1")?.toString();
-  const addressLine2 = formData.get("addressLine2")?.toString();
-  const town = formData.get("town")?.toString();
-  const county = formData.get("county")?.toString();
-  const eirecode = formData.get("eirecode")?.toString();
-  const moveInDay = formData.get("moveInDay")?.toString();
-  const moveInMonth = formData.get("moveInMonth")?.toString();
-  const moveInYear = formData.get("moveInYear")?.toString();
-  const moveOutDay = formData.get("moveOutDay")?.toString();
-  const moveOutMonth = formData.get("moveOutMonth")?.toString();
-  const moveOutYear = formData.get("moveOutYear")?.toString();
-  const isOwner = formData.get("isOwner")?.toString();
-  const isPrimaryAddress = formData.get("isPrimaryAddress")?.toString();
-
-  if (!addressLine1) {
-    errors.push({
-      messageKey: form.errorTranslationKeys.empty,
-      errorValue: "",
-      field: form.fieldTranslationKeys.address_first_line,
-    });
-  }
-
-  if (!town) {
-    errors.push({
-      messageKey: form.errorTranslationKeys.empty,
-      errorValue: "",
-      field: form.fieldTranslationKeys.town,
-    });
-  }
-
-  if (!county) {
-    errors.push({
-      messageKey: form.errorTranslationKeys.empty,
-      errorValue: "",
-      field: form.fieldTranslationKeys.county,
-    });
-  }
-
-  if (!eirecode) {
-    errors.push({
-      messageKey: form.errorTranslationKeys.empty,
-      errorValue: "",
-      field: form.fieldTranslationKeys.eirecode,
-    });
-  }
-
-  if (moveInDay || moveInMonth || moveInYear) {
-    errors.push(
-      ...form.validation.dateErrors(
-        {
-          field: form.fieldTranslationKeys.moveInYear,
-          value: parseInt(moveInYear || ""),
-        },
-        {
-          field: form.fieldTranslationKeys.moveInMonth,
-          value: parseInt(moveInMonth || ""),
-        },
-        {
-          field: form.fieldTranslationKeys.moveInDay,
-          value: parseInt(moveInDay || ""),
-        },
-      ),
-    );
-  }
-
-  if (moveOutDay || moveOutMonth || moveOutYear) {
-    errors.push(
-      ...form.validation.dateErrors(
-        {
-          field: form.fieldTranslationKeys.moveOutYear,
-          value: parseInt(moveOutYear || ""),
-        },
-        {
-          field: form.fieldTranslationKeys.moveOutMonth,
-          value: parseInt(moveOutMonth || ""),
-        },
-        {
-          field: form.fieldTranslationKeys.moveOutDay,
-          value: parseInt(moveOutDay || ""),
-        },
-      ),
-    );
-  }
-
-  if (isOwner === undefined) {
-    errors.push({
-      messageKey: form.errorTranslationKeys.emptySelection,
-      errorValue: "",
-      field: form.fieldTranslationKeys.isOwner,
-    });
-  }
-
-  if (isPrimaryAddress === undefined) {
-    errors.push({
-      messageKey: form.errorTranslationKeys.emptySelection,
-      errorValue: "",
-      field: form.fieldTranslationKeys.isPrimaryAddress,
-    });
-  }
-
-  if (errors.length) {
-    await form.insertErrors(errors, userId, routes.addresses.editAddress.slug);
-    return revalidatePath("/");
-  }
-
-  let moveInDate: string | undefined;
-  if (moveInDay && moveInMonth && moveInYear) {
-    moveInDate = dayjs()
-      .year(Number(moveInYear))
-      .month(Number(moveInMonth) - 1)
-      .date(Number(moveInDay))
-      .startOf("day")
-      .toISOString();
-  }
-
-  let moveOutDate: string | undefined;
-  if (moveOutDay && moveOutMonth && moveOutYear) {
-    moveOutDate = dayjs()
-      .year(Number(moveOutYear))
-      .month(Number(moveOutMonth) - 1)
-      .date(Number(moveOutDay))
-      .startOf("day")
-      .toISOString();
-  }
-
-  if (
-    addressLine1 &&
-    town &&
-    county &&
-    eirecode &&
-    isOwner &&
-    isPrimaryAddress
-  ) {
-    const result = await new Profile(userId).updateAddress(addressId, {
-      addressLine1,
-      addressLine2,
-      town,
-      county,
-      eirecode,
-      moveInDate,
-      moveOutDate,
-      ownershipStatus: isOwner === "true" ? "owner" : "renting",
-      isPrimary: isPrimaryAddress === "true" ? true : false,
-    });
-
-    if (result?.error) {
-      //handle error
-    }
-  }
-
-  redirect("/");
-}
-
-async function cancelAction() {
-  "use server";
-  redirect("/");
-}
-
-export default async (params: NextPageProps) => {
+export default async (props: NextPageProps) => {
   const { userId } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
@@ -189,10 +16,187 @@ export default async (params: NextPageProps) => {
     userId,
     routes.addresses.editAddress.slug,
   );
-  const { id: addressId } = params.params;
+  const { id: addressId, locale } = props.params;
 
   if (!addressId) {
     throw notFound();
+  }
+
+  async function editAddress(formData: FormData) {
+    "use server";
+
+    const addressId = formData.get("addressId")?.toString();
+    const userId = formData.get("userId")?.toString();
+
+    if (!addressId) {
+      throw Error("Address id not found");
+    }
+
+    if (!userId) {
+      throw Error("User id not found");
+    }
+
+    const errors: form.Error[] = [];
+    const addressLine1 = formData.get("addressLine1")?.toString();
+    const addressLine2 = formData.get("addressLine2")?.toString();
+    const town = formData.get("town")?.toString();
+    const county = formData.get("county")?.toString();
+    const eirecode = formData.get("eirecode")?.toString();
+    const moveInDay = formData.get("moveInDay")?.toString();
+    const moveInMonth = formData.get("moveInMonth")?.toString();
+    const moveInYear = formData.get("moveInYear")?.toString();
+    const moveOutDay = formData.get("moveOutDay")?.toString();
+    const moveOutMonth = formData.get("moveOutMonth")?.toString();
+    const moveOutYear = formData.get("moveOutYear")?.toString();
+    const isOwner = formData.get("isOwner")?.toString();
+    const isPrimaryAddress = formData.get("isPrimaryAddress")?.toString();
+
+    if (!addressLine1) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.address_first_line,
+      });
+    }
+
+    if (!town) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.town,
+      });
+    }
+
+    if (!county) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.county,
+      });
+    }
+
+    if (!eirecode) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.empty,
+        errorValue: "",
+        field: form.fieldTranslationKeys.eirecode,
+      });
+    }
+
+    if (moveInDay || moveInMonth || moveInYear) {
+      errors.push(
+        ...form.validation.dateErrors(
+          {
+            field: form.fieldTranslationKeys.moveInYear,
+            value: parseInt(moveInYear || ""),
+          },
+          {
+            field: form.fieldTranslationKeys.moveInMonth,
+            value: parseInt(moveInMonth || ""),
+          },
+          {
+            field: form.fieldTranslationKeys.moveInDay,
+            value: parseInt(moveInDay || ""),
+          },
+        ),
+      );
+    }
+
+    if (moveOutDay || moveOutMonth || moveOutYear) {
+      errors.push(
+        ...form.validation.dateErrors(
+          {
+            field: form.fieldTranslationKeys.moveOutYear,
+            value: parseInt(moveOutYear || ""),
+          },
+          {
+            field: form.fieldTranslationKeys.moveOutMonth,
+            value: parseInt(moveOutMonth || ""),
+          },
+          {
+            field: form.fieldTranslationKeys.moveOutDay,
+            value: parseInt(moveOutDay || ""),
+          },
+        ),
+      );
+    }
+
+    if (isOwner === undefined) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.emptySelection,
+        errorValue: "",
+        field: form.fieldTranslationKeys.isOwner,
+      });
+    }
+
+    if (isPrimaryAddress === undefined) {
+      errors.push({
+        messageKey: form.errorTranslationKeys.emptySelection,
+        errorValue: "",
+        field: form.fieldTranslationKeys.isPrimaryAddress,
+      });
+    }
+
+    if (errors.length) {
+      await form.insertErrors(
+        errors,
+        userId,
+        routes.addresses.editAddress.slug,
+      );
+      return revalidatePath("/");
+    }
+
+    let moveInDate: string | undefined;
+    if (moveInDay && moveInMonth && moveInYear) {
+      moveInDate = dayjs()
+        .year(Number(moveInYear))
+        .month(Number(moveInMonth) - 1)
+        .date(Number(moveInDay))
+        .startOf("day")
+        .toISOString();
+    }
+
+    let moveOutDate: string | undefined;
+    if (moveOutDay && moveOutMonth && moveOutYear) {
+      moveOutDate = dayjs()
+        .year(Number(moveOutYear))
+        .month(Number(moveOutMonth) - 1)
+        .date(Number(moveOutDay))
+        .startOf("day")
+        .toISOString();
+    }
+
+    if (
+      addressLine1 &&
+      town &&
+      county &&
+      eirecode &&
+      isOwner &&
+      isPrimaryAddress
+    ) {
+      const result = await new Profile(userId).updateAddress(addressId, {
+        addressLine1,
+        addressLine2,
+        town,
+        county,
+        eirecode,
+        moveInDate,
+        moveOutDate,
+        ownershipStatus: isOwner === "true" ? "owner" : "renting",
+        isPrimary: isPrimaryAddress === "true" ? true : false,
+      });
+
+      if (result?.error) {
+        //handle error
+      }
+    }
+
+    redirect(`/${locale}`);
+  }
+
+  async function cancelAction() {
+    "use server";
+    redirect(`/${locale}`);
   }
 
   const { data: address, error } = await new Profile(userId).getAddress(
@@ -723,7 +727,7 @@ export default async (params: NextPageProps) => {
           </div>
         </form>
         <div style={{ margin: "30px 0" }}>
-          <Link href={"/"} className="govie-back-link">
+          <Link href={`/${locale}`} className="govie-back-link">
             {t("back")}
           </Link>
         </div>

@@ -7,6 +7,12 @@ import ds from "design-system";
 import { form, routes } from "../../../../utils";
 import { revalidatePath } from "next/cache";
 
+const AddressLine = ({ value }: { value: string }) => (
+  <p className="govie-body" style={{ marginBottom: "5px" }}>
+    {value}
+  </p>
+);
+
 export default async (props: NextPageProps) => {
   const { userId } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
@@ -108,13 +114,11 @@ export default async (props: NextPageProps) => {
             marginBottom: "30px",
           }}
         >
-          <ul className="govie-list">
-            <li>{address.addressLine1}</li>
-            {address.addressLine2 && <li>{address.addressLine2}</li>}
-            <li>{address.town}</li>
-            <li>{address.county}</li>
-            <li>{address.eirecode}</li>
-          </ul>
+          <AddressLine value={address.addressLine1} />
+          {address.addressLine2 && <AddressLine value={address.addressLine2} />}
+          <AddressLine value={address.town} />
+          <AddressLine value={address.county} />
+          <AddressLine value={address.eirecode} />
         </div>
         <form action={saveAddressDetails}>
           <h2 className="govie-heading-m">{t("ownerOrRenting")}</h2>
