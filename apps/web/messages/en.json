@@ -389,7 +389,9 @@
     "orderBirthCertificateBody": "Once approved your birth certificate will be sent to you by post and you should receive it within 7 days.",
     "applyJobseekersAllowance": "Jobseeker's Allowance",
     "applyJobseekersAllowanceBody": "Someone from the Department of Social Protection will contact you using the details you provided.",
-    "date": "Date of application"
+    "date": "Date of application",
+    "getDigitalWalletBody": "Description of what happens next",
+    "getDigitalWallet": "Digital wallet"
   },
   "RenewDriversLicence": {
     "title": "Renew your driving licence"
@@ -725,22 +727,15 @@
     "GetDigitalWalletDetails": {
       "title": "Review Digital Wallet application",
       "getDigitalWallet": "Digital Wallet copy",
-      "name": "Name",
-      "sex": "Sex",
-      "address": "Address",
-      "addressVerified": "Address verified",
-      "yes": "Yes",
-      "no": "No",
-      "proofOfAddress": "Proof of address",
-      "mobile": "Mobile",
-      "email": "Email",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "myGovIdEmail": "MyGovID email",
+      "govIEEmail": "Gov.ie work email",
+      "lineManagerName": "line manager name",
+      "jobTitle": "Job title",
+      "appStoreEmail": "Apple/Android app store email",
       "reject": "Reject",
-      "approve": "Approve",
-      "birthDay": "Date of birth",
-      "utilityBill": "Utility bill",
-      "bankStatement": "Bank statement",
-      "taxDocuments": "Tax document",
-      "noDocuments": "No document"
+      "approve": "Approve"
     },
     "RejectReasonForm": {
       "title": "Reason for rejection",

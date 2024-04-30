@@ -33,21 +33,6 @@ export default async ({ userId, flow, flowData }: Props) => {
     redirect("/admin");
   }
 
-  let proofOfAddressDownloadUrl: string | undefined;
-
-  // New link is generated on each render, but expires after 5 minutes. This might not be desirable but there has been no specifications
-  if (flowData.proofOfAddressFileId) {
-    const s3Config = getS3ClientConfig();
-
-    const command = new GetObjectCommand({
-      Bucket: s3Config.bucketName,
-      Key: `${userId}/${flowData.proofOfAddressFileId}`,
-    });
-    proofOfAddressDownloadUrl = await getSignedUrl(s3Config.client, command, {
-      expiresIn: 5 * 60,
-    });
-  }
-
   return (
     <FormLayout
       action={{ slug: "submissions." + flow }}
@@ -57,49 +42,41 @@ export default async ({ userId, flow, flowData }: Props) => {
       <div className="govie-heading-l">
         {t("title", { flow: t(flow).toLowerCase() })}
       </div>
-      <div className="govie-heading-m">{flowData.userName}</div>
+      <div className="govie-heading-m">
+        {flowData.firstName} {flowData.lastName}
+      </div>
       <div className="govie-grid-row">
         <div className="govie-grid-column-two-thirds-from-desktop">
           <dl className="govie-summary-list">
-            <ListRow item={{ key: t("name"), value: flowData.userName }} />
             <ListRow
-              item={{
-                key: t("birthDay"),
-                value: !flowData.yearOfBirth
-                  ? "-"
-                  : web.formatDate(
-                      `${flowData.yearOfBirth}-${flowData.monthOfBirth}-${flowData.dayOfBirth}`,
-                    ),
-              }}
-            />
-            <ListRow item={{ key: t("sex"), value: flowData.sex }} />
-            <ListRow
-              item={{
-                key: t("address"),
-                value: flowData.currentAddress,
-              }}
+              item={{ key: t("firstName"), value: flowData.firstName }}
             />
             <ListRow
               item={{
-                key: t("addressVerified"),
-                value: flowData.currentAddressVerified ? t("yes") : t("no"),
+                key: t("lastName"),
+                value: flowData.lastName,
+              }}
+            />
+            <ListRow
+              item={{ key: t("myGovIdEmail"), value: flowData.myGovIdEmail }}
+            />
+            <ListRow
+              item={{
+                key: t("govIEEmail"),
+                value: flowData.govIEEmail,
               }}
             />
             <ListRow
               item={{
-                key: t("proofOfAddress"),
-                value: proofOfAddressDownloadUrl ? (
-                  <a target="_blank" href={proofOfAddressDownloadUrl}>
-                    {t(flowData.proofOfAddressRequest)}
-                  </a>
-                ) : (
-                  t(flowData.proofOfAddressRequest)
-                ),
+                key: t("lineManagerName"),
+                value: flowData.lineManagerName,
               }}
             />
 
-            <ListRow item={{ key: t("mobile"), value: flowData.mobile }} />
-            <ListRow item={{ key: t("email"), value: flowData.email }} />
+            <ListRow item={{ key: t("jobTitle"), value: flowData.jobTitle }} />
+            <ListRow
+              item={{ key: t("appStoreEmail"), value: flowData.appStoreEmail }}
+            />
           </dl>
         </div>
       </div>
