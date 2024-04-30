@@ -23,7 +23,7 @@ variables:
     value: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}
   - name: varFile
     ${{ if variables.pushArtefacts }}:
-      value: ${{ variables.Build.SourceBranchName }}
+      value: ${{ coalesce(variables.Build.SourceBranchName, 'dev') }}
     ${{ else }}:
       value: 'dev'
 
