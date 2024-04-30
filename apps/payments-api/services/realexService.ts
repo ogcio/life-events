@@ -1,50 +1,10 @@
+import { RealexHppDataResponse } from "../routes/schemas";
 import CryptographyService from "./cryptographyService";
-
-type HppDataResponse = {
-  RESULT: string;
-  AUTHCODE: string;
-  MESSAGE: string;
-  PASREF: string;
-  AVSPOSTCODERESULT: string;
-  AVSADDRESSRESULT: string;
-  CVNRESULT: string;
-  ACCOUNT: string;
-  MERCHANT_ID: string;
-  ORDER_ID: string;
-  TIMESTAMP: string;
-  AMOUNT: string;
-  MERCHANT_RESPONSE_URL: string;
-  HPP_LANG: string;
-  pas_uuid: string;
-  HPP_CUSTOMER_COUNTRY: string;
-  HPP_CUSTOMER_PHONENUMBER_MOBILE: string;
-  BILLING_CODE: string;
-  BILLING_CO: string;
-  ECI: string;
-  CAVV: string;
-  XID: string;
-  DS_TRANS_ID: string;
-  AUTHENTICATION_VALUE: string;
-  MESSAGE_VERSION: string;
-  SRD: string;
-  SHA1HASH: string;
-  HPP_BILLING_STREET1: string;
-  HPP_BILLING_STREET2: string;
-  HPP_BILLING_STREET3: string;
-  HPP_BILLING_CITY: string;
-  HPP_BILLING_COUNTRY: string;
-  HPP_BILLING_POSTALCODE: string;
-  HPP_CUSTOMER_FIRSTNAME: string;
-  HPP_CUSTOMER_LASTNAME: string;
-  HPP_CUSTOMER_EMAIL: string;
-  HPP_ADDRESS_MATCH_INDICATOR: string;
-  BATCHID: string;
-};
 
 interface IRealexService {
   generateTimestamp(): string;
   generateHash(text: string): string;
-  verifyHash(hppDataResponse: HppDataResponse): boolean;
+  verifyHash(hppDataResponse: RealexHppDataResponse): boolean;
 }
 export class RealexService implements IRealexService {
   private cryptographyService: CryptographyService;
@@ -80,7 +40,7 @@ export class RealexService implements IRealexService {
     );
   }
 
-  verifyHash(response: HppDataResponse): boolean {
+  verifyHash(response: RealexHppDataResponse): boolean {
     const {
       TIMESTAMP,
       MERCHANT_ID,

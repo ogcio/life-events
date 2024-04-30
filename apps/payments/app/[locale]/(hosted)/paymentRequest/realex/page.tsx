@@ -85,8 +85,8 @@ export default async function Card(props: {
   if (!paymentDetails) notFound();
 
   const responseUrl = new URL(
-    `/api/paymentRequest/realex`,
-    process.env.HOST_URL,
+    "/api/v1/transactions/realex/verifyPaymentResponse",
+    process.env.BACKEND_URL,
   ).toString();
 
   const intentId = await generatePaymentIntentId(userId);

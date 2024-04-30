@@ -5,6 +5,7 @@ import {
   ParamsWithTransactionId,
   PaymentIntentId,
   RealexData,
+  RealexHppDataResponse,
   RealexPaymentObject,
   RealexPaymentObjectQueryParams,
   TransactionDetails,
@@ -326,6 +327,102 @@ export default async function transactions(app: FastifyInstance) {
       reply.send(result);
     },
   );
-}
 
-// TODO: "/realex/verifyPaymentResponse",
+  // endpoint called by Realex upon payment completion
+  app.post<{
+    Body: RealexHppDataResponse;
+    Reply: string | Error;
+  }>(
+    "/realex/verifyPaymentResponse",
+    {
+      schema: {
+        tags: ["Transactions"],
+        body: Type.Object({}),
+        response: {
+          200: Type.String(),
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const body = request.body;
+      console.log(body);
+
+      let transaction;
+      try {
+        transaction = await app.pg.query(
+          `SELECT * 
+        FROM payment_transactions 
+        WHERE ext_payment_id = $1`,
+          [body.ORDER_ID],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      if (!transaction?.rowCount) {
+        throw app.httpErrors.notFound("Transaction not found");
+      }
+
+      const providerId = transaction.rows[0].payment_provider_id;
+      let providerRes;
+      try {
+        providerRes = await app.pg.query(
+          `
+          SELECT
+            provider_data as data,
+            status
+          FROM payment_providers
+          WHERE provider_id = $1
+          `,
+          [providerId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      if (!providerRes?.rows.length) {
+        throw app.httpErrors.notFound("Provider not found");
+      }
+
+      const provider = providerRes.rows[0];
+      if (provider.status !== "connected") {
+        throw app.httpErrors.unprocessableEntity("Provider is not enabled");
+      }
+      const providerSecretsHandler = providerSecretsHandlersFactory("realex");
+      const { sharedSecret } = providerSecretsHandler.getClearTextData(
+        provider.data,
+      ) as unknown as RealexData;
+
+      const realexService = new RealexService(sharedSecret);
+      const isResponseValid = realexService.verifyHash(body);
+      if (!isResponseValid) {
+        throw app.httpErrors.unprocessableEntity(
+          "Payment response contains untrusted data",
+        );
+      }
+
+      const errorQueryParam =
+        body.RESULT !== "00" ? `&error=${body.RESULT}` : "";
+      const url = new URL(
+        `/${body.HPP_LANG}/paymentRequest/complete?payment_id=${body.ORDER_ID}${errorQueryParam}`,
+        process.env.PAYMENTS_HOST_URL,
+      );
+
+      const html = `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="refresh" content="0; url=${url}">
+          <title>Redirecting...</title>
+        </head>
+        <body>
+          <!-- No visible text -->
+        </body>
+      </html>`;
+
+      reply.header("Content-Type", "text/html");
+      reply.send(html);
+    },
+  );
+}
