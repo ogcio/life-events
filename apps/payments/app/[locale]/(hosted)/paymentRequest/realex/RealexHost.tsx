@@ -22,7 +22,7 @@ export default function RealexHost({ payment, locale, responseUrl }: Props) {
   const formInputs = useMemo(
     () =>
       Object.keys(payment).map((k: any) => (
-        <input type="hidden" name={k} value={payment[k]} />
+        <input type="hidden" key={k} name={k} value={payment[k]} />
       )),
     [payment],
   );
