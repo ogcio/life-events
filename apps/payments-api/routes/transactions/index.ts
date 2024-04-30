@@ -263,7 +263,8 @@ export default async function transactions(app: FastifyInstance) {
         querystring: RealexPaymentObjectQueryParams,
         response: {
           200: RealexPaymentObject,
-          500: HttpError,
+          404: HttpError,
+          422: HttpError,
         },
       },
     },
