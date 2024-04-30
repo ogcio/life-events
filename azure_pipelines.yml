@@ -66,3 +66,20 @@ stages:
           awsServiceConnection: $(awsServiceConnection)
           awsRegion: $(awsRegion)
           serviceName: ${{ serviceName }}
+  - stage: Deploy_to_ECS
+    displayName: Deploy all services to ECS
+    condition: and(succeeded(), eq(variables.pushArtefacts, true))
+    dependsOn: 
+    - ${{ each serviceName in parameters.services }}:
+      - Push_${{ replace(serviceName, '-', '_') }}
+    jobs:
+    - job: Validate
+      displayName: Wait for deployment approval
+      pool: server
+      timeoutInMinutes: 20
+      steps:
+      - task: ManualValidation@0
+        timeoutInMinutes: 5
+        inputs:
+          instructions: 'Please validate the deployment of ${{ Build.SourceBranchName }}'
+          onTimeout: 'reject'
