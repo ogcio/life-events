@@ -176,4 +176,16 @@ export class Payments {
       this.client.GET("/api/v1/transactions/generatePaymentIntentId"),
     );
   }
+
+  async getRealexPaymentObject(
+    query: paths["/api/v1/transactions/realex/paymentObject"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/transactions/realex/paymentObject", {
+        params: {
+          query,
+        },
+      }),
+    );
+  }
 }

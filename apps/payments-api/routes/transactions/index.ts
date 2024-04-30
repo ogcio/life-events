@@ -4,12 +4,17 @@ import {
   CreateTransactionBody,
   ParamsWithTransactionId,
   PaymentIntentId,
+  RealexData,
+  RealexPaymentObject,
+  RealexPaymentObjectQueryParams,
   TransactionDetails,
   Transactions,
   TransactionStatusesEnum,
   UpdateTransactionBody,
 } from "../schemas";
 import { Type } from "@sinclair/typebox";
+import { providerSecretsHandlersFactory } from "../../services/providersSecretsService";
+import { RealexService } from "../../services/realexService";
 
 export default async function transactions(app: FastifyInstance) {
   app.get<{
@@ -245,4 +250,81 @@ export default async function transactions(app: FastifyInstance) {
       reply.send(result.rows[0]);
     },
   );
+
+  app.get<{
+    Reply: RealexPaymentObject | Error;
+    Querystring: RealexPaymentObjectQueryParams;
+  }>(
+    "/realex/paymentObject",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: ["Transactions"],
+        querystring: RealexPaymentObjectQueryParams,
+        response: {
+          200: RealexPaymentObject,
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.user?.id;
+      const { providerId, amount, intentId } = request.query;
+
+      let providerRes;
+      try {
+        providerRes = await app.pg.query(
+          `
+          SELECT
+            provider_data as data,
+            status
+          FROM payment_providers
+          WHERE provider_id = $1
+          AND user_id = $2
+          `,
+          [providerId, userId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      if (!providerRes?.rows.length) {
+        throw app.httpErrors.notFound("Provider not found");
+      }
+
+      const provider = providerRes.rows[0];
+      if (provider.status !== "connected") {
+        throw app.httpErrors.unprocessableEntity("Provider is not enabled");
+      }
+      const providerSecretsHandler = providerSecretsHandlersFactory("realex");
+      const { merchantId, sharedSecret } =
+        providerSecretsHandler.getClearTextData(
+          provider.data,
+        ) as unknown as RealexData;
+
+      const currency = "EUR";
+      const realexService = new RealexService(sharedSecret);
+      const timestamp = realexService.generateTimestamp();
+      const hash = realexService.generateHash(
+        [timestamp, merchantId, intentId, amount, currency].join("."),
+      );
+
+      const result = {
+        ACCOUNT: process.env.REALEX_PAYMENT_ACCOUNT ?? "internet",
+        AMOUNT: amount,
+        CURRENCY: currency,
+        MERCHANT_ID: merchantId,
+        ORDER_ID: intentId,
+        TIMESTAMP: timestamp,
+        URL:
+          process.env.REALEX_PAYMENT_URL ??
+          "https://pay.sandbox.realexpayments.com/pay",
+        SHA256HASH: hash,
+      };
+
+      reply.send(result);
+    },
+  );
 }
+
+// TODO: "/realex/verifyPaymentResponse",

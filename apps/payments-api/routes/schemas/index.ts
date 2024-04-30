@@ -291,3 +291,24 @@ export const PaymentIntentId = Type.Object({
   intentId: Type.String(),
 });
 export type PaymentIntentId = Static<typeof PaymentIntentId>;
+
+export const RealexPaymentObject = Type.Object({
+  ACCOUNT: Type.String(),
+  AMOUNT: Type.String(),
+  CURRENCY: Type.String(),
+  MERCHANT_ID: Type.String(),
+  ORDER_ID: Type.String(),
+  TIMESTAMP: Type.String(),
+  URL: Type.String(),
+  SHA256HASH: Type.String(),
+});
+export type RealexPaymentObject = Static<typeof RealexPaymentObject>;
+
+export const RealexPaymentObjectQueryParams = Type.Object({
+  amount: Type.String(),
+  intentId: Type.String(),
+  providerId: Type.String(),
+});
+export type RealexPaymentObjectQueryParams = Static<
+  typeof RealexPaymentObjectQueryParams
+>;
