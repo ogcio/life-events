@@ -346,7 +346,6 @@ export default async function transactions(app: FastifyInstance) {
     },
     async (request, reply) => {
       const body = request.body;
-      console.log(body);
 
       let transaction;
       try {
