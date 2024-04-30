@@ -197,7 +197,7 @@ const DetailsSummaryStep: React.FC<FormProps> = ({
     >
       <DetailsSummary
         data={data}
-        flow={workflow.keys.orderBirthCertificate}
+        flow={workflow.keys.getDigitalWallet}
         userId={userId}
       />
     </FormLayout>
