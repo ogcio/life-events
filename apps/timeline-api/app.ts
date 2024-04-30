@@ -12,6 +12,7 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
+import postgres from "@fastify/postgres";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -36,13 +37,7 @@ export async function build(opts?: FastifyServerOptions) {
       },
       tags: [
         {
-          name: "User",
-        },
-        {
-          name: "Addresses",
-        },
-        {
-          name: "Entitlements",
+          name: "Timeline",
         },
       ],
     },
@@ -59,16 +54,13 @@ export async function build(opts?: FastifyServerOptions) {
     },
   });
 
-  /**
-   * postgres not required right now, leaving it commented for now
-   */
-  // app.register(postgres, {
-  //   host: process.env.POSTGRES_HOST,
-  //   port: Number(process.env.POSTGRES_PORT),
-  //   user: process.env.POSTGRES_USER,
-  //   password: process.env.POSTGRES_PASSWORD,
-  //   database: process.env.POSTGRES_DB_NAME,
-  // });
+  app.register(postgres, {
+    host: process.env.POSTGRES_HOST,
+    port: Number(process.env.POSTGRES_PORT),
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB_NAME,
+  });
 
   app.setErrorHandler((error, _request, reply) => {
     app.log.error(error);

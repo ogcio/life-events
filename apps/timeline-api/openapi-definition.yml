@@ -123,6 +123,4 @@ paths:
                   - message
                   - time
 tags:
-  - name: User
-  - name: Addresses
-  - name: Entitlements
+  - name: Timeline
