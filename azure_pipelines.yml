@@ -19,6 +19,8 @@ parameters:
     default: ["dev", "sta", "uat"]
 
 variables:
+  - name: pushArtefacts
+    value: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}
   - name: varFile
     ${{ if containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}:
       value: ${{ coalesce(variables.Build.SourceBranchName, 'dev') }}
@@ -60,17 +62,11 @@ stages:
       - template: pipeline-templates/build_service.yml
         parameters:
           serviceName: ${{ serviceName }}
-          ${{ if containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}:
-            pushArtefacts: true
-          ${{ else }}:
-            pushArtefacts: false
+          pushArtefacts: ${{ variables.pushArtefacts }}
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
-      ${{ if containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}:
-        condition: true
-      ${{ else }}:
-        condition: false
+      condition: ${{ variables.pushArtefacts }}
       variables:
       - template: pipeline-variables/${{ variables.varFile }}.yml
       jobs:
