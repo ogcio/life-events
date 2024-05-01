@@ -39,7 +39,7 @@ export default async (props: {
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds-from-desktop">
         <div className="govie-heading-l">{t("title")}</div>
-        <div className="govie-heading-m">{t("subTitle")}</div>
+        <p className="govie-heading-s">{t("subTitle")}</p>
         <form action={submitAction}>
           <ul
             className="govie-list govie-list--bullet"

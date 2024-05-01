@@ -49,7 +49,8 @@
     "before-you-begin": "Before you begin",
     "about-you": "About you",
     "your-employment": "Your employment",
-    "your-device": "Your device"
+    "your-device": "Your device",
+    "verify-mygovid-account": "Verify your MyGovID account"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -343,6 +344,12 @@
       "appStoreEmail": "Apple/Android app store email",
       "change": "Change",
       "submitText": "Confirm and continue"
+    },
+    "VerifyAccount": {
+      "title": "Verify your MyGovId account",
+      "whyVerifyFirstParagraph": "To gain access to all the services available through the Life Events Portal and the Digital Wallet, you need to verify your basic MyGovID account.",
+      "whyVerifySecondParagraph": "Please follow <link>this link to the Gov.IE website</link> for instructions on how you can get verified.",
+      "whyVerifyThirdParagraph": "We will send you an email with a link to proceed with your Digital Wallet onboarding once you are verified."
     }
   },
   "PaymentSuccessful": {
@@ -495,14 +502,14 @@
     },
     "getDigitalWallet": {
       "title": {
-        "base": "Get your digital wallet",
+        "base": "{hasGovIdVerifiedAccount, select, true {Get your digital wallet} false {Get ready for your digital wallet} other {Get ready for your digital wallet}}",
         "pre": "Continue with your digital wallet application",
         "mid": "Your digital wallet application is being processed",
         "post": "Your digital wallet application is complete",
         "rejected": "Your application for a digital wallet is rejected"
       },
       "description": {
-        "base": "Apply for the digital wallet pilot here",
+        "base": "{hasGovIdVerifiedAccount, select, true {Apply for the digital wallet pilot here} false {You need to secure your MyGov ID for the Digital Wallet pilot. <br></br> Find out more here} other {You need to secure your MyGov ID for the Digital Wallet pilot. <br></br> Find out more here}}",
         "pre": "A line of text to support this statement",
         "mid": "A line of text to support this statement",
         "post": "You should now have access to your Digital Wallet",

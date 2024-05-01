@@ -327,6 +327,12 @@ export const digitalWallet = {
         return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.applicationSuccess.slug}`;
       },
     },
+    verifyMyGovIdAccount: {
+      slug: "verify-mygovid-account",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.verifyMyGovIdAccount.slug}`;
+      },
+    },
   },
 };
 

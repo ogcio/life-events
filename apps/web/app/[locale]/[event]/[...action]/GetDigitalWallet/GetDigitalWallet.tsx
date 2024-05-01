@@ -8,8 +8,9 @@ import AboutYou from "./AboutYou";
 import YourEmployment from "./YourEmployment";
 import YourDevice from "./YourDevice";
 import DetailsSummary from "./DetailsSummary";
+import VerifyAccount from "./VerifyAccount";
 
-export const getDigitalWalletRules: Parameters<
+export const getDigitalWalletRulesVerified: Parameters<
   typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
 >[0] = [
   // Rule 1: Check if user has read the introduction
@@ -59,6 +60,18 @@ export const getDigitalWalletRules: Parameters<
           key: routes.digitalWallet.getDigitalWallet.applicationSuccess.slug,
           isStepValid: true,
         },
+];
+
+export const getDigitalWalletRulesNotVerified: Parameters<
+  typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
+>[0] = [
+  // Rule 1: Show how to get verified instructions
+  () => {
+    return {
+      key: routes.digitalWallet.getDigitalWallet.verifyMyGovIdAccount.slug,
+      isStepValid: true,
+    };
+  },
 ];
 
 type FormProps = {
@@ -223,6 +236,14 @@ const ApplicationSuccessStep: React.FC<FormProps> = ({
   );
 };
 
+const VerifyAccountStep: React.FC<FormProps> = ({ actionSlug, stepSlug }) => {
+  return (
+    <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
+      <VerifyAccount />
+    </FormLayout>
+  );
+};
+
 const FormComponentsMap = {
   [routes.digitalWallet.getDigitalWallet.beforeYouBegin.slug]:
     BeforeYouBeginStep,
@@ -233,21 +254,23 @@ const FormComponentsMap = {
   [routes.digitalWallet.getDigitalWallet.checkDetails.slug]: DetailsSummaryStep,
   [routes.digitalWallet.getDigitalWallet.applicationSuccess.slug]:
     ApplicationSuccessStep,
+  [routes.digitalWallet.getDigitalWallet.verifyMyGovIdAccount.slug]:
+    VerifyAccountStep,
 };
 
 export default async (props: web.NextPageProps) => {
-  const { userId } = await PgSessions.get();
+  const { userId, hasGovIdVerifiedAccount } = await PgSessions.get();
 
   const data = await workflow.getFlowData(
     workflow.keys.getDigitalWallet,
     workflow.emptyGetDigitalWallet(),
   );
 
-  //add different sets of rules if user is level 2 or level 0
-  const { key: nextSlug, isStepValid } = workflow.getCurrentStep(
-    getDigitalWalletRules,
-    data,
-  );
+  const rules = hasGovIdVerifiedAccount
+    ? getDigitalWalletRulesVerified
+    : getDigitalWalletRulesNotVerified;
+
+  const { key: nextSlug, isStepValid } = workflow.getCurrentStep(rules, data);
 
   const stepSlug = props.params.action?.at(1);
   const actionSlug = props.params.action?.at(0);

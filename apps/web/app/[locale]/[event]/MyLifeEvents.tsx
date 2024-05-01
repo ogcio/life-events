@@ -9,16 +9,31 @@ import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
 import { Messaging } from "building-blocks-sdk";
-import { getDigitalWalletRules } from "./[...action]/GetDigitalWallet/GetDigitalWallet";
 import { isFeatureFlagEnabled } from "feature-flags/utils";
+import {
+  getDigitalWalletRulesNotVerified,
+  getDigitalWalletRulesVerified,
+} from "./[...action]/GetDigitalWallet/GetDigitalWallet";
 
-const eventRules = {
-  [workflow.keys.orderEHIC]: orderEHICRules,
-  [workflow.keys.renewDriversLicence]: renewDriverLicenceRules,
-  [workflow.keys.orderBirthCertificate]: orderBirthCertificateRules,
-  [workflow.keys.notifyDeath]: notifyDeathRules,
-  [workflow.keys.applyJobseekersAllowance]: applyJobseekersAllowanceRules,
-  [workflow.keys.getDigitalWallet]: getDigitalWalletRules,
+const eventRules = (flow: string, hasGovIdVerifiedAccount: boolean) => {
+  switch (flow) {
+    case workflow.keys.orderEHIC:
+      return orderEHICRules;
+    case workflow.keys.renewDriversLicence:
+      return renewDriverLicenceRules;
+    case workflow.keys.orderBirthCertificate:
+      return orderBirthCertificateRules;
+    case workflow.keys.notifyDeath:
+      return notifyDeathRules;
+    case workflow.keys.applyJobseekersAllowance:
+      return applyJobseekersAllowanceRules;
+    case workflow.keys.getDigitalWallet:
+      return hasGovIdVerifiedAccount
+        ? getDigitalWalletRulesVerified
+        : getDigitalWalletRulesNotVerified;
+    default:
+      throw new Error(`Unsupported workflow: ${flow}`);
+  }
 };
 
 async function getEvents() {
@@ -53,16 +68,22 @@ async function getEvents() {
   ]);
 }
 
-function eventFlowMapper(row: {
-  flow: string;
-  category: string;
-  data: workflow.Workflow;
-}) {
+function eventFlowMapper(
+  row: {
+    flow: string;
+    category: string;
+    data: workflow.Workflow;
+  },
+  hasGovIdVerifiedAccount: boolean,
+) {
   const flowKey = row.flow;
   let descriptionKey = row.flow;
   let titleKey = row.flow;
 
-  const { key: step } = workflow.getCurrentStep(eventRules[row.flow], row.data);
+  const { key: step } = workflow.getCurrentStep(
+    eventRules(row.flow, hasGovIdVerifiedAccount),
+    row.data,
+  );
 
   let successful = false;
   if (row.data.successfulAt) {
@@ -98,7 +119,7 @@ function eventFlowMapper(row: {
   };
 }
 
-async function getFlows() {
+async function getFlows(hasGovIdVerifiedAccount: boolean) {
   "use server";
 
   const { userId } = await PgSessions.get();
@@ -122,14 +143,18 @@ async function getFlows() {
     return [];
   }
 
-  return flowsQueryResult.rows.map(eventFlowMapper);
+  return flowsQueryResult.rows.map((row) =>
+    eventFlowMapper(row, hasGovIdVerifiedAccount),
+  );
 }
 
 export default async ({ locale }) => {
   const t = await getTranslations("MyLifeEvents");
-  const [flow, events] = await Promise.all([getFlows(), getEvents()]);
-
-  const { userId } = await PgSessions.get();
+  const { userId, hasGovIdVerifiedAccount } = await PgSessions.get();
+  const [flow, events] = await Promise.all([
+    getFlows(hasGovIdVerifiedAccount),
+    getEvents(),
+  ]);
 
   const { data: messageEvents } = await new Messaging(userId).getMessages(
     "event",
@@ -177,20 +202,38 @@ export default async ({ locale }) => {
                 >
                   <div>
                     <Link className="govie-link" href={evt.slug}>
-                      {t(evt.flowTitle)}
+                      {evt.flowKey === workflow.keys.getDigitalWallet
+                        ? t(evt.flowTitle, {
+                            hasGovIdVerifiedAccount:
+                              hasGovIdVerifiedAccount.toString(),
+                          })
+                        : t(evt.flowTitle)}
                     </Link>
                     <p
                       className="govie-body"
                       style={{ margin: "unset", marginTop: "16px" }}
                     >
-                      {t(evt.descriptionKey, { date: "19th March" })}
+                      {evt.flowKey === workflow.keys.getDigitalWallet
+                        ? t.rich(evt.descriptionKey, {
+                            hasGovIdVerifiedAccount:
+                              hasGovIdVerifiedAccount.toString(),
+                            br: () => <br />,
+                          })
+                        : t(evt.descriptionKey, { date: "19th March" })}
                     </p>
                   </div>
                   <div>
                     <Link
                       className="govie-link"
                       href={evt.slug}
-                      aria-label={t(evt.flowTitle)}
+                      aria-label={
+                        evt.flowKey === workflow.keys.getDigitalWallet
+                          ? t(evt.flowTitle, {
+                              hasGovIdVerifiedAccount:
+                                hasGovIdVerifiedAccount.toString(),
+                            })
+                          : t(evt.flowTitle)
+                      }
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
