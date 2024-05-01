@@ -71,8 +71,8 @@ stages:
       jobs:
       - template: pipeline-templates/push_image.yml
         parameters:
-          awsServiceConnection: $(awsServiceConnection)
-          awsRegion: $(awsRegion)
+          awsServiceConnection: ${{ variables.awsServiceConnection }}
+          awsRegion: ${{ variables.awsRegion }}
           serviceName: ${{ serviceName }}
   - stage: Deploy_approval
     displayName: Approve the deployment of all services to ECS
@@ -100,6 +100,6 @@ stages:
       jobs:
       - template: pipeline-templates/deploy_ecs.yml
         parameters:
-          awsServiceConnection: $(awsServiceConnection)
-          awsRegion: $(awsRegion)
+          awsServiceConnection: ${{ variables.awsServiceConnection }}
+          awsRegion: ${{ variables.awsRegion }}
           serviceName: ${{ serviceName }}
