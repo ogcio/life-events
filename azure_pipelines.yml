@@ -74,27 +74,9 @@ stages:
           awsServiceConnection: ${{ variables.awsServiceConnection }}
           awsRegion: ${{ variables.awsRegion }}
           serviceName: ${{ serviceName }}
-  - stage: Deploy_approval
-    displayName: Approve the deployment of all services to ECS
-    condition: and(succeeded(), eq(variables.pushArtefacts, true))
-    dependsOn: 
-    - ${{ each serviceName in parameters.services }}:
-      - Push_${{ replace(serviceName, '-', '_') }}
-    jobs:
-    - job: Validate
-      displayName: Wait for deployment approval
-      pool: server
-      timeoutInMinutes: 20
-      steps:
-      - task: ManualValidation@0
-        timeoutInMinutes: 5
-        inputs:
-          instructions: 'Please confirm the deployment of $(Build.SourceBranchName)'
-          onTimeout: 'reject'
-  - ${{ each serviceName in parameters.services }}:
     - stage: Deploy_${{ replace(serviceName, '-', '_') }}
       displayName: Deploy to ECS - ${{ serviceName }}
-      dependsOn: Deploy_approval
+      dependsOn: Push_${{ replace(serviceName, '-', '_') }}
       variables:
       - template: pipeline-variables/${{ variables.varFile }}.yml
       jobs:
