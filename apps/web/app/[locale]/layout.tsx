@@ -15,6 +15,7 @@ import {
 } from "./[event]/components/Menu/options";
 import SidebarWrapper from "./[event]/components/SidebarWrapper";
 import { getTranslations } from "next-intl/server";
+import styles from "./layout.module.scss";
 
 export default async function RootLayout({
   children,
@@ -76,13 +77,10 @@ export default async function RootLayout({
         {SidebarComponent}
         <Header showSidebarToggle={showEventsMenu} locale={locale} />
         {/* All designs are made for 1440 px  */}
-        <div
-          className="govie-width-container"
-          style={{ maxWidth: "1440px", width: "100%" }}
-        >
+        <main className={styles.main}>
           <FeedbackBanner />
           <div style={{ margin: "0 auto", paddingTop: "20px" }}>{children}</div>
-        </div>
+        </main>
         <Footer />
       </body>
     </html>
