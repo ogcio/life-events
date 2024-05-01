@@ -34,10 +34,10 @@ jobs:
         arguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicApiEndpoint)"'
     - task: Docker@0
       displayName: 'Run a Docker command'
-      condition: eq(parameters.pushArtefacts, true)
+      condition: ${{ parameters.pushArtefacts }}
       inputs:
         action: 'Run a Docker command'
         customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_${{ parameters.serviceName }}_$(Build.BuildId).tar life-events-${{ parameters.serviceName }}:$(Build.BuildId)'
     - publish:  $(Build.ArtifactStagingDirectory)
-      condition: eq(parameters.pushArtefacts, true)
+      condition: ${{ parameters.pushArtefacts }}
       artifact: 'docker-${{ parameters.serviceName }}-$(Build.BuildId)'
