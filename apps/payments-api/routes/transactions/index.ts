@@ -341,7 +341,8 @@ export default async function transactions(app: FastifyInstance) {
         body: Type.Object({}),
         response: {
           200: Type.String(),
-          500: HttpError,
+          404: HttpError,
+          422: HttpError,
         },
       },
     },
