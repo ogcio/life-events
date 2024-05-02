@@ -36,9 +36,18 @@ Service URLs
 | payments                 | `http://localhost:3001` |
 | messages                 | `http://localhost:3002` |
 | profile                  | `http://localhost:3003` |
-| mock-api                 | `http://localhost:8000` |
 | logto admin console      | `http://localhost:3302` |
 | logto apis               | `http://localhost:3301` |
+
+APIs
+
+| API Name     | URL                     |
+| ------------ | ----------------------- |
+| mock-api     | `http://localhost:8000` |
+| payments-api | `http://localhost:8001` |
+| messages-api | `http://localhost:8002` |
+| profile-api  | `http://localhost:8003` |
+| timeline-api | `http://localhost:8004` |
 
 ## Localisation
 

@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 
 type Event = {
   service: string;
-  date: Date;
+  date: string;
   title: string;
   description: string;
   weight: number;

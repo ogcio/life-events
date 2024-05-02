@@ -2,9 +2,9 @@ import ds from "design-system";
 
 import Timeline from "./Timeline";
 import { AbstractIntlMessages } from "next-intl";
+import { PgSessions } from "auth/sessions";
 
 type TimelineWrapperProps = {
-  username: string;
   locale: string;
   searchParams?: {
     [key: string]: string;
@@ -12,13 +12,15 @@ type TimelineWrapperProps = {
   messages: AbstractIntlMessages;
 };
 
-export default ({
-  username,
+export default async ({
   searchParams,
   messages,
   locale,
 }: TimelineWrapperProps) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
+  const { firstName, lastName, userId } = await PgSessions.get();
+
+  const username = [firstName, lastName].join(" ");
 
   return (
     <ol
@@ -45,6 +47,7 @@ export default ({
         </label>
       </li>
       <Timeline
+        userId={userId}
         locale={locale}
         searchProps={searchParams}
         messages={messages}
