@@ -5,7 +5,7 @@ import fp from "fastify-plugin";
 const extractBearerToken = (authHeader: string) => {
   const [type, token] = authHeader.split(" ");
   if (type !== "Bearer") {
-    throw new Error("Invalid Authorization header type");
+    throw new Error("Invalid Authorization header type, 'Bearer' expected");
   }
   return token;
 };
