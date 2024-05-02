@@ -5,6 +5,7 @@ interface IRealexService {
   generateTimestamp(): string;
   generateHash(text: string): string;
   verifyHash(hppDataResponse: RealexHppDataResponse): boolean;
+  generateHTMLResponse(response: RealexHppDataResponse): string;
 }
 export class RealexService implements IRealexService {
   private cryptographyService: CryptographyService;
@@ -55,5 +56,26 @@ export class RealexService implements IRealexService {
     const validHash = this.generateHash(toHash);
 
     return validHash === response.SHA256HASH;
+  }
+
+  generateHTMLResponse(response: RealexHppDataResponse): string {
+    const errorQueryParam =
+      response.RESULT !== "00" ? `&error=${response.RESULT}` : "";
+    const url = new URL(
+      `/${response.HPP_LANG}/paymentRequest/complete?payment_id=${response.ORDER_ID}${errorQueryParam}`,
+      process.env.PAYMENTS_HOST_URL,
+    );
+
+    return `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="refresh" content="0; url=${url}">
+          <title>Redirecting...</title>
+        </head>
+        <body>
+          <!-- No visible text -->
+        </body>
+      </html>`;
   }
 }

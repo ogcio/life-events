@@ -290,14 +290,14 @@ export default async function transactions(app: FastifyInstance) {
         app.log.error((err as Error).message);
       }
 
-      if (!providerRes?.rows.length) {
+      if (!providerRes?.rows.length)
         throw app.httpErrors.notFound("Provider not found");
-      }
 
       const provider = providerRes.rows[0];
       if (provider.status !== "connected") {
         throw app.httpErrors.unprocessableEntity("Provider is not enabled");
       }
+
       const providerSecretsHandler = providerSecretsHandlersFactory("realex");
       const { merchantId, sharedSecret } =
         providerSecretsHandler.getClearTextData(
@@ -305,6 +305,9 @@ export default async function transactions(app: FastifyInstance) {
         ) as unknown as RealexData;
 
       const currency = "EUR";
+      const url =
+        process.env.REALEX_PAYMENT_URL ??
+        "https://pay.sandbox.realexpayments.com/pay";
       const realexService = new RealexService(sharedSecret);
       const timestamp = realexService.generateTimestamp();
       const hash = realexService.generateHash(
@@ -318,9 +321,7 @@ export default async function transactions(app: FastifyInstance) {
         MERCHANT_ID: merchantId,
         ORDER_ID: intentId,
         TIMESTAMP: timestamp,
-        URL:
-          process.env.REALEX_PAYMENT_URL ??
-          "https://pay.sandbox.realexpayments.com/pay",
+        URL: url,
         SHA256HASH: hash,
       };
 
@@ -351,8 +352,8 @@ export default async function transactions(app: FastifyInstance) {
       try {
         transaction = await app.pg.query(
           `SELECT * 
-        FROM payment_transactions 
-        WHERE ext_payment_id = $1`,
+          FROM payment_transactions 
+          WHERE ext_payment_id = $1`,
           [body.ORDER_ID],
         );
       } catch (err) {
@@ -380,14 +381,14 @@ export default async function transactions(app: FastifyInstance) {
         app.log.error((err as Error).message);
       }
 
-      if (!providerRes?.rows.length) {
+      if (!providerRes?.rows.length)
         throw app.httpErrors.notFound("Provider not found");
-      }
 
       const provider = providerRes.rows[0];
       if (provider.status !== "connected") {
         throw app.httpErrors.unprocessableEntity("Provider is not enabled");
       }
+
       const providerSecretsHandler = providerSecretsHandlersFactory("realex");
       const { sharedSecret } = providerSecretsHandler.getClearTextData(
         provider.data,
@@ -401,27 +402,10 @@ export default async function transactions(app: FastifyInstance) {
         );
       }
 
-      const errorQueryParam =
-        body.RESULT !== "00" ? `&error=${body.RESULT}` : "";
-      const url = new URL(
-        `/${body.HPP_LANG}/paymentRequest/complete?payment_id=${body.ORDER_ID}${errorQueryParam}`,
-        process.env.PAYMENTS_HOST_URL,
-      );
-
-      const html = `<!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta http-equiv="refresh" content="0; url=${url}">
-          <title>Redirecting...</title>
-        </head>
-        <body>
-          <!-- No visible text -->
-        </body>
-      </html>`;
+      const res = realexService.generateHTMLResponse(body);
 
       reply.header("Content-Type", "text/html");
-      reply.send(html);
+      reply.send(res);
     },
   );
 }
