@@ -2,7 +2,7 @@ import { RealexHppResponse } from "../routes/schemas";
 import CryptographyService from "./cryptographyService";
 
 interface IRealexService {
-  generateTimestamp(): string;
+  generateTimestamp(timestamp?: Date): string;
   generateHash(text: string): string;
   verifyHash(hppDataResponse: RealexHppResponse): boolean;
   generateHTMLResponse(response: RealexHppResponse): string;
@@ -16,7 +16,7 @@ export class RealexService implements IRealexService {
     this.secret = secret;
   }
 
-  generateTimestamp() {
+  generateTimestamp(timestamp: Date = new Date()) {
     const [date, time] = new Intl.DateTimeFormat("it", {
       year: "numeric",
       month: "2-digit",
@@ -26,7 +26,7 @@ export class RealexService implements IRealexService {
       second: "2-digit",
       hour12: false,
     })
-      .format(new Date())
+      .format(timestamp)
       .split(",");
     const timeFormatted = time.replace(/\D/g, "");
     const [day, month, year] = date.split("/");
