@@ -71,10 +71,10 @@ export default async function RootLayout({
         )}
         <Header showHamburgerButton={showHamburgerMenu} locale={locale} />
         {/* All designs are made for 1440 px  */}
-        <main className={styles.main}>
+        <div className={styles.mainContainer}>
           <FeedbackBanner />
           <div style={{ margin: "0 auto", paddingTop: "20px" }}>{children}</div>
-        </main>
+        </div>
         <Footer />
       </body>
     </html>
