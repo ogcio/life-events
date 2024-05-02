@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ds from "design-system";
 import styles from "./HamburgerMenu.module.scss";
-import { headers } from "next/headers";
+import { useTranslations } from "next-intl";
 
 const Icon = ds.Icon;
 
@@ -29,18 +29,12 @@ export default ({
   clickCallback,
   path,
 }: Props) => {
+  const t = useTranslations();
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
   const pathSlice = path?.split("/").slice(2).join("/") || "";
 
   return (
-    <ol
-      className={["govie-list govie-list--spaced", styles.events].join(" ")}
-      style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <ol className={`govie-list govie-list--spaced ${styles.hamburgerMenu}`}>
       <li
         key="userinfo"
         style={{
@@ -66,16 +60,11 @@ export default ({
             }}
           >
             <Link
-              className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
-              href={option.url}
+              className={`govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16 ${styles.menuLink}`}
               style={{
-                margin: "unset",
-                paddingLeft: "12px",
-                width: "100%",
-                display: "flex",
-                justifyContent: "flex-start",
                 background: selected.includes(option.key) ? tintGold : "",
               }}
+              href={option.url}
             >
               <Icon
                 icon={option.icon as IconProps["icon"]}
@@ -86,6 +75,20 @@ export default ({
             </Link>
           </li>
         ))}
+        <div className={styles.logoutContainer}>
+          <Link
+            href="/logout"
+            prefetch={false}
+            className={`govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16 ${styles.menuLink}`}
+          >
+            <ds.Icon
+              icon="logout"
+              className="govie-button__icon-left"
+              color={ds.colours.ogcio.darkGreen}
+            />
+            {t("logout")}
+          </Link>
+        </div>
         <div className={styles.languagesContainer}>
           <Link
             className={`govie-link govie-link--no-underline`}

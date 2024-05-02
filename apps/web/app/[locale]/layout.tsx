@@ -14,8 +14,9 @@ import {
   menuOptions,
 } from "../components/HamburgerMenu/options";
 import HamburgerMenuWrapper from "../components/HamburgerMenu/HamburgerMenuWrapper";
-import { getTranslations } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import styles from "./layout.module.scss";
+import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 
 export default async function RootLayout({
   children,
@@ -47,8 +48,11 @@ export default async function RootLayout({
   const enabledEntries = await getAllEnabledFlags(
     menuOptions.map((o) => o.key),
   );
-  const eventsMenuT = await getTranslations("EventsMenu");
-  const options = getEnabledOptions(locale, enabledEntries, eventsMenuT);
+
+  const messages = await getMessages({ locale });
+  const hamburgerMenuMessages = messages.HamburgerMenu as AbstractIntlMessages;
+  const hamburgerMenuT = await getTranslations("HamburgerMenu");
+  const options = getEnabledOptions(locale, enabledEntries, hamburgerMenuT);
 
   return (
     <html lang={locale}>
@@ -62,13 +66,15 @@ export default async function RootLayout({
         }}
       >
         {showHamburgerMenu && (
-          <HamburgerMenuWrapper
-            userName={userName}
-            selected={path || ""}
-            options={options}
-            locale={locale}
-            path={path}
-          />
+          <NextIntlClientProvider messages={hamburgerMenuMessages}>
+            <HamburgerMenuWrapper
+              userName={userName}
+              selected={path || ""}
+              options={options}
+              locale={locale}
+              path={path}
+            />
+          </NextIntlClientProvider>
         )}
         <Header showHamburgerButton={showHamburgerMenu} locale={locale} />
         {/* All designs are made for 1440 px  */}

@@ -15,7 +15,7 @@
   flex: 1;
   gap: 2.5rem;
 
-  @media ((max-width: $breakpoint-phone)) {
+  @media ((max-width: $breakpoint-tablet)) {
     gap: 0;
   }
 }
@@ -24,6 +24,10 @@
   margin-bottom: 1rem;
   flex: 1;
   min-width: 400px;
+
+  @media ((max-width: $breakpoint-tablet)) {
+    min-width: 100%;
+  }
 
   @media ((max-width: $breakpoint-phone)) {
     margin: 0;

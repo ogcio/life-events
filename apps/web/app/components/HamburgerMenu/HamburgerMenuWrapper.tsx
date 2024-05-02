@@ -4,6 +4,7 @@ import useClientSide from "../hooks/useClientSide";
 import { useEffect, useState } from "react";
 import HamburgerMenu from "./HamburgerMenu";
 import styles from "./HamburgerMenu.module.scss";
+import { useTranslations } from "next-intl";
 
 type Props = {
   locale: string;
@@ -44,10 +45,7 @@ export default ({ userName, selected, options, locale, path }: Props) => {
     };
   }, []);
 
-  const sidebarClasses = [styles.sidebar];
-  if (menuOpen || !mounted) {
-    sidebarClasses.push(styles.visible);
-  }
+  const showMenu = menuOpen || !mounted;
 
   const closeSidebar = () => {
     toggleSidebar(false);
@@ -55,14 +53,11 @@ export default ({ userName, selected, options, locale, path }: Props) => {
 
   return (
     <div
-      className={styles.hamburgerMenuWrapper}
-      style={{
-        display: menuOpen ? "block" : "none",
-      }}
+      className={`${styles.hamburgerMenuWrapper}  ${showMenu ? styles.visible : ""}`}
     >
-      {menuOpen && <div className={styles.backdrop} onClick={closeSidebar} />}
+      {showMenu && <div className={styles.backdrop} onClick={closeSidebar} />}
 
-      <div className={sidebarClasses.join(" ")}>
+      <div className={`${styles.sidebar} ${showMenu ? styles.visible : ""}`}>
         <HamburgerMenu
           options={options}
           selected={selected}
