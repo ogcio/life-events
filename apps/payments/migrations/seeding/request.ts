@@ -5,6 +5,7 @@ export const seedPaymentRequest = async (
     openBankingProviderId,
     manualBankTransferProviderId,
     stripeProviderId,
+    realexProviderId,
     title,
     description,
     reference,
@@ -41,12 +42,14 @@ export const seedPaymentRequest = async (
     values
         ($2, $1, true),
         ($3, $1, true),
-        ($4, $1, true)`,
+        ($4, $1, true),
+        ($5, $1, true)`,
     [
       paymentRequestId,
       openBankingProviderId,
       manualBankTransferProviderId,
       stripeProviderId,
+      realexProviderId,
     ],
   );
 };

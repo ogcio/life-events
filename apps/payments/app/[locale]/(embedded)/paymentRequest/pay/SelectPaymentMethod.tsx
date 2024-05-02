@@ -54,6 +54,7 @@ export default function ({
   hasOpenBanking,
   hasManualBanking,
   hasStripe,
+  hasRealex,
   paymentId,
   referenceId,
   urlAmount,
@@ -133,6 +134,25 @@ export default function ({
               >
                 {t("payByCard")}
                 <p className="govie-body">{t("payByCardDescription")}</p>
+              </label>
+            </div>
+          )}
+
+          {hasRealex && (
+            <div className="govie-radios__item">
+              <input
+                id="realex-0"
+                name="type"
+                type="radio"
+                value="realex"
+                className="govie-radios__input"
+              />
+              <label
+                className="govie-label--s govie-radios__label"
+                htmlFor="realex-0"
+              >
+                {t("payByCard")}
+                <p className="govie-body">{t("payByRealexCardDescription")}</p>
               </label>
             </div>
           )}

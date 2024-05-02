@@ -5,46 +5,9 @@ import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FormElement } from "../../FormElement";
 
 const defaultErrorStateId = "email_provider_form";
-
-const ProviderInput = (props: {
-  id: string;
-  label: string;
-  hint?: string;
-  defaultValue?: string | number;
-  error?: string;
-}) => (
-  <div
-    className={
-      !Boolean(props.error)
-        ? "govie-form-group"
-        : "govie-form-group govie-form-group--error"
-    }
-  >
-    {props.error && (
-      <p id="input-field-error" className="govie-error-message">
-        <span className="govie-visually-hidden">Error:</span>
-        {props.error}
-      </p>
-    )}
-    <label htmlFor="host" className="govie-label--s">
-      {props.label}
-    </label>
-    {props.hint && (
-      <div className="govie-hint" id="input-field-hint">
-        {props.hint}
-      </div>
-    )}
-    <input
-      id={props.id}
-      type="text"
-      name={props.id}
-      className="govie-input"
-      defaultValue={props.defaultValue}
-    />
-  </div>
-);
 
 export default async (props: { searchParams: { id: string } }) => {
   const [t, errorT] = await Promise.all([
@@ -150,10 +113,9 @@ export default async (props: { searchParams: { id: string } }) => {
       </h1>
       <form action={submitAction}>
         <input name="id" value={props.searchParams.id} type="hidden" />
-        <ProviderInput
+        <FormElement
           id="name"
           label={t("nameLabel")}
-          defaultValue={data?.name}
           error={
             nameError &&
             errorT(nameError.messageKey, {
@@ -161,12 +123,19 @@ export default async (props: { searchParams: { id: string } }) => {
               indArticleCheck: "",
             })
           }
-        />
+        >
+          <input
+            id="name"
+            type="text"
+            name="name"
+            className="govie-input"
+            defaultValue={data?.name}
+          />
+        </FormElement>
 
-        <ProviderInput
+        <FormElement
           id="host"
           label={t("hostLabel")}
-          defaultValue={data?.host}
           error={
             hostError &&
             errorT(hostError.messageKey, {
@@ -174,12 +143,19 @@ export default async (props: { searchParams: { id: string } }) => {
               indArticleCheck: "",
             })
           }
-        />
+        >
+          <input
+            id="host"
+            type="text"
+            name="host"
+            className="govie-input"
+            defaultValue={data?.host}
+          />
+        </FormElement>
 
-        <ProviderInput
+        <FormElement
           id="port"
           label={t("portLabel")}
-          defaultValue={data?.port}
           error={
             portError &&
             errorT(portError.messageKey, {
@@ -187,12 +163,19 @@ export default async (props: { searchParams: { id: string } }) => {
               indArticleCheck: "",
             })
           }
-        />
+        >
+          <input
+            id="port"
+            type="text"
+            name="port"
+            className="govie-input"
+            defaultValue={data?.port}
+          />
+        </FormElement>
 
-        <ProviderInput
+        <FormElement
           id="username"
           label={t("usernameLabel")}
-          defaultValue={data?.username}
           error={
             usernameError &&
             errorT(usernameError.messageKey, {
@@ -200,12 +183,19 @@ export default async (props: { searchParams: { id: string } }) => {
               indArticleCheck: "",
             })
           }
-        />
+        >
+          <input
+            id="username"
+            type="text"
+            name="username"
+            className="govie-input"
+            defaultValue={data?.username}
+          />
+        </FormElement>
 
-        <ProviderInput
+        <FormElement
           id="password"
           label={t("passwordLabel")}
-          defaultValue={data?.password}
           error={
             passwordError &&
             errorT(passwordError.messageKey, {
@@ -213,12 +203,19 @@ export default async (props: { searchParams: { id: string } }) => {
               indArticleCheck: "",
             })
           }
-        />
+        >
+          <input
+            id="password"
+            type="password"
+            name="password"
+            className="govie-input"
+            defaultValue={data?.password}
+          />
+        </FormElement>
 
-        <ProviderInput
+        <FormElement
           id="fromAddress"
           label={t("fromAddressLabel")}
-          defaultValue={data?.fromAddress}
           error={
             fromAddressError &&
             errorT(fromAddressError.messageKey, {
@@ -226,13 +223,20 @@ export default async (props: { searchParams: { id: string } }) => {
               indArticleCheck: "",
             })
           }
-        />
+        >
+          <input
+            id="fromAddress"
+            type="text"
+            name="fromAddress"
+            className="govie-input"
+            defaultValue={data?.fromAddress}
+          />
+        </FormElement>
 
-        <ProviderInput
+        <FormElement
           id="throttle"
           label={t("throttleLabel")}
           hint={t("throttleHint")}
-          defaultValue={data?.throttle}
           error={
             throttleError &&
             errorT(throttleError.messageKey, {
@@ -240,7 +244,15 @@ export default async (props: { searchParams: { id: string } }) => {
               indArticleCheck: "",
             })
           }
-        />
+        >
+          <input
+            id="throttle"
+            type="text"
+            name="throttle"
+            className="govie-input"
+            defaultValue={data?.throttle}
+          />
+        </FormElement>
 
         <button className="govie-button" type="submit">
           {props.searchParams.id ? t("updateButton") : t("createButton")}

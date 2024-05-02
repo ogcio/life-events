@@ -4,6 +4,7 @@ trigger:
   - sta
 
 pr:
+  autoCancel: true
   branches:
     include:
       - "*"
@@ -15,12 +16,16 @@ parameters:
 
   - name: envBranches
     type: object
-    default: ["refs/heads/dev", "refs/heads/sta", "refs/heads/uat"]
+    default: ["dev", "sta", "uat"]
 
 variables:
-  - template: pipeline-variables/dev.yml
   - name: pushArtefacts
-    value: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranch']) }}
+    value: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}
+  - name: varFile
+    ${{ if containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}:
+      value: ${{ coalesce(variables.Build.SourceBranchName, 'dev') }}
+    ${{ else }}:
+      value: 'dev'
 
 stages:
   - stage: securityScan
@@ -44,114 +49,40 @@ stages:
   - stage: BuildDeps
     displayName: Build service dependencies
     jobs:
-      - job: BuildBaseContainer
-        displayName: Build base container
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-        - task: Docker@2
-          displayName:  Build base image
-          inputs:
-            command: build
-            repository: base-deps
-            tags: 'latest'
-            dockerfile: ./Dockerfile
-            buildContext: '$(Build.SourcesDirectory)'
-        - task: Docker@0
-          displayName: 'Docker save base'
-          inputs:
-            action: 'Run a Docker command'
-            customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_base_$(Build.BuildId).tar base-deps:latest'
-        - publish:  $(Build.ArtifactStagingDirectory)
-          artifact: 'docker-base-$(Build.BuildId)'
-        - task: Docker@2
-          displayName:  Build design system image
-          inputs:
-            command: build
-            repository: design-system-container
-            tags: 'latest'
-            dockerfile: packages/design-system/Dockerfile
-            buildContext: '$(Build.SourcesDirectory)'
-        - task: Docker@0
-          displayName: 'Docker save design-system'
-          inputs:
-            action: 'Run a Docker command'
-            customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_design_system_$(Build.BuildId).tar design-system-container:latest'
-        - publish:  $(Build.ArtifactStagingDirectory)
-          artifact: 'docker-design-system-$(Build.BuildId)'
+      - template: pipeline-templates/build_dependencies.yml
   - ${{ each serviceName in parameters.services }}:
     - stage: Build_${{ replace(serviceName, '-', '_') }}
       displayName: Build ${{ serviceName }}
+      variables:
+      - template: pipeline-variables/${{ variables.varFile }}.yml
       dependsOn: 
         - securityScan
         - BuildDeps
       jobs:  
-      - job: Build
-        displayName: Build job - ${{ serviceName }}
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-        - download: current
-          artifact: 'docker-base-$(Build.BuildId)'
-        - task: Docker@0
-          displayName: 'Retrieve base docker image from artifacts'
-          inputs:
-            action: 'Run a Docker command'
-            customCommand: 'load -i $(Pipeline.Workspace)/docker-base-$(Build.BuildId)/image_base_$(Build.BuildId).tar'
-        - download: current
-          artifact: 'docker-design-system-$(Build.BuildId)'
-        - task: Docker@0
-          displayName: 'Retrieve base docker image from artifacts'
-          inputs:
-            action: 'Run a Docker command'
-            customCommand: 'load -i $(Pipeline.Workspace)/docker-design-system-$(Build.BuildId)/image_design_system_$(Build.BuildId).tar'
-        - task: Docker@2
-          displayName: Build - ${{ serviceName }}
-          inputs:
-            command: build
-            repository: life-events-${{ serviceName }}
-            dockerfile: apps/${{ serviceName }}/Dockerfile
-            buildContext: '$(Build.SourcesDirectory)'
-            arguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicApiEndpoint)"'
-        - task: Docker@0
-          displayName: 'Run a Docker command'
-          condition: eq(variables.pushArtefacts, true)
-          inputs:
-            action: 'Run a Docker command'
-            customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_${{ serviceName }}_$(Build.BuildId).tar life-events-${{ serviceName }}:$(Build.BuildId)'
-        - publish:  $(Build.ArtifactStagingDirectory)
-          condition: eq(variables.pushArtefacts, true)
-          artifact: 'docker-${{ serviceName }}-$(Build.BuildId)'
+      - template: pipeline-templates/build_service.yml
+        parameters:
+          serviceName: ${{ serviceName }}
+          pushArtefacts: ${{ variables.pushArtefacts }}
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
-      condition: and(succeeded(), eq(variables.pushArtefacts, true))
+      condition: ${{ variables.pushArtefacts }}
+      variables:
+      - template: pipeline-variables/${{ variables.varFile }}.yml
       jobs:
-      - job: Push
-        displayName: Push - ${{ serviceName }}
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-        - download: current
-          artifact: 'docker-${{ serviceName }}-$(Build.BuildId)'
-        - task: Docker@0
-          displayName: 'Retrieve docker image from artifacts'
-          inputs:
-            action: 'Run a Docker command'
-            customCommand: 'load -i $(Pipeline.Workspace)/docker-${{ serviceName }}-$(Build.BuildId)/image_${{ serviceName }}_$(Build.BuildId).tar'
-        - task: ECRPushImage@1
-          inputs:
-            awsCredentials: $(awsServiceConnection)
-            regionName: $(awsRegion)
-            imageSource: 'imagename'
-            sourceImageName: life-events-${{ serviceName }}
-            sourceImageTag: $(Build.BuildId)
-            pushTag: $(Build.SourceBranchName)
-            repositoryName: life-events-${{ serviceName }}
-        - task: AWSCLI@1
-          inputs:
-            awsCredentials: $(awsServiceConnection)
-            regionName: $(awsRegion)
-            awsCommand: 'ecs'
-            awsSubCommand: 'update-service'
-            awsArguments: '--force-new-deployment --cluster life-events-ecs --service ${{ serviceName }}-service'
+      - template: pipeline-templates/push_image.yml
+        parameters:
+          awsServiceConnection: ${{ variables.awsServiceConnection }}
+          awsRegion: ${{ variables.awsRegion }}
+          serviceName: ${{ serviceName }}
+    - stage: Deploy_${{ replace(serviceName, '-', '_') }}
+      displayName: Deploy to ECS - ${{ serviceName }}
+      dependsOn: Push_${{ replace(serviceName, '-', '_') }}
+      variables:
+      - template: pipeline-variables/${{ variables.varFile }}.yml
+      jobs:
+      - template: pipeline-templates/deploy_ecs.yml
+        parameters:
+          awsServiceConnection: ${{ variables.awsServiceConnection }}
+          awsRegion: ${{ variables.awsRegion }}
+          serviceName: ${{ serviceName }}

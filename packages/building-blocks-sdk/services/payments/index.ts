@@ -79,6 +79,32 @@ export class Payments {
     );
   }
 
+  async createRealexProvider(
+    data: paths["/api/v1/providers/realex"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/providers/realex", {
+        body: data,
+      }),
+    );
+  }
+
+  async updateProvider(
+    providerId: paths["/api/v1/providers/{providerId}"]["put"]["parameters"]["path"]["providerId"],
+    data: paths["/api/v1/providers/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.PUT("/api/v1/providers/{providerId}", {
+        params: {
+          path: {
+            providerId,
+          },
+        },
+        body: data,
+      }),
+    );
+  }
+
   /**
    * PAYMENT REQUESTS
    */
@@ -119,6 +145,18 @@ export class Payments {
     return formatQueryResult(this.client.GET("/api/v1/transactions/"));
   }
 
+  async getTransactionDetails(transactionId: string) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/transactions/{transactionId}", {
+        params: {
+          path: {
+            transactionId,
+          },
+        },
+      }),
+    );
+  }
+
   async updateTransaction(
     transactionId: paths["/api/v1/transactions/{transactionId}"]["patch"]["parameters"]["path"]["transactionId"],
     data: paths["/api/v1/transactions/{transactionId}"]["patch"]["requestBody"]["content"]["application/json"],
@@ -148,6 +186,26 @@ export class Payments {
   async generatePaymentIntentId() {
     return formatQueryResult(
       this.client.GET("/api/v1/transactions/generatePaymentIntentId"),
+    );
+  }
+
+  /**
+   * Citizen
+   */
+
+  async getCitizenTransactions() {
+    return formatQueryResult(this.client.GET("/api/v1/citizen/transactions"));
+  }
+
+  async getCitizenTransactionDetails(transactionId: string) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/citizen/transactions/{transactionId}", {
+        params: {
+          path: {
+            transactionId,
+          },
+        },
+      }),
     );
   }
 }

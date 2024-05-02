@@ -9,7 +9,7 @@ const Line = () => (
   <hr className="govie-section-break govie-section-break--visible govie-section-break--l"></hr>
 );
 
-export default async () => {
+export default async ({ locale }: { locale: string }) => {
   const t = await getTranslations("AboutMe");
 
   return (
@@ -43,9 +43,9 @@ export default async () => {
       </p>
       <UserDetails />
       <Line />
-      <Addresses />
+      <Addresses locale={locale} />
       <Line />
-      <Entitlements />
+      <Entitlements locale={locale} />
       <Line />
       <Consent />
     </div>

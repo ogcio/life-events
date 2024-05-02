@@ -13,11 +13,11 @@ const darkGrey = ds.hexToRgba(ds.colours.ogcio.darkGrey, 80);
 
 type MonthsCardProps = {
   months: Month[];
-  view: string;
   searchParams: URLSearchParams;
+  locale: string;
 };
 
-export default async ({ months, view, searchParams }: MonthsCardProps) => {
+export default async ({ months, searchParams, locale }: MonthsCardProps) => {
   const t = await getTranslations("Timeline");
   return months.map((monthObject) => {
     const { events } = monthObject;
@@ -74,10 +74,10 @@ export default async ({ months, view, searchParams }: MonthsCardProps) => {
               <div style={{ textAlign: "right" }}>
                 <Link
                   href={{
-                    pathname: "/timeline/details",
+                    pathname: `/${locale}/timeline/details`,
                     query: searchParams.toString(),
                   }}
-                  className="govie-link"
+                  className="govie-body-s govie-link"
                 >
                   <span>{t("details")}</span>
                 </Link>

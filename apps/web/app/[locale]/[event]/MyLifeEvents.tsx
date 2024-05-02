@@ -118,7 +118,7 @@ async function getFlows() {
   return flowsQueryResult.rows.map(eventFlowMapper);
 }
 
-export default async () => {
+export default async ({ locale }) => {
   const t = await getTranslations("MyLifeEvents");
   const [flow] = await Promise.all([getFlows(), getEvents()]);
 
@@ -147,8 +147,10 @@ export default async () => {
               <Link
                 className="govie-link"
                 href={
-                  new URL(`messages/${msg.id}`, process.env.MESSAGES_HOST_URL)
-                    .href
+                  new URL(
+                    `/${locale}/messages/${msg.id}`,
+                    process.env.MESSAGES_HOST_URL,
+                  ).href
                 }
               >
                 {msg.subject}

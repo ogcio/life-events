@@ -2,6 +2,7 @@ import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
 import Header from "./Header";
 import Footer from "./Footer";
+import FeedbackBanner from "./FeedbackBanner";
 
 export default function RootLayout({
   children,
@@ -27,6 +28,7 @@ export default function RootLayout({
           className="govie-width-container"
           style={{ maxWidth: "1440px", width: "100%" }}
         >
+          <FeedbackBanner />
           <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
             {children}
           </div>

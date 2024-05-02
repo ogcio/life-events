@@ -7,6 +7,19 @@ import Tooltip from "../../../../../components/Tooltip";
 import CopyLink from "./CopyBtn";
 import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
+import Modal from "../../../../../components/Modal";
+
+async function showDeleteModal() {
+  "use server";
+
+  redirect("?action=delete");
+}
+
+async function closeDeleteModal() {
+  "use server";
+
+  redirect("?");
+}
 
 async function deletePaymentRequest(requestId: string, userId: string) {
   "use server";
@@ -28,7 +41,13 @@ async function hasTransactions(requestId: string, userId: string) {
   return transactions.length > 0;
 }
 
-export const RequestDetails = async ({ requestId }: { requestId: string }) => {
+export const RequestDetails = async ({
+  requestId,
+  action,
+}: {
+  requestId: string;
+  action: string | undefined;
+}) => {
   const { userId } = await PgSessions.get();
   let details;
 
@@ -54,6 +73,7 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
     details.paymentRequestId,
     userId,
   );
+
   // Cannot delete the payment request if we already have transactions
   const disableDeleteButton = await hasTransactions(requestId, userId);
 
@@ -65,6 +85,16 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
 
   return (
     <>
+      {action === "delete" && (
+        <Modal
+          title={t("deleteModal.title")}
+          body={t("deleteModal.description")}
+          confirmActionLabel={t("deleteModal.confirmLabel")}
+          confirmAction={deletePR}
+          cancelAction={closeDeleteModal}
+        ></Modal>
+      )}
+
       <div
         style={{
           display: "flex",
@@ -95,7 +125,7 @@ export const RequestDetails = async ({ requestId }: { requestId: string }) => {
               </button>
             </Tooltip>
           ) : (
-            <form action={deletePR}>
+            <form action={showDeleteModal}>
               <button className="govie-button govie-button--tertiary">
                 {tCommon("delete")}
               </button>

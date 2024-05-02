@@ -9,9 +9,10 @@ import HamburgerButton from "./HamburgerButton";
 
 type THeaderProps = {
   showSidebarToggle: boolean;
+  locale: string;
 };
 
-export default ({ showSidebarToggle }: THeaderProps) => {
+export default ({ showSidebarToggle, locale }: THeaderProps) => {
   const t = useTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
@@ -48,8 +49,8 @@ export default ({ showSidebarToggle }: THeaderProps) => {
           >
             {showSidebarToggle && <HamburgerButton />}
 
-            <a
-              href="/"
+            <Link
+              href={`/${locale}`}
               className="govie-header__link govie-header__link--homepage"
               style={{ display: "block" }}
             >
@@ -117,7 +118,7 @@ export default ({ showSidebarToggle }: THeaderProps) => {
                 </defs>
               </svg>
               <span className="govie-visually-hidden">gov.ie</span>
-            </a>
+            </Link>
             <div className="govie-!-font-size-24">
               <strong>{t("myLifeEvents")}</strong>
             </div>
@@ -137,6 +138,7 @@ export default ({ showSidebarToggle }: THeaderProps) => {
                   pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/en/" + path, process.env.HOST_URL).href}
+                prefetch={false}
               >
                 English
               </Link>
@@ -153,11 +155,12 @@ export default ({ showSidebarToggle }: THeaderProps) => {
                   pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/ga/" + path, process.env.HOST_URL).href}
+                prefetch={false}
               >
-                Gealic
+                Gaelic
               </Link>
             </div>
-            <NotificationsLink />
+            <NotificationsLink locale={locale} />
             <UserIcon />
 
             <Link href="/logout" prefetch={false} style={{ display: "flex" }}>

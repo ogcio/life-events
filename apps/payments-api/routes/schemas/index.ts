@@ -28,6 +28,12 @@ export const WorldpayData = Type.Object({
 });
 export type WorldpayData = Static<typeof WorldpayData>;
 
+export const RealexData = Type.Object({
+  merchantId: Type.String(),
+  sharedSecret: Type.String(),
+});
+export type RealexData = Static<typeof RealexData>;
+
 /**
  * Providers types
  */
@@ -64,11 +70,20 @@ export const WorldpayProvider = Type.Object({
   status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
 });
 
+export const RealexProvider = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  type: Type.Literal("realex"),
+  data: RealexData,
+  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+});
+
 export const Provider = Type.Union([
   BankTransferProvider,
   OpenBankingProvider,
   StripeProvider,
   WorldpayProvider,
+  RealexProvider,
 ]);
 export type Provider = Static<typeof Provider>;
 
@@ -96,6 +111,9 @@ export const CreateWorldpayProvider = Type.Omit(WorldpayProvider, [
   "status",
 ]);
 export type CreateWorldpayProvider = Static<typeof CreateWorldpayProvider>;
+
+export const CreateRealexProvider = Type.Omit(RealexProvider, ["id", "status"]);
+export type CreateRealexProvider = Static<typeof CreateRealexProvider>;
 
 export const ProvidersList = Type.Union([Type.Array(Provider)]);
 export type ProvidersList = Static<typeof ProvidersList>;
@@ -211,7 +229,7 @@ export const FullTransaction = Type.Object({
   transactionId: Type.String(),
   paymentRequestId: Type.String(),
   extPaymentId: Type.String(),
-  status: Type.String(), // TODO: Change to TransactionStatuses
+  status: TransactionStatuses,
   integrationReference: Type.String(),
   amount: Type.Number(),
   paymentProviderId: Type.String(),
@@ -273,3 +291,18 @@ export const PaymentIntentId = Type.Object({
   intentId: Type.String(),
 });
 export type PaymentIntentId = Static<typeof PaymentIntentId>;
+
+/**
+ * Citizen
+ */
+
+export const CitizenTransactions = Type.Array(
+  Type.Pick(Transaction, [
+    "transactionId",
+    "status",
+    "title",
+    "updatedAt",
+    "amount",
+  ]),
+);
+export type CitizenTransactions = Static<typeof CitizenTransactions>;

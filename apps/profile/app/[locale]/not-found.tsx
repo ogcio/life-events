@@ -7,7 +7,7 @@ export default async function NotFound() {
     <div>
       <h2 className="govie-heading-m">{t("title")}</h2>
       <p className="govie-body">{t("description")}</p>
-      <Link href="/events">
+      <Link href="/">
         <button className="govie-button govie-button--primary">
           {t("return-home")}
         </button>

@@ -122,6 +122,33 @@ export interface paths {
       };
     };
   };
+  "/api/v1/providers/realex": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            /** @enum {string} */
+            type: "realex";
+            data: {
+              merchantId: string;
+              sharedSecret: string;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/providers/": {
     get: {
       responses: {
@@ -430,7 +457,12 @@ export interface paths {
           content: {
             "application/json": {
               transactionId: string;
-              status: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
               amount: number;
               updatedAt: string;
               title: string;
@@ -453,7 +485,12 @@ export interface paths {
           content: {
             "application/json": {
               transactionId: string;
-              status: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
               amount: number;
               updatedAt: string;
               title: string;
@@ -492,7 +529,12 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            status: string;
+            status:
+              | "initiated"
+              | "pending"
+              | "succeeded"
+              | "cancelled"
+              | "failed";
           };
         };
       };
@@ -514,7 +556,12 @@ export interface paths {
           content: {
             "application/json": {
               transactionId: string;
-              status: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
               amount: number;
               updatedAt: string;
               title: string;
@@ -553,7 +600,6 @@ export interface paths {
             integrationReference: string;
             amount: number;
             paymentProviderId: string;
-            userId: string;
             userData: {
               name: string;
               email: string;
@@ -598,6 +644,90 @@ export interface paths {
         };
         /** @description Default Response */
         400: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/citizen/transactions": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              transactionId: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
+              title: string;
+              updatedAt: string;
+              amount: number;
+            }[];
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/citizen/transactions/{transactionId}": {
+    get: {
+      parameters: {
+        path: {
+          transactionId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              transactionId: string;
+              status:
+                | "initiated"
+                | "pending"
+                | "succeeded"
+                | "cancelled"
+                | "failed";
+              amount: number;
+              updatedAt: string;
+              title: string;
+              extPaymentId: string;
+              userId: string;
+              userData: {
+                name: string;
+                email: string;
+              };
+              providerName: string;
+              providerType: string;
+              paymentRequestId: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
           content: {
             "application/json": {
               statusCode: number;

@@ -2,7 +2,7 @@ import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import dayjs from "dayjs";
 import ds from "design-system";
-import { form, postgres } from "../utils";
+import { form } from "../utils";
 import { revalidatePath } from "next/cache";
 import { Profile } from "building-blocks-sdk";
 
@@ -28,7 +28,7 @@ async function submitAction(formData: FormData) {
   );
 
   if (formErrors.length) {
-    await form.insertErrors(formErrors, userId);
+    await form.insertErrors(formErrors, userId, "user");
 
     return revalidatePath("/");
   }
@@ -45,12 +45,12 @@ async function submitAction(formData: FormData) {
     .toISOString();
 
   let data = {
-    date_of_birth: dateOfBirth,
+    dateOfBirth: dateOfBirth,
     title: "",
     firstname: "",
     lastname: "",
     ppsn: "",
-    ppsn_visible: false,
+    ppsnVisible: false,
     gender: "",
     phone: "",
     email: "",
@@ -124,12 +124,12 @@ export default async () => {
     lastname: "Surname",
     email: "test@email.com",
     title: "Mr",
-    date_of_birth: String(new Date("1990-01-01T00:00:00Z")),
+    dateOfBirth: String(new Date("1990-01-01T00:00:00Z")),
     ppsn: "9876543W",
-    ppsn_visible: false,
+    ppsnVisible: false,
     gender: "male",
     phone: "01234567891",
-    consent_to_prefill_data: false,
+    consenttToPrefillData: false,
   };
 
   //Temporarily use default data if user is not found or no data is returned
@@ -140,9 +140,9 @@ export default async () => {
     lastname,
     email,
     title,
-    date_of_birth,
+    dateOfBirth,
     ppsn,
-    ppsn_visible,
+    ppsnVisible,
     gender,
     phone,
   } = userData;
@@ -160,10 +160,10 @@ export default async () => {
     }
 
     if (userExistsQuery) {
-      const isPPSNVisible = userExistsQuery.ppsn_visible;
+      const isPPSNVisible = userExistsQuery.ppsnVisible;
 
-      const result = await new Profile(userId).updateUser({
-        ppsn_visible: !isPPSNVisible,
+      const result = await new Profile(userId).patchUser({
+        ppsnVisible: !isPPSNVisible,
       });
 
       if (result?.error) {
@@ -184,12 +184,12 @@ export default async () => {
     revalidatePath("/");
   }
 
-  const dob = dayjs(date_of_birth);
+  const dob = dayjs(dateOfBirth);
   const dayOfBirth = dob.date();
   const monthOfBirth = dob.month() + 1;
   const yearOfBirth = dob.year();
 
-  const errors = await form.getErrorsQuery(userId);
+  const errors = await form.getErrorsQuery(userId, "user");
 
   const phoneError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.phone,
@@ -324,7 +324,7 @@ export default async () => {
                 style={{ display: "flex", alignItems: "center", gap: "20px" }}
               >
                 <input
-                  type={ppsn_visible ? "text" : "password"}
+                  type={ppsnVisible ? "text" : "password"}
                   id="ppsn-field"
                   name="ppsn"
                   className="govie-input"
@@ -339,7 +339,7 @@ export default async () => {
                   style={{ marginBottom: 0, width: "90px", minWidth: "90px" }}
                   formAction={togglePPSN}
                 >
-                  {ppsn_visible ? t("hide") : t("reveal")}
+                  {ppsnVisible ? t("hide") : t("reveal")}
                 </button>
               </div>
             </div>

@@ -10,6 +10,52 @@
     "title": "Nothing to show...",
     "description": "The current list is empty"
   },
+  "FeedbackBanner": {
+    "tag": "prototype",
+    "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
+  },
+  "Header": {
+    "title": "Payments"
+  },
+  "MyPayments": {
+    "title": "My Payments",
+    "empty": {
+      "title": "There are no payments.",
+      "description": "You have not made any payments yet."
+    },
+    "table": {
+      "status": "Status",
+      "date": "Date",
+      "paymentRequestTitle": "Payment Request Title",
+      "amount": "Amount",
+      "actions": "Actions"
+    },
+    "actions": {
+      "details": "Details"
+    },
+    "details": {
+      "paymentDetails": "Payment details",
+      "requestTitle": "Payment Request Title",
+      "amount": "Amount",
+      "lastUpdate": "Last update",
+      "status": "Status",
+      "providerType": "Provider type",
+      "providers": {
+        "openbanking": "Open Banking",
+        "banktransfer": "Bank Transfer",
+        "stripe": "Credit/Debit Card",
+        "realex": "Realex",
+        "worldpay": "WorldPay"
+      },
+      "payerName": "Payer name",
+      "payerEmail": "Payer email",
+      "referenceCode": "Payment reference code"
+    }
+  },
+  "Modal": {
+    "cancel": "Cancel",
+    "close": "Close"
+  },
   "PaymentSetup": {
     "menu": {
       "payments": "Payments",
@@ -50,6 +96,7 @@
       "openbankingDescription": "Utilize OpenBanking for secure and direct bank payments, offering your customers a convenient way to pay directly from their bank accounts without needing to enter payment details.",
       "stripeDescription": "Incorporate Stripe to accept payments via credit card, Apple Pay, Google Pay, and more. Benefit from Stripe's comprehensive payment infrastructure and fraud prevention tools.",
       "worldpayDescription": "Connect with WorldPay for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
+      "realexDescription": "Connect with Realex for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
       "selectHint": "Choose the type of payment provider",
       "label": "Payment Provider",
       "banktransfer": "Manual Bank Transfer",
@@ -57,6 +104,7 @@
       "openbanking": "OpenBanking",
       "stripe": "Stripe",
       "worldpay": "WorldPay",
+      "realex": "Realex",
       "continue": "Continue",
       "select": "Select"
     },
@@ -102,6 +150,17 @@
       "merchantCodeHint": "This is the unique identifier assigned to your Worldpay account. It's used to ensure that payments are sent to the correct merchant account.",
       "installationId": "Installation Id",
       "installationIdHint": "Your specific installation ID from Worldpay, required for integrating your payment gateway with the web application. This ties the payments to your account.",
+      "confirm": "Confirm"
+    },
+    "AddRealex": {
+      "title": "Add Realex Payment Provider",
+      "editTitle": "Edit Realex Payment Provider",
+      "name": "Name",
+      "nameHint": "Create a name for this Realex configuration to easily identify it among your payment options, such as 'Main Site Payments' or 'Event Registrations'.",
+      "merchantId": "Merchant Id",
+      "merchantIdHint": "This is the unique identifier assigned to your Realex account. It's used to ensure that payments are sent to the correct merchant account.",
+      "sharedSecret": "Shared secret",
+      "sharedSecretHint": "This is the Shared Secret from Realex, required for integrating your payment gateway with the web application. This ties the payments to your account.",
       "confirm": "Confirm"
     },
     "Payments": {
@@ -183,7 +242,8 @@
           "openbanking": "OpenBanking Account",
           "banktransfer": "Manual Bank Transfer Account",
           "stripe": "Stripe Account",
-          "worldpay": "Worldpay Account"
+          "worldpay": "Worldpay Account",
+          "realex": "Realex Account"
         },
         "reference": "Reference",
         "amount": "Amount",
@@ -195,7 +255,12 @@
       },
       "copyLink": "Copy",
       "goBack": "Back to payments",
-      "paymentLink": "Payment link"
+      "paymentLink": "Payment link",
+      "deleteModal": {
+        "title": "Delete Payment Request",
+        "description": "Are you sure you want to delete this payment request?",
+        "confirmLabel": "Delete"
+      }
     }
   },
   "PayPaymentRequest": {
@@ -208,6 +273,7 @@
     "payByBankDescription": "Make a direct payment securely from your bank app - no card needed",
     "payByCard": "Credit/Debit card",
     "payByCardDescription": "Pay securely with your credit or debit card",
+    "payByRealexCardDescription": "Pay securely with your credit or debit card - powered by Realex",
     "payNow": "Pay now",
     "manualBankTransfer": "Manual Bank Transfer",
     "manualBankTransferDescription": "Make a manual bank transfer",
