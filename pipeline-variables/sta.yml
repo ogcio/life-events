@@ -1,0 +1,7 @@
+variables:
+  awsServiceConnection: life-events-sta-ecr
+  awsRegion: eu-west-1
+  ecrEndpoint: 975050122570.dkr.ecr.eu-west-1.amazonaws.com
+  nextPublicStripePublishableKey: pk_test_51OzFkUK1VL0xyyr2E3EvcEmzsAGLowKH3jlM4g3AhQwUjhlpxQvfjZizc5GRSAnNzf8HHwTdzhz2rRYS69nooxtg00ZF7kRvyN
+  nextPublicHostUrl: https://payments.sta.blocks.gov.ie/
+  nextPublicApiEndpoint: https://api.sta.blocks.gov.ie

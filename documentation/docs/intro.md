@@ -36,13 +36,41 @@ Service URLs
 | payments                 | `http://localhost:3001` |
 | messages                 | `http://localhost:3002` |
 | profile                  | `http://localhost:3003` |
-| mock-api                 | `http://localhost:8000` |
 | logto admin console      | `http://localhost:3302` |
 | logto apis               | `http://localhost:3301` |
+
+APIs
+
+| API Name     | URL                     |
+| ------------ | ----------------------- |
+| mock-api     | `http://localhost:8000` |
+| payments-api | `http://localhost:8001` |
+| messages-api | `http://localhost:8002` |
+| profile-api  | `http://localhost:8003` |
+| timeline-api | `http://localhost:8004` |
 
 ## Localisation
 
 Translation files are stored in /web/messages. Localisation works on React server components and it uses [next-intl](https://next-intl-docs.vercel.app/)
+
+## Logto integration
+
+The only app that supports logto at the present time is payments. in order to allow using logto it is required to setup the following .env keys
+
+```
+LOGTO_APP_ID=logto_app_id
+LOGTO_ENDPOINT=http://localhost:3301/
+LOGTO_APP_SECRET=logto_app_secret
+LOGTO_COOKIE_SECRET=logto_cookie_secret
+LOGTO_BASE_URL=http://localhost:3001
+
+```
+
+To retrieve the ids and secrets you need to access the logto interface http://localhost:3302
+
+in the `Applications` section you can retrieve `LOGTO_APP_ID` and `LOGTO_APP_SECRET` for the application you are willing to configure.
+
+the `LOGTO_COOKIE_SECRET` can be retrieved in the `Signinig keys` section
 
 ## Docker build
 
