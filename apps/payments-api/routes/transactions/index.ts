@@ -5,7 +5,7 @@ import {
   ParamsWithTransactionId,
   PaymentIntentId,
   RealexData,
-  RealexHppDataResponse,
+  RealexHppResponse,
   RealexPaymentObject,
   RealexPaymentObjectQueryParams,
   TransactionDetails,
@@ -331,7 +331,7 @@ export default async function transactions(app: FastifyInstance) {
 
   // endpoint called by Realex upon payment completion
   app.post<{
-    Body: RealexHppDataResponse;
+    Body: RealexHppResponse;
     Reply: string | Error;
   }>(
     "/realex/verifyPaymentResponse",

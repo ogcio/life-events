@@ -317,7 +317,7 @@ export type RealexPaymentObjectQueryParams = Static<
   typeof RealexPaymentObjectQueryParams
 >;
 
-export const RealexHppDataResponse = Type.Object({
+export const RealexHppResponse = Type.Object({
   RESULT: Type.String(),
   AUTHCODE: Type.String(),
   MESSAGE: Type.String(),
@@ -357,7 +357,7 @@ export const RealexHppDataResponse = Type.Object({
   HPP_ADDRESS_MATCH_INDICATOR: Type.String(),
   BATCHID: Type.String(),
 });
-export type RealexHppDataResponse = Static<typeof RealexHppDataResponse>;
+export type RealexHppResponse = Static<typeof RealexHppResponse>;
 
 /**
  * Citizen
