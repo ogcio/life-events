@@ -43,7 +43,7 @@ export default async (props: web.NextPageProps) => {
 
   if (Component) {
     return (
-      <div className={styles.eventsPageWrapper}>
+      <div className={styles.eventsLandingPageWrapper}>
         <aside>
           <SideMenu
             username={userName}

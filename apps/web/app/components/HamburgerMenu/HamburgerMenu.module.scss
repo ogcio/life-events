@@ -1,13 +1,5 @@
 @import "/app/styles/globals.scss";
 
-.events {
-  @include phone {
-    width: 80vw;
-  }
-
-  width: 200px;
-}
-
 .hamburgerMenuWrapper {
   position: fixed;
   top: 0;
@@ -15,6 +7,30 @@
   right: 0;
   bottom: 0;
   z-index: 1000;
+  visibility: hidden;
+
+  &.visible {
+    visibility: visible;
+  }
+}
+
+.hamburgerMenu {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+
+  @include phone {
+    width: 80vw;
+  }
+
+  & .menuLink {
+    margin: unset;
+    padding-left: 12px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+  }
 }
 
 .backdrop {
@@ -32,10 +48,10 @@
   background-color: white;
   transform: translateX(-100vh);
   transition: all 0.3s;
-}
 
-.visible {
-  transform: translateX(0px);
+  &.visible {
+    transform: translateX(0px);
+  }
 }
 
 .languagesContainer {
@@ -43,8 +59,17 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+  margin-top: 30px;
 
   @media ((min-width: ($breakpoint-tablet + 1))) {
+    display: none;
+  }
+}
+
+.logoutContainer {
+  margin-top: 30px;
+
+  @media ((min-width: ($breakpoint-phone + 1))) {
     display: none;
   }
 }
