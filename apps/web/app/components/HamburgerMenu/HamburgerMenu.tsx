@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ds from "design-system";
 import styles from "./HamburgerMenu.module.scss";
+import { headers } from "next/headers";
 
 const Icon = ds.Icon;
 
@@ -16,11 +17,20 @@ type Props = {
   selected: string;
   userName: string;
   locale: string;
+  path?: string;
   clickCallback: (selected: string) => void;
 };
 
-export default (props: Props) => {
+export default ({
+  options,
+  selected,
+  userName,
+  locale,
+  clickCallback,
+  path,
+}: Props) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
+  const pathSlice = path?.split("/").slice(2).join("/") || "";
 
   return (
     <ol
@@ -42,17 +52,17 @@ export default (props: Props) => {
         }}
       >
         <label className="govie-label--s govie-!-font-size-16">
-          {props.userName}
+          {userName}
         </label>
       </li>
 
       <>
-        {props.options.map((option) => (
+        {options.map((option) => (
           <li
             key={`lem_${option.url}`}
             tabIndex={0}
             onClick={() => {
-              props.clickCallback(option.key);
+              clickCallback(option.key);
             }}
           >
             <Link
@@ -64,7 +74,7 @@ export default (props: Props) => {
                 width: "100%",
                 display: "flex",
                 justifyContent: "flex-start",
-                background: props.selected.includes(option.key) ? tintGold : "",
+                background: selected.includes(option.key) ? tintGold : "",
               }}
             >
               <Icon
@@ -76,6 +86,38 @@ export default (props: Props) => {
             </Link>
           </li>
         ))}
+        <div className={styles.languagesContainer}>
+          <Link
+            className={`govie-link govie-link--no-underline`}
+            style={{
+              fontWeight: locale === "en" ? "bold" : "normal",
+              color: ds.colours.ogcio.darkGreen,
+            }}
+            href={"/en/" + pathSlice}
+            prefetch={false}
+          >
+            English
+          </Link>
+          <div
+            style={{
+              height: "14px",
+              width: "1px",
+              borderLeft: `1px solid ${ds.colours.ogcio.darkGreen}`,
+            }}
+          />
+
+          <Link
+            className={`govie-link govie-link--no-underline`}
+            style={{
+              fontWeight: locale === "ga" ? "bold" : "normal",
+              color: ds.colours.ogcio.darkGreen,
+            }}
+            href={"/ga/" + pathSlice}
+            prefetch={false}
+          >
+            Gaelic
+          </Link>
+        </div>
       </>
     </ol>
   );

@@ -67,6 +67,7 @@ export default async function RootLayout({
             selected={path || ""}
             options={options}
             locale={locale}
+            path={path}
           />
         )}
         <Header showHamburgerButton={showHamburgerMenu} locale={locale} />

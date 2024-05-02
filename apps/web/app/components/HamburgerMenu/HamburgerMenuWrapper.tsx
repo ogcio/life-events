@@ -1,12 +1,13 @@
 "use client";
 
-import styles from "./HamburgerMenu.module.css";
 import useClientSide from "../hooks/useClientSide";
 import { useEffect, useState } from "react";
 import HamburgerMenu from "./HamburgerMenu";
+import styles from "./HamburgerMenu.module.scss";
 
-type OverlayProps = {
+type Props = {
   locale: string;
+  path?: string;
   userName: string;
   selected: string;
   options: {
@@ -17,7 +18,7 @@ type OverlayProps = {
   }[];
 };
 
-export default ({ userName, selected, options, locale }: OverlayProps) => {
+export default ({ userName, selected, options, locale, path }: Props) => {
   const mounted = useClientSide();
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -53,7 +54,12 @@ export default ({ userName, selected, options, locale }: OverlayProps) => {
   };
 
   return (
-    <>
+    <div
+      className={styles.hamburgerMenuWrapper}
+      style={{
+        display: menuOpen ? "block" : "none",
+      }}
+    >
       {menuOpen && <div className={styles.backdrop} onClick={closeSidebar} />}
 
       <div className={sidebarClasses.join(" ")}>
@@ -63,8 +69,9 @@ export default ({ userName, selected, options, locale }: OverlayProps) => {
           userName={userName}
           locale={locale}
           clickCallback={clickCallback}
+          path={path}
         />
       </div>
-    </>
+    </div>
   );
 };
