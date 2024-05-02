@@ -22,4 +22,4 @@ ENV LOG_LEVEL=trace
 
 EXPOSE 8001
 
-CMD [ "npm", "--prefix", "apps/payments-api",  "run", "dev" ]
+CMD [ "npm", "--prefix", "apps/payments-api",  "run", "start" ]
