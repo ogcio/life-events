@@ -14,7 +14,7 @@ import Employment from "./Employment";
 import StartingABusiness from "./StartingABusiness";
 import Housing from "./Housing";
 import Death from "./Death";
-import TimelineWrapper from "./components/TimelineWrapper";
+import SideMenu from "./components/SideMenu";
 import { getMessages } from "next-intl/server";
 import { AbstractIntlMessages } from "next-intl";
 
@@ -49,7 +49,7 @@ export default async (props: web.NextPageProps) => {
           gap: "2.5rem",
         }}
       >
-        <TimelineWrapper
+        <SideMenu
           username={userName}
           searchParams={props.searchParams}
           messages={timelineMessages}

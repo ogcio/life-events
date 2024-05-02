@@ -8,11 +8,11 @@ import styles from "./Header.module.scss";
 import HamburgerButton from "./HamburgerButton";
 
 type THeaderProps = {
-  showSidebarToggle: boolean;
+  showHamburgerButton: boolean;
   locale: string;
 };
 
-export default ({ showSidebarToggle, locale }: THeaderProps) => {
+export default ({ showHamburgerButton, locale }: THeaderProps) => {
   const t = useTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
@@ -25,7 +25,7 @@ export default ({ showSidebarToggle, locale }: THeaderProps) => {
     >
       <div className={`govie-header__container ${styles.headerInnerWrapper}`}>
         <div className={styles.headerLeftContainer}>
-          {showSidebarToggle && <HamburgerButton />}
+          {showHamburgerButton && <HamburgerButton />}
 
           <Link
             href={`/${locale}`}

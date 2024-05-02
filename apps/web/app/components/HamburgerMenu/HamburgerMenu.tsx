@@ -1,6 +1,6 @@
 import Link from "next/link";
 import ds from "design-system";
-import styles from "./LifeEventsMenu.module.scss";
+import styles from "./HamburgerMenu.module.scss";
 
 const Icon = ds.Icon;
 
@@ -15,7 +15,6 @@ type Props = {
   }[];
   selected: string;
   userName: string;
-  ppsn: string;
   locale: string;
   clickCallback: (selected: string) => void;
 };

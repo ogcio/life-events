@@ -1,4 +1,4 @@
-import { routes } from "../../../../utils";
+import { routes } from "../../utils";
 
 const url = (locale: string, slug: string) => "/" + locale + "/" + slug;
 

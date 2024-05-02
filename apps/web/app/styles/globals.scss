@@ -20,7 +20,7 @@ $breakpoint-desktop: 1199px;
   }
 }
 
-@mixin large-desktop {
+@mixin wide-desktop {
   @media (min-width: ($breakpoint-desktop + 1)) {
     @content;
   }
