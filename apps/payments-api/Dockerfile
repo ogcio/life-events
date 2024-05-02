@@ -3,16 +3,11 @@ FROM base-deps as deps
 WORKDIR /app
 
 COPY ./package*.json /app/
-COPY ./apps/payments-api/package*.json /app/apps/payments-api/
-COPY ./packages/logging-wrapper/package*.json /app/packages/logging-wrapper/
-COPY ./packages/error-handler/package*.json /app/packages/error-handler/
-
-
-RUN npm ci
-
 COPY ./apps/payments-api/ /app/apps/payments-api/
 COPY ./packages/logging-wrapper/ /app/packages/logging-wrapper/
 COPY ./packages/error-handler/ /app/packages/error-handler/
+
+RUN npm ci
 
 FROM deps AS builder
 WORKDIR /app
