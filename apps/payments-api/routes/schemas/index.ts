@@ -344,7 +344,7 @@ export const RealexHppDataResponse = Type.Object({
   AUTHENTICATION_VALUE: Type.String(),
   MESSAGE_VERSION: Type.String(),
   SRD: Type.String(),
-  SHA1HASH: Type.String(),
+  SHA256HASH: Type.String(),
   HPP_BILLING_STREET1: Type.String(),
   HPP_BILLING_STREET2: Type.String(),
   HPP_BILLING_STREET3: Type.String(),

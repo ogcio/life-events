@@ -51,11 +51,9 @@ export class RealexService implements IRealexService {
       AUTHCODE,
     } = response;
 
-    const firstHash = this.generateHash(
-      `${TIMESTAMP}.${MERCHANT_ID}.${ORDER_ID}.${RESULT}.${MESSAGE}.${PASREF}.${AUTHCODE}`,
-    );
+    const toHash = `${TIMESTAMP}.${MERCHANT_ID}.${ORDER_ID}.${RESULT}.${MESSAGE}.${PASREF}.${AUTHCODE}`;
+    const validHash = this.generateHash(toHash);
 
-    const validHash = this.generateHash(firstHash);
-    return validHash === response.SHA1HASH;
+    return validHash === response.SHA256HASH;
   }
 }
