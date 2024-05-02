@@ -3,6 +3,7 @@ import ds from "design-system";
 import Timeline from "./Timeline";
 import { AbstractIntlMessages } from "next-intl";
 import styles from "./SideMenu.module.scss";
+import { PgSessions } from "auth/sessions";
 
 type SideMenuProps = {
   username: string;
@@ -13,13 +14,11 @@ type SideMenuProps = {
   messages: AbstractIntlMessages;
 };
 
-export default ({
-  username,
-  searchParams,
-  messages,
-  locale,
-}: SideMenuProps) => {
+export default async ({ searchParams, messages, locale }: SideMenuProps) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
+  const { firstName, lastName, userId } = await PgSessions.get();
+
+  const username = [firstName, lastName].join(" ");
 
   return (
     <ol className={`govie-list govie-list--spaced ${styles.sideMenu}`}>
@@ -38,6 +37,7 @@ export default ({
         </label>
       </li>
       <Timeline
+        userId={userId}
         locale={locale}
         searchProps={searchParams}
         messages={messages}

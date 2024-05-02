@@ -1,0 +1,36 @@
+jobs:
+  - job: BuildBaseContainer
+    displayName: Build base container
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Docker@2
+      displayName:  Build base image
+      inputs:
+        command: build
+        repository: base-deps
+        tags: 'latest'
+        dockerfile: ./Dockerfile
+        buildContext: '$(Build.SourcesDirectory)'
+    - task: Docker@0
+      displayName: 'Docker save base'
+      inputs:
+        action: 'Run a Docker command'
+        customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_base_$(Build.BuildId).tar base-deps:latest'
+    - publish:  $(Build.ArtifactStagingDirectory)
+      artifact: 'docker-base-$(Build.BuildId)'
+    - task: Docker@2
+      displayName:  Build design system image
+      inputs:
+        command: build
+        repository: design-system-container
+        tags: 'latest'
+        dockerfile: packages/design-system/Dockerfile
+        buildContext: '$(Build.SourcesDirectory)'
+    - task: Docker@0
+      displayName: 'Docker save design-system'
+      inputs:
+        action: 'Run a Docker command'
+        customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_design_system_$(Build.BuildId).tar design-system-container:latest'
+    - publish:  $(Build.ArtifactStagingDirectory)
+      artifact: 'docker-design-system-$(Build.BuildId)'
