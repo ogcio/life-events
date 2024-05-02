@@ -15,6 +15,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
-EXPOSE 8003
+EXPOSE 8004
 
 CMD [ "npm", "--prefix", "apps/timeline-api",  "run", "dev" ]
