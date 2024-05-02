@@ -56,7 +56,7 @@ async function generatePaymentIntentId(userId: string): Promise<string> {
   return result.data.intentId;
 }
 
-export default async function Card(props: {
+export default async function CardWithRealex(props: {
   params: { locale: string };
   searchParams:
     | {
@@ -90,10 +90,7 @@ export default async function Card(props: {
   ).toString();
 
   const intentId = await generatePaymentIntentId(userId);
-  const providerId = paymentDetails.providers.find(
-    (p) => p.type === "realex",
-  ).id;
-  const { amount } = paymentDetails;
+  const { amount, providerId } = paymentDetails;
 
   await new Payments(userId).createTransaction({
     paymentRequestId: props.searchParams.paymentId,
