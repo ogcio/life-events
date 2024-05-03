@@ -4,7 +4,10 @@ export default () => {
   const t = useTranslations("FeedbackBanner");
   return (
     <div className="govie-phase-banner">
-      <p className="govie-phase-banner__content">
+      <p
+        className="govie-phase-banner__content"
+        style={{ display: "flex", alignItems: "center" }}
+      >
         <strong className="govie-tag govie-phase-banner__content__tag">
           {t("tag")}
         </strong>

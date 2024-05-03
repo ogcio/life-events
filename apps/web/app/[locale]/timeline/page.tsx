@@ -1,7 +1,7 @@
 import { PgSessions } from "auth/sessions";
 import { web } from "../../utils";
-import Timeline, { TimeLineData } from "./Timeline";
-import getTimelineData from "../../data/getTimelineData";
+import Timeline from "./Timeline";
+import { Timeline as TimelineClient } from "building-blocks-sdk";
 import { notFound } from "next/navigation";
 import { isFeatureFlagEnabled } from "feature-flags/utils";
 
@@ -10,7 +10,7 @@ export default async (props: web.NextPageProps) => {
   if (!showTimeline) {
     throw notFound();
   }
-  const { firstName, lastName } = await PgSessions.get();
+  const { firstName, lastName, userId } = await PgSessions.get();
 
   const userName = [firstName, lastName].join(" ");
 
@@ -31,10 +31,11 @@ export default async (props: web.NextPageProps) => {
     queryParams.set("searchQuery", "");
   }
 
-  const timelineResponse = await getTimelineData(queryParams);
-
+  const timelineResponse = await new TimelineClient(userId).getTimelineData(
+    Object.fromEntries(queryParams),
+  );
   // HANDLE ERROR
-  const responseData: TimeLineData = await timelineResponse.json();
+  const responseData = timelineResponse.data;
 
   return (
     <div
@@ -44,12 +45,14 @@ export default async (props: web.NextPageProps) => {
         gap: "2.5rem",
       }}
     >
-      <Timeline
-        userName={userName}
-        searchParams={queryParams}
-        timeLineData={responseData}
-        locale={props.params.locale}
-      />
+      {responseData && (
+        <Timeline
+          userName={userName}
+          searchParams={queryParams}
+          timeLineData={responseData}
+          locale={props.params.locale}
+        />
+      )}
     </div>
   );
 };

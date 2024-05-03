@@ -14,6 +14,7 @@ import {
   getDigitalWalletRulesNotVerified,
   getDigitalWalletRulesVerified,
 } from "./[...action]/GetDigitalWallet/GetDigitalWallet";
+import styles from "./event.module.scss";
 
 const eventRules = (flow: string, hasGovIdVerifiedAccount: boolean) => {
   switch (flow) {
@@ -177,8 +178,8 @@ export default async ({ locale }) => {
     });
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", flex: 1, gap: "2.5rem" }}>
-      <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
+    <div className={styles.landingPageSectionsWrapper}>
+      <section className={styles.section}>
         <div className="govie-heading-l">{t("lifeEvents")}</div>
         <ul className="govie-list">
           {showDigitalWalletOnboarding &&
@@ -285,7 +286,7 @@ export default async ({ locale }) => {
             ))}
         </ul>
       </section>
-      <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
+      <section className={styles.section}>
         <div className="govie-heading-l">{t("openEvents")}</div>
         <ul className="govie-list">
           {flow.map((evt) => (

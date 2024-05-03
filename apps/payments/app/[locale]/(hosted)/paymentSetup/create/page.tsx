@@ -12,6 +12,7 @@ async function createPayment(userId: string, formData: FormData) {
     formData.get("openbanking-account")?.toString(),
     formData.get("banktransfer-account")?.toString(),
     formData.get("stripe-account")?.toString(),
+    formData.get("realex-account")?.toString(),
   ].filter((provider): provider is string => !!provider);
 
   const data = {

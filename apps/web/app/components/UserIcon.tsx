@@ -1,5 +1,6 @@
 import { PgSessions } from "auth/sessions";
 import ds from "design-system";
+import styles from "./Header.module.scss";
 
 export default async () => {
   const { firstName, lastName } = await PgSessions.get();
@@ -7,17 +8,10 @@ export default async () => {
 
   return (
     <div
+      className={styles.userIcon}
       style={{
-        height: 30,
-        width: 30,
-        fontSize: "14px",
-        fontWeight: 600,
         background: ds.colours.ogcio.white,
-        borderRadius: "100%",
         color: ds.colours.ogcio.darkGreen,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
       }}
     >
       {name}

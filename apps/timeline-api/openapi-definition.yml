@@ -1,0 +1,126 @@
+openapi: 3.0.3
+info:
+  title: OGCIO Timeline API
+  description: API for OGCIO Timeline Service
+  version: 0.1.0
+components:
+  schemas: {}
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/timeline/:
+    get:
+      tags:
+        - TimelineData
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: searchQuery
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: startDate
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: endDate
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: services
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  minYear:
+                    type: number
+                  maxYear:
+                    type: number
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        year:
+                          type: number
+                        minYear:
+                          type: number
+                        maxYear:
+                          type: number
+                        months:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              month:
+                                type: string
+                              events:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    service:
+                                      type: string
+                                    date:
+                                      type: string
+                                    title:
+                                      type: string
+                                    description:
+                                      type: string
+                                    weight:
+                                      type: number
+                                  required:
+                                    - service
+                                    - date
+                                    - title
+                                    - description
+                                    - weight
+                            required:
+                              - month
+                              - events
+                      required:
+                        - year
+                        - minYear
+                        - maxYear
+                        - months
+                required:
+                  - minYear
+                  - maxYear
+                  - data
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+tags:
+  - name: Timeline

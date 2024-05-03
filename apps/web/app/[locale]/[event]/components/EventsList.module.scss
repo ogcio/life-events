@@ -1,0 +1,7 @@
+@import "/app/styles/globals.scss";
+
+.chevronIcon {
+  @media ((max-width: $breakpoint-tablet)) {
+    display: none;
+  }
+}

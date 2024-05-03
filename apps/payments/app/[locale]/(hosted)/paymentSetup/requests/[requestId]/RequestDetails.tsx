@@ -44,9 +44,11 @@ async function hasTransactions(requestId: string, userId: string) {
 export const RequestDetails = async ({
   requestId,
   action,
+  locale,
 }: {
   requestId: string;
   action: string | undefined;
+  locale: string;
 }) => {
   const { userId } = await PgSessions.get();
   let details;
@@ -79,7 +81,7 @@ export const RequestDetails = async ({
 
   const integrationReference = requestId;
   const completePaymentLink = new URL(
-    `/paymentRequest/pay?paymentId=${requestId}&id=${integrationReference}`,
+    `${locale}/paymentRequest/pay?paymentId=${requestId}&id=${integrationReference}`,
     process.env.HOST_URL ?? "",
   ).toString();
 
