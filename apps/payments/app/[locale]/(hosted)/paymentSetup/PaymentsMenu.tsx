@@ -4,7 +4,7 @@ import ds from "design-system";
 
 const Icon = ds.Icon;
 
-export default () => {
+export default ({ locale }: { locale: string }) => {
   const t = useTranslations("PaymentSetup.menu");
 
   return (
@@ -12,7 +12,7 @@ export default () => {
       <li tabIndex={0}>
         <Link
           className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
-          href={"/paymentSetup"}
+          href={`/${locale}/paymentSetup`}
           style={{
             margin: "unset",
             paddingLeft: "12px",
@@ -32,7 +32,7 @@ export default () => {
       <li tabIndex={0}>
         <Link
           className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
-          href={"/paymentSetup/requests"}
+          href={`/${locale}/paymentSetup/requests`}
           style={{
             margin: "unset",
             paddingLeft: "12px",
@@ -52,7 +52,7 @@ export default () => {
       <li tabIndex={1}>
         <Link
           className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
-          href={"/paymentSetup/providers"}
+          href={`/${locale}/paymentSetup/providers`}
           style={{
             margin: "unset",
             paddingLeft: "12px",
