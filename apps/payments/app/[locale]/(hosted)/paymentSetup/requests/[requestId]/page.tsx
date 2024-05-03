@@ -12,7 +12,7 @@ import buildApiClient from "../../../../../../client/index";
 import { EmptyStatus } from "../../../../../components/EmptyStatus";
 
 export default async function ({
-  params: { requestId },
+  params: { requestId, locale },
   searchParams: { action },
 }) {
   const t = await getTranslations("PaymentSetup.Request");
@@ -32,7 +32,7 @@ export default async function ({
 
   return (
     <div>
-      <RequestDetails requestId={requestId} action={action} />
+      <RequestDetails requestId={requestId} action={action} locale={locale} />
 
       <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
         <section
