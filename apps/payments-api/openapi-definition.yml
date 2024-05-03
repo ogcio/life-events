@@ -394,9 +394,27 @@ paths:
                           name:
                             type: string
                           type:
-                            type: string
+                            anyOf:
+                              - type: string
+                                enum:
+                                  - banktransfer
+                              - type: string
+                                enum:
+                                  - openbanking
+                              - type: string
+                                enum:
+                                  - stripe
+                              - type: string
+                                enum:
+                                  - realex
                           status:
-                            type: string
+                            anyOf:
+                              - type: string
+                                enum:
+                                  - connected
+                              - type: string
+                                enum:
+                                  - disconnected
                           data: {}
                           createdAt:
                             type: string
@@ -566,9 +584,27 @@ paths:
                         name:
                           type: string
                         type:
-                          type: string
+                          anyOf:
+                            - type: string
+                              enum:
+                                - banktransfer
+                            - type: string
+                              enum:
+                                - openbanking
+                            - type: string
+                              enum:
+                                - stripe
+                            - type: string
+                              enum:
+                                - realex
                         status:
-                          type: string
+                          anyOf:
+                            - type: string
+                              enum:
+                                - connected
+                            - type: string
+                              enum:
+                                - disconnected
                         data: {}
                         createdAt:
                           type: string

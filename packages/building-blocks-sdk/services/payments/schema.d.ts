@@ -244,8 +244,8 @@ export interface paths {
                 userId: string;
                 id: string;
                 name: string;
-                type: string;
-                status: string;
+                type: "banktransfer" | "openbanking" | "stripe" | "realex";
+                status: "connected" | "disconnected";
                 data: unknown;
                 createdAt: string;
               }[];
@@ -332,8 +332,8 @@ export interface paths {
                 userId: string;
                 id: string;
                 name: string;
-                type: string;
-                status: string;
+                type: "banktransfer" | "openbanking" | "stripe" | "realex";
+                status: "connected" | "disconnected";
                 data: unknown;
                 createdAt: string;
               }[];

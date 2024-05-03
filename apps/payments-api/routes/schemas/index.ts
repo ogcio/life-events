@@ -127,7 +127,7 @@ export type ProvidersList = Static<typeof ProvidersList>;
 export const UpdateProvider = Type.Object({
   name: Type.String(),
   data: Type.Object({}),
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
 });
 // export const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
 export type UpdateProvider = Static<typeof UpdateProvider>;
@@ -149,8 +149,9 @@ export const ProviderDetails = Type.Object({
     Type.Literal("banktransfer"),
     Type.Literal("openbanking"),
     Type.Literal("stripe"),
+    Type.Literal("realex"),
   ]),
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
   data: Type.Any(),
   createdAt: Type.String(),
 });
