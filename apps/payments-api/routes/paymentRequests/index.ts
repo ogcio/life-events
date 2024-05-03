@@ -358,12 +358,10 @@ export default async function paymentRequests(app: FastifyInstance) {
           );
 
           if (providersUpdate.toDisable.length) {
-            const idsToDisable = providersUpdate.toDisable.join(", ");
-
             await app.pg.query(
               `update payment_requests_providers set enabled = false
-                where payment_request_id = $1 and provider_id in ($2)`,
-              [paymentRequestId, idsToDisable],
+                where payment_request_id = $1 and provider_id = any($2::uuid[])`,
+              [paymentRequestId, providersUpdate.toDisable],
             );
           }
 
