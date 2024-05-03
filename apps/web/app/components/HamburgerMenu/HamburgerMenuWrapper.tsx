@@ -4,7 +4,6 @@ import useClientSide from "../hooks/useClientSide";
 import { useEffect, useState } from "react";
 import HamburgerMenu from "./HamburgerMenu";
 import styles from "./HamburgerMenu.module.scss";
-import { useTranslations } from "next-intl";
 
 type Props = {
   locale: string;
@@ -20,7 +19,11 @@ type Props = {
 };
 
 export default ({ userName, selected, options, locale, path }: Props) => {
-  const mounted = useClientSide();
+  /* 
+  Commenting out the code to make the menu stay open when JS is disabled, as agreed with Tiago, 
+  so to hot fix a bug where the menu would open and close as this component was re-rendered
+  */
+  // const mounted = useClientSide();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(selected);
@@ -45,7 +48,8 @@ export default ({ userName, selected, options, locale, path }: Props) => {
     };
   }, []);
 
-  const showMenu = menuOpen || !mounted;
+  // const showMenu = menuOpen || !mounted;
+  const showMenu = menuOpen;
 
   const closeSidebar = () => {
     toggleSidebar(false);

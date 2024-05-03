@@ -39,7 +39,7 @@ export default async (props: web.NextPageProps) => {
 
   if (Component) {
     return (
-      <div className={styles.eventsLandingPageWrapper}>
+      <div className={styles.eventsPageWrapper}>
         <aside>
           <SideMenu
             searchParams={props.searchParams}

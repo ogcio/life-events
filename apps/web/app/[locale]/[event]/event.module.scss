@@ -9,14 +9,27 @@
   }
 }
 
-.sectionsWrapper {
+.sectionsWrapper,
+.landingPageSectionsWrapper {
   display: flex;
   flex-wrap: wrap;
   flex: 1;
   gap: 2.5rem;
+}
 
+.sectionsWrapper {
   @media ((max-width: $breakpoint-tablet)) {
+    flex-direction: column;
     gap: 0;
+  }
+}
+
+/* leaving the 2.5rem gap on tablet/mobile unlike .sectionsWrapper
+  above given at the moment the 'my life events' section is always empty
+*/
+.landingPageSectionsWrapper {
+  @media ((max-width: $breakpoint-tablet)) {
+    flex-direction: column;
   }
 }
 
@@ -27,9 +40,6 @@
 
   @media ((max-width: $breakpoint-tablet)) {
     min-width: 100%;
-  }
-
-  @media ((max-width: $breakpoint-phone)) {
     margin: 0;
   }
 }

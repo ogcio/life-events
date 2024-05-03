@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { postgres, routes, web, workflow } from "../../../../utils";
@@ -28,6 +27,16 @@ export default async ({ userId, flow, flowData }: Props) => {
     );
 
     redirect("/admin");
+  }
+
+  async function rejectAction() {
+    "use server";
+
+    const url = new URL(
+      `${headers().get("x-pathname")}/reject`,
+      process.env.HOST_URL,
+    ).href;
+    redirect(url);
   }
 
   return (
@@ -89,17 +98,12 @@ export default async ({ userId, flow, flowData }: Props) => {
       >
         <input type="hidden" name="userId" defaultValue={userId} />
         <input type="hidden" name="flow" defaultValue={flow} />
-        <Link
-          className="govie-link"
-          href={
-            new URL(
-              `${headers().get("x-pathname")}/reject`,
-              process.env.HOST_URL,
-            ).href
-          }
+        <button
+          className="govie-button govie-button--tertiary govie-button--medium"
+          formAction={rejectAction}
         >
           {t("reject")}
-        </Link>
+        </button>
         <button type="submit" className="govie-button govie-button--medium">
           {t("approve")}
         </button>
