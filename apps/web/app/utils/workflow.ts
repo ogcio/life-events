@@ -226,6 +226,7 @@ export type GetDigitalWallet = Base & {
   firstName: string;
   lastName: string;
   hasReadIntro: boolean;
+  hasConfirmedPersonalDetails: boolean;
   appStoreEmail: string;
   myGovIdEmail: string;
   govIEEmail: string;
@@ -242,6 +243,7 @@ export function emptyGetDigitalWallet(): GetDigitalWallet {
     firstName: "",
     lastName: "",
     hasReadIntro: false,
+    hasConfirmedPersonalDetails: false,
     appStoreEmail: "",
     myGovIdEmail: "",
     govIEEmail: "",
@@ -341,7 +343,8 @@ export async function getFlowData<T extends Workflow>(
   defaultData: T,
 ) {
   // Session details
-  const { userId, email, firstName, lastName } = await PgSessions.get();
+  const { userId, email, firstName, lastName, myGovIdEmail } =
+    await PgSessions.get();
 
   const flowQuery = postgres.pgpool.query<{ data: Workflow }, [string, string]>(
     `
@@ -371,6 +374,10 @@ export async function getFlowData<T extends Workflow>(
 
   if ("lastName" in data) {
     data.lastName = lastName;
+  }
+
+  if ("myGovIdEmail" in data) {
+    data.myGovIdEmail = myGovIdEmail;
   }
 
   if (flowResult.rowCount) {

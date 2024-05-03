@@ -25,9 +25,14 @@ export const getDigitalWalletRulesVerified: Parameters<
           isStepValid: true,
         };
   },
-  //Rule 2: Check if personal details are populated
+  //Rule 2: Check if personal details are populated and confirmed
   (params) =>
-    Boolean(params.firstName && params.lastName && params.myGovIdEmail)
+    Boolean(
+      params.firstName &&
+        params.lastName &&
+        params.myGovIdEmail &&
+        params.hasConfirmedPersonalDetails,
+    )
       ? { key: null, isStepValid: true }
       : {
           key: routes.digitalWallet.getDigitalWallet.aboutYou.slug,

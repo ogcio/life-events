@@ -63,11 +63,12 @@ export default async (props: {
 
     const data: Pick<
       workflow.GetDigitalWallet,
-      "firstName" | "lastName" | "myGovIdEmail"
+      "firstName" | "lastName" | "myGovIdEmail" | "hasConfirmedPersonalDetails"
     > = {
       firstName: "",
       lastName: "",
       myGovIdEmail: "",
+      hasConfirmedPersonalDetails: true,
     };
 
     const formIterator = formData.entries();
