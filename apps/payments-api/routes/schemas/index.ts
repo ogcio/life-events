@@ -293,6 +293,73 @@ export const PaymentIntentId = Type.Object({
 export type PaymentIntentId = Static<typeof PaymentIntentId>;
 
 /**
+ * Realex integration types
+ */
+
+export const RealexPaymentObject = Type.Object({
+  ACCOUNT: Type.String(),
+  AMOUNT: Type.String(),
+  CURRENCY: Type.String(),
+  MERCHANT_ID: Type.String(),
+  ORDER_ID: Type.String(),
+  TIMESTAMP: Type.String(),
+  URL: Type.String(),
+  SHA256HASH: Type.String(),
+});
+export type RealexPaymentObject = Static<typeof RealexPaymentObject>;
+
+export const RealexPaymentObjectQueryParams = Type.Object({
+  amount: Type.String(),
+  intentId: Type.String(),
+  providerId: Type.String(),
+});
+export type RealexPaymentObjectQueryParams = Static<
+  typeof RealexPaymentObjectQueryParams
+>;
+
+export const RealexHppResponse = Type.Object({
+  RESULT: Type.String(),
+  AUTHCODE: Type.String(),
+  MESSAGE: Type.String(),
+  PASREF: Type.String(),
+  AVSPOSTCODERESULT: Type.String(),
+  AVSADDRESSRESULT: Type.String(),
+  CVNRESULT: Type.String(),
+  ACCOUNT: Type.String(),
+  MERCHANT_ID: Type.String(),
+  ORDER_ID: Type.String(),
+  TIMESTAMP: Type.String(),
+  AMOUNT: Type.String(),
+  MERCHANT_RESPONSE_URL: Type.String(),
+  HPP_LANG: Type.String(),
+  pas_uuid: Type.String(),
+  HPP_CUSTOMER_COUNTRY: Type.String(),
+  HPP_CUSTOMER_PHONENUMBER_MOBILE: Type.String(),
+  BILLING_CODE: Type.String(),
+  BILLING_CO: Type.String(),
+  ECI: Type.String(),
+  CAVV: Type.String(),
+  XID: Type.String(),
+  DS_TRANS_ID: Type.String(),
+  AUTHENTICATION_VALUE: Type.String(),
+  MESSAGE_VERSION: Type.String(),
+  SRD: Type.String(),
+  SHA256HASH: Type.String(),
+  HPP_BILLING_STREET1: Type.String(),
+  HPP_BILLING_STREET2: Type.String(),
+  HPP_BILLING_STREET3: Type.String(),
+  HPP_BILLING_CITY: Type.String(),
+  HPP_BILLING_COUNTRY: Type.String(),
+  HPP_BILLING_POSTALCODE: Type.String(),
+  HPP_CUSTOMER_FIRSTNAME: Type.String(),
+  HPP_CUSTOMER_LASTNAME: Type.String(),
+  HPP_CUSTOMER_EMAIL: Type.String(),
+  HPP_ADDRESS_MATCH_INDICATOR: Type.String(),
+  BATCHID: Type.String(),
+});
+export type RealexHppResponse = Static<typeof RealexHppResponse>;
+
+/**
  * Citizen
  */
 

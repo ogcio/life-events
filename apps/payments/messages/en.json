@@ -305,6 +305,9 @@
     "paymentRequiresPaymentMmethod": "Your payment was not successful, please try again.",
     "somethingWrong": "Something went wrong."
   },
+  "PayRealex": {
+    "loading": "Loading checkout..."
+  },
   "PaymentRequestComplete": {
     "title": "Your payment was successful",
     "yourRef": "Your reference number",

@@ -189,6 +189,17 @@ export class Payments {
     );
   }
 
+  async getRealexPaymentObject(
+    query: paths["/api/v1/realex/paymentObject"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/realex/paymentObject", {
+        params: {
+          query,
+        },
+      }),
+    );
+  }
   /**
    * Citizen
    */
