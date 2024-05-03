@@ -346,7 +346,7 @@
   "Generic": {
     "back": "Back"
   },
-  "EventsMenu": {
+  "HamburgerMenu": {
     "events": "Events",
     "aboutMe": "About me",
     "birth": "Birth",
@@ -355,7 +355,8 @@
     "employment": "Employment",
     "business": "Starting a business",
     "housing": "Housing",
-    "death": "Death"
+    "death": "Death",
+    "logout": "Logout"
   },
   "MyLifeEvents": {
     "lifeEvents": "My Life Events",

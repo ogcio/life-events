@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import styles from "./EventsList.module.scss";
 
 const EventLink = ({
   children,
@@ -69,7 +70,7 @@ export default async (props: {
                 {t(evt.descriptionKey, { date: "19th March" })}
               </p>
             </div>
-            <div>
+            <div className={styles.chevronIcon}>
               <EventLink slug={evt.slug} ariaLabel={t(evt.flowTitle)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

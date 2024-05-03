@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { routes, workflow } from "../../utils";
 import EventsList from "./components/EventsList";
+import styles from "./event.module.scss";
 
 async function getEvents() {
   "use server";
@@ -41,18 +42,16 @@ export default async () => {
   });
 
   return (
-    <div style={{ flex: 1, marginTop: "1rem" }}>
+    <div className={styles.eventContainer}>
       <div className="govie-heading-l">{t("title")}</div>
-      <div
-        style={{ display: "flex", flexWrap: "wrap", flex: 1, gap: "2.5rem" }}
-      >
-        <section style={{ marginBottom: "1rem", flex: 1, minWidth: "400px" }}>
+      <div className={styles.sectionsWrapper}>
+        <section className={styles.section}>
           <EventsList
             events={eventsToRender.slice(0, 2)}
             category={t("title")}
           />
         </section>
-        <section style={{ marginBottom: "1rem", flex: 1, minWidth: "400px" }}>
+        <section className={styles.section}>
           <EventsList
             events={eventsToRender.slice(2, 4)}
             category={t("title")}

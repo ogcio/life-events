@@ -1,9 +1,10 @@
 import { getTranslations } from "next-intl/server";
+import styles from "./event.module.scss";
 
 export default async () => {
   const t = await getTranslations("StartingABusiness");
   return (
-    <section style={{ margin: "1rem 0" }}>
+    <section className={styles.eventContainer}>
       <div className="govie-heading-l">{t("title")}</div>
       <p className="govie-body">{t("comingSoon")}</p>
     </section>
