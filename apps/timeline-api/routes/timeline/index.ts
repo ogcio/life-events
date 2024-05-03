@@ -6,13 +6,12 @@ import {
   TimelineData,
 } from "../../types/schemaDefinitions";
 
-import { faker } from "@faker-js/faker";
-
 const drivingEvent1 = (date: string | number | Date) => ({
   service: "driving",
   date: new Date(date).toString(),
   title: "Driving licence renewal due",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 1,
 });
 
@@ -20,7 +19,8 @@ const drivingEvent2 = (date: string | number | Date) => ({
   service: "driving",
   date: new Date(date).toString(),
   title: "Driving licence renewed",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 3,
 });
 
@@ -28,7 +28,8 @@ const drivingEvent3 = (date: string | number | Date) => ({
   service: "driving",
   date: new Date(date).toString(),
   title: "VW Golf registered",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 2,
 });
 
@@ -36,7 +37,8 @@ const drivingEvent4 = (date: string | number | Date) => ({
   service: "driving",
   date: new Date(date).toString(),
   title: "VW Golf purchased",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 3,
 });
 
@@ -44,7 +46,8 @@ const drivingEvent5 = (date: string | number | Date) => ({
   service: "driving",
   date: new Date(date).toString(),
   title: "VW Golf MOT issued",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 2,
 });
 
@@ -52,7 +55,8 @@ const drivingEvent6 = (date: string | number | Date) => ({
   service: "driving",
   date: new Date(date).toString(),
   title: "VW Golf MOT due",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 1,
 });
 
@@ -60,7 +64,8 @@ const drivingEvent7 = (date: string | number | Date) => ({
   service: "driving",
   date: new Date(date).toString(),
   title: "Applied for new driving licence",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 1,
 });
 
@@ -68,7 +73,8 @@ const drivingEvent8 = (date: string | number | Date) => ({
   service: "driving",
   date: new Date(date).toString(),
   title: "Paid for new driving licence",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 1,
 });
 
@@ -76,7 +82,8 @@ const drivingEvent9 = (date: string | number | Date) => ({
   service: "driving",
   date: new Date(date).toString(),
   title: "Driving licence issued",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 2,
 });
 
@@ -84,7 +91,8 @@ const drivingEvent10 = (date: string | number | Date) => ({
   service: "driving",
   date: new Date(date).toString(),
   title: "Driving licence added to digital wallet",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 2,
 });
 
@@ -92,7 +100,8 @@ const housingEvent1 = (date: string | number | Date) => ({
   service: "housing",
   date: new Date(date).toString(),
   title: "Local Property Tax due",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 1,
 });
 
@@ -100,7 +109,8 @@ const housingEvent2 = (date: string | number | Date) => ({
   service: "housing",
   date: new Date(date).toString(),
   title: "Local Property Tax paid",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 1,
 });
 
@@ -108,7 +118,8 @@ const housingEvent3 = (date: string | number | Date) => ({
   service: "housing",
   date: new Date(date).toString(),
   title: "Applied for housing benefit",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 1,
 });
 
@@ -124,7 +135,8 @@ const housingEvent5 = (date: string | number | Date) => ({
   service: "housing",
   date: new Date(date).toString(),
   title: "Stamp Duty Land Tax paid",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 1,
 });
 
@@ -132,7 +144,8 @@ const housingEvent6 = (date: string | number | Date) => ({
   service: "housing",
   date: new Date(date).toString(),
   title: "Applied for planning permission",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 1,
 });
 
@@ -140,7 +153,8 @@ const housingEvent7 = (date: string | number | Date) => ({
   service: "housing",
   date: new Date(date).toString(),
   title: "Planning permission granted",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 2,
 });
 
@@ -148,7 +162,8 @@ const employmentEvent1 = (date: string | number | Date) => ({
   service: "employment",
   date: new Date(date).toString(),
   title: "Self-assessment deadline",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 2,
 });
 
@@ -156,7 +171,8 @@ const employmentEvent2 = (date: string | number | Date) => ({
   service: "employment",
   date: new Date(date).toString(),
   title: "Jobseeker's Allowance requested",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 1,
 });
 
@@ -164,7 +180,8 @@ const employmentEvent3 = (date: string | number | Date) => ({
   service: "employment",
   date: new Date(date).toString(),
   title: "Jobseeker's Allowance approved",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 3,
 });
 
@@ -172,7 +189,8 @@ const employmentEvent4 = (date: string | number | Date, company: string) => ({
   service: "employment",
   date: new Date(date).toString(),
   title: `Employment started with ${company} `,
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 3,
 });
 
@@ -180,7 +198,8 @@ const employmentEvent5 = (date: string | number | Date) => ({
   service: "employment",
   date: new Date(date).toString(),
   title: "Jobseeker's Allowance stopped",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 3,
 });
 
@@ -188,7 +207,8 @@ const healthEvent1 = (date: string | number | Date) => ({
   service: "health",
   date: new Date(date).toString(),
   title: "Applied for EHIC",
-  description: faker.lorem.words(10),
+  description:
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi convallis.",
   weight: 1,
 });
 
