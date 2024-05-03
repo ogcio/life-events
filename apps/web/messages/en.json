@@ -350,6 +350,16 @@
       "whyVerifyFirstParagraph": "To gain access to all the services available through the Life Events Portal and the Digital Wallet, you need to verify your basic MyGovID account.",
       "whyVerifySecondParagraph": "Please follow <link>this link to the Gov.IE website</link> for instructions on how you can get verified.",
       "whyVerifyThirdParagraph": "We will send you an email with a link to proceed with your Digital Wallet onboarding once you are verified."
+    },
+    "ChangeDetails": {
+      "firstName": "First name <red>*</red>",
+      "lastName": "Last name <red>*</red>",
+      "myGovIdEmail": "MyGovID email <red>*</red>",
+      "lineManagerName": "Your line manager name <red>*</red>",
+      "govIEEmail": "Gov.ie work email <red>*</red>",
+      "jobTitle": "Your job title <red>*</red>",
+      "appStoreEmail": "Apple/Android app store email <red>*</red>",
+      "submitText": "Confirm and continue"
     }
   },
   "PaymentSuccessful": {

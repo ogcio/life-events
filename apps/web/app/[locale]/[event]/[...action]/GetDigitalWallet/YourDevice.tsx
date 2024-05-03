@@ -112,11 +112,7 @@ export default async (props: {
       <div className="govie-grid-column-two-thirds-from-desktop">
         <h1 className="govie-heading-l">{t("title")}</h1>
         <p className="govie-heading-s">{t("subTitle")}</p>
-        <form
-          action={submitAction}
-          id="user-details-form"
-          style={{ maxWidth: "590px" }}
-        >
+        <form action={submitAction} style={{ maxWidth: "590px" }}>
           <div
             className={`govie-form-group ${
               appStoreEmailError ? "govie-form-group--error" : ""

@@ -208,7 +208,7 @@ export default async (
   return (
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds-from-desktop">
-        <form action={submitAction} id="user-details-form">
+        <form action={submitAction}>
           <div
             className={`govie-form-group ${
               nameError ? "govie-form-group--error" : ""

@@ -9,6 +9,7 @@ import YourEmployment from "./YourEmployment";
 import YourDevice from "./YourDevice";
 import DetailsSummary from "./DetailsSummary";
 import VerifyAccount from "./VerifyAccount";
+import ChangeDetails from "./ChangeDetails";
 
 export const getDigitalWalletRulesVerified: Parameters<
   typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
@@ -205,7 +206,6 @@ const DetailsSummaryStep: React.FC<FormProps> = ({
   data,
   userId,
   eventsPageHref,
-  urlBase,
 }) => {
   return stepSlug === nextSlug ? (
     <FormLayout
@@ -249,6 +249,25 @@ const VerifyAccountStep: React.FC<FormProps> = ({ actionSlug, stepSlug }) => {
   );
 };
 
+const ChangeDetailsStep: React.FC<FormProps> = ({
+  data,
+  actionSlug,
+  stepSlug,
+  userId,
+  urlBase,
+}) => {
+  return (
+    <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
+      <ChangeDetails
+        data={data}
+        userId={userId}
+        urlBase={urlBase}
+        flow={workflow.keys.getDigitalWallet}
+      />
+    </FormLayout>
+  );
+};
+
 const FormComponentsMap = {
   [routes.digitalWallet.getDigitalWallet.beforeYouBegin.slug]:
     BeforeYouBeginStep,
@@ -261,6 +280,7 @@ const FormComponentsMap = {
     ApplicationSuccessStep,
   [routes.digitalWallet.getDigitalWallet.verifyMyGovIdAccount.slug]:
     VerifyAccountStep,
+  [routes.digitalWallet.getDigitalWallet.changeDetails.slug]: ChangeDetailsStep,
 };
 
 export default async (props: web.NextPageProps) => {
