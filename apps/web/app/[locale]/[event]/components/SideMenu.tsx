@@ -6,7 +6,6 @@ import styles from "./SideMenu.module.scss";
 import { PgSessions } from "auth/sessions";
 
 type SideMenuProps = {
-  username: string;
   locale: string;
   searchParams?: {
     [key: string]: string;
