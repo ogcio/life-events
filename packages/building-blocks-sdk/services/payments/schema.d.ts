@@ -657,99 +657,6 @@ export interface paths {
       };
     };
   };
-  "/api/v1/transactions/realex/paymentObject": {
-    get: {
-      parameters: {
-        query: {
-          amount: string;
-          intentId: string;
-          providerId: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              ACCOUNT: string;
-              AMOUNT: string;
-              CURRENCY: string;
-              MERCHANT_ID: string;
-              ORDER_ID: string;
-              TIMESTAMP: string;
-              URL: string;
-              SHA256HASH: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              statusCode: number;
-              code: string;
-              error: string;
-              message: string;
-              time: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        422: {
-          content: {
-            "application/json": {
-              statusCode: number;
-              code: string;
-              error: string;
-              message: string;
-              time: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/transactions/realex/verifyPaymentResponse": {
-    post: {
-      requestBody?: {
-        content: {
-          "application/json": Record<string, never>;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": string;
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              statusCode: number;
-              code: string;
-              error: string;
-              message: string;
-              time: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        422: {
-          content: {
-            "application/json": {
-              statusCode: number;
-              code: string;
-              error: string;
-              message: string;
-              time: string;
-            };
-          };
-        };
-      };
-    };
-  };
   "/api/v1/citizen/transactions": {
     get: {
       responses: {
@@ -821,6 +728,99 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/realex/paymentObject": {
+    get: {
+      parameters: {
+        query: {
+          amount: string;
+          intentId: string;
+          providerId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              ACCOUNT: string;
+              AMOUNT: string;
+              CURRENCY: string;
+              MERCHANT_ID: string;
+              ORDER_ID: string;
+              TIMESTAMP: string;
+              URL: string;
+              SHA256HASH: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        422: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/realex/verifyPaymentResponse": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": Record<string, never>;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": string;
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        422: {
           content: {
             "application/json": {
               statusCode: number;

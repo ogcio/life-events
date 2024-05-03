@@ -1172,168 +1172,6 @@ paths:
                   - error
                   - message
                   - time
-  /api/v1/transactions/realex/paymentObject:
-    get:
-      tags:
-        - Transactions
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: amount
-          required: true
-        - schema:
-            type: string
-          in: query
-          name: intentId
-          required: true
-        - schema:
-            type: string
-          in: query
-          name: providerId
-          required: true
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  ACCOUNT:
-                    type: string
-                  AMOUNT:
-                    type: string
-                  CURRENCY:
-                    type: string
-                  MERCHANT_ID:
-                    type: string
-                  ORDER_ID:
-                    type: string
-                  TIMESTAMP:
-                    type: string
-                  URL:
-                    type: string
-                  SHA256HASH:
-                    type: string
-                required:
-                  - ACCOUNT
-                  - AMOUNT
-                  - CURRENCY
-                  - MERCHANT_ID
-                  - ORDER_ID
-                  - TIMESTAMP
-                  - URL
-                  - SHA256HASH
-        "404":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statusCode:
-                    type: number
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  time:
-                    type: string
-                required:
-                  - statusCode
-                  - code
-                  - error
-                  - message
-                  - time
-        "422":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statusCode:
-                    type: number
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  time:
-                    type: string
-                required:
-                  - statusCode
-                  - code
-                  - error
-                  - message
-                  - time
-  /api/v1/transactions/realex/verifyPaymentResponse:
-    post:
-      tags:
-        - Transactions
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties: {}
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: string
-        "404":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statusCode:
-                    type: number
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  time:
-                    type: string
-                required:
-                  - statusCode
-                  - code
-                  - error
-                  - message
-                  - time
-        "422":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statusCode:
-                    type: number
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  time:
-                    type: string
-                required:
-                  - statusCode
-                  - code
-                  - error
-                  - message
-                  - time
   /api/v1/citizen/transactions:
     get:
       tags:
@@ -1478,6 +1316,168 @@ paths:
                   - providerType
                   - paymentRequestId
         "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+  /api/v1/realex/paymentObject:
+    get:
+      tags:
+        - Transactions
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: amount
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: intentId
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: providerId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ACCOUNT:
+                    type: string
+                  AMOUNT:
+                    type: string
+                  CURRENCY:
+                    type: string
+                  MERCHANT_ID:
+                    type: string
+                  ORDER_ID:
+                    type: string
+                  TIMESTAMP:
+                    type: string
+                  URL:
+                    type: string
+                  SHA256HASH:
+                    type: string
+                required:
+                  - ACCOUNT
+                  - AMOUNT
+                  - CURRENCY
+                  - MERCHANT_ID
+                  - ORDER_ID
+                  - TIMESTAMP
+                  - URL
+                  - SHA256HASH
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+        "422":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+  /api/v1/realex/verifyPaymentResponse:
+    post:
+      tags:
+        - Transactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+        "422":
           description: Default Response
           content:
             application/json:

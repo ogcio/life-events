@@ -85,7 +85,7 @@ export default async function CardWithRealex(props: {
   if (!paymentDetails) notFound();
 
   const responseUrl = new URL(
-    "/api/v1/transactions/realex/verifyPaymentResponse",
+    "/api/v1/realex/verifyPaymentResponse",
     process.env.BACKEND_URL,
   ).toString();
 
