@@ -273,10 +273,8 @@ export default async function transactions(app: FastifyInstance) {
       const userId = request.user?.id;
       const { providerId, amount, intentId } = request.query;
 
-      let providerRes;
-      try {
-        providerRes = await app.pg.query(
-          `
+      const providerRes = await app.pg.query(
+        `
           SELECT
             provider_data as data,
             status
@@ -284,16 +282,12 @@ export default async function transactions(app: FastifyInstance) {
           WHERE provider_id = $1
           AND user_id = $2
           `,
-          [providerId, userId],
-        );
-      } catch (err) {
-        app.log.error((err as Error).message);
-      }
-
-      if (!providerRes?.rows.length)
-        throw app.httpErrors.notFound("Provider not found");
+        [providerId, userId],
+      );
 
       const provider = providerRes.rows[0];
+      if (!provider) throw app.httpErrors.notFound("Provider not found");
+
       if (provider.status !== "connected") {
         throw app.httpErrors.unprocessableEntity("Provider is not enabled");
       }
@@ -350,43 +344,31 @@ export default async function transactions(app: FastifyInstance) {
     async (request, reply) => {
       const body = request.body;
 
-      let transaction;
-      try {
-        transaction = await app.pg.query(
-          `SELECT * 
+      const transaction = await app.pg.query(
+        `SELECT * 
           FROM payment_transactions 
           WHERE ext_payment_id = $1`,
-          [body.ORDER_ID],
-        );
-      } catch (err) {
-        app.log.error((err as Error).message);
-      }
+        [body.ORDER_ID],
+      );
 
-      if (!transaction?.rowCount) {
+      if (!transaction?.rowCount)
         throw app.httpErrors.notFound("Transaction not found");
-      }
 
       const providerId = transaction.rows[0].payment_provider_id;
-      let providerRes;
-      try {
-        providerRes = await app.pg.query(
-          `
+      const providerRes = await app.pg.query(
+        `
           SELECT
             provider_data as data,
             status
           FROM payment_providers
           WHERE provider_id = $1
           `,
-          [providerId],
-        );
-      } catch (err) {
-        app.log.error((err as Error).message);
-      }
-
-      if (!providerRes?.rows.length)
-        throw app.httpErrors.notFound("Provider not found");
+        [providerId],
+      );
 
       const provider = providerRes.rows[0];
+      if (!provider) throw app.httpErrors.notFound("Provider not found");
+
       if (provider.status !== "connected") {
         throw app.httpErrors.unprocessableEntity("Provider is not enabled");
       }
