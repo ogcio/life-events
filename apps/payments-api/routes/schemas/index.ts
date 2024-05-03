@@ -37,13 +37,18 @@ export type RealexData = Static<typeof RealexData>;
 /**
  * Providers types
  */
+export const ProviderStatus = Type.Union([
+  Type.Literal("connected"),
+  Type.Literal("disconnected"),
+]);
+export type ProviderStatus = Static<typeof ProviderStatus>;
 
 export const BankTransferProvider = Type.Object({
   id: Type.String(),
   name: Type.String(),
   type: Type.Literal("banktransfer"),
   data: BankTransferData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
 });
 
 export const OpenBankingProvider = Type.Object({
@@ -51,7 +56,7 @@ export const OpenBankingProvider = Type.Object({
   name: Type.String(),
   type: Type.Literal("openbanking"),
   data: OpenBankingData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
 });
 
 export const StripeProvider = Type.Object({
@@ -59,7 +64,7 @@ export const StripeProvider = Type.Object({
   name: Type.String(),
   type: Type.Literal("stripe"),
   data: StripeData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
 });
 
 export const WorldpayProvider = Type.Object({
@@ -67,7 +72,7 @@ export const WorldpayProvider = Type.Object({
   name: Type.String(),
   type: Type.Literal("worldpay"),
   data: WorldpayData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
 });
 
 export const RealexProvider = Type.Object({
@@ -75,7 +80,7 @@ export const RealexProvider = Type.Object({
   name: Type.String(),
   type: Type.Literal("realex"),
   data: RealexData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
 });
 
 export const Provider = Type.Union([

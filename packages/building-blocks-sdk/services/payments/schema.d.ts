@@ -419,7 +419,7 @@ export interface paths {
                 id: string;
                 name: string;
                 type: string;
-                status: string;
+                status: "connected" | "disconnected";
                 data: unknown;
                 createdAt: string;
               }[];

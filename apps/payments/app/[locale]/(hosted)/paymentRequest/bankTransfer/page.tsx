@@ -1,18 +1,15 @@
-import OpenBankingHost from "./OpenBankingHost";
-import { createPaymentRequest } from "../../../../integration/trueLayer";
+import { RedirectType, notFound, redirect } from "next/navigation";
+import { routeDefinitions } from "../../../../routeDefinitions";
 import { getTranslations } from "next-intl/server";
-import { getRealAmount } from "../../../../utils";
-import buildApiClient from "../../../../../client/index";
-import { PgSessions } from "auth/sessions";
-import notFound from "../../../../not-found";
+import { formatCurrency } from "../../../../utils";
 import { Payments } from "building-blocks-sdk";
+import { PgSessions } from "auth/sessions";
+import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 
 async function getPaymentDetails(
-  paymentId: string,
   userId: string,
-  user: { name: string; email: string },
+  paymentId: string,
   amount?: number,
-  customAmount?: number,
 ) {
   let details;
   try {
@@ -26,92 +23,158 @@ async function getPaymentDetails(
   if (!details) return undefined;
 
   const provider = details.providers.find(
-    (provider) => provider.type === "openbanking",
+    (provider) => provider.type === "banktransfer",
   );
 
   if (!provider) return undefined;
 
-  const realAmount = getRealAmount({
-    amount: details.amount,
-    customAmount,
-    amountOverride: amount,
-    allowAmountOverride: details.allowAmountOverride,
-    allowCustomOverride: details.allowCustomAmount,
-  });
-
-  const paymentDetails = {
+  return {
     ...details,
     providerId: provider.id,
     providerName: provider.name,
     providerData: provider.data,
-    amount: realAmount,
-    user,
-  };
-
-  const paymentRequest = await createPaymentRequest(paymentDetails);
-  return {
-    paymentDetails,
-    paymentRequest,
+    amount: details.allowAmountOverride && amount ? amount : details.amount,
   };
 }
 
-export default async function Bank(props: {
-  params: { locale: string };
+async function confirmPayment(
+  userId: string,
+  transactionId: string,
+  redirectUrl: string,
+) {
+  "use server";
+
+  await new Payments(userId).updateTransaction(transactionId, {
+    status: TransactionStatuses.Pending,
+  });
+
+  redirect(redirectUrl, RedirectType.replace);
+}
+
+async function generatePaymentIntentId(userId: string): Promise<string> {
+  "use server";
+
+  let result;
+
+  try {
+    result = await new Payments(userId).generatePaymentIntentId();
+  } catch (err) {
+    console.log(err);
+  }
+
+  if (!result.data.intentId || result.error) {
+    // Handle edge case when intentId was not possible to generate
+    throw new Error("Payment intentId was not possible to generate.");
+  }
+
+  return result.data.intentId;
+}
+
+export default async function Bank(params: {
   searchParams:
     | {
         paymentId: string;
         integrationRef: string;
         amount?: string;
-        customAmount?: string;
       }
     | undefined;
 }) {
-  const { userId, firstName, lastName, email } = await PgSessions.get();
-  const t = await getTranslations("Common");
-  if (!props.searchParams?.paymentId) {
-    return notFound();
+  const { userId, email, firstName, lastName } = await PgSessions.get();
+  if (!params.searchParams?.paymentId) {
+    redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
   }
 
-  const amount = props.searchParams.amount
-    ? parseFloat(props.searchParams.amount)
-    : undefined;
+  const t = await getTranslations("PayManualBankTransfer");
 
-  const customAmount = props.searchParams.customAmount
-    ? parseFloat(props.searchParams.customAmount)
+  const amount = params.searchParams.amount
+    ? parseFloat(params.searchParams.amount)
     : undefined;
-
-  const details = await getPaymentDetails(
-    props.searchParams.paymentId,
+  const paymentDetails = await getPaymentDetails(
     userId,
-    { email, name: `${firstName} ${lastName}` },
+    params.searchParams.paymentId,
     amount,
-    customAmount,
   );
 
-  if (!details) {
-    return notFound();
+  if (!paymentDetails) {
+    notFound();
   }
 
-  const { paymentDetails, paymentRequest } = details;
+  const paymentIntentId = await generatePaymentIntentId(userId);
 
-  await buildApiClient(userId).transactions.apiV1TransactionsPost({
-    paymentRequestId: props.searchParams.paymentId,
-    extPaymentId: paymentRequest.id,
-    integrationReference: props.searchParams.integrationRef,
-    amount: paymentDetails.amount,
-    paymentProviderId: paymentDetails.providerId,
-    userData: { email, name: `${firstName} ${lastName}` },
-  });
+  const transactionId = (
+    await new Payments(userId).createTransaction({
+      paymentRequestId: params.searchParams.paymentId,
+      extPaymentId: paymentIntentId,
+      integrationReference: params.searchParams.integrationRef,
+      amount: paymentDetails.amount,
+      paymentProviderId: paymentDetails.providerId,
+      userData: { email, name: `${firstName} ${lastName}` },
+    })
+  ).data?.transactionId;
 
-  const returnUri = new URL(
-    `/${props.params.locale}/paymentRequest/complete`,
-    process.env.HOST_URL,
+  const paymentMade = confirmPayment.bind(
+    this,
+    userId,
+    transactionId,
+    paymentDetails.redirectUrl,
   );
+
   return (
-    <OpenBankingHost
-      resourceToken={paymentRequest.resource_token}
-      paymentId={paymentRequest.id}
-      returnUri={returnUri.toString()}
-    />
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        marginTop: "2em",
+      }}
+    >
+      <section style={{ width: "80%" }}>
+        <h1 className="govie-heading-l">{t("title")}</h1>
+        <p className="govie-body">{t("description")}</p>
+        <dl className="govie-summary-list">
+          <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">{t("summary.title")}</dt>
+            <dt className="govie-summary-list__value">
+              {paymentDetails.title}
+            </dt>
+          </div>
+          <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">{t("summary.amount")}</dt>
+            <dt className="govie-summary-list__value">
+              {formatCurrency(paymentDetails.amount)}
+            </dt>
+          </div>
+          <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">
+              {t("summary.accountHolderName")}
+            </dt>
+            <dt className="govie-summary-list__value">
+              {paymentDetails.providerData.accountHolderName}
+            </dt>
+          </div>
+          <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">{t("summary.iban")}</dt>
+            <dt className="govie-summary-list__value">
+              {paymentDetails.providerData.iban}
+            </dt>
+          </div>
+          <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">
+              {t("summary.referenceCode")}*
+            </dt>
+            <dt className="govie-summary-list__value">
+              <b>{paymentIntentId}</b>
+              <br />
+            </dt>
+          </div>
+        </dl>
+        <p className="govie-body">*{t("summary.referenceCodeDescription")}</p>
+        <form action={paymentMade}>
+          <button className="govie-button govie-button--primary">
+            {t("confirmPayment")}
+          </button>
+        </form>
+      </section>
+    </div>
   );
 }

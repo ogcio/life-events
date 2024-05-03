@@ -724,7 +724,13 @@ paths:
                         type:
                           type: string
                         status:
-                          type: string
+                          anyOf:
+                            - type: string
+                              enum:
+                                - connected
+                            - type: string
+                              enum:
+                                - disconnected
                         data: {}
                         createdAt:
                           type: string
