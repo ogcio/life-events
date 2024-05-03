@@ -1,6 +1,7 @@
 import fastify, { FastifyServerOptions } from "fastify";
 import routes from "./routes";
 import fastifyEnv from "@fastify/env";
+import fastifyFormBody from "@fastify/formbody";
 import postgres from "@fastify/postgres";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import dotenv from "dotenv";
@@ -36,6 +37,8 @@ export async function build(opts?: FastifyServerOptions) {
     schema: envSchema,
     dotenv: true,
   });
+
+  app.register(fastifyFormBody);
 
   app.register(fastifySwagger, {
     openapi: {

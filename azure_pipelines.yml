@@ -12,7 +12,7 @@ pr:
 parameters:
   - name: services
     type: object
-    default: ["web", "mock-api", "payments", "messaging", "messaging-api", "payments-api", "profile", "profile-api"]
+    default: ["web", "mock-api", "payments", "messaging", "messaging-api", "payments-api", "profile", "profile-api", "timeline-api"]
 
   - name: envBranches
     type: object
