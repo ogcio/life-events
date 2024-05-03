@@ -16,6 +16,19 @@ import {
 } from "./[...action]/GetDigitalWallet/GetDigitalWallet";
 import styles from "./event.module.scss";
 
+const ChevronIcon = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="13" fill="none">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m0 0 5.753 6.5L0 13h4.247l4.78-5.4L10 6.5l-.974-1.1L4.247 0H0Z"
+        fill="#2C55A2"
+      />
+    </svg>
+  );
+};
+
 const eventRules = (flow: string, hasGovIdVerifiedAccount: boolean) => {
   switch (flow) {
     case workflow.keys.orderEHIC:
@@ -178,7 +191,7 @@ export default async ({ locale }) => {
     });
 
   return (
-    <div className={styles.landingPageSectionsWrapper}>
+    <div className={styles.sectionsWrapper}>
       <section className={styles.section}>
         <div className="govie-heading-l">{t("lifeEvents")}</div>
         <ul className="govie-list">
@@ -236,19 +249,7 @@ export default async ({ locale }) => {
                           : t(evt.flowTitle)
                       }
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="10"
-                        height="13"
-                        fill="none"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="m0 0 5.753 6.5L0 13h4.247l4.78-5.4L10 6.5l-.974-1.1L4.247 0H0Z"
-                          fill="#2C55A2"
-                        />
-                      </svg>
+                      <ChevronIcon />
                     </Link>
                   </div>
                 </div>
@@ -260,27 +261,53 @@ export default async ({ locale }) => {
               <li
                 key={msg.subject}
                 style={{
-                  margin: "1rem",
+                  margin: "1rem 0",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-around",
                   gap: "1rem",
                 }}
               >
-                <Link
-                  className="govie-link"
-                  href={
-                    new URL(
-                      `/${locale}/messages/${msg.id}`,
-                      process.env.MESSAGES_HOST_URL,
-                    ).href
-                  }
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  {msg.subject}
-                </Link>
-                <p className="govie-body" style={{ margin: "unset" }}>
-                  {msg.excerpt}
-                </p>
+                  <div>
+                    <Link
+                      className="govie-link"
+                      href={
+                        new URL(
+                          `/${locale}/messages/${msg.id}`,
+                          process.env.MESSAGES_HOST_URL,
+                        ).href
+                      }
+                    >
+                      {msg.subject}
+                    </Link>
+                    <p
+                      className="govie-body"
+                      style={{ margin: "unset", marginTop: "16px" }}
+                    >
+                      {msg.excerpt}
+                    </p>
+                  </div>
+                  <div>
+                    <Link
+                      className="govie-link"
+                      href={
+                        new URL(
+                          `/${locale}/messages/${msg.id}`,
+                          process.env.MESSAGES_HOST_URL,
+                        ).href
+                      }
+                    >
+                      <ChevronIcon />
+                    </Link>
+                  </div>
+                </div>
                 <hr className="govie-section-break govie-section-break--visible" />
               </li>
             ))}

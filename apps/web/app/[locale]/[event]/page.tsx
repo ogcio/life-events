@@ -45,7 +45,7 @@ export default async (props: web.NextPageProps) => {
             locale={locale}
           />
         </aside>
-        <main>
+        <main style={{ flex: 1 }}>
           <Component locale={locale} />
         </main>
       </div>
