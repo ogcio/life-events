@@ -146,6 +146,11 @@ export const RequestDetails = async ({
           <dt className="govie-summary-list__value">{details.description}</dt>
         </div>
 
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("form.status.title")}</dt>
+          <dt className="govie-summary-list__value">{details.status}</dt>
+        </div>
+
         {details.providers.map(({ name, type, id }) => (
           <div className="govie-summary-list__row" key={id}>
             <dt className="govie-summary-list__key">

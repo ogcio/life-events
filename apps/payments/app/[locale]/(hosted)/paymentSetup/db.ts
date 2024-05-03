@@ -10,6 +10,7 @@ export type PaymentRequestDetails = Pick<
   | "redirectUrl"
   | "allowAmountOverride"
   | "allowCustomAmount"
+  | "status"
 > & {
   providers: {
     name: string;

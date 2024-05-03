@@ -382,6 +382,8 @@ paths:
                       type: number
                     reference:
                       type: string
+                    status:
+                      type: string
                     providers:
                       type: array
                       items:
@@ -414,6 +416,7 @@ paths:
                     - description
                     - amount
                     - reference
+                    - status
                     - providers
     post:
       tags:
@@ -442,6 +445,14 @@ paths:
                   type: array
                   items:
                     type: string
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - active
+                    - type: string
+                      enum:
+                        - inactive
               required:
                 - title
                 - description
@@ -451,6 +462,7 @@ paths:
                 - allowAmountOverride
                 - allowCustomAmount
                 - providers
+                - status
         required: true
       responses:
         "200":
@@ -487,6 +499,14 @@ paths:
                   type: boolean
                 allowCustomAmount:
                   type: boolean
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - active
+                    - type: string
+                      enum:
+                        - inactive
                 paymentRequestId:
                   type: string
                 providersUpdate:
@@ -511,6 +531,7 @@ paths:
                 - redirectUrl
                 - allowAmountOverride
                 - allowCustomAmount
+                - status
                 - paymentRequestId
                 - providersUpdate
         required: true
@@ -554,6 +575,8 @@ paths:
                     type: number
                   reference:
                     type: string
+                  status:
+                    type: string
                   providers:
                     type: array
                     items:
@@ -592,6 +615,7 @@ paths:
                   - description
                   - amount
                   - reference
+                  - status
                   - providers
                   - redirectUrl
                   - allowAmountOverride
@@ -710,6 +734,8 @@ paths:
                     type: number
                   reference:
                     type: string
+                  status:
+                    type: string
                   providers:
                     type: array
                     items:
@@ -748,6 +774,7 @@ paths:
                   - description
                   - amount
                   - reference
+                  - status
                   - providers
                   - redirectUrl
                   - allowAmountOverride

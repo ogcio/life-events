@@ -21,7 +21,7 @@ async function getPaymentDetails(
     console.log(err);
   }
 
-  if (!details) return undefined;
+  if (!details || details?.status === "inactive") return undefined;
 
   const provider = details.providers.find(
     (provider) => provider.type === "stripe",

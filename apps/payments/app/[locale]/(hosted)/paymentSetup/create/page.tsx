@@ -23,6 +23,7 @@ async function createPayment(userId: string, formData: FormData) {
     redirectUrl: formData.get("redirect-url") as string,
     allowAmountOverride: formData.get("allowAmountOverride") === "on",
     allowCustomAmount: formData.get("allowCustomAmount") === "on",
+    status: formData.get("status") as string,
     providers,
   };
 
