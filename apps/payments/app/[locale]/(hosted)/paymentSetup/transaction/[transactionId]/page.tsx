@@ -39,7 +39,11 @@ async function confirmTransaction(transactionId: string) {
   revalidatePath("/");
 }
 
-export default async function ({ params: { transactionId } }) {
+export default async function ({
+  params: { transactionId, locale },
+}: {
+  params: { transactionId: string; locale: string };
+}) {
   const [t, details, tRequest] = await Promise.all([
     getTranslations("PaymentSetup.Request.details"),
     getTransactionDetails(transactionId),
@@ -59,7 +63,9 @@ export default async function ({ params: { transactionId } }) {
       <dl className="govie-summary-list">
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("requestTitle")}</dt>
-          <Link href={`/paymentSetup/requests/${details.paymentRequestId}`}>
+          <Link
+            href={`/${locale}/paymentSetup/requests/${details.paymentRequestId}`}
+          >
             <dt className="govie-summary-list__value">{details.title}</dt>
           </Link>
         </div>
