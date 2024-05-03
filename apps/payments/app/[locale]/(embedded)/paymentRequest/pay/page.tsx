@@ -13,7 +13,6 @@ import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 import Header from "../../../(hosted)/Header";
 import Footer from "../../../(hosted)/Footer";
-import { Fragment } from "react";
 
 type Props = {
   params: {
