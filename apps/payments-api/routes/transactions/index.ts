@@ -329,7 +329,8 @@ export default async function transactions(app: FastifyInstance) {
     },
   );
 
-  // endpoint called by Realex upon payment completion
+  // endpoint called by Realex upon payment completion.
+  // The HTML response received will be rendered by HPP. The redirect is on us
   app.post<{
     Body: RealexHppResponse;
     Reply: string | Error;
