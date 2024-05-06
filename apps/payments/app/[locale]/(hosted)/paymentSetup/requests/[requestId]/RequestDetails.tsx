@@ -5,7 +5,6 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Tooltip from "../../../../../components/Tooltip";
 import CopyLink from "./CopyBtn";
-import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 import Modal from "../../../../../components/Modal";
 import { Payments } from "building-blocks-sdk";
@@ -32,12 +31,9 @@ async function deletePaymentRequest(requestId: string, userId: string) {
 
 async function hasTransactions(requestId: string, userId: string) {
   const transactions = (
-    await buildApiClient(
-      userId,
-    ).transactions.apiV1RequestsRequestIdTransactionsGet(requestId)
+    await new Payments(userId).getPaymentRequestTransactions(requestId)
   ).data;
-
-  return transactions.length > 0;
+  return transactions && transactions.length > 0;
 }
 
 export const RequestDetails = async ({

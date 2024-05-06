@@ -123,6 +123,10 @@ export class Payments {
    * PAYMENT REQUESTS
    */
 
+  async getPaymentRequests() {
+    return formatQueryResult(this.client.GET("/api/v1/requests/"));
+  }
+
   async getPaymentRequest(
     requestId: paths["/api/v1/requests/{requestId}"]["get"]["parameters"]["path"]["requestId"],
   ) {
