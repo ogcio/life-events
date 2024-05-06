@@ -241,9 +241,10 @@
         "paymentProvider": {
           "openbanking": "OpenBanking Account",
           "banktransfer": "Manual Bank Transfer Account",
-          "stripe": "Stripe Account",
-          "worldpay": "Worldpay Account",
-          "realex": "Realex Account"
+          "card": "Card Payment Account",
+          "worldpay": "WorldPay Account",
+          "realex": "Realex Account",
+          "stripe": "Stripe Account"
         },
         "reference": "Reference",
         "amount": "Amount",
@@ -269,11 +270,20 @@
     "title": "Pay your fee",
     "errorNotReady": "This payment form is not enabled yet to recieve any payments.",
     "toPay": "Total to pay",
-    "payByBank": "Pay by bank app",
-    "payByBankDescription": "Make a direct payment securely from your bank app - no card needed",
-    "payByCard": "Credit/Debit card",
-    "payByCardDescription": "Pay securely with your credit or debit card",
-    "payByRealexCardDescription": "Pay securely with your credit or debit card - powered by Realex",
+    "payBy": {
+      "openbanking": {
+        "title": "Pay by bank app",
+        "description": "Make a direct payment securely from your bank app - no card needed"
+      },
+      "card": {
+        "title": "Credit/Debit card",
+        "description": "Pay securely with your credit or debit card"
+      },
+      "banktransfer": {
+        "title": "Manual Bank Transfer",
+        "description": "Make a manual bank transfer"
+      }
+    },
     "payNow": "Pay now",
     "manualBankTransfer": "Manual Bank Transfer",
     "manualBankTransferDescription": "Make a manual bank transfer",
