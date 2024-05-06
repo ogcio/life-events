@@ -33,6 +33,16 @@ export default async ({ userId, flow, flowData }: Props) => {
     redirect("/admin");
   }
 
+  async function rejectAction() {
+    "use server";
+
+    const url = new URL(
+      `${headers().get("x-pathname")}/reject`,
+      process.env.HOST_URL,
+    ).href;
+    redirect(url);
+  }
+
   let proofOfAddressDownloadUrl: string | undefined;
 
   // New link is generated on each render, but expires after 5 minutes. This might not be desirable but there has been no specifications
@@ -121,17 +131,12 @@ export default async ({ userId, flow, flowData }: Props) => {
       >
         <input type="hidden" name="userId" defaultValue={userId} />
         <input type="hidden" name="flow" defaultValue={flow} />
-        <Link
-          className="govie-link"
-          href={
-            new URL(
-              `${headers().get("x-pathname")}/reject`,
-              process.env.HOST_URL,
-            ).href
-          }
+        <button
+          className="govie-button govie-button--tertiary govie-button--medium"
+          formAction={rejectAction}
         >
           {t("reject")}
-        </Link>
+        </button>
         <button type="submit" className="govie-button govie-button--medium">
           {t("approve")}
         </button>

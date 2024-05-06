@@ -7,6 +7,8 @@ import {
   ParamsWithPaymentRequestId,
   PaymentRequest,
   PaymentRequestDetails,
+  ProviderDetails,
+  ProviderStatus,
   Transaction,
 } from "../schemas";
 
@@ -26,17 +28,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               amount: Type.Number(),
               reference: Type.String(),
               status: Type.String(),
-              providers: Type.Array(
-                Type.Object({
-                  userId: Type.String(),
-                  id: Type.String(),
-                  name: Type.String(),
-                  type: Type.String(),
-                  status: Type.String(),
-                  data: Type.Any(),
-                  createdAt: Type.String(),
-                }),
-              ),
+              providers: Type.Array(ProviderDetails),
             }),
           ),
         },
@@ -94,17 +86,7 @@ export default async function paymentRequests(app: FastifyInstance) {
             amount: Type.Number(),
             reference: Type.String(),
             status: Type.String(),
-            providers: Type.Array(
-              Type.Object({
-                userId: Type.String(),
-                id: Type.String(),
-                name: Type.String(),
-                type: Type.String(),
-                status: Type.String(),
-                data: Type.Any(),
-                createdAt: Type.String(),
-              }),
-            ),
+            providers: Type.Array(ProviderDetails),
             redirectUrl: Type.String(),
             allowAmountOverride: Type.Boolean(),
             allowCustomAmount: Type.Boolean(),
@@ -180,17 +162,7 @@ export default async function paymentRequests(app: FastifyInstance) {
             amount: Type.Number(),
             reference: Type.String(),
             status: Type.String(),
-            providers: Type.Array(
-              Type.Object({
-                userId: Type.String(),
-                id: Type.String(),
-                name: Type.String(),
-                type: Type.String(),
-                status: Type.String(),
-                data: Type.Any(),
-                createdAt: Type.String(),
-              }),
-            ),
+            providers: Type.Array(ProviderDetails),
             redirectUrl: Type.String(),
             allowAmountOverride: Type.Boolean(),
             allowCustomAmount: Type.Boolean(),
@@ -385,12 +357,10 @@ export default async function paymentRequests(app: FastifyInstance) {
           );
 
           if (providersUpdate.toDisable.length) {
-            const idsToDisable = providersUpdate.toDisable.join(", ");
-
             await app.pg.query(
               `update payment_requests_providers set enabled = false
-                where payment_request_id = $1 and provider_id in ($2)`,
-              [paymentRequestId, idsToDisable],
+                where payment_request_id = $1 and provider_id = any($2::uuid[])`,
+              [paymentRequestId, providersUpdate.toDisable],
             );
           }
 

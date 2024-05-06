@@ -76,18 +76,6 @@ export default async function Page(props: Props) {
     return <h1 className="govie-heading-l">{t("errorNotReady")}</h1>;
   }
 
-  const hasOpenBanking = details.providers.some(
-    ({ type }) => type === "openbanking",
-  );
-
-  const hasManualBanking = details.providers.some(
-    ({ type }) => type === "banktransfer",
-  );
-
-  const hasStripe = details.providers.some(({ type }) => type === "stripe");
-
-  const hasRealex = details.providers.some(({ type }) => type === "realex");
-
   const allowCustomAmount = details.allowCustomAmount;
 
   const urlAmount = props.searchParams.amount
@@ -181,10 +169,7 @@ export default async function Page(props: Props) {
             messages={messages?.["PayPaymentRequest"] as AbstractIntlMessages}
           >
             <SelectPaymentMethod
-              hasManualBanking={hasManualBanking}
-              hasOpenBanking={hasOpenBanking}
-              hasStripe={hasStripe}
-              hasRealex={hasRealex}
+              providers={details.providers}
               paymentId={props.searchParams.paymentId}
               referenceId={props.searchParams.id}
               urlAmount={urlAmount}

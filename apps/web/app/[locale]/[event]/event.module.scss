@@ -1,0 +1,45 @@
+@import "/app/styles/globals.scss";
+
+.eventContainer {
+  flex: 1;
+  margin-top: 1rem;
+
+  @media ((max-width: $breakpoint-phone)) {
+    margin-top: 0;
+  }
+}
+
+.sectionsWrapper,
+.landingPageSectionsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+  gap: 2.5rem;
+}
+
+.sectionsWrapper {
+  @media ((max-width: $breakpoint-tablet)) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+/* leaving the 2.5rem gap on tablet/mobile unlike .sectionsWrapper
+  above given at the moment the 'my life events' section is always empty
+*/
+.landingPageSectionsWrapper {
+  @media ((max-width: $breakpoint-tablet)) {
+    flex-direction: column;
+  }
+}
+
+.section {
+  margin-bottom: 1rem;
+  flex: 1;
+  min-width: 400px;
+
+  @media ((max-width: $breakpoint-tablet)) {
+    min-width: 100%;
+    margin: 0;
+  }
+}

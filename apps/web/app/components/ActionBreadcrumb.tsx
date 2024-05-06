@@ -23,7 +23,10 @@ export default ({ action, step, homeHref }: Props) => {
       </span>
     );
   return (
-    <div className="govie-breadcrumbs" style={{ marginBottom: "30px" }}>
+    <div
+      className="govie-breadcrumbs"
+      style={{ marginBottom: "30px", marginTop: 0 }}
+    >
       <ol className="govie-breadcrumbs__list">
         <li className="govie-breadcrumbs__list-item">
           <Link className="govie-breadcrumbs__link" href={homeHref ?? "/"}>
