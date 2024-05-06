@@ -3,7 +3,7 @@ import { seedProviders } from "./providers";
 import { createUser } from "./users";
 import { buildPgPool as buildAuthPool } from "auth/sessions";
 import dotenv from "dotenv";
-import { seedPaymentRequest } from "./request";
+import { seedPaymentRequests } from "./request";
 import { TransactionStatuses } from "../../types/TransactionStatuses";
 dotenv.config();
 
@@ -23,7 +23,7 @@ const seed = async () => {
     userId,
   );
 
-  await seedPaymentRequest(pgpool, {
+  await seedPaymentRequests(pgpool, {
     openBankingProviderId: openBanking.rows[0].provider_id,
     manualBankTransferProviderId: manualBankTransfer.rows[0].provider_id,
     stripeProviderId: stripe.data!.id,
