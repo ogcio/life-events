@@ -51,9 +51,7 @@ export default async function realex(app: FastifyInstance) {
 
       const providerSecretsHandler = providerSecretsHandlersFactory("realex");
       const { merchantId, sharedSecret } =
-        providerSecretsHandler.getClearTextData(
-          provider.data,
-        ) as unknown as RealexData;
+        providerSecretsHandler.getClearTextData(provider.data);
 
       const currency = "EUR";
       const url =
@@ -133,7 +131,7 @@ export default async function realex(app: FastifyInstance) {
       const providerSecretsHandler = providerSecretsHandlersFactory("realex");
       const { sharedSecret } = providerSecretsHandler.getClearTextData(
         provider.data,
-      ) as unknown as RealexData;
+      );
 
       const realexService = new RealexService(sharedSecret);
       const isResponseValid = realexService.verifyHash(body);
