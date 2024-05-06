@@ -7,12 +7,10 @@ import { Payments } from "building-blocks-sdk";
 async function createPayment(userId: string, formData: FormData) {
   "use server";
 
-  // Worldpay integration is missing, temporarily ignore it
   const providers: string[] = [
     formData.get("openbanking-account")?.toString(),
     formData.get("banktransfer-account")?.toString(),
-    formData.get("stripe-account")?.toString(),
-    formData.get("realex-account")?.toString(),
+    formData.get("card-account")?.toString(),
   ].filter((provider): provider is string => !!provider);
 
   const paymentRequestId = (

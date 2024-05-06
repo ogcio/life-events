@@ -33,6 +33,6 @@ export type PaymentRequest = {
   allowCustomAmount: boolean;
 };
 
-type ProviderWithUnknownData = {
+export type ProviderWithUnknownData = {
   [K in keyof Provider]: K extends "data" ? unknown : Provider[K];
 };
