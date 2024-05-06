@@ -13,6 +13,7 @@ import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 import Header from "../../../(hosted)/Header";
 import Footer from "../../../(hosted)/Footer";
+import { EmptyStatus } from "../../../../components/EmptyStatus";
 
 type Props = {
   params: {
@@ -108,68 +109,75 @@ export default async function Page(props: Props) {
         alignItems: "center",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          width: "80%",
-        }}
-      >
-        <h1 className="govie-heading-l">{t("title")}</h1>
-        <h2 className="govie-heading-m">
-          {t("toPay")}: {formatCurrency(realAmount)}
-        </h2>
-        {allowCustomAmount && (
-          <div className="govie-form-group">
-            <label htmlFor="customAmount" className="govie-label--s">
-              {t("selectCustomAmount")}
-            </label>
-
-            <form style={{ maxWidth: "500px" }} action={selectAmountAction}>
-              <div style={{ margin: "1em 0px" }}>
-                <div className="govie-input__wrapper">
-                  <div aria-hidden="true" className="govie-input__prefix">
-                    {tCommon("currencySymbol")}
-                  </div>
-                  <input
-                    type="number"
-                    id="customAmount"
-                    name="customAmount"
-                    className="govie-input"
-                    min="0.00"
-                    max="10000.00"
-                    step="0.01"
-                    required
-                    defaultValue={
-                      customAmount && allowCustomAmount
-                        ? customAmount / 100
-                        : undefined
-                    }
-                  />
-                </div>
-              </div>
-              <input
-                type="submit"
-                value={t("changeAmount")}
-                className="govie-button"
-              />
-            </form>
-          </div>
-        )}
-
-        <hr className="govie-section-break govie-section-break--visible"></hr>
-        <NextIntlClientProvider
-          messages={messages?.["PayPaymentRequest"] as AbstractIntlMessages}
+      {details.status === "inactive" ? (
+        <EmptyStatus
+          title={t("paymentInactive.title")}
+          description={t("paymentInactive.description")}
+        />
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "80%",
+          }}
         >
-          <SelectPaymentMethod
-            providers={details.providers}
-            paymentId={props.searchParams.paymentId}
-            referenceId={props.searchParams.id}
-            urlAmount={urlAmount}
-            customAmount={customAmount}
-          />
-        </NextIntlClientProvider>
-      </div>
+          <h1 className="govie-heading-l">{t("title")}</h1>
+          <h2 className="govie-heading-m">
+            {t("toPay")}: {formatCurrency(realAmount)}
+          </h2>
+          {allowCustomAmount && (
+            <div className="govie-form-group">
+              <label htmlFor="customAmount" className="govie-label--s">
+                {t("selectCustomAmount")}
+              </label>
+
+              <form style={{ maxWidth: "500px" }} action={selectAmountAction}>
+                <div style={{ margin: "1em 0px" }}>
+                  <div className="govie-input__wrapper">
+                    <div aria-hidden="true" className="govie-input__prefix">
+                      {tCommon("currencySymbol")}
+                    </div>
+                    <input
+                      type="number"
+                      id="customAmount"
+                      name="customAmount"
+                      className="govie-input"
+                      min="0.00"
+                      max="10000.00"
+                      step="0.01"
+                      required
+                      defaultValue={
+                        customAmount && allowCustomAmount
+                          ? customAmount / 100
+                          : undefined
+                      }
+                    />
+                  </div>
+                </div>
+                <input
+                  type="submit"
+                  value={t("changeAmount")}
+                  className="govie-button"
+                />
+              </form>
+            </div>
+          )}
+
+          <hr className="govie-section-break govie-section-break--visible"></hr>
+          <NextIntlClientProvider
+            messages={messages?.["PayPaymentRequest"] as AbstractIntlMessages}
+          >
+            <SelectPaymentMethod
+              providers={details.providers}
+              paymentId={props.searchParams.paymentId}
+              referenceId={props.searchParams.id}
+              urlAmount={urlAmount}
+              customAmount={customAmount}
+            />
+          </NextIntlClientProvider>
+        </div>
+      )}
     </div>
   );
 

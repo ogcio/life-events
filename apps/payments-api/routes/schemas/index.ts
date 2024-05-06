@@ -174,6 +174,11 @@ export const ProviderDetails = Type.Object({
   createdAt: Type.String(),
 });
 
+export const PaymentRequestStatus = Type.Union([
+  Type.Literal("active"),
+  Type.Literal("inactive"),
+]);
+
 export const PaymentRequest = Type.Object({
   paymentRequestId: Type.String(),
   title: Type.String(),
@@ -181,6 +186,7 @@ export const PaymentRequest = Type.Object({
   amount: Type.Number(),
   reference: Type.String(),
   providers: Type.Array(ProviderDetails),
+  status: PaymentRequestStatus,
 });
 export type PaymentRequest = Static<typeof PaymentRequest>;
 
@@ -203,6 +209,7 @@ export const CreatePaymentRequest = Type.Object({
   allowAmountOverride: Type.Boolean(),
   allowCustomAmount: Type.Boolean(),
   providers: Type.Array(Type.String()),
+  status: PaymentRequestStatus,
 });
 export type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
 
