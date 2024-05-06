@@ -14,6 +14,51 @@ export interface paths {
       };
     };
   };
+  "/api/v1/messages/scheduled-message/{id}": {
+    post: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/v1/messages/scheduled-template/{id}": {
+    post: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/v1/messages/yolo/{id}": {
+    post: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
   "/api/v1/messages/": {
     get: {
       parameters: {
@@ -75,6 +120,8 @@ export interface paths {
             userIds: string[];
             security: string;
             messageType: string;
+            /** Format: date-time */
+            scheduleAt: string;
           };
         };
       };

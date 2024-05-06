@@ -23,6 +23,28 @@ paths:
       responses:
         "200":
           description: Default Response
+  /api/v1/messages/scheduled-message/{id}:
+    post:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/messages/scheduled-template/{id}:
+    post:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Default Response
   /api/v1/messages/:
     get:
       tags:
@@ -150,11 +172,15 @@ paths:
                   type: string
                 messageType:
                   type: string
+                scheduleAt:
+                  format: date-time
+                  type: string
               required:
                 - preferredTransports
                 - userIds
                 - security
                 - messageType
+                - scheduleAt
         required: true
       responses:
         4XX:
