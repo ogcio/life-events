@@ -381,7 +381,13 @@ paths:
                     reference:
                       type: string
                     status:
-                      type: string
+                      anyOf:
+                        - type: string
+                          enum:
+                            - active
+                        - type: string
+                          enum:
+                            - inactive
                     providers:
                       type: array
                       items:
@@ -592,7 +598,13 @@ paths:
                   reference:
                     type: string
                   status:
-                    type: string
+                    anyOf:
+                      - type: string
+                        enum:
+                          - active
+                      - type: string
+                        enum:
+                          - inactive
                   providers:
                     type: array
                     items:

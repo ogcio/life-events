@@ -240,7 +240,7 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
-              status: string;
+              status: "active" | "inactive";
               providers: {
                 userId: string;
                 id: string;
@@ -331,7 +331,7 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
-              status: string;
+              status: "active" | "inactive";
               providers: {
                 userId: string;
                 id: string;

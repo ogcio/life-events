@@ -7,8 +7,8 @@ import {
   ParamsWithPaymentRequestId,
   PaymentRequest,
   PaymentRequestDetails,
+  PaymentRequestStatus,
   ProviderDetails,
-  ProviderStatus,
   Transaction,
 } from "../schemas";
 
@@ -27,7 +27,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               description: Type.String(),
               amount: Type.Number(),
               reference: Type.String(),
-              status: Type.String(),
+              status: PaymentRequestStatus,
               providers: Type.Array(ProviderDetails),
             }),
           ),
@@ -85,7 +85,7 @@ export default async function paymentRequests(app: FastifyInstance) {
             description: Type.String(),
             amount: Type.Number(),
             reference: Type.String(),
-            status: Type.String(),
+            status: PaymentRequestStatus,
             providers: Type.Array(ProviderDetails),
             redirectUrl: Type.String(),
             allowAmountOverride: Type.Boolean(),
