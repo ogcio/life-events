@@ -211,7 +211,7 @@ export interface paths {
         content: {
           "application/json": {
             name: string;
-            data: Record<string, never>;
+            data: unknown;
             status: "connected" | "disconnected";
           };
         };

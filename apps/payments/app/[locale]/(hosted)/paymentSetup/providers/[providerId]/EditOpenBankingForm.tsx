@@ -4,7 +4,7 @@ import EditProviderForm from "./EditProviderForm";
 import type { OpenBankingProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
-import buildApiClient from "../../../../../../client/index";
+import { Payments } from "building-blocks-sdk";
 
 type Props = {
   provider: OpenBankingProvider;
@@ -18,22 +18,14 @@ export default async ({ provider }: Props) => {
 
     const { userId } = await PgSessions.get();
 
-    const providerName = formData.get("provider_name") as string;
-    const iban = formData.get("iban");
-    const accountHolderName = formData.get("account_holder_name");
-    const providerData = {
-      iban,
-      accountHolderName,
-    };
-
-    await buildApiClient(userId).providers.apiV1ProvidersProviderIdPut(
-      provider.id,
-      {
-        name: providerName,
-        data: providerData,
-        status: provider.status,
+    await new Payments(userId).updateProvider(provider.id, {
+      name: formData.get("provider_name") as string,
+      data: {
+        iban: formData.get("iban") as string,
+        accountHolderName: formData.get("account_holder_name") as string,
       },
-    );
+      status: provider.status,
+    });
 
     redirect("./");
   }

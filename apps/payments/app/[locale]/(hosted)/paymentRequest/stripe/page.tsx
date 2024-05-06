@@ -2,7 +2,6 @@ import StripeHost from "./StripeHost";
 import { getMessages, getTranslations } from "next-intl/server";
 import { createPaymentIntent } from "../../../../integration/stripe";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
-import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 import { notFound } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
@@ -74,7 +73,7 @@ export default async function Card(props: {
   const { paymentIntent, providerKeysValid } =
     await createPaymentIntent(paymentDetails);
 
-  await buildApiClient(userId).transactions.apiV1TransactionsPost({
+  await new Payments(userId).createTransaction({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentIntent.id,
     integrationReference: props.searchParams.integrationRef,

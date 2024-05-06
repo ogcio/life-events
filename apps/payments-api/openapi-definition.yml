@@ -324,9 +324,7 @@ paths:
               properties:
                 name:
                   type: string
-                data:
-                  type: object
-                  properties: {}
+                data: {}
                 status:
                   anyOf:
                     - type: string

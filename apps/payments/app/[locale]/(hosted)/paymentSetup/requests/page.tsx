@@ -2,8 +2,8 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
 import { formatCurrency } from "../../../../utils";
-import buildApiClient from "../../../../../client/index";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
+import { Payments } from "building-blocks-sdk";
 
 export default async function ({
   params: { locale },
@@ -15,9 +15,8 @@ export default async function ({
     PgSessions.get(),
   ]);
 
-  const paymentRequests = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsGet()
-  ).data;
+  const paymentRequests =
+    (await new Payments(userId).getPaymentRequests()).data || [];
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
