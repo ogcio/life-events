@@ -45,9 +45,8 @@ export type CommonProvider = {
   id: string;
   name: string;
   userId?: string;
-  status: "connected" | "disconnected";
+  status: string;
   type: string;
-  createdAt: string;
 };
 
 export type StripeProvider = CommonProvider & {
