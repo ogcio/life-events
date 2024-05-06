@@ -22,17 +22,35 @@ export const StripeData = Type.Object({
 });
 export type StripeData = Static<typeof StripeData>;
 
+export const StripeEncryptedData = Type.Object({
+  livePublishableKey: Type.String(),
+  encryptedLiveSecretKey: Type.String(),
+});
+export type StripeEncryptedData = Static<typeof StripeEncryptedData>;
+
 export const WorldpayData = Type.Object({
   merchantCode: Type.String(),
   installationId: Type.String(),
 });
 export type WorldpayData = Static<typeof WorldpayData>;
 
+export const WorldpayEncryptedData = Type.Object({
+  installationId: Type.String(),
+  encryptedMerchantCode: Type.String(),
+});
+export type WorldpayEncryptedData = Static<typeof WorldpayEncryptedData>;
+
 export const RealexData = Type.Object({
   merchantId: Type.String(),
   sharedSecret: Type.String(),
 });
 export type RealexData = Static<typeof RealexData>;
+
+export const RealexEncryptedData = Type.Object({
+  merchantId: Type.String(),
+  encryptedSharedSecret: Type.String(),
+});
+export type RealexEncryptedData = Static<typeof RealexEncryptedData>;
 
 /**
  * Providers types
