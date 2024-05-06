@@ -1,11 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { PaymentRequestDetails } from "./db";
 import { providerTypes } from "./providers/types";
-import buildApiClient from "../../../../client/index";
+import { Payments } from "building-blocks-sdk";
 
 async function getRegisteredAccounts(userId: string) {
-  const providers = (await buildApiClient(userId).providers.apiV1ProvidersGet())
-    .data;
+  const providers = (await new Payments(userId).getProviders()).data;
 
   if (!providers) {
     return new Map();

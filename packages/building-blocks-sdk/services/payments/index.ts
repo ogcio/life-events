@@ -39,6 +39,20 @@ export class Payments {
     return formatQueryResult(this.client.GET("/api/v1/providers/"));
   }
 
+  async getProviderById(
+    providerId: paths["/api/v1/providers/{providerId}"]["get"]["parameters"]["path"]["providerId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/providers/{providerId}", {
+        params: {
+          path: {
+            providerId,
+          },
+        },
+      }),
+    );
+  }
+
   async createBankTransferProvider(
     data: paths["/api/v1/providers/banktransfer"]["post"]["requestBody"]["content"]["application/json"],
   ) {
@@ -119,6 +133,16 @@ export class Payments {
             requestId,
           },
         },
+      }),
+    );
+  }
+
+  async createPaymentRequest(
+    data: paths["/api/v1/requests/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/requests/", {
+        body: data,
       }),
     );
   }
