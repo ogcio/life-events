@@ -30,7 +30,7 @@ const defaultFeatureFlags = {
     enabled: true,
   },
   eventsMenu: {
-    enabled: false,
+    enabled: true,
   },
 };
 

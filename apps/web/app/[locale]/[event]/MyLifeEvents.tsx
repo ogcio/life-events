@@ -9,6 +9,7 @@ import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
 import { Messaging } from "building-blocks-sdk";
+import styles from "./event.module.scss";
 
 const eventRules = {
   [workflow.keys.orderEHIC]: orderEHICRules,
@@ -129,8 +130,8 @@ export default async ({ locale }) => {
   );
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", flex: 1, gap: "2.5rem" }}>
-      <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
+    <div className={styles.landingPageSectionsWrapper}>
+      <section className={styles.section}>
         <div className="govie-heading-l">{t("lifeEvents")}</div>
         <ul className="govie-list">
           {messageEvents?.map((msg) => (
@@ -163,7 +164,7 @@ export default async ({ locale }) => {
           ))}
         </ul>
       </section>
-      <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
+      <section className={styles.section}>
         <div className="govie-heading-l">{t("openEvents")}</div>
         <ul className="govie-list">
           {flow.map((evt) => (
