@@ -3,8 +3,7 @@ import type { Provider } from "../types";
 import type { PropsWithChildren } from "react";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
-import buildApiClient from "../../../../../../client/index";
-
+import { Payments } from "building-blocks-sdk";
 type Props = {
   provider: Provider;
   updateProviderAction: (formData: FormData) => void;
@@ -17,19 +16,16 @@ export default async ({
 }: PropsWithChildren<Props>) => {
   const t = await getTranslations("PaymentSetup.Providers.edit");
 
-  async function setProviderStatus(status: string) {
+  async function setProviderStatus(status: "connected" | "disconnected") {
     "use server";
 
     const { userId } = await PgSessions.get();
 
-    await buildApiClient(userId).providers.apiV1ProvidersProviderIdPut(
-      provider.id,
-      {
-        name: provider.name,
-        data: provider.data,
-        status,
-      },
-    );
+    await new Payments(userId).updateProvider(provider.id, {
+      name: provider.name,
+      data: provider.data,
+      status,
+    });
 
     redirect("./");
   }

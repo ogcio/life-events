@@ -126,7 +126,7 @@ export type ProvidersList = Static<typeof ProvidersList>;
 // TEMPORARILY CREATE NEW TYPE WITHOUT VALIDATIONS.
 export const UpdateProvider = Type.Object({
   name: Type.String(),
-  data: Type.Object({}),
+  data: Type.Any(),
   status: ProviderStatus,
 });
 // export const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
