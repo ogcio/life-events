@@ -3,6 +3,7 @@ import { RedirectType, redirect } from "next/navigation";
 import PaymentSetupForm from "../PaymentSetupForm";
 import { stringToAmount } from "../../../../utils";
 import { Payments } from "building-blocks-sdk";
+import { PaymentRequestStatus } from "../../../../../types/common";
 
 async function createPayment(userId: string, formData: FormData) {
   "use server";
@@ -22,7 +23,7 @@ async function createPayment(userId: string, formData: FormData) {
       redirectUrl: formData.get("redirect-url") as string,
       allowAmountOverride: formData.get("allowAmountOverride") === "on",
       allowCustomAmount: formData.get("allowCustomAmount") === "on",
-      status: formData.get("status") as "active" | "inactive",
+      status: formData.get("status") as PaymentRequestStatus,
       providers,
     })
   ).data?.id;
