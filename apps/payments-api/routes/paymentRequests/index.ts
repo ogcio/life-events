@@ -157,17 +157,7 @@ export default async function paymentRequests(app: FastifyInstance) {
             description: Type.String(),
             amount: Type.Number(),
             reference: Type.String(),
-            providers: Type.Array(
-              Type.Object({
-                userId: Type.String(),
-                id: Type.String(),
-                name: Type.String(),
-                type: Type.String(),
-                status: ProviderStatus,
-                data: Type.Any(),
-                createdAt: Type.String(),
-              }),
-            ),
+            providers: Type.Array(ProviderDetails),
             redirectUrl: Type.String(),
             allowAmountOverride: Type.Boolean(),
             allowCustomAmount: Type.Boolean(),

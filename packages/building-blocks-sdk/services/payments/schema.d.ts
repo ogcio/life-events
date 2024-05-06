@@ -418,7 +418,7 @@ export interface paths {
                 userId: string;
                 id: string;
                 name: string;
-                type: string;
+                type: "banktransfer" | "openbanking" | "stripe" | "realex";
                 status: "connected" | "disconnected";
                 data: unknown;
                 createdAt: string;

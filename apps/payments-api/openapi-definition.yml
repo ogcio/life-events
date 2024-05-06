@@ -758,7 +758,19 @@ paths:
                         name:
                           type: string
                         type:
-                          type: string
+                          anyOf:
+                            - type: string
+                              enum:
+                                - banktransfer
+                            - type: string
+                              enum:
+                                - openbanking
+                            - type: string
+                              enum:
+                                - stripe
+                            - type: string
+                              enum:
+                                - realex
                         status:
                           anyOf:
                             - type: string
