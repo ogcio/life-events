@@ -161,6 +161,30 @@ export class Payments {
     );
   }
 
+  async updatePaymentRequest(
+    data: paths["/api/v1/requests/"]["put"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.PUT("/api/v1/requests/", {
+        body: data,
+      }),
+    );
+  }
+
+  async deletePaymentRequest(
+    requestId: paths["/api/v1/requests/{requestId}"]["delete"]["parameters"]["path"]["requestId"],
+  ) {
+    return formatQueryResult(
+      this.client.DELETE("/api/v1/requests/{requestId}", {
+        params: {
+          path: {
+            requestId,
+          },
+        },
+      }),
+    );
+  }
+
   /**
    * TRANSACTIONS
    */

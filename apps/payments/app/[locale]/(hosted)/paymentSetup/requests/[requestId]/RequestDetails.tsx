@@ -8,6 +8,7 @@ import CopyLink from "./CopyBtn";
 import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 import Modal from "../../../../../components/Modal";
+import { Payments } from "building-blocks-sdk";
 
 async function showDeleteModal() {
   "use server";
@@ -24,9 +25,7 @@ async function closeDeleteModal() {
 async function deletePaymentRequest(requestId: string, userId: string) {
   "use server";
 
-  await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdDelete(
-    requestId,
-  );
+  await new Payments(userId).deletePaymentRequest(requestId);
 
   redirect("/paymentSetup/requests");
 }
