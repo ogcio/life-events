@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import type { Provider } from "../types";
+import type { Provider, ProviderStatus } from "../types";
 import type { PropsWithChildren } from "react";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
@@ -16,7 +16,7 @@ export default async ({
 }: PropsWithChildren<Props>) => {
   const t = await getTranslations("PaymentSetup.Providers.edit");
 
-  async function setProviderStatus(status: "connected" | "disconnected") {
+  async function setProviderStatus(status: ProviderStatus) {
     "use server";
 
     const { userId } = await PgSessions.get();
