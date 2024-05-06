@@ -1,9 +1,35 @@
-import { Provider } from "../routes/schemas";
+import {
+  BankTransferData,
+  OpenBankingData,
+  Provider,
+  RealexData,
+  RealexEncryptedData,
+  StripeData,
+  StripeEncryptedData,
+  WorldpayData,
+  WorldpayEncryptedData,
+} from "../routes/schemas";
 import CryptographyService from "./cryptographyService";
 
 type ProviderType = Provider["type"];
 
-export const providerSecretsHandlersFactory = (type: ProviderType) => {
+export function providerSecretsHandlersFactory(
+  type: "stripe",
+): StripeProviderSecretsHandler;
+export function providerSecretsHandlersFactory(
+  type: "banktransfer",
+): StripeProviderSecretsHandler;
+export function providerSecretsHandlersFactory(
+  type: "openbanking",
+): OpenBankingProviderSecretsHandler;
+export function providerSecretsHandlersFactory(
+  type: "worldpay",
+): WorldpayProviderSecretsHandler;
+export function providerSecretsHandlersFactory(
+  type: "realex",
+): RealexProviderSecretsHandler;
+
+export function providerSecretsHandlersFactory(type: ProviderType) {
   switch (type) {
     case "stripe":
       return new StripeProviderSecretsHandler();
@@ -12,110 +38,124 @@ export const providerSecretsHandlersFactory = (type: ProviderType) => {
     case "openbanking":
       return new OpenBankingProviderSecretsHandler();
     case "worldpay":
-      return new WorldPayProviderSecretsHandler();
+      return new WorldpayProviderSecretsHandler();
     case "realex":
       return new RealexProviderSecretsHandler();
     default:
       throw new Error(`Unsupported provider type: ${type}`);
   }
-};
-interface IProviderSecretsHandler {
-  getCypheredData(data: any): any;
-  getClearTextData(data: any): any;
 }
-class StripeProviderSecretsHandler implements IProviderSecretsHandler {
+
+interface IProviderSecretsHandler<T, U> {
+  getCypheredData(data: T): U;
+  getClearTextData(data: U): T;
+}
+
+class StripeProviderSecretsHandler
+  implements IProviderSecretsHandler<StripeData, StripeEncryptedData>
+{
   private cryptographyService: CryptographyService;
 
   constructor() {
     this.cryptographyService = new CryptographyService();
   }
 
-  getCypheredData(data: any) {
-    const encryptedLiveSecretKey = this.cryptographyService.encrypt(
-      data.liveSecretKey,
+  getCypheredData({
+    livePublishableKey,
+    liveSecretKey,
+  }: StripeData): StripeEncryptedData {
+    const encryptedLiveSecretKey =
+      this.cryptographyService.encrypt(liveSecretKey);
+    return { livePublishableKey, encryptedLiveSecretKey };
+  }
+
+  getClearTextData({
+    livePublishableKey,
+    encryptedLiveSecretKey,
+  }: StripeEncryptedData): StripeData {
+    const liveSecretKey = this.cryptographyService.decrypt(
+      encryptedLiveSecretKey,
     );
-    data.encryptedLiveSecretKey = encryptedLiveSecretKey;
-    delete data.liveSecretKey;
+    return { livePublishableKey, liveSecretKey };
+  }
+}
+
+class BankTransferProviderSecretsHandler
+  implements IProviderSecretsHandler<BankTransferData, BankTransferData>
+{
+  getCypheredData(data: BankTransferData): BankTransferData {
     return data;
   }
 
-  getClearTextData(data: any) {
-    const decryptedSecretKey = this.cryptographyService.decrypt(
-      data.encryptedLiveSecretKey,
-    );
-    data.liveSecretKey = decryptedSecretKey;
-    delete data.encryptedLiveSecretKey;
+  getClearTextData(data: BankTransferData): BankTransferData {
     return data;
   }
 }
 
-class BankTransferProviderSecretsHandler implements IProviderSecretsHandler {
-  getCypheredData(data: any) {
+class OpenBankingProviderSecretsHandler
+  implements IProviderSecretsHandler<OpenBankingData, OpenBankingData>
+{
+  getCypheredData(data: OpenBankingData): OpenBankingData {
     return data;
   }
 
-  getClearTextData(data: any) {
-    return data;
-  }
-}
-
-class OpenBankingProviderSecretsHandler implements IProviderSecretsHandler {
-  getCypheredData(data: any) {
-    return data;
-  }
-
-  getClearTextData(data: any) {
+  getClearTextData(data: OpenBankingData): OpenBankingData {
     return data;
   }
 }
-
-class WorldPayProviderSecretsHandler implements IProviderSecretsHandler {
+class WorldpayProviderSecretsHandler
+  implements IProviderSecretsHandler<WorldpayData, WorldpayEncryptedData>
+{
   private cryptographyService: CryptographyService;
 
   constructor() {
     this.cryptographyService = new CryptographyService();
   }
 
-  getCypheredData(data: any) {
-    const encryptedMerchantCode = this.cryptographyService.encrypt(
-      data.merchantCode,
-    );
-    data.encryptedMerchantCode = encryptedMerchantCode;
-    delete data.merchantCode;
-    return data;
+  getCypheredData({
+    installationId,
+    merchantCode,
+  }: WorldpayData): WorldpayEncryptedData {
+    const encryptedMerchantCode =
+      this.cryptographyService.encrypt(merchantCode);
+    return { installationId, encryptedMerchantCode };
   }
 
-  getClearTextData(data: any) {
-    const decryptedMerchantCode = this.cryptographyService.decrypt(
-      data.encryptedMerchantCode,
+  getClearTextData({
+    installationId,
+    encryptedMerchantCode,
+  }: WorldpayEncryptedData): WorldpayData {
+    const merchantCode = this.cryptographyService.decrypt(
+      encryptedMerchantCode,
     );
-    data.merchantCode = decryptedMerchantCode;
-    delete data.encryptedMerchantCode;
-    return data;
+    return { installationId, merchantCode };
   }
 }
-class RealexProviderSecretsHandler implements IProviderSecretsHandler {
+class RealexProviderSecretsHandler
+  implements IProviderSecretsHandler<RealexData, RealexEncryptedData>
+{
   private cryptographyService: CryptographyService;
 
   constructor() {
     this.cryptographyService = new CryptographyService();
   }
 
-  getCypheredData(data: any) {
-    const encryptedSharedSecret = this.cryptographyService.encrypt(
-      data.sharedSecret,
-    );
-    data.encryptedSharedSecret = encryptedSharedSecret;
-    delete data.sharedSecret;
-    return data;
+  getCypheredData({
+    merchantId,
+    sharedSecret,
+  }: RealexData): RealexEncryptedData {
+    const encryptedSharedSecret =
+      this.cryptographyService.encrypt(sharedSecret);
+    return { encryptedSharedSecret, merchantId };
   }
 
-  getClearTextData(data: any) {
-    const decryptedSecretKey = this.cryptographyService.decrypt(
-      data.encryptedSharedSecret,
+  getClearTextData({
+    merchantId,
+    encryptedSharedSecret,
+  }: RealexEncryptedData): RealexData {
+    const sharedSecret = this.cryptographyService.decrypt(
+      encryptedSharedSecret,
     );
-    data.sharedSecret = decryptedSecretKey;
-    delete data.encryptedSharedSecret;
-    return data;
+    return { sharedSecret, merchantId };
   }
 }
