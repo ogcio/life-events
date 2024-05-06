@@ -50,17 +50,9 @@ export const RequestDetails = async ({
   locale: string;
 }) => {
   const { userId } = await PgSessions.get();
-  let details;
+  const details = (await new Payments(userId).getPaymentRequest(requestId))
+    .data;
 
-  try {
-    details = (
-      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-        requestId,
-      )
-    ).data;
-  } catch (err) {
-    console.log(err);
-  }
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tSetup = await getTranslations("PaymentSetup");
   const tCommon = await getTranslations("Common");

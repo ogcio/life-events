@@ -137,6 +137,20 @@ export class Payments {
     );
   }
 
+  async getPaymentRequestTransactions(
+    requestId: paths["/api/v1/requests/{requestId}/transactions"]["get"]["parameters"]["path"]["requestId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/requests/{requestId}/transactions", {
+        params: {
+          path: {
+            requestId,
+          },
+        },
+      }),
+    );
+  }
+
   async createPaymentRequest(
     data: paths["/api/v1/requests/"]["post"]["requestBody"]["content"]["application/json"],
   ) {
