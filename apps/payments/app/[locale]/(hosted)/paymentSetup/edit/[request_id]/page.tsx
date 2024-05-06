@@ -1,13 +1,12 @@
 import { PgSessions } from "auth/sessions";
 import { notFound, redirect } from "next/navigation";
 import PaymentSetupForm from "../../PaymentSetupForm";
+import { Payments } from "building-blocks-sdk";
 import {
   paymentMethodToProviderType,
   paymentMethods,
   stringToAmount,
 } from "../../../../../utils";
-import buildApiClient from "../../../../../../client/index";
-import { Payments } from "building-blocks-sdk";
 import { ProviderWithUnknownData } from "../../../../../../types/common";
 
 async function editPayment(
@@ -69,24 +68,17 @@ async function editPayment(
     providersUpdate,
   };
 
-  const requestId = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsPut(data)
-  ).data.id;
+  const requestId = (await new Payments(userId).updatePaymentRequest(data)).data
+    ?.id;
 
   redirect(`/paymentSetup/requests/${requestId}`);
 }
 
 export default async function (props: { params: { request_id: string } }) {
   const { userId } = await PgSessions.get();
-  let details;
-
-  try {
-    details = (
-      await new Payments(userId).getPaymentRequest(props.params.request_id)
-    ).data;
-  } catch (err) {
-    console.log(err);
-  }
+  const details = (
+    await new Payments(userId).getPaymentRequest(props.params.request_id)
+  ).data;
 
   if (!details) {
     notFound();

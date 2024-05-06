@@ -5,9 +5,9 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Tooltip from "../../../../../components/Tooltip";
 import CopyLink from "./CopyBtn";
-import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 import Modal from "../../../../../components/Modal";
+import { Payments } from "building-blocks-sdk";
 
 async function showDeleteModal() {
   "use server";
@@ -24,21 +24,16 @@ async function closeDeleteModal() {
 async function deletePaymentRequest(requestId: string, userId: string) {
   "use server";
 
-  await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdDelete(
-    requestId,
-  );
+  await new Payments(userId).deletePaymentRequest(requestId);
 
   redirect("/paymentSetup/requests");
 }
 
 async function hasTransactions(requestId: string, userId: string) {
   const transactions = (
-    await buildApiClient(
-      userId,
-    ).transactions.apiV1RequestsRequestIdTransactionsGet(requestId)
+    await new Payments(userId).getPaymentRequestTransactions(requestId)
   ).data;
-
-  return transactions.length > 0;
+  return transactions && transactions.length > 0;
 }
 
 export const RequestDetails = async ({
@@ -51,17 +46,9 @@ export const RequestDetails = async ({
   locale: string;
 }) => {
   const { userId } = await PgSessions.get();
-  let details;
+  const details = (await new Payments(userId).getPaymentRequest(requestId))
+    .data;
 
-  try {
-    details = (
-      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-        requestId,
-      )
-    ).data;
-  } catch (err) {
-    console.log(err);
-  }
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tSetup = await getTranslations("PaymentSetup");
   const tCommon = await getTranslations("Common");

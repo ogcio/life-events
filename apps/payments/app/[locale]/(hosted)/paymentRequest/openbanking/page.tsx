@@ -2,7 +2,6 @@ import OpenBankingHost from "./OpenBankingHost";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 import { getRealAmount } from "../../../../utils";
-import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 import notFound from "../../../../not-found";
 import { Payments } from "building-blocks-sdk";
@@ -94,7 +93,7 @@ export default async function Bank(props: {
 
   const { paymentDetails, paymentRequest } = details;
 
-  await buildApiClient(userId).transactions.apiV1TransactionsPost({
+  await new Payments(userId).createTransaction({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentRequest.id,
     integrationReference: props.searchParams.integrationRef,
