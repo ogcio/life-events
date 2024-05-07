@@ -27,18 +27,22 @@ WORKDIR /app
 COPY --from=builder /app/package*.json /app/
 
 COPY --from=builder /app/apps/timeline-api/dist /app/apps/timeline-api/dist
-COPY --from=builder /app/apps/timeline-api/package*.json /app/apps/timeline-api/.env /app/apps/timeline-api/
+COPY --from=builder /app/apps/timeline-api/node_modules /app/apps/timeline-api/node_modules
+COPY --from=builder /app/apps/timeline-api/package*.json /app/apps/timeline-api/
 
 COPY --from=builder /app/packages/logging-wrapper/dist /app/packages/logging-wrapper/dist
+COPY --from=builder /app/packages/logging-wrapper/node_modules /app/packages/logging-wrapper/node_modules
 COPY --from=builder /app/packages/logging-wrapper/package.json /app/packages/logging-wrapper/
 
 COPY --from=builder /app/packages/error-handler/dist /app/packages/error-handler/dist
+COPY --from=builder /app/packages/error-handler/node_modules /app/packages/error-handler/node_modules
 COPY --from=builder /app/packages/error-handler/package.json /app/packages/error-handler/
 
 
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
-RUN npm ci
+
+RUN npm prune --omit=dev
 
 
 EXPOSE 8004
