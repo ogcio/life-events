@@ -80,6 +80,7 @@ export default function ({
             name="type"
             type="radio"
             value={type}
+            required
             className="govie-radios__input"
           />
           <label
