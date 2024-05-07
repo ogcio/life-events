@@ -4,7 +4,6 @@ import { createUser } from "./users";
 import { buildPgPool as buildAuthPool } from "auth/sessions";
 import dotenv from "dotenv";
 import { seedPaymentRequests } from "./request";
-import { TransactionStatuses } from "../../types/TransactionStatuses";
 dotenv.config();
 
 const pgpool = new Pool({
@@ -29,13 +28,12 @@ const seed = async () => {
     stripeProviderId: stripe.data!.id,
     realexProviderId: realex.data!.id,
     userId,
-    title: "Test Payment Request",
     description: "Description",
     reference: "1234",
     amount: 1000,
     redirectUrl: "https://www.google.com",
     allowAmountOverride: false,
-    status: TransactionStatuses.Initiated,
+    status: "active",
     allowCustomAmount: false,
   });
 };
