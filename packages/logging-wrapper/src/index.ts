@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyServerOptions } from "fastify";
 import {
   getLoggingConfiguration as fastifyLoggingConfiguration,
   initializeLoggingHooks as fastifyLoggingHooks,
-} from "./src/fastify-logging-wrapper";
+} from "./fastify-logging-wrapper.js";
 import { DestinationStream } from "pino";
 
 export const getLoggingConfiguration = (

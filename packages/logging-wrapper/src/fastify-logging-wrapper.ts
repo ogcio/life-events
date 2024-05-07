@@ -1,6 +1,9 @@
 import { FastifyServerOptions, FastifyInstance } from "fastify";
 import hyperid from "hyperid";
-import { LogMessages, REQUEST_ID_LOG_LABEL } from "./logging-wrapper-entities";
+import {
+  LogMessages,
+  REQUEST_ID_LOG_LABEL,
+} from "./logging-wrapper-entities.js";
 import {
   getLoggerConfiguration,
   getLoggingContextError,
@@ -8,7 +11,7 @@ import {
   parseFullLoggingRequest,
   resetLoggingContext,
   setLoggingContext,
-} from "./logging-wrapper";
+} from "./logging-wrapper.js";
 import { pino, DestinationStream } from "pino";
 
 const hyperidInstance = hyperid({ fixedLength: true, urlSafe: true });
