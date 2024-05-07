@@ -17,14 +17,6 @@ export default (props: Props) => {
   }
   return (
     <>
-      <div className="govie-panel govie-panel--confirmation">
-        <div className="govie-panel__title">{t("panelTitle")}</div>
-        <div className="govie-panel__body">
-          {t("panelReferenceText")}
-          <br />
-          <strong>{t("panelReferenceNumber")}</strong>
-        </div>
-      </div>
       <div className="govie-grid-column-two-thirds-from-desktop">
         <div className="govie-heading-l">{t("title")}</div>
         <p className="govie-body">{t("getDigitalWalletBody")}</p>

@@ -27,29 +27,6 @@ export default async (props: {
 
     const formErrors: form.Error[] = [];
 
-    const firstName = formData.get("firstName")?.toString();
-    formErrors.push(
-      ...form.validation.stringNotEmpty(
-        form.fieldTranslationKeys.firstName,
-        firstName,
-      ),
-    );
-    const lastName = formData.get("lastName")?.toString();
-    formErrors.push(
-      ...form.validation.stringNotEmpty(
-        form.fieldTranslationKeys.lastName,
-        lastName,
-      ),
-    );
-
-    const myGovIdEmail = formData.get("myGovIdEmail")?.toString();
-    formErrors.push(
-      ...form.validation.emailErrors(
-        form.fieldTranslationKeys.myGovIdEmail,
-        myGovIdEmail,
-      ),
-    );
-
     const govIEEmail = formData.get("govIEEmail")?.toString();
     formErrors.push(
       ...form.validation.emailErrors(
@@ -95,17 +72,8 @@ export default async (props: {
 
     const data: Pick<
       workflow.GetDigitalWallet,
-      | "firstName"
-      | "lastName"
-      | "myGovIdEmail"
-      | "govIEEmail"
-      | "lineManagerName"
-      | "jobTitle"
-      | "appStoreEmail"
+      "govIEEmail" | "lineManagerName" | "jobTitle" | "appStoreEmail"
     > = {
-      firstName: "",
-      lastName: "",
-      myGovIdEmail: "",
       govIEEmail: "",
       lineManagerName: "",
       jobTitle: "",
@@ -118,15 +86,9 @@ export default async (props: {
       const [key, value] = iterResult.value;
 
       if (
-        [
-          "firstName",
-          "lastName",
-          "myGovIdEmail",
-          "govIEEmail",
-          "lineManagerName",
-          "jobTitle",
-          "appStoreEmail",
-        ].includes(key)
+        ["govIEEmail", "lineManagerName", "jobTitle", "appStoreEmail"].includes(
+          key,
+        )
       ) {
         data[key] = value;
       }
@@ -175,18 +137,6 @@ export default async (props: {
     return redirect(urlBase);
   }
 
-  const firstNameError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.firstName,
-  );
-
-  const lastNameError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.lastName,
-  );
-
-  const myGovIdEmailError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.myGovIdEmail,
-  );
-
   const govIEEmailError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.govIEEmail,
   );
@@ -206,121 +156,7 @@ export default async (props: {
   return (
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds-from-desktop">
-        <form action={submitAction}>
-          <div
-            className={`govie-form-group ${
-              firstNameError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <h1 className="govie-label-wrapper">
-              <label
-                htmlFor="firstName"
-                className="govie-label--s govie-label--l"
-              >
-                {t.rich("firstName", {
-                  red: (chunks) => <span style={{ color: red }}>{chunks}</span>,
-                })}
-              </label>
-            </h1>
-            {firstNameError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(firstNameError.messageKey, {
-                  field: errorT(`fields.${firstNameError.field}`),
-                  indArticleCheck: "",
-                })}
-              </p>
-            )}
-            <input
-              type="text"
-              id="firstName"
-              name="firstName"
-              className={`govie-input ${
-                firstNameError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={
-                firstNameError ? firstNameError.errorValue : data.firstName
-              }
-            />
-          </div>
-
-          <div
-            className={`govie-form-group ${
-              lastNameError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <h1 className="govie-label-wrapper">
-              <label
-                htmlFor="lastName"
-                className="govie-label--s govie-label--l"
-              >
-                {t.rich("lastName", {
-                  red: (chunks) => <span style={{ color: red }}>{chunks}</span>,
-                })}
-              </label>
-            </h1>
-            {lastNameError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(lastNameError.messageKey, {
-                  field: errorT(`fields.${lastNameError.field}`),
-                  indArticleCheck: "",
-                })}
-              </p>
-            )}
-            <input
-              type="text"
-              id="lastName"
-              name="lastName"
-              className={`govie-input ${
-                lastNameError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={
-                lastNameError ? lastNameError.errorValue : data.lastName
-              }
-            />
-          </div>
-
-          <div
-            className={`govie-form-group ${
-              myGovIdEmailError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <h1 className="govie-label-wrapper">
-              <label htmlFor="email" className="govie-label--s govie-label--l">
-                {t.rich("myGovIdEmail", {
-                  red: (chunks) => <span style={{ color: red }}>{chunks}</span>,
-                })}
-              </label>
-            </h1>
-            {myGovIdEmailError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(myGovIdEmailError.messageKey, {
-                  field: errorT(`fields.${myGovIdEmailError.field}`),
-                  indArticleCheck:
-                    myGovIdEmailError.messageKey ===
-                    form.errorTranslationKeys.empty
-                      ? "an"
-                      : "",
-                })}
-              </p>
-            )}
-            <input
-              type="text"
-              id="myGovIdEmail"
-              name="myGovIdEmail"
-              className={`govie-input ${
-                myGovIdEmailError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={
-                myGovIdEmailError
-                  ? myGovIdEmailError.errorValue
-                  : data.myGovIdEmail
-              }
-            />
-          </div>
-
+        <form action={submitAction} style={{ maxWidth: "590px" }}>
           <div
             className={`govie-form-group ${
               govIEEmailError ? "govie-form-group--error" : ""

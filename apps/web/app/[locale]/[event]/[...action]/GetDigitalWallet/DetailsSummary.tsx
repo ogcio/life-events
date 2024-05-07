@@ -35,16 +35,9 @@ export default (props: {
           <div className="govie-heading-l">{t("title")}</div>
           <p className="govie-body">{t("subTitle")}</p>
           <dl className="govie-summary-list">
+            <ListRow item={{ key: t("firstName"), value: data.firstName }} />
+            <ListRow item={{ key: t("lastName"), value: data.lastName }} />
             <ListRow
-              change={{ key: t("change"), value: changeDetailsHref }}
-              item={{ key: t("firstName"), value: data.firstName }}
-            />
-            <ListRow
-              change={{ key: t("change"), value: changeDetailsHref }}
-              item={{ key: t("lastName"), value: data.lastName }}
-            />
-            <ListRow
-              change={{ key: t("change"), value: changeDetailsHref }}
               item={{
                 key: t("myGovIdEmail"),
                 value: data.myGovIdEmail,

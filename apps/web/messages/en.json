@@ -347,7 +347,7 @@
     },
     "VerifyAccount": {
       "title": "Verify your MyGovId account",
-      "whyVerifyFirstParagraph": "To gain access to all the services available through the Life Events Portal and the Digital Wallet, you need to verify your basic MyGovID account.",
+      "whyVerifyFirstParagraph": "To gain access to all the services available through the Digital Wallet, you need to verify your basic MyGovID account.",
       "whyVerifySecondParagraph": "Please follow <link>this link to the Gov.IE website</link> for instructions on how you can get verified.",
       "whyVerifyThirdParagraph": "We will send you an email with a link to proceed with your Digital Wallet onboarding once you are verified."
     },
@@ -407,7 +407,7 @@
     "applyJobseekersAllowance": "Jobseeker's Allowance",
     "applyJobseekersAllowanceBody": "Someone from the Department of Social Protection will contact you using the details you provided.",
     "date": "Date of application",
-    "getDigitalWalletBody": "Description of what happens next",
+    "getDigitalWalletBody": "Thank you for submitting your application, your request will be reviewed soon.",
     "getDigitalWallet": "Digital wallet"
   },
   "RenewDriversLicence": {

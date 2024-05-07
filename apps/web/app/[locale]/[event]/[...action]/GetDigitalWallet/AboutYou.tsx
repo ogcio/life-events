@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { form, routes, postgres, workflow } from "../../../../utils";
+import { postgres, workflow } from "../../../../utils";
 import ds from "design-system";
 
 export default async (props: {
@@ -12,77 +11,21 @@ export default async (props: {
 }) => {
   const { data, userId, urlBase, flow } = props;
   const t = await getTranslations("GetDigitalWallet.AboutYou");
-  const errorT = await getTranslations("formErrors");
 
   const red = ds.colours.ogcio.red;
-
-  const errors = await form.getErrorsQuery(
-    props.userId,
-    routes.digitalWallet.getDigitalWallet.aboutYou.slug,
-    props.flow,
-  );
 
   async function submitAction(formData: FormData) {
     "use server";
 
-    const formErrors: form.Error[] = [];
-
-    const firstName = formData.get("firstName")?.toString();
-    formErrors.push(
-      ...form.validation.stringNotEmpty(
-        form.fieldTranslationKeys.firstName,
-        firstName,
-      ),
-    );
-    const lastName = formData.get("lastName")?.toString();
-    formErrors.push(
-      ...form.validation.stringNotEmpty(
-        form.fieldTranslationKeys.lastName,
-        lastName,
-      ),
-    );
-
-    const myGovIdEmail = formData.get("myGovIdEmail")?.toString();
-    formErrors.push(
-      ...form.validation.emailErrors(
-        form.fieldTranslationKeys.myGovIdEmail,
-        myGovIdEmail,
-      ),
-    );
-
-    if (formErrors.length) {
-      await form.insertErrors(
-        formErrors,
-        userId,
-        routes.digitalWallet.getDigitalWallet.aboutYou.slug,
-        flow,
-      );
-
-      return revalidatePath("/");
-    }
-
-    const data: Pick<
+    const newData: Pick<
       workflow.GetDigitalWallet,
       "firstName" | "lastName" | "myGovIdEmail" | "hasConfirmedPersonalDetails"
     > = {
-      firstName: "",
-      lastName: "",
-      myGovIdEmail: "",
+      firstName: data.firstName,
+      lastName: data.lastName,
+      myGovIdEmail: data.myGovIdEmail,
       hasConfirmedPersonalDetails: true,
     };
-
-    const formIterator = formData.entries();
-    let iterResult = formIterator.next();
-
-    while (!iterResult.done) {
-      const [key, value] = iterResult.value;
-
-      if (["firstName", "lastName", "myGovIdEmail"].includes(key)) {
-        data[key] = value;
-      }
-
-      iterResult = formIterator.next();
-    }
 
     const currentDataResults = await postgres.pgpool.query<{
       currentData: workflow.GetDigitalWallet;
@@ -97,11 +40,11 @@ export default async (props: {
     let dataToUpdate: workflow.GetDigitalWallet;
     if (currentDataResults.rowCount) {
       const [{ currentData }] = currentDataResults.rows;
-      Object.assign(currentData, data);
+      Object.assign(currentData, newData);
       dataToUpdate = currentData;
     } else {
       const base: workflow.GetDigitalWallet = workflow.emptyGetDigitalWallet();
-      Object.assign(base, data);
+      Object.assign(base, newData);
       dataToUpdate = base;
     }
 
@@ -124,29 +67,13 @@ export default async (props: {
     redirect(urlBase);
   }
 
-  const firstNameError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.firstName,
-  );
-
-  const lastNameError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.lastName,
-  );
-
-  const myGovIdEmailError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.myGovIdEmail,
-  );
-
   return (
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds-from-desktop">
         <h1 className="govie-heading-l">{t("title")}</h1>
         <p className="govie-heading-s">{t("subTitle")}</p>
         <form action={submitAction} style={{ maxWidth: "590px" }}>
-          <div
-            className={`govie-form-group ${
-              firstNameError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
+          <div className="govie-form-group">
             <h1 className="govie-label-wrapper">
               <label
                 htmlFor="firstName"
@@ -157,33 +84,17 @@ export default async (props: {
                 })}
               </label>
             </h1>
-            {firstNameError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(firstNameError.messageKey, {
-                  field: errorT(`fields.${firstNameError.field}`),
-                  indArticleCheck: "",
-                })}
-              </p>
-            )}
             <input
               type="text"
               id="firstName"
               name="firstName"
-              className={`govie-input ${
-                firstNameError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={
-                firstNameError ? firstNameError.errorValue : data.firstName
-              }
+              className="govie-input"
+              defaultValue={data.firstName}
+              disabled
             />
           </div>
 
-          <div
-            className={`govie-form-group ${
-              lastNameError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
+          <div className="govie-form-group">
             <h1 className="govie-label-wrapper">
               <label
                 htmlFor="lastName"
@@ -194,33 +105,17 @@ export default async (props: {
                 })}
               </label>
             </h1>
-            {lastNameError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(lastNameError.messageKey, {
-                  field: errorT(`fields.${lastNameError.field}`),
-                  indArticleCheck: "",
-                })}
-              </p>
-            )}
             <input
               type="text"
               id="lastName"
               name="lastName"
-              className={`govie-input ${
-                lastNameError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={
-                lastNameError ? lastNameError.errorValue : data.lastName
-              }
+              className="govie-input"
+              defaultValue={data.lastName}
+              disabled
             />
           </div>
 
-          <div
-            className={`govie-form-group ${
-              myGovIdEmailError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
+          <div className="govie-form-group">
             <h1 className="govie-label-wrapper">
               <label htmlFor="email" className="govie-label--s govie-label--l">
                 {t.rich("myGovIdEmail", {
@@ -228,31 +123,13 @@ export default async (props: {
                 })}
               </label>
             </h1>
-            {myGovIdEmailError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(myGovIdEmailError.messageKey, {
-                  field: errorT(`fields.${myGovIdEmailError.field}`),
-                  indArticleCheck:
-                    myGovIdEmailError.messageKey ===
-                    form.errorTranslationKeys.empty
-                      ? "an"
-                      : "",
-                })}
-              </p>
-            )}
             <input
               type="text"
               id="myGovIdEmail"
               name="myGovIdEmail"
-              className={`govie-input ${
-                myGovIdEmailError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={
-                myGovIdEmailError
-                  ? myGovIdEmailError.errorValue
-                  : data.myGovIdEmail
-              }
+              className="govie-input"
+              defaultValue={data.myGovIdEmail}
+              disabled
             />
           </div>
 
