@@ -236,7 +236,7 @@
       "title": "Payment Request Setup Form",
       "form": {
         "status": {
-          "title": "Stauts",
+          "title": "Status",
           "header": "Payment Request Status",
           "active": "Active",
           "inactive": "Inactive",

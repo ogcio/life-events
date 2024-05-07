@@ -6,7 +6,6 @@ export const seedPaymentRequests = async (
     manualBankTransferProviderId,
     stripeProviderId,
     realexProviderId,
-    title,
     description,
     reference,
     amount,
