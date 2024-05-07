@@ -2,7 +2,9 @@ import { writeFile } from "fs/promises";
 
 import { build } from "./app";
 
-const app = await build({ logger: true });
+import { getLoggingConfiguration } from "logging-wrapper";
+
+const app = await build(getLoggingConfiguration());
 
 app.listen({ host: "0.0.0.0", port: 8002 }, (err, address) => {
   if (err) {

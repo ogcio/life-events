@@ -235,6 +235,14 @@
     "CreatePayment": {
       "title": "Payment Request Setup Form",
       "form": {
+        "status": {
+          "title": "Stauts",
+          "header": "Payment Request Status",
+          "active": "Active",
+          "inactive": "Inactive",
+          "activeDescription": "This payment request is active and can be used to receive payments.",
+          "inactiveDescription": "This payment request is inactive and cannot be used to receive payments."
+        },
         "title": "Title",
         "description": "Description",
         "beneficiaryAccount": "Beneficiary Account",
@@ -291,7 +299,11 @@
     "changeAmount": "Change amount",
     "name": "Full Name",
     "email": "Email",
-    "addInfo": "Add your information"
+    "addInfo": "Add your information",
+    "paymentInactive": {
+      "title": "The payment request is inactive",
+      "description": "This payment request is currently inactive and cannot be used to receive payments."
+    }
   },
   "PayManualBankTransfer": {
     "title": "Pay with a Manual Bank Transfer",

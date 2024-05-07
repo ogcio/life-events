@@ -240,6 +240,7 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
+              status: "active" | "inactive";
               providers: {
                 userId: string;
                 id: string;
@@ -265,6 +266,7 @@ export interface paths {
             redirectUrl: string;
             allowAmountOverride: boolean;
             allowCustomAmount: boolean;
+            status: "active" | "inactive";
             paymentRequestId: string;
             providersUpdate: {
               toDisable: string[];
@@ -296,6 +298,7 @@ export interface paths {
             allowAmountOverride: boolean;
             allowCustomAmount: boolean;
             providers: string[];
+            status: "active" | "inactive";
           };
         };
       };
@@ -328,6 +331,7 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
+              status: "active" | "inactive";
               providers: {
                 userId: string;
                 id: string;
@@ -414,6 +418,7 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
+              status: string;
               providers: {
                 userId: string;
                 id: string;

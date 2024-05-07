@@ -7,8 +7,8 @@ import {
   ParamsWithPaymentRequestId,
   PaymentRequest,
   PaymentRequestDetails,
+  PaymentRequestStatus,
   ProviderDetails,
-  ProviderStatus,
   Transaction,
 } from "../schemas";
 
@@ -27,6 +27,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               description: Type.String(),
               amount: Type.Number(),
               reference: Type.String(),
+              status: PaymentRequestStatus,
               providers: Type.Array(ProviderDetails),
             }),
           ),
@@ -42,6 +43,7 @@ export default async function paymentRequests(app: FastifyInstance) {
           pr.description,
           pr.amount,
           pr.reference,
+          pr.status,
           CASE 
               WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
                   'userId', pp.user_id,
@@ -83,6 +85,7 @@ export default async function paymentRequests(app: FastifyInstance) {
             description: Type.String(),
             amount: Type.Number(),
             reference: Type.String(),
+            status: PaymentRequestStatus,
             providers: Type.Array(ProviderDetails),
             redirectUrl: Type.String(),
             allowAmountOverride: Type.Boolean(),
@@ -103,6 +106,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               pr.payment_request_id as "paymentRequestId",
               pr.description,
               pr.amount,
+              pr.status,
               CASE 
                 WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
                     'userId', pp.user_id,
@@ -157,6 +161,7 @@ export default async function paymentRequests(app: FastifyInstance) {
             description: Type.String(),
             amount: Type.Number(),
             reference: Type.String(),
+            status: Type.String(),
             providers: Type.Array(ProviderDetails),
             redirectUrl: Type.String(),
             allowAmountOverride: Type.Boolean(),
@@ -176,6 +181,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               pr.payment_request_id as "paymentRequestId",
               pr.description,
               pr.amount,
+              pr.status,
               CASE 
                 WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
                     'userId', pp.user_id,
@@ -238,6 +244,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         allowAmountOverride,
         allowCustomAmount,
         providers,
+        status,
       } = request.body;
 
       try {
@@ -253,7 +260,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               reference,
               amount,
               redirectUrl,
-              "pending",
+              status,
               allowAmountOverride,
               allowCustomAmount,
             ],
@@ -326,13 +333,14 @@ export default async function paymentRequests(app: FastifyInstance) {
         allowCustomAmount,
         paymentRequestId,
         providersUpdate,
+        status,
       } = request.body;
 
       try {
         await app.pg.transact(async (client) => {
           await client.query(
             `update payment_requests 
-              set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 
+              set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 , status = $10
               where payment_request_id = $8 and user_id = $9`,
             [
               title,
@@ -344,6 +352,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               allowCustomAmount,
               paymentRequestId,
               userId,
+              status,
             ],
           );
 

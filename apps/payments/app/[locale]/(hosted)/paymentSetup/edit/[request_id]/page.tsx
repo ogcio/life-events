@@ -7,7 +7,10 @@ import {
   paymentMethods,
   stringToAmount,
 } from "../../../../../utils";
-import { ProviderWithUnknownData } from "../../../../../../types/common";
+import {
+  PaymentRequestStatus,
+  ProviderWithUnknownData,
+} from "../../../../../../types/common";
 
 async function editPayment(
   userId: string,
@@ -64,6 +67,7 @@ async function editPayment(
     redirectUrl: formData.get("redirect-url") as string,
     allowAmountOverride: formData.get("allowAmountOverride") === "on",
     allowCustomAmount: formData.get("allowCustomAmount") === "on",
+    status: formData.get("status") as PaymentRequestStatus,
     paymentRequestId,
     providersUpdate,
   };
