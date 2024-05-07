@@ -25,7 +25,20 @@ services:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh' # ready hook
-
+  scheduler:
+    build: './apps/scheduler-api'
+    ports:
+      - 8004:8004
+    env_file:
+      - './apps/scheduler-api/.env'
+    deploy:
+      replicas: 5
+    healthcheck:
+      test: curl --fail http://localhost/health || exit 1
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
 volumes:
   db:
     driver: local

@@ -12,6 +12,8 @@ COPY ./apps/scheduler-api/ /app/apps/scheduler-api/
 FROM deps AS builder
 WORKDIR /app
 
+RUN apk add curl
+
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
