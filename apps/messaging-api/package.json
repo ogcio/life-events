@@ -15,7 +15,8 @@
       "../../packages/auth/src/**/*",
       "../../packages/feature-flags/src/**/*",
       "../../packages/messages/src/**/*",
-      "./**/*"
+      "../../packages/logging-wrapper/src/**/*",
+      "../../packages/error-handler/src/**/*"
     ],
     "ext": "ts,json",
     "exec": "node --import tsx index.ts"
@@ -40,7 +41,9 @@
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
     "nodemailer": "^6.9.13",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+        "logging-wrapper": "*",
+    "error-handler": "*"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.1",
