@@ -14,6 +14,7 @@ import { PgSessions } from "auth/sessions";
 import Header from "../../../(hosted)/Header";
 import Footer from "../../../(hosted)/Footer";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
+import PreviewBanner from "../../PreviewBanner";
 
 type Props = {
   params: {
@@ -58,7 +59,7 @@ export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return notFound();
 
-  const { userId } = await PgSessions.get();
+  const { userId, publicServant } = await PgSessions.get();
 
   const embed = props.searchParams?.embed === "true";
 
@@ -172,6 +173,7 @@ export default async function Page(props: Props) {
               providers={details.providers}
               paymentId={props.searchParams.paymentId}
               referenceId={props.searchParams.id}
+              isPublicServant={publicServant}
               urlAmount={urlAmount}
               customAmount={customAmount}
             />
@@ -191,6 +193,7 @@ export default async function Page(props: Props) {
           flexDirection: "column",
         }}
       >
+        {publicServant && <PreviewBanner />}
         {content}
       </body>
     );
@@ -215,6 +218,7 @@ export default async function Page(props: Props) {
         className="govie-width-container"
         style={{ maxWidth: "1440px", width: "100%" }}
       >
+        {publicServant && <PreviewBanner />}
         <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
           {content}
         </div>

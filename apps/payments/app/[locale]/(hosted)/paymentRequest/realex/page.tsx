@@ -2,8 +2,8 @@ import RealexHost from "./RealexHost";
 import { getMessages, getTranslations } from "next-intl/server";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { PgSessions } from "auth/sessions";
-import { notFound } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
+import { redirect, RedirectType } from "next/navigation";
 
 async function getPaymentDetails(
   userId: string,
@@ -66,7 +66,13 @@ export default async function CardWithRealex(props: {
       }
     | undefined;
 }) {
-  const { userId, email, firstName, lastName } = await PgSessions.get();
+  const { userId, email, firstName, lastName, publicServant } =
+    await PgSessions.get();
+
+  if (publicServant) {
+    return redirect("/not-found", RedirectType.replace);
+  }
+
   const messages = await getMessages({ locale: props.params.locale });
   const realexMessages =
     (await messages.PayRealex) as unknown as AbstractIntlMessages;
@@ -82,7 +88,7 @@ export default async function CardWithRealex(props: {
     props.searchParams.amount,
   );
 
-  if (!paymentDetails) notFound();
+  if (!paymentDetails) return redirect("/not-found", RedirectType.replace);
 
   const responseUrl = new URL(
     "/api/v1/realex/verifyPaymentResponse",

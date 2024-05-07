@@ -344,5 +344,9 @@
     "back": "Back to My Portal",
     "sorry": "Sorry, there was a problem",
     "tryAgain": "Please return to My Portal and attempt the payment again"
+  },
+  "PreviewBanner": {
+    "tag": "Preview",
+    "bannerText": "This is a preview. Public servants are not allowed to make payments. If you want to proceed with payments, you must be logged in as a citizen."
   }
 }
