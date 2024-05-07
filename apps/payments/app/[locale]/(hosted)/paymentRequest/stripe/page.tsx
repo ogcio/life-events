@@ -3,7 +3,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { createPaymentIntent } from "../../../../integration/stripe";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { PgSessions } from "auth/sessions";
-import { notFound } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
 
 async function getPaymentDetails(
@@ -50,7 +50,13 @@ export default async function Card(props: {
       }
     | undefined;
 }) {
-  const { userId, email, firstName, lastName } = await PgSessions.get();
+  const { userId, email, firstName, lastName, publicServant } =
+    await PgSessions.get();
+
+  if (publicServant) {
+    return redirect("/not-found", RedirectType.replace);
+  }
+
   const messages = await getMessages({ locale: props.params.locale });
   const stripeMessages =
     (await messages.PayStripe) as unknown as AbstractIntlMessages;
@@ -67,7 +73,7 @@ export default async function Card(props: {
   );
 
   if (!paymentDetails) {
-    notFound();
+    return redirect("/not-found", RedirectType.replace);
   }
 
   const { paymentIntent, providerKeysValid } =

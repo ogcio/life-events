@@ -8,6 +8,7 @@ type Props = {
   providers: ProviderWithUnknownData[];
   paymentId: string;
   referenceId: string;
+  isPublicServant: boolean;
   urlAmount?: number;
   customAmount?: number;
 };
@@ -65,6 +66,7 @@ export default function ({
   providers,
   paymentId,
   referenceId,
+  isPublicServant,
   urlAmount,
   customAmount,
 }: Props) {
@@ -81,6 +83,7 @@ export default function ({
             type="radio"
             value={type}
             required
+            disabled={isPublicServant}
             className="govie-radios__input"
           />
           <label
@@ -117,7 +120,10 @@ export default function ({
         </div>
 
         <div className="govie-form-group" style={{ marginTop: "20px" }}>
-          <button className="govie-button govie-button--primary">
+          <button
+            className="govie-button govie-button--primary"
+            disabled={isPublicServant}
+          >
             {t("confirm")}
           </button>
         </div>

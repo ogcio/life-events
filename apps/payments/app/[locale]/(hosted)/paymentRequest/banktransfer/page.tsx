@@ -79,7 +79,13 @@ export default async function Bank(params: {
       }
     | undefined;
 }) {
-  const { userId, email, firstName, lastName } = await PgSessions.get();
+  const { userId, email, firstName, lastName, publicServant } =
+    await PgSessions.get();
+
+  if (publicServant) {
+    return redirect("/not-found", RedirectType.replace);
+  }
+
   if (!params.searchParams?.paymentId) {
     redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
   }
