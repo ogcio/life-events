@@ -6,6 +6,7 @@
   "files": ["dist"],
   "type": "module",
   "scripts": {
+    "dev": "rm -rf dist && tsc -w -p tsconfig.prod.json",
     "test": "TAP_RCFILE=tap.yml tap",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json",
     "lint": "eslint . --ext .ts",

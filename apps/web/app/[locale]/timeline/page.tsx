@@ -29,6 +29,7 @@ export default async (props: web.NextPageProps) => {
     Object.fromEntries(queryParams),
   );
   // HANDLE ERROR
+
   const responseData = timelineResponse.data;
 
   return (
