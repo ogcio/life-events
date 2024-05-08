@@ -1,9 +1,9 @@
 import t from "tap";
 import { Level } from "pino";
-import { getLoggerConfiguration } from "../src/logging-wrapper";
-import { buildLogger } from "./helpers/build-logger";
+import { getLoggerConfiguration } from "../src/logging-wrapper.js";
+import { buildLogger } from "./helpers/build-logger.js";
 import { hostname } from "os";
-import { REDACTED_VALUE } from "../src/logging-wrapper-entities";
+import { REDACTED_VALUE } from "../src/logging-wrapper-entities.js";
 
 const getRandomFieldValue = (): string => Math.random().toString(36).slice(2);
 

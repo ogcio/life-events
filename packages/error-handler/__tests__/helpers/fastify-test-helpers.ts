@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { buildFastify } from "./build-fastify";
+import { buildFastify } from "./build-fastify.js";
 export const DEFAULT_HOSTNAME = "localhost:80";
 export const DEFAULT_USER_AGENT = "lightMyRequest";
 export const DEFAULT_REQUEST_HEADERS = {

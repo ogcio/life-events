@@ -1,13 +1,13 @@
 import { FastifyInstance } from "fastify";
-import { buildFastify } from "./build-fastify";
+import { buildFastify } from "./build-fastify.js";
 import {
   TestingLoggerDestination,
   getTestingDestinationLogger,
-} from "./build-logger";
+} from "./build-logger.js";
 import {
   LogErrorClasses,
   LogMessages,
-} from "../../src/logging-wrapper-entities";
+} from "../../src/logging-wrapper-entities.js";
 import { t } from "tap";
 
 export const DEFAULT_HOSTNAME = "localhost:80";
