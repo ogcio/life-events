@@ -12,11 +12,12 @@ import {
   CreateWorldpayProvider,
   CreateRealexProvider,
   Id,
+  OkResponse,
 } from "../schemas";
 import { providerSecretsHandlersFactory } from "../../services/providersSecretsService";
 
 export default async function providers(app: FastifyInstance) {
-  app.post<{ Body: CreateBankTransferProvider; Reply: { id: string } }>(
+  app.post<{ Body: CreateBankTransferProvider; Reply: Id }>(
     "/banktransfer",
     {
       preValidation: app.verifyUser,
@@ -42,7 +43,7 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.post<{ Body: CreateOpenBankingProvider; Reply: { id: string } }>(
+  app.post<{ Body: CreateOpenBankingProvider; Reply: Id }>(
     "/openbanking",
     {
       preValidation: app.verifyUser,
@@ -68,7 +69,7 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.post<{ Body: CreateStripeProvider; Reply: { id: string } }>(
+  app.post<{ Body: CreateStripeProvider; Reply: Id }>(
     "/stripe",
     {
       preValidation: app.verifyUser,
@@ -97,7 +98,7 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.post<{ Body: CreateWorldpayProvider; Reply: { id: string } }>(
+  app.post<{ Body: CreateWorldpayProvider; Reply: Id }>(
     "/worldpay",
     {
       preValidation: app.verifyUser,
@@ -126,7 +127,7 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.post<{ Body: CreateRealexProvider; Reply: { id: string } }>(
+  app.post<{ Body: CreateRealexProvider; Reply: Id }>(
     "/realex",
     {
       preValidation: app.verifyUser,
@@ -161,19 +162,7 @@ export default async function providers(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
-        response: {
-          200: Type.Array(
-            Type.Union([
-              Type.Object({
-                id: Type.String(),
-                name: Type.String(),
-                type: Type.String(),
-                data: Type.Any(),
-                status: Type.String(),
-              }),
-            ]),
-          ),
-        },
+        response: { 200: ProvidersList },
       },
     },
     async (request, reply) => {
@@ -211,13 +200,7 @@ export default async function providers(app: FastifyInstance) {
       schema: {
         tags: ["Providers"],
         response: {
-          200: Type.Object({
-            id: Type.String(),
-            name: Type.String(),
-            type: Type.String(),
-            data: Type.Any(),
-            status: Type.String(),
-          }),
+          200: Provider,
           400: HttpError,
         },
       },
@@ -260,18 +243,18 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.put<{ Body: UpdateProvider; Params: ParamsWithProviderId }>(
+  app.put<{
+    Body: UpdateProvider;
+    Params: ParamsWithProviderId;
+    Reply: OkResponse;
+  }>(
     "/:providerId",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
         body: UpdateProvider,
-        response: {
-          200: Type.Object({
-            ok: Type.Boolean(),
-          }),
-        },
+        response: { 200: OkResponse },
       },
     },
     async (request, reply) => {

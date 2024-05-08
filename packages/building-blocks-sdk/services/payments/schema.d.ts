@@ -155,13 +155,63 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
-            }[];
+            "application/json": (
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "banktransfer";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "openbanking";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "stripe";
+                  data: {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "worldpay";
+                  data: {
+                    merchantCode: string;
+                    installationId: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "realex";
+                  data: {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+            )[];
           };
         };
       };
@@ -178,13 +228,62 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
-            };
+            "application/json":
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "banktransfer";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "openbanking";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "stripe";
+                  data: {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "worldpay";
+                  data: {
+                    merchantCode: string;
+                    installationId: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "realex";
+                  data: {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
+                  status: "connected" | "disconnected";
+                };
           };
         };
         /** @description Default Response */

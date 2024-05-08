@@ -5,6 +5,11 @@ export const Id = Type.Object({
 });
 export type Id = Static<typeof Id>;
 
+export const OkResponse = Type.Object({
+  ok: Type.Boolean(),
+});
+export type OkResponse = Static<typeof OkResponse>;
+
 /**
  * Provider Data types
  */
