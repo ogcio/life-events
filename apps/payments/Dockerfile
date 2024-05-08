@@ -1,7 +1,6 @@
 FROM base-deps as deps
 
 WORKDIR /app
-ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
 COPY ./package*.json /app/
@@ -20,15 +19,26 @@ COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 
 FROM deps AS builder
 WORKDIR /app
+
+RUN npm run build --workspace=auth
 ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ARG NEXT_PUBLIC_HOST_URL
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_HOST_URL=$NEXT_PUBLIC_HOST_URL
-
 RUN npm run build --workspace=apps/payments
+
+from base-deps as runner
+
+WORKDIR /app
+
+ENV LOG_LEVEL=trace
+ENV NODE_ENV=production
+
+COPY --from=builder /app/apps/payments/.next/standalone ./
+COPY --from=builder /app/apps/payments/.next/static ./apps/web/.next/static
 
 EXPOSE 3001
 
-CMD [ "npm", "--prefix", "apps/payments",  "start" ]
+CMD [ "node", "apps/payments/server.js" ]
