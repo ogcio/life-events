@@ -1203,10 +1203,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  transactionId:
+                  id:
                     type: string
                 required:
-                  - transactionId
+                  - id
         "500":
           description: Default Response
           content:
