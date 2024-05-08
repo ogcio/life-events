@@ -40,4 +40,6 @@ COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
 
 EXPOSE 3000
 
+ENV PORT 3000
+
 CMD [ "node", "apps/web/server.js" ]

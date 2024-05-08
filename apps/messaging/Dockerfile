@@ -40,5 +40,6 @@ COPY --from=builder /app/apps/messaging/.next/standalone ./
 COPY --from=builder /app/apps/messaging/.next/static ./apps/messaging/.next/static
 
 EXPOSE 3002
+ENV PORT 3002
 
 CMD [ "node", "apps/messaging/server.js" ]

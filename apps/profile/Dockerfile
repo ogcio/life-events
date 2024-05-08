@@ -39,4 +39,6 @@ COPY --from=builder /app/apps/profile/.next/static ./apps/profile/.next/static
 
 EXPOSE 3003
 
+ENV PORT 3003
+
 CMD [ "node", "apps/profile/server.js" ]
