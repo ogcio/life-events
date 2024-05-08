@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify";
-import { HttpError } from "../../types/httpErrors";
+import { HttpError } from "../../types/httpErrors.js";
 import {
   Event,
   GetTimelineData,
   TimelineData,
-} from "../../types/schemaDefinitions";
+} from "../../types/schemaDefinitions.js";
 
 const drivingEvent1 = (date: string | number | Date) => ({
   service: "driving",

@@ -2,9 +2,8 @@ import OpenBankingHost from "./OpenBankingHost";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 import { getRealAmount } from "../../../../utils";
-import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
-import notFound from "../../../../not-found";
+import { redirect, RedirectType } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
 
 async function getPaymentDetails(
@@ -23,7 +22,7 @@ async function getPaymentDetails(
     console.log(err);
   }
 
-  if (!details) return undefined;
+  if (!details || details?.status === "inactive") return undefined;
 
   const provider = details.providers.find(
     (provider) => provider.type === "openbanking",
@@ -66,10 +65,12 @@ export default async function Bank(props: {
       }
     | undefined;
 }) {
-  const { userId, firstName, lastName, email } = await PgSessions.get();
+  const { userId, firstName, lastName, email, publicServant } =
+    await PgSessions.get();
   const t = await getTranslations("Common");
-  if (!props.searchParams?.paymentId) {
-    return notFound();
+
+  if (publicServant || !props.searchParams?.paymentId) {
+    return redirect("/not-found", RedirectType.replace);
   }
 
   const amount = props.searchParams.amount
@@ -89,12 +90,12 @@ export default async function Bank(props: {
   );
 
   if (!details) {
-    return notFound();
+    return redirect("/not-found", RedirectType.replace);
   }
 
   const { paymentDetails, paymentRequest } = details;
 
-  await buildApiClient(userId).transactions.apiV1TransactionsPost({
+  await new Payments(userId).createTransaction({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentRequest.id,
     integrationReference: props.searchParams.integrationRef,

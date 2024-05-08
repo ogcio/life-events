@@ -9,8 +9,8 @@ import {
   parseErrorClass,
   setLoggingContext,
   getLoggingContextError,
-} from "logging-wrapper/src/logging-wrapper";
-import { LogMessages } from "logging-wrapper/src/logging-wrapper-entities";
+} from "logging-wrapper/logging-wrapper";
+import { LogMessages } from "logging-wrapper/logging-wrapper-entities";
 
 const buildErrorResponse = (error: FastifyError, request: FastifyRequest) => ({
   code: parseErrorClass(error),

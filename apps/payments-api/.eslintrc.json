@@ -10,6 +10,7 @@
       "sourceType": "module"
     },
     "rules": {
+      "no-redeclare": "off"
     },
     "env": {
       "browser": true,

@@ -1,4 +1,5 @@
 import { TransactionStatuses } from "../types/TransactionStatuses";
+import { ProviderType } from "./[locale]/(hosted)/paymentSetup/providers/types";
 
 export function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-IE", {
@@ -63,4 +64,24 @@ export const mapTransactionStatusColorClassName = (status: string) => {
     default:
       return "";
   }
+};
+
+export const paymentMethods = ["openbanking", "banktransfer", "card"] as const;
+export type PaymentMethod = (typeof paymentMethods)[number];
+
+export const providerTypeToPaymentMethod: Record<ProviderType, PaymentMethod> =
+  {
+    openbanking: "openbanking",
+    banktransfer: "banktransfer",
+    stripe: "card",
+    realex: "card",
+    worldpay: "card",
+  };
+export const paymentMethodToProviderType: Record<
+  PaymentMethod,
+  ProviderType[]
+> = {
+  openbanking: ["openbanking"],
+  banktransfer: ["banktransfer"],
+  card: ["stripe", "realex"],
 };

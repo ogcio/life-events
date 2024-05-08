@@ -3,8 +3,7 @@ import { seedProviders } from "./providers";
 import { createUser } from "./users";
 import { buildPgPool as buildAuthPool } from "auth/sessions";
 import dotenv from "dotenv";
-import { seedPaymentRequest } from "./request";
-import { TransactionStatuses } from "../../types/TransactionStatuses";
+import { seedPaymentRequests } from "./request";
 dotenv.config();
 
 const pgpool = new Pool({
@@ -23,19 +22,18 @@ const seed = async () => {
     userId,
   );
 
-  await seedPaymentRequest(pgpool, {
+  await seedPaymentRequests(pgpool, {
     openBankingProviderId: openBanking.rows[0].provider_id,
     manualBankTransferProviderId: manualBankTransfer.rows[0].provider_id,
     stripeProviderId: stripe.data!.id,
     realexProviderId: realex.data!.id,
     userId,
-    title: "Test Payment Request",
     description: "Description",
     reference: "1234",
     amount: 1000,
     redirectUrl: "https://www.google.com",
     allowAmountOverride: false,
-    status: TransactionStatuses.Initiated,
+    status: "active",
     allowCustomAmount: false,
   });
 };

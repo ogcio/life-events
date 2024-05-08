@@ -10,8 +10,8 @@ import {
   REDACTED_VALUE,
   REDACTED_PATHS,
   MESSAGE_KEY,
-} from "./logging-wrapper-entities";
-import { LogLevel, PinoLoggerOptions } from "fastify/types/logger";
+} from "./logging-wrapper-entities.js";
+import { LogLevel, PinoLoggerOptions } from "fastify/types/logger.js";
 
 const loggingContext: LoggingContext = {};
 const UNHANDLED_EXCEPTION_CODE = "UNHANDLED_EXCEPTION";

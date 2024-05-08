@@ -29,7 +29,6 @@ export default async function realex(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
       const { providerId, amount, intentId } = request.query;
 
       const providerRes = await app.pg.query(
@@ -39,9 +38,8 @@ export default async function realex(app: FastifyInstance) {
             status
           FROM payment_providers
           WHERE provider_id = $1
-          AND user_id = $2
           `,
-        [providerId, userId],
+        [providerId],
       );
 
       const provider = providerRes.rows[0];
@@ -53,9 +51,7 @@ export default async function realex(app: FastifyInstance) {
 
       const providerSecretsHandler = providerSecretsHandlersFactory("realex");
       const { merchantId, sharedSecret } =
-        providerSecretsHandler.getClearTextData(
-          provider.data,
-        ) as unknown as RealexData;
+        providerSecretsHandler.getClearTextData(provider.data);
 
       const currency = "EUR";
       const url =
@@ -135,7 +131,7 @@ export default async function realex(app: FastifyInstance) {
       const providerSecretsHandler = providerSecretsHandlersFactory("realex");
       const { sharedSecret } = providerSecretsHandler.getClearTextData(
         provider.data,
-      ) as unknown as RealexData;
+      );
 
       const realexService = new RealexService(sharedSecret);
       const isResponseValid = realexService.verifyHash(body);

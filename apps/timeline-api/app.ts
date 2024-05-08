@@ -1,18 +1,20 @@
 import fastify, { FastifyServerOptions } from "fastify";
-import routes from "./routes";
+import routes from "./routes/index.js";
 import fastifyEnv from "@fastify/env";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import dotenv from "dotenv";
-import { envSchema } from "./config";
-import authPlugin from "./plugins/auth";
+import { envSchema } from "./config.js";
+import authPlugin from "./plugins/auth.js";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import healthCheck from "./routes/healthcheck";
+import healthCheck from "./routes/healthcheck.js";
 import sensible from "@fastify/sensible";
 import postgres from "@fastify/postgres";
+import { initializeLoggingHooks } from "logging-wrapper";
+import { initializeErrorHandler } from "error-handler";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,6 +23,8 @@ dotenv.config();
 
 export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
+  initializeLoggingHooks(app);
+  initializeErrorHandler(app);
 
   app.register(authPlugin);
   app.register(fastifyEnv, {

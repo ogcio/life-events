@@ -7,6 +7,8 @@ export type NextPageProps = {
   };
 };
 
+export type PaymentRequestStatus = "active" | "inactive";
+
 export type PaymentRequestDO = {
   paymentRequestId: string;
   userId: string;
@@ -15,7 +17,7 @@ export type PaymentRequestDO = {
   provider_id: string;
   reference: string;
   amount: number;
-  status: string;
+  status: PaymentRequestStatus;
   redirectUrl: string;
   allowAmountOverride: boolean;
   allowCustomAmount: boolean;
@@ -33,6 +35,6 @@ export type PaymentRequest = {
   allowCustomAmount: boolean;
 };
 
-type ProviderWithUnknownData = {
+export type ProviderWithUnknownData = {
   [K in keyof Provider]: K extends "data" ? unknown : Provider[K];
 };

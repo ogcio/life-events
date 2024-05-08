@@ -211,7 +211,7 @@ export interface paths {
         content: {
           "application/json": {
             name: string;
-            data: Record<string, never>;
+            data: unknown;
             status: "connected" | "disconnected";
           };
         };
@@ -240,12 +240,13 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
+              status: "active" | "inactive";
               providers: {
                 userId: string;
                 id: string;
                 name: string;
-                type: string;
-                status: string;
+                type: "banktransfer" | "openbanking" | "stripe" | "realex";
+                status: "connected" | "disconnected";
                 data: unknown;
                 createdAt: string;
               }[];
@@ -265,6 +266,7 @@ export interface paths {
             redirectUrl: string;
             allowAmountOverride: boolean;
             allowCustomAmount: boolean;
+            status: "active" | "inactive";
             paymentRequestId: string;
             providersUpdate: {
               toDisable: string[];
@@ -296,6 +298,7 @@ export interface paths {
             allowAmountOverride: boolean;
             allowCustomAmount: boolean;
             providers: string[];
+            status: "active" | "inactive";
           };
         };
       };
@@ -328,12 +331,13 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
+              status: "active" | "inactive";
               providers: {
                 userId: string;
                 id: string;
                 name: string;
-                type: string;
-                status: string;
+                type: "banktransfer" | "openbanking" | "stripe" | "realex";
+                status: "connected" | "disconnected";
                 data: unknown;
                 createdAt: string;
               }[];
@@ -414,12 +418,13 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
+              status: string;
               providers: {
                 userId: string;
                 id: string;
                 name: string;
-                type: string;
-                status: string;
+                type: "banktransfer" | "openbanking" | "stripe" | "realex";
+                status: "connected" | "disconnected";
                 data: unknown;
                 createdAt: string;
               }[];

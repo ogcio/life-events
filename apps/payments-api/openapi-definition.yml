@@ -324,9 +324,7 @@ paths:
               properties:
                 name:
                   type: string
-                data:
-                  type: object
-                  properties: {}
+                data: {}
                 status:
                   anyOf:
                     - type: string
@@ -382,6 +380,14 @@ paths:
                       type: number
                     reference:
                       type: string
+                    status:
+                      anyOf:
+                        - type: string
+                          enum:
+                            - active
+                        - type: string
+                          enum:
+                            - inactive
                     providers:
                       type: array
                       items:
@@ -394,9 +400,27 @@ paths:
                           name:
                             type: string
                           type:
-                            type: string
+                            anyOf:
+                              - type: string
+                                enum:
+                                  - banktransfer
+                              - type: string
+                                enum:
+                                  - openbanking
+                              - type: string
+                                enum:
+                                  - stripe
+                              - type: string
+                                enum:
+                                  - realex
                           status:
-                            type: string
+                            anyOf:
+                              - type: string
+                                enum:
+                                  - connected
+                              - type: string
+                                enum:
+                                  - disconnected
                           data: {}
                           createdAt:
                             type: string
@@ -414,6 +438,7 @@ paths:
                     - description
                     - amount
                     - reference
+                    - status
                     - providers
     post:
       tags:
@@ -442,6 +467,14 @@ paths:
                   type: array
                   items:
                     type: string
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - active
+                    - type: string
+                      enum:
+                        - inactive
               required:
                 - title
                 - description
@@ -451,6 +484,7 @@ paths:
                 - allowAmountOverride
                 - allowCustomAmount
                 - providers
+                - status
         required: true
       responses:
         "200":
@@ -487,6 +521,14 @@ paths:
                   type: boolean
                 allowCustomAmount:
                   type: boolean
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - active
+                    - type: string
+                      enum:
+                        - inactive
                 paymentRequestId:
                   type: string
                 providersUpdate:
@@ -511,6 +553,7 @@ paths:
                 - redirectUrl
                 - allowAmountOverride
                 - allowCustomAmount
+                - status
                 - paymentRequestId
                 - providersUpdate
         required: true
@@ -554,6 +597,14 @@ paths:
                     type: number
                   reference:
                     type: string
+                  status:
+                    anyOf:
+                      - type: string
+                        enum:
+                          - active
+                      - type: string
+                        enum:
+                          - inactive
                   providers:
                     type: array
                     items:
@@ -566,9 +617,27 @@ paths:
                         name:
                           type: string
                         type:
-                          type: string
+                          anyOf:
+                            - type: string
+                              enum:
+                                - banktransfer
+                            - type: string
+                              enum:
+                                - openbanking
+                            - type: string
+                              enum:
+                                - stripe
+                            - type: string
+                              enum:
+                                - realex
                         status:
-                          type: string
+                          anyOf:
+                            - type: string
+                              enum:
+                                - connected
+                            - type: string
+                              enum:
+                                - disconnected
                         data: {}
                         createdAt:
                           type: string
@@ -592,6 +661,7 @@ paths:
                   - description
                   - amount
                   - reference
+                  - status
                   - providers
                   - redirectUrl
                   - allowAmountOverride
@@ -710,6 +780,8 @@ paths:
                     type: number
                   reference:
                     type: string
+                  status:
+                    type: string
                   providers:
                     type: array
                     items:
@@ -722,9 +794,27 @@ paths:
                         name:
                           type: string
                         type:
-                          type: string
+                          anyOf:
+                            - type: string
+                              enum:
+                                - banktransfer
+                            - type: string
+                              enum:
+                                - openbanking
+                            - type: string
+                              enum:
+                                - stripe
+                            - type: string
+                              enum:
+                                - realex
                         status:
-                          type: string
+                          anyOf:
+                            - type: string
+                              enum:
+                                - connected
+                            - type: string
+                              enum:
+                                - disconnected
                         data: {}
                         createdAt:
                           type: string
@@ -748,6 +838,7 @@ paths:
                   - description
                   - amount
                   - reference
+                  - status
                   - providers
                   - redirectUrl
                   - allowAmountOverride
