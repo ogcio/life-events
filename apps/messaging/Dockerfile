@@ -41,4 +41,4 @@ COPY --from=builder /app/apps/messaging/.next/static ./apps/messaging/.next/stat
 
 EXPOSE 3002
 
-CMD [ "npm", "--prefix", "apps/messaging",  "start" ]
+CMD [ "node", "apps/messaging/server.js" ]
