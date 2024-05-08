@@ -226,11 +226,11 @@
       lastName = nameSplit.slice(1).join(" ");
       document.querySelector("input[name='public_servant']").checked =
         user.is_public_servant;
-      document.querySelector("input[name='public_servant']").disabled = true;
+      document.querySelector("input[name='public_servant']").setAttribute('readonly', true);
     } else {
       firstName = faker.person.firstName();
       lastName = faker.person.lastName();
-      document.querySelector("input[name='public_servant']").disabled = false;
+      document.querySelector("input[name='public_servant']").setAttribute('readonly', false);
     }
 
     document.querySelector("#id_token").value = createUnsecuredJwt(
