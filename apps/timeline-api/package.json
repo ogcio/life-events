@@ -2,13 +2,14 @@
   "name": "timeline-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "node --import=tsx --test ./test/*.ts",
-    "start": "node --import tsx index.ts",
+    "start": "node dist/index.js",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
-    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/services/timeline/schema.d.ts"
+    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/services/timeline/schema.d.ts",
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp logo.png dist/"
   },
   "nodemonConfig": {
     "watch": [
@@ -40,8 +41,6 @@
     "dotenv": "^16.4.5",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
-    "logging-wrapper": "*",
-    "error-handler": "*",
     "pg": "^8.11.3"
   },
   "devDependencies": {
@@ -52,11 +51,11 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
+    "openapi-typescript": "^6.7.5",
     "pino-pretty": "^11.0.0",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.2",
-    "openapi-typescript": "^6.7.5"
+    "typescript": "^5.4.2"
   }
 }

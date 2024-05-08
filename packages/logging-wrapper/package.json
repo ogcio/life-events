@@ -3,9 +3,11 @@
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
+    "dev": "rm -rf dist && tsc -w -p tsconfig.prod.json",
     "test": "TAP_RCFILE=tap.yml tap",
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },

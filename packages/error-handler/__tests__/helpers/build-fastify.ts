@@ -1,7 +1,7 @@
 import { FastifyError, createError } from "@fastify/error";
 import { pino, DestinationStream } from "pino";
 import fastify, { FastifyInstance } from "fastify";
-import { initializeErrorHandler } from "../..";
+import { initializeErrorHandler } from "../../src/index.js";
 
 export const buildFastify = (
   loggerDestination?: DestinationStream,
