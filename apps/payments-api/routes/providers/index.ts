@@ -11,6 +11,7 @@ import {
   CreateStripeProvider,
   CreateWorldpayProvider,
   CreateRealexProvider,
+  Id,
 } from "../schemas";
 import { providerSecretsHandlersFactory } from "../../services/providersSecretsService";
 
@@ -22,11 +23,7 @@ export default async function providers(app: FastifyInstance) {
       schema: {
         tags: ["Providers"],
         body: CreateBankTransferProvider,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
@@ -52,11 +49,7 @@ export default async function providers(app: FastifyInstance) {
       schema: {
         tags: ["Providers"],
         body: CreateOpenBankingProvider,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
@@ -82,11 +75,7 @@ export default async function providers(app: FastifyInstance) {
       schema: {
         tags: ["Providers"],
         body: CreateStripeProvider,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
@@ -115,11 +104,7 @@ export default async function providers(app: FastifyInstance) {
       schema: {
         tags: ["Providers"],
         body: CreateWorldpayProvider,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
@@ -148,11 +133,7 @@ export default async function providers(app: FastifyInstance) {
       schema: {
         tags: ["Providers"],
         body: CreateRealexProvider,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
