@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import * as jose from "jose";
-import { cookies } from "next/headers";
-import { redirect, RedirectType } from "next/navigation";
+import { cookies } from "next/headers.js";
+import { redirect, RedirectType } from "next/navigation.js";
 
 type GovIdJwtPayload = {
   surname: string;
