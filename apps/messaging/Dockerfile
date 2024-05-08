@@ -1,7 +1,6 @@
 FROM base-deps as deps
 
 WORKDIR /app
-ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
 COPY ./package*.json /app/
@@ -22,10 +21,23 @@ COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 
 FROM deps AS builder
 WORKDIR /app
+
+RUN npm run build --workspace=auth
+
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
 RUN npm run build --workspace=apps/messaging
+
+from base-deps as runner
+
+WORKDIR /app
+
+ENV LOG_LEVEL=trace
+ENV NODE_ENV=production
+
+COPY --from=builder /app/apps/messaging/.next/standalone ./
+COPY --from=builder /app/apps/messaging/.next/static ./apps/messaging/.next/static
 
 EXPOSE 3002
 
