@@ -4,11 +4,10 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreatePaymentRequest,
   EditPaymentRequest,
+  Id,
   ParamsWithPaymentRequestId,
   PaymentRequest,
   PaymentRequestDetails,
-  PaymentRequestStatus,
-  ProviderDetails,
   Transaction,
 } from "../schemas";
 
@@ -19,19 +18,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: ["PaymentRequests"],
-        response: {
-          200: Type.Array(
-            Type.Object({
-              paymentRequestId: Type.String(),
-              title: Type.String(),
-              description: Type.String(),
-              amount: Type.Number(),
-              reference: Type.String(),
-              status: PaymentRequestStatus,
-              providers: Type.Array(ProviderDetails),
-            }),
-          ),
-        },
+        response: { 200: Type.Array(PaymentRequest) },
       },
     },
     async (request, reply) => {
@@ -79,18 +66,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: ["PaymentRequests"],
         params: ParamsWithPaymentRequestId,
         response: {
-          200: Type.Object({
-            paymentRequestId: Type.String(),
-            title: Type.String(),
-            description: Type.String(),
-            amount: Type.Number(),
-            reference: Type.String(),
-            status: PaymentRequestStatus,
-            providers: Type.Array(ProviderDetails),
-            redirectUrl: Type.String(),
-            allowAmountOverride: Type.Boolean(),
-            allowCustomAmount: Type.Boolean(),
-          }),
+          200: PaymentRequestDetails,
           404: HttpError,
         },
       },
@@ -155,18 +131,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: ["PaymentRequests"],
         params: ParamsWithPaymentRequestId,
         response: {
-          200: Type.Object({
-            paymentRequestId: Type.String(),
-            title: Type.String(),
-            description: Type.String(),
-            amount: Type.Number(),
-            reference: Type.String(),
-            status: Type.String(),
-            providers: Type.Array(ProviderDetails),
-            redirectUrl: Type.String(),
-            allowAmountOverride: Type.Boolean(),
-            allowCustomAmount: Type.Boolean(),
-          }),
+          200: PaymentRequestDetails,
           404: HttpError,
         },
       },
@@ -226,11 +191,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       schema: {
         tags: ["PaymentRequests"],
         body: CreatePaymentRequest,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
@@ -314,11 +275,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       schema: {
         tags: ["PaymentRequests"],
         body: EditPaymentRequest,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {

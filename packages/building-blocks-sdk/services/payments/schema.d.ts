@@ -240,7 +240,6 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
-              status: "active" | "inactive";
               providers: {
                 userId: string;
                 id: string;
@@ -250,6 +249,7 @@ export interface paths {
                 data: unknown;
                 createdAt: string;
               }[];
+              status: "active" | "inactive";
             }[];
           };
         };
@@ -331,7 +331,6 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
-              status: "active" | "inactive";
               providers: {
                 userId: string;
                 id: string;
@@ -341,6 +340,7 @@ export interface paths {
                 data: unknown;
                 createdAt: string;
               }[];
+              status: "active" | "inactive";
               redirectUrl: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;
@@ -418,7 +418,6 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
-              status: string;
               providers: {
                 userId: string;
                 id: string;
@@ -428,6 +427,7 @@ export interface paths {
                 data: unknown;
                 createdAt: string;
               }[];
+              status: "active" | "inactive";
               redirectUrl: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;

@@ -380,14 +380,6 @@ paths:
                       type: number
                     reference:
                       type: string
-                    status:
-                      anyOf:
-                        - type: string
-                          enum:
-                            - active
-                        - type: string
-                          enum:
-                            - inactive
                     providers:
                       type: array
                       items:
@@ -432,14 +424,22 @@ paths:
                           - status
                           - data
                           - createdAt
+                    status:
+                      anyOf:
+                        - type: string
+                          enum:
+                            - active
+                        - type: string
+                          enum:
+                            - inactive
                   required:
                     - paymentRequestId
                     - title
                     - description
                     - amount
                     - reference
-                    - status
                     - providers
+                    - status
     post:
       tags:
         - PaymentRequests
@@ -597,14 +597,6 @@ paths:
                     type: number
                   reference:
                     type: string
-                  status:
-                    anyOf:
-                      - type: string
-                        enum:
-                          - active
-                      - type: string
-                        enum:
-                          - inactive
                   providers:
                     type: array
                     items:
@@ -649,6 +641,14 @@ paths:
                         - status
                         - data
                         - createdAt
+                  status:
+                    anyOf:
+                      - type: string
+                        enum:
+                          - active
+                      - type: string
+                        enum:
+                          - inactive
                   redirectUrl:
                     type: string
                   allowAmountOverride:
@@ -661,8 +661,8 @@ paths:
                   - description
                   - amount
                   - reference
-                  - status
                   - providers
+                  - status
                   - redirectUrl
                   - allowAmountOverride
                   - allowCustomAmount
@@ -780,8 +780,6 @@ paths:
                     type: number
                   reference:
                     type: string
-                  status:
-                    type: string
                   providers:
                     type: array
                     items:
@@ -826,6 +824,14 @@ paths:
                         - status
                         - data
                         - createdAt
+                  status:
+                    anyOf:
+                      - type: string
+                        enum:
+                          - active
+                      - type: string
+                        enum:
+                          - inactive
                   redirectUrl:
                     type: string
                   allowAmountOverride:
@@ -838,8 +844,8 @@ paths:
                   - description
                   - amount
                   - reference
-                  - status
                   - providers
+                  - status
                   - redirectUrl
                   - allowAmountOverride
                   - allowCustomAmount
