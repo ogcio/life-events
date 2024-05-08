@@ -184,7 +184,7 @@ export default async function paymentRequests(app: FastifyInstance) {
     },
   );
 
-  app.post<{ Body: CreatePaymentRequest; Reply: { id: string } | Error }>(
+  app.post<{ Body: CreatePaymentRequest; Reply: Id | Error }>(
     "/",
     {
       preValidation: app.verifyUser,
@@ -268,7 +268,7 @@ export default async function paymentRequests(app: FastifyInstance) {
     },
   );
 
-  app.put<{ Body: EditPaymentRequest; Reply: { id: string } | Error }>(
+  app.put<{ Body: EditPaymentRequest; Reply: Id | Error }>(
     "/",
     {
       preValidation: app.verifyUser,

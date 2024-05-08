@@ -146,7 +146,7 @@ export default async function transactions(app: FastifyInstance) {
 
   app.post<{
     Body: CreateTransactionBody;
-    Reply: { transactionId: string } | Error;
+    Reply: Id | Error;
   }>(
     "/",
     {
@@ -196,7 +196,7 @@ export default async function transactions(app: FastifyInstance) {
         );
       }
 
-      reply.send({ transactionId: result.rows[0].transactionId });
+      reply.send({ id: result.rows[0].transactionId });
     },
   );
 
