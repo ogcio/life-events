@@ -33,7 +33,7 @@ export default ({ searchParams }: Pick<web.NextPageProps, "searchParams">) => {
     searchParams?.status === "pending" ||
     Boolean(!Object.keys(searchParams ?? {}).length);
   const isApproved = searchParams?.status === "approved";
-  const isClosed = searchParams?.status === "closed";
+  const isRejected = searchParams?.status === "rejected";
 
   return (
     <nav style={{ display: "flex", width: "fit-content", gap: "15px" }}>
@@ -64,12 +64,12 @@ export default ({ searchParams }: Pick<web.NextPageProps, "searchParams">) => {
         </Link>
       </div>
 
-      <div style={linkStyle(isClosed)}>
+      <div style={linkStyle(isRejected)}>
         <Link
-          href={"?" + new URLSearchParams({ status: "closed" }).toString()}
-          className={linkClassName(isClosed)}
+          href={"?" + new URLSearchParams({ status: "rejected" }).toString()}
+          className={linkClassName(isRejected)}
         >
-          {t("closed")}
+          {t("rejected")}
         </Link>
       </div>
     </nav>
