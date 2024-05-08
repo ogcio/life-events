@@ -23,6 +23,7 @@ FROM deps AS builder
 
 WORKDIR /app
 
+RUN npm run build --workspace=auth
 ARG NEXT_PUBLIC_API_ENDPOINT
 ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
 RUN npm run build --workspace=apps/web
