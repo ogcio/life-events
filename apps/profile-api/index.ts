@@ -1,7 +1,7 @@
 import { writeFile } from "fs/promises";
 
 import { build } from "./app";
-import { getLoggingConfiguration } from "logging-wrapper/src/fastify-logging-wrapper";
+import { getLoggingConfiguration } from "logging-wrapper";
 
 const app = await build(getLoggingConfiguration());
 
