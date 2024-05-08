@@ -20,6 +20,8 @@ COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 
 FROM deps AS builder
 WORKDIR /app
+
+RUN npm run build --workspace=auth
 ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ARG NEXT_PUBLIC_HOST_URL
 ENV NODE_ENV=production

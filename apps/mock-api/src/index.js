@@ -68,12 +68,12 @@ fastify.register(autoload, {
   },
 });
 
-fastify.register(autoload, {
-  dir: path.join(__dirname, "routes"),
-  options: {
-    prefix: "/api",
-  },
-});
+// fastify.register(autoload, {
+//   dir: path.join(__dirname, "routes"),
+//   options: {
+//     prefix: "/api",
+//   },
+// });
 
 await fastify.register(cors, {
   origin: fastify.config.ORIGIN_URL,
