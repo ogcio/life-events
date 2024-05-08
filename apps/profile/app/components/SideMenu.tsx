@@ -1,5 +1,6 @@
 import { PgSessions } from "auth/sessions";
 import ds from "design-system";
+import styles from "./SideMenu.module.scss";
 
 export default async () => {
   const { firstName, lastName } = await PgSessions.get();
@@ -7,15 +8,7 @@ export default async () => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
   return (
     <>
-      <ol
-        className="govie-list govie-list--spaced"
-        style={{
-          width: "200px",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+      <ol className={`govie-list govie-list--spaced ${styles.sideMenu}`}>
         <li
           key="userinfo"
           style={{

@@ -3,8 +3,6 @@ export const revalidate = 0;
 import MyLifeEvents from "./MyLifeEvents";
 import AboutMe from "./AboutMe";
 
-import { PgSessions } from "auth/sessions";
-
 import { routes, web } from "../../utils";
 import { notFound } from "next/navigation";
 import Birth from "./Birth";
