@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
 import {
   ParamsWithProviderId,
