@@ -1,6 +1,6 @@
-import { cookies } from "next/headers";
-import { decodeJwt, pgpool, PgSessions } from "./sessions";
-import { redirect, RedirectType } from "next/navigation";
+import { cookies } from "next/headers.js";
+import { decodeJwt, pgpool, PgSessions } from "./sessions.js";
+import { redirect, RedirectType } from "next/navigation.js";
 
 enum SAME_SITE_VALUES {
   LAX = "lax",

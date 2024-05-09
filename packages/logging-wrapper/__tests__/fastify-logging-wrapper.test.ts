@@ -1,4 +1,4 @@
-import { LogMessages } from "../src/logging-wrapper-entities";
+import { LogMessages } from "../src/logging-wrapper-entities.js";
 import { t } from "tap";
 import {
   initializeServer,
@@ -8,7 +8,7 @@ import {
   checkExpectedResponseEntry,
   parseLogEntry,
   checkGenericEntryFields,
-} from "./helpers/fastify-test-helpers";
+} from "./helpers/fastify-test-helpers.js";
 
 t.test(
   "Logging entries when all works fine are the expected ones",

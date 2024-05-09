@@ -20,7 +20,7 @@ async function getPaymentDetails(
     console.log(err);
   }
 
-  if (!details) return undefined;
+  if (!details || details?.status === "inactive") return undefined;
 
   const provider = details.providers.find(
     (provider) => provider.type === "banktransfer",
@@ -79,7 +79,13 @@ export default async function Bank(params: {
       }
     | undefined;
 }) {
-  const { userId, email, firstName, lastName } = await PgSessions.get();
+  const { userId, email, firstName, lastName, publicServant } =
+    await PgSessions.get();
+
+  if (publicServant) {
+    return redirect("/not-found", RedirectType.replace);
+  }
+
   if (!params.searchParams?.paymentId) {
     redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
   }
@@ -110,7 +116,7 @@ export default async function Bank(params: {
       paymentProviderId: paymentDetails.providerId,
       userData: { email, name: `${firstName} ${lastName}` },
     })
-  ).data?.transactionId;
+  ).data?.id;
 
   const paymentMade = confirmPayment.bind(
     this,

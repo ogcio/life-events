@@ -15,6 +15,8 @@
       "../../packages/auth/src/**/*",
       "../../packages/feature-flags/src/**/*",
       "../../packages/messages/src/**/*",
+      "../../packages/logging-wrapper/src/**/*",
+      "../../packages/error-handler/src/**/*",
       "./**/*"
     ],
     "ext": "ts,json",
@@ -38,7 +40,9 @@
     "dotenv": "^16.4.5",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "error-handler": "*",
+    "logging-wrapper": "*"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.1",

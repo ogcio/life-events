@@ -1,5 +1,15 @@
 import { Static, Type } from "@sinclair/typebox";
 
+export const Id = Type.Object({
+  id: Type.String(),
+});
+export type Id = Static<typeof Id>;
+
+export const OkResponse = Type.Object({
+  ok: Type.Boolean(),
+});
+export type OkResponse = Static<typeof OkResponse>;
+
 /**
  * Provider Data types
  */
@@ -22,11 +32,23 @@ export const StripeData = Type.Object({
 });
 export type StripeData = Static<typeof StripeData>;
 
+export const StripeEncryptedData = Type.Object({
+  livePublishableKey: Type.String(),
+  encryptedLiveSecretKey: Type.String(),
+});
+export type StripeEncryptedData = Static<typeof StripeEncryptedData>;
+
 export const WorldpayData = Type.Object({
   merchantCode: Type.String(),
   installationId: Type.String(),
 });
 export type WorldpayData = Static<typeof WorldpayData>;
+
+export const WorldpayEncryptedData = Type.Object({
+  installationId: Type.String(),
+  encryptedMerchantCode: Type.String(),
+});
+export type WorldpayEncryptedData = Static<typeof WorldpayEncryptedData>;
 
 export const RealexData = Type.Object({
   merchantId: Type.String(),
@@ -34,16 +56,27 @@ export const RealexData = Type.Object({
 });
 export type RealexData = Static<typeof RealexData>;
 
+export const RealexEncryptedData = Type.Object({
+  merchantId: Type.String(),
+  encryptedSharedSecret: Type.String(),
+});
+export type RealexEncryptedData = Static<typeof RealexEncryptedData>;
+
 /**
  * Providers types
  */
+export const ProviderStatus = Type.Union([
+  Type.Literal("connected"),
+  Type.Literal("disconnected"),
+]);
+export type ProviderStatus = Static<typeof ProviderStatus>;
 
 export const BankTransferProvider = Type.Object({
   id: Type.String(),
   name: Type.String(),
   type: Type.Literal("banktransfer"),
   data: BankTransferData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
 });
 
 export const OpenBankingProvider = Type.Object({
@@ -51,7 +84,7 @@ export const OpenBankingProvider = Type.Object({
   name: Type.String(),
   type: Type.Literal("openbanking"),
   data: OpenBankingData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
 });
 
 export const StripeProvider = Type.Object({
@@ -59,7 +92,7 @@ export const StripeProvider = Type.Object({
   name: Type.String(),
   type: Type.Literal("stripe"),
   data: StripeData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
 });
 
 export const WorldpayProvider = Type.Object({
@@ -67,7 +100,7 @@ export const WorldpayProvider = Type.Object({
   name: Type.String(),
   type: Type.Literal("worldpay"),
   data: WorldpayData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
 });
 
 export const RealexProvider = Type.Object({
@@ -75,7 +108,7 @@ export const RealexProvider = Type.Object({
   name: Type.String(),
   type: Type.Literal("realex"),
   data: RealexData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
 });
 
 export const Provider = Type.Union([
@@ -121,8 +154,8 @@ export type ProvidersList = Static<typeof ProvidersList>;
 // TEMPORARILY CREATE NEW TYPE WITHOUT VALIDATIONS.
 export const UpdateProvider = Type.Object({
   name: Type.String(),
-  data: Type.Object({}),
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  data: Type.Any(),
+  status: ProviderStatus,
 });
 // export const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
 export type UpdateProvider = Static<typeof UpdateProvider>;
@@ -144,11 +177,17 @@ export const ProviderDetails = Type.Object({
     Type.Literal("banktransfer"),
     Type.Literal("openbanking"),
     Type.Literal("stripe"),
+    Type.Literal("realex"),
   ]),
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+  status: ProviderStatus,
   data: Type.Any(),
   createdAt: Type.String(),
 });
+
+export const PaymentRequestStatus = Type.Union([
+  Type.Literal("active"),
+  Type.Literal("inactive"),
+]);
 
 export const PaymentRequest = Type.Object({
   paymentRequestId: Type.String(),
@@ -157,6 +196,7 @@ export const PaymentRequest = Type.Object({
   amount: Type.Number(),
   reference: Type.String(),
   providers: Type.Array(ProviderDetails),
+  status: PaymentRequestStatus,
 });
 export type PaymentRequest = Static<typeof PaymentRequest>;
 
@@ -179,6 +219,7 @@ export const CreatePaymentRequest = Type.Object({
   allowAmountOverride: Type.Boolean(),
   allowCustomAmount: Type.Boolean(),
   providers: Type.Array(Type.String()),
+  status: PaymentRequestStatus,
 });
 export type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
 

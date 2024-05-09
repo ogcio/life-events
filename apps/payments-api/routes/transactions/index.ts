@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreateTransactionBody,
+  Id,
   ParamsWithTransactionId,
   PaymentIntentId,
   TransactionDetails,
@@ -145,7 +146,7 @@ export default async function transactions(app: FastifyInstance) {
 
   app.post<{
     Body: CreateTransactionBody;
-    Reply: { transactionId: string } | Error;
+    Reply: Id | Error;
   }>(
     "/",
     {
@@ -154,9 +155,7 @@ export default async function transactions(app: FastifyInstance) {
         tags: ["Transactions"],
         body: CreateTransactionBody,
         response: {
-          200: Type.Object({
-            transactionId: Type.String(),
-          }),
+          200: Id,
           500: HttpError,
         },
       },
@@ -197,7 +196,7 @@ export default async function transactions(app: FastifyInstance) {
         );
       }
 
-      reply.send({ transactionId: result.rows[0].transactionId });
+      reply.send({ id: result.rows[0].transactionId });
     },
   );
 
