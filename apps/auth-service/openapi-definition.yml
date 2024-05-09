@@ -1,0 +1,160 @@
+openapi: 3.0.3
+info:
+  title: OGCIO AuthService
+  description: API for OGCIO AuthService
+  version: 0.1.0
+components:
+  schemas: {}
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /auth/:
+    get:
+      tags:
+        - Auth
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: redirectUrl
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+  /auth/auth:
+    post:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                public_servant:
+                  type: string
+                id_token:
+                  type: string
+                password:
+                  type: string
+              required:
+                - id_token
+                - password
+        required: true
+      responses:
+        "302":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  headers:
+                    location:
+                      type: string
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+  /auth/logout:
+    get:
+      tags:
+        - Auth
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: redirectUrl
+          required: false
+      responses:
+        "302":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  headers:
+                    location:
+                      type: string
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+  /auth/users:
+    get:
+      tags:
+        - Auth
+      responses:
+        "200":
+          description: Default Response
+tags:
+  - name: AuthService
