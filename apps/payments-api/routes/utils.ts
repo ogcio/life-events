@@ -33,4 +33,7 @@ export const handleDbError = (err: unknown, dbConstrainMap: DbConstrainMap) => {
 
     throw error;
   }
+
+  // Fallback to original error
+  throw err;
 };
