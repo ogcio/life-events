@@ -1,4 +1,3 @@
-import { FastifyBaseLogger } from "fastify";
 import {
   getValidationError,
   getValidationPayload,
