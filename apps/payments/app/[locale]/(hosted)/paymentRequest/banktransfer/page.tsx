@@ -116,7 +116,7 @@ export default async function Bank(params: {
       paymentProviderId: paymentDetails.providerId,
       userData: { email, name: `${firstName} ${lastName}` },
     })
-  ).data?.transactionId;
+  ).data?.id;
 
   const paymentMade = confirmPayment.bind(
     this,

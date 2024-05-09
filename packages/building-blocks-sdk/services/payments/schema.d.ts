@@ -155,13 +155,63 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
-            }[];
+            "application/json": (
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "banktransfer";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "openbanking";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "stripe";
+                  data: {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "worldpay";
+                  data: {
+                    merchantCode: string;
+                    installationId: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "realex";
+                  data: {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+            )[];
           };
         };
       };
@@ -178,13 +228,62 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
-            };
+            "application/json":
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "banktransfer";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "openbanking";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "stripe";
+                  data: {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "worldpay";
+                  data: {
+                    merchantCode: string;
+                    installationId: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "realex";
+                  data: {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
+                  status: "connected" | "disconnected";
+                };
           };
         };
         /** @description Default Response */
@@ -240,7 +339,6 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
-              status: "active" | "inactive";
               providers: {
                 userId: string;
                 id: string;
@@ -250,6 +348,7 @@ export interface paths {
                 data: unknown;
                 createdAt: string;
               }[];
+              status: "active" | "inactive";
             }[];
           };
         };
@@ -331,7 +430,6 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
-              status: "active" | "inactive";
               providers: {
                 userId: string;
                 id: string;
@@ -341,6 +439,7 @@ export interface paths {
                 data: unknown;
                 createdAt: string;
               }[];
+              status: "active" | "inactive";
               redirectUrl: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;
@@ -418,7 +517,6 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
-              status: string;
               providers: {
                 userId: string;
                 id: string;
@@ -428,6 +526,7 @@ export interface paths {
                 data: unknown;
                 createdAt: string;
               }[];
+              status: "active" | "inactive";
               redirectUrl: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;
@@ -617,7 +716,7 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              transactionId: string;
+              id: string;
             };
           };
         };
