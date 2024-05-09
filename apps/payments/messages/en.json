@@ -348,5 +348,14 @@
   "PreviewBanner": {
     "tag": "Preview",
     "bannerText": "This is a preview. Public servants are not allowed to make payments. If you want to proceed with payments, you must be logged in as a citizen."
+  },
+  "LandingPage": {
+    "mainSection": {
+      "title": "Welcome to the Payments Service",
+      "description": "This is a new service that allows you to make payments online. You can pay for a range of services, using a variety of payment methods."
+    },
+    "actions": {
+      "login": "Login"
+    }
   }
 }
