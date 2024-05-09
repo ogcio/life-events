@@ -54,27 +54,6 @@ async function getEvents() {
   "use server";
 
   return Promise.resolve([
-    // All the commented out events are now reachable via the burger menu
-    // {
-    //   flowKey: workflow.keys.renewDriversLicence,
-    //   category: workflow.categories.driving,
-    // },
-    // {
-    //   flowKey: workflow.keys.orderEHIC,
-    //   category: workflow.categories.health,
-    // },
-    // {
-    //   flowKey: workflow.keys.orderBirthCertificate,
-    //   category: workflow.categories.birth,
-    // },
-    // {
-    //   flowKey: workflow.keys.notifyDeath,
-    //   category: workflow.categories.death,
-    // },
-    // {
-    //   flowKey: workflow.keys.applyJobseekersAllowance,
-    //   category: workflow.categories.employment,
-    // },
     {
       flowKey: workflow.keys.getDigitalWallet,
       category: workflow.categories.digitalWallet,
