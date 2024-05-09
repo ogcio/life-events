@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import * as jose from "jose";
-import { cookies } from "next/headers";
-import { redirect, RedirectType } from "next/navigation";
+import { cookies } from "next/headers.js";
+import { redirect, RedirectType } from "next/navigation.js";
 
 type GovIdJwtPayload = {
   surname: string;
@@ -25,6 +25,9 @@ export interface Sessions {
     SessionTokenDecoded & {
       userId: string;
       publicServant: boolean;
+      //The values below will likely be extracted from session token  once we integrate with GOV ID
+      myGovIdEmail: string;
+      hasGovIdVerifiedAccount: boolean;
     }
   >;
   set(session: Session): Promise<string>;
@@ -102,6 +105,9 @@ export const PgSessions: Sessions = {
       ...decodeJwt(session.token),
       userId: session.userId,
       publicServant: session.publicServant,
+      //The values below will likely be extracted from session token once we integrate with GOV ID
+      myGovIdEmail: "testMyGovIdEmail@test.com",
+      hasGovIdVerifiedAccount: true,
     };
   },
   async set(session: Session) {

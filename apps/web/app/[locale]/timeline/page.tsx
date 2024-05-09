@@ -2,8 +2,14 @@ import { PgSessions } from "auth/sessions";
 import { web } from "../../utils";
 import Timeline from "./Timeline";
 import { Timeline as TimelineClient } from "building-blocks-sdk";
+import { notFound } from "next/navigation";
+import { isFeatureFlagEnabled } from "feature-flags/utils";
 
 export default async (props: web.NextPageProps) => {
+  const showTimeline = await isFeatureFlagEnabled("timeline");
+  if (!showTimeline) {
+    throw notFound();
+  }
   const { firstName, lastName, userId } = await PgSessions.get();
 
   const userName = [firstName, lastName].join(" ");
