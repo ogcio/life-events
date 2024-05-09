@@ -68,4 +68,10 @@ export const routeDefinitions = {
       },
     },
   },
+  info: {
+    slug: "info",
+    path() {
+      return `/${routeDefinitions.info.slug}`;
+    },
+  },
 };

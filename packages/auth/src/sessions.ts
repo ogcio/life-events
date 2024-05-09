@@ -29,6 +29,7 @@ export interface Sessions {
   >;
   set(session: Session): Promise<string>;
   delete(key: string): Promise<void>;
+  isAuthenticated(): Promise<boolean>;
 }
 
 export const pgpool = new Pool({
@@ -119,6 +120,17 @@ export const PgSessions: Sessions = {
   },
   async delete(key: string) {
     await pgpool.query("DELETE FROM govid_sessions WHERE id=$1", [key]);
+  },
+
+  async isAuthenticated() {
+    const sessionId = cookies().get("sessionId")?.value;
+    if (!sessionId) {
+      return false;
+    }
+
+    const session = await getPgSession(sessionId);
+
+    return !!session;
   },
 };
 
