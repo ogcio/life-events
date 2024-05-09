@@ -5,6 +5,7 @@ import RenewDriversLicence from "./RenewDriversLicence/RenewDriversLicence";
 import OrderBirthCertificate from "./OrderBirthCertificate/OrderBirthCertificate";
 import NotifyDeath from "./NotifyDeath/NotifyDeath";
 import ApplyJobseekersAllowance from "./ApplyJobseekersAllowance/ApplyJobseekersAllowance";
+import GetDigitalWallet from "./GetDigitalWallet/GetDigitalWallet";
 
 const componentsMap = {
   [routes.driving.renewDriversLicence.slug]: RenewDriversLicence,
@@ -12,6 +13,7 @@ const componentsMap = {
   [routes.birth.orderBirthCertificate.slug]: OrderBirthCertificate,
   [routes.death.notifyDeath.slug]: NotifyDeath,
   [routes.employment.applyJobseekersAllowance.slug]: ApplyJobseekersAllowance,
+  [routes.digitalWallet.getDigitalWallet.slug]: GetDigitalWallet,
 };
 
 export default function ActionPage(props: web.NextPageProps) {

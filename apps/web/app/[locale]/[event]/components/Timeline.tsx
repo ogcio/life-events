@@ -5,9 +5,9 @@ import { GroupedEvents } from "../../timeline/Timeline";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import EventTypeSelector from "./EventTypeSelector";
-import { headers } from "next/headers";
 import SearchForm from "../../timeline/SearchForm";
 import { Timeline as TimelineClient } from "building-blocks-sdk";
+import { isFeatureFlagEnabled } from "feature-flags/utils";
 
 const Icon = ds.Icon;
 
@@ -29,7 +29,10 @@ export default async ({
   locale,
   userId,
 }: TimelineProps) => {
-  const path = headers().get("x-pathname")?.toString();
+  const showTimeline = await isFeatureFlagEnabled("timeline");
+  if (!showTimeline) {
+    return;
+  }
 
   const t = await getTranslations("Timeline");
 

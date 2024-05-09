@@ -40,18 +40,9 @@ export default async (props: {
   const t = await getTranslations(props.category);
 
   return (
-    <ul className="govie-list">
+    <ul className={`govie-list ${styles.eventsList}`}>
       {props.events.slice(0, 2).map((evt) => (
-        <li
-          key={`le_${evt.flowKey}`}
-          style={{
-            margin: "1rem 0",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-around",
-            gap: "1rem",
-          }}
-        >
+        <li key={`le_${evt.flowKey}`}>
           <div
             style={{
               display: "flex",
