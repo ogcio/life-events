@@ -25,6 +25,9 @@ export interface Sessions {
     SessionTokenDecoded & {
       userId: string;
       publicServant: boolean;
+      //The values below will likely be extracted from session token  once we integrate with GOV ID
+      myGovIdEmail: string;
+      hasGovIdVerifiedAccount: boolean;
     }
   >;
   set(session: Session): Promise<string>;
@@ -103,6 +106,9 @@ export const PgSessions: Sessions = {
       ...decodeJwt(session.token),
       userId: session.userId,
       publicServant: session.publicServant,
+      //The values below will likely be extracted from session token once we integrate with GOV ID
+      myGovIdEmail: "testMyGovIdEmail@test.com",
+      hasGovIdVerifiedAccount: true,
     };
   },
   async set(session: Session) {
