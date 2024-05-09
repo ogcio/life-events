@@ -13,8 +13,16 @@ import {
   CreateRealexProvider,
 } from "../schemas";
 import { providerSecretsHandlersFactory } from "../../services/providersSecretsService";
+import { DbConstrainMap, handleDbError } from "../utils";
 
 export default async function providers(app: FastifyInstance) {
+  const dbConstrainMap: DbConstrainMap = {
+    unique_provider_name: {
+      field: "providerName",
+      message: "Provider's name must be unique!",
+    },
+  };
+
   app.post<{ Body: CreateBankTransferProvider; Reply: { id: string } }>(
     "/banktransfer",
     {
@@ -33,15 +41,20 @@ export default async function providers(app: FastifyInstance) {
       const userId = request.user?.id;
       const { name, type, data } = request.body;
 
-      const result = await app.pg.query(
-        `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
-            `,
-        [userId, name, type, "connected", data],
-      );
+      try {
+        const result = await app.pg.query(
+          `
+          INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+          VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+              `,
+          [userId, name, type, "connected", data],
+        );
 
-      reply.send({ id: result.rows[0].id });
+        reply.send({ id: result.rows[0].id });
+      } catch (err) {
+        app.log.error((err as Error).message);
+        handleDbError(err, dbConstrainMap);
+      }
     },
   );
 
@@ -63,15 +76,20 @@ export default async function providers(app: FastifyInstance) {
       const userId = request.user?.id;
       const { name, type, data } = request.body;
 
-      const result = await app.pg.query(
-        `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
-            `,
-        [userId, name, type, "connected", data],
-      );
+      try {
+        const result = await app.pg.query(
+          `
+          INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+          VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+              `,
+          [userId, name, type, "connected", data],
+        );
 
-      reply.send({ id: result.rows[0].id });
+        reply.send({ id: result.rows[0].id });
+      } catch (err) {
+        app.log.error((err as Error).message);
+        handleDbError(err, dbConstrainMap);
+      }
     },
   );
 
@@ -96,15 +114,20 @@ export default async function providers(app: FastifyInstance) {
       const providerSecretsHandler = providerSecretsHandlersFactory(type);
       const cypheredData = providerSecretsHandler.getCypheredData(data);
 
-      const result = await app.pg.query(
-        `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
-            `,
-        [userId, name, type, "connected", cypheredData],
-      );
+      try {
+        const result = await app.pg.query(
+          `
+          INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+          VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+              `,
+          [userId, name, type, "connected", cypheredData],
+        );
 
-      reply.send({ id: result.rows[0].id });
+        reply.send({ id: result.rows[0].id });
+      } catch (err) {
+        app.log.error((err as Error).message);
+        handleDbError(err, dbConstrainMap);
+      }
     },
   );
 
@@ -129,15 +152,20 @@ export default async function providers(app: FastifyInstance) {
       const providerSecretsHandler = providerSecretsHandlersFactory(type);
       const cypheredData = providerSecretsHandler.getCypheredData(data);
 
-      const result = await app.pg.query(
-        `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
-            `,
-        [userId, name, type, "connected", cypheredData],
-      );
+      try {
+        const result = await app.pg.query(
+          `
+          INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+          VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+              `,
+          [userId, name, type, "connected", cypheredData],
+        );
 
-      reply.send({ id: result.rows[0].id });
+        reply.send({ id: result.rows[0].id });
+      } catch (err) {
+        app.log.error((err as Error).message);
+        handleDbError(err, dbConstrainMap);
+      }
     },
   );
 
@@ -162,15 +190,20 @@ export default async function providers(app: FastifyInstance) {
       const providerSecretsHandler = providerSecretsHandlersFactory(type);
       const cypheredData = providerSecretsHandler.getCypheredData(data);
 
-      const result = await app.pg.query(
-        `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
-            `,
-        [userId, name, type, "connected", cypheredData],
-      );
+      try {
+        const result = await app.pg.query(
+          `
+          INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+          VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+              `,
+          [userId, name, type, "connected", cypheredData],
+        );
 
-      reply.send({ id: result.rows[0].id });
+        reply.send({ id: result.rows[0].id });
+      } catch (err) {
+        app.log.error((err as Error).message);
+        handleDbError(err, dbConstrainMap);
+      }
     },
   );
 
