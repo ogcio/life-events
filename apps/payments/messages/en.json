@@ -357,5 +357,10 @@
     "actions": {
       "login": "Login"
     }
+  },
+  "ServicesTiles": {
+    "payments": "Payments",
+    "messaging": "Messaging",
+    "lifeEvents": "Life Events"
   }
 }
