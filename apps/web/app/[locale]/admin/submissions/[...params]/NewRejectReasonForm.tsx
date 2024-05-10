@@ -7,16 +7,18 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import dayjs from "dayjs";
+import { getDigitalWalletAdminRules } from "./GetDigitalWalletDetails";
 
 type Props = {
   flow: string;
   userId: string;
+  flowData: workflow.GetDigitalWallet;
 };
 
 export default async (props: Props) => {
   const t = await getTranslations("Admin.RejectReasonForm");
   const errorT = await getTranslations("formErrors");
-  const { userId, flow } = props;
+  const { userId, flow, flowData } = props;
   const basePath =
     headers().get("x-pathname")?.split("/reject")[0] ??
     `${routes.admin.slug}/${flow}/${userId}`;
@@ -24,6 +26,12 @@ export default async (props: Props) => {
   async function rejectAction(formData: FormData) {
     "use server";
     const formErrors: form.Error[] = [];
+
+    const nextStep = formData.get("nextStep")?.toString();
+
+    if (!nextStep) {
+      throw new Error("Missing next workflow step");
+    }
 
     const reason = formData.get("rejectReason")?.toString();
     formErrors.push(
@@ -61,24 +69,33 @@ export default async (props: Props) => {
 
     const reviewerName = `${firstName} ${lastName}`;
 
-    const totalApprovalStages = workflow.workFlowApprovalStages[flow];
+    const totalApprovalStages = Object.keys(
+      workflow.workFlowApprovalStages[flow],
+    ).length;
     const currentStage = currentFlowData.approvalStages.length;
     const newStage = currentFlowData.approvalStages.length + 1;
 
     let dataToUpdate: workflow.GetDigitalWallet;
     if (currentStage < totalApprovalStages) {
+      const date = dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss.SSSSSSZ");
+
       const approvalStages: workflow.GetDigitalWallet["approvalStages"] = [
         ...currentFlowData.approvalStages,
         {
-          stage: newStage,
+          stageNumber: newStage,
+          stageKey: nextStep,
           status: "rejected",
           rejectReason: reason,
           reviewer: reviewerName,
-          date: dayjs(new Date()).format("YYYY-MM-DD HH:mm:ss.SSSSSSZ"),
+          date,
         },
       ];
 
-      Object.assign(currentFlowData, { approvalStages: approvalStages });
+      Object.assign(currentFlowData, {
+        approvalStages: approvalStages,
+        rejectedAt: date,
+        rejectReason: reason,
+      });
       dataToUpdate = currentFlowData;
 
       try {
@@ -112,6 +129,11 @@ export default async (props: Props) => {
     (row) => row.field === form.fieldTranslationKeys.reason,
   );
 
+  const { key: nextStep } = workflow.getCurrentStep(
+    getDigitalWalletAdminRules,
+    flowData,
+  );
+
   return (
     <FormLayout
       action={{
@@ -124,6 +146,11 @@ export default async (props: Props) => {
     >
       <form action={rejectAction}>
         <h1 className="govie-heading-s">{t("title")}</h1>
+        <input
+          type="hidden"
+          name="nextStep"
+          defaultValue={nextStep || undefined}
+        />
         <div
           className={`govie-form-group ${
             reasonError ? "govie-form-group--error" : ""

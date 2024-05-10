@@ -224,7 +224,8 @@ export function emptyApplyJobseekersAllowance(): ApplyJobseekersAllowance {
 
 type ApprovalStages = {
   approvalStages: {
-    stage: number;
+    stageNumber: number;
+    stageKey: string;
     status: "approved" | "rejected";
     rejectReason?: string;
     reviewer: string;
@@ -232,20 +233,21 @@ type ApprovalStages = {
   }[];
 };
 
-export type GetDigitalWallet = ApprovalStages & {
-  firstName: string;
-  lastName: string;
-  hasReadIntro: boolean;
-  hasConfirmedPersonalDetails: boolean;
-  appStoreEmail: string;
-  myGovIdEmail: string;
-  govIEEmail: string;
-  lineManagerName: string;
-  jobTitle: string;
-  confirmedApplication: string;
-  status: string;
-  submittedAt: string;
-};
+export type GetDigitalWallet = Base &
+  ApprovalStages & {
+    firstName: string;
+    lastName: string;
+    hasReadIntro: boolean;
+    hasConfirmedPersonalDetails: boolean;
+    appStoreEmail: string;
+    myGovIdEmail: string;
+    govIEEmail: string;
+    lineManagerName: string;
+    jobTitle: string;
+    confirmedApplication: string;
+    status: string;
+    submittedAt: string;
+  };
 
 export function emptyGetDigitalWallet(): GetDigitalWallet {
   return {
@@ -262,6 +264,9 @@ export function emptyGetDigitalWallet(): GetDigitalWallet {
     status: "",
     submittedAt: "",
     approvalStages: [],
+    successfulAt: "",
+    rejectedAt: "",
+    rejectReason: "",
   };
 }
 
@@ -305,7 +310,18 @@ export const keys = {
 // ===== workflow approval stages =====
 
 export const workFlowApprovalStages = {
-  [keys.getDigitalWallet]: 2,
+  [keys.getDigitalWallet]: {
+    isPublicServant: {
+      name: "Is Public Servant",
+      description: "Verify if applicant is a public servant",
+      allowedReviewerRoles: [],
+    },
+    digitalWalletAccess: {
+      name: "Digital Wallet Pilot Access",
+      description: "Grant access to the digital wallet pilot",
+      allowedReviewerRoles: [],
+    },
+  },
 };
 
 // ===== categories =====

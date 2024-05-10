@@ -45,11 +45,11 @@ const isGetDigitalWalletData = (
   flow === workflow.keys.getDigitalWallet;
 
 export default async (props: {
-  searchParams: { action: string };
+  searchParams: { action: string; status: string };
   params: { params: string[] };
 }) => {
   const [flow, userId, redirectPath] = props.params.params;
-  const { action } = props.searchParams;
+  const { action, status } = props.searchParams;
 
   if (!flow || !userId) {
     throw notFound();
@@ -81,8 +81,8 @@ export default async (props: {
     return <RejectReasonForm flow={flow} userId={userId} />;
   }
 
-  if (redirectPath === "reject-new") {
-    return <NewRejectReasonForm flow={flow} userId={userId} />;
+  if (redirectPath === "reject-new" && isGetDigitalWalletData(flow, data)) {
+    return <NewRejectReasonForm flow={flow} userId={userId} flowData={data} />;
   }
 
   if (
@@ -138,6 +138,7 @@ export default async (props: {
         flowData={data}
         userId={userId}
         action={action}
+        status={status}
       />
     );
   }

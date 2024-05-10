@@ -3,11 +3,12 @@ import Link from "next/link";
 import { postgres, web, workflow } from "../../../utils";
 import dayjs from "dayjs";
 import { QueryResult } from "pg";
+import { getDigitalWalletAdminRules } from "./[...params]/GetDigitalWalletDetails";
 
 export default async (props: web.NextPageProps) => {
   const t = await getTranslations("Admin.EventsTable");
 
-  const statusSelection = props.searchParams?.status || "pending";
+  const statusSelection = props.searchParams?.status || "all";
 
   let userFlows: QueryResult<{
     userId: string;
@@ -45,33 +46,33 @@ export default async (props: web.NextPageProps) => {
   }) {
     const { approvalStages } = flowData;
 
-    const totalApprovalStages = workflow.workFlowApprovalStages[flow];
+    const totalApprovalStages = Object.keys(
+      workflow.workFlowApprovalStages[flow],
+    ).length;
     const remainingStages =
       totalApprovalStages - flowData.approvalStages.length;
 
     if (!approvalStages.length || statusSelection === "pending") {
-      return t("pending");
+      return <p>{t("pending")}</p>;
     }
 
     return (
       <div>
         {approvalStages.map((stage) => (
-          <div>
+          <>
             <p style={{ marginBottom: 0 }}>
               {t(`${stage.status}by`)} {stage.reviewer}
             </p>
             <p className="govie-body-s" style={{ marginTop: 0 }}>
               <span>{`${dayjs(stage.date).format("DD-MM-YYYY HH:mm")}`}</span>
             </p>
-          </div>
+          </>
         ))}
         {statusSelection === "all" &&
         remainingStages > 0 &&
         !approvalStages.find((obj) => obj.status == "rejected")
-          ? Array.from({ length: remainingStages }).map((_, index) => (
-              <div>
-                <p>{t("pending")}</p>
-              </div>
+          ? Array.from({ length: remainingStages }).map(() => (
+              <p>{t("pending")}</p>
             ))
           : null}
       </div>
@@ -87,35 +88,82 @@ export default async (props: web.NextPageProps) => {
   }) {
     const { approvalStages } = flowData;
 
-    const totalApprovalStages = workflow.workFlowApprovalStages[flow];
+    const totalApprovalStages = Object.keys(
+      workflow.workFlowApprovalStages[flow],
+    ).length;
 
     if (!approvalStages.length) {
-      return `1 ${t("of")} ${totalApprovalStages}`;
+      const stageKey = Object.keys(
+        workflow.workFlowApprovalStages[workflow.keys.getDigitalWallet],
+      )[0];
+      return (
+        <div>
+          <p style={{ marginBottom: 0 }}>{stageKey}</p>
+          <p
+            style={{ marginTop: 0 }}
+          >{`1 ${t("of")} ${totalApprovalStages} ${t("steps")}`}</p>
+        </div>
+      );
     }
 
     if (statusSelection === "pending") {
       const nextStage = approvalStages.length + 1;
-      return `${nextStage} ${t("of")} ${totalApprovalStages}`;
+      const { key: nextStep } = workflow.getCurrentStep(
+        getDigitalWalletAdminRules,
+        flowData,
+      );
+      return (
+        <div>
+          <p style={{ marginBottom: 0 }}>{nextStep}</p>
+          <p style={{ marginTop: 0 }}>
+            {`${nextStage} ${t("of")} ${totalApprovalStages} ${t("steps")}`}
+          </p>
+        </div>
+      );
     }
 
     if (statusSelection === "all") {
-      return Array.from({ length: totalApprovalStages }).map((_, index) => (
+      /** this is to show stages only up to any rejection if the app has been rejected */
+      const rejectedStageIndex = approvalStages.findIndex(
+        (stage) => stage.status === "rejected",
+      );
+
+      return Array.from({
+        length:
+          rejectedStageIndex >= 0
+            ? rejectedStageIndex + 1
+            : totalApprovalStages,
+      }).map((_, index) => (
         <div>
-          <p>{`${index + 1} ${t("of")} ${totalApprovalStages}`}</p>
+          <p style={{ marginBottom: 0 }}>
+            {
+              Object.keys(
+                workflow.workFlowApprovalStages[workflow.keys.getDigitalWallet],
+              )[index]
+            }
+          </p>
+          <p
+            style={{ marginTop: 0 }}
+          >{`${index + 1} ${t("of")} ${totalApprovalStages} ${t("steps")}`}</p>
         </div>
       ));
     }
 
     return approvalStages.map((stage) => (
       <div>
-        <p>{`${stage.stage} ${t("of")} ${totalApprovalStages}`}</p>
+        <p style={{ marginBottom: 0 }}>{stage.stageKey}</p>
+        <p
+          style={{ marginTop: 0 }}
+        >{`${stage.stageNumber} ${t("of")} ${totalApprovalStages} ${t("steps")}`}</p>
       </div>
     ));
   }
 
   const filteredFlows = userFlows?.rows?.filter((row) => {
     const { approvalStages } = row.flowData;
-    const totalApprovalStages = workflow.workFlowApprovalStages[row.flow];
+    const totalApprovalStages = Object.keys(
+      workflow.workFlowApprovalStages[row.flow],
+    ).length;
 
     if (statusSelection === "all") {
       return row;
@@ -162,6 +210,17 @@ export default async (props: web.NextPageProps) => {
       </thead>
       <tbody className="govie-table__body">
         {filteredFlows?.map((row) => {
+          /* hasPendingActions if application has not been rejected and if there are remaining stages */
+          const hasPendingActions =
+            !row.flowData.approvalStages.find(
+              (stage) => stage.status === "rejected",
+            ) &&
+            row.flowData.approvalStages.length <
+              Object.keys(workflow.workFlowApprovalStages[row.flow]).length;
+
+          /** this can take into account a user permissions once we have those */
+          const canReview =
+            hasPendingActions && ["all", "pending"].includes(statusSelection);
           return (
             <tr key={row.userId} className="govie-table__row">
               <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
@@ -194,12 +253,12 @@ export default async (props: web.NextPageProps) => {
                           process.env.HOST_URL,
                         ).href,
                         query: {
-                          action:
-                            statusSelection === "pending" ? "review" : "view",
+                          action: canReview ? "review" : "view",
+                          status: statusSelection,
                         },
                       }}
                     >
-                      {statusSelection === "pending" ? t("review") : t("view")}
+                      {canReview ? t("review") : t("view")}
                     </Link>
                   </div>
                 </div>

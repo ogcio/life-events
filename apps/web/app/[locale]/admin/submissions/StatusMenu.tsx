@@ -28,10 +28,10 @@ const linkClassName = (selected: boolean): string =>
 
 export default ({ searchParams }: Pick<web.NextPageProps, "searchParams">) => {
   const t = useTranslations("Admin.StatusMenu");
-  const isAll = searchParams?.status === "all";
-  const isPending =
-    searchParams?.status === "pending" ||
+  const isAll =
+    searchParams?.status === "all" ||
     Boolean(!Object.keys(searchParams ?? {}).length);
+  const isPending = searchParams?.status === "pending";
   const isApproved = searchParams?.status === "approved";
   const isRejected = searchParams?.status === "rejected";
 

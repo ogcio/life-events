@@ -766,7 +766,8 @@
       "approvalSteps": "Approval steps",
       "of": "of",
       "rejectReason": "Rejection reason",
-      "date": "Date"
+      "date": "Date",
+      "step": "Step"
     },
     "RejectReasonForm": {
       "title": "Reason for rejection",
@@ -795,7 +796,8 @@
       "approvedby": "Approved by",
       "rejectedby": "Rejected by",
       "of": "of",
-      "review": "Review"
+      "review": "Review",
+      "steps": "steps"
     },
     "StatusMenu": {
       "all": "All",
