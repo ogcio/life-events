@@ -18,161 +18,76 @@ export const OpenBankingData = Type.Object({
   iban: Type.String({ validator: "IBANValidator" }),
   accountHolderName: Type.String(),
 });
-export type OpenBankingData = Static<typeof OpenBankingData>;
 
 export const BankTransferData = Type.Object({
   iban: Type.String({ validator: "IBANValidator" }),
   accountHolderName: Type.String(),
 });
-export type BankTransferData = Static<typeof BankTransferData>;
 
 export const StripeData = Type.Object({
   livePublishableKey: Type.String(),
   liveSecretKey: Type.String(),
 });
-export type StripeData = Static<typeof StripeData>;
-
-export const StripeEncryptedData = Type.Object({
-  livePublishableKey: Type.String(),
-  encryptedLiveSecretKey: Type.String(),
-});
-export type StripeEncryptedData = Static<typeof StripeEncryptedData>;
 
 export const WorldpayData = Type.Object({
   merchantCode: Type.String(),
   installationId: Type.String(),
 });
-export type WorldpayData = Static<typeof WorldpayData>;
-
-export const WorldpayEncryptedData = Type.Object({
-  installationId: Type.String(),
-  encryptedMerchantCode: Type.String(),
-});
-export type WorldpayEncryptedData = Static<typeof WorldpayEncryptedData>;
 
 export const RealexData = Type.Object({
   merchantId: Type.String(),
   sharedSecret: Type.String(),
 });
-export type RealexData = Static<typeof RealexData>;
-
-export const RealexEncryptedData = Type.Object({
-  merchantId: Type.String(),
-  encryptedSharedSecret: Type.String(),
-});
-export type RealexEncryptedData = Static<typeof RealexEncryptedData>;
-
-/**
- * Providers types
- */
-export const ProviderStatus = Type.Union([
-  Type.Literal("connected"),
-  Type.Literal("disconnected"),
-]);
-export type ProviderStatus = Static<typeof ProviderStatus>;
 
 export const ProviderData = Type.Union([
   OpenBankingData,
   BankTransferData,
   StripeData,
-  RealexData,
   WorldpayData,
+  RealexData,
 ]);
-export type ProviderData = Static<typeof ProviderData>;
 
-export const BankTransferProvider = Type.Object({
+/**
+ * Providers types
+ */
+
+export const ProviderTypes = Type.Union([
+  Type.Literal("banktransfer"),
+  Type.Literal("openbanking"),
+  Type.Literal("stripe"),
+  Type.Literal("realex"),
+  Type.Literal("worldpay"),
+]);
+
+export const ProviderStatus = Type.Union([
+  Type.Literal("connected"),
+  Type.Literal("disconnected"),
+]);
+
+export const Provider = Type.Object({
   id: Type.String(),
   name: Type.String(),
-  type: Type.Literal("banktransfer"),
-  data: BankTransferData,
+  type: ProviderTypes,
+  data: Type.Record(Type.String(), Type.String(), {
+    validator: "ProvidersValidator",
+  }),
   status: ProviderStatus,
 });
 
-export const OpenBankingProvider = Type.Object({
+export const ProviderReply = Type.Object({
   id: Type.String(),
   name: Type.String(),
-  type: Type.Literal("openbanking"),
-  data: OpenBankingData,
+  type: ProviderTypes,
+  data: ProviderData,
   status: ProviderStatus,
 });
 
-export const StripeProvider = Type.Object({
-  id: Type.String(),
-  name: Type.String(),
-  type: Type.Literal("stripe"),
-  data: StripeData,
-  status: ProviderStatus,
-});
-
-export const WorldpayProvider = Type.Object({
-  id: Type.String(),
-  name: Type.String(),
-  type: Type.Literal("worldpay"),
-  data: WorldpayData,
-  status: ProviderStatus,
-});
-
-export const RealexProvider = Type.Object({
-  id: Type.String(),
-  name: Type.String(),
-  type: Type.Literal("realex"),
-  data: RealexData,
-  status: ProviderStatus,
-});
-
-export const Provider = Type.Union([
-  BankTransferProvider,
-  OpenBankingProvider,
-  StripeProvider,
-  WorldpayProvider,
-  RealexProvider,
-]);
-export type Provider = Static<typeof Provider>;
-
-export const CreateBankTransferProvider = Type.Omit(BankTransferProvider, [
-  "id",
-  "status",
-]);
-export type CreateBankTransferProvider = Static<
-  typeof CreateBankTransferProvider
->;
-
-export const CreateOpenBankingProvider = Type.Omit(OpenBankingProvider, [
-  "id",
-  "status",
-]);
-export type CreateOpenBankingProvider = Static<
-  typeof CreateOpenBankingProvider
->;
-
-export const CreateStripeProvider = Type.Omit(StripeProvider, ["id", "status"]);
-export type CreateStripeProvider = Static<typeof CreateStripeProvider>;
-
-export const CreateWorldpayProvider = Type.Omit(WorldpayProvider, [
-  "id",
-  "status",
-]);
-export type CreateWorldpayProvider = Static<typeof CreateWorldpayProvider>;
-
-export const CreateRealexProvider = Type.Omit(RealexProvider, ["id", "status"]);
-export type CreateRealexProvider = Static<typeof CreateRealexProvider>;
-
-export const ProvidersList = Type.Union([Type.Array(Provider)]);
-export type ProvidersList = Static<typeof ProvidersList>;
-
-// TEMPORARILY CREATE NEW TYPE WITHOUT VALIDATIONS.
-export const UpdateProvider = Type.Object({
-  name: Type.String(),
-  data: Type.Any(),
-  status: ProviderStatus,
-});
-// export const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
-export type UpdateProvider = Static<typeof UpdateProvider>;
-
+export const CreateProvider = Type.Omit(Provider, ["id", "status"]);
+export const ProvidersList = Type.Array(ProviderReply);
+export const UpdateProvider = Type.Omit(Provider, ["id"]);
 export const ParamsWithProviderId = Type.Object({
   providerId: Type.String(),
 });
-export type ParamsWithProviderId = Static<typeof ParamsWithProviderId>;
 
 /**
  * Payment requests types
@@ -182,12 +97,7 @@ export const ProviderDetails = Type.Object({
   userId: Type.String(),
   id: Type.String(),
   name: Type.String(),
-  type: Type.Union([
-    Type.Literal("banktransfer"),
-    Type.Literal("openbanking"),
-    Type.Literal("stripe"),
-    Type.Literal("realex"),
-  ]),
+  type: ProviderTypes,
   status: ProviderStatus,
   data: ProviderData,
   createdAt: Type.String(),

@@ -34,7 +34,7 @@ export default async (props: Props) => {
 
     const { data: result, error } = await new Payments(
       userId,
-    ).createOpenBankingProvider({
+    ).createProvider({
       name: formData.get("provider_name") as string,
       type: "openbanking",
       data: {

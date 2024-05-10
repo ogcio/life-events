@@ -32,9 +32,10 @@ export default async (props: Props) => {
       errors: {},
     };
 
+
     const { data: result, error } = await new Payments(
       userId,
-    ).createStripeProvider({
+    ).createProvider({
       name: formData.get("provider_name") as string,
       type: "stripe",
       data: {

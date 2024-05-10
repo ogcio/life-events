@@ -11,224 +11,57 @@ paths:
       responses:
         "200":
           description: Default Response
-  /api/v1/providers/banktransfer:
-    post:
-      tags:
-        - Providers
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - banktransfer
-                data:
-                  type: object
-                  properties:
-                    iban:
-                      validator: IBANValidator
-                      type: string
-                    accountHolderName:
-                      type: string
-                  required:
-                    - iban
-                    - accountHolderName
-              required:
-                - name
-                - type
-                - data
-        required: true
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                required:
-                  - id
-  /api/v1/providers/openbanking:
-    post:
-      tags:
-        - Providers
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - openbanking
-                data:
-                  type: object
-                  properties:
-                    iban:
-                      validator: IBANValidator
-                      type: string
-                    accountHolderName:
-                      type: string
-                  required:
-                    - iban
-                    - accountHolderName
-              required:
-                - name
-                - type
-                - data
-        required: true
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                required:
-                  - id
-  /api/v1/providers/stripe:
-    post:
-      tags:
-        - Providers
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - stripe
-                data:
-                  type: object
-                  properties:
-                    livePublishableKey:
-                      type: string
-                    liveSecretKey:
-                      type: string
-                  required:
-                    - livePublishableKey
-                    - liveSecretKey
-              required:
-                - name
-                - type
-                - data
-        required: true
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                required:
-                  - id
-  /api/v1/providers/worldpay:
-    post:
-      tags:
-        - Providers
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - worldpay
-                data:
-                  type: object
-                  properties:
-                    merchantCode:
-                      type: string
-                    installationId:
-                      type: string
-                  required:
-                    - merchantCode
-                    - installationId
-              required:
-                - name
-                - type
-                - data
-        required: true
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                required:
-                  - id
-  /api/v1/providers/realex:
-    post:
-      tags:
-        - Providers
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - realex
-                data:
-                  type: object
-                  properties:
-                    merchantId:
-                      type: string
-                    sharedSecret:
-                      type: string
-                  required:
-                    - merchantId
-                    - sharedSecret
-              required:
-                - name
-                - type
-                - data
-        required: true
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                required:
-                  - id
   /api/v1/providers/:
+    post:
+      tags:
+        - Providers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - banktransfer
+                    - type: string
+                      enum:
+                        - openbanking
+                    - type: string
+                      enum:
+                        - stripe
+                    - type: string
+                      enum:
+                        - realex
+                    - type: string
+                      enum:
+                        - worldpay
+                data:
+                  validator: ProvidersValidator
+                  type: object
+                  additionalProperties:
+                    type: string
+              required:
+                - name
+                - type
+                - data
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
     get:
       tags:
         - Providers
@@ -240,54 +73,32 @@ paths:
               schema:
                 type: array
                 items:
-                  anyOf:
-                    - type: object
-                      properties:
-                        id:
-                          type: string
-                        name:
-                          type: string
-                        type:
-                          type: string
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    type:
+                      anyOf:
+                        - type: string
                           enum:
                             - banktransfer
-                        data:
-                          type: object
-                          properties:
-                            iban:
-                              validator: IBANValidator
-                              type: string
-                            accountHolderName:
-                              type: string
-                          required:
-                            - iban
-                            - accountHolderName
-                        status:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - connected
-                            - type: string
-                              enum:
-                                - disconnected
-                      required:
-                        - id
-                        - name
-                        - type
-                        - data
-                        - status
-                    - type: object
-                      properties:
-                        id:
-                          type: string
-                        name:
-                          type: string
-                        type:
-                          type: string
+                        - type: string
                           enum:
                             - openbanking
-                        data:
-                          type: object
+                        - type: string
+                          enum:
+                            - stripe
+                        - type: string
+                          enum:
+                            - realex
+                        - type: string
+                          enum:
+                            - worldpay
+                    data:
+                      anyOf:
+                        - type: object
                           properties:
                             iban:
                               validator: IBANValidator
@@ -297,32 +108,17 @@ paths:
                           required:
                             - iban
                             - accountHolderName
-                        status:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - connected
-                            - type: string
-                              enum:
-                                - disconnected
-                      required:
-                        - id
-                        - name
-                        - type
-                        - data
-                        - status
-                    - type: object
-                      properties:
-                        id:
-                          type: string
-                        name:
-                          type: string
-                        type:
-                          type: string
-                          enum:
-                            - stripe
-                        data:
-                          type: object
+                        - type: object
+                          properties:
+                            iban:
+                              validator: IBANValidator
+                              type: string
+                            accountHolderName:
+                              type: string
+                          required:
+                            - iban
+                            - accountHolderName
+                        - type: object
                           properties:
                             livePublishableKey:
                               type: string
@@ -331,32 +127,7 @@ paths:
                           required:
                             - livePublishableKey
                             - liveSecretKey
-                        status:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - connected
-                            - type: string
-                              enum:
-                                - disconnected
-                      required:
-                        - id
-                        - name
-                        - type
-                        - data
-                        - status
-                    - type: object
-                      properties:
-                        id:
-                          type: string
-                        name:
-                          type: string
-                        type:
-                          type: string
-                          enum:
-                            - worldpay
-                        data:
-                          type: object
+                        - type: object
                           properties:
                             merchantCode:
                               type: string
@@ -365,32 +136,7 @@ paths:
                           required:
                             - merchantCode
                             - installationId
-                        status:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - connected
-                            - type: string
-                              enum:
-                                - disconnected
-                      required:
-                        - id
-                        - name
-                        - type
-                        - data
-                        - status
-                    - type: object
-                      properties:
-                        id:
-                          type: string
-                        name:
-                          type: string
-                        type:
-                          type: string
-                          enum:
-                            - realex
-                        data:
-                          type: object
+                        - type: object
                           properties:
                             merchantId:
                               type: string
@@ -399,20 +145,20 @@ paths:
                           required:
                             - merchantId
                             - sharedSecret
-                        status:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - connected
-                            - type: string
-                              enum:
-                                - disconnected
-                      required:
-                        - id
-                        - name
-                        - type
-                        - data
-                        - status
+                    status:
+                      anyOf:
+                        - type: string
+                          enum:
+                            - connected
+                        - type: string
+                          enum:
+                            - disconnected
+                  required:
+                    - id
+                    - name
+                    - type
+                    - data
+                    - status
   /api/v1/providers/{providerId}:
     get:
       tags:
@@ -429,54 +175,32 @@ paths:
           content:
             application/json:
               schema:
-                anyOf:
-                  - type: object
-                    properties:
-                      id:
-                        type: string
-                      name:
-                        type: string
-                      type:
-                        type: string
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  type:
+                    anyOf:
+                      - type: string
                         enum:
                           - banktransfer
-                      data:
-                        type: object
-                        properties:
-                          iban:
-                            validator: IBANValidator
-                            type: string
-                          accountHolderName:
-                            type: string
-                        required:
-                          - iban
-                          - accountHolderName
-                      status:
-                        anyOf:
-                          - type: string
-                            enum:
-                              - connected
-                          - type: string
-                            enum:
-                              - disconnected
-                    required:
-                      - id
-                      - name
-                      - type
-                      - data
-                      - status
-                  - type: object
-                    properties:
-                      id:
-                        type: string
-                      name:
-                        type: string
-                      type:
-                        type: string
+                      - type: string
                         enum:
                           - openbanking
-                      data:
-                        type: object
+                      - type: string
+                        enum:
+                          - stripe
+                      - type: string
+                        enum:
+                          - realex
+                      - type: string
+                        enum:
+                          - worldpay
+                  data:
+                    anyOf:
+                      - type: object
                         properties:
                           iban:
                             validator: IBANValidator
@@ -486,32 +210,17 @@ paths:
                         required:
                           - iban
                           - accountHolderName
-                      status:
-                        anyOf:
-                          - type: string
-                            enum:
-                              - connected
-                          - type: string
-                            enum:
-                              - disconnected
-                    required:
-                      - id
-                      - name
-                      - type
-                      - data
-                      - status
-                  - type: object
-                    properties:
-                      id:
-                        type: string
-                      name:
-                        type: string
-                      type:
-                        type: string
-                        enum:
-                          - stripe
-                      data:
-                        type: object
+                      - type: object
+                        properties:
+                          iban:
+                            validator: IBANValidator
+                            type: string
+                          accountHolderName:
+                            type: string
+                        required:
+                          - iban
+                          - accountHolderName
+                      - type: object
                         properties:
                           livePublishableKey:
                             type: string
@@ -520,32 +229,7 @@ paths:
                         required:
                           - livePublishableKey
                           - liveSecretKey
-                      status:
-                        anyOf:
-                          - type: string
-                            enum:
-                              - connected
-                          - type: string
-                            enum:
-                              - disconnected
-                    required:
-                      - id
-                      - name
-                      - type
-                      - data
-                      - status
-                  - type: object
-                    properties:
-                      id:
-                        type: string
-                      name:
-                        type: string
-                      type:
-                        type: string
-                        enum:
-                          - worldpay
-                      data:
-                        type: object
+                      - type: object
                         properties:
                           merchantCode:
                             type: string
@@ -554,32 +238,7 @@ paths:
                         required:
                           - merchantCode
                           - installationId
-                      status:
-                        anyOf:
-                          - type: string
-                            enum:
-                              - connected
-                          - type: string
-                            enum:
-                              - disconnected
-                    required:
-                      - id
-                      - name
-                      - type
-                      - data
-                      - status
-                  - type: object
-                    properties:
-                      id:
-                        type: string
-                      name:
-                        type: string
-                      type:
-                        type: string
-                        enum:
-                          - realex
-                      data:
-                        type: object
+                      - type: object
                         properties:
                           merchantId:
                             type: string
@@ -588,20 +247,20 @@ paths:
                         required:
                           - merchantId
                           - sharedSecret
-                      status:
-                        anyOf:
-                          - type: string
-                            enum:
-                              - connected
-                          - type: string
-                            enum:
-                              - disconnected
-                    required:
-                      - id
-                      - name
-                      - type
-                      - data
-                      - status
+                  status:
+                    anyOf:
+                      - type: string
+                        enum:
+                          - connected
+                      - type: string
+                        enum:
+                          - disconnected
+                required:
+                  - id
+                  - name
+                  - type
+                  - data
+                  - status
         "400":
           description: Default Response
           content:
@@ -636,7 +295,28 @@ paths:
               properties:
                 name:
                   type: string
-                data: {}
+                type:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - banktransfer
+                    - type: string
+                      enum:
+                        - openbanking
+                    - type: string
+                      enum:
+                        - stripe
+                    - type: string
+                      enum:
+                        - realex
+                    - type: string
+                      enum:
+                        - worldpay
+                data:
+                  validator: ProvidersValidator
+                  type: object
+                  additionalProperties:
+                    type: string
                 status:
                   anyOf:
                     - type: string
@@ -647,6 +327,7 @@ paths:
                         - disconnected
               required:
                 - name
+                - type
                 - data
                 - status
         required: true
@@ -717,6 +398,9 @@ paths:
                               - type: string
                                 enum:
                                   - realex
+                              - type: string
+                                enum:
+                                  - worldpay
                           status:
                             anyOf:
                               - type: string
@@ -982,6 +666,9 @@ paths:
                             - type: string
                               enum:
                                 - realex
+                            - type: string
+                              enum:
+                                - worldpay
                         status:
                           anyOf:
                             - type: string
@@ -1213,6 +900,9 @@ paths:
                             - type: string
                               enum:
                                 - realex
+                            - type: string
+                              enum:
+                                - worldpay
                         status:
                           anyOf:
                             - type: string

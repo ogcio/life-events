@@ -14,204 +14,54 @@ export interface paths {
       };
     };
   };
-  "/api/v1/providers/banktransfer": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            /** @enum {string} */
-            type: "banktransfer";
-            data: {
-              iban: string;
-              accountHolderName: string;
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/providers/openbanking": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            /** @enum {string} */
-            type: "openbanking";
-            data: {
-              iban: string;
-              accountHolderName: string;
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/providers/stripe": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            /** @enum {string} */
-            type: "stripe";
-            data: {
-              livePublishableKey: string;
-              liveSecretKey: string;
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/providers/worldpay": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            /** @enum {string} */
-            type: "worldpay";
-            data: {
-              merchantCode: string;
-              installationId: string;
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/providers/realex": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            /** @enum {string} */
-            type: "realex";
-            data: {
-              merchantId: string;
-              sharedSecret: string;
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
   "/api/v1/providers/": {
     get: {
       responses: {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": (
-              | {
-                  id: string;
-                  name: string;
-                  /** @enum {string} */
-                  type: "banktransfer";
-                  data: {
-                    iban: string;
-                    accountHolderName: string;
-                  };
-                  status: "connected" | "disconnected";
-                }
-              | {
-                  id: string;
-                  name: string;
-                  /** @enum {string} */
-                  type: "openbanking";
-                  data: {
-                    iban: string;
-                    accountHolderName: string;
-                  };
-                  status: "connected" | "disconnected";
-                }
-              | {
-                  id: string;
-                  name: string;
-                  /** @enum {string} */
-                  type: "stripe";
-                  data: {
-                    livePublishableKey: string;
-                    liveSecretKey: string;
-                  };
-                  status: "connected" | "disconnected";
-                }
-              | {
-                  id: string;
-                  name: string;
-                  /** @enum {string} */
-                  type: "worldpay";
-                  data: {
-                    merchantCode: string;
-                    installationId: string;
-                  };
-                  status: "connected" | "disconnected";
-                }
-              | {
-                  id: string;
-                  name: string;
-                  /** @enum {string} */
-                  type: "realex";
-                  data: {
-                    merchantId: string;
-                    sharedSecret: string;
-                  };
-                  status: "connected" | "disconnected";
-                }
-            )[];
+            "application/json": {
+              id: string;
+              name: string;
+              type:
+                | "banktransfer"
+                | "openbanking"
+                | "stripe"
+                | "realex"
+                | "worldpay";
+              data: {
+                [key: string]: string;
+              };
+              status: "connected" | "disconnected";
+            }[];
+          };
+        };
+      };
+    };
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            type:
+              | "banktransfer"
+              | "openbanking"
+              | "stripe"
+              | "realex"
+              | "worldpay";
+            data: {
+              [key: string]: string;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
           };
         };
       };
@@ -228,62 +78,20 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json":
-              | {
-                  id: string;
-                  name: string;
-                  /** @enum {string} */
-                  type: "banktransfer";
-                  data: {
-                    iban: string;
-                    accountHolderName: string;
-                  };
-                  status: "connected" | "disconnected";
-                }
-              | {
-                  id: string;
-                  name: string;
-                  /** @enum {string} */
-                  type: "openbanking";
-                  data: {
-                    iban: string;
-                    accountHolderName: string;
-                  };
-                  status: "connected" | "disconnected";
-                }
-              | {
-                  id: string;
-                  name: string;
-                  /** @enum {string} */
-                  type: "stripe";
-                  data: {
-                    livePublishableKey: string;
-                    liveSecretKey: string;
-                  };
-                  status: "connected" | "disconnected";
-                }
-              | {
-                  id: string;
-                  name: string;
-                  /** @enum {string} */
-                  type: "worldpay";
-                  data: {
-                    merchantCode: string;
-                    installationId: string;
-                  };
-                  status: "connected" | "disconnected";
-                }
-              | {
-                  id: string;
-                  name: string;
-                  /** @enum {string} */
-                  type: "realex";
-                  data: {
-                    merchantId: string;
-                    sharedSecret: string;
-                  };
-                  status: "connected" | "disconnected";
-                };
+            "application/json": {
+              id: string;
+              name: string;
+              type:
+                | "banktransfer"
+                | "openbanking"
+                | "stripe"
+                | "realex"
+                | "worldpay";
+              data: {
+                [key: string]: string;
+              };
+              status: "connected" | "disconnected";
+            };
           };
         };
         /** @description Default Response */
@@ -310,7 +118,15 @@ export interface paths {
         content: {
           "application/json": {
             name: string;
-            data: unknown;
+            type:
+              | "banktransfer"
+              | "openbanking"
+              | "stripe"
+              | "realex"
+              | "worldpay";
+            data: {
+              [key: string]: string;
+            };
             status: "connected" | "disconnected";
           };
         };
@@ -343,7 +159,12 @@ export interface paths {
                 userId: string;
                 id: string;
                 name: string;
-                type: "banktransfer" | "openbanking" | "stripe" | "realex";
+                type:
+                  | "banktransfer"
+                  | "openbanking"
+                  | "stripe"
+                  | "realex"
+                  | "worldpay";
                 status: "connected" | "disconnected";
                 data:
                   | {
@@ -450,7 +271,12 @@ export interface paths {
                 userId: string;
                 id: string;
                 name: string;
-                type: "banktransfer" | "openbanking" | "stripe" | "realex";
+                type:
+                  | "banktransfer"
+                  | "openbanking"
+                  | "stripe"
+                  | "realex"
+                  | "worldpay";
                 status: "connected" | "disconnected";
                 data:
                   | {
@@ -553,7 +379,12 @@ export interface paths {
                 userId: string;
                 id: string;
                 name: string;
-                type: "banktransfer" | "openbanking" | "stripe" | "realex";
+                type:
+                  | "banktransfer"
+                  | "openbanking"
+                  | "stripe"
+                  | "realex"
+                  | "worldpay";
                 status: "connected" | "disconnected";
                 data:
                   | {

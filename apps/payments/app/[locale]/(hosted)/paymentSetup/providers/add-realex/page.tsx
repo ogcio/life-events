@@ -29,9 +29,10 @@ export default async (props: Props) => {
 
     const validation = { errors: {} };
 
+
     const { data: result, error } = await new Payments(
       userId,
-    ).createRealexProvider({
+    ).createProvider({
       name: formData.get("provider_name") as string,
       type: "realex",
       data: {

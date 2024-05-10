@@ -25,6 +25,7 @@ export default async ({
     const { error } = await new Payments(userId).updateProvider(provider.id, {
       name: provider.name,
       data: provider.data,
+      type: provider.type,
       status,
     });
 

@@ -20,8 +20,8 @@ export default async ({ provider }: Props) => {
     const { userId } = await PgSessions.get();
 
     const providerName = formData.get("provider_name") as string;
-    const merchantCode = formData.get("merchant_code");
-    const installationId = formData.get("installation_id");
+    const merchantCode = formData.get("merchant_code") as string;
+    const installationId = formData.get("installation_id") as string;
     const providerData = {
       merchantCode,
       installationId,
@@ -30,6 +30,7 @@ export default async ({ provider }: Props) => {
     const { error } = await new Payments(userId).updateProvider(provider.id, {
       name: providerName,
       data: providerData,
+      type: provider.type,
       status: provider.status,
     });
 
