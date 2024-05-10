@@ -51,7 +51,51 @@ paths:
                   - error
                   - message
                   - time
-  /auth/auth:
+  /auth/logout:
+    get:
+      tags:
+        - Auth
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: redirectUrl
+          required: false
+      responses:
+        "302":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  headers:
+                    location:
+                      type: string
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+  /auth/callback:
     post:
       tags:
         - Auth
@@ -105,54 +149,10 @@ paths:
                   - error
                   - message
                   - time
-  /auth/logout:
+  /users/:
     get:
       tags:
-        - Auth
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: redirectUrl
-          required: false
-      responses:
-        "302":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  headers:
-                    location:
-                      type: string
-        "500":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statusCode:
-                    type: number
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  time:
-                    type: string
-                required:
-                  - statusCode
-                  - code
-                  - error
-                  - message
-                  - time
-  /auth/users:
-    get:
-      tags:
-        - Auth
+        - Users
       responses:
         "200":
           description: Default Response
