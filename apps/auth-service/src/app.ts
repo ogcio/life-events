@@ -2,7 +2,6 @@ import fastify, { FastifyServerOptions } from "fastify";
 import routes from "./routes/index.js";
 import fastifyEnv from "@fastify/env";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
-import dotenv from "dotenv";
 import { envSchema } from "./config.js";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
@@ -17,14 +16,12 @@ import postgres from "@fastify/postgres";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-dotenv.config();
-
 export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
   initializeLoggingHooks(app);
   initializeErrorHandler(app);
 
-  app.register(fastifyEnv, {
+  await app.register(fastifyEnv, {
     schema: envSchema,
     dotenv: true,
   });
@@ -56,36 +53,11 @@ export async function build(opts?: FastifyServerOptions) {
   });
 
   app.register(postgres, {
-    host: process.env.POSTGRES_HOST,
-    port: Number(process.env.POSTGRES_PORT),
-    user: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DB_NAME_SHARED,
-  });
-
-  app.setErrorHandler((error, _request, reply) => {
-    app.log.error(error);
-    if (error instanceof Error && error.name !== "error") {
-      reply
-        .code(error.statusCode || 500)
-        .type("application/json")
-        .send({
-          message: error.message,
-          error,
-          code: error.code || "INTERNAL_SERVER_ERROR",
-          statusCode: error.statusCode || 500,
-          time: new Date().toISOString(),
-        });
-      return;
-    }
-
-    reply.code(500).type("application/json").send({
-      message: error.message,
-      error: "Internal Server Error",
-      code: "INTERNAL_SERVER_ERROR",
-      statusCode: 500,
-      time: new Date().toISOString(),
-    });
+    host: app.config.POSTGRES_HOST,
+    port: Number(app.config.POSTGRES_PORT),
+    user: app.config.POSTGRES_USER,
+    password: app.config.POSTGRES_PASSWORD,
+    database: app.config.POSTGRES_DB_NAME_SHARED,
   });
 
   app.register(import("@fastify/cookie"), {

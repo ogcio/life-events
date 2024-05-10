@@ -33,7 +33,7 @@
     ">
     <span style="margin: 0 auto" id="mygovid-logo" class="icon-mygovid_logo"></span>
 
-    <form id="login-form" method="POST" action="/auth/auth">
+    <form id="login-form" method="POST" action="/auth/callback">
         <label>
             <input type="checkbox" name="public_servant"
                 style="vertical-align: middle; position: relative; bottom: 4px" />
@@ -84,7 +84,7 @@
             <div>
                 <button style="
               width: 100%;
-              height:60px;
+              height: 60px;
               color: #ffffff;
               background-color: #007da6;
               min-width: 200px;
@@ -121,7 +121,7 @@
 <script type="module">
     import { faker } from "https://esm.sh/@faker-js/faker";
     import * as jose from "https://cdnjs.cloudflare.com/ajax/libs/jose/5.2.2/index.js";
-
+    let isCurrentUserSet = false;
     const returnUrl = new URLSearchParams(window.location.search).get(
         "return_url",
     );
@@ -132,11 +132,12 @@
 
     const apiUsers = await (
         await fetch(
-            location.protocol + "//" + location.host + "/auth/users",
+            location.protocol + "//" + location.host + "/users",
         )
     ).json();
 
     const usersSelectElement = document.querySelector("#user_select");
+    const publicServantCheckbox = document.querySelector("input[name='public_servant']");
 
     for (const u of apiUsers.users) {
         var option = document.createElement("option");
@@ -146,23 +147,32 @@
         usersSelectElement.add(option);
     }
 
+    publicServantCheckbox.addEventListener("click", (e) => {
+        if (isCurrentUserSet === false) {
+            return;
+        }
+
+        e.preventDefault();
+    });
+
     usersSelectElement.addEventListener("change", (e) => {
         const user = apiUsers.users.find(
             (user) => user.govid_email === e.target.value,
         );
 
         let firstName, lastName;
+
         if (user) {
             const nameSplit = user.user_name.split(" ");
             firstName = nameSplit.at(0);
             lastName = nameSplit.slice(1).join(" ");
             document.querySelector("input[name='public_servant']").checked =
                 user.is_public_servant;
-            document.querySelector("input[name='public_servant']").disabled = true;
+            isCurrentUserSet = true;
         } else {
             firstName = faker.person.firstName();
             lastName = faker.person.lastName();
-            document.querySelector("input[name='public_servant']").disabled = false;
+            isCurrentUserSet = false;
         }
 
         document.querySelector("#id_token").value = createUnsecuredJwt(

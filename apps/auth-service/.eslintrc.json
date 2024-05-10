@@ -9,7 +9,10 @@
     "ecmaVersion": 2020,
     "sourceType": "module"
   },
-  "rules": {},
+  "rules": {
+    "no-redeclare": "off",
+    "no-unused-vars": "off"
+  },
   "env": {
     "browser": true,
     "node": true
