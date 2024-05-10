@@ -47,7 +47,8 @@ export default async function paymentRequests(app: FastifyInstance) {
         left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
         left join payment_providers pp on ppr.provider_id = pp.provider_id
         where pr.user_id = $1
-        group by pr.payment_request_id`,
+        group by pr.payment_request_id
+        ORDER BY pr.created_at DESC`,
         [userId],
       );
 

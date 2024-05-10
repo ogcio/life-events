@@ -210,6 +210,7 @@ export default async function providers(app: FastifyInstance) {
             status
           FROM payment_providers
           WHERE user_id = $1
+          ORDER BY created_at DESC
         `,
         [userId],
       );
