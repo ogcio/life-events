@@ -15,8 +15,16 @@ import {
   ProviderDO,
   UpdateProviderDO,
 } from "./types";
+import { DbConstrainMap, handleDbError } from "../../../routes/utils";
 
 export type ProvidersPlugin = Awaited<ReturnType<typeof buildPlugin>>;
+
+const dbConstrainMap: DbConstrainMap = {
+  unique_provider_name: {
+    field: "providerName",
+    message: "Provider's name must be unique!",
+  },
+};
 
 const buildGetProviderById =
   (repo: ProvidersRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
@@ -131,10 +139,11 @@ const buildCreateProvider =
       result = await repo.createProvider(createProvider, userId);
     } catch (err) {
       log.error((err as Error).message);
+      handleDbError(err, dbConstrainMap);
     }
 
-    if (!result?.rows[0]) {
-      throw new Error();
+    if (!result?.rowCount) {
+      throw httpErrors.internalServerError("Something went wrong.");
     }
 
     return result?.rows[0];

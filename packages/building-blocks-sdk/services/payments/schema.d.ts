@@ -29,9 +29,23 @@ export interface paths {
                 | "stripe"
                 | "realex"
                 | "worldpay";
-              data: {
-                [key: string]: string;
-              };
+              data:
+                | {
+                    iban: string;
+                    accountHolderName: string;
+                  }
+                | {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  }
+                | {
+                    merchantCode: string;
+                    installationId: string;
+                  }
+                | {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
               status: "connected" | "disconnected";
             }[];
           };
@@ -87,9 +101,23 @@ export interface paths {
                 | "stripe"
                 | "realex"
                 | "worldpay";
-              data: {
-                [key: string]: string;
-              };
+              data:
+                | {
+                    iban: string;
+                    accountHolderName: string;
+                  }
+                | {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  }
+                | {
+                    merchantCode: string;
+                    installationId: string;
+                  }
+                | {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
               status: "connected" | "disconnected";
             };
           };
