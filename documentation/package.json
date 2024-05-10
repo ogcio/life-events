@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.1.1",
+    "@docusaurus/theme-mermaid": "3.1.1",
     "@docusaurus/types": "3.1.1"
   },
   "browserslist": {

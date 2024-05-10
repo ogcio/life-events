@@ -8,6 +8,7 @@ import { themes as prismThemes } from "prism-react-renderer";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
+  markdown: { mermaid: true },
   title: "OGCIO Documentation",
   favicon: "img/favicon.ico",
 
@@ -48,6 +49,7 @@ const config = {
     ],
   ],
 
+  themes: ["@docusaurus/theme-mermaid"],
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
