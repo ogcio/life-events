@@ -222,12 +222,49 @@ export function emptyApplyJobseekersAllowance(): ApplyJobseekersAllowance {
   };
 }
 
+export type GetDigitalWallet = Base & {
+  firstName: string;
+  lastName: string;
+  hasReadIntro: boolean;
+  hasConfirmedPersonalDetails: boolean;
+  appStoreEmail: string;
+  myGovIdEmail: string;
+  govIEEmail: string;
+  lineManagerName: string;
+  jobTitle: string;
+  confirmedApplication: string;
+  rejectReason: string;
+  status: string;
+  submittedAt: string;
+};
+
+export function emptyGetDigitalWallet(): GetDigitalWallet {
+  return {
+    firstName: "",
+    lastName: "",
+    hasReadIntro: false,
+    hasConfirmedPersonalDetails: false,
+    appStoreEmail: "",
+    myGovIdEmail: "",
+    govIEEmail: "",
+    lineManagerName: "",
+    jobTitle: "",
+    confirmedApplication: "",
+    successfulAt: "",
+    rejectedAt: "",
+    rejectReason: "",
+    status: "",
+    submittedAt: "",
+  };
+}
+
 export type Workflow =
   | RenewDriversLicence
   | OrderEHIC
   | OrderBirthCertificate
   | NotifyDeath
-  | ApplyJobseekersAllowance;
+  | ApplyJobseekersAllowance
+  | GetDigitalWallet;
 
 // ===== workflow keys =====
 
@@ -255,6 +292,7 @@ export const keys = {
   housingBenefit: "housingBenefit",
   housingAssociationHomes: "housingAssociationHomes",
   housingOmbudsman: "housingOmbudsman",
+  getDigitalWallet: "getDigitalWallet",
 };
 
 // ===== categories =====
@@ -266,6 +304,7 @@ export const categories = {
   birth: "birth",
   employment: "employment",
   housing: "housing",
+  digitalWallet: "digital-wallet",
 };
 
 // ===== utils =====
@@ -304,7 +343,8 @@ export async function getFlowData<T extends Workflow>(
   defaultData: T,
 ) {
   // Session details
-  const { userId, email, firstName, lastName } = await PgSessions.get();
+  const { userId, email, firstName, lastName, myGovIdEmail } =
+    await PgSessions.get();
 
   const flowQuery = postgres.pgpool.query<{ data: Workflow }, [string, string]>(
     `
@@ -326,6 +366,18 @@ export async function getFlowData<T extends Workflow>(
 
   if ("email" in data) {
     data.email = email;
+  }
+
+  if ("firstName" in data) {
+    data.firstName = firstName;
+  }
+
+  if ("lastName" in data) {
+    data.lastName = lastName;
+  }
+
+  if ("myGovIdEmail" in data) {
+    data.myGovIdEmail = myGovIdEmail;
   }
 
   if (flowResult.rowCount) {

@@ -3,19 +3,28 @@
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*.js"
+  },
   "scripts": {
+    "dev": "rm -rf dist && tsc -w -p tsconfig.prod.json",
     "test": "TAP_RCFILE=tap.yml tap",
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint:fix": "eslint . --ext .ts --fix",
+    "list": "tsc --listFiles"
   },
   "keywords": [],
   "author": "samuele.salvatico@nearform.com",
   "license": "ISC",
   "dependencies": {
     "@fastify/error": "^3.4.1",
-    "fastify": "^4.26.2",
-    "logging-wrapper": "*"
+    "fastify": "^4.26.2"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",

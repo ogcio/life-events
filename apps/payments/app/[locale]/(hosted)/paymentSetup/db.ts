@@ -1,4 +1,5 @@
 import { PaymentRequestDO } from "../../../../types/common";
+import { ProviderType } from "./providers/types";
 
 export type PaymentRequestDetails = Pick<
   PaymentRequestDO,
@@ -10,10 +11,11 @@ export type PaymentRequestDetails = Pick<
   | "redirectUrl"
   | "allowAmountOverride"
   | "allowCustomAmount"
+  | "status"
 > & {
   providers: {
     name: string;
-    type: string;
+    type: ProviderType;
     id: string;
   }[];
 };

@@ -1,6 +1,9 @@
-import { LogErrorClasses } from "../src/logging-wrapper-entities";
+import { LogErrorClasses } from "../src/logging-wrapper-entities.js";
 import { t } from "tap";
-import { initializeServer, runErrorTest } from "./helpers/fastify-test-helpers";
+import {
+  initializeServer,
+  runErrorTest,
+} from "./helpers/fastify-test-helpers.js";
 
 t.test("Error data are correctly set", async () => {
   const { server, loggingDestination } = initializeServer();

@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
 import {
   ParamsWithProviderId,
@@ -11,82 +10,90 @@ import {
   CreateStripeProvider,
   CreateWorldpayProvider,
   CreateRealexProvider,
+  Id,
+  OkResponse,
 } from "../schemas";
 import { providerSecretsHandlersFactory } from "../../services/providersSecretsService";
+import { DbConstrainMap, handleDbError } from "../utils";
 
 export default async function providers(app: FastifyInstance) {
-  app.post<{ Body: CreateBankTransferProvider; Reply: { id: string } }>(
+  const dbConstrainMap: DbConstrainMap = {
+    unique_provider_name: {
+      field: "providerName",
+      message: "Provider's name must be unique!",
+    },
+  };
+
+  app.post<{ Body: CreateBankTransferProvider; Reply: Id }>(
     "/banktransfer",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
         body: CreateBankTransferProvider,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
       const userId = request.user?.id;
       const { name, type, data } = request.body;
 
-      const result = await app.pg.query(
-        `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
-            `,
-        [userId, name, type, "connected", data],
-      );
+      try {
+        const result = await app.pg.query(
+          `
+          INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+          VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+              `,
+          [userId, name, type, "connected", data],
+        );
 
-      reply.send({ id: result.rows[0].id });
+        reply.send({ id: result.rows[0].id });
+      } catch (err) {
+        app.log.error((err as Error).message);
+        handleDbError(err, dbConstrainMap);
+      }
     },
   );
 
-  app.post<{ Body: CreateOpenBankingProvider; Reply: { id: string } }>(
+  app.post<{ Body: CreateOpenBankingProvider; Reply: Id }>(
     "/openbanking",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
         body: CreateOpenBankingProvider,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
       const userId = request.user?.id;
       const { name, type, data } = request.body;
 
-      const result = await app.pg.query(
-        `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
-            `,
-        [userId, name, type, "connected", data],
-      );
+      try {
+        const result = await app.pg.query(
+          `
+          INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+          VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+              `,
+          [userId, name, type, "connected", data],
+        );
 
-      reply.send({ id: result.rows[0].id });
+        reply.send({ id: result.rows[0].id });
+      } catch (err) {
+        app.log.error((err as Error).message);
+        handleDbError(err, dbConstrainMap);
+      }
     },
   );
 
-  app.post<{ Body: CreateStripeProvider; Reply: { id: string } }>(
+  app.post<{ Body: CreateStripeProvider; Reply: Id }>(
     "/stripe",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
         body: CreateStripeProvider,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
@@ -96,30 +103,31 @@ export default async function providers(app: FastifyInstance) {
       const providerSecretsHandler = providerSecretsHandlersFactory(type);
       const cypheredData = providerSecretsHandler.getCypheredData(data);
 
-      const result = await app.pg.query(
-        `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
-            `,
-        [userId, name, type, "connected", cypheredData],
-      );
+      try {
+        const result = await app.pg.query(
+          `
+          INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+          VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+              `,
+          [userId, name, type, "connected", cypheredData],
+        );
 
-      reply.send({ id: result.rows[0].id });
+        reply.send({ id: result.rows[0].id });
+      } catch (err) {
+        app.log.error((err as Error).message);
+        handleDbError(err, dbConstrainMap);
+      }
     },
   );
 
-  app.post<{ Body: CreateWorldpayProvider; Reply: { id: string } }>(
+  app.post<{ Body: CreateWorldpayProvider; Reply: Id }>(
     "/worldpay",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
         body: CreateWorldpayProvider,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
@@ -129,30 +137,31 @@ export default async function providers(app: FastifyInstance) {
       const providerSecretsHandler = providerSecretsHandlersFactory(type);
       const cypheredData = providerSecretsHandler.getCypheredData(data);
 
-      const result = await app.pg.query(
-        `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
-            `,
-        [userId, name, type, "connected", cypheredData],
-      );
+      try {
+        const result = await app.pg.query(
+          `
+          INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+          VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+              `,
+          [userId, name, type, "connected", cypheredData],
+        );
 
-      reply.send({ id: result.rows[0].id });
+        reply.send({ id: result.rows[0].id });
+      } catch (err) {
+        app.log.error((err as Error).message);
+        handleDbError(err, dbConstrainMap);
+      }
     },
   );
 
-  app.post<{ Body: CreateRealexProvider; Reply: { id: string } }>(
+  app.post<{ Body: CreateRealexProvider; Reply: Id }>(
     "/realex",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
         body: CreateRealexProvider,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
@@ -162,15 +171,20 @@ export default async function providers(app: FastifyInstance) {
       const providerSecretsHandler = providerSecretsHandlersFactory(type);
       const cypheredData = providerSecretsHandler.getCypheredData(data);
 
-      const result = await app.pg.query(
-        `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
-            `,
-        [userId, name, type, "connected", cypheredData],
-      );
+      try {
+        const result = await app.pg.query(
+          `
+          INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
+          VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+              `,
+          [userId, name, type, "connected", cypheredData],
+        );
 
-      reply.send({ id: result.rows[0].id });
+        reply.send({ id: result.rows[0].id });
+      } catch (err) {
+        app.log.error((err as Error).message);
+        handleDbError(err, dbConstrainMap);
+      }
     },
   );
 
@@ -180,19 +194,7 @@ export default async function providers(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
-        response: {
-          200: Type.Array(
-            Type.Union([
-              Type.Object({
-                id: Type.String(),
-                name: Type.String(),
-                type: Type.String(),
-                data: Type.Any(),
-                status: Type.String(),
-              }),
-            ]),
-          ),
-        },
+        response: { 200: ProvidersList },
       },
     },
     async (request, reply) => {
@@ -208,6 +210,7 @@ export default async function providers(app: FastifyInstance) {
             status
           FROM payment_providers
           WHERE user_id = $1
+          ORDER BY created_at DESC
         `,
         [userId],
       );
@@ -230,13 +233,7 @@ export default async function providers(app: FastifyInstance) {
       schema: {
         tags: ["Providers"],
         response: {
-          200: Type.Object({
-            id: Type.String(),
-            name: Type.String(),
-            type: Type.String(),
-            data: Type.Any(),
-            status: Type.String(),
-          }),
+          200: Provider,
           400: HttpError,
         },
       },
@@ -279,18 +276,18 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.put<{ Body: UpdateProvider; Params: ParamsWithProviderId }>(
+  app.put<{
+    Body: UpdateProvider;
+    Params: ParamsWithProviderId;
+    Reply: OkResponse;
+  }>(
     "/:providerId",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
         body: UpdateProvider,
-        response: {
-          200: Type.Object({
-            ok: Type.Boolean(),
-          }),
-        },
+        response: { 200: OkResponse },
       },
     },
     async (request, reply) => {

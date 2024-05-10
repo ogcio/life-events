@@ -22,5 +22,6 @@
   },
   "env": {
     "node": true
-  }
+  },
+  "ignorePatterns": ["dist"]
 }

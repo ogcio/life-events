@@ -3,7 +3,7 @@ import {
   DEFAULT_METHOD,
   DEFAULT_PATH,
   initializeServer,
-} from "./helpers/fastify-test-helpers";
+} from "./helpers/fastify-test-helpers.js";
 
 t.test("Common error is managed as expected", async () => {
   const { server } = initializeServer();

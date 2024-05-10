@@ -2,39 +2,24 @@ import { getTranslations } from "next-intl/server";
 import { formatCurrency } from "../../../../../utils";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
-import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 import { notFound } from "next/navigation";
 import { TransactionStatuses } from "../../../../../../types/TransactionStatuses";
 import Link from "next/link";
+import { Payments } from "building-blocks-sdk";
 
 async function getTransactionDetails(transactionId: string) {
   const { userId } = await PgSessions.get();
-  let details;
-
-  try {
-    details = (
-      await buildApiClient(
-        userId,
-      ).transactions.apiV1TransactionsTransactionIdGet(transactionId)
-    ).data;
-  } catch (err) {
-    console.log(err);
-  }
-
-  return details;
+  return (await new Payments(userId).getTransactionDetails(transactionId)).data;
 }
 
 async function confirmTransaction(transactionId: string) {
   "use server";
 
   const { userId } = await PgSessions.get();
-  await buildApiClient(userId).transactions.apiV1TransactionsTransactionIdPatch(
-    transactionId,
-    {
-      status: TransactionStatuses.Succeeded,
-    },
-  );
+  await new Payments(userId).updateTransaction(transactionId, {
+    status: TransactionStatuses.Succeeded,
+  });
 
   revalidatePath("/");
 }
@@ -78,7 +63,7 @@ export default async function ({
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("lastUpdate")}</dt>
           <dt className="govie-summary-list__value">
-            {dayjs(details.updatedAt).format("DD/MM/YYYY")}
+            {dayjs(details.updatedAt).format("DD/MM/YYYY - HH:mm:ss")}
           </dt>
         </div>
         <div className="govie-summary-list__row">

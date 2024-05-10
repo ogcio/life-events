@@ -8,8 +8,8 @@ import dayjs from "dayjs";
 import { PgSessions } from "auth/sessions";
 import { RequestDetails } from "./RequestDetails";
 import Link from "next/link";
-import buildApiClient from "../../../../../../client/index";
 import { EmptyStatus } from "../../../../../components/EmptyStatus";
+import { Payments } from "building-blocks-sdk";
 
 export default async function ({
   params: { requestId, locale },
@@ -19,16 +19,9 @@ export default async function ({
 
   const { userId } = await PgSessions.get();
 
-  let transactions: Array<any> = [];
-  try {
-    transactions = (
-      await buildApiClient(
-        userId,
-      ).transactions.apiV1RequestsRequestIdTransactionsGet(requestId)
-    ).data;
-  } catch (err) {
-    console.log(err);
-  }
+  const transactions = (
+    await new Payments(userId).getPaymentRequestTransactions(requestId)
+  ).data;
 
   return (
     <div>
@@ -45,7 +38,7 @@ export default async function ({
         >
           <h2 className="govie-heading-m">{t("payments")}</h2>
 
-          {transactions.length === 0 ? (
+          {transactions?.length === 0 ? (
             <EmptyStatus
               title={t("empty.title")}
               description={t("empty.description")}
@@ -69,7 +62,7 @@ export default async function ({
                 </tr>
               </thead>
               <tbody className="govie-table__body">
-                {transactions.map((trx) => (
+                {transactions?.map((trx) => (
                   <tr className="govie-table__row" key={trx.transactionId}>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                       <strong
@@ -80,7 +73,7 @@ export default async function ({
                       </strong>
                     </td>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      {dayjs(trx.updatedAt).format("DD/MM/YYYY")}
+                      {dayjs(trx.updatedAt).format("DD/MM/YYYY - HH:mm")}
                     </td>
 
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">

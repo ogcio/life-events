@@ -32,6 +32,12 @@ const defaultFeatureFlags = {
   eventsMenu: {
     enabled: true,
   },
+  timeline: {
+    enabled: false,
+  },
+  digitalWallet: {
+    enabled: true,
+  },
 };
 
 export async function isFeatureFlagEnabled(
