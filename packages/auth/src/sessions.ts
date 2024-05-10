@@ -30,21 +30,7 @@ export interface Sessions {
       hasGovIdVerifiedAccount: boolean;
     }
   >;
-  set(session: Session): Promise<string>;
-  delete(key: string): Promise<void>;
   isAuthenticated(): Promise<boolean>;
-}
-
-export interface AuthServiceSessions {
-  get(): Promise<
-    SessionTokenDecoded & {
-      userId: string;
-      publicServant: boolean;
-      //The values below will likely be extracted from session token  once we integrate with GOV ID
-      myGovIdEmail: string;
-      hasGovIdVerifiedAccount: boolean;
-    }
-  >;
 }
 
 export const pgpool = new Pool({
@@ -103,57 +89,6 @@ export function decodeJwt(token: string) {
 
 export const PgSessions: Sessions = {
   async get() {
-    const sessionId = cookies().get("sessionId")?.value;
-    if (!sessionId) {
-      return redirect("/logout", RedirectType.replace);
-    }
-
-    const session = await getPgSession(sessionId); //PgSessions.get(sessionId);
-
-    if (!session) {
-      return redirect("/logout", RedirectType.replace);
-    }
-
-    return {
-      ...decodeJwt(session.token),
-      userId: session.userId,
-      publicServant: session.publicServant,
-      //The values below will likely be extracted from session token once we integrate with GOV ID
-      myGovIdEmail: "testMyGovIdEmail@test.com",
-      hasGovIdVerifiedAccount: true,
-    };
-  },
-  async set(session: Session) {
-    const query = await pgpool.query<{ id: string }, string[]>(
-      `INSERT INTO govid_sessions(token, user_id) VALUES($1, $2) RETURNING id`,
-      [session.token, session.userId],
-    );
-
-    if (!query.rowCount) {
-      throw new Error("failed to create session");
-    }
-
-    const [{ id }] = query.rows;
-    return id;
-  },
-  async delete(key: string) {
-    await pgpool.query("DELETE FROM govid_sessions WHERE id=$1", [key]);
-  },
-
-  async isAuthenticated() {
-    const sessionId = cookies().get("sessionId")?.value;
-    if (!sessionId) {
-      return false;
-    }
-
-    const session = await getPgSession(sessionId);
-
-    return !!session;
-  },
-};
-
-export const AuthServicePgSessions: AuthServiceSessions = {
-  async get() {
     const authServiceUrl = process.env.AUTH_SERVICE_URL;
 
     if (!authServiceUrl) {
@@ -181,6 +116,16 @@ export const AuthServicePgSessions: AuthServiceSessions = {
       myGovIdEmail: "testMyGovIdEmail@test.com",
       hasGovIdVerifiedAccount: true,
     };
+  },
+  async isAuthenticated() {
+    const sessionId = cookies().get("sessionId")?.value;
+    if (!sessionId) {
+      return false;
+    }
+
+    const session = await getPgSession(sessionId);
+
+    return !!session;
   },
 };
 

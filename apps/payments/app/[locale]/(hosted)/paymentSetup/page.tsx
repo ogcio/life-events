@@ -18,7 +18,7 @@ export default async function ({
   const t = await getTranslations("PaymentSetup.Payments");
   let transactions;
 
-  if (process.env.USE_LOGTO_AUTH) {
+  if (process.env.USE_LOGTO_AUTH === "true") {
     const user = await getUser();
     transactions = (await new Payments(user.id).getTransactions()).data;
   } else {

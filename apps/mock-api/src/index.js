@@ -53,14 +53,6 @@ fastify.get("/health", async function handler() {
   return { ping: "pong" };
 });
 
-fastify.register(import("@fastify/static"), {
-  root: path.join(__dirname, "stubs"),
-  prefix: "/static/",
-  index: "index.html",
-  list: false,
-  constraints: {},
-});
-
 fastify.register(autoload, {
   dir: path.join(__dirname, "stubs"),
   options: {

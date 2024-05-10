@@ -21,7 +21,7 @@ export default async function (props: Props) {
   const t = await getTranslations("MyPayments");
 
   let userId;
-  if (process.env.USE_LOGTO_AUTH) {
+  if (process.env.USE_LOGTO_AUTH === "true") {
     userId = (await getUser()).id;
   } else {
     userId = (await PgSessions.get()).userId;
