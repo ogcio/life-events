@@ -79,7 +79,7 @@ export default async function (props: Props) {
                     </strong>
                   </td>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    {dayjs(trx.updatedAt).format("DD/MM/YYYY")}
+                    {dayjs(trx.updatedAt).format("DD/MM/YYYY - HH:mm")}
                   </td>
 
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">

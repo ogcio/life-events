@@ -63,7 +63,7 @@ export default async function ({
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("lastUpdate")}</dt>
           <dt className="govie-summary-list__value">
-            {dayjs(details.updatedAt).format("DD/MM/YYYY")}
+            {dayjs(details.updatedAt).format("DD/MM/YYYY - HH:mm:ss")}
           </dt>
         </div>
         <div className="govie-summary-list__row">
