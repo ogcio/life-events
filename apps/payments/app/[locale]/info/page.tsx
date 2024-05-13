@@ -58,7 +58,7 @@ export default async (props: Props) => {
                 </a>
               </div>
               <div style={{ flex: "1 1 auto", maxWidth: "700px" }}>
-                <Image src={hero} alt="hero" width={500} />
+                <Image src={hero} alt={t("sections.main.title")} width={500} />
               </div>
             </div>
             <div className="govie-grid-column-full">
@@ -108,7 +108,11 @@ export default async (props: Props) => {
                 </p>
               </div>
               <div style={{ flex: "1 1 auto", maxWidth: "700px" }}>
-                <Image src={security} alt="hero" width={500} />
+                <Image
+                  src={security}
+                  alt={t("sections.security.title")}
+                  width={500}
+                />
               </div>
             </div>
 
@@ -132,13 +136,21 @@ export default async (props: Props) => {
                 }}
               >
                 <div>
-                  <Image src={interfaceCitizen} alt="hero" height={300} />
+                  <Image
+                    src={interfaceCitizen}
+                    alt={t("sections.interface.citizenPOV")}
+                    height={300}
+                  />
                   <p className="govie-body">
                     {t("sections.interface.citizenPOV")}
                   </p>
                 </div>
                 <div>
-                  <Image src={interfacePublicServant} alt="hero" height={300} />
+                  <Image
+                    src={interfacePublicServant}
+                    alt={t("sections.interface.publicServantPOV")}
+                    height={300}
+                  />
                   <p className="govie-body">
                     {t("sections.interface.publicServantPOV")}
                   </p>
