@@ -3,7 +3,7 @@ import "design-system/dist/esm/index.css";
 import "../styles/globals.scss";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import { RedirectType, redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { pgpool } from "../utils/postgres";
@@ -25,7 +25,7 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const { userId, firstName, lastName } = await AuthServicePgSessions.get();
+  const { userId, firstName, lastName } = await PgSessions.get();
 
   const userName = [firstName, lastName].join(" ");
 
