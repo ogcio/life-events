@@ -63,7 +63,7 @@ export default async function Card(props: {
 
   const t = await getTranslations("Common");
   if (!props.searchParams?.paymentId) {
-    return <h1>{t("notFound")}</h1>;
+    return redirect("/not-found", RedirectType.replace);
   }
 
   const paymentDetails = await getPaymentDetails(

@@ -6,7 +6,7 @@ import {
   getRealAmount,
   stringToAmount,
 } from "../../../../utils";
-import { notFound, redirect } from "next/navigation";
+import { notFound, redirect, RedirectType } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
 import { Payments } from "building-blocks-sdk";
@@ -32,9 +32,15 @@ type Props = {
 };
 
 async function getPaymentRequestDetails(paymentId: string, userId: string) {
-  const details = (
-    await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
-  ).data;
+  let details;
+
+  try {
+    details = (
+      await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
+    ).data;
+  } catch (err) {
+    redirect("error", RedirectType.replace);
+  }
 
   if (!details) {
     return undefined;
