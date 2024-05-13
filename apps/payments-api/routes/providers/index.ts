@@ -25,7 +25,8 @@ export default async function providers(app: FastifyInstance) {
         body: CreateProvider,
         response: {
           200: Id,
-          "4xx": HttpError,
+          401: HttpError,
+          422: HttpError,
           500: HttpError,
         },
       },
@@ -51,7 +52,7 @@ export default async function providers(app: FastifyInstance) {
         tags: ["Providers"],
         response: {
           200: ProvidersList,
-          "4xx": HttpError,
+          401: HttpError,
         },
       },
     },
@@ -76,7 +77,8 @@ export default async function providers(app: FastifyInstance) {
         tags: ["Providers"],
         response: {
           200: ProviderReply,
-          "4xx": HttpError,
+          401: HttpError,
+          404: HttpError,
         },
       },
     },
@@ -107,7 +109,9 @@ export default async function providers(app: FastifyInstance) {
         body: UpdateProvider,
         response: {
           200: OkResponse,
-          "4xx": HttpError,
+          401: HttpError,
+          404: HttpError,
+          422: HttpError,
         },
       },
     },

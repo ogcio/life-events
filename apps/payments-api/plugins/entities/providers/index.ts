@@ -76,7 +76,7 @@ const buildUpdateProvider =
     );
 
     if (mappingErrors.length) {
-      throw httpErrors.badRequest("Provider's data is invalid!");
+      throw httpErrors.unprocessableEntity("Provider's data is invalid!");
     }
 
     const secretFields = getSecretFields(provider.rows[0].type);
@@ -130,7 +130,7 @@ const buildCreateProvider =
     );
 
     if (mappingErrors.length) {
-      throw httpErrors.badRequest("Provider's data is invalid!");
+      throw httpErrors.unprocessableEntity("Provider's data is invalid!");
     }
 
     const secretFields = getSecretFields(createProvider.type);
