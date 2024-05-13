@@ -6,7 +6,7 @@ import {
   RealexPaymentObjectQueryParams,
 } from "../schemas";
 import { Type } from "@sinclair/typebox";
-import sectersHandlerFactory from "../../services/providersSecretsService";
+import secretsHandlerFactory from "../../services/providersSecretsService";
 import { RealexService } from "../../services/realexService";
 import { getSecretFields } from "../../plugins/entities/providers/dataMapper";
 
@@ -50,7 +50,7 @@ export default async function realex(app: FastifyInstance) {
       }
 
       const secretFields = getSecretFields("realex");
-      const { merchantId, sharedSecret } = sectersHandlerFactory
+      const { merchantId, sharedSecret } = secretsHandlerFactory
         .getInstance()
         .getClearTextData(provider.data, secretFields);
 
@@ -130,7 +130,7 @@ export default async function realex(app: FastifyInstance) {
       }
 
       const secretFields = getSecretFields("realex");
-      const { sharedSecret } = sectersHandlerFactory
+      const { sharedSecret } = secretsHandlerFactory
         .getInstance()
         .getClearTextData(provider.data, secretFields);
 

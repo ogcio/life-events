@@ -6,7 +6,7 @@ import {
 import fp from "fastify-plugin";
 import { ProvidersRepo } from "./repo";
 import { ReturnType } from "@sinclair/typebox";
-import sectersHandlerFactory from "../../../services/providersSecretsService";
+import secretsHandlerFactory from "../../../services/providersSecretsService";
 import { HttpErrors } from "@fastify/sensible";
 import { getSecretFields, mapProviderData } from "./dataMapper";
 import {
@@ -15,11 +15,11 @@ import {
   ProviderDO,
   UpdateProviderDO,
 } from "./types";
-import { DbConstrainMap, handleDbError } from "../../../routes/utils";
+import { DbConstraintMap, handleDbError } from "../../../routes/utils";
 
 export type ProvidersPlugin = Awaited<ReturnType<typeof buildPlugin>>;
 
-const dbConstrainMap: DbConstrainMap = {
+const dbConstraintMap: DbConstraintMap = {
   unique_provider_name: {
     field: "providerName",
     message: "Provider's name must be unique!",
@@ -46,7 +46,7 @@ const buildGetProviderById =
 
     return {
       ...provider,
-      data: sectersHandlerFactory
+      data: secretsHandlerFactory
         .getInstance()
         .getClearTextData(provider.data, secretFields) as ProviderData,
     };
@@ -80,11 +80,14 @@ const buildUpdateProvider =
     }
 
     const secretFields = getSecretFields(provider.rows[0].type);
-    providerData.data = sectersHandlerFactory
-      .getInstance()
-      .getCypheredData(mappedData, secretFields);
+    const providerEncrypted = {
+      ...providerData,
+      data: secretsHandlerFactory
+        .getInstance()
+        .getCypheredData(mappedData, secretFields),
+    };
 
-    repo.updateProvider(providerId, providerData, userId);
+    repo.updateProvider(providerId, providerEncrypted, userId);
   };
 
 const buildGetProvidersList =
@@ -106,7 +109,7 @@ const buildGetProvidersList =
       const secretFields = getSecretFields(provider.type);
       return {
         ...provider,
-        data: sectersHandlerFactory
+        data: secretsHandlerFactory
           .getInstance()
           .getClearTextData(provider.data, secretFields) as ProviderData,
       };
@@ -131,15 +134,19 @@ const buildCreateProvider =
     }
 
     const secretFields = getSecretFields(createProvider.type);
-    createProvider.data = sectersHandlerFactory
-      .getInstance()
-      .getCypheredData(mappedData, secretFields);
+
+    const providerEncrypted = {
+      ...createProvider,
+      data: secretsHandlerFactory
+        .getInstance()
+        .getCypheredData(mappedData, secretFields),
+    };
 
     try {
-      result = await repo.createProvider(createProvider, userId);
+      result = await repo.createProvider(providerEncrypted, userId);
     } catch (err) {
       log.error((err as Error).message);
-      handleDbError(err, dbConstrainMap);
+      handleDbError(err, dbConstraintMap);
     }
 
     if (!result?.rowCount) {

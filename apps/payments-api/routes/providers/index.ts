@@ -25,6 +25,8 @@ export default async function providers(app: FastifyInstance) {
         body: CreateProvider,
         response: {
           200: Id,
+          "4xx": HttpError,
+          500: HttpError,
         },
       },
     },
@@ -32,7 +34,7 @@ export default async function providers(app: FastifyInstance) {
       const userId = request.user?.id;
 
       if (!userId) {
-        throw app.httpErrors.unauthorized("User not found.");
+        throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
       const result = await app.providers.createProvider(request.body, userId);
@@ -47,15 +49,17 @@ export default async function providers(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
-        response: { 200: ProvidersList },
+        response: {
+          200: ProvidersList,
+          "4xx": HttpError,
+        },
       },
     },
     async (request, reply) => {
       const userId = request.user?.id;
 
       if (!userId) {
-        throw app.httpErrors.unauthorized("User not found.");
-
+        throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
       const providers = await app.providers.getProvidersList(userId);
@@ -72,7 +76,7 @@ export default async function providers(app: FastifyInstance) {
         tags: ["Providers"],
         response: {
           200: ProviderReply,
-          400: HttpError,
+          "4xx": HttpError,
         },
       },
     },
@@ -81,7 +85,7 @@ export default async function providers(app: FastifyInstance) {
       const { providerId } = request.params;
 
       if (!userId) {
-        throw app.httpErrors.unauthorized("User not found.");
+        throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
       const provider = await app.providers.getProviderById(providerId, userId);
@@ -90,14 +94,21 @@ export default async function providers(app: FastifyInstance) {
     },
   );
 
-  app.put<{ Body: UpdateProviderDO; Params: ParamsWithProviderId, Reply: OkResponse; }>(
+  app.put<{
+    Body: UpdateProviderDO;
+    Params: ParamsWithProviderId;
+    Reply: OkResponse;
+  }>(
     "/:providerId",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Providers"],
         body: UpdateProvider,
-        response: { 200: OkResponse },
+        response: {
+          200: OkResponse,
+          "4xx": HttpError,
+        },
       },
     },
     async (request, reply) => {
@@ -105,7 +116,7 @@ export default async function providers(app: FastifyInstance) {
       const { providerId } = request.params;
 
       if (!userId) {
-        throw app.httpErrors.unauthorized("User not found.");
+        throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
       await app.providers.updateProvider(providerId, request.body, userId);

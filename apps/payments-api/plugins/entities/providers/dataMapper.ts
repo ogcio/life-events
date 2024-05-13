@@ -93,8 +93,6 @@ export const providersDataMap = {
 const validateDataValue = (value: any, type: string) => {
   switch (type) {
     case "iban":
-      console.log(">>>>>>", value, ibanValidator("IE29AIBK93115212345678"));
-      console.log(">>>>>>", value, ibanValidator("IE29AIBK93115212345679"));
       return ibanValidator(value);
     default:
       return true;
@@ -105,7 +103,12 @@ export const mapProviderData = (
   data: Record<string, string>,
   type: ProviderTypes,
 ) => {
-  return Object.entries(providersDataMap[type]).reduce(
+  return Object.entries(providersDataMap[type]).reduce<
+    [
+      Record<string, string>,
+      Array<{ field: string; error: ProviderDataErrors }>,
+    ]
+  >(
     (acc, curr) => {
       const [key, props] = curr;
       const [dataObj, errors] = acc;
@@ -132,21 +135,21 @@ export const mapProviderData = (
 
       return acc;
     },
-    [{}, []] as [
-      Record<string, string>,
-      Array<{ field: string; error: ProviderDataErrors }>,
-    ],
+    [{}, []],
   );
 };
 
 export const getSecretFields = (type: ProviderTypes) => {
-  return Object.entries(providersDataMap[type]).reduce((acc, curr) => {
-    const [key, props] = curr;
+  return Object.entries(providersDataMap[type]).reduce<Array<string>>(
+    (acc, curr) => {
+      const [key, props] = curr;
 
-    if (props.isSecret) {
-      acc.push(key);
-    }
+      if (props.isSecret) {
+        acc.push(key);
+      }
 
-    return acc;
-  }, [] as Array<string>);
+      return acc;
+    },
+    [],
+  );
 };

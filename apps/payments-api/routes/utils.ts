@@ -8,12 +8,18 @@ export enum DbErrors {
   DuplicatedKey = "23505",
 }
 
-export type DbConstrainMap = Record<string, { field: string; message: string }>;
+export type DbConstraintMap = Record<
+  string,
+  { field: string; message: string }
+>;
 
-export const handleDbError = (err: unknown, dbConstrainMap: DbConstrainMap) => {
+export const handleDbError = (
+  err: unknown,
+  dbConstraintMap: DbConstraintMap,
+) => {
   if ((err as any).code === DbErrors.DuplicatedKey) {
     const constrainName = (err as any).constraint;
-    const constrainDetails = dbConstrainMap[constrainName];
+    const constrainDetails = dbConstraintMap[constrainName];
 
     const error = getValidationError(
       422,
