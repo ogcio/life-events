@@ -46,7 +46,7 @@ export async function build(opts?: FastifyServerOptions) {
     logo: {
       type: "image/png",
       content: Buffer.from(
-        fs.readFileSync(join(__dirname, "..", "logo.png")).toString("base64"),
+        fs.readFileSync(join(__dirname, "logo.png")).toString("base64"),
         "base64",
       ),
     },
