@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "rm -rf dist && tsc -w",
     "build": "rm -rf dist && tsc"
   },
   "exports": {
