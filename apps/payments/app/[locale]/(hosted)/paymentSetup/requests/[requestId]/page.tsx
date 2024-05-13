@@ -1,6 +1,7 @@
 import React from "react";
 import { getTranslations } from "next-intl/server";
 import {
+  errorHandler,
   formatCurrency,
   mapTransactionStatusColorClassName,
 } from "../../../../../utils";
@@ -19,9 +20,13 @@ export default async function ({
 
   const { userId } = await PgSessions.get();
 
-  const transactions = (
-    await new Payments(userId).getPaymentRequestTransactions(requestId)
-  ).data;
+  const { data: transactions, error } = await new Payments(
+    userId,
+  ).getPaymentRequestTransactions(requestId);
+
+  if (error) {
+    errorHandler(error);
+  }
 
   return (
     <div>

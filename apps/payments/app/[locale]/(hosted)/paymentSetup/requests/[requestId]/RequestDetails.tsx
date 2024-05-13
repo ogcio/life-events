@@ -1,6 +1,6 @@
 import React from "react";
 import { getTranslations } from "next-intl/server";
-import { formatCurrency } from "../../../../../utils";
+import { errorHandler, formatCurrency } from "../../../../../utils";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Tooltip from "../../../../../components/Tooltip";
@@ -24,15 +24,24 @@ async function closeDeleteModal() {
 async function deletePaymentRequest(requestId: string, userId: string) {
   "use server";
 
-  await new Payments(userId).deletePaymentRequest(requestId);
+  const { error } = await new Payments(userId).deletePaymentRequest(requestId);
+
+  if (error) {
+    errorHandler(error);
+  }
 
   redirect("/paymentSetup/requests");
 }
 
 async function hasTransactions(requestId: string, userId: string) {
-  const transactions = (
-    await new Payments(userId).getPaymentRequestTransactions(requestId)
-  ).data;
+  const { data: transactions, error } = await new Payments(
+    userId,
+  ).getPaymentRequestTransactions(requestId);
+
+  if (error) {
+    errorHandler(error);
+  }
+
   return transactions && transactions.length > 0;
 }
 
@@ -46,8 +55,13 @@ export const RequestDetails = async ({
   locale: string;
 }) => {
   const { userId } = await PgSessions.get();
-  const details = (await new Payments(userId).getPaymentRequest(requestId))
-    .data;
+  const { data: details, error } = await new Payments(userId).getPaymentRequest(
+    requestId,
+  );
+
+  if (error) {
+    errorHandler(error);
+  }
 
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tSetup = await getTranslations("PaymentSetup");

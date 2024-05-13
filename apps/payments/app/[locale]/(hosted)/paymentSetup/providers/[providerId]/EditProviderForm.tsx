@@ -4,6 +4,7 @@ import type { PropsWithChildren } from "react";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
+import { errorHandler } from "../../../../../utils";
 type Props = {
   provider: Provider;
   updateProviderAction: (formData: FormData) => void;
@@ -21,11 +22,15 @@ export default async ({
 
     const { userId } = await PgSessions.get();
 
-    await new Payments(userId).updateProvider(provider.id, {
+    const { error } = await new Payments(userId).updateProvider(provider.id, {
       name: provider.name,
       data: provider.data,
       status,
     });
+
+    if (error) {
+      errorHandler(error);
+    }
 
     redirect("./");
   }

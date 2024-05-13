@@ -71,6 +71,15 @@ export const ProviderStatus = Type.Union([
 ]);
 export type ProviderStatus = Static<typeof ProviderStatus>;
 
+export const ProviderData = Type.Union([
+  OpenBankingData,
+  BankTransferData,
+  StripeData,
+  RealexData,
+  WorldpayData,
+]);
+export type ProviderData = Static<typeof ProviderData>;
+
 export const BankTransferProvider = Type.Object({
   id: Type.String(),
   name: Type.String(),
@@ -180,7 +189,7 @@ export const ProviderDetails = Type.Object({
     Type.Literal("realex"),
   ]),
   status: ProviderStatus,
-  data: Type.Any(),
+  data: ProviderData,
   createdAt: Type.String(),
 });
 

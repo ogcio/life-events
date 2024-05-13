@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 
 import {
+  errorHandler,
   formatCurrency,
   getRealAmount,
   stringToAmount,
@@ -32,14 +33,12 @@ type Props = {
 };
 
 async function getPaymentRequestDetails(paymentId: string, userId: string) {
-  let details;
+  const { data: details, error } = await new Payments(
+    userId,
+  ).getPaymentRequestPublicInfo(paymentId);
 
-  try {
-    details = (
-      await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
-    ).data;
-  } catch (err) {
-    redirect("error", RedirectType.replace);
+  if (error) {
+    errorHandler(error);
   }
 
   if (!details) {

@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import WorldpayFields from "../add-worldpay/WorldpayFields";
 import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
+import { errorHandler } from "../../../../../utils";
 
 type Props = {
   provider: WorldpayProvider;
@@ -26,11 +27,15 @@ export default async ({ provider }: Props) => {
       installationId,
     };
 
-    await new Payments(userId).updateProvider(provider.id, {
+    const { error } = await new Payments(userId).updateProvider(provider.id, {
       name: providerName,
       data: providerData,
       status: provider.status,
     });
+
+    if (error) {
+      errorHandler(error);
+    }
 
     redirect("./");
   }

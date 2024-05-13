@@ -725,7 +725,55 @@ paths:
                               - type: string
                                 enum:
                                   - disconnected
-                          data: {}
+                          data:
+                            anyOf:
+                              - type: object
+                                properties:
+                                  iban:
+                                    validator: IBANValidator
+                                    type: string
+                                  accountHolderName:
+                                    type: string
+                                required:
+                                  - iban
+                                  - accountHolderName
+                              - type: object
+                                properties:
+                                  iban:
+                                    validator: IBANValidator
+                                    type: string
+                                  accountHolderName:
+                                    type: string
+                                required:
+                                  - iban
+                                  - accountHolderName
+                              - type: object
+                                properties:
+                                  livePublishableKey:
+                                    type: string
+                                  liveSecretKey:
+                                    type: string
+                                required:
+                                  - livePublishableKey
+                                  - liveSecretKey
+                              - type: object
+                                properties:
+                                  merchantId:
+                                    type: string
+                                  sharedSecret:
+                                    type: string
+                                required:
+                                  - merchantId
+                                  - sharedSecret
+                              - type: object
+                                properties:
+                                  merchantCode:
+                                    type: string
+                                  installationId:
+                                    type: string
+                                required:
+                                  - merchantCode
+                                  - installationId
                           createdAt:
                             type: string
                         required:
@@ -942,7 +990,55 @@ paths:
                             - type: string
                               enum:
                                 - disconnected
-                        data: {}
+                        data:
+                          anyOf:
+                            - type: object
+                              properties:
+                                iban:
+                                  validator: IBANValidator
+                                  type: string
+                                accountHolderName:
+                                  type: string
+                              required:
+                                - iban
+                                - accountHolderName
+                            - type: object
+                              properties:
+                                iban:
+                                  validator: IBANValidator
+                                  type: string
+                                accountHolderName:
+                                  type: string
+                              required:
+                                - iban
+                                - accountHolderName
+                            - type: object
+                              properties:
+                                livePublishableKey:
+                                  type: string
+                                liveSecretKey:
+                                  type: string
+                              required:
+                                - livePublishableKey
+                                - liveSecretKey
+                            - type: object
+                              properties:
+                                merchantId:
+                                  type: string
+                                sharedSecret:
+                                  type: string
+                              required:
+                                - merchantId
+                                - sharedSecret
+                            - type: object
+                              properties:
+                                merchantCode:
+                                  type: string
+                                installationId:
+                                  type: string
+                              required:
+                                - merchantCode
+                                - installationId
                         createdAt:
                           type: string
                       required:
@@ -1125,7 +1221,55 @@ paths:
                             - type: string
                               enum:
                                 - disconnected
-                        data: {}
+                        data:
+                          anyOf:
+                            - type: object
+                              properties:
+                                iban:
+                                  validator: IBANValidator
+                                  type: string
+                                accountHolderName:
+                                  type: string
+                              required:
+                                - iban
+                                - accountHolderName
+                            - type: object
+                              properties:
+                                iban:
+                                  validator: IBANValidator
+                                  type: string
+                                accountHolderName:
+                                  type: string
+                              required:
+                                - iban
+                                - accountHolderName
+                            - type: object
+                              properties:
+                                livePublishableKey:
+                                  type: string
+                                liveSecretKey:
+                                  type: string
+                              required:
+                                - livePublishableKey
+                                - liveSecretKey
+                            - type: object
+                              properties:
+                                merchantId:
+                                  type: string
+                                sharedSecret:
+                                  type: string
+                              required:
+                                - merchantId
+                                - sharedSecret
+                            - type: object
+                              properties:
+                                merchantCode:
+                                  type: string
+                                installationId:
+                                  type: string
+                              required:
+                                - merchantCode
+                                - installationId
                         createdAt:
                           type: string
                       required:

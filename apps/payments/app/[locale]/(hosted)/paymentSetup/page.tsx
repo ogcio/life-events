@@ -3,6 +3,7 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import { PgSessions } from "auth/sessions";
 import {
+  errorHandler,
   formatCurrency,
   mapTransactionStatusColorClassName,
 } from "../../../utils";
@@ -16,14 +17,20 @@ export default async function ({
   params: { locale: string };
 }) {
   const t = await getTranslations("PaymentSetup.Payments");
-  let transactions;
+  let userId;
 
   if (process.env.USE_LOGTO_AUTH) {
-    const user = await getUser();
-    transactions = (await new Payments(user.id).getTransactions()).data;
+    userId = (await getUser()).id;
   } else {
-    const { userId } = await PgSessions.get();
-    transactions = (await new Payments(userId).getTransactions()).data;
+    userId = (await PgSessions.get()).userId;
+  }
+
+  const { data: transactions, error } = await new Payments(
+    userId,
+  ).getTransactions();
+
+  if (error) {
+    errorHandler(error);
   }
 
   return (

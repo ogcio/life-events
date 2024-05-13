@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import StripeFields from "../add-stripe/StripeFields";
 import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
+import { errorHandler } from "../../../../../utils";
 
 type Props = {
   provider: StripeProvider;
@@ -26,11 +27,15 @@ export default async ({ provider }: Props) => {
       liveSecretKey,
     };
 
-    await new Payments(userId).updateProvider(provider.id, {
+    const { error } = await new Payments(userId).updateProvider(provider.id, {
       name: providerName,
       data: providerData,
       status: provider.status,
     });
+
+    if (error) {
+      errorHandler(error);
+    }
 
     redirect("./");
   }

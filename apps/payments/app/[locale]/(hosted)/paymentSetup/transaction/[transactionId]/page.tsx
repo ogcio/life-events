@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { formatCurrency } from "../../../../../utils";
+import { errorHandler, formatCurrency } from "../../../../../utils";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import { PgSessions } from "auth/sessions";
@@ -10,16 +10,31 @@ import { Payments } from "building-blocks-sdk";
 
 async function getTransactionDetails(transactionId: string) {
   const { userId } = await PgSessions.get();
-  return (await new Payments(userId).getTransactionDetails(transactionId)).data;
+  const { data: result, error } = await new Payments(
+    userId,
+  ).getTransactionDetails(transactionId);
+
+  if (error) {
+    errorHandler(error);
+  }
+
+  return result;
 }
 
 async function confirmTransaction(transactionId: string) {
   "use server";
 
   const { userId } = await PgSessions.get();
-  await new Payments(userId).updateTransaction(transactionId, {
-    status: TransactionStatuses.Succeeded,
-  });
+  const { error } = await new Payments(userId).updateTransaction(
+    transactionId,
+    {
+      status: TransactionStatuses.Succeeded,
+    },
+  );
+
+  if (error) {
+    errorHandler(error);
+  }
 
   revalidatePath("/");
 }
