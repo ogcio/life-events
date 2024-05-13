@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import * as jose from "jose";
-import { cookies, headers } from "next/headers.js";
+import { cookies } from "next/headers.js";
 import { redirect, RedirectType } from "next/navigation.js";
 
 type GovIdJwtPayload = {
@@ -33,18 +33,6 @@ export interface Sessions {
   set(session: Session): Promise<string>;
   delete(key: string): Promise<void>;
   isAuthenticated(): Promise<boolean>;
-}
-
-export interface AuthServiceSessions {
-  get(): Promise<
-    SessionTokenDecoded & {
-      userId: string;
-      publicServant: boolean;
-      //The values below will likely be extracted from session token  once we integrate with GOV ID
-      myGovIdEmail: string;
-      hasGovIdVerifiedAccount: boolean;
-    }
-  >;
 }
 
 export const pgpool = new Pool({
@@ -149,38 +137,6 @@ export const PgSessions: Sessions = {
     const session = await getPgSession(sessionId);
 
     return !!session;
-  },
-};
-
-export const AuthServicePgSessions: AuthServiceSessions = {
-  async get() {
-    const authServiceUrl = process.env.AUTH_SERVICE_URL;
-
-    if (!authServiceUrl) {
-      throw Error("Missing env var AUTH_SERVICE_URL");
-    }
-
-    const logoutUrl = `${authServiceUrl}/auth/logout?redirectUrl=${process.env.HOST_URL}${headers().get("x-pathname") || ""}`;
-
-    const sessionId = cookies().get("sessionId")?.value;
-    if (!sessionId) {
-      return redirect(logoutUrl, RedirectType.replace);
-    }
-
-    const session = await getPgSession(sessionId); //PgSessions.get(sessionId);
-
-    if (!session) {
-      return redirect(logoutUrl, RedirectType.replace);
-    }
-
-    return {
-      ...decodeJwt(session.token),
-      userId: session.userId,
-      publicServant: session.publicServant,
-      //The values below will likely be extracted from session token once we integrate with GOV ID
-      myGovIdEmail: "testMyGovIdEmail@test.com",
-      hasGovIdVerifiedAccount: true,
-    };
   },
 };
 

@@ -133,11 +133,7 @@ export default ({ showHamburgerButton, locale }: THeaderProps) => {
           <NotificationsLink locale={locale} />
           <UserIcon />
 
-          <Link
-            href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
-            prefetch={false}
-            className={styles.logoutLink}
-          >
+          <Link href="/logout" prefetch={false} className={styles.logoutLink}>
             <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
           </Link>
         </div>
