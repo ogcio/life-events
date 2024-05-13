@@ -26,7 +26,7 @@ export default async function tasks(app: FastifyInstance) {
       await app.pg.pool.query(
         `
             insert into scheduled_events(
-                webhook_url, webhoob_auth, execute_at
+                webhook_url, webhook_auth, execute_at
             ) values ${args.join(", ")}
         `,
         values,

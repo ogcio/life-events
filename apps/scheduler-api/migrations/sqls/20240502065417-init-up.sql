@@ -2,7 +2,7 @@
 create table scheduled_events(
     id uuid not null default gen_random_uuid() primary key,
     webhook_url text not null,
-    webhoob_auth text,
+    webhook_auth text,
     execute_at timestamptz not null,
     event_status text not null default 'pending',
     retries int default 0 check (retries >= 0),

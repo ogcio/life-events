@@ -23,18 +23,7 @@ paths:
       responses:
         "200":
           description: Default Response
-  /api/v1/messages/scheduled-message/{id}:
-    post:
-      parameters:
-        - schema:
-            type: string
-          in: path
-          name: id
-          required: true
-      responses:
-        "200":
-          description: Default Response
-  /api/v1/messages/scheduled-template/{id}:
+  /api/v1/messages/jobs/{id}:
     post:
       parameters:
         - schema:

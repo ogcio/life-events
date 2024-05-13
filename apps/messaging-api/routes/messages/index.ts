@@ -1,9 +1,272 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
-
+import createError from "@fastify/error";
 import { mailService } from "../providers/services";
-import { utils, organisationId } from "../../utils";
+import { utils, organisationId, HttpError } from "../../utils";
 import { awsSnsSmsService } from "../../services/sms/aws";
+import { setTimeout as lulz } from "timers/promises";
+import { Pool } from "pg";
+
+type scheduledMessageByTemplateStatus =
+  | "pending"
+  | "working"
+  | "failed"
+  | "delivered";
+
+async function scheduleMessage(
+  pool: Pool,
+  messageId: string,
+  userId: string,
+): Promise<HttpError | undefined> {
+  const client = await pool.connect();
+  let error: HttpError | undefined;
+  console.log("Bror vi hustlar message", messageId, userId);
+  try {
+    client.query("BEGIN");
+
+    const messageUser = await client
+      .query<{ transports: string[] }>(
+        `
+      update messages set 
+        is_delivered = true,
+        updated_at = now()
+      where id = $1
+      returning preferred_transports as "transports"
+    `,
+        [messageId],
+      )
+      .then((res) => res.rows.at(0));
+
+    if (!messageUser) {
+      throw new Error(`failed to find message for id ${messageId}`);
+    }
+
+    const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
+    await client.query(
+      `
+      update jobs set delivery_status = $1
+      where job_id = $2 and user_id = $3
+    `,
+      [statusDelivered, messageId, userId],
+    );
+
+    // TODO send transports
+
+    client.query("COMMIT");
+  } catch (err) {
+    client.query("ROLLBACK");
+
+    if (err instanceof Error && "message" in err) {
+      error = utils.buildApiError(err.message, 500);
+    }
+    error = utils.buildApiError(JSON.stringify(err), 500); // ??
+  } finally {
+    client.release();
+  }
+  return error;
+}
+
+async function scheduledTemplate(
+  pool: Pool,
+  scheduledId: string,
+  userId: string,
+): Promise<HttpError | undefined> {
+  // Chaos factor
+  // if (~~(Math.random() * 100) > 20) {
+  //   // Took too long!
+  //   if (~~(Math.random() * 100) > 30) {
+  //     // await new Promise((resolve) => setTimeout(resolve, 7000));
+  //     await lulz(7000);
+  //     return;
+  //   }
+
+  //   // Just plain old internal error
+  //   console.log("Lite fel 500");
+  //   // reply.statusCode = 500;
+  //   return utils.buildApiError("lite fel", 500);
+  // }
+
+  const templateMeta = await pool
+    .query<{
+      id: string;
+      preferredTransports: string[];
+      security: string;
+      messageType: string;
+    }>(
+      `
+      select 
+        template_meta_id as "id",
+        message_security as "security",
+        preferred_transports as "preferredTransports",
+        message_type as "messageType"
+      from scheduled_message_by_templates
+      where id = $1
+  `,
+      [scheduledId],
+    )
+    .then((res) => res.rows.at(0));
+
+  if (!templateMeta) {
+    // We log here and return 500 so scheduler can keep failing until max retries hit to signal further admin.
+    return utils.buildApiError(
+      `failed to get any scheduled message by template for id ${scheduledId}`,
+      500, // Or 404
+    );
+  }
+
+  // Let's just get the language the user expects. Need to check the user api what they prefer
+  // but also fallback if there's no template for the lang
+  const templateContents = await pool
+    .query<{
+      subject: string;
+      excerpt: string;
+      richText: string;
+      plainText: string;
+      lang: string;
+    }>(
+      `
+    select 
+        subject, 
+        excerpt, 
+        rich_text as "richText", 
+        plain_text as "plainText",
+        lang
+    from message_template_contents
+    where template_meta_id = $1 
+    `,
+      [templateMeta.id],
+    )
+    .then((res) => res.rows);
+
+  if (!templateContents.length) {
+    const error = utils.buildApiError(
+      `failed to find a template for meta id ${templateMeta.id}`,
+      400,
+    );
+    return error;
+  }
+
+  // TODO some kind of default logic here
+  const templateContent =
+    templateContents.find((tmpl) => tmpl?.lang === "en") ??
+    templateContents.at(0)!; // We know there's items in the list at this point.
+
+  // The interpolations will come from a table once we set to create a message from a scheduler
+  const interpolationsResult = await pool
+    .query<{
+      key: string;
+      value: string;
+    }>(
+      `
+    select 
+      interpolation_key as "key", 
+      interpolation_value as "value" 
+    from message_template_interpolations
+    where message_by_template_id = $1
+  `,
+      [scheduledId],
+    )
+    .then((res) => res.rows);
+
+  const interpolations = interpolationsResult.reduce<Record<string, string>>(
+    function reducer(acc, pair) {
+      acc[pair.key] = pair.value;
+      return acc;
+    },
+    {},
+  );
+
+  const interpolationKeys = Object.keys(interpolations);
+  const interpolationReducer = utils.interpolationReducer(interpolations);
+
+  const subject = interpolationKeys.reduce(
+    interpolationReducer,
+    templateContent.subject,
+  );
+
+  const plainText = interpolationKeys.reduce(
+    interpolationReducer,
+    templateContent.plainText,
+  );
+
+  const richText = interpolationKeys.reduce(
+    interpolationReducer,
+    templateContent.richText,
+  );
+
+  const excerpt = interpolationKeys.reduce(
+    interpolationReducer,
+    templateContent.excerpt,
+  );
+
+  // transportationSubject = subject;
+  // transportationBody = richText || plainText;
+  // transportationExcerpt = excerpt;
+
+  // Values for each language insert
+  const values = [
+    "true",
+    subject,
+    excerpt,
+    richText,
+    plainText,
+    templateContent.lang,
+    organisationId,
+    templateMeta.security,
+    subject, // message name, no idea what we're supposed to put here...
+    subject, //thread name, no idea how this correlates with a template
+    templateMeta.preferredTransports
+      ? utils.postgresArrayify(templateMeta.preferredTransports)
+      : null,
+    templateMeta.messageType,
+    userId,
+  ];
+
+  // A job is tied to one user. We dont need any magic
+  let error: HttpError | undefined;
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query(
+      `
+        insert into messages(
+          is_delivered,
+          subject,
+          excerpt, 
+          rich_text,
+          plain_text,
+          lang,
+          organisation_id,
+          security_level,
+          message_name,
+          thread_name,
+          preferred_transports,
+          message_type,
+          user_id
+        ) values (${values.map((_, i) => `$${i + 1}`).join(", ")})
+    `,
+      values,
+    );
+
+    const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
+    await client.query(
+      `
+          update jobs set delivery_status = $1
+          where job_id = $2
+      `,
+      [statusDelivered, scheduledId],
+    );
+
+    await client.query("COMMIT");
+  } catch (err) {
+    error = utils.buildApiError("failed to create message from template", 500);
+    // Update delivery status?
+    await client.query("ROLLBACK");
+  } finally {
+    client.release;
+  }
+  return error;
+}
 
 interface GetAllMessages {
   Querystring: {
@@ -42,273 +305,106 @@ interface CreateMessage {
   };
 }
 
+type JobType = "message" | "template";
+
 export default async function messages(app: FastifyInstance) {
   app.post<{ Params: { id: string } }>(
-    "/scheduled-message/:id",
+    "/jobs/:id",
     {},
-    async function scheduledMessageHandler(request, reply) {
-      const id = request.params.id;
-      const client = await app.pg.connect();
-      try {
-        client.query("BEGIN");
+    async function jobHandler(request, reply) {
+      const jobId = request.params.id;
+      const statusWorking: scheduledMessageByTemplateStatus = "working";
+      const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
 
-        const messageUser = await client
-          .query<{ userId: string; transports: string[] }>(
+      let job:
+        | {
+            jobId: string;
+            userId: string;
+            type: JobType;
+            status: scheduledMessageByTemplateStatus;
+          }
+        | undefined;
+
+      const client = await app.pg.pool.connect();
+      try {
+        client.query("begin");
+        const jobStatusResult = await client.query<{
+          status: scheduledMessageByTemplateStatus;
+        }>(
+          `
+          select coalesce(delivery_status, 'pending') as "status" from jobs where id = $1
+          and case when delivery_status is not null then delivery_status != $2 else true end
+      `,
+          [jobId, statusDelivered],
+        );
+
+        if (!jobStatusResult.rowCount) {
+          throw new Error("job doesn't exist");
+        }
+
+        const jobStatus = jobStatusResult.rows.at(0)?.status;
+
+        if (jobStatus === "working") {
+          throw new Error("job is already in progress");
+        }
+
+        job = await client
+          .query<{
+            userId: string;
+            jobId: string;
+            type: JobType;
+            status: scheduledMessageByTemplateStatus;
+          }>(
             `
-          update messages set 
-            is_delivered = true,
-            updated_at = now()
-          where id = $1
-          returning user_id as "userId", preferred_transports as "transports"
-        `,
-            [id],
+          update jobs set delivery_status = $1
+          where id = $2
+          returning 
+          user_id as "userId",
+          job_type as "type",
+          job_id as "jobId"
+      `,
+            [statusWorking, jobId],
           )
           .then((res) => res.rows.at(0));
 
-        // TODO get stuff for user id and send transports
-        console.log({ messageUser });
-
-        client.query("COMMIT");
+        client.query("commit");
       } catch (err) {
-        console.log("fel vid commit i message delivery", err);
-        client.query("ROLLBACK");
+        // log failed to even query job
+        client.query("rollback");
       } finally {
         client.release();
       }
-    },
-  );
 
-  app.post<{ Params: { id: string } }>(
-    "/scheduled-template/:id",
-    {},
-    async function scheduledTemplateHandler(request, reply) {
-      const scheduledId = request.params.id;
-
-      const templateMeta = await app.pg.pool
-        .query<{
-          id: string;
-          preferredTransports: string[];
-          security: string;
-          messageType: string;
-        }>(
-          `
-        select 
-          template_meta_id as "id" ,
-          preferred_transports as "preferredTransports",
-          message_security as "security",
-          message_type as "messageType"
-        from scheduled_message_by_templates
-        where id = $1
-      `,
-          [scheduledId],
-        )
-        .then((res) => res.rows.at(0));
-
-      if (!templateMeta) {
-        throw Error("failed to get scheduled template");
+      if (!job?.userId || !job.type) {
+        // What should we actually do here? Just 500 , let scheduled exhaust retries and log? This is a critical data error
+        reply.statusCode = 500;
+        return;
       }
 
-      const userIds = await app.pg.pool
-        .query<{ userId: string }>(
-          `
-        select user_id as "userId" from scheduled_message_by_template_users
-        where message_by_template_id = $1
-      `,
-          [scheduledId],
-        )
-        .then((res) => res.rows.map((row) => row.userId));
-
-      if (!userIds.length) {
-        throw Error("failed to get users");
+      let error: HttpError | undefined;
+      if (job.type === "template") {
+        error = await scheduledTemplate(app.pg.pool, job.jobId, job.userId);
+      } else if (job.type === "message") {
+        error = await scheduleMessage(app.pg.pool, job.jobId, job.userId);
       }
 
-      const templateContents = await app.pg.pool
-        .query<{
-          subject: string;
-          excerpt: string;
-          richText: string;
-          plainText: string;
-          lang: string;
-        }>(
+      if (error) {
+        console.log(error);
+        const statusFailed: scheduledMessageByTemplateStatus = "failed";
+        // log
+        await app.pg.pool.query(
           `
-        select 
-            subject, 
-            excerpt, 
-            rich_text as "richText", 
-            plain_text as "plainText", 
-            lang 
-        from message_template_contents
-        where template_meta_id = $1
+          update jobs set delivery_status = $1
+          where id = $2
         `,
-          [templateMeta.id],
-        )
-        .then((res) => res.rows);
-
-      if (!templateContents.length) {
-        const error = utils.buildApiError(
-          `no template for id ${templateMeta.id}`,
-          400,
+          [statusFailed, jobId],
         );
         reply.statusCode = error.statusCode;
-        return error;
+        return;
       }
 
-      // No users preference api (yet). Use this code when it's available
-      // const languagesToConsider = users.reduce(
-      //   utils.reduceUserLang,
-      //   new Set<string>(),
-      // );
-      const languagesToConsider = new Set<string>(["en"]);
-      const templates = templateContents.filter(
-        utils.templateFilter(languagesToConsider),
-      );
-
-      // Each sub array of args is the full list of eg. [$1, $2, $5] per user/message. Goal is to join to a "($1,$2), ($1,$3) ..." string
-      const valuesByLang: Record<
-        string,
-        { args: string[][]; values: (string | null)[]; initSize: number }
-      > = {};
-
-      // The interpolations will come from a table once we set to create a message from a scheduler
-      const interpolationsBro = await app.pg.pool
-        .query<{
-          key: string;
-          value: string;
-        }>(
-          `
-        select 
-          interpolation_key as "key", 
-          interpolation_value as "value" 
-        from message_template_interpolations
-        where message_by_template_id = $1
-      `,
-          [scheduledId],
-        )
-        .then((res) => res.rows);
-
-      console.log(interpolationsBro);
-      const interpolations = interpolationsBro.reduce<Record<string, string>>(
-        function reducer(acc, pair) {
-          acc[pair.key] = pair.value;
-          return acc;
-        },
-        {},
-      );
-
-      const interpolationKeys = Object.keys(interpolations);
-      const interpolationReducer = utils.interpolationReducer(interpolations);
-      const baseargs: string[] = [];
-
-      for (const template of templates) {
-        const subject = interpolationKeys.reduce(
-          interpolationReducer,
-          template.subject,
-        );
-
-        const plainText = interpolationKeys.reduce(
-          interpolationReducer,
-          template.plainText,
-        );
-
-        const richText = interpolationKeys.reduce(
-          interpolationReducer,
-          template.richText,
-        );
-
-        const excerpt = interpolationKeys.reduce(
-          interpolationReducer,
-          template.excerpt,
-        );
-
-        // transportationSubject = subject;
-        // transportationBody = richText || plainText;
-        // transportationExcerpt = excerpt;
-
-        // Values for each language insert
-        const values = [
-          "true",
-          subject,
-          excerpt,
-          richText,
-          plainText,
-          template.lang,
-          organisationId,
-          templateMeta.security,
-          subject, // message name, no idea what we're supposed to put here...
-          subject, //thread name, no idea how this correlates with a template
-          templateMeta.preferredTransports
-            ? utils.postgresArrayify(templateMeta.preferredTransports)
-            : null,
-          templateMeta.messageType,
-        ];
-
-        const valuesSize = values.length;
-
-        if (!baseargs.length) {
-          baseargs.push(
-            ...[...new Array(valuesSize)].map((_, i) => `$${i + 1}`),
-          );
-        }
-
-        valuesByLang[template.lang] = {
-          args: [],
-          values,
-          initSize: valuesSize,
-        };
-
-        let i = valuesByLang[template.lang].initSize;
-        // gotta filter the users here on their preferred language...
-        for (const userid of userIds) {
-          valuesByLang[template.lang].values.push(userid);
-          valuesByLang[template.lang].args.push([...baseargs, `$${i + 1}`]);
-          i += 1;
-        }
-
-        const client = await app.pg.connect();
-        let error: ReturnType<typeof utils.buildApiError> | undefined;
-        try {
-          await client.query("BEGIN");
-          for (const lang of Object.keys(valuesByLang)) {
-            let messageQuery = `
-          insert into messages(
-            is_delivered,
-            subject,
-            excerpt, 
-            rich_text,
-            plain_text,
-            lang,
-            organisation_id,
-            security_level,
-            message_name,
-            thread_name,
-            preferred_transports,
-            message_type,
-            user_id
-          )
-          values ${valuesByLang[lang].args.map((arr) => `(${arr.join(", ")})`).join(", ")}
-        `;
-
-            await client.query(messageQuery, valuesByLang[lang].values);
-          }
-          await client.query("COMMIT");
-        } catch (err) {
-          await client.query("ROLLBACK");
-          app.log.error(err);
-          error = {
-            message: "internal error",
-            statusCode: 500,
-          };
-        } finally {
-          client.release();
-        }
-
-        if (error) {
-          reply.statusCode = error.statusCode;
-          throw app.httpErrors.internalServerError(error.message);
-        }
-
-        reply.statusCode = 201;
-      }
+      reply.statusCode = 202;
+      return;
     },
   );
 
@@ -526,12 +622,6 @@ export default async function messages(app: FastifyInstance) {
         return error;
       }
 
-      console.log("KOKOKO", template);
-
-      let transportationSubject: string | undefined;
-      let transportationBody: string | undefined;
-      let transportationExcerpt: string | undefined;
-
       if (message) {
         const {
           links,
@@ -544,9 +634,6 @@ export default async function messages(app: FastifyInstance) {
           subject,
           lang,
         } = message;
-        transportationSubject = message.subject;
-        transportationBody = message.richText ?? message.plainText;
-        transportationExcerpt = message.excerpt;
 
         const values: (string | null)[] = [];
         const args: string[] = [];
@@ -604,22 +691,57 @@ export default async function messages(app: FastifyInstance) {
           .query<{ id: string; userId: string }>(insertQuery, values)
           .then((res) => res.rows);
 
+        // Create jobs
+        const jobType = "message";
+        const jobArgs: string[] = [];
+        const jobValues: string[] = [jobType];
+        let argIndex = jobValues.length;
+        for (const id of ids) {
+          jobArgs.push(`($1, $${++argIndex}, $${++argIndex})`);
+          jobValues.push(id.id, id.userId);
+        }
+
+        const jobs = await app.pg.pool
+          .query<{ id: string; userId: string }>(
+            `
+          insert into jobs(job_type, job_id, user_id)
+          values ${jobArgs.join(", ")}
+          returning id as "id", user_id as "userId"
+        `,
+            jobValues,
+          )
+          .then((res) => res.rows);
+
+        const body = jobs.map((job) => {
+          const callbackUrl = new URL(
+            `/api/v1/messages/jobs/${job.id}`,
+            "http:localhost:8002",
+          );
+
+          return {
+            webhookUrl: callbackUrl.toString(),
+            webhookAuth: job.userId, // Update when we're not using x-user-id as auth
+            executeAt: scheduleAt,
+          };
+        });
+
         const url = new URL("/api/v1/tasks", "http://localhost:8004");
         await fetch(url.toString(), {
           method: "POST",
           body: JSON.stringify(
-            ids.map((id) => {
-              const callbackUrl = new URL(
-                `/api/v1/messages/scheduled-message/${id.id}`,
-                "http:localhost:8002",
-              );
+            // ids.map((id) => {
+            //   const callbackUrl = new URL(
+            //     `/api/v1/messages/scheduled-message/${id.id}`,
+            //     "http:localhost:8002",
+            //   );
 
-              return {
-                webhookUrl: callbackUrl.toString(),
-                webhookAuth: id.userId,
-                executeAt: scheduleAt,
-              };
-            }),
+            //   return {
+            //     webhookUrl: callbackUrl.toString(),
+            //     webhookAuth: id.userId,
+            //     executeAt: scheduleAt,
+            //   };
+            // }),
+            body,
           ),
         });
       } else if (template) {
@@ -627,8 +749,16 @@ export default async function messages(app: FastifyInstance) {
 
         try {
           client.query("begin");
-          // Base
-          const baseId = await client
+          // // Create schedules for n users and then jobs returning job_id and user_id
+
+          // const schedules = await client.query<{ id: string }>(`
+          //   insert into scheduled_message_by_templates(template_meta_id, preferred_transports, message_type)
+          // `);
+
+          // // send a body with job_id and user_id
+
+          // Dragons
+          const scheduleBase = await client
             .query<{ id: string }>(
               `
                 insert into scheduled_message_by_templates(template_meta_id, preferred_transports, message_type)
@@ -643,79 +773,80 @@ export default async function messages(app: FastifyInstance) {
             )
             .then((res) => res.rows.at(0));
 
-          console.log("hoho? ", baseId);
-          if (!baseId?.id) {
+          if (!scheduleBase?.id) {
+            // TODO LOG
+            // TODO set status code eg
             throw Error(
               `failed to insert schedule message by template for template id ${template.id}`,
             );
           }
 
-          const values: string[] = [baseId.id];
+          const values: string[] = [scheduleBase.id, "template"];
           const args: string[] = [];
 
-          let i = 1;
+          let i = values.length;
           for (const userId of userIds) {
-            args.push(`($1, $${++i})`);
+            args.push(`($1, $2, $${++i})`);
             values.push(userId);
           }
 
-          console.log(
-            "users ids",
-            values,
-            `
-          insert into scheduled_message_by_template_users(message_by_template_id, user_id)
-          values ${args.join(", ")}
-        `,
-          );
-          // Link users to base
-          await client.query(
-            `
-              insert into scheduled_message_by_template_users(message_by_template_id, user_id)
+          console.log(args, values);
+
+          // Create a job for each user.
+          if (args.length) {
+            // NOTE user id is only used for the temporary authentication
+            const jobs = await client
+              .query<{ id: string; userId: string }>(
+                `
+              insert into jobs(job_id, job_type, user_id) 
               values ${args.join(", ")}
-            `,
-            values,
-          );
+              returning id, user_id as "userId"
+              `,
+                values,
+              )
+              .then((res) => res.rows);
 
-          // Store interpolation key/values to base
-          const interpolationKeys = Object.keys(template.interpolations);
-          if (interpolationKeys.length) {
-            const values = [baseId.id];
-            const args = [];
+            const body = jobs.map((job) => {
+              const callback = new URL(
+                `/api/v1/messages/jobs/${job.id}`,
+                "http://localhost:8002",
+              );
+              return {
+                executeAt: scheduleAt,
+                webhookAuth: job.userId,
+                webhookUrl: callback.toString(),
+              };
+            });
 
-            let i = 1;
-            for (const key of interpolationKeys) {
-              args.push(`($1, $${++i}, $${++i})`);
-              values.push(key, template.interpolations[key]);
-            }
+            // Store interpolation key/values to base
+            const interpolationKeys = Object.keys(template.interpolations);
+            if (interpolationKeys.length) {
+              const values = [scheduleBase.id];
+              const args = [];
 
-            console.log("yolo i interpolation ", values, args);
-            await client.query(
-              `
+              let i = 1;
+              for (const key of interpolationKeys) {
+                args.push(`($1, $${++i}, $${++i})`);
+                values.push(key, template.interpolations[key]);
+              }
+
+              console.log("yolo i interpolation ", values, args);
+              await client.query(
+                `
               insert into message_template_interpolations(message_by_template_id, interpolation_key, interpolation_value)
               values ${args.join(", ")}
               `,
-              values,
-            );
+                values,
+              );
+            }
+
+            // TODO .env
+            const url = new URL("/api/v1/tasks", "http://localhost:8004");
+            await fetch(url.toString(), {
+              method: "POST",
+              body: JSON.stringify(body),
+            });
           }
-
-          const url = new URL("/api/v1/tasks", "http://localhost:8004");
-          await fetch(url.toString(), {
-            method: "POST",
-            body: JSON.stringify(
-              userIds.map((userId) => {
-                const callbackUrl = new URL(
-                  `/api/v1/messages/scheduled-template/${baseId.id}`,
-                  "http:localhost:8002",
-                );
-
-                return {
-                  webhookUrl: callbackUrl.toString(),
-                  webhookAuth: userId,
-                  executeAt: scheduleAt,
-                };
-              }),
-            ),
-          });
 
           client.query("commit");
         } catch (err) {

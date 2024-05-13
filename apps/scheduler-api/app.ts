@@ -68,24 +68,24 @@ export async function build(opts?: FastifyServerOptions) {
 
   app.register(sensible);
 
-  app.setErrorHandler((error, request, reply) => {
-    app.log.error(error);
-    if (
-      error instanceof Error &&
-      (error.name !== "error" || !!error.validation)
-    ) {
-      reply.status(error.statusCode || 500).send({
-        error: STATUS_CODES[error.statusCode || 500],
-        message: error.message,
-        name: error.name,
-        validation: error.validation,
-        validationContext: error.validationContext,
-        statusCode: error.statusCode || 500,
-      });
-      return;
-    }
-    reply.code(500).type("application/json").send({ error });
-  });
+  // app.setErrorHandler((error, request, reply) => {
+  //   app.log.error(error);
+  //   if (
+  //     error instanceof Error &&
+  //     (error.name !== "error" || !!error.validation)
+  //   ) {
+  //     reply.status(error.statusCode || 500).send({
+  //       error: STATUS_CODES[error.statusCode || 500],
+  //       message: error.message,
+  //       name: error.name,
+  //       validation: error.validation,
+  //       validationContext: error.validationContext,
+  //       statusCode: error.statusCode || 500,
+  //     });
+  //     return;
+  //   }
+  //   reply.code(500).type("application/json").send({ error });
+  // });
 
   return app;
 }
