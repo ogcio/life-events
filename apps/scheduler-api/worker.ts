@@ -2,6 +2,13 @@ import { FastifyInstance } from "fastify";
 
 type WebhookCallbackStatus = "delivered" | "error" | "timeout";
 
+type Config = {
+  size: number;
+  interval: number;
+  callbackTimeout: number;
+  maxRetries: number;
+};
+
 async function callbackWebHooks(
   callbackTimeoutMs: number,
   events: {
@@ -60,6 +67,7 @@ async function unitOfWork(
   processId: string,
   batchSize: number,
   callbackTimeoutMs: number,
+  maxRetries: number,
 ) {
   try {
     // Todo add some identitifcation for the process to scheduled events table so we know who is locking the row
@@ -69,13 +77,13 @@ async function unitOfWork(
         `
         with selection as (
           select id from scheduled_events 
-          where event_status = 'pending' and execute_at <= now()
+          where event_status = 'pending' and execute_at <= now() and retries <= $1
           order by 
             case when retries > 0 then retries end desc,
             case when retries = 0 then 0 end,
             execute_at
           for update skip locked
-          limit $1
+          limit $2
         )
         update scheduled_events set event_status = 'handling'
         where id in (select id from selection)
@@ -85,7 +93,7 @@ async function unitOfWork(
           scheduled_events.webhook_auth as "webhookAuth"
       
     `,
-        [batchSize],
+        [maxRetries, batchSize],
       )
       .then((res) => res.rows);
 
@@ -140,35 +148,46 @@ async function unitOfWork(
 function workWithTimeoutRecursive(
   id: string,
   app: FastifyInstance,
-  config: { size: number; intervalMs: number; callbackLimitMs: number },
+  config: Config,
 ) {
   const timeout = setTimeout(async () => {
-    const { size, callbackLimitMs } = config;
-    unitOfWork(app, id, size, callbackLimitMs);
+    const { size, callbackTimeout, maxRetries } = config;
+    unitOfWork(app, id, size, callbackTimeout, maxRetries);
     clearTimeout(timeout);
     workWithTimeoutRecursive(id, app, config);
-  }, config.intervalMs);
+  }, config.interval);
 }
 
-export async function workwork(app: FastifyInstance, id: string) {
-  const { interval, size } = await app.pg.pool
-    .query<{ interval: number; size: number }>(
+export async function worker(app: FastifyInstance, id: string) {
+  const config = await app.pg.pool
+    .query<{
+      interval: number;
+      size: number;
+      maxRetries: number;
+      callbackTimeout: number;
+    }>(
       `
   select 
     base_interval_ms as interval,
-    select_size as size
+    select_size as size,
+    max_retries as "maxRetries",
+    http_callback_timeout_ms as "callbackTimeout"
   from config
   `,
     )
-    .then((res) => res.rows.at(0) || { size: 200, interval: 10 * 1000 });
+    .then(
+      (res) =>
+        res.rows.at(0) || {
+          size: 200,
+          interval: 10 * 1000,
+          callbackTimeout: 5000,
+          maxRetries: 5,
+        },
+    );
 
   return {
     start() {
-      workWithTimeoutRecursive(id, app, {
-        intervalMs: interval,
-        size,
-        callbackLimitMs: 5000,
-      });
+      workWithTimeoutRecursive(id, app, config);
     },
   };
 }

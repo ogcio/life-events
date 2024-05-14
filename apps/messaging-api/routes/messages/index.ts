@@ -72,19 +72,19 @@ async function scheduledTemplate(
   userId: string,
 ): Promise<HttpError | undefined> {
   // Chaos factor
-  // if (~~(Math.random() * 100) > 20) {
-  //   // Took too long!
-  //   if (~~(Math.random() * 100) > 30) {
-  //     // await new Promise((resolve) => setTimeout(resolve, 7000));
-  //     await lulz(7000);
-  //     return;
-  //   }
+  if (~~(Math.random() * 100) > 20) {
+    // Took too long!
+    if (~~(Math.random() * 100) > 30) {
+      // await new Promise((resolve) => setTimeout(resolve, 7000));
+      await lulz(7000);
+      return;
+    }
 
-  //   // Just plain old internal error
-  //   console.log("Lite fel 500");
-  //   // reply.statusCode = 500;
-  //   return utils.buildApiError("lite fel", 500);
-  // }
+    // Just plain old internal error
+    console.log("Lite fel 500");
+    // reply.statusCode = 500;
+    return utils.buildApiError("lite fel", 500);
+  }
 
   const templateMeta = await pool
     .query<{
@@ -383,22 +383,42 @@ export default async function messages(app: FastifyInstance) {
 
       let error: HttpError | undefined;
       if (job.type === "template") {
-        error = await scheduledTemplate(app.pg.pool, job.jobId, job.userId);
+        try {
+          error = await scheduledTemplate(app.pg.pool, job.jobId, job.userId);
+        } catch (err) {
+          const msg =
+            err instanceof Error && "message" in err
+              ? err.message
+              : "failed to create message from template job";
+          error = utils.buildApiError(msg, 500);
+        }
       } else if (job.type === "message") {
-        error = await scheduleMessage(app.pg.pool, job.jobId, job.userId);
+        try {
+          error = await scheduleMessage(app.pg.pool, job.jobId, job.userId);
+        } catch (err) {
+          const msg =
+            err instanceof Error && "message" in err
+              ? err.message
+              : "failed to create message job";
+          error = utils.buildApiError(msg, 500);
+        }
       }
 
       if (error) {
         console.log(error);
         const statusFailed: scheduledMessageByTemplateStatus = "failed";
         // log
-        await app.pg.pool.query(
-          `
-          update jobs set delivery_status = $1
-          where id = $2
-        `,
-          [statusFailed, jobId],
-        );
+        try {
+          await app.pg.pool.query(
+            `
+            update jobs set delivery_status = $1
+            where id = $2
+            `,
+            [statusFailed, jobId],
+          );
+        } catch (err) {
+          // log again?
+        }
         reply.statusCode = error.statusCode;
         return;
       }

@@ -1,12 +1,13 @@
 import { writeFile } from "fs/promises";
 
 import { build } from "./app";
-import { workwork } from "./worker";
+import { worker } from "./worker";
 import { randomUUID } from "crypto";
 
 const app = await build({ logger: true });
 // TODO Check if we can get the docker container id or something from somewhere
-const scheduler = await workwork(app, randomUUID().toString());
+
+const scheduler = await worker(app, randomUUID().toString());
 
 app.listen({ host: "0.0.0.0", port: 8004 }, (err, address) => {
   if (err) {
@@ -16,7 +17,6 @@ app.listen({ host: "0.0.0.0", port: 8004 }, (err, address) => {
   console.log(`app listening at ${address}`);
 });
 
-// Put in env so we can start N amount of schedulers
 scheduler.start();
 
 await app.ready();
