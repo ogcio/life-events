@@ -49,9 +49,7 @@ export default async function login(app: FastifyInstance) {
         return reply.redirect(redirectUrl);
       }
 
-      if (redirectUrl) {
-        setCookie(request, reply, "redirectUrl", redirectUrl, app.config);
-      }
+      setCookie(request, reply, "redirectUrl", redirectUrl, app.config);
 
       const stream = fs.createReadStream(
         path.join(__dirname, "..", "static", "index.html"),
@@ -84,8 +82,6 @@ export default async function login(app: FastifyInstance) {
       const sessionId = request.cookies.sessionId;
 
       await app.pg.query("DELETE FROM govid_sessions WHERE id=$1", [sessionId]);
-
-      deleteCookie(request, reply, "sessionId", "", app.config);
 
       return reply.redirect(
         `/auth?${new URLSearchParams(request.query).toString()}`,
