@@ -21,11 +21,10 @@ parameters:
 variables:
   - name: pushArtefacts
     value: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}
-  - name: varFile
-    ${{ if containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}:
-      value: ${{ coalesce(variables.Build.SourceBranchName, 'dev') }}
-    ${{ else }}:
-      value: 'dev'
+  - ${{ if containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}:
+    - template: pipeline-variables/${{ coalesce(variables.Build.SourceBranchName, 'fallback') }}.yml
+  - ${{ else }}:
+    - template: pipeline-variables/dev.yml
 
 stages:
   - stage: securityScan
@@ -53,8 +52,6 @@ stages:
   - ${{ each serviceName in parameters.services }}:
     - stage: Build_${{ replace(serviceName, '-', '_') }}
       displayName: Build ${{ serviceName }}
-      variables:
-      - template: pipeline-variables/${{ variables.varFile }}.yml
       dependsOn: 
         - securityScan
         - BuildDeps
@@ -67,8 +64,6 @@ stages:
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
       condition: ${{ variables.pushArtefacts }}
-      variables:
-      - template: pipeline-variables/${{ variables.varFile }}.yml
       jobs:
       - template: pipeline-templates/push_image.yml
         parameters:
@@ -78,8 +73,6 @@ stages:
     - stage: Deploy_${{ replace(serviceName, '-', '_') }}
       displayName: Deploy to ECS - ${{ serviceName }}
       dependsOn: Push_${{ replace(serviceName, '-', '_') }}
-      variables:
-      - template: pipeline-variables/${{ variables.varFile }}.yml
       jobs:
       - template: pipeline-templates/deploy_ecs.yml
         parameters:
