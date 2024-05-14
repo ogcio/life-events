@@ -21,20 +21,15 @@ export const handleDbError = (
     const constrainName = (err as any).constraint;
     const constrainDetails = dbConstraintMap[constrainName];
 
-    const error = getValidationError(
-      422,
-      (err as Error).message,
-      "Duplicated key",
-      [
-        getValidationPayload(
-          ValidationKeywords.INVALID,
-          constrainDetails?.message ?? (err as Error).message,
-          {
-            field: constrainDetails?.field,
-          },
-        ),
-      ],
-    );
+    const error = getValidationError((err as Error).message, "Duplicated key", [
+      getValidationPayload(
+        ValidationKeywords.INVALID,
+        constrainDetails?.message ?? (err as Error).message,
+        {
+          field: constrainDetails?.field,
+        },
+      ),
+    ]);
 
     throw error;
   }
