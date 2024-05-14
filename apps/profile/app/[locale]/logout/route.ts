@@ -5,8 +5,8 @@ import { AuthServicePgSessions } from "auth/sessions";
 export async function GET(request: Request) {
   const sessionCookie = cookies().get("sessionId");
   if (sessionCookie) {
-    AuthServicePgSessions.delete(sessionCookie.value);
-    cookies().delete(sessionCookie.name);
+    // AuthServicePgSessions.delete(sessionCookie.value);
+    // cookies().delete(sessionCookie.name);
   }
 
   const loginUrl = process.env.LOGIN_URL;
