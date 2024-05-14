@@ -91,7 +91,7 @@ export interface paths {
           };
         };
         /** @description Default Response */
-        401: {
+        400: {
           content: {
             "application/json": {
               statusCode: number;
@@ -103,7 +103,7 @@ export interface paths {
           };
         };
         /** @description Default Response */
-        422: {
+        401: {
           content: {
             "application/json": {
               statusCode: number;
@@ -229,6 +229,18 @@ export interface paths {
           };
         };
         /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+        /** @description Default Response */
         401: {
           content: {
             "application/json": {
@@ -242,18 +254,6 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
-          content: {
-            "application/json": {
-              statusCode: number;
-              code: string;
-              error: string;
-              message: string;
-              time: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        422: {
           content: {
             "application/json": {
               statusCode: number;
