@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { notFound, redirect } from "next/navigation";
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 import { routes, workflow, web } from "../../../../utils";
 import AddressForm from "../shared/AddressForm";
 import ApplicationSuccess from "./ApplicationSuccess";
@@ -365,7 +365,7 @@ const FormComponentsMap = {
 };
 
 export default async (props: web.NextPageProps) => {
-  const { userId } = await PgSessions.get();
+  const { userId } = await AuthServicePgSessions.get();
   const data = await workflow.getFlowData(
     workflow.keys.renewDriversLicence,
     workflow.emptyRenewDriversLicence(),

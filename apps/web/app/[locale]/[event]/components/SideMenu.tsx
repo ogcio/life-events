@@ -3,7 +3,7 @@ import ds from "design-system";
 import Timeline from "./Timeline";
 import { AbstractIntlMessages } from "next-intl";
 import styles from "./SideMenu.module.scss";
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 
 type SideMenuProps = {
   locale: string;
@@ -15,7 +15,7 @@ type SideMenuProps = {
 
 export default async ({ searchParams, messages, locale }: SideMenuProps) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
-  const { firstName, lastName, userId } = await PgSessions.get();
+  const { firstName, lastName, userId } = await AuthServicePgSessions.get();
 
   const username = [firstName, lastName].join(" ");
 

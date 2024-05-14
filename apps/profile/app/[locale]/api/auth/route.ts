@@ -1,2 +1,2 @@
-import authRoute from "auth/route";
+import authRoute from "auth/loginRoute";
 export const POST = authRoute;
