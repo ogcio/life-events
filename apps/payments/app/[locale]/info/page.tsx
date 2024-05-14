@@ -32,10 +32,7 @@ export default async (props: Props) => {
       >
         <Header />
 
-        <div
-          className="govie-width-container"
-          style={{ maxWidth: "1440px", width: "100%" }}
-        >
+        <div className="govie-width-container" style={{ maxWidth: "1440px" }}>
           <div style={{ width: "100%", margin: "0 auto", paddingTop: "40px" }}>
             <div
               style={{
@@ -58,7 +55,11 @@ export default async (props: Props) => {
                 </a>
               </div>
               <div style={{ flex: "1 1 auto", maxWidth: "700px" }}>
-                <Image src={hero} alt={t("sections.main.title")} width={500} />
+                <Image
+                  src={hero}
+                  alt={t("sections.main.title")}
+                  layout="responsive"
+                />
               </div>
             </div>
             <div className="govie-grid-column-full">
@@ -85,7 +86,7 @@ export default async (props: Props) => {
                 <Image
                   src={integration}
                   alt={t("sections.integration.title")}
-                  width={500}
+                  layout="responsive"
                 />
               </div>
             </div>
@@ -107,11 +108,11 @@ export default async (props: Props) => {
                   {t("sections.security.description")}
                 </p>
               </div>
-              <div style={{ flex: "1 1 auto", maxWidth: "700px" }}>
+              <div style={{ flex: "1 1 auto", maxWidth: "500px" }}>
                 <Image
                   src={security}
                   alt={t("sections.security.title")}
-                  width={500}
+                  layout="responsive"
                 />
               </div>
             </div>
@@ -135,21 +136,21 @@ export default async (props: Props) => {
                   justifyContent: "space-around",
                 }}
               >
-                <div>
+                <div style={{ flex: "1 1 auto", maxWidth: "400px" }}>
                   <Image
                     src={interfaceCitizen}
                     alt={t("sections.interface.citizenPOV")}
-                    height={300}
+                    layout="responsive"
                   />
                   <p className="govie-body">
                     {t("sections.interface.citizenPOV")}
                   </p>
                 </div>
-                <div>
+                <div style={{ flex: "1 1 auto", maxWidth: "400px" }}>
                   <Image
                     src={interfacePublicServant}
                     alt={t("sections.interface.publicServantPOV")}
-                    height={300}
+                    layout="responsive"
                   />
                   <p className="govie-body">
                     {t("sections.interface.publicServantPOV")}
