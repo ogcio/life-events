@@ -25,8 +25,8 @@ export default async function providers(app: FastifyInstance) {
         body: CreateProvider,
         response: {
           200: Id,
-          400: HttpError,
           401: HttpError,
+          422: HttpError,
           500: HttpError,
         },
       },
@@ -109,8 +109,8 @@ export default async function providers(app: FastifyInstance) {
         body: UpdateProvider,
         response: {
           200: OkResponse,
-          400: HttpError,
           401: HttpError,
+          422: HttpError,
           404: HttpError,
         },
       },
