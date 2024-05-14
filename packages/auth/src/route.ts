@@ -1,5 +1,5 @@
 import { cookies } from "next/headers.js";
-import { decodeJwt, pgpool, PgSessions } from "./sessions.js";
+import { decodeJwt, getPgSession, pgpool, PgSessions } from "./sessions.js";
 import { redirect, RedirectType } from "next/navigation.js";
 
 enum SAME_SITE_VALUES {
@@ -7,7 +7,7 @@ enum SAME_SITE_VALUES {
   NONE = "none",
 }
 
-function getSessionIdCookieConfig(req: Request, cookieValue: string) {
+export function getSessionIdCookieConfig(req: Request, cookieValue: string) {
   const cookieConfig = {
     name: "sessionId",
     value: cookieValue,

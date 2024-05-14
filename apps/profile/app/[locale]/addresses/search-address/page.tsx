@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 import Link from "next/link";
 import { form, routes } from "../../../utils";
 import { revalidatePath } from "next/cache";
@@ -8,7 +8,7 @@ import { NextPageProps } from "../../../../types";
 
 export default async (props: NextPageProps) => {
   const t = await getTranslations("AddressForm");
-  const { userId } = await PgSessions.get();
+  const { userId } = await AuthServicePgSessions.get();
   const errorT = await getTranslations("FormErrors");
   const { locale } = props.params;
   const errors = await form.getErrorsQuery(

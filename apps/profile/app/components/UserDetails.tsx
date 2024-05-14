@@ -1,4 +1,4 @@
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import dayjs from "dayjs";
 import ds from "design-system";
@@ -110,7 +110,7 @@ export default async () => {
 
   const red = ds.colours.ogcio.red;
 
-  const { userId } = await PgSessions.get();
+  const { userId } = await AuthServicePgSessions.get();
 
   const { data, error } = await new Profile(userId).getUser();
 

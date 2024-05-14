@@ -1,9 +1,9 @@
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 import ds from "design-system";
 import styles from "./SideMenu.module.scss";
 
 export default async () => {
-  const { firstName, lastName } = await PgSessions.get();
+  const { firstName, lastName } = await AuthServicePgSessions.get();
   const userName = [firstName, lastName].join(" ");
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
   return (

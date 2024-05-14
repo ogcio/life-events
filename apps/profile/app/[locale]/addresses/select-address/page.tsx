@@ -4,7 +4,7 @@ import { form, routes } from "../../../utils";
 import { revalidatePath } from "next/cache";
 import { Profile } from "building-blocks-sdk";
 import dayjs from "dayjs";
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { NextPageProps } from "../../../../types";
@@ -14,7 +14,8 @@ export default async (props: NextPageProps) => {
     searchParams,
     params: { locale },
   } = props;
-  const { userId, firstName, lastName, email } = await PgSessions.get();
+  const { userId, firstName, lastName, email } =
+    await AuthServicePgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
 
