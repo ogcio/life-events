@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import dayjs from "dayjs";
 import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
 import { getUser } from "../../../../../libraries/auth";
@@ -78,7 +79,7 @@ export default async function (props: Props) {
                     </strong>
                   </td>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    {new Date(trx.updatedAt).toLocaleDateString()}
+                    {dayjs(trx.updatedAt).format("DD/MM/YYYY - HH:mm")}
                   </td>
 
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">

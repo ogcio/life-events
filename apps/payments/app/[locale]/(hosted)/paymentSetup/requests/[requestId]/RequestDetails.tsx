@@ -5,9 +5,9 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Tooltip from "../../../../../components/Tooltip";
 import CopyLink from "./CopyBtn";
-import buildApiClient from "../../../../../../client/index";
 import { PgSessions } from "auth/sessions";
 import Modal from "../../../../../components/Modal";
+import { Payments } from "building-blocks-sdk";
 
 async function showDeleteModal() {
   "use server";
@@ -24,42 +24,31 @@ async function closeDeleteModal() {
 async function deletePaymentRequest(requestId: string, userId: string) {
   "use server";
 
-  await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdDelete(
-    requestId,
-  );
+  await new Payments(userId).deletePaymentRequest(requestId);
 
   redirect("/paymentSetup/requests");
 }
 
 async function hasTransactions(requestId: string, userId: string) {
   const transactions = (
-    await buildApiClient(
-      userId,
-    ).transactions.apiV1RequestsRequestIdTransactionsGet(requestId)
+    await new Payments(userId).getPaymentRequestTransactions(requestId)
   ).data;
-
-  return transactions.length > 0;
+  return transactions && transactions.length > 0;
 }
 
 export const RequestDetails = async ({
   requestId,
   action,
+  locale,
 }: {
   requestId: string;
   action: string | undefined;
+  locale: string;
 }) => {
   const { userId } = await PgSessions.get();
-  let details;
+  const details = (await new Payments(userId).getPaymentRequest(requestId))
+    .data;
 
-  try {
-    details = (
-      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-        requestId,
-      )
-    ).data;
-  } catch (err) {
-    console.log(err);
-  }
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tSetup = await getTranslations("PaymentSetup");
   const tCommon = await getTranslations("Common");
@@ -79,7 +68,7 @@ export const RequestDetails = async ({
 
   const integrationReference = requestId;
   const completePaymentLink = new URL(
-    `/paymentRequest/pay?paymentId=${requestId}&id=${integrationReference}`,
+    `${locale}/paymentRequest/pay?paymentId=${requestId}&id=${integrationReference}`,
     process.env.HOST_URL ?? "",
   ).toString();
 
@@ -142,6 +131,11 @@ export const RequestDetails = async ({
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.description")}</dt>
           <dt className="govie-summary-list__value">{details.description}</dt>
+        </div>
+
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("form.status.title")}</dt>
+          <dt className="govie-summary-list__value">{details.status}</dt>
         </div>
 
         {details.providers.map(({ name, type, id }) => (

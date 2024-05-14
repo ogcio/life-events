@@ -41,9 +41,16 @@
       "orderEHIC": "EHIC application",
       "applyJobseekersAllowance": "Jobseeker's Allowance application",
       "notifyDeath": "Death notification",
-      "orderBirthCertificate": "Birth certificate application"
+      "orderBirthCertificate": "Birth certificate application",
+      "getDigitalWallet": "Digital Wallet application"
     },
-    "reject": "Reject"
+    "reject": "Reject",
+    "get-digital-wallet": "Digital Wallet Onboarding",
+    "before-you-begin": "Before you begin",
+    "about-you": "About you",
+    "your-employment": "Your employment",
+    "your-device": "Your device",
+    "verify-mygovid-account": "Verify your MyGovID account"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -294,6 +301,67 @@
     "change": "Change",
     "continue": "Confirm and submit application"
   },
+  "GetDigitalWallet": {
+    "BeforeYouBeginForm": {
+      "title": "Before you begin",
+      "subTitle": "Please have the following information ready to proceed:",
+      "appStoreEmailAddress": "Your Apple or Android app store email address",
+      "myGovIdEmailAddress": "Your MyGovID email address",
+      "govIEEmaildAddress": "Your gov.ie work email address",
+      "continue": "Continue"
+    },
+    "AboutYou": {
+      "title": "About you",
+      "subTitle": "Please check and confirm the information below:",
+      "firstName": "First name <red>*</red>",
+      "lastName": "Last name <red>*</red>",
+      "myGovIdEmail": "MyGovID email <red>*</red>",
+      "submitText": "Confirm and continue"
+    },
+    "YourEmployment": {
+      "title": "Your employment",
+      "subTitle": "Please provide the information below:",
+      "lineManagerName": "Your line manager name <red>*</red>",
+      "govIEEmail": "Gov.ie work email <red>*</red>",
+      "jobTitle": "Your job title <red>*</red>",
+      "submitText": "Confirm and continue"
+    },
+    "YourDevice": {
+      "title": "Your device",
+      "subTitle": "Please provide the information below:",
+      "appStoreEmail": "Apple/Android app store email <red>*</red>",
+      "submitText": "Confirm and continue"
+    },
+    "DetailsSummary": {
+      "title": "Check your details",
+      "subTitle": "Please confirm the details below before proceeding with the application",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "myGovIdEmail": "MyGovID email",
+      "lineManagerName": "Your line manager name",
+      "govIEEmail": "Gov.ie work email",
+      "jobTitle": "Your job title",
+      "appStoreEmail": "Apple/Android app store email",
+      "change": "Change",
+      "submitText": "Confirm and continue"
+    },
+    "VerifyAccount": {
+      "title": "Verify your MyGovId account",
+      "whyVerifyFirstParagraph": "To gain access to all the services available through the Digital Wallet, you need to verify your basic MyGovID account.",
+      "whyVerifySecondParagraph": "Please follow <link>this link to the Gov.IE website</link> for instructions on how you can get verified.",
+      "whyVerifyThirdParagraph": "We will send you an email with a link to proceed with your Digital Wallet onboarding once you are verified."
+    },
+    "ChangeDetails": {
+      "firstName": "First name <red>*</red>",
+      "lastName": "Last name <red>*</red>",
+      "myGovIdEmail": "MyGovID email <red>*</red>",
+      "lineManagerName": "Your line manager name <red>*</red>",
+      "govIEEmail": "Gov.ie work email <red>*</red>",
+      "jobTitle": "Your job title <red>*</red>",
+      "appStoreEmail": "Apple/Android app store email <red>*</red>",
+      "submitText": "Confirm and continue"
+    }
+  },
   "PaymentSuccessful": {
     "panelTitle": "Your payment was successful",
     "panelReferenceText": "Your reference number",
@@ -338,7 +406,9 @@
     "orderBirthCertificateBody": "Once approved your birth certificate will be sent to you by post and you should receive it within 7 days.",
     "applyJobseekersAllowance": "Jobseeker's Allowance",
     "applyJobseekersAllowanceBody": "Someone from the Department of Social Protection will contact you using the details you provided.",
-    "date": "Date of application"
+    "date": "Date of application",
+    "getDigitalWalletBody": "Thank you for submitting your application, your request will be reviewed soon.",
+    "getDigitalWallet": "Digital wallet"
   },
   "RenewDriversLicence": {
     "title": "Renew your driving licence"
@@ -346,7 +416,7 @@
   "Generic": {
     "back": "Back"
   },
-  "EventsMenu": {
+  "HamburgerMenu": {
     "events": "Events",
     "aboutMe": "About me",
     "birth": "Birth",
@@ -355,7 +425,8 @@
     "employment": "Employment",
     "business": "Starting a business",
     "housing": "Housing",
-    "death": "Death"
+    "death": "Death",
+    "logout": "Logout"
   },
   "MyLifeEvents": {
     "lifeEvents": "My Life Events",
@@ -437,6 +508,22 @@
         "pre": "A line of text to support this statement",
         "mid": "You will be informed here once the application has been complete",
         "post": "Your allowance will begin on 1.2.24. Please update us if your employment changes",
+        "rejected": "{rejectedReason}"
+      }
+    },
+    "getDigitalWallet": {
+      "title": {
+        "base": "{hasGovIdVerifiedAccount, select, true {Get your digital wallet} false {Get ready for your digital wallet} other {Get ready for your digital wallet}}",
+        "pre": "Continue with your digital wallet application",
+        "mid": "Your digital wallet application is being processed",
+        "post": "Your digital wallet application is complete",
+        "rejected": "Your application for a digital wallet is rejected"
+      },
+      "description": {
+        "base": "{hasGovIdVerifiedAccount, select, true {Apply for the digital wallet pilot here} false {You need to secure your MyGov ID for the Digital Wallet pilot. <br></br> Find out more here} other {You need to secure your MyGov ID for the Digital Wallet pilot. <br></br> Find out more here}}",
+        "pre": "A line of text to support this statement",
+        "mid": "A line of text to support this statement",
+        "post": "You should now have access to your Digital Wallet",
         "rejected": "{rejectedReason}"
       }
     }
@@ -655,6 +742,19 @@
       "currentAddress": "Current address",
       "applyJobseekersAllowance": "Jobseeker's Allowance"
     },
+    "GetDigitalWalletDetails": {
+      "title": "Review Digital Wallet application",
+      "getDigitalWallet": "Digital Wallet copy",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "myGovIdEmail": "MyGovID email",
+      "govIEEmail": "Gov.ie work email",
+      "lineManagerName": "line manager name",
+      "jobTitle": "Job title",
+      "appStoreEmail": "Apple/Android app store email",
+      "reject": "Reject",
+      "approve": "Approve"
+    },
     "RejectReasonForm": {
       "title": "Reason for rejection",
       "inputLabel": "Provide the reason for the user to see",
@@ -674,7 +774,8 @@
       "orderEHIC": "Application for an EHIC",
       "orderBirthCertificate": "Application for a copy of the birth certificate",
       "notifyDeath": "Death notification",
-      "applyJobseekersAllowance": "Application for Jobseeker's Allowance"
+      "applyJobseekersAllowance": "Application for Jobseeker's Allowance",
+      "getDigitalWallet": "Application for a Digital Wallet"
     },
     "StatusMenu": {
       "all": "All",
@@ -724,7 +825,14 @@
       "PPSN": "PPSN",
       "referenceNumber": "12 digit reference number",
       "deceasedSurname": "surname",
-      "contactNumber": "contact number"
+      "contactNumber": "contact number",
+      "firstName": "first name",
+      "lastName": "last name",
+      "appStoreEmail": "email",
+      "myGovIdEmail": "email",
+      "govIEEmail": "email",
+      "lineManagerName": "line manager name",
+      "jobTitle": "job title"
     }
   },
   "Notifications": {

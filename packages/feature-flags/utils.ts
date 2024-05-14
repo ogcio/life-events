@@ -30,7 +30,13 @@ const defaultFeatureFlags = {
     enabled: true,
   },
   eventsMenu: {
+    enabled: true,
+  },
+  timeline: {
     enabled: false,
+  },
+  digitalWallet: {
+    enabled: true,
   },
 };
 

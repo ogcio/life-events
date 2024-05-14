@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { formatDate } from "../../../utils/web";
 import ds from "design-system";
-import { GroupedEvents, TimeLineData } from "../../timeline/Timeline";
+import { GroupedEvents } from "../../timeline/Timeline";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import getTimelineData from "@/data/getTimelineData";
 import EventTypeSelector from "./EventTypeSelector";
-import submitQuery_ from "../../timeline/actions/submitQuery";
-import { headers } from "next/headers";
 import SearchForm from "../../timeline/SearchForm";
+import { Timeline as TimelineClient } from "building-blocks-sdk";
+import { isFeatureFlagEnabled } from "feature-flags/utils";
 
 const Icon = ds.Icon;
 
@@ -21,10 +20,19 @@ type TimelineProps = {
   };
   locale: string;
   messages: AbstractIntlMessages;
+  userId: string;
 };
 
-export default async ({ searchProps, messages, locale }: TimelineProps) => {
-  const path = headers().get("x-pathname")?.toString();
+export default async ({
+  searchProps,
+  messages,
+  locale,
+  userId,
+}: TimelineProps) => {
+  const showTimeline = await isFeatureFlagEnabled("timeline");
+  if (!showTimeline) {
+    return;
+  }
 
   const t = await getTranslations("Timeline");
 
@@ -45,14 +53,9 @@ export default async ({ searchProps, messages, locale }: TimelineProps) => {
 
   queryParams.set("searchQuery", searchQuery);
 
-  const submitQuery = submitQuery_.bind(
-    null,
-    path,
-    new URLSearchParams(searchProps),
+  const timelineData = await new TimelineClient(userId).getTimelineData(
+    Object.fromEntries(queryParams),
   );
-
-  const timelineResponse = await getTimelineData(queryParams);
-  const timelineData: TimeLineData = await timelineResponse.json();
 
   return (
     <div style={{ height: "100" }}>
@@ -79,7 +82,7 @@ export default async ({ searchProps, messages, locale }: TimelineProps) => {
       >
         <div style={{ borderLeft: "1px solid #B1B4B6", paddingLeft: "10px" }}>
           {timelineData?.data &&
-            timelineData.data.reverse().map((yearObject) => {
+            timelineData.data.data.reverse().map((yearObject) => {
               return yearObject.months.map((monthObject) => {
                 const { events } = monthObject;
                 const groupedEvents: GroupedEvents = events.reduce(

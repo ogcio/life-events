@@ -3,6 +3,7 @@ import "design-system/dist/esm/index.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import FeedbackBanner from "../components/FeedbackBanner";
+import styles from "./layout.module.scss";
 
 export default async function RootLayout({
   children,
@@ -22,12 +23,9 @@ export default async function RootLayout({
           flexDirection: "column",
         }}
       >
-        <Header />
+        <Header locale={locale} />
         {/* All designs are made for 1440 px  */}
-        <div
-          className="govie-width-container"
-          style={{ maxWidth: "1440px", width: "100%" }}
-        >
+        <div className={styles.mainContainer}>
           <FeedbackBanner />
           <div style={{ margin: "0 auto", paddingTop: "20px" }}>{children}</div>
         </div>

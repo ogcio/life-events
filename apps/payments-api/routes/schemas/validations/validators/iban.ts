@@ -1,4 +1,5 @@
 import { ValidatorFn } from ".";
+import { getValidationPayload, ValidationKeywords } from "../utils";
 
 function mod97(str: string) {
   const first9 = str.substring(0, 9);
@@ -26,13 +27,11 @@ const validate: ValidatorFn = (value, field, errors) => {
   const valid = ibanValidator(value);
 
   if (!valid) {
-    errors.push({
-      keyword: "invalid",
-      message: "IBAN is not valid",
-      params: {
+    errors.push(
+      getValidationPayload(ValidationKeywords.INVALID, "IBAN is not valid", {
         field,
-      },
-    });
+      }),
+    );
   }
 
   return valid;

@@ -1,22 +1,26 @@
 import { getTranslations } from "next-intl/server";
 import { PaymentRequestDetails } from "./db";
-import { providerTypes } from "./providers/types";
-import buildApiClient from "../../../../client/index";
+import { Payments } from "building-blocks-sdk";
+import {
+  paymentMethodToProviderType,
+  paymentMethods,
+  providerTypeToPaymentMethod,
+} from "../../../utils";
 
 async function getRegisteredAccounts(userId: string) {
-  const providers = (await buildApiClient(userId).providers.apiV1ProvidersGet())
-    .data;
+  const providers = (await new Payments(userId).getProviders()).data;
 
   if (!providers) {
     return new Map();
   }
 
   const accounts = providers.reduce((acc, provider) => {
-    if (!acc.get(provider.type)) {
-      acc.set(provider.type, []);
+    const paymentMethod = providerTypeToPaymentMethod[provider.type];
+    if (!acc.get(paymentMethod)) {
+      acc.set(paymentMethod, []);
     }
 
-    acc.get(provider.type).push({
+    acc.get(paymentMethod).push({
       id: provider.id,
       name: provider.name,
     });
@@ -72,30 +76,28 @@ export default async function ({
             defaultValue={details?.description}
           ></textarea>
         </div>
-        {providerTypes.map((providerType, index) => {
-          // TODO: remove this line once worldpay is integrated
-          if (providerType === "worldpay") return null;
-          const provider = details?.providers.find(
-            (p) => p.type === providerType,
+        {paymentMethods.map((paymentMethod, index) => {
+          const provider = details?.providers.find((p) =>
+            paymentMethodToProviderType[paymentMethod].includes(p.type),
           );
           return (
             <div className="govie-form-group" key={index}>
               <label
-                htmlFor={`${providerType}-account`}
+                htmlFor={`${paymentMethod}-account`}
                 className="govie-label--s"
               >
-                {t(`form.paymentProvider.${providerType}`)}
+                {t(`form.paymentProvider.${paymentMethod}`)}
               </label>
               <br />
               <select
-                id={`${providerType}-account`}
-                name={`${providerType}-account`}
+                id={`${paymentMethod}-account`}
+                name={`${paymentMethod}-account`}
                 className="govie-select"
                 defaultValue={provider?.id}
                 style={{ width: "350px" }}
               >
                 <option value={""}>Disabled</option>
-                {(providerAccounts.get(providerType) ?? []).map((account) => (
+                {(providerAccounts.get(paymentMethod) ?? []).map((account) => (
                   <option key={account.id} value={account.id}>
                     {account.name}
                   </option>
@@ -186,6 +188,55 @@ export default async function ({
             required
             defaultValue={details?.redirectUrl}
           />
+        </div>
+
+        <h2 className="govie-heading-m">{t("form.status.header")}</h2>
+        <div
+          data-module="govie-radios"
+          className="govie-radios govie-radios--large"
+        >
+          <div className="govie-radios__item">
+            <input
+              id="active"
+              name="status"
+              type="radio"
+              value="active"
+              className="govie-radios__input"
+              defaultChecked={
+                typeof details === "undefined"
+                  ? true
+                  : details?.status === "active"
+              }
+            />
+            <label
+              className="govie-label--s govie-radios__label"
+              htmlFor="active"
+            >
+              {t("form.status.active")}
+              <p className="govie-body">{t("form.status.activeDescription")}</p>
+            </label>
+          </div>
+
+          <div className="govie-radios__item">
+            <input
+              id="inactive"
+              name="status"
+              type="radio"
+              value="inactive"
+              className="govie-radios__input"
+              defaultChecked={details?.status === "inactive"}
+            />
+
+            <label
+              className="govie-label--s govie-radios__label"
+              htmlFor="inactive"
+            >
+              {t("form.status.inactive")}
+              <p className="govie-body">
+                {t("form.status.inactiveDescription")}
+              </p>
+            </label>
+          </div>
         </div>
 
         <input type="submit" value={tCommon("save")} className="govie-button" />

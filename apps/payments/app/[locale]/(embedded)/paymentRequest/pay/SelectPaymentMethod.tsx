@@ -1,5 +1,17 @@
 "use client";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
+import { providerTypeToPaymentMethod } from "../../../../utils";
+import { ProviderWithUnknownData } from "../../../../../types/common";
+
+type Props = {
+  providers: ProviderWithUnknownData[];
+  paymentId: string;
+  referenceId: string;
+  isPublicServant: boolean;
+  urlAmount?: number;
+  customAmount?: number;
+};
 
 async function redirectToPaymentUrl(
   settings: {
@@ -51,16 +63,42 @@ async function getPaymentUrl({
 }
 
 export default function ({
-  hasOpenBanking,
-  hasManualBanking,
-  hasStripe,
-  hasRealex,
+  providers,
   paymentId,
   referenceId,
+  isPublicServant,
   urlAmount,
   customAmount,
-}) {
+}: Props) {
   const t = useTranslations();
+
+  const paymentMethodInputs = useMemo(() => {
+    return providers.map(({ type }, index) => {
+      const paymentMethod = providerTypeToPaymentMethod[type];
+      return (
+        <div className="govie-radios__item" key={index}>
+          <input
+            id={`${paymentMethod}-${index}`}
+            name="type"
+            type="radio"
+            value={type}
+            required
+            disabled={isPublicServant}
+            className="govie-radios__input"
+          />
+          <label
+            className="govie-label--s govie-radios__label"
+            htmlFor={`${paymentMethod}-${index}`}
+          >
+            {t(`payBy.${paymentMethod}.title`)}
+            <p className="govie-body">
+              {t(`payBy.${paymentMethod}.description`)}
+            </p>
+          </label>
+        </div>
+      );
+    });
+  }, [providers]);
 
   const redirectToPayment = redirectToPaymentUrl.bind(this, {
     paymentId,
@@ -78,88 +116,14 @@ export default function ({
           data-module="govie-radios"
           className="govie-radios govie-radios--large"
         >
-          {hasOpenBanking && (
-            <div className="govie-radios__item">
-              <input
-                id="bankTransfer-0"
-                name="type"
-                type="radio"
-                value="bankTransfer"
-                className="govie-radios__input"
-              />
-              <label
-                className="govie-label--s govie-radios__label"
-                htmlFor="bankTransfer-0"
-              >
-                {t("payByBank")}
-                <p className="govie-body">{t("payByBankDescription")}</p>
-              </label>
-            </div>
-          )}
-
-          {hasManualBanking && (
-            <div className="govie-radios__item">
-              <input
-                id="manual-0"
-                name="type"
-                type="radio"
-                value="manual"
-                className="govie-radios__input"
-              />
-
-              <label
-                className="govie-label--s govie-radios__label"
-                htmlFor="manual-0"
-              >
-                {t("manualBankTransfer")}
-                <p className="govie-body">
-                  {t("manualBankTransferDescription")}
-                </p>
-              </label>
-            </div>
-          )}
-
-          {hasStripe && (
-            <div className="govie-radios__item">
-              <input
-                id="stripe-0"
-                name="type"
-                type="radio"
-                value="stripe"
-                className="govie-radios__input"
-              />
-              <label
-                className="govie-label--s govie-radios__label"
-                htmlFor="stripe-0"
-              >
-                {t("payByCard")}
-                <p className="govie-body">{t("payByCardDescription")}</p>
-              </label>
-            </div>
-          )}
-
-          {hasRealex && (
-            <div className="govie-radios__item">
-              <input
-                id="realex-0"
-                name="type"
-                type="radio"
-                value="realex"
-                className="govie-radios__input"
-              />
-              <label
-                className="govie-label--s govie-radios__label"
-                htmlFor="realex-0"
-              >
-                {t("payByCard")}
-                <p className="govie-body">{t("payByRealexCardDescription")}</p>
-              </label>
-            </div>
-          )}
+          {paymentMethodInputs}
         </div>
 
         <div className="govie-form-group" style={{ marginTop: "20px" }}>
-          <button className="govie-button govie-button--primary">
+          <button
+            className="govie-button govie-button--primary"
+            disabled={isPublicServant}
+          >
             {t("confirm")}
           </button>
         </div>

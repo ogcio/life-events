@@ -4,7 +4,7 @@ import EditProviderForm from "./EditProviderForm";
 import type { BankTransferProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
-import buildApiClient from "../../../../../../client/index";
+import { Payments } from "building-blocks-sdk";
 
 type Props = {
   provider: BankTransferProvider;
@@ -26,14 +26,11 @@ export default async ({ provider }: Props) => {
       accountHolderName,
     };
 
-    await buildApiClient(userId).providers.apiV1ProvidersProviderIdPut(
-      provider.id,
-      {
-        name: providerName,
-        data: providerData,
-        status: provider.status,
-      },
-    );
+    await new Payments(userId).updateProvider(provider.id, {
+      name: providerName,
+      data: providerData,
+      status: provider.status,
+    });
 
     redirect("./");
   }

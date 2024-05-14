@@ -155,13 +155,63 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
-            }[];
+            "application/json": (
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "banktransfer";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "openbanking";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "stripe";
+                  data: {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "worldpay";
+                  data: {
+                    merchantCode: string;
+                    installationId: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "realex";
+                  data: {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+            )[];
           };
         };
       };
@@ -178,13 +228,62 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": {
-              id: string;
-              name: string;
-              type: string;
-              data: unknown;
-              status: string;
-            };
+            "application/json":
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "banktransfer";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "openbanking";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "stripe";
+                  data: {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "worldpay";
+                  data: {
+                    merchantCode: string;
+                    installationId: string;
+                  };
+                  status: "connected" | "disconnected";
+                }
+              | {
+                  id: string;
+                  name: string;
+                  /** @enum {string} */
+                  type: "realex";
+                  data: {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
+                  status: "connected" | "disconnected";
+                };
           };
         };
         /** @description Default Response */
@@ -211,7 +310,7 @@ export interface paths {
         content: {
           "application/json": {
             name: string;
-            data: Record<string, never>;
+            data: unknown;
             status: "connected" | "disconnected";
           };
         };
@@ -244,11 +343,12 @@ export interface paths {
                 userId: string;
                 id: string;
                 name: string;
-                type: string;
-                status: string;
+                type: "banktransfer" | "openbanking" | "stripe" | "realex";
+                status: "connected" | "disconnected";
                 data: unknown;
                 createdAt: string;
               }[];
+              status: "active" | "inactive";
             }[];
           };
         };
@@ -265,6 +365,7 @@ export interface paths {
             redirectUrl: string;
             allowAmountOverride: boolean;
             allowCustomAmount: boolean;
+            status: "active" | "inactive";
             paymentRequestId: string;
             providersUpdate: {
               toDisable: string[];
@@ -296,6 +397,7 @@ export interface paths {
             allowAmountOverride: boolean;
             allowCustomAmount: boolean;
             providers: string[];
+            status: "active" | "inactive";
           };
         };
       };
@@ -332,11 +434,12 @@ export interface paths {
                 userId: string;
                 id: string;
                 name: string;
-                type: string;
-                status: string;
+                type: "banktransfer" | "openbanking" | "stripe" | "realex";
+                status: "connected" | "disconnected";
                 data: unknown;
                 createdAt: string;
               }[];
+              status: "active" | "inactive";
               redirectUrl: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;
@@ -418,11 +521,12 @@ export interface paths {
                 userId: string;
                 id: string;
                 name: string;
-                type: string;
-                status: string;
+                type: "banktransfer" | "openbanking" | "stripe" | "realex";
+                status: "connected" | "disconnected";
                 data: unknown;
                 createdAt: string;
               }[];
+              status: "active" | "inactive";
               redirectUrl: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;
@@ -612,7 +716,7 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              transactionId: string;
+              id: string;
             };
           };
         };
@@ -728,6 +832,99 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/realex/paymentObject": {
+    get: {
+      parameters: {
+        query: {
+          amount: string;
+          intentId: string;
+          providerId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              ACCOUNT: string;
+              AMOUNT: string;
+              CURRENCY: string;
+              MERCHANT_ID: string;
+              ORDER_ID: string;
+              TIMESTAMP: string;
+              URL: string;
+              SHA256HASH: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        422: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/realex/verifyPaymentResponse": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": Record<string, never>;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": string;
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        422: {
           content: {
             "application/json": {
               statusCode: number;

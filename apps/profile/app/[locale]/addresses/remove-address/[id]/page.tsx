@@ -1,39 +1,38 @@
 import { getTranslations } from "next-intl/server";
 import { NextPageProps } from "../../../../../types";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { PgSessions } from "auth/sessions";
 import { formatDate } from "../../../../utils";
-import { redirect } from "../../../../utils/navigation";
 import { Profile } from "building-blocks-sdk";
 
-async function removeAddress(formData: FormData) {
-  "use server";
-
-  const addressId = formData.get("addressId")?.toString();
-  const userId = formData.get("userId")?.toString();
-
-  if (!addressId) {
-    throw Error("Address id not found");
-  }
-
-  if (!userId) {
-    throw Error("User id not found");
-  }
-
-  const { error } = await new Profile(userId).deleteAddress(addressId);
-
-  if (error) {
-    //handle error
-  }
-
-  redirect("/");
-}
-
-export default async (params: NextPageProps) => {
+export default async (props: NextPageProps) => {
   const t = await getTranslations("AddressForm");
-  const { id: addressId } = params.params;
+  const { id: addressId, locale } = props.params;
   const { userId } = await PgSessions.get();
+
+  async function removeAddress(formData: FormData) {
+    "use server";
+
+    const addressId = formData.get("addressId")?.toString();
+    const userId = formData.get("userId")?.toString();
+
+    if (!addressId) {
+      throw Error("Address id not found");
+    }
+
+    if (!userId) {
+      throw Error("User id not found");
+    }
+
+    const { error } = await new Profile(userId).deleteAddress(addressId);
+
+    if (error) {
+      //handle error
+    }
+
+    redirect(`/${locale}`);
+  }
 
   if (!addressId) {
     throw notFound();
@@ -57,7 +56,7 @@ export default async (params: NextPageProps) => {
                 {t("firstLineOfAddress")}
               </dt>
               <dd className="govie-summary-list__value">
-                {address.address_line1}
+                {address.addressLine1}
               </dd>
             </div>
             <div className="govie-summary-list__row">
@@ -65,7 +64,7 @@ export default async (params: NextPageProps) => {
                 {t("secondLineOfAddress")}
               </dt>
               <dd className="govie-summary-list__value">
-                {address.address_line2}
+                {address.addressLine2}
               </dd>
             </div>
             <div className="govie-summary-list__row">
@@ -83,13 +82,13 @@ export default async (params: NextPageProps) => {
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("moveInDate")}</dt>
               <dd className="govie-summary-list__value">
-                {address.move_in_date ? formatDate(address.move_in_date) : ""}
+                {address.moveInDate ? formatDate(address.moveInDate) : ""}
               </dd>
             </div>
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("moveOutDate")}</dt>
               <dd className="govie-summary-list__value">
-                {address.move_out_date ? formatDate(address.move_out_date) : ""}
+                {address.moveOutDate ? formatDate(address.moveOutDate) : ""}
               </dd>
             </div>
           </dl>
@@ -101,7 +100,7 @@ export default async (params: NextPageProps) => {
             {t("remove")}
           </button>
           <div style={{ margin: "30px 0" }}>
-            <Link href={"/"} className="govie-back-link">
+            <Link href={`/${locale}`} className="govie-back-link">
               {t("back")}
             </Link>
           </div>

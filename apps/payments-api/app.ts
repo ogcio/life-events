@@ -1,6 +1,7 @@
 import fastify, { FastifyServerOptions } from "fastify";
 import routes from "./routes";
 import fastifyEnv from "@fastify/env";
+import fastifyFormBody from "@fastify/formbody";
 import postgres from "@fastify/postgres";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import dotenv from "dotenv";
@@ -14,7 +15,8 @@ import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
-import { STATUS_CODES } from "http";
+import { initializeErrorHandler } from "error-handler";
+import { initializeLoggingHooks } from "logging-wrapper";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,6 +25,8 @@ dotenv.config();
 
 export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
+  initializeLoggingHooks(app);
+  initializeErrorHandler(app);
 
   app.setValidatorCompiler(({ schema }) => {
     return schemaValidators(schema);
@@ -33,6 +37,8 @@ export async function build(opts?: FastifyServerOptions) {
     schema: envSchema,
     dotenv: true,
   });
+
+  app.register(fastifyFormBody);
 
   app.register(fastifySwagger, {
     openapi: {
@@ -73,25 +79,6 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(routes, { prefix: "/api/v1" });
 
   app.register(sensible);
-
-  app.setErrorHandler((error, request, reply) => {
-    app.log.error(error);
-    if (
-      error instanceof Error &&
-      (error.name !== "error" || !!error.validation)
-    ) {
-      reply.status(error.statusCode || 500).send({
-        error: STATUS_CODES[error.statusCode || 500],
-        message: error.message,
-        name: error.name,
-        validation: error.validation,
-        validationContext: error.validationContext,
-        statusCode: error.statusCode || 500,
-      });
-      return;
-    }
-    reply.code(500).type("application/json").send({ error });
-  });
 
   return app;
 }

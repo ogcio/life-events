@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import dayjs from "dayjs";
 import { PgSessions } from "auth/sessions";
 import {
   formatCurrency,
@@ -9,7 +10,11 @@ import { getUser } from "../../../../libraries/auth";
 import { EmptyStatus } from "../../../components/EmptyStatus";
 import { Payments } from "building-blocks-sdk";
 
-export default async function () {
+export default async function ({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
   const t = await getTranslations("PaymentSetup.Payments");
   let transactions;
 
@@ -37,7 +42,7 @@ export default async function () {
             title={t("emptyPaymentsList.title")}
             description={t("emptyPaymentsList.description")}
             action={
-              <Link href="/paymentSetup/providers">
+              <Link href={`/${locale}/paymentSetup/providers`}>
                 <button
                   id="button"
                   data-module="govie-button"
@@ -81,7 +86,7 @@ export default async function () {
                     </strong>
                   </td>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    {new Date(trx.updatedAt).toLocaleDateString()}
+                    {dayjs(trx.updatedAt).format("DD/MM/YYYY - HH:mm")}
                   </td>
 
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
@@ -92,7 +97,7 @@ export default async function () {
                   </td>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     <Link
-                      href={`paymentSetup/transaction/${trx.transactionId}`}
+                      href={`/${locale}/paymentSetup/transaction/${trx.transactionId}`}
                     >
                       {t("table.details")}
                     </Link>

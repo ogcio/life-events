@@ -2,18 +2,21 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
 import { formatCurrency } from "../../../../utils";
-import buildApiClient from "../../../../../client/index";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
+import { Payments } from "building-blocks-sdk";
 
-export default async function () {
+export default async function ({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
   const [t, { userId }] = await Promise.all([
     getTranslations("PaymentSetup.Payments"),
     PgSessions.get(),
   ]);
 
-  const paymentRequests = (
-    await buildApiClient(userId).paymentRequests.apiV1RequestsGet()
-  ).data;
+  const paymentRequests =
+    (await new Payments(userId).getPaymentRequests()).data || [];
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
@@ -33,7 +36,7 @@ export default async function () {
         >
           <h1 className="govie-heading-m">{t("paymentRequests")}</h1>
 
-          <Link href="create">
+          <Link href={`/${locale}/paymentSetup/create`}>
             <button
               id="button"
               data-module="govie-button"
@@ -88,7 +91,7 @@ export default async function () {
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                     <Link
                       className="govie-link"
-                      href={`/paymentSetup/requests/${req.paymentRequestId}`}
+                      href={`/${locale}/paymentSetup/requests/${req.paymentRequestId}`}
                     >
                       {t("table.details")}
                     </Link>

@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import styles from "./EventsList.module.scss";
 
 const EventLink = ({
   children,
@@ -39,18 +40,9 @@ export default async (props: {
   const t = await getTranslations(props.category);
 
   return (
-    <ul className="govie-list">
+    <ul className={`govie-list ${styles.eventsList}`}>
       {props.events.slice(0, 2).map((evt) => (
-        <li
-          key={`le_${evt.flowKey}`}
-          style={{
-            margin: "1rem 0",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-around",
-            gap: "1rem",
-          }}
-        >
+        <li key={`le_${evt.flowKey}`}>
           <div
             style={{
               display: "flex",
@@ -69,7 +61,7 @@ export default async (props: {
                 {t(evt.descriptionKey, { date: "19th March" })}
               </p>
             </div>
-            <div>
+            <div className={styles.chevronIcon}>
               <EventLink slug={evt.slug} ariaLabel={t(evt.flowTitle)}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

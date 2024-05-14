@@ -278,6 +278,64 @@ export const timeline = {
   slug: "timeline",
 };
 
+export const digitalWallet = {
+  slug: "digital-wallet",
+  getDigitalWallet: {
+    slug: "get-digital-wallet",
+    path() {
+      return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}`;
+    },
+    beforeYouBegin: {
+      slug: "before-you-begin",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.beforeYouBegin.slug}`;
+      },
+    },
+    aboutYou: {
+      slug: "about-you",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.aboutYou.slug}`;
+      },
+    },
+    yourEmployment: {
+      slug: "your-employment",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.yourEmployment.slug}`;
+      },
+    },
+    yourDevice: {
+      slug: "your-device",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.yourDevice.slug}`;
+      },
+    },
+    checkDetails: {
+      slug: "check-details",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.checkDetails.slug}`;
+      },
+    },
+    changeDetails: {
+      slug: "change-details",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.changeDetails.slug}`;
+      },
+    },
+    applicationSuccess: {
+      slug: "application-success",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.applicationSuccess.slug}`;
+      },
+    },
+    verifyMyGovIdAccount: {
+      slug: "verify-mygovid-account",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.verifyMyGovIdAccount.slug}`;
+      },
+    },
+  },
+};
+
 export const category = {
   health,
   driving,
@@ -286,4 +344,5 @@ export const category = {
   employment,
   business,
   housing,
+  "digital-wallet": digitalWallet,
 };

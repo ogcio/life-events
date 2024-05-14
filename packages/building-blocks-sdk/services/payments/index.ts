@@ -39,6 +39,20 @@ export class Payments {
     return formatQueryResult(this.client.GET("/api/v1/providers/"));
   }
 
+  async getProviderById(
+    providerId: paths["/api/v1/providers/{providerId}"]["get"]["parameters"]["path"]["providerId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/providers/{providerId}", {
+        params: {
+          path: {
+            providerId,
+          },
+        },
+      }),
+    );
+  }
+
   async createBankTransferProvider(
     data: paths["/api/v1/providers/banktransfer"]["post"]["requestBody"]["content"]["application/json"],
   ) {
@@ -109,6 +123,10 @@ export class Payments {
    * PAYMENT REQUESTS
    */
 
+  async getPaymentRequests() {
+    return formatQueryResult(this.client.GET("/api/v1/requests/"));
+  }
+
   async getPaymentRequest(
     requestId: paths["/api/v1/requests/{requestId}"]["get"]["parameters"]["path"]["requestId"],
   ) {
@@ -123,11 +141,59 @@ export class Payments {
     );
   }
 
+  async getPaymentRequestTransactions(
+    requestId: paths["/api/v1/requests/{requestId}/transactions"]["get"]["parameters"]["path"]["requestId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/requests/{requestId}/transactions", {
+        params: {
+          path: {
+            requestId,
+          },
+        },
+      }),
+    );
+  }
+
+  async createPaymentRequest(
+    data: paths["/api/v1/requests/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/requests/", {
+        body: data,
+      }),
+    );
+  }
+
   async getPaymentRequestPublicInfo(
     requestId: paths["/api/v1/requests/{requestId}/public-info"]["get"]["parameters"]["path"]["requestId"],
   ) {
     return formatQueryResult(
       this.client.GET("/api/v1/requests/{requestId}/public-info", {
+        params: {
+          path: {
+            requestId,
+          },
+        },
+      }),
+    );
+  }
+
+  async updatePaymentRequest(
+    data: paths["/api/v1/requests/"]["put"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.PUT("/api/v1/requests/", {
+        body: data,
+      }),
+    );
+  }
+
+  async deletePaymentRequest(
+    requestId: paths["/api/v1/requests/{requestId}"]["delete"]["parameters"]["path"]["requestId"],
+  ) {
+    return formatQueryResult(
+      this.client.DELETE("/api/v1/requests/{requestId}", {
         params: {
           path: {
             requestId,
@@ -189,6 +255,17 @@ export class Payments {
     );
   }
 
+  async getRealexPaymentObject(
+    query: paths["/api/v1/realex/paymentObject"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/realex/paymentObject", {
+        params: {
+          query,
+        },
+      }),
+    );
+  }
   /**
    * Citizen
    */

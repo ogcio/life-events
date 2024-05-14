@@ -3,14 +3,24 @@ import "design-system/dist/esm/index.css";
 import Header from "./Header";
 import Footer from "./Footer";
 import FeedbackBanner from "./FeedbackBanner";
+import { redirect, RedirectType } from "next/navigation";
+import { routeDefinitions } from "../../routeDefinitions";
+import { PgSessions } from "auth/sessions";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params: { locale },
 }: {
   children: React.ReactNode;
   params: { locale: string };
 }) {
+  const isAuthenticated = await PgSessions.isAuthenticated();
+  if (!isAuthenticated)
+    return redirect(
+      `${locale}/${routeDefinitions.info.slug}`,
+      RedirectType.replace,
+    );
+
   return (
     <html lang={locale}>
       <body
