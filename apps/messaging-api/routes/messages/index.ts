@@ -869,8 +869,6 @@ export default async function messages(app: FastifyInstance) {
             values.push(userId);
           }
 
-          console.log(args, values);
-
           // Create a job for each user.
           if (args.length) {
             // NOTE user id is only used for the temporary authentication
