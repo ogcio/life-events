@@ -14,14 +14,19 @@ parameters:
     type: object
     default: ["web", "mock-api", "payments", "messaging", "messaging-api", "payments-api", "profile", "profile-api", "timeline-api"]
 
-  - name: envBranches
+  - name: buildBranches
     type: object
     default: ["dev", "sta", "uat"]
 
+  - name: validEnvironments
+    type: object
+    displayName: List of valid environments to deploy (do not change)
+    default: ['dev','sta', 'uat', 'prd']
+
 variables:
   - name: pushArtefacts
-    value: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}
-  - ${{ if containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}:
+    value: ${{ containsValue(parameters.buildBranches, variables['Build.SourceBranchName']) }}
+  - ${{ if and(containsValue(parameters.validEnvironments ,variables['Build.SourceBranchName']), variables.pushArtefacts) }}:
     - template: pipeline-variables/${{ coalesce(variables['Build.SourceBranchName'], 'fallback') }}.yml
   - ${{ else }}:
     - template: pipeline-variables/dev.yml
