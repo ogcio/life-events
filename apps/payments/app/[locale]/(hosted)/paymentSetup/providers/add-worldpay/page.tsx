@@ -13,7 +13,7 @@ export default async () => {
   async function handleSubmit(formData: FormData) {
     "use server";
 
-    const { error } = await new Payments(userId).createWorldpayProvider({
+    const { error } = await new Payments(userId).createProvider({
       name: formData.get("provider_name") as string,
       type: "worldpay",
       data: {

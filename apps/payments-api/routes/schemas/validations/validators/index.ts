@@ -1,19 +1,21 @@
-import ibanValidator from "./iban";
+import providersValidator from "./providers";
 
 export type ValidatorFn = (
   value: any,
   field: string,
+  rootData: any,
   errors: Array<any>,
 ) => boolean;
 
 const validators: Record<string, ValidatorFn> = {
-  IBANValidator: ibanValidator,
+  ProvidersValidator: providersValidator,
 };
 
 export default function validator(
   value: any,
   validatorFn: string,
   field: string,
+  rootData: any,
   errors: Array<any>,
 ): boolean {
   if (!validators[validatorFn]) {
@@ -21,5 +23,5 @@ export default function validator(
     throw err;
   }
 
-  return validators[validatorFn](value, field, errors);
+  return validators[validatorFn](value, field, rootData, errors);
 }

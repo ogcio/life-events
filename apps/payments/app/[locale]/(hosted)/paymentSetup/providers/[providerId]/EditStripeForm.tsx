@@ -20,8 +20,8 @@ export default async ({ provider }: Props) => {
     const { userId } = await PgSessions.get();
 
     const providerName = formData.get("provider_name") as string;
-    const livePublishableKey = formData.get("live_publishable_key");
-    const liveSecretKey = formData.get("live_secret_key");
+    const livePublishableKey = formData.get("live_publishable_key") as string;
+    const liveSecretKey = formData.get("live_secret_key") as string;
     const providerData = {
       livePublishableKey,
       liveSecretKey,
@@ -30,6 +30,7 @@ export default async ({ provider }: Props) => {
     const { error } = await new Payments(userId).updateProvider(provider.id, {
       name: providerName,
       data: providerData,
+      type: provider.type,
       status: provider.status,
     });
 

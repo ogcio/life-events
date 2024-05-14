@@ -33,7 +33,7 @@ export const seedProviders = (pool, userId) => {
     ],
   );
 
-  const stripe = new Payments(userId).createStripeProvider({
+  const stripe = new Payments(userId).createProvider({
     name: "Stripe provider",
     type: "stripe",
     data: {
@@ -42,7 +42,7 @@ export const seedProviders = (pool, userId) => {
     },
   });
 
-  const realex = new Payments(userId).createRealexProvider({
+  const realex = new Payments(userId).createProvider({
     name: "Realex provider",
     type: "realex",
     data: {

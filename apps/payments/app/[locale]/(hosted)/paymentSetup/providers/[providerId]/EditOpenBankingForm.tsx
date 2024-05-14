@@ -22,9 +22,10 @@ export default async ({ provider }: Props) => {
     const { error } = await new Payments(userId).updateProvider(provider.id, {
       name: formData.get("provider_name") as string,
       data: {
-        iban: formData.get("iban") as string,
+        iban: (formData.get("iban") as string).replaceAll(" ", ""),
         accountHolderName: formData.get("account_holder_name") as string,
       },
+      type: provider.type,
       status: provider.status,
     });
 

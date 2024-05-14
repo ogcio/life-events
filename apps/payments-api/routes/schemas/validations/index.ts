@@ -18,6 +18,7 @@ ajv.addKeyword({
           data,
           validatorFn,
           ctx.parentDataProperty,
+          ctx.rootData,
           errors,
         );
 
