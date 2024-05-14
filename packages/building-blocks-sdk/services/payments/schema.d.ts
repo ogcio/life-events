@@ -309,12 +309,12 @@ export interface paths {
                       liveSecretKey: string;
                     }
                   | {
-                      merchantId: string;
-                      sharedSecret: string;
-                    }
-                  | {
                       merchantCode: string;
                       installationId: string;
+                    }
+                  | {
+                      merchantId: string;
+                      sharedSecret: string;
                     };
                 createdAt: string;
               }[];
@@ -421,12 +421,12 @@ export interface paths {
                       liveSecretKey: string;
                     }
                   | {
-                      merchantId: string;
-                      sharedSecret: string;
-                    }
-                  | {
                       merchantCode: string;
                       installationId: string;
+                    }
+                  | {
+                      merchantId: string;
+                      sharedSecret: string;
                     };
                 createdAt: string;
               }[];
@@ -532,12 +532,12 @@ export interface paths {
                       liveSecretKey: string;
                     }
                   | {
-                      merchantId: string;
-                      sharedSecret: string;
-                    }
-                  | {
                       merchantCode: string;
                       installationId: string;
+                    }
+                  | {
+                      merchantId: string;
+                      sharedSecret: string;
                     };
                 createdAt: string;
               }[];

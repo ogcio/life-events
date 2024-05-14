@@ -626,15 +626,6 @@ paths:
                                   - liveSecretKey
                               - type: object
                                 properties:
-                                  merchantId:
-                                    type: string
-                                  sharedSecret:
-                                    type: string
-                                required:
-                                  - merchantId
-                                  - sharedSecret
-                              - type: object
-                                properties:
                                   merchantCode:
                                     type: string
                                   installationId:
@@ -642,6 +633,15 @@ paths:
                                 required:
                                   - merchantCode
                                   - installationId
+                              - type: object
+                                properties:
+                                  merchantId:
+                                    type: string
+                                  sharedSecret:
+                                    type: string
+                                required:
+                                  - merchantId
+                                  - sharedSecret
                           createdAt:
                             type: string
                         required:
@@ -894,15 +894,6 @@ paths:
                                 - liveSecretKey
                             - type: object
                               properties:
-                                merchantId:
-                                  type: string
-                                sharedSecret:
-                                  type: string
-                              required:
-                                - merchantId
-                                - sharedSecret
-                            - type: object
-                              properties:
                                 merchantCode:
                                   type: string
                                 installationId:
@@ -910,6 +901,15 @@ paths:
                               required:
                                 - merchantCode
                                 - installationId
+                            - type: object
+                              properties:
+                                merchantId:
+                                  type: string
+                                sharedSecret:
+                                  type: string
+                              required:
+                                - merchantId
+                                - sharedSecret
                         createdAt:
                           type: string
                       required:
@@ -1128,15 +1128,6 @@ paths:
                                 - liveSecretKey
                             - type: object
                               properties:
-                                merchantId:
-                                  type: string
-                                sharedSecret:
-                                  type: string
-                              required:
-                                - merchantId
-                                - sharedSecret
-                            - type: object
-                              properties:
                                 merchantCode:
                                   type: string
                                 installationId:
@@ -1144,6 +1135,15 @@ paths:
                               required:
                                 - merchantCode
                                 - installationId
+                            - type: object
+                              properties:
+                                merchantId:
+                                  type: string
+                                sharedSecret:
+                                  type: string
+                              required:
+                                - merchantId
+                                - sharedSecret
                         createdAt:
                           type: string
                       required:
