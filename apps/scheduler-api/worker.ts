@@ -70,8 +70,6 @@ async function unitOfWork(
   maxRetries: number,
 ) {
   try {
-    // Todo add some identitifcation for the process to scheduled events table so we know who is locking the row
-    // for update skip locked will prevent deadlocks. Alebeit slower than a specific queue impleem
     const events = await app.pg.pool
       .query<{ id: string; webhookUrl: string; webhookAuth: string }>(
         `
@@ -141,7 +139,17 @@ async function unitOfWork(
       console.log("Hittade ingenting");
     }
   } catch (err) {
-    console.log("Det blev tokigt tyvarr", err);
+    app.log.error(
+      {
+        processId,
+        batchSize,
+        callbackTimeoutMs,
+        maxRetries,
+        err,
+        at: Date.now(),
+      },
+      "failed unit of work",
+    );
   }
 }
 
