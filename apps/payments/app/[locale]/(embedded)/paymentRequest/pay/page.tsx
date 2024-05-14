@@ -7,7 +7,7 @@ import {
   getRealAmount,
   stringToAmount,
 } from "../../../../utils";
-import { notFound, redirect, RedirectType } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
 import { Payments } from "building-blocks-sdk";
