@@ -31,6 +31,24 @@ export default async function login(app: FastifyInstance) {
         redirectUrl = request.cookies.redirectUrl || "";
       }
 
+      const sessionId = request.cookies.sessionId;
+
+      const query = await app.pg.query(
+        `
+      SELECT
+        s.token,
+        s.user_id AS "userId",
+        u.is_public_servant as "publicServant"
+      FROM govid_sessions s
+      JOIN users u on u.id = s.user_id
+      WHERE s.id=$1`,
+        [sessionId],
+      );
+
+      if (query.rowCount && redirectUrl.length > 0) {
+        return reply.redirect(redirectUrl);
+      }
+
       if (redirectUrl) {
         setCookie(request, reply, "redirectUrl", redirectUrl, app.config);
       }

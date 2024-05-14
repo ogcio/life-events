@@ -160,7 +160,7 @@ export const AuthServicePgSessions: AuthServiceSessions = {
       throw Error("Missing env var AUTH_SERVICE_URL");
     }
 
-    const logoutUrl = `${authServiceUrl}/auth/logout?redirectUrl=${process.env.HOST_URL}${headers().get("x-pathname") || ""}`;
+    const logoutUrl = `${authServiceUrl}/auth/logout?redirectUrl=${process.env.HOST_URL}`;
 
     const sessionId = cookies().get("sessionId")?.value;
     if (!sessionId) {
