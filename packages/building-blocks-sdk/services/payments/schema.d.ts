@@ -345,7 +345,23 @@ export interface paths {
                 name: string;
                 type: "banktransfer" | "openbanking" | "stripe" | "realex";
                 status: "connected" | "disconnected";
-                data: unknown;
+                data:
+                  | {
+                      iban: string;
+                      accountHolderName: string;
+                    }
+                  | {
+                      livePublishableKey: string;
+                      liveSecretKey: string;
+                    }
+                  | {
+                      merchantId: string;
+                      sharedSecret: string;
+                    }
+                  | {
+                      merchantCode: string;
+                      installationId: string;
+                    };
                 createdAt: string;
               }[];
               status: "active" | "inactive";
@@ -436,7 +452,23 @@ export interface paths {
                 name: string;
                 type: "banktransfer" | "openbanking" | "stripe" | "realex";
                 status: "connected" | "disconnected";
-                data: unknown;
+                data:
+                  | {
+                      iban: string;
+                      accountHolderName: string;
+                    }
+                  | {
+                      livePublishableKey: string;
+                      liveSecretKey: string;
+                    }
+                  | {
+                      merchantId: string;
+                      sharedSecret: string;
+                    }
+                  | {
+                      merchantCode: string;
+                      installationId: string;
+                    };
                 createdAt: string;
               }[];
               status: "active" | "inactive";
@@ -523,7 +555,23 @@ export interface paths {
                 name: string;
                 type: "banktransfer" | "openbanking" | "stripe" | "realex";
                 status: "connected" | "disconnected";
-                data: unknown;
+                data:
+                  | {
+                      iban: string;
+                      accountHolderName: string;
+                    }
+                  | {
+                      livePublishableKey: string;
+                      liveSecretKey: string;
+                    }
+                  | {
+                      merchantId: string;
+                      sharedSecret: string;
+                    }
+                  | {
+                      merchantCode: string;
+                      installationId: string;
+                    };
                 createdAt: string;
               }[];
               status: "active" | "inactive";

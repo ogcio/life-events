@@ -1,3 +1,4 @@
+import { redirect, RedirectType } from "next/navigation";
 import { TransactionStatuses } from "../types/TransactionStatuses";
 import { ProviderType } from "./[locale]/(hosted)/paymentSetup/providers/types";
 
@@ -84,4 +85,18 @@ export const paymentMethodToProviderType: Record<
   openbanking: ["openbanking"],
   banktransfer: ["banktransfer"],
   card: ["stripe", "realex"],
+};
+
+export const errorHandler = (error) => {
+  if (error.validation) {
+    return;
+  }
+
+  if (error.name === "NotFoundError") {
+    return redirect("/not-found", RedirectType.replace);
+  }
+
+  // Fallback to Error page
+  console.error(error);
+  return redirect("/error", RedirectType.replace);
 };

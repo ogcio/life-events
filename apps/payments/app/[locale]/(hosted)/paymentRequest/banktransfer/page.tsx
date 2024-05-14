@@ -1,23 +1,23 @@
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
 import { getTranslations } from "next-intl/server";
-import { formatCurrency } from "../../../../utils";
+import { errorHandler, formatCurrency } from "../../../../utils";
 import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
+import { BankTransferData } from "../../paymentSetup/providers/types";
 
 async function getPaymentDetails(
   userId: string,
   paymentId: string,
   amount?: number,
 ) {
-  let details;
-  try {
-    details = (
-      await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
-    ).data;
-  } catch (err) {
-    console.log(err);
+  const { data: details, error } = await new Payments(
+    userId,
+  ).getPaymentRequestPublicInfo(paymentId);
+
+  if (error) {
+    errorHandler(error);
   }
 
   if (!details || details?.status === "inactive") return undefined;
@@ -44,9 +44,16 @@ async function confirmPayment(
 ) {
   "use server";
 
-  await new Payments(userId).updateTransaction(transactionId, {
-    status: TransactionStatuses.Pending,
-  });
+  const { error } = await new Payments(userId).updateTransaction(
+    transactionId,
+    {
+      status: TransactionStatuses.Pending,
+    },
+  );
+
+  if (error) {
+    errorHandler(error);
+  }
 
   redirect(redirectUrl, RedirectType.replace);
 }
@@ -54,20 +61,21 @@ async function confirmPayment(
 async function generatePaymentIntentId(userId: string): Promise<string> {
   "use server";
 
-  let result;
+  const { data: result, error } = await new Payments(
+    userId,
+  ).generatePaymentIntentId();
 
-  try {
-    result = await new Payments(userId).generatePaymentIntentId();
-  } catch (err) {
-    console.log(err);
+  if (error) {
+    errorHandler(error);
   }
 
-  if (!result.data.intentId || result.error) {
+  if (!result?.intentId) {
     // Handle edge case when intentId was not possible to generate
-    throw new Error("Payment intentId was not possible to generate.");
+    console.error("Payment intentId was not possible to generate.");
+    return redirect("error", RedirectType.replace);
   }
 
-  return result.data.intentId;
+  return result.intentId;
 }
 
 export default async function Bank(params: {
@@ -107,21 +115,25 @@ export default async function Bank(params: {
 
   const paymentIntentId = await generatePaymentIntentId(userId);
 
-  const transactionId = (
-    await new Payments(userId).createTransaction({
-      paymentRequestId: params.searchParams.paymentId,
-      extPaymentId: paymentIntentId,
-      integrationReference: params.searchParams.integrationRef,
-      amount: paymentDetails.amount,
-      paymentProviderId: paymentDetails.providerId,
-      userData: { email, name: `${firstName} ${lastName}` },
-    })
-  ).data?.id;
+  const { data: transaction, error } = await new Payments(
+    userId,
+  ).createTransaction({
+    paymentRequestId: params.searchParams.paymentId,
+    extPaymentId: paymentIntentId,
+    integrationReference: params.searchParams.integrationRef,
+    amount: paymentDetails.amount,
+    paymentProviderId: paymentDetails.providerId,
+    userData: { email, name: `${firstName} ${lastName}` },
+  });
+
+  if (error) {
+    errorHandler(error);
+  }
 
   const paymentMade = confirmPayment.bind(
     this,
     userId,
-    transactionId,
+    transaction?.id,
     paymentDetails.redirectUrl,
   );
 
@@ -155,13 +167,16 @@ export default async function Bank(params: {
               {t("summary.accountHolderName")}
             </dt>
             <dt className="govie-summary-list__value">
-              {paymentDetails.providerData.accountHolderName}
+              {
+                (paymentDetails.providerData as BankTransferData)
+                  .accountHolderName
+              }
             </dt>
           </div>
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("summary.iban")}</dt>
             <dt className="govie-summary-list__value">
-              {paymentDetails.providerData.iban}
+              {(paymentDetails.providerData as BankTransferData).iban}
             </dt>
           </div>
           <div className="govie-summary-list__row">

@@ -2,13 +2,18 @@ import { getTranslations } from "next-intl/server";
 import { PaymentRequestDetails } from "./db";
 import { Payments } from "building-blocks-sdk";
 import {
+  errorHandler,
   paymentMethodToProviderType,
   paymentMethods,
   providerTypeToPaymentMethod,
 } from "../../../utils";
 
 async function getRegisteredAccounts(userId: string) {
-  const providers = (await new Payments(userId).getProviders()).data;
+  const { data: providers, error } = await new Payments(userId).getProviders();
+
+  if (error) {
+    errorHandler(error);
+  }
 
   if (!providers) {
     return new Map();

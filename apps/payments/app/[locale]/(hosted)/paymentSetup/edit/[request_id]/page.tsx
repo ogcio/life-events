@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import PaymentSetupForm from "../../PaymentSetupForm";
 import { Payments } from "building-blocks-sdk";
 import {
+  errorHandler,
   paymentMethodToProviderType,
   paymentMethods,
   stringToAmount,
@@ -72,17 +73,26 @@ async function editPayment(
     providersUpdate,
   };
 
-  const requestId = (await new Payments(userId).updatePaymentRequest(data)).data
-    ?.id;
+  const { data: requestId, error } = await new Payments(
+    userId,
+  ).updatePaymentRequest(data);
+
+  if (error) {
+    errorHandler(error);
+  }
 
   redirect(`/paymentSetup/requests/${requestId}`);
 }
 
 export default async function (props: { params: { request_id: string } }) {
   const { userId } = await PgSessions.get();
-  const details = (
-    await new Payments(userId).getPaymentRequest(props.params.request_id)
-  ).data;
+  const { data: details, error } = await new Payments(userId).getPaymentRequest(
+    props.params.request_id,
+  );
+
+  if (error) {
+    errorHandler(error);
+  }
 
   if (!details) {
     notFound();

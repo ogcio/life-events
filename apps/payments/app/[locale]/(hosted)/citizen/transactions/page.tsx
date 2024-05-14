@@ -6,6 +6,7 @@ import { Payments } from "building-blocks-sdk";
 import { getUser } from "../../../../../libraries/auth";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import {
+  errorHandler,
   formatCurrency,
   mapTransactionStatusColorClassName,
 } from "../../../../utils";
@@ -27,8 +28,13 @@ export default async function (props: Props) {
     userId = (await PgSessions.get()).userId;
   }
 
-  const transactions = (await new Payments(userId).getCitizenTransactions())
-    .data;
+  const { data: transactions, error } = await new Payments(
+    userId,
+  ).getCitizenTransactions();
+
+  if (error) {
+    errorHandler(error);
+  }
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
