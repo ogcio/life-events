@@ -60,4 +60,7 @@ export const utils = {
         "secretAccessKey" in check,
     );
   },
+  isError(error: unknown): error is Error {
+    return error instanceof Error;
+  },
 };

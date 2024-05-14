@@ -222,7 +222,7 @@ async function scheduledTemplate(
     userId,
   ];
 
-  // A job is tied to one user. We dont need any magic
+  // A job is tied to one user.
   let error: HttpError | undefined;
   const client = await pool.connect();
   try {
@@ -260,11 +260,63 @@ async function scheduledTemplate(
     await client.query("COMMIT");
   } catch (err) {
     error = utils.buildApiError("failed to create message from template", 500);
-    // Update delivery status?
     await client.query("ROLLBACK");
   } finally {
     client.release;
   }
+
+  // // Transports (email, sms)
+  // for (const transport of templateMeta.preferredTransports) {
+  //   if (transport === "email") {
+  //     if (!transportationSubject) {
+  //       console.error("no subject");
+  //       continue;
+  //     }
+
+  //     const providerId =
+  //       await mailService(app).getFirstOrEtherealMailProvider();
+
+  //     try {
+  //       void mailService(app).sendMails(
+  //         providerId,
+  //         ["ludwig.thurfjell@nearform.com"], // There's no api to get users atm?
+  //         transportationSubject,
+  //         transportationBody ?? "",
+  //       );
+  //     } catch (err) {
+  //       app.log.error(err, "email");
+  //     }
+  //   } else if (transport === "sms") {
+  //     if (!transportationExcerpt || !transportationSubject) {
+  //       continue;
+  //     }
+
+  //     // todo proper query
+  //     const config = await app.pg.pool
+  //       .query<{ config: unknown }>(
+  //         `
+  //         select config from sms_providers
+  //         limit 1
+  //       `,
+  //       )
+  //       .then((res) => res.rows.at(0)?.config);
+
+  //     if (utils.isSmsAwsConfig(config)) {
+  //       const service = awsSnsSmsService(
+  //         config.accessKey,
+  //         config.secretAccessKey,
+  //       );
+
+  //       try {
+  //         void service.Send(transportationExcerpt, transportationSubject, [
+  //           "+46703835834",
+  //         ]);
+  //       } catch (err) {
+  //         app.log.error(err, "sms");
+  //       }
+  //     }
+  //   }
+  // }
   return error;
 }
 
@@ -310,7 +362,10 @@ type JobType = "message" | "template";
 export default async function messages(app: FastifyInstance) {
   app.post<{ Params: { id: string } }>(
     "/jobs/:id",
-    {},
+    {
+      preValidation: app.verifyUser,
+      schema: {},
+    },
     async function jobHandler(request, reply) {
       const jobId = request.params.id;
       const statusWorking: scheduledMessageByTemplateStatus = "working";
@@ -369,14 +424,15 @@ export default async function messages(app: FastifyInstance) {
 
         client.query("commit");
       } catch (err) {
-        // log failed to even query job
+        const msg = utils.isError(err) ? err.message : "failed to fetch job";
+        app.log.error({ jobId, err }, msg);
         client.query("rollback");
       } finally {
         client.release();
       }
 
       if (!job?.userId || !job.type) {
-        // What should we actually do here? Just 500 , let scheduled exhaust retries and log? This is a critical data error
+        app.log.error({ jobId, job }, "job row missing critical fields");
         reply.statusCode = 500;
         return;
       }
@@ -386,28 +442,25 @@ export default async function messages(app: FastifyInstance) {
         try {
           error = await scheduledTemplate(app.pg.pool, job.jobId, job.userId);
         } catch (err) {
-          const msg =
-            err instanceof Error && "message" in err
-              ? err.message
-              : "failed to create message from template job";
+          const msg = utils.isError(err)
+            ? err.message
+            : "failed to create message from template job";
           error = utils.buildApiError(msg, 500);
         }
       } else if (job.type === "message") {
         try {
           error = await scheduleMessage(app.pg.pool, job.jobId, job.userId);
         } catch (err) {
-          const msg =
-            err instanceof Error && "message" in err
-              ? err.message
-              : "failed to create message job";
+          const msg = utils.isError(err)
+            ? err.message
+            : "failed to create message job";
           error = utils.buildApiError(msg, 500);
         }
       }
 
       if (error) {
-        console.log(error);
+        app.log.error({ job, jobId }, error.message);
         const statusFailed: scheduledMessageByTemplateStatus = "failed";
-        // log
         try {
           await app.pg.pool.query(
             `
@@ -417,7 +470,13 @@ export default async function messages(app: FastifyInstance) {
             [statusFailed, jobId],
           );
         } catch (err) {
-          // log again?
+          const msg = utils.isError(err)
+            ? err.message
+            : "failed to update job devliery status";
+          app.log.error(
+            { job, jobId, expectedDeliveryStatus: statusFailed },
+            msg,
+          );
         }
         reply.statusCode = error.statusCode;
         return;
