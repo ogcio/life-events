@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { postgres, web, workflow } from "../../utils";
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 import { revalidatePath } from "next/cache";
 import { RedirectType, redirect } from "next/navigation";
 
@@ -19,7 +19,7 @@ const rules: Parameters<typeof workflow.getCurrentStep<ConsentState>>[0] = [
 ];
 
 export default async (props: web.NextPageProps) => {
-  const { userId } = await PgSessions.get();
+  const { userId } = await AuthServicePgSessions.get();
   const t = await getTranslations("UserConsentFlow");
 
   const consentsResult = await postgres.pgpool.query(

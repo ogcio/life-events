@@ -1,9 +1,23 @@
+import * as url from "url";
+import path from "path";
 import { FastifyInstance } from "fastify";
 import { PostAuthFormData } from "../../types/schemaDefinitions.js";
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors.js";
 import decodeJWT from "./utils/decodeJWT.js";
 import { deleteCookie, setCookie } from "./utils/cookies.js";
+import fs from "fs";
+
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+
+const streamToString = (stream: fs.ReadStream): Promise<string> => {
+  const chunks: Buffer[] = [];
+  return new Promise((resolve, reject) => {
+    stream.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
+    stream.on("error", (err) => reject(err));
+    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+  });
+};
 
 export default async (app: FastifyInstance) => {
   app.post<{
@@ -57,7 +71,7 @@ export default async (app: FastifyInstance) => {
         ],
       );
 
-      const [{ id: user_id, is_public_servant }] = q.rows;
+      const [{ id: user_id }] = q.rows;
 
       const query = await app.pg.query<{ id: string }, string[]>(
         `INSERT INTO govid_sessions(token, user_id) VALUES($1, $2) RETURNING id`,
@@ -74,11 +88,21 @@ export default async (app: FastifyInstance) => {
 
       setCookie(request, reply, "sessionId", ssid, app.config);
 
-      if (is_public_servant) {
-        return reply.redirect(`${redirectUrl}/admin`);
-      }
+      const stream = fs.createReadStream(
+        path.join(__dirname, "..", "static", "redirect.html"),
+      );
 
-      return reply.redirect(`${redirectUrl}/`);
+      let result = await streamToString(stream);
+      result = result.replace("%sessionId%", ssid);
+      result = result.replace("%redirectUrl%", redirectUrl);
+
+      return reply.type("text/html").send(result);
+
+      // if (is_public_servant) {
+      //   return reply.redirect(`${redirectUrl}/admin`);
+      // }
+
+      // return reply.redirect(`${redirectUrl}/`);
     },
   );
 };

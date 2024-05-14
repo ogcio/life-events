@@ -1,10 +1,10 @@
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { formatDate } from "../../../../utils";
 import Link from "next/link";
 
 async function getBirthCertificateeDetails(_id: string) {
-  const { firstName, lastName } = await PgSessions.get();
+  const { firstName, lastName } = await AuthServicePgSessions.get();
   return {
     name: `${firstName} ${lastName}`,
     dateOfBirth: new Date("1990-01-01T00:00:00Z"),

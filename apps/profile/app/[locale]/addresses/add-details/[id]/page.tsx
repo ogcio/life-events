@@ -1,4 +1,4 @@
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 import { Profile } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
@@ -14,7 +14,7 @@ const AddressLine = ({ value }: { value: string }) => (
 );
 
 export default async (props: NextPageProps) => {
-  const { userId } = await PgSessions.get();
+  const { userId } = await AuthServicePgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
   const { id: addressId, locale } = props.params;

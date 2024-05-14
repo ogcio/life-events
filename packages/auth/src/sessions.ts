@@ -64,7 +64,7 @@ export const buildPgPool = () =>
     database: process.env.POSTGRES_DB_NAME_SHARED,
   });
 
-async function getPgSession(key: string) {
+export async function getPgSession(key: string) {
   const query = await pgpool.query<
     {
       token: string;

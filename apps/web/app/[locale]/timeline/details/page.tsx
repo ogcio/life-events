@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { web } from "../../../utils";
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 import ds from "design-system";
 
 const opaque = ds.hexToRgba(ds.colours.ogcio.gold, 5);
 
 export default async (props: web.NextPageProps) => {
-  const { firstName, lastName } = await PgSessions.get();
+  const { firstName, lastName } = await AuthServicePgSessions.get();
 
   const userName = [firstName, lastName].join(" ");
   const searchParams = new URLSearchParams(props.searchParams);
