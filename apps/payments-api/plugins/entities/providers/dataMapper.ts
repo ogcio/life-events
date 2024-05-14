@@ -1,5 +1,24 @@
 import { ProviderTypes } from "./types";
 
+/**
+ * Each IBAN contains a check digit calculated individually by the bank for the
+ * account holder. This check digit makes it easy to recognize typing errors or
+ * numbers when entering and processing the IBAN. The principle is always the
+ * same: A mathematical operation processes all available numbers and digits
+ * and uses a defined procedure to calculate one or more check digits. For the
+ * IBAN, the Modulo 97 method is used for the check digit calculation.
+ *
+ * The following steps are performed:
+ *
+ * 1) the first four characters of the IBAN number are pulled out from the
+ *  beginning and are appended at the end of the string.
+ * 2) All the letters in the hence obtained string of characters are replaced
+ *  by the ASCII value of their corresponding uppercase letter decreased by 55.
+ *  (ascii value −55)
+ * 3) The modulus of the hence obtained number, let's say 𝑥, with respect to 97
+ *  is checked.
+ * 4) If the modulus is 1, then it's a valid IBAN number
+ */
 function mod97(str: string) {
   const first9 = str.substring(0, 9);
   const remainingStr = str.substring(9);
