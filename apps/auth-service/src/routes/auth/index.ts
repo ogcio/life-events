@@ -4,7 +4,7 @@ import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
 import fs from "fs";
 import { HttpError } from "../../types/httpErrors.js";
-import { setCookie } from "./utils/cookies.js";
+import { deleteCookie, setCookie } from "./utils/cookies.js";
 import callback from "./callback.js";
 import streamToString from "./utils/streamToString.js";
 
@@ -54,6 +54,7 @@ export default async function login(app: FastifyInstance) {
 
           return reply.type("text/html").send(result);
         }
+        deleteCookie(request, reply, "sessionId", "", app.config);
       }
 
       redirectUrl = redirectUrl || "/";
