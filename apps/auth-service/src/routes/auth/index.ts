@@ -26,7 +26,7 @@ export default async function login(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      let redirectUrl = request.cookies.redirectUrl;
+      let redirectUrl = request.query.redirectUrl;
       const sessionId = request.cookies.sessionId;
 
       const query = await app.pg.query(
@@ -45,7 +45,7 @@ export default async function login(app: FastifyInstance) {
         return reply.redirect(redirectUrl);
       }
 
-      redirectUrl = request.query.redirectUrl;
+      redirectUrl = redirectUrl || "/";
 
       setCookie(request, reply, "redirectUrl", redirectUrl, app.config);
 
