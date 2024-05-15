@@ -6,6 +6,8 @@ import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+const AVAILABLE_LANGUAGES = ["en", "ga"];
+
 function options(base: string[], current?: string[]): string[] {
   if (!current) {
     return base;
@@ -46,12 +48,14 @@ type Content = {
 };
 
 type StateField = { value: string; description: string };
+
 type State = {
   content: Content[];
   fields: StateField[];
 };
 
 type StoredStateField = StateField & { languages: string[] };
+
 type StoredState = Omit<State, "fields"> & { fields: StoredStateField[] };
 
 function assignTemplateLiterals(set: Set<string>, s?: string) {
@@ -388,10 +392,63 @@ export default async (props: {
     redirect("/admin/templates");
   }
 
+  const getTemplateVarsLanguageMapping = (
+    contents: {
+      subject?: string;
+      excerpt?: string;
+      plainText?: string;
+      lang: string;
+    }[],
+  ): Record<string, Set<string>> => {
+    const allVariables: Record<string, Set<string>> = {};
+    // not optimized, but at the moment I would avoid
+    // to update template schema on to also save languages
+    for (const contentForLang of contents) {
+      const varsForThisLanguage = new Set<string>();
+      assignTemplateLiterals(varsForThisLanguage, contentForLang.subject);
+      assignTemplateLiterals(varsForThisLanguage, contentForLang.excerpt);
+      assignTemplateLiterals(varsForThisLanguage, contentForLang.plainText);
+
+      for (const currentVar of varsForThisLanguage) {
+        if (!allVariables[currentVar]) {
+          allVariables[currentVar] = new Set();
+        }
+
+        allVariables[currentVar].add(contentForLang.lang);
+      }
+    }
+
+    return allVariables;
+  };
+
+  const getFieldsForTemplate = (params: {
+    template: any | undefined;
+    state: StoredState | undefined;
+  }): StoredStateField[] => {
+    const { template, state } = params;
+    if (state) {
+      return state.fields;
+    }
+
+    if (!template || !template.data) {
+      return [];
+    }
+
+    const varsForLanguages = getTemplateVarsLanguageMapping(
+      template.data.contents,
+    );
+
+    return template.data.fields.map((field) => ({
+      value: field.fieldName,
+      description: field.fieldType,
+      languages: varsForLanguages[field.fieldName] ?? AVAILABLE_LANGUAGES,
+    }));
+  };
+
   const { userId } = await PgSessions.get();
   const client = new Messaging(userId);
   const state = await pgpool
-    .query<{ state: State }>(
+    .query<{ state: StoredState }>(
       `
     select state from message_template_states
     where user_id = $1
@@ -417,17 +474,10 @@ export default async (props: {
   const subject = stateContent?.subject ?? templateContent?.subject;
   const excerpt = stateContent?.excerpt ?? templateContent?.excerpt;
   const plainText = stateContent?.plainText ?? templateContent?.plainText;
-
-  const fields: State["fields"] =
-    state?.state.fields ??
-    template?.data?.fields.map((field) => ({
-      value: field.fieldName,
-      description: field.fieldType,
-    })) ??
-    [];
+  const fields = getFieldsForTemplate({ template, state: state?.state });
 
   const availableLangOptions = options(
-    ["en", "ga"],
+    AVAILABLE_LANGUAGES,
     state?.state.content.map((c) => c.lang) ??
       template?.data?.contents?.map((c) => c.lang) ?? [
         props.searchParams.lang || "en",
