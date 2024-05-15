@@ -7,17 +7,9 @@ import { HttpError } from "../../types/httpErrors.js";
 import decodeJWT from "./utils/decodeJWT.js";
 import { deleteCookie, setCookie } from "./utils/cookies.js";
 import fs from "fs";
+import streamToString from "./utils/streamToString.js";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
-
-const streamToString = (stream: fs.ReadStream): Promise<string> => {
-  const chunks: Buffer[] = [];
-  return new Promise((resolve, reject) => {
-    stream.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
-    stream.on("error", (err) => reject(err));
-    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
-  });
-};
 
 export default async (app: FastifyInstance) => {
   app.post<{
