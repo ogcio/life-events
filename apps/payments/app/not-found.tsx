@@ -1,7 +1,7 @@
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
-import Header from "./[locale]/(hosted)/Header";
 import Footer from "./[locale]/(hosted)/Footer";
+import Header from "./components/Header/Header";
 
 // Using strings temporarly since locale is not working
 export default async function () {

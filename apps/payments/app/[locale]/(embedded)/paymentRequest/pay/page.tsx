@@ -12,10 +12,10 @@ import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
 import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
-import Header from "../../../(hosted)/Header";
+import PreviewBanner from "../../PreviewBanner";
 import Footer from "../../../(hosted)/Footer";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
-import PreviewBanner from "../../PreviewBanner";
+import Header from "../../../../components/Header/Header";
 
 type Props = {
   params: {

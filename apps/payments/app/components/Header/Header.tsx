@@ -1,9 +1,10 @@
 import Link from "next/link";
 import ds from "design-system/";
 import UserIcon from "./UserIcon";
+import styles from "./Header.module.scss";
 import { getUser } from "../../../libraries/auth";
-import { headers } from "next/headers";
-import "./Header.css";
+import HamburgerButton from "./HamburgerButton";
+import LanguageSwitch from "./LanguageSwitch";
 
 export default async () => {
   let user;
@@ -12,24 +13,13 @@ export default async () => {
     user = await getUser();
   }
 
-  const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
-  const path = pathSlice.slice(2)?.join("/") || "";
-
   return (
-    <header role="banner" data-module="govie-header" className="govie-header">
-      <div
-        className="govie-header__container govie-width-container"
-        // all designs are made for 1440px
-        style={{
-          maxWidth: "1440px",
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          height: "80px",
-          boxSizing: "border-box",
-        }}
-      >
+    <header
+      role="banner"
+      data-module="govie-header"
+      className={`govie-header ${styles.govieHeader}`}
+    >
+      <div className={`govie-header__container ${styles.innerWrapper}`}>
         <div
           style={{
             display: "flex",
@@ -38,13 +28,8 @@ export default async () => {
             width: "100%",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "15px",
-            }}
-          >
+          <div className={styles.leftSideContainer}>
+            <HamburgerButton />
             <a
               href="/"
               className="govie-header__link govie-header__link--homepage"
@@ -115,19 +100,11 @@ export default async () => {
               </svg>
               <span className="govie-visually-hidden">gov.ie</span>
             </a>
-            <div className="govie-!-font-size-24">
+            <div className={styles.title}>
               <strong>Payments</strong>
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: "20px",
-              marginTop: "3px",
-            }}
-          >
+          <div className={styles.rightsideContainer}>
             <div className="govie-!-font-size-12">
               {process.env.USE_LOGTO_AUTH && (
                 <>
@@ -141,35 +118,10 @@ export default async () => {
               )}
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <a
-                className={`govie-link govie-link--inverse govie-link--no-underline ${
-                  pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
-                }`.trim()}
-                href={new URL("/en/" + path, process.env.HOST_URL).href}
-              >
-                English
-              </a>
-              <div
-                style={{
-                  height: "14px",
-                  width: "1px",
-                  borderLeft: `1px solid ${ds.colours.ogcio.white}`,
-                }}
-              />
-
-              <a
-                className={`govie-link govie-link--inverse govie-link--no-underline  ${
-                  pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
-                }`.trim()}
-                href={new URL("/ga/" + path, process.env.HOST_URL).href}
-              >
-                Gaelic
-              </a>
-            </div>
+            <LanguageSwitch />
             <UserIcon />
 
-            <Link href="/logout" prefetch={false} style={{ display: "flex" }}>
+            <Link href="/logout" prefetch={false}>
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
             </Link>
           </div>
