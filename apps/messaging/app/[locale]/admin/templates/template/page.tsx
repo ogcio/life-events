@@ -58,6 +58,21 @@ type StoredStateField = StateField & { languages: string[] };
 
 type StoredState = Omit<State, "fields"> & { fields: StoredStateField[] };
 
+type TemplateData = {
+  contents: {
+    templateName: string;
+    subject: string;
+    excerpt: string;
+    plainText: string;
+    richText: string;
+    lang: string;
+  }[];
+  fields: {
+    fieldName: string;
+    fieldType: string;
+  }[];
+};
+
 function assignTemplateLiterals(set: Set<string>, s?: string) {
   if (!s) {
     return;
@@ -393,12 +408,7 @@ export default async (props: {
   }
 
   const getTemplateVarsLanguageMapping = (
-    contents: {
-      subject?: string;
-      excerpt?: string;
-      plainText?: string;
-      lang: string;
-    }[],
+    contents: TemplateData["contents"],
   ): Record<string, Set<string>> => {
     const allVariables: Record<string, Set<string>> = {};
     // not optimized, but at the moment I would avoid
@@ -422,7 +432,7 @@ export default async (props: {
   };
 
   const getFieldsForTemplate = (params: {
-    template: any | undefined;
+    template: TemplateData | undefined;
     state: StoredState | undefined;
   }): StoredStateField[] => {
     const { template, state } = params;
@@ -430,42 +440,51 @@ export default async (props: {
       return state.fields;
     }
 
-    if (!template || !template.data) {
+    if (!template) {
       return [];
     }
 
-    const varsForLanguages = getTemplateVarsLanguageMapping(
-      template.data.contents,
-    );
+    const varsForLanguages = getTemplateVarsLanguageMapping(template.contents);
 
-    return template.data.fields.map((field) => ({
+    return template.fields.map((field) => ({
       value: field.fieldName,
       description: field.fieldType,
-      languages: varsForLanguages[field.fieldName] ?? AVAILABLE_LANGUAGES,
+      languages: varsForLanguages[field.fieldName]
+        ? [...varsForLanguages[field.fieldName]]
+        : AVAILABLE_LANGUAGES,
     }));
   };
 
-  const { userId } = await PgSessions.get();
-  const client = new Messaging(userId);
-  const state = await pgpool
-    .query<{ state: StoredState }>(
-      `
-    select state from message_template_states
-    where user_id = $1
-  `,
-      [userId],
-    )
-    .then((res) => res.rows.at(0));
+  const loadStateAndTemplate = async (): Promise<{
+    state: StoredState | undefined;
+    templateData: TemplateData | undefined;
+  }> => {
+    const { userId } = await PgSessions.get();
+    const client = new Messaging(userId);
+    const state = await pgpool
+      .query<{ state: StoredState }>(
+        `
+      select state from message_template_states
+      where user_id = $1
+    `,
+        [userId],
+      )
+      .then((res) => res.rows.at(0));
 
-  const template = props.searchParams.id
-    ? await client.getTemplate(props.searchParams.id)
-    : undefined;
+    const template = props.searchParams.id
+      ? await client.getTemplate(props.searchParams.id)
+      : undefined;
 
-  const stateContent = state?.state.content?.find(
+    return { state: state?.state, templateData: template?.data };
+  };
+
+  const { state, templateData } = await loadStateAndTemplate();
+
+  const stateContent = state?.content?.find(
     (x) => x.lang === props.searchParams.lang!,
   );
 
-  const templateContent = template?.data?.contents.find(
+  const templateContent = templateData?.contents.find(
     (c) => c.lang === props.searchParams.lang!,
   );
 
@@ -474,19 +493,19 @@ export default async (props: {
   const subject = stateContent?.subject ?? templateContent?.subject;
   const excerpt = stateContent?.excerpt ?? templateContent?.excerpt;
   const plainText = stateContent?.plainText ?? templateContent?.plainText;
-  const fields = getFieldsForTemplate({ template, state: state?.state });
+  const fields = getFieldsForTemplate({ template: templateData, state });
 
   const availableLangOptions = options(
     AVAILABLE_LANGUAGES,
-    state?.state.content.map((c) => c.lang) ??
-      template?.data?.contents?.map((c) => c.lang) ?? [
+    state?.content.map((c) => c.lang) ??
+      templateData?.contents?.map((c) => c.lang) ?? [
         props.searchParams.lang || "en",
       ],
   );
 
   return (
     <>
-      {(state?.state?.content ?? template?.data?.contents)?.map((x) => {
+      {(state?.content ?? templateData?.contents)?.map((x) => {
         const params = new URLSearchParams({
           ...props.searchParams,
           lang: x.lang,
@@ -509,7 +528,7 @@ export default async (props: {
       <h1>
         <span className="govie-heading-l">
           {(props.searchParams.id &&
-            (state?.state.content ?? template?.data?.contents)?.find(
+            (state?.content ?? templateData?.contents)?.find(
               (x) => x.lang === props.searchParams.lang,
             )?.templateName) ??
             t("createNewTemplateHeader")}{" "}
@@ -640,9 +659,7 @@ export default async (props: {
         <button
           className="govie-button"
           type="submit"
-          disabled={
-            !state?.state.content.every((c) => c.subject && c.templateName)
-          }
+          disabled={!state?.content.every((c) => c.subject && c.templateName)}
         >
           {props.searchParams.id
             ? t("updateTemplateButton")
