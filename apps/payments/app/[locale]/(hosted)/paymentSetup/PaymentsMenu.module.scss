@@ -1,0 +1,10 @@
+@import "/app/styles/globals.scss";
+
+.container {
+  display: none;
+
+  @media ((min-width: ($breakpoint-sm))) {
+    display: block;
+    min-width: 200px;
+  }
+}

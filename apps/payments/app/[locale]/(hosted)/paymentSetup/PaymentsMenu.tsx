@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import ds from "design-system";
+import styles from "./PaymentsMenu.module.scss";
 
 const Icon = ds.Icon;
 
@@ -8,7 +9,7 @@ export default ({ locale }: { locale: string }) => {
   const t = useTranslations("PaymentSetup.menu");
 
   return (
-    <ol className="govie-list govie-list--spaced" style={{ minWidth: "200px" }}>
+    <ol className={`govie-list govie-list--spaced ${styles.container}`}>
       <li tabIndex={0}>
         <Link
           className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
