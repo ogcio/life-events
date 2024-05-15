@@ -4,7 +4,7 @@ import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
 import fs from "fs";
 import { HttpError } from "../../types/httpErrors.js";
-import { deleteCookie, setCookie } from "./utils/cookies.js";
+import { setCookie } from "./utils/cookies.js";
 import callback from "./callback.js";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
@@ -26,11 +26,7 @@ export default async function login(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      let redirectUrl = request.query.redirectUrl;
-      if (!redirectUrl) {
-        redirectUrl = request.cookies.redirectUrl || "";
-      }
-
+      let redirectUrl = request.cookies.redirectUrl;
       const sessionId = request.cookies.sessionId;
 
       const query = await app.pg.query(
@@ -45,9 +41,11 @@ export default async function login(app: FastifyInstance) {
         [sessionId],
       );
 
-      if (query.rowCount && redirectUrl.length > 0) {
+      if (query.rowCount && redirectUrl) {
         return reply.redirect(redirectUrl);
       }
+
+      redirectUrl = request.query.redirectUrl;
 
       setCookie(request, reply, "redirectUrl", redirectUrl, app.config);
 
