@@ -6,6 +6,7 @@ import fs from "fs";
 import { HttpError } from "../../types/httpErrors.js";
 import { deleteCookie, setCookie } from "./utils/cookies.js";
 import callback from "./callback.js";
+import streamToString from "./utils/streamToString.js";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
@@ -27,13 +28,37 @@ export default async function login(app: FastifyInstance) {
     },
     async (request, reply) => {
       let redirectUrl = request.query.redirectUrl;
-      if (!redirectUrl) {
-        redirectUrl = request.cookies.redirectUrl || "";
+      const sessionId = request.cookies.sessionId;
+
+      if (sessionId) {
+        const query = await app.pg.query(
+          `
+          SELECT
+          s.token,
+          s.user_id AS "userId",
+          u.is_public_servant as "publicServant"
+          FROM govid_sessions s
+          JOIN users u on u.id = s.user_id
+          WHERE s.id=$1`,
+          [sessionId],
+        );
+
+        if (query.rowCount && redirectUrl) {
+          const stream = fs.createReadStream(
+            path.join(__dirname, "..", "static", "redirect.html"),
+          );
+
+          let result = await streamToString(stream);
+          result = result.replace("%sessionId%", sessionId);
+          result = result.replace("%redirectUrl%", redirectUrl);
+
+          return reply.type("text/html").send(result);
+        }
       }
 
-      if (redirectUrl) {
-        setCookie(request, reply, "redirectUrl", redirectUrl, app.config);
-      }
+      redirectUrl = redirectUrl || "/";
+
+      setCookie(request, reply, "redirectUrl", redirectUrl, app.config);
 
       const stream = fs.createReadStream(
         path.join(__dirname, "..", "static", "index.html"),
@@ -66,8 +91,6 @@ export default async function login(app: FastifyInstance) {
       const sessionId = request.cookies.sessionId;
 
       await app.pg.query("DELETE FROM govid_sessions WHERE id=$1", [sessionId]);
-
-      deleteCookie(request, reply, "sessionId", "", app.config);
 
       return reply.redirect(
         `/auth?${new URLSearchParams(request.query).toString()}`,

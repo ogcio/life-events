@@ -3,6 +3,7 @@ import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
 import WorldpayFields from "./WorldpayFields";
+import { errorHandler } from "../../../../../utils";
 
 export default async () => {
   const t = await getTranslations("PaymentSetup.AddWorldpay");
@@ -12,7 +13,7 @@ export default async () => {
   async function handleSubmit(formData: FormData) {
     "use server";
 
-    await new Payments(userId).createWorldpayProvider({
+    const { error } = await new Payments(userId).createProvider({
       name: formData.get("provider_name") as string,
       type: "worldpay",
       data: {
@@ -20,6 +21,10 @@ export default async () => {
         installationId: formData.get("installation_id") as string,
       },
     });
+
+    if (error) {
+      errorHandler(error);
+    }
 
     redirect("./");
   }

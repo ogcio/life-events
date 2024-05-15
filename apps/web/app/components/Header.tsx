@@ -134,7 +134,7 @@ export default ({ showHamburgerButton, locale }: THeaderProps) => {
           <UserIcon />
 
           <Link
-            href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}/${pathSlice.at(1)}`}
+            href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
             prefetch={false}
             className={styles.logoutLink}
           >

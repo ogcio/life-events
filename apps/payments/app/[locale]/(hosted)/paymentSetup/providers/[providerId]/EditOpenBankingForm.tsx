@@ -5,6 +5,7 @@ import type { OpenBankingProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
+import { errorHandler } from "../../../../../utils";
 
 type Props = {
   provider: OpenBankingProvider;
@@ -18,14 +19,19 @@ export default async ({ provider }: Props) => {
 
     const { userId } = await PgSessions.get();
 
-    await new Payments(userId).updateProvider(provider.id, {
+    const { error } = await new Payments(userId).updateProvider(provider.id, {
       name: formData.get("provider_name") as string,
       data: {
-        iban: formData.get("iban") as string,
+        iban: (formData.get("iban") as string).replaceAll(" ", ""),
         accountHolderName: formData.get("account_holder_name") as string,
       },
+      type: provider.type,
       status: provider.status,
     });
+
+    if (error) {
+      errorHandler(error);
+    }
 
     redirect("./");
   }

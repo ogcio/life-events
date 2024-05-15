@@ -1,14 +1,14 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
-  RealexData,
   RealexHppResponse,
   RealexPaymentObject,
   RealexPaymentObjectQueryParams,
 } from "../schemas";
 import { Type } from "@sinclair/typebox";
-import { providerSecretsHandlersFactory } from "../../services/providersSecretsService";
+import secretsHandlerFactory from "../../services/providersSecretsService";
 import { RealexService } from "../../services/realexService";
+import { getSecretFields } from "../../plugins/entities/providers/dataMapper";
 
 export default async function realex(app: FastifyInstance) {
   app.get<{
@@ -49,9 +49,10 @@ export default async function realex(app: FastifyInstance) {
         throw app.httpErrors.unprocessableEntity("Provider is not enabled");
       }
 
-      const providerSecretsHandler = providerSecretsHandlersFactory("realex");
-      const { merchantId, sharedSecret } =
-        providerSecretsHandler.getClearTextData(provider.data);
+      const secretFields = getSecretFields("realex");
+      const { merchantId, sharedSecret } = secretsHandlerFactory
+        .getInstance()
+        .getClearTextData(provider.data, secretFields);
 
       const currency = "EUR";
       const url =
@@ -128,10 +129,10 @@ export default async function realex(app: FastifyInstance) {
         throw app.httpErrors.unprocessableEntity("Provider is not enabled");
       }
 
-      const providerSecretsHandler = providerSecretsHandlersFactory("realex");
-      const { sharedSecret } = providerSecretsHandler.getClearTextData(
-        provider.data,
-      );
+      const secretFields = getSecretFields("realex");
+      const { sharedSecret } = secretsHandlerFactory
+        .getInstance()
+        .getClearTextData(provider.data, secretFields);
 
       const realexService = new RealexService(sharedSecret);
       const isResponseValid = realexService.verifyHash(body);

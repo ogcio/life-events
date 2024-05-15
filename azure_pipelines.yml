@@ -26,7 +26,7 @@ parameters:
 variables:
   - name: pushArtefacts
     value: ${{ containsValue(parameters.buildBranches, variables['Build.SourceBranchName']) }}
-  - ${{ if and(containsValue(parameters.validEnvironments ,variables['Build.SourceBranchName']), variables.pushArtefacts) }}:
+  - ${{ if containsValue(parameters.validEnvironments ,variables['Build.SourceBranchName']) }}:
     - template: pipeline-variables/${{ coalesce(variables['Build.SourceBranchName'], 'fallback') }}.yml
   - ${{ else }}:
     - template: pipeline-variables/dev.yml

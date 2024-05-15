@@ -4,19 +4,19 @@ import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
 import { redirect, RedirectType } from "next/navigation";
+import { errorHandler } from "../../../../utils";
 
 async function getPaymentDetails(
   userId: string,
   paymentId: string,
   amount?: string,
 ) {
-  let details;
-  try {
-    details = (
-      await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
-    ).data;
-  } catch (err) {
-    console.log(err);
+  const { data: details, error } = await new Payments(
+    userId,
+  ).getPaymentRequestPublicInfo(paymentId);
+
+  if (error) {
+    errorHandler(error);
   }
 
   if (!details || details?.status === "inactive") return undefined;
@@ -40,20 +40,21 @@ async function getPaymentDetails(
 }
 
 async function generatePaymentIntentId(userId: string): Promise<string> {
-  let result;
+  const { data: result, error } = await new Payments(
+    userId,
+  ).generatePaymentIntentId();
 
-  try {
-    result = await new Payments(userId).generatePaymentIntentId();
-  } catch (err) {
-    console.log(err);
+  if (error) {
+    errorHandler(error);
   }
 
-  if (!result.data.intentId || result.error) {
+  if (!result?.intentId) {
     // Handle edge case when intentId was not possible to generate
-    throw new Error("Payment intentId was not possible to generate.");
+    console.error("Payment intentId was not possible to generate.");
+    redirect("error", RedirectType.replace);
   }
 
-  return result.data.intentId;
+  return result.intentId;
 }
 
 export default async function CardWithRealex(props: {
@@ -79,7 +80,7 @@ export default async function CardWithRealex(props: {
 
   const t = await getTranslations("Common");
   if (!props.searchParams?.paymentId) {
-    return <h1>{t("notFound")}</h1>;
+    return redirect("/not-found", RedirectType.replace);
   }
 
   const paymentDetails = await getPaymentDetails(
@@ -98,7 +99,9 @@ export default async function CardWithRealex(props: {
   const intentId = await generatePaymentIntentId(userId);
   const { amount, providerId } = paymentDetails;
 
-  await new Payments(userId).createTransaction({
+  const { error: createTransactionError } = await new Payments(
+    userId,
+  ).createTransaction({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: intentId,
     integrationReference: props.searchParams.integrationRef,
@@ -107,11 +110,21 @@ export default async function CardWithRealex(props: {
     userData: { email, name: `${firstName} ${lastName}` },
   });
 
-  const payment = await new Payments(userId).getRealexPaymentObject({
+  if (createTransactionError) {
+    errorHandler(createTransactionError);
+  }
+
+  const { data: payment, error: realexPaymentObjectError } = await new Payments(
+    userId,
+  ).getRealexPaymentObject({
     intentId,
-    amount,
+    amount: amount.toString(),
     providerId,
   });
+
+  if (realexPaymentObjectError) {
+    errorHandler(realexPaymentObjectError);
+  }
 
   return (
     <div
@@ -124,7 +137,7 @@ export default async function CardWithRealex(props: {
     >
       <NextIntlClientProvider messages={realexMessages}>
         <RealexHost
-          payment={payment.data}
+          payment={payment}
           responseUrl={responseUrl}
           locale={props.params.locale}
         />
