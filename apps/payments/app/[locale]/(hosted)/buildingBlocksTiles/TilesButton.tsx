@@ -4,7 +4,8 @@ import ds from "design-system/";
 import { ComponentProps } from "react";
 import { useTranslations } from "next-intl";
 
-const buildingBlocksMainLandingPage = "https://www.google.com";
+const buildingBlocksMainLandingPage =
+  (process.env.NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE as string) ?? "#";
 const services: TileProps[] = [
   {
     url: process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT as string,
@@ -42,6 +43,7 @@ const Tile = ({ url, label, icon }: TileProps) => {
         alignItems: "center",
         padding: "20px",
         backgroundColor: tintGold,
+        textDecoration: "none",
       }}
     >
       <ds.Icon icon={icon} color={ds.colours.ogcio.green} size={42} />
@@ -79,9 +81,28 @@ export default function () {
         onClick={handleTilesClick}
         style={{
           cursor: "pointer",
+          position: "relative",
+          display: "inline-block",
         }}
       >
         <ds.Icon icon="tiles" color={ds.colours.ogcio.white} size={22} />
+        {/* White triangle to show on the bottom of the button */}
+        {isTilesBarOpen && (
+          <div
+            style={{
+              width: 0,
+              height: 0,
+              borderLeft: "10px solid transparent",
+              borderRight: "10px solid transparent",
+              borderBottom: "10px solid white",
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
+              top: "100%",
+              marginTop: "8px",
+            }}
+          ></div>
+        )}
       </a>
 
       {isTilesBarOpen && (
@@ -95,6 +116,7 @@ export default function () {
               top: "70px",
               zIndex: 100,
               display: "flex",
+              justifyContent: "center",
               gap: "20px",
               padding: "20px",
               backgroundColor: ds.colours.ogcio.white,
