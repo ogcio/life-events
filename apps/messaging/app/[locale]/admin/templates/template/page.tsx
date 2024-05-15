@@ -5,6 +5,7 @@ import { pgpool } from "messages/dbConnection";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { QueryResult } from "pg";
 
 const AVAILABLE_LANGUAGES = ["en", "ga"];
 
@@ -241,6 +242,22 @@ const manageVariables = (params: {
   return toStoreVars;
 };
 
+const storeState = async (params: {
+  userId: string;
+  state: StoredState;
+}): Promise<void> => {
+  await pgpool.query(
+    `
+   insert into message_template_states(user_id, state)
+   values($1, $2)
+   on conflict(user_id) do update
+   set state = message_template_states.state || $2
+   where message_template_states.user_id = $1
+  `,
+    [params.userId, params.state],
+  );
+};
+
 export default async (props: {
   searchParams: { id: string; lang?: string };
   params: { locale: string };
@@ -307,16 +324,7 @@ export default async (props: {
       formData: { excerpt, plainText, subject },
     });
 
-    await pgpool.query(
-      `
-     insert into message_template_states(user_id, state)
-     values($1, $2)
-     on conflict(user_id) do update
-     set state = message_template_states.state || $2
-     where message_template_states.user_id = $1
-    `,
-      [userId, state],
-    );
+    await storeState({ userId, state });
 
     revalidatePath("/");
     const langParam = langAdded ? langAdded : lang;
@@ -458,6 +466,7 @@ export default async (props: {
   const loadStateAndTemplate = async (): Promise<{
     state: StoredState | undefined;
     templateData: TemplateData | undefined;
+    userId: string;
   }> => {
     const { userId } = await PgSessions.get();
     const client = new Messaging(userId);
@@ -475,37 +484,82 @@ export default async (props: {
       ? await client.getTemplate(props.searchParams.id)
       : undefined;
 
-    return { state: state?.state, templateData: template?.data };
+    return { userId, state: state?.state, templateData: template?.data };
   };
 
-  const { state, templateData } = await loadStateAndTemplate();
+  const fillStoredState = async (params: {
+    currentLanguage: string;
+  }): Promise<{
+    newState: StoredState | undefined;
+    previousState: StoredState | undefined;
+    contentForLanguage: Content | undefined;
+    userId: string;
+  }> => {
+    const { currentLanguage } = params;
+    const {
+      templateData,
+      state: previousState,
+      userId,
+    } = await loadStateAndTemplate();
 
-  const stateContent = state?.content?.find(
-    (x) => x.lang === props.searchParams.lang!,
-  );
+    if (!templateData && !previousState) {
+      return {
+        previousState,
+        newState: undefined,
+        contentForLanguage: undefined,
+        userId,
+      };
+    }
+    const fields = getFieldsForTemplate({
+      template: templateData,
+      state: previousState,
+    });
+    let contentForLanguage: Content | undefined;
+    const contents: Content[] = [];
+    for (const availableLanguage of AVAILABLE_LANGUAGES) {
+      const stateContent = previousState?.content?.find(
+        (x) => x.lang === availableLanguage,
+      );
 
-  const templateContent = templateData?.contents.find(
-    (c) => c.lang === props.searchParams.lang!,
-  );
+      const templateContent: Content | undefined = templateData?.contents.find(
+        (c) => c.lang === availableLanguage,
+      );
 
-  const templateName =
-    stateContent?.templateName ?? templateContent?.templateName;
-  const subject = stateContent?.subject ?? templateContent?.subject;
-  const excerpt = stateContent?.excerpt ?? templateContent?.excerpt;
-  const plainText = stateContent?.plainText ?? templateContent?.plainText;
-  const fields = getFieldsForTemplate({ template: templateData, state });
+      const toPush = stateContent ?? templateContent;
+      if (toPush) {
+        contents.push(toPush);
+        if (availableLanguage === currentLanguage) {
+          contentForLanguage = toPush;
+        }
+      }
+    }
 
-  const availableLangOptions = options(
-    AVAILABLE_LANGUAGES,
-    state?.content.map((c) => c.lang) ??
-      templateData?.contents?.map((c) => c.lang) ?? [
-        props.searchParams.lang || "en",
-      ],
-  );
+    return {
+      previousState,
+      contentForLanguage,
+      newState: { content: contents, fields },
+      userId,
+    };
+  };
+
+  const { previousState, newState, contentForLanguage, userId } =
+    await fillStoredState({
+      currentLanguage: props.searchParams.lang || "en",
+    });
+
+  if (!previousState) {
+    await storeState({ state: newState!, userId });
+  }
+
+  let usedLanguages = newState?.content.map((c) => c.lang) || [];
+  if (usedLanguages.length === 0) {
+    usedLanguages = [props.searchParams.lang || "en"];
+  }
+  const availableLangOptions = options(AVAILABLE_LANGUAGES, usedLanguages);
 
   return (
     <>
-      {(state?.content ?? templateData?.contents)?.map((x) => {
+      {newState?.content?.map((x) => {
         const params = new URLSearchParams({
           ...props.searchParams,
           lang: x.lang,
@@ -528,9 +582,8 @@ export default async (props: {
       <h1>
         <span className="govie-heading-l">
           {(props.searchParams.id &&
-            (state?.content ?? templateData?.contents)?.find(
-              (x) => x.lang === props.searchParams.lang,
-            )?.templateName) ??
+            newState?.content?.find((x) => x.lang === props.searchParams.lang)
+              ?.templateName) ??
             t("createNewTemplateHeader")}{" "}
           ({props.searchParams.lang})
         </span>
@@ -577,7 +630,7 @@ export default async (props: {
             name="templateName"
             className="govie-input"
             autoComplete="off"
-            defaultValue={templateName}
+            defaultValue={contentForLanguage?.templateName}
           />
         </div>
 
@@ -591,7 +644,7 @@ export default async (props: {
             name="subject"
             className="govie-input"
             autoComplete="off"
-            defaultValue={subject}
+            defaultValue={contentForLanguage?.subject}
           />
         </div>
 
@@ -606,7 +659,7 @@ export default async (props: {
             name="excerpt"
             className="govie-textarea"
             rows={5}
-            defaultValue={excerpt}
+            defaultValue={contentForLanguage?.excerpt}
           ></textarea>
         </div>
 
@@ -624,14 +677,14 @@ export default async (props: {
             name="plainText"
             className="govie-textarea"
             rows={15}
-            defaultValue={plainText}
+            defaultValue={contentForLanguage?.plainText}
           ></textarea>
         </div>
 
         <h2>
           <span className="govie-heading-m">{t("templateFieldsHeading")}</span>
         </h2>
-        {fields?.map((x) => (
+        {newState?.fields.map((x) => (
           <div className="govie-form-group">
             <input type="hidden" name="field" value={x.value} />
             <label htmlFor="subject" className="govie-label--s">
@@ -659,7 +712,9 @@ export default async (props: {
         <button
           className="govie-button"
           type="submit"
-          disabled={!state?.content.every((c) => c.subject && c.templateName)}
+          disabled={
+            !newState?.content.every((c) => c.subject && c.templateName)
+          }
         >
           {props.searchParams.id
             ? t("updateTemplateButton")
