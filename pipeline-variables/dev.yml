@@ -6,6 +6,6 @@ variables:
   nextPublicHostUrl: https://payments.dev.blocks.gov.ie/
   nextPublicApiEndpoint: https://api.dev.blocks.gov.ie
   nextPublicMessagingServiceEntryPoint: https://messaging.dev.blocks.gov.ie/
-  nextPublicPaymentsServiceEntryPoint: http://payments.dev.blocks.gov.ie/
-  nextPublicLifeEventsServiceEntryPoint: http://dev.life.gov.ie/
+  nextPublicPaymentsServiceEntryPoint: https://payments.dev.blocks.gov.ie/
+  nextPublicLifeEventsServiceEntryPoint: https://dev.life.gov.ie/
   nextPublicBuildingBlocksLandingPage: https://blocks.gov.ie/

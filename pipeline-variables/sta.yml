@@ -5,3 +5,7 @@ variables:
   nextPublicStripePublishableKey: pk_test_51OzFkUK1VL0xyyr2E3EvcEmzsAGLowKH3jlM4g3AhQwUjhlpxQvfjZizc5GRSAnNzf8HHwTdzhz2rRYS69nooxtg00ZF7kRvyN
   nextPublicHostUrl: https://payments.sta.blocks.gov.ie/
   nextPublicApiEndpoint: https://api.sta.blocks.gov.ie
+  nextPublicMessagingServiceEntryPoint: https://messaging.dev.blocks.gov.ie/
+  nextPublicPaymentsServiceEntryPoint: https://payments.dev.blocks.gov.ie/
+  nextPublicLifeEventsServiceEntryPoint: https://dev.life.gov.ie/
+  nextPublicBuildingBlocksLandingPage: https://blocks.gov.ie/
