@@ -6,7 +6,7 @@ import styles from "./PaymentsMenu.module.scss";
 const Icon = ds.Icon;
 
 export default ({ locale }: { locale: string }) => {
-  const t = useTranslations("PaymentSetup.menu");
+  const t = useTranslations("Menu");
 
   return (
     <ol className={`govie-list govie-list--spaced ${styles.container}`}>
