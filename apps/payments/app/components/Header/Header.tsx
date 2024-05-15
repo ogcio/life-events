@@ -10,6 +10,7 @@ import UserIcon from "./UserIcon";
 import { getUser } from "../../../libraries/auth";
 
 import styles from "./Header.module.scss";
+import BuildingBlocksTiles from "../../[locale]/(hosted)/buildingBlocksTiles";
 
 type HeaderProps = {
   locale: string;
@@ -47,6 +48,7 @@ export default async ({ locale }: HeaderProps) => {
             <NextIntlClientProvider messages={menuMessages}>
               <Hamburger userName={`${firstName} ${lastName}`} />
             </NextIntlClientProvider>
+            <BuildingBlocksTiles locale={locale} />
             <a
               href="/"
               className="govie-header__link govie-header__link--homepage"

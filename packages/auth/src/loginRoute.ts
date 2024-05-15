@@ -7,8 +7,12 @@ export default async (req: Request) => {
   const formData = await req.formData();
   const sessionId = formData.get("sessionId")?.toString() ?? "";
 
+  const authServiceUrl = process.env.AUTH_SERVICE_URL;
+
+  const loginUrl = `${authServiceUrl}/auth?redirectUrl=${process.env.HOST_URL}`;
+
   if (!sessionId) {
-    return redirect("/logout", RedirectType.replace);
+    return redirect(loginUrl, RedirectType.replace);
   }
 
   const session = await getPgSession(sessionId); //PgSessions.get(sessionId);
@@ -16,7 +20,7 @@ export default async (req: Request) => {
   cookies().set(getSessionIdCookieConfig(req, sessionId));
 
   if (!session) {
-    return redirect("/logout", RedirectType.replace);
+    return redirect(loginUrl, RedirectType.replace);
   }
 
   const { publicServant } = session;
