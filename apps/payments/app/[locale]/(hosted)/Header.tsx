@@ -4,8 +4,9 @@ import UserIcon from "./UserIcon";
 import { getUser } from "../../../libraries/auth";
 import { headers } from "next/headers";
 import "./Header.css";
+import BuildingBlocksTiles from "./buildingBlocksTiles";
 
-export default async () => {
+export default async ({ locale }: { locale }) => {
   let user;
 
   if (process.env.USE_LOGTO_AUTH) {
@@ -45,6 +46,7 @@ export default async () => {
               gap: "15px",
             }}
           >
+            <BuildingBlocksTiles locale={locale} />
             <a
               href="/"
               className="govie-header__link govie-header__link--homepage"
