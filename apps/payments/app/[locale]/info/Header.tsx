@@ -15,7 +15,6 @@ export default async () => {
         // all designs are made for 1440px
         style={{
           maxWidth: "1440px",
-          width: "100%",
           display: "flex",
           alignItems: "center",
           gap: "8px",
@@ -108,9 +107,6 @@ export default async () => {
               </svg>
               <span className="govie-visually-hidden">gov.ie</span>
             </a>
-            <div className="govie-!-font-size-24">
-              <strong>Payments</strong>
-            </div>
           </div>
           <div
             style={{
@@ -128,7 +124,7 @@ export default async () => {
                 }`.trim()}
                 href={new URL("/en/" + path, process.env.HOST_URL).href}
               >
-                English
+                EN
               </a>
               <div
                 style={{
@@ -143,8 +139,11 @@ export default async () => {
                   pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/ga/" + path, process.env.HOST_URL).href}
+                style={{
+                  marginRight: "10px",
+                }}
               >
-                Gaelic
+                GA
               </a>
               <a href="/paymentSetup">
                 <button
@@ -153,7 +152,6 @@ export default async () => {
                   className="govie-button govie-button--secondary"
                   style={{
                     marginBottom: "0",
-                    marginLeft: "30px",
                   }}
                 >
                   {t("actions.login")}
