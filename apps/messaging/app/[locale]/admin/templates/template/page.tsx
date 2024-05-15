@@ -4,7 +4,6 @@ import { Messaging } from "building-blocks-sdk";
 import { pgpool } from "messages/dbConnection";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 function options(base: string[], current?: string[]): string[] {
@@ -27,7 +26,7 @@ function options(base: string[], current?: string[]): string[] {
 
 async function getState(userId: string) {
   return await pgpool
-    .query<{ state: State }>(
+    .query<{ state: StoredState }>(
       `
 
   select state from message_template_states
@@ -45,10 +44,15 @@ type Content = {
   templateName: string;
   lang: string;
 };
+
+type StateField = { value: string; description: string };
 type State = {
   content: Content[];
-  fields: { value: string; description: string }[];
+  fields: StateField[];
 };
+
+type StoredStateField = StateField & { languages: string[] };
+type StoredState = Omit<State, "fields"> & { fields: StoredStateField[] };
 
 function assignTemplateLiterals(set: Set<string>, s?: string) {
   if (!s) {
@@ -68,6 +72,155 @@ function assignTemplateLiterals(set: Set<string>, s?: string) {
     current = xp.exec(scpy);
   }
 }
+
+const extractVariablesFromFormData = (formData: {
+  subject: string;
+  excerpt: string;
+  plainText: string;
+}): Set<string> => {
+  const { subject, excerpt, plainText } = formData;
+  const dynamicValuesSet = new Set<string>();
+  assignTemplateLiterals(dynamicValuesSet, subject);
+  assignTemplateLiterals(dynamicValuesSet, excerpt);
+  assignTemplateLiterals(dynamicValuesSet, plainText);
+
+  return dynamicValuesSet;
+};
+
+const isVariableNotUsedAnymore = (params: {
+  currentLanguage: string;
+  fromDbField: StoredStateField;
+  varNamesFromTemplateBody: Set<string>;
+}): boolean =>
+  // is not used anymore if it is not one of the variables
+  // set in the just submitted formData and if it is not
+  // used in another language
+  ((params.fromDbField.languages.length === 1 &&
+    params.fromDbField.languages[0] === params.currentLanguage) ||
+    params.fromDbField.languages.length === 0) &&
+  !params.varNamesFromTemplateBody.has(params.fromDbField.value);
+
+const getLanguagesForVariable = (params: {
+  currentlyStored: StoredStateField;
+  varsFromFormData: Set<string>;
+  currentLanguage: string;
+}): string[] => {
+  const { currentlyStored, varsFromFormData, currentLanguage } = params;
+  const languages = new Set(currentlyStored.languages);
+  if (varsFromFormData.has(currentlyStored.value)) {
+    languages.add(currentLanguage);
+
+    return [...languages];
+  }
+
+  languages.delete(currentLanguage);
+
+  return [...languages];
+};
+
+const getToStoreVariable = (params: {
+  currentLanguage: string;
+  currentlyStored: StoredStateField;
+  varsFromFormData: Set<string>;
+  varUpdatedValues: Record<string, StateField>;
+}): StoredStateField | null => {
+  const { currentlyStored, varUpdatedValues } = params;
+  // the variable is not in the list of the submitted ones
+  if (!varUpdatedValues[currentlyStored.value]) {
+    return null;
+  }
+
+  return {
+    value: currentlyStored.value,
+    languages: getLanguagesForVariable(params),
+    description: varUpdatedValues[currentlyStored.value].description,
+  };
+};
+
+const updateAlreadyStoredVariable = (params: {
+  varUpdatedValues: Record<string, StateField>;
+  varsFromFormData: Set<string>;
+  currentLanguage: string;
+  currentlyStored: StoredStateField;
+}): StoredStateField | null => {
+  const {
+    varsFromFormData,
+    currentLanguage,
+    currentlyStored,
+    varUpdatedValues,
+  } = params;
+  // was this field saved only for this language and is not
+  // used anymore ?
+  if (
+    isVariableNotUsedAnymore({
+      currentLanguage: params.currentLanguage,
+      varNamesFromTemplateBody: varsFromFormData,
+      fromDbField: currentlyStored,
+    })
+  ) {
+    return null;
+  }
+  // check if it set for the current language
+  const toStoreVariable = getToStoreVariable({
+    currentLanguage,
+    varsFromFormData,
+    varUpdatedValues,
+    currentlyStored,
+  });
+  if (toStoreVariable !== null) {
+    return toStoreVariable;
+  }
+  // otherwise was stored for other languages
+  const currentLanguages = currentlyStored.languages.filter(
+    (x) => x !== params.currentLanguage,
+  );
+
+  if (currentLanguages.length > 0) {
+    return { ...currentlyStored, languages: currentLanguages };
+  }
+
+  return null;
+};
+
+const manageVariables = (params: {
+  formData: {
+    subject: string;
+    excerpt: string;
+    plainText: string;
+  };
+  currentLanguage: string;
+  fromDb: StoredState["fields"];
+  varUpdatedValues: Record<string, StateField>;
+}): StoredStateField[] => {
+  const { currentLanguage, fromDb, varUpdatedValues, formData } = params;
+
+  const varsFromFormData = extractVariablesFromFormData(formData);
+  let toStoreVars: StoredStateField[] = [];
+  const usedFieldNames: Set<string> = new Set();
+  for (const currentlyStored of fromDb) {
+    const toStore = updateAlreadyStoredVariable({
+      varsFromFormData,
+      varUpdatedValues,
+      currentLanguage,
+      currentlyStored,
+    });
+    usedFieldNames.add(currentlyStored.value);
+    if (toStore !== null) {
+      toStoreVars.push(toStore);
+    }
+  }
+
+  for (const newFieldName of varsFromFormData) {
+    if (usedFieldNames.has(newFieldName)) {
+      continue;
+    }
+    // newly added variables from the fields
+    const currentField = { value: newFieldName, description: "" };
+    toStoreVars.push({ ...currentField, languages: [params.currentLanguage] });
+  }
+
+  return toStoreVars;
+};
 
 export default async (props: {
   searchParams: { id: string; lang?: string };
@@ -114,7 +267,7 @@ export default async (props: {
       });
     }
 
-    const fields: Record<string, State["fields"][0]> = {};
+    const fields: Record<string, StateField> = {};
     formData.forEach((value, key) => {
       if (!key.startsWith("$ACTION") || key !== "state") {
         if (key === "field") {
@@ -128,38 +281,12 @@ export default async (props: {
       }
     });
 
-    // These are fresh parsed from current form change
-    const dynamicValuesSet = new Set<string>();
-    assignTemplateLiterals(dynamicValuesSet, subject);
-    assignTemplateLiterals(dynamicValuesSet, excerpt);
-    assignTemplateLiterals(dynamicValuesSet, plainText);
-    const formParsedTexts = [...dynamicValuesSet];
-
-    const currentValues = state.fields.map((field) => field.value);
-    const valuesToConsider = formParsedTexts.filter((parsed) =>
-      currentValues.includes(parsed),
-    );
-
-    const nextFields: State["fields"] = [];
-
-    for (const field of formParsedTexts) {
-      if (!currentValues.some((v) => v === field)) {
-        nextFields.push({
-          value: field,
-          description: fields[field]?.description ?? "",
-        });
-      }
-    }
-
-    // Check if any were just updated?
-    for (const field of state.fields) {
-      if (valuesToConsider.some((v) => v === field.value)) {
-        field.description = fields[field.value]?.description ?? "";
-        nextFields.push(field);
-      }
-    }
-
-    state.fields = nextFields;
+    state.fields = manageVariables({
+      currentLanguage: lang,
+      fromDb: state.fields,
+      varUpdatedValues: fields,
+      formData: { excerpt, plainText, subject },
+    });
 
     await pgpool.query(
       `
@@ -195,6 +322,7 @@ export default async (props: {
       variables: state.fields.map((field) => ({
         name: field.value,
         type: field.description,
+        languages: field.languages,
       })),
       contents: state.content.map((c) => ({ ...c, richText: "" })),
     };
@@ -262,7 +390,6 @@ export default async (props: {
 
   const { userId } = await PgSessions.get();
   const client = new Messaging(userId);
-
   const state = await pgpool
     .query<{ state: State }>(
       `
