@@ -1,4 +1,4 @@
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import { web } from "../../utils";
 import Timeline from "./Timeline";
 import { Timeline as TimelineClient } from "building-blocks-sdk";
@@ -10,7 +10,7 @@ export default async (props: web.NextPageProps) => {
   if (!showTimeline) {
     throw notFound();
   }
-  const { firstName, lastName, userId } = await AuthServicePgSessions.get();
+  const { firstName, lastName, userId } = await PgSessions.get();
 
   const userName = [firstName, lastName].join(" ");
 

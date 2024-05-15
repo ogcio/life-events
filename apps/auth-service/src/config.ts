@@ -1,17 +1,14 @@
 export const envSchema = {
   type: "object",
   required: [
-    "HOST_DOMAIN",
     "POSTGRES_USER",
     "POSTGRES_PASSWORD",
     "POSTGRES_HOST",
     "POSTGRES_PORT",
     "POSTGRES_DB_NAME_SHARED",
+    "REDIRECT_TIMEOUT",
   ],
   properties: {
-    HOST_DOMAIN: {
-      type: "string",
-    },
     POSTGRES_USER: {
       type: "string",
     },
@@ -25,6 +22,9 @@ export const envSchema = {
       type: "string",
     },
     POSTGRES_DB_NAME_SHARED: {
+      type: "string",
+    },
+    REDIRECT_TIMEOUT: {
       type: "string",
     },
   },

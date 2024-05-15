@@ -14,6 +14,7 @@
     "build:auth": "npm run build --workspace=auth",
     "build:logging-wrapper": "npm run build --workspace=logging-wrapper",
     "build:error-handler": "npm run build --workspace=error-handler",
+    "build:services": "npm run build --workspace=auth-service && npm run build --workspace=web && npm run build --workspace=payments && npm run build --workspace=messaging && npm run build --workspace=profile && npm run build --workspace=timeline-api",
     "build:packages": "npm run build:logging-wrapper && npm run build:error-handler && npm run build:auth",
     "update-env": "MODE=update node scripts/init-env.mjs",
     "init:packages": "npm i && npm run build:packages",

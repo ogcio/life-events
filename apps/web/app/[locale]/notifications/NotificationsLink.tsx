@@ -1,10 +1,10 @@
 import Link from "next/link";
 import ds from "design-system/";
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import { api } from "messages";
 
 export default async ({ locale }: { locale: string }) => {
-  const { userId } = await AuthServicePgSessions.get();
+  const { userId } = await PgSessions.get();
 
   const unreadNotificationsCount = await api.getUnreadMessageCount(userId);
 

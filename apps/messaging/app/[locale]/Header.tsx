@@ -136,7 +136,11 @@ export default () => {
             </div>
             <UserIcon />
 
-            <Link href="/logout" prefetch={false} style={{ display: "flex" }}>
+            <Link
+              href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
+              prefetch={false}
+              style={{ display: "flex" }}
+            >
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
             </Link>
           </div>

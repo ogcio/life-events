@@ -76,9 +76,9 @@ export default async (app: FastifyInstance) => {
 
       const [{ id: ssid }] = query.rows;
 
-      deleteCookie(request, reply, "redirectUrl", "", app.config);
+      deleteCookie(request, reply, "redirectUrl", "");
 
-      setCookie(request, reply, "sessionId", ssid, app.config);
+      setCookie(request, reply, "sessionId", ssid);
 
       const stream = fs.createReadStream(
         path.join(__dirname, "..", "static", "redirect.html"),
@@ -87,14 +87,12 @@ export default async (app: FastifyInstance) => {
       let result = await streamToString(stream);
       result = result.replace("%sessionId%", ssid);
       result = result.replace("%redirectUrl%", redirectUrl);
+      result = result.replaceAll(
+        "%REDIRECT_TIMEOUT%",
+        app.config.REDIRECT_TIMEOUT,
+      );
 
       return reply.type("text/html").send(result);
-
-      // if (is_public_servant) {
-      //   return reply.redirect(`${redirectUrl}/admin`);
-      // }
-
-      // return reply.redirect(`${redirectUrl}/`);
     },
   );
 };

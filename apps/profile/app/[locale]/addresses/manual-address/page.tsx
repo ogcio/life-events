@@ -4,13 +4,12 @@ import { revalidatePath } from "next/cache";
 import { Profile } from "building-blocks-sdk";
 import dayjs from "dayjs";
 import { redirect } from "next/navigation";
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import Link from "next/link";
 import { NextPageProps } from "../../../../types";
 
 export default async (props: NextPageProps) => {
-  const { userId, firstName, lastName, email } =
-    await AuthServicePgSessions.get();
+  const { userId, firstName, lastName, email } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
   const { locale } = props.params;
