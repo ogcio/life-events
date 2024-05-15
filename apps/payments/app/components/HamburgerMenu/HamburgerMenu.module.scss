@@ -1,0 +1,90 @@
+@import "/app/styles/globals.scss";
+
+.hamburgerButton {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  outline: inherit;
+  padding: 0;
+
+  @media (min-width: $breakpoint-sm) {
+    display: none;
+  }
+}
+
+.hamburgerMenuWrapper {
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  visibility: hidden;
+  z-index: 1000;
+
+  &.visible {
+    visibility: visible;
+  }
+}
+
+.hamburgerMenu {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 80vw;
+
+  @media (min-width: $breakpoint-sm) {
+    width: 250px;
+  }
+
+  & .menuLink {
+    display: flex;
+    justify-content: flex-start;
+    margin: unset;
+    padding-left: 12px;
+    width: 100%;
+  }
+}
+
+.backdrop {
+  background-color: gray;
+  height: 100%;
+  min-height: 1px;
+  opacity: 0.3;
+  position: absolute;
+  width: 100%;
+}
+
+.sidebar {
+  background-color: white;
+  height: 100%;
+  position: absolute;
+  transform: translateX(-100vh);
+  transition: all 0.3s;
+
+  &.visible {
+    transform: translateX(0px);
+  }
+}
+
+.languagesContainer {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 30px;
+
+  @media ((min-width: ($breakpoint-md + 1))) {
+    display: none;
+  }
+}
+
+.logoutContainer {
+  margin-top: 30px;
+
+  @media ((min-width: ($breakpoint-sm + 1))) {
+    display: none;
+  }
+}

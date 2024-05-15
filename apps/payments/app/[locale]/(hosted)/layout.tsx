@@ -32,8 +32,7 @@ export default async function RootLayout({
           flexDirection: "column",
         }}
       >
-        <Header />
-        {/* All designs are made for 1440 px  */}
+        <Header locale={locale} />
         <div
           className="govie-width-container"
           style={{ maxWidth: "1440px", width: "100%" }}

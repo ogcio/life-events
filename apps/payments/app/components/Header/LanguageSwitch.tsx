@@ -1,7 +1,7 @@
 import ds from "design-system";
 import { headers } from "next/headers";
 
-export default async () => {
+export default () => {
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
 
@@ -13,7 +13,6 @@ export default async () => {
         }`.trim()}
         href={new URL("/en/" + path, process.env.HOST_URL).href}
       >
-        {/* TODO: should we translate language names as well? */}
         English
       </a>
       <div
