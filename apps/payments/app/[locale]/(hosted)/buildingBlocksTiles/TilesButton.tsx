@@ -8,21 +8,23 @@ const buildingBlocksMainLandingPage =
   (process.env.NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE as string) ?? "#";
 const services: TileProps[] = [
   {
-    url: process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT as string,
+    url: process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT ?? "#",
     label: "payments",
     icon: "payments-service",
   },
   {
-    url: process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
+    url: process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT ?? "#",
     label: "messaging",
     icon: "messaging-service",
   },
   {
-    url: process.env.NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT as string,
+    url: process.env.NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT ?? "#",
     label: "lifeEvents",
     icon: "events",
   },
 ];
+
+const availableServices = services.filter((service) => service.url !== "#");
 
 type TileProps = {
   url: string;
@@ -123,7 +125,7 @@ export default function () {
               boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
             }}
           >
-            {services.map(({ url, label, icon }, index) => (
+            {availableServices.map(({ url, label, icon }, index) => (
               <Tile key={index} url={url} label={label} icon={icon} />
             ))}
           </div>
