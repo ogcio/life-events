@@ -9,6 +9,7 @@ import {
   RawServerBase,
   RawServerDefault,
 } from "fastify";
+import { ProvidersPlugin } from "../plugins/entities/providers";
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -20,5 +21,6 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     verifyUser: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    providers: ProvidersPlugin;
   }
 }

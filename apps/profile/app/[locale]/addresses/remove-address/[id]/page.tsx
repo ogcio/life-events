@@ -2,14 +2,14 @@ import { getTranslations } from "next-intl/server";
 import { NextPageProps } from "../../../../../types";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 import { formatDate } from "../../../../utils";
 import { Profile } from "building-blocks-sdk";
 
 export default async (props: NextPageProps) => {
   const t = await getTranslations("AddressForm");
   const { id: addressId, locale } = props.params;
-  const { userId } = await PgSessions.get();
+  const { userId } = await AuthServicePgSessions.get();
 
   async function removeAddress(formData: FormData) {
     "use server";

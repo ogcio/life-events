@@ -74,4 +74,10 @@ export const routeDefinitions = {
       return `/${routeDefinitions.info.slug}`;
     },
   },
+  error: {
+    slug: "error",
+    path() {
+      return `/${routeDefinitions.error.slug}`;
+    },
+  },
 };

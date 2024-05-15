@@ -1,0 +1,98 @@
+<html lang="en-IE">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="csrf-token"
+      content="7Wb8EJrcwtLmnFBwx84DQWPrlHMaKUVd0Bo1soYTuDodrnxrPvA4vEBWFOYsbyr8MOWSOWqavzDaGWOebUsELb6WK7wnZwOEp-2dNVXXkLfosiaZHYlYPmkfkuotPOLq4w7V4m1cGANxdxw1JZc1TA2:hBlKcknWuO4WV5oj83Cfz8wxhsn55InrWlg2fkeJxG-vqGFSlxWysNd2eI0tgQoj59MpPnVor1uRHJh79X6gF6Z0LH4kgDGztIpANSK1jVNKmvfxyEA2ZtWvDiATUf5J3pacRd9aannWXSMqEqsP-Q2"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyGovID - Login</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://mygovidstatic.blob.core.windows.net/assets/images/favicon.ico"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://mygovidstatic.blob.core.windows.net/assets/Content/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://mygovidstatic.blob.core.windows.net/assets/Content/static-styles.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://mygovidstatic.blob.core.windows.net/assets/Content/signin-styles.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://mygovidstatic.blob.core.windows.net/assets/Content/loader-styles.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://mygovidstatic.blob.core.windows.net/assets/Content/visual-clue-style.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <div
+    style="
+      max-width: 600px;
+      box-shadow:
+        0 4px 4px -2px rgba(0, 0, 0, 0.1),
+        0 10px 20px -5px rgba(0, 0, 0, 0.1);
+      padding: 25px 142.5px 25px;
+      margin: 50 auto;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    "
+  >
+    <span
+      style="margin: 0 auto"
+      id="mygovid-logo"
+      class="icon-mygovid_logo"
+    ></span>
+
+    <form id="redirect-form" method="POST" action="%redirectUrl%/api/auth">
+      <span
+        >You are being redirected back to the application, if redirection does
+        not happen within a few seconds,
+        
+        <input type="text" style="display: none;" name="sessionId" value="%sessionId%">
+        
+        <button
+          type="submit"
+          style="
+            background: none !important;
+            border: none;
+            padding: 0 !important;
+            font-family: arial, sans-serif;
+            color: #069;
+            text-decoration: underline;
+            cursor: pointer;
+          "
+        >
+          click here
+        </button></span
+      >
+    </form>
+  </div>
+</html>
+
+<script type="module">
+  setTimeout(() => {
+    document.querySelector('#redirect-form').submit()
+  }, 5000)
+</script>

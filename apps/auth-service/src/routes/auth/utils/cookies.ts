@@ -15,13 +15,14 @@ const setCookie = (
   value: string,
   appConfig: { [key: string]: string },
 ) => {
+  const env = process.env.NODE_ENV;
   const secure = isSecure(request);
   reply.setCookie(key, value, {
     httpOnly: true,
     secure,
     path: "/",
     sameSite: secure ? SAME_SITE_VALUES.STRICT : SAME_SITE_VALUES.LAX,
-    domain: appConfig.HOST_DOMAIN,
+    // ...(env === "production" ? { domain: appConfig.HOST_DOMAIN } : {}),
   });
 };
 
@@ -35,7 +36,7 @@ const deleteCookie = (
   const secure = isSecure(request);
   reply.cookie(key, value, {
     path: "/",
-    domain: appConfig.HOST_DOMAIN,
+    // domain: appConfig.HOST_DOMAIN,
     httpOnly: true,
     expires: new Date(Date.now() - 100),
     secure,

@@ -64,7 +64,7 @@ export const buildPgPool = () =>
     database: process.env.POSTGRES_DB_NAME_SHARED,
   });
 
-async function getPgSession(key: string) {
+export async function getPgSession(key: string) {
   const query = await pgpool.query<
     {
       token: string;
@@ -160,17 +160,17 @@ export const AuthServicePgSessions: AuthServiceSessions = {
       throw Error("Missing env var AUTH_SERVICE_URL");
     }
 
-    const logoutUrl = `${authServiceUrl}/auth/logout?redirectUrl=${process.env.HOST_URL}${headers().get("x-pathname") || ""}`;
+    const loginUrl = `${authServiceUrl}/auth?redirectUrl=${process.env.HOST_URL}`;
 
     const sessionId = cookies().get("sessionId")?.value;
     if (!sessionId) {
-      return redirect(logoutUrl, RedirectType.replace);
+      return redirect(loginUrl, RedirectType.replace);
     }
 
     const session = await getPgSession(sessionId); //PgSessions.get(sessionId);
 
     if (!session) {
-      return redirect(logoutUrl, RedirectType.replace);
+      return redirect(loginUrl, RedirectType.replace);
     }
 
     return {

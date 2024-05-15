@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { pgpool } from "../../../utils/postgres";
 import { driving } from "../../../utils/routes";
 import { temporaryMockUtils } from "messages";
-import { PgSessions } from "auth/sessions";
+import { AuthServicePgSessions } from "auth/sessions";
 import { Messaging } from "building-blocks-sdk";
 
 export async function GET(request: NextRequest) {
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     [transactionId, pay, status, userId, flow],
   );
 
-  const { email } = await PgSessions.get();
+  const { email } = await AuthServicePgSessions.get();
   const paymentTemplateIdPlaceholder =
     await temporaryMockUtils.autoPaymentTemplateId();
 

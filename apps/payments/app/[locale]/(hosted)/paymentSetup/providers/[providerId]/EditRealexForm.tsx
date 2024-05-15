@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import RealexFields from "../add-realex/RealexFields";
 import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
+import { errorHandler } from "../../../../../utils";
 
 type Props = {
   provider: RealexProvider;
@@ -26,11 +27,16 @@ export default async ({ provider }: Props) => {
       sharedSecret,
     };
 
-    await new Payments(userId).updateProvider(provider.id, {
+    const { error } = await new Payments(userId).updateProvider(provider.id, {
       name: providerName,
-      data: providerData as unknown as any, // Temp fix, Typebox type must be fixed
+      data: providerData,
+      type: provider.type,
       status: provider.status,
     });
+
+    if (error) {
+      errorHandler(error);
+    }
 
     redirect("./");
   }

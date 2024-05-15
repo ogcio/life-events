@@ -4,6 +4,7 @@ import { getInternalStatus } from "../../../../integration/stripe";
 import { PgSessions } from "auth/sessions";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { Payments } from "building-blocks-sdk";
+import { errorHandler } from "../../../../utils";
 
 type Props = {
   searchParams: {
@@ -42,9 +43,13 @@ async function updateTransaction(extPaymentId: string, status: string) {
 
 async function getRequestDetails(requestId: string) {
   const { userId } = await PgSessions.get();
-  const details = (
-    await new Payments(userId).getPaymentRequestPublicInfo(requestId)
-  ).data;
+  const { data: details, error } = await new Payments(
+    userId,
+  ).getPaymentRequestPublicInfo(requestId);
+
+  if (error) {
+    errorHandler(error);
+  }
 
   return details;
 }
