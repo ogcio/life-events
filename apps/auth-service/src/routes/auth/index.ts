@@ -54,7 +54,6 @@ export default async function login(app: FastifyInstance) {
 
           return reply.type("text/html").send(result);
         }
-        deleteCookie(request, reply, "sessionId", "", app.config);
       }
 
       redirectUrl = redirectUrl || "/";
