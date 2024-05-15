@@ -8,6 +8,11 @@ import decodeJWT from "./utils/decodeJWT.js";
 import { deleteCookie, setCookie } from "./utils/cookies.js";
 import fs from "fs";
 import streamToString from "./utils/streamToString.js";
+import {
+  REDIRECT_TIMEOUT,
+  REDIRECT_URL,
+  SESSION_ID,
+} from "./utils/replacementConstants.js";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
@@ -85,12 +90,9 @@ export default async (app: FastifyInstance) => {
       );
 
       let result = await streamToString(stream);
-      result = result.replace("%sessionId%", ssid);
-      result = result.replace("%redirectUrl%", redirectUrl);
-      result = result.replaceAll(
-        "%REDIRECT_TIMEOUT%",
-        app.config.REDIRECT_TIMEOUT,
-      );
+      result = result.replace(SESSION_ID, ssid);
+      result = result.replace(REDIRECT_URL, redirectUrl);
+      result = result.replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
 
       return reply.type("text/html").send(result);
     },

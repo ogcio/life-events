@@ -7,6 +7,11 @@ import { HttpError } from "../../types/httpErrors.js";
 import { setCookie } from "./utils/cookies.js";
 import callback from "./callback.js";
 import streamToString from "./utils/streamToString.js";
+import {
+  REDIRECT_TIMEOUT,
+  REDIRECT_URL,
+  SESSION_ID,
+} from "./utils/replacementConstants.js";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
@@ -49,10 +54,10 @@ export default async function login(app: FastifyInstance) {
           );
 
           let result = await streamToString(stream);
-          result = result.replace("%sessionId%", sessionId);
-          result = result.replace("%redirectUrl%", redirectUrl);
+          result = result.replace(SESSION_ID, sessionId);
+          result = result.replace(REDIRECT_URL, redirectUrl);
           result = result.replaceAll(
-            "%REDIRECT_TIMEOUT%",
+            REDIRECT_TIMEOUT,
             app.config.REDIRECT_TIMEOUT,
           );
 

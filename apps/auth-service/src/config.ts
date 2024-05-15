@@ -25,7 +25,7 @@ export const envSchema = {
       type: "string",
     },
     REDIRECT_TIMEOUT: {
-      type: "string",
+      type: "number",
     },
   },
 };
