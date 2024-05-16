@@ -1,7 +1,7 @@
 import OpenBankingHost from "./OpenBankingHost";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
-import { getRealAmount } from "../../../../utils";
+import { errorHandler, getRealAmount } from "../../../../utils";
 import { PgSessions } from "auth/sessions";
 import { redirect, RedirectType } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
@@ -13,13 +13,12 @@ async function getPaymentDetails(
   amount?: number,
   customAmount?: number,
 ) {
-  let details;
-  try {
-    details = (
-      await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
-    ).data;
-  } catch (err) {
-    console.log(err);
+  const { data: details, error } = await new Payments(
+    userId,
+  ).getPaymentRequestPublicInfo(paymentId);
+
+  if (error) {
+    errorHandler(error);
   }
 
   if (!details || details?.status === "inactive") return undefined;
@@ -95,7 +94,7 @@ export default async function Bank(props: {
 
   const { paymentDetails, paymentRequest } = details;
 
-  await new Payments(userId).createTransaction({
+  const { error } = await new Payments(userId).createTransaction({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentRequest.id,
     integrationReference: props.searchParams.integrationRef,
@@ -103,6 +102,10 @@ export default async function Bank(props: {
     paymentProviderId: paymentDetails.providerId,
     userData: { email, name: `${firstName} ${lastName}` },
   });
+
+  if (error) {
+    errorHandler(error);
+  }
 
   const returnUri = new URL(
     `/${props.params.locale}/paymentRequest/complete`,

@@ -13,6 +13,7 @@ import {
   StripeProvider,
   WorldpayProvider,
 } from "../types";
+import { errorHandler } from "../../../../../utils";
 
 type Props = {
   params: {
@@ -23,8 +24,13 @@ type Props = {
 
 export default async ({ params: { providerId, locale } }: Props) => {
   const { userId } = await PgSessions.get();
-  const provider = (await new Payments(userId).getProviderById(providerId))
-    .data;
+  const { data: provider, error } = await new Payments(userId).getProviderById(
+    providerId,
+  );
+
+  if (error) {
+    errorHandler(error);
+  }
 
   if (!provider) {
     notFound();

@@ -3,6 +3,8 @@ import { FastifyInstance } from "fastify";
 import { utils, organisationId } from "../../utils";
 const tags = ["Templates"];
 const { buildApiError } = utils;
+
+type TemplateVariable = { name: string; type: string; languages: string[] };
 interface CreateTemplate {
   Body: {
     contents: {
@@ -13,7 +15,7 @@ interface CreateTemplate {
       richText: string;
       plainText: string;
     }[];
-    variables: { name: string; type: string }[];
+    variables: TemplateVariable[];
   };
 }
 
@@ -28,7 +30,7 @@ interface UpdateTemplate {
       richText: string;
       plainText: string;
     }[];
-    variables: { name: string; type: string }[];
+    variables: TemplateVariable[];
   };
   Params: {
     templateId: string;
@@ -187,7 +189,7 @@ export default async function templates(app: FastifyInstance) {
         )
         .then((res) => res.rows);
 
-      let template: {
+      const template: {
         contents: {
           templateName: string;
           subject: string;
@@ -266,6 +268,7 @@ export default async function templates(app: FastifyInstance) {
             Type.Object({
               name: Type.String(),
               type: Type.String(),
+              languages: Type.Array(Type.String()),
             }),
           ),
         }),

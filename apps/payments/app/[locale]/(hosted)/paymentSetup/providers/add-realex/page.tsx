@@ -2,7 +2,7 @@ import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
-import { getValidationErrors } from "../../../../../utils";
+import { errorHandler, getValidationErrors } from "../../../../../utils";
 import RealexForm from "./RealexForm";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 
@@ -29,7 +29,10 @@ export default async (props: Props) => {
 
     const validation = { errors: {} };
 
-    const result = await new Payments(userId).createRealexProvider({
+
+    const { data: result, error } = await new Payments(
+      userId,
+    ).createProvider({
       name: formData.get("provider_name") as string,
       type: "realex",
       data: {
@@ -38,10 +41,14 @@ export default async (props: Props) => {
       },
     });
 
-    if (result.data && !result.error) redirect("./");
+    if (error) {
+      errorHandler(error);
+    }
 
-    if (result.error.validation) {
-      validation.errors = getValidationErrors(result.error.validation);
+    if (result) redirect("./");
+
+    if (error.validation) {
+      validation.errors = getValidationErrors(error.validation);
     }
 
     return validation;

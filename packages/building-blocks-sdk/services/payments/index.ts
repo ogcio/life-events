@@ -53,51 +53,11 @@ export class Payments {
     );
   }
 
-  async createBankTransferProvider(
-    data: paths["/api/v1/providers/banktransfer"]["post"]["requestBody"]["content"]["application/json"],
+  async createProvider(
+    data: paths["/api/v1/providers/"]["post"]["requestBody"]["content"]["application/json"],
   ) {
     return formatQueryResult(
-      this.client.POST("/api/v1/providers/banktransfer", {
-        body: data,
-      }),
-    );
-  }
-
-  async createOpenBankingProvider(
-    data: paths["/api/v1/providers/openbanking"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    return formatQueryResult(
-      this.client.POST("/api/v1/providers/openbanking", {
-        body: data,
-      }),
-    );
-  }
-
-  async createStripeProvider(
-    data: paths["/api/v1/providers/stripe"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    return formatQueryResult(
-      this.client.POST("/api/v1/providers/stripe", {
-        body: data,
-      }),
-    );
-  }
-
-  async createWorldpayProvider(
-    data: paths["/api/v1/providers/worldpay"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    return formatQueryResult(
-      this.client.POST("/api/v1/providers/worldpay", {
-        body: data,
-      }),
-    );
-  }
-
-  async createRealexProvider(
-    data: paths["/api/v1/providers/realex"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    return formatQueryResult(
-      this.client.POST("/api/v1/providers/realex", {
+      this.client.POST("/api/v1/providers/", {
         body: data,
       }),
     );

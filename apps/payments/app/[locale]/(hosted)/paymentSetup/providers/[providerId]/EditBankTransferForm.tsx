@@ -5,6 +5,7 @@ import type { BankTransferProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
+import { errorHandler } from "../../../../../utils";
 
 type Props = {
   provider: BankTransferProvider;
@@ -19,18 +20,23 @@ export default async ({ provider }: Props) => {
     const { userId } = await PgSessions.get();
 
     const providerName = formData.get("provider_name") as string;
-    const iban = formData.get("iban");
-    const accountHolderName = formData.get("account_holder_name");
+    const iban = (formData.get("iban") as string).replaceAll(" ", "");
+    const accountHolderName = formData.get("account_holder_name") as string;
     const providerData = {
       iban,
       accountHolderName,
     };
 
-    await new Payments(userId).updateProvider(provider.id, {
+    const { error } = await new Payments(userId).updateProvider(provider.id, {
       name: providerName,
       data: providerData,
+      type: provider.type,
       status: provider.status,
     });
+
+    if (error) {
+      errorHandler(error);
+    }
 
     redirect("./");
   }
