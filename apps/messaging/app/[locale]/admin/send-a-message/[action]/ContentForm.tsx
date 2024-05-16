@@ -69,24 +69,26 @@ export default async (props: MessageCreateProps) => {
 
     const formProperties = extractFormProperties(formData);
 
-    const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] =
-      [];
+    const getFormErrors = (
+      formProperties: FormProperties,
+    ): Parameters<typeof temporaryMockUtils.createErrors>[0] => {
+      const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] =
+        [];
+      const required = ["subject", "plainText", "excerpt"];
+      for (const key of required) {
+        if (!formProperties[key]) {
+          formErrors.push({
+            errorValue: "",
+            field: key,
+            messageKey: "empty",
+          });
+        }
+      }
 
-    const required = {
-      subject: formProperties.subject,
-      plainText: formProperties.plainText,
-      excerpt: formProperties.excerpt,
+      return formErrors;
     };
 
-    for (const key of Object.keys(required)) {
-      if (!required[key]) {
-        formErrors.push({
-          errorValue: "",
-          field: key,
-          messageKey: "empty",
-        });
-      }
-    }
+    const formErrors = getFormErrors(formProperties);
 
     if (Boolean(formErrors.length)) {
       await temporaryMockUtils.createErrors(
@@ -100,8 +102,7 @@ export default async (props: MessageCreateProps) => {
     const links = formProperties.link ? [formProperties.link] : [];
     const next: ApiMessageState = Object.assign({}, props.state, {
       links,
-      ...required,
-      richText: formProperties.richText,
+      ...formProperties,
       submittedContentAt: dayjs().toISOString(),
       paymentRequestId: formProperties.paymentRequestId,
     });
