@@ -27,6 +27,7 @@ ARG NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT
 ARG NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT
 ARG NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT
 ARG NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE
+ARG AUTH_SERVICE_URL
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -35,9 +36,10 @@ ENV NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_MESSAGING_SERVICE_ENT
 ENV NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT
 ENV NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT
 ENV NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE=$NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE
+ENV AUTH_SERVICE_URL=$AUTH_SERVICE_URL
 RUN npm run build --workspace=apps/payments
 
-from base-deps as runner
+FROM base-deps as runner
 
 WORKDIR /app
 
@@ -46,6 +48,10 @@ ENV NODE_ENV=production
 
 COPY --from=builder /app/apps/payments/.next/standalone ./
 COPY --from=builder /app/apps/payments/.next/static ./apps/payments/.next/static
+# TODO: Filter and remove whatever is not necessary for db-migrate and db-migrate-pg
+COPY --from=deps /app/node_modules/ /app/node_modules/
+COPY --from=deps /app/apps/payments/database.json /app/apps/payments/
+COPY --from=deps /app/apps/payments/migrations /app/apps/payments/migrations
 
 EXPOSE 3001
 
