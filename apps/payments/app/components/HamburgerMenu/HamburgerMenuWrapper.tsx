@@ -14,15 +14,6 @@ export default ({ userName }: { userName: string }) => {
       <button
         aria-label="events-menu"
         className={styles.hamburgerButton}
-        style={{
-          cursor: "pointer",
-          background: "none",
-          color: "inherit",
-          border: "none",
-          padding: 0,
-          font: "inherit",
-          outline: "inherit",
-        }}
         onClick={() => setMenuOpen(true)}
       >
         <ds.Icon
