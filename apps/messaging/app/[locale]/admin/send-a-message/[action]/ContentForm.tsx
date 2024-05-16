@@ -14,22 +14,28 @@ export default async (props: MessageCreateProps) => {
     getTranslations("formErrors"),
   ]);
 
-  type request = {
+  type PaymentRequest = {
     requestId: string;
     userId: string;
     title: string;
     redirectUrl: string;
   };
 
-  const paymentRequests: request[] = [];
-  try {
-    const requestURL = new URL("api/requests", process.env.PAYMENTS_URL);
-    const paymentRequestRespone = await fetch(requestURL.href);
-    const parsed = (await paymentRequestRespone.json()) as request[];
-    paymentRequests.push(...parsed);
-  } catch (err) {
-    console.log(err);
-  }
+  const getPaymentRequests = async (): Promise<PaymentRequest[]> => {
+    try {
+      const requestURL = new URL("api/requests", process.env.PAYMENTS_URL);
+      const paymentRequestRespone = await fetch(requestURL.href);
+      const parsed = (await paymentRequestRespone.json()) as PaymentRequest[];
+
+      return parsed;
+    } catch (err) {
+      console.log(err);
+    }
+
+    return [];
+  };
+
+  const paymentRequests = await getPaymentRequests();
 
   const errors = props.stateId
     ? await temporaryMockUtils.getErrors(props.userId, props.stateId)
@@ -43,19 +49,34 @@ export default async (props: MessageCreateProps) => {
       return;
     }
 
-    const paymentRequestId = formData.get("paymentRequestId")?.toString() || "";
+    type FormProperties = {
+      link: string | undefined;
+      paymentRequestId: string;
+      subject: string | undefined;
+      richText: string | undefined;
+      plainText: string | undefined;
+      excerpt: string | undefined;
+    };
 
-    const subject = formData.get("subject")?.toString();
-    const richText = formData.get("richText")?.toString();
-    const plainText = formData.get("plainText")?.toString();
-    const excerpt = formData.get("excerpt")?.toString();
+    const extractFormProperties = (formData: FormData): FormProperties => ({
+      paymentRequestId: formData.get("paymentRequestId")?.toString() || "",
+      subject: formData.get("subject")?.toString(),
+      richText: formData.get("richText")?.toString(),
+      plainText: formData.get("plainText")?.toString(),
+      excerpt: formData.get("excerpt")?.toString(),
+      link: formData.get("link")?.toString(),
+    });
 
-    const link = formData.get("link")?.toString();
+    const formProperties = extractFormProperties(formData);
 
     const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] =
       [];
 
-    const required = { subject, plainText, excerpt };
+    const required = {
+      subject: formProperties.subject,
+      plainText: formProperties.plainText,
+      excerpt: formProperties.excerpt,
+    };
 
     for (const key of Object.keys(required)) {
       if (!required[key]) {
@@ -76,13 +97,13 @@ export default async (props: MessageCreateProps) => {
       return revalidatePath("/");
     }
 
-    const links = link ? [link] : [];
+    const links = formProperties.link ? [formProperties.link] : [];
     const next: ApiMessageState = Object.assign({}, props.state, {
       links,
       ...required,
-      richText,
+      richText: formProperties.richText,
       submittedContentAt: dayjs().toISOString(),
-      paymentRequestId,
+      paymentRequestId: formProperties.paymentRequestId,
     });
 
     await api.upsertMessageState(next, props.userId, props.stateId);
