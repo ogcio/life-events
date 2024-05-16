@@ -1,0 +1,53 @@
+@import "../../styles/globals.scss";
+
+.govieHeader {
+  & > .innerWrapper {
+    padding-top: 15px;
+
+    &:after {
+      display: none;
+    }
+  }
+
+  & .title {
+    display: none;
+  }
+}
+
+.innerWrapper {
+  max-width: 1440px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  padding: 15px;
+  margin: 0 auto;
+  justify-content: space-between;
+}
+
+.leftSideContainer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.rightsideContainer {
+  display: none;
+}
+
+@media (min-width: $breakpoint-sm) {
+  .rightsideContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-top: 3px;
+  }
+
+  .govieHeader {
+    & .title {
+      font-size: 24px;
+    }
+  }
+}

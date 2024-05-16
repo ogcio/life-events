@@ -4,6 +4,8 @@ import ds from "design-system/";
 import { ComponentProps } from "react";
 import { useTranslations } from "next-intl";
 
+import styles from "./Tiles.module.scss";
+
 const buildingBlocksMainLandingPage =
   (process.env.NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE as string) ?? "#";
 const services: TileProps[] = [
@@ -36,22 +38,16 @@ const Tile = ({ url, label, icon }: TileProps) => {
   const t = useTranslations();
 
   return (
-    <a
-      href={url}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "20px",
-        backgroundColor: tintGold,
-        textDecoration: "none",
-      }}
-    >
+    <a href={url} className={styles.tile} style={{ backgroundColor: tintGold }}>
       <ds.Icon icon={icon} color={ds.colours.ogcio.green} size={42} />
       <p
         className="govie-heading-s"
-        style={{ marginBottom: 0, marginTop: "10px" }}
+        style={{
+          marginBottom: 0,
+          marginTop: "10px",
+          textAlign: "center",
+          fontWeight: "400",
+        }}
       >
         {t(label)}
       </p>
@@ -89,56 +85,21 @@ export default function () {
       >
         <ds.Icon icon="tiles" color={ds.colours.ogcio.white} size={22} />
         {/* White triangle to show on the bottom of the button */}
-        {isTilesBarOpen && (
-          <div
-            style={{
-              width: 0,
-              height: 0,
-              borderLeft: "10px solid transparent",
-              borderRight: "10px solid transparent",
-              borderBottom: "10px solid white",
-              position: "absolute",
-              left: "50%",
-              transform: "translateX(-50%)",
-              top: "100%",
-              marginTop: "8px",
-            }}
-          ></div>
-        )}
+        {isTilesBarOpen && <div className={styles.triangle}></div>}
       </a>
 
       {isTilesBarOpen && (
         <>
           <div
-            style={{
-              position: "fixed",
-              left: 0,
-              right: 0,
-              width: "100%",
-              top: "70px",
-              zIndex: 100,
-              display: "flex",
-              justifyContent: "center",
-              gap: "20px",
-              padding: "20px",
-              backgroundColor: ds.colours.ogcio.white,
-              boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
-            }}
+            className={styles.tilesContainer}
+            style={{ backgroundColor: ds.colours.ogcio.white }}
           >
             {availableServices.map(({ url, label, icon }, index) => (
               <Tile key={index} url={url} label={label} icon={icon} />
             ))}
           </div>
           <div
-            style={{
-              position: "fixed",
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              width: "100%",
-              height: "100%",
-            }}
+            className={styles.backdrop}
             id="backdrop"
             onClick={closeTilesBar}
           />
