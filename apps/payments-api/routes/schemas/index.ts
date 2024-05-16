@@ -355,6 +355,7 @@ export const PaginationLinks = Type.Object({
   prev: PaginationLink,
   first: PaginationLink,
   last: PaginationLink,
+  pages: Type.Record(Type.String(), PaginationLink),
 });
 export type PaginationLinks = Static<typeof PaginationLinks>;
 

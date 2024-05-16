@@ -1510,12 +1510,20 @@ paths:
                             properties:
                               href:
                                 type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
                         required:
                           - self
                           - next
                           - prev
                           - first
                           - last
+                          - pages
                 required:
                   - data
                   - metadata

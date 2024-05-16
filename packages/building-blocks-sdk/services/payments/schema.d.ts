@@ -651,6 +651,11 @@ export interface paths {
                   last: {
                     href?: string;
                   };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
                 };
               };
             };

@@ -105,6 +105,18 @@ export const errorHandler = (error) => {
  * Pagination
  */
 
+export type PaginationLink = {
+  href?: string;
+};
+export type PaginationLinks = {
+  self: PaginationLink;
+  next: PaginationLink;
+  prev: PaginationLink;
+  first: PaginationLink;
+  last: PaginationLink;
+  pages: Record<string, PaginationLink>;
+};
+
 export const offsetToPage = (offset: number, limit: number) => {
   return Math.floor(offset / limit) + 1;
 };
@@ -115,32 +127,50 @@ export const pageToOffset = (page: number, limit: number) => {
 
 export const buildPaginationLinks = (
   targetUrl: string,
-  links?: Record<string, { href?: string }>,
-) => {
+  links?: PaginationLinks,
+): PaginationLinks => {
   if (!links) {
-    return {};
+    return {
+      self: { href: undefined },
+      next: { href: undefined },
+      prev: { href: undefined },
+      first: { href: undefined },
+      last: { href: undefined },
+      pages: {},
+    };
   }
 
-  return Object.entries(links).reduce<Record<string, { href?: string }>>(
-    (acc, [key, link]) => {
-      if (!link.href) {
+  const { pages: pagesLinks, ...paginationLinks } = links;
+
+  const buildLinks = (data: Record<string, PaginationLink>) => {
+    return Object.entries(data).reduce<Record<string, PaginationLink>>(
+      (acc, [key, link]) => {
+        if (!link.href) {
+          acc[key] = {
+            href: undefined,
+          };
+          return acc;
+        }
+
+        const url = new URL(
+          link.href as string,
+          process.env.PAYMENTS_BACKEND_URL,
+        );
+        const offset = parseInt(url.searchParams.get("offset") ?? "0");
+        const limit = parseInt(url.searchParams.get("limit") ?? "10");
+
         acc[key] = {
-          href: undefined,
+          href: `${targetUrl}?limit=${limit}&page=${offsetToPage(offset, limit)}`,
         };
 
         return acc;
-      }
+      },
+      {},
+    );
+  };
 
-      const url = new URL(link.href, process.env.PAYMENTS_BACKEND_URL);
-      const offset = parseInt(url.searchParams.get("offset") ?? "0");
-      const limit = parseInt(url.searchParams.get("limit") ?? "10");
-
-      acc[key] = {
-        href: `${targetUrl}?limit=${limit}&page=${offsetToPage(offset, limit)}`,
-      };
-
-      return acc;
-    },
-    {},
-  );
+  return {
+    ...buildLinks(paginationLinks),
+    pages: buildLinks(pagesLinks),
+  } as PaginationLinks;
 };

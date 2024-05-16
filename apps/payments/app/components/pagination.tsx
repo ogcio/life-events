@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
+import { PaginationLinks } from "../utils";
 
 export type PaginationProps = {
-  links: Record<string, { href?: string }>;
+  links: PaginationLinks;
 };
 
 export default async function Pagination({ links }: PaginationProps) {
@@ -38,8 +39,23 @@ export default async function Pagination({ links }: PaginationProps) {
           </div>
         )}
 
-        {/* <ul className="govie-pagination__list">
-                    <li className="govie-pagination__item">
+        <ul className="govie-pagination__list">
+          {Object.entries(links.pages).map(([page, link]) => {
+            return (
+              <li className="govie-pagination__item">
+                <a
+                  className="govie-link govie-pagination__link"
+                  href={link.href}
+                  aria-label="Page 1"
+                  aria-current="page"
+                >
+                  {page}
+                </a>
+              </li>
+            );
+          })}
+
+          {/* <li className="govie-pagination__item">
                         <a
                             className="govie-link govie-pagination__link"
                             href="#"
@@ -51,7 +67,7 @@ export default async function Pagination({ links }: PaginationProps) {
                     </li>
 
                     <li className="govie-pagination__item govie-pagination__item--ellipses">⋯</li>
-                    
+
                     <li className="govie-pagination__item">
                         <a className="govie-link govie-pagination__link" href="#" aria-label="Page 2" aria-current="page">6</a>
                     </li>
@@ -61,13 +77,13 @@ export default async function Pagination({ links }: PaginationProps) {
                     <li className="govie-pagination__item">
                         <a className="govie-link govie-pagination__link" href="#" aria-label="Page 4" aria-current="page">8</a>
                     </li>
-                    
+
                     <li className="govie-pagination__item govie-pagination__item--ellipses">⋯</li>
-                    
+
                     <li className="govie-pagination__item">
                         <a className="govie-link govie-pagination__link" href="#" aria-label="Page 5" aria-current="page">40</a>
-                    </li>
-                </ul> */}
+                    </li> */}
+        </ul>
 
         {links.next.href && (
           <div className="govie-pagination__next">

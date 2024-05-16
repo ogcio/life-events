@@ -48,7 +48,7 @@ export default async function ({
 
   const url = `/${locale}/${routeDefinitions.paymentSetup.path()}`;
   const links = buildPaginationLinks(url, transactionsResponse?.metadata.links);
-
+  console.log(links);
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
       <section
