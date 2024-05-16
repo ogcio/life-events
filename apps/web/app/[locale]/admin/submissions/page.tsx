@@ -1,5 +1,5 @@
 import { RedirectType, redirect } from "next/navigation";
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import EventTable from "./EventTable";
 import { web } from "../../../utils";
 import StatusMenu from "./StatusMenu";
@@ -7,7 +7,7 @@ import { getTranslations } from "next-intl/server";
 
 export default async (props: web.NextPageProps) => {
   const t = await getTranslations("Admin.Submissions");
-  const { publicServant } = await AuthServicePgSessions.get();
+  const { publicServant } = await PgSessions.get();
 
   if (!publicServant) {
     redirect("/", RedirectType.replace);

@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { web, workflow, routes } from "../../../../utils";
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import FormLayout from "../../../../components/FormLayout";
 import SimpleDetailsForm from "./SimpleDetailsForm";
 import DetailsSummary from "./DetailsSummary";
@@ -261,7 +261,7 @@ const FormComponentsMap = {
 };
 
 export default async (props: web.NextPageProps) => {
-  const { userId } = await AuthServicePgSessions.get();
+  const { userId } = await PgSessions.get();
   const data = await workflow.getFlowData(
     workflow.keys.orderEHIC,
     workflow.emptyOrderEHIC(),

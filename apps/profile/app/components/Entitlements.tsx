@@ -1,4 +1,4 @@
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { routes } from "../utils";
 import ds from "design-system";
@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default async ({ locale }: { locale: string }) => {
   const t = await getTranslations("Entitlements");
-  const { userId } = await AuthServicePgSessions.get();
+  const { userId } = await PgSessions.get();
   const { data: entitlements = [], error } = await new Profile(
     userId,
   ).getEntitlements();

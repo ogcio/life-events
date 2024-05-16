@@ -10,7 +10,7 @@ export default async function ({ params: { transactionId } }) {
   const t = await getTranslations("MyPayments.details");
 
   let userId;
-  if (process.env.USE_LOGTO_AUTH) {
+  if (process.env.USE_LOGTO_AUTH === "true") {
     userId = (await getUser()).id;
   } else {
     userId = (await PgSessions.get()).userId;
