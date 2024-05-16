@@ -1,8 +1,7 @@
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
-import createError from "@fastify/error";
 import { mailService } from "../providers/services";
-import { utils, organisationId, HttpError } from "../../utils";
+import { utils, organisationId, HttpError, ServiceError } from "../../utils";
 import { awsSnsSmsService } from "../../services/sms/aws";
 import { setTimeout as lulz } from "timers/promises";
 import { Pool } from "pg";
@@ -17,21 +16,35 @@ async function scheduleMessage(
   pool: Pool,
   messageId: string,
   userId: string,
-): Promise<HttpError | undefined> {
+): Promise<ServiceError[]> {
   const client = await pool.connect();
-  let error: HttpError | undefined;
-  console.log("Bror vi hustlar message", messageId, userId);
+  const errors: ServiceError[] = [];
+
+  const preferredTransports: string[] = [];
+  let transportationSubject: string | undefined;
+  let transportationExcerpt: string | undefined;
+  let transportationBody: string | undefined;
+
   try {
     client.query("BEGIN");
 
     const messageUser = await client
-      .query<{ transports: string[] }>(
+      .query<{
+        transports: string[];
+        subject: string;
+        excerpt: string;
+        body: string;
+      }>(
         `
       update messages set 
         is_delivered = true,
         updated_at = now()
       where id = $1
-      returning preferred_transports as "transports"
+      returning 
+        preferred_transports as "transports",
+        excerpt,
+        subject,
+        case when rich_text <> '' then rich_text else plain_text end as "body"
     `,
         [messageId],
       )
@@ -40,6 +53,11 @@ async function scheduleMessage(
     if (!messageUser) {
       throw new Error(`failed to find message for id ${messageId}`);
     }
+
+    preferredTransports.push(...messageUser.transports);
+    transportationBody = messageUser.body;
+    transportationExcerpt = messageUser.excerpt;
+    transportationSubject = messageUser.subject;
 
     const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
     await client.query(
@@ -55,36 +73,118 @@ async function scheduleMessage(
     client.query("COMMIT");
   } catch (err) {
     client.query("ROLLBACK");
-
-    if (err instanceof Error && "message" in err) {
-      error = utils.buildApiError(err.message, 500);
-    }
-    error = utils.buildApiError(JSON.stringify(err), 500); // ??
+    const msg = utils.isError(err) ? err.message : "failed";
+    errors.push({ error: { err }, msg, critical: true });
   } finally {
     client.release();
   }
-  return error;
+
+  /**
+   * There's a lot of logic to determine which transports, if any, to use
+   * for each user.
+   * eg.
+   * Does user accept the preferred transport?
+   * Which transport can we defer to?
+   * Persist logs?
+   * Fetch user information. Email and number
+   */
+  for (const transport of preferredTransports) {
+    if (transport === "email") {
+      if (!transportationSubject) {
+        continue;
+      }
+
+      let providerId: string | undefined;
+      try {
+        // This is a big placeholder that needs proper logic
+        providerId = await mailService(pool).getFirstOrEtherealMailProvider();
+
+        await mailService(pool).sendMail({
+          providerId,
+          email: "",
+          subject: transportationSubject,
+          body: transportationBody ?? "",
+        });
+      } catch (err) {
+        errors.push({
+          critical: false,
+          error: {
+            userId,
+            providerId,
+            transportationSubject,
+            transportationBody,
+          },
+          msg: "failed to send email",
+        });
+      }
+    } else if (transport === "sms") {
+      if (!transportationExcerpt || !transportationSubject) {
+        continue;
+      }
+
+      // todo proper query
+      const config = await pool
+        .query<{ config: unknown }>(
+          `
+          select config from sms_providers
+          limit 1
+        `,
+        )
+        .then((res) => res.rows.at(0)?.config);
+
+      if (utils.isSmsAwsConfig(config)) {
+        const service = awsSnsSmsService(
+          config.accessKey,
+          config.secretAccessKey,
+        );
+
+        try {
+          await service.Send(transportationExcerpt, "");
+        } catch (err) {
+          const msg = utils.isError(err) ? err.message : "failed to send sms";
+          errors.push({
+            critical: false,
+            error: {
+              userId,
+              transportationExcerpt,
+              transportationSubject,
+            },
+            msg,
+          });
+        }
+      }
+    }
+  }
+
+  return errors;
 }
 
 async function scheduledTemplate(
   pool: Pool,
   scheduledId: string,
   userId: string,
-): Promise<HttpError | undefined> {
-  // Chaos factor
-  if (~~(Math.random() * 100) > 20) {
-    // Took too long!
-    if (~~(Math.random() * 100) > 30) {
-      // await new Promise((resolve) => setTimeout(resolve, 7000));
-      await lulz(7000);
-      return;
-    }
+): Promise<ServiceError[]> {
+  const errors: ServiceError[] = [];
 
-    // Just plain old internal error
-    console.log("Lite fel 500");
-    // reply.statusCode = 500;
-    return utils.buildApiError("lite fel", 500);
-  }
+  // Chaos factor
+  // if (~~(Math.random() * 100) > 20) {
+  //   // Took too long!
+  //   if (~~(Math.random() * 100) > 30) {
+  //     // await new Promise((resolve) => setTimeout(resolve, 7000));
+  //     await lulz(7000);
+  //     return errors;
+  //   }
+
+  //   // Just plain old internal error
+  //   console.log("Lite fel 500");
+  //   // reply.statusCode = 500;
+  //   errors.push({ error: {}, msg: "chaos factor error" });
+  //   return errors;
+  // }
+
+  let transportationSubject: string | undefined;
+  let transportationBody: string | undefined;
+  let transportationExcerpt: string | undefined;
 
   const templateMeta = await pool
     .query<{
@@ -108,10 +208,12 @@ async function scheduledTemplate(
 
   if (!templateMeta) {
     // We log here and return 500 so scheduler can keep failing until max retries hit to signal further admin.
-    return utils.buildApiError(
-      `failed to get any scheduled message by template for id ${scheduledId}`,
-      500, // Or 404
-    );
+    errors.push({
+      critical: true,
+      error: { scheduledId, userId },
+      msg: "failed to get any scheduled message by template",
+    });
+    return errors;
   }
 
   // Let's just get the language the user expects. Need to check the user api what they prefer
@@ -139,11 +241,16 @@ async function scheduledTemplate(
     .then((res) => res.rows);
 
   if (!templateContents.length) {
-    const error = utils.buildApiError(
-      `failed to find a template for meta id ${templateMeta.id}`,
-      400,
-    );
-    return error;
+    errors.push({
+      critical: true,
+      error: {
+        userId,
+        templateMeta,
+      },
+      msg: "failed to find a template for meta id",
+    });
+
+    return errors;
   }
 
   // TODO some kind of default logic here
@@ -199,9 +306,9 @@ async function scheduledTemplate(
     templateContent.excerpt,
   );
 
-  // transportationSubject = subject;
-  // transportationBody = richText || plainText;
-  // transportationExcerpt = excerpt;
+  transportationSubject = subject;
+  transportationBody = richText || plainText;
+  transportationExcerpt = excerpt;
 
   // Values for each language insert
   const values = [
@@ -223,7 +330,6 @@ async function scheduledTemplate(
   ];
 
   // A job is tied to one user.
-  let error: HttpError | undefined;
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -259,65 +365,95 @@ async function scheduledTemplate(
 
     await client.query("COMMIT");
   } catch (err) {
-    error = utils.buildApiError("failed to create message from template", 500);
+    errors.push({
+      critical: true,
+      error: { err },
+      msg: "failed to create message from template",
+    });
+    // error = utils.buildApiError("failed to create message from template", 500);
     await client.query("ROLLBACK");
   } finally {
     client.release;
   }
 
-  // // Transports (email, sms)
-  // for (const transport of templateMeta.preferredTransports) {
-  //   if (transport === "email") {
-  //     if (!transportationSubject) {
-  //       console.error("no subject");
-  //       continue;
-  //     }
+  /**
+   * There's a lot of logic to determine which transports, if any, to use
+   * for each user.
+   * eg.
+   * Does user accept the preferred transport?
+   * Which transport can we defer to?
+   * Persist logs?
+   * Fetch user information. Email and number
+   */
+  for (const transport of templateMeta.preferredTransports) {
+    if (transport === "email") {
+      if (!transportationSubject) {
+        continue;
+      }
 
-  //     const providerId =
-  //       await mailService(app).getFirstOrEtherealMailProvider();
+      let providerId: string | undefined;
+      try {
+        // This is a big placeholder that needs proper logic
+        providerId = await mailService(pool).getFirstOrEtherealMailProvider();
 
-  //     try {
-  //       void mailService(app).sendMails(
-  //         providerId,
-  //         ["ludwig.thurfjell@nearform.com"], // There's no api to get users atm?
-  //         transportationSubject,
-  //         transportationBody ?? "",
-  //       );
-  //     } catch (err) {
-  //       app.log.error(err, "email");
-  //     }
-  //   } else if (transport === "sms") {
-  //     if (!transportationExcerpt || !transportationSubject) {
-  //       continue;
-  //     }
+        void mailService(pool).sendMail({
+          providerId,
+          email: "",
+          subject: transportationSubject,
+          body: transportationBody ?? "",
+        });
+      } catch (err) {
+        errors.push({
+          critical: false,
+          error: {
+            userId,
+            providerId,
+            transportationSubject,
+            transportationBody,
+          },
+          msg: "failed to send email",
+        });
+      }
+    } else if (transport === "sms") {
+      if (!transportationExcerpt || !transportationSubject) {
+        continue;
+      }
 
-  //     // todo proper query
-  //     const config = await app.pg.pool
-  //       .query<{ config: unknown }>(
-  //         `
-  //         select config from sms_providers
-  //         limit 1
-  //       `,
-  //       )
-  //       .then((res) => res.rows.at(0)?.config);
+      // todo proper query
+      const config = await pool
+        .query<{ config: unknown }>(
+          `
+          select config from sms_providers
+          limit 1
+        `,
+        )
+        .then((res) => res.rows.at(0)?.config);
 
-  //     if (utils.isSmsAwsConfig(config)) {
-  //       const service = awsSnsSmsService(
-  //         config.accessKey,
-  //         config.secretAccessKey,
-  //       );
+      if (utils.isSmsAwsConfig(config)) {
+        const service = awsSnsSmsService(
+          config.accessKey,
+          config.secretAccessKey,
+        );
 
-  //       try {
-  //         void service.Send(transportationExcerpt, transportationSubject, [
-  //           "+46703835834",
-  //         ]);
-  //       } catch (err) {
-  //         app.log.error(err, "sms");
-  //       }
-  //     }
-  //   }
-  // }
-  return error;
+        try {
+          await service.Send(transportationExcerpt, "");
+        } catch (err) {
+          const msg = utils.isError(err) ? err.message : "failed to send sms";
+          errors.push({
+            critical: false,
+            error: {
+              userId,
+              transportationExcerpt,
+              transportationSubject,
+            },
+            msg,
+          });
+        }
+      }
+    }
+  }
+
+  return errors;
 }
 
 interface GetAllMessages {
@@ -440,7 +576,19 @@ export default async function messages(app: FastifyInstance) {
       let error: HttpError | undefined;
       if (job.type === "template") {
         try {
-          error = await scheduledTemplate(app.pg.pool, job.jobId, job.userId);
+          const serviceErrors = await scheduledTemplate(
+            app.pg.pool,
+            job.jobId,
+            job.userId,
+          );
+          for (const err of serviceErrors) {
+            app.log.error(err.error, err.msg);
+          }
+
+          const firstError = serviceErrors.filter((err) => err.critical).at(0);
+          if (firstError) {
+            error = utils.buildApiError(firstError.msg, 500);
+          }
         } catch (err) {
           const msg = utils.isError(err)
             ? err.message
@@ -449,7 +597,20 @@ export default async function messages(app: FastifyInstance) {
         }
       } else if (job.type === "message") {
         try {
-          error = await scheduleMessage(app.pg.pool, job.jobId, job.userId);
+          const serviceErrors = await scheduleMessage(
+            app.pg.pool,
+            job.jobId,
+            job.userId,
+          );
+
+          for (const err of serviceErrors) {
+            app.log.error(err.error, err.msg);
+          }
+
+          const firstError = serviceErrors.filter((err) => err.critical).at(0);
+          if (firstError) {
+            error = utils.buildApiError(firstError.msg, 500);
+          }
         } catch (err) {
           const msg = utils.isError(err)
             ? err.message
@@ -831,8 +992,6 @@ export default async function messages(app: FastifyInstance) {
             .then((res) => res.rows.at(0));
 
           if (!scheduleBase?.id) {
-            // TODO LOG
-            // TODO set status code eg
             throw Error(
               `failed to insert schedule message by template for template id ${template.id}`,
             );
@@ -904,67 +1063,12 @@ export default async function messages(app: FastifyInstance) {
 
           client.query("commit");
         } catch (err) {
-          console.log("failed to schedule template ", err);
+          app.log.error({ err }, "failed to create message from template");
           client.query("rollback");
         } finally {
           client.release();
         }
       }
-
-      // for template, move all current logic to the yolo endpoint.
-      // in here, we only insert template interpolation values attached to receivers.
-
-      // for (const transport of preferredTransports) {
-      //   if (transport === "email") {
-      //     if (!transportationSubject) {
-      //       console.error("no subject");
-      //       continue;
-      //     }
-
-      //     const providerId =
-      //       await mailService(app).getFirstOrEtherealMailProvider();
-
-      //     try {
-      //       void mailService(app).sendMails(
-      //         providerId,
-      //         ["ludwig.thurfjell@nearform.com"], // There's no api to get users atm?
-      //         transportationSubject,
-      //         transportationBody ?? "",
-      //       );
-      //     } catch (err) {
-      //       app.log.error(err, "email");
-      //     }
-      //   } else if (transport === "sms") {
-      //     if (!transportationExcerpt || !transportationSubject) {
-      //       continue;
-      //     }
-
-      //     // todo proper query
-      //     const config = await app.pg.pool
-      //       .query<{ config: unknown }>(
-      //         `
-      //         select config from sms_providers
-      //         limit 1
-      //       `,
-      //       )
-      //       .then((res) => res.rows.at(0)?.config);
-
-      //     if (utils.isSmsAwsConfig(config)) {
-      //       const service = awsSnsSmsService(
-      //         config.accessKey,
-      //         config.secretAccessKey,
-      //       );
-
-      //       try {
-      //         void service.Send(transportationExcerpt, transportationSubject, [
-      //           "+46703835834",
-      //         ]);
-      //       } catch (err) {
-      //         app.log.error(err, "sms");
-      //       }
-      //     }
-      //   }
-      // }
     },
   );
 }
