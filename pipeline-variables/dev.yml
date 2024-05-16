@@ -10,4 +10,3 @@ variables:
   nextPublicLifeEventsServiceEntryPoint: https://dev.life.gov.ie/
   nextPublicBuildingBlocksLandingPage: https://blocks.gov.ie/
   authServiceUrl: https://auth.dev.blocks.gov.ie/
-  
