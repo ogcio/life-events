@@ -22,9 +22,11 @@ sequenceDiagram
     User Browser->>+MyGovID: POST MyGovID { username password }
     MyGovID->>-User Browser: MyGovID Token
     User Browser->>+AuthService: POST AuthService/callback Cookie redirectUrl
-    AuthService->>-User Browser: Set Cookie SessionId Redirect to ogcio.app
-    User Browser->>+OGCIO App: GET ogcio.app Cookie SessionID
-    OGCIO App->>-User Browser: Return data
+    AuthService->>-User Browser: Set Cookie SessionId Redirect to ogcio.app/api/auth
+    User Browser->>+OGCIO App: POST ogcio.app/api/auth sessionId
+    OGCIO App->>-User Browser: Set Cookie sessionId
+    User Browser->>+OGCIO App: GET ogcio.app
+    OGCIO App->>-User Browser: return Data
 ```
 
 To implement authentication in a NextJS app, you can use the `auth` package and call `PgSessions.get()`. This function will handle retrieving session data using the `sessionID` cookie or redirecting to the `AuthService` specified by the `AUTH_SERVICE_URL` environment variable.
