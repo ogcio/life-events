@@ -4,7 +4,12 @@ import { useCallback, useState } from "react";
 import styles from "./HamburgerMenu.module.scss";
 import HamburgerMenu from "./HamburgerMenu";
 
-export default ({ userName }: { userName: string }) => {
+type MenuWrapperProps = {
+  userName: string;
+  publicServant: boolean;
+};
+
+export default ({ userName, publicServant }: MenuWrapperProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleClick = useCallback(() => setMenuOpen(false), [setMenuOpen]);
@@ -28,7 +33,11 @@ export default ({ userName }: { userName: string }) => {
       >
         {menuOpen && <div className={styles.backdrop} onClick={handleClick} />}
         <div className={`${styles.sidebar} ${menuOpen ? styles.visible : ""}`}>
-          <HamburgerMenu userName={userName} handleClick={handleClick} />
+          <HamburgerMenu
+            userName={userName}
+            publicServant={publicServant}
+            handleClick={handleClick}
+          />
         </div>
       </div>
     </>

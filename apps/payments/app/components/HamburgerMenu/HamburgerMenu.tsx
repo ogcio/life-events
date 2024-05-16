@@ -10,6 +10,7 @@ type IconProps = React.ComponentProps<typeof ds.Icon>;
 
 type MenuProps = {
   userName: string;
+  publicServant: boolean;
   handleClick: () => void;
 };
 
@@ -33,7 +34,7 @@ const options = [
 
 const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 
-export default ({ userName, handleClick }: MenuProps) => {
+export default ({ userName, publicServant, handleClick }: MenuProps) => {
   const t = useTranslations();
 
   const pathname = usePathname();
@@ -59,27 +60,28 @@ export default ({ userName, handleClick }: MenuProps) => {
       </li>
 
       <>
-        {options.map((option) => {
-          const optionUrl = `/${locale}${option.url}`;
-          return (
-            <li key={option.url} tabIndex={0} onClick={() => handleClick()}>
-              <Link
-                className={`govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16 ${styles.menuLink}`}
-                style={{
-                  background: pathname === optionUrl ? tintGold : "",
-                }}
-                href={optionUrl}
-              >
-                <Icon
-                  icon={option.icon as IconProps["icon"]}
-                  className="govie-button__icon-left"
-                  color={ds.colours.ogcio.darkGreen}
-                />
-                {t(option.label)}
-              </Link>
-            </li>
-          );
-        })}
+        {publicServant &&
+          options.map((option) => {
+            const optionUrl = `/${locale}${option.url}`;
+            return (
+              <li key={option.url} tabIndex={0} onClick={() => handleClick()}>
+                <Link
+                  className={`govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16 ${styles.menuLink}`}
+                  style={{
+                    background: pathname === optionUrl ? tintGold : "",
+                  }}
+                  href={optionUrl}
+                >
+                  <Icon
+                    icon={option.icon as IconProps["icon"]}
+                    className="govie-button__icon-left"
+                    color={ds.colours.ogcio.darkGreen}
+                  />
+                  {t(option.label)}
+                </Link>
+              </li>
+            );
+          })}
         <div className={styles.logoutContainer}>
           <Link
             href="/logout"

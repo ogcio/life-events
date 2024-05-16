@@ -21,7 +21,7 @@ export default async ({ locale }: HeaderProps) => {
     user = await getUser();
   }
 
-  const { firstName, lastName } = await PgSessions.get();
+  const { firstName, lastName, publicServant } = await PgSessions.get();
   const initials = firstName.charAt(0) + lastName.charAt(0);
 
   return (
@@ -41,7 +41,11 @@ export default async ({ locale }: HeaderProps) => {
         >
           <div className={styles.leftSideContainer}>
             <BuildingBlocksTiles locale={locale} />
-            <Hamburger userName={`${firstName} ${lastName}`} locale={locale} />
+            <Hamburger
+              userName={`${firstName} ${lastName}`}
+              publicServant={publicServant}
+              locale={locale}
+            />
             <a
               href="/"
               className="govie-header__link govie-header__link--homepage"
