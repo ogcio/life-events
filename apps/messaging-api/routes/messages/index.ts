@@ -3,7 +3,6 @@ import { Type } from "@sinclair/typebox";
 import { mailService } from "../providers/services";
 import { utils, organisationId, HttpError, ServiceError } from "../../utils";
 import { awsSnsSmsService } from "../../services/sms/aws";
-import { setTimeout as lulz } from "timers/promises";
 import { Pool } from "pg";
 
 type scheduledMessageByTemplateStatus =
@@ -30,7 +29,7 @@ async function scheduleMessage(
 
     const messageUser = await client
       .query<{
-        transports: string[];
+        transports?: string[];
         subject: string;
         excerpt: string;
         body: string;
@@ -54,7 +53,7 @@ async function scheduleMessage(
       throw new Error(`failed to find message for id ${messageId}`);
     }
 
-    preferredTransports.push(...messageUser.transports);
+    preferredTransports.push(...(messageUser?.transports ?? []));
     transportationBody = messageUser.body;
     transportationExcerpt = messageUser.excerpt;
     transportationSubject = messageUser.subject;
@@ -165,22 +164,6 @@ async function scheduledTemplate(
   userId: string,
 ): Promise<ServiceError[]> {
   const errors: ServiceError[] = [];
-
-  // Chaos factor
-  // if (~~(Math.random() * 100) > 20) {
-  //   // Took too long!
-  //   if (~~(Math.random() * 100) > 30) {
-  //     // await new Promise((resolve) => setTimeout(resolve, 7000));
-  //     await lulz(7000);
-  //     return errors;
-  //   }
-
-  //   // Just plain old internal error
-  //   console.log("Lite fel 500");
-  //   // reply.statusCode = 500;
-  //   errors.push({ error: {}, msg: "chaos factor error" });
-  //   return errors;
-  // }
 
   let transportationSubject: string | undefined;
   let transportationBody: string | undefined;
@@ -500,7 +483,13 @@ export default async function messages(app: FastifyInstance) {
     "/jobs/:id",
     {
       preValidation: app.verifyUser,
-      schema: {},
+      schema: {
+        response: {
+          202: Type.Void(),
+          "5xx": { $ref: "HttpError" },
+          "4xx": { $ref: "HttpError" },
+        },
+      },
     },
     async function jobHandler(request, reply) {
       const jobId = request.params.id;

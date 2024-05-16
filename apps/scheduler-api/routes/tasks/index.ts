@@ -1,4 +1,6 @@
 import { FastifyInstance } from "fastify";
+import { HttpError } from "../../types/httpErrors";
+import { Type } from "@sinclair/typebox";
 
 type RequestBody = {
   executeAt: string;
@@ -9,7 +11,23 @@ type RequestBody = {
 export default async function tasks(app: FastifyInstance) {
   app.post<{ Body: RequestBody }>(
     "/",
-    {},
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        body: Type.Array(
+          Type.Object({
+            webhookUrl: Type.String({ format: "uri" }),
+            webhookAuth: Type.String(),
+            executeAt: Type.String({ format: "date-time" }),
+          }),
+        ),
+        tags: ["Tasks"],
+        response: {
+          202: Type.Void(),
+          500: HttpError,
+        },
+      },
+    },
     async function handleScheduleTasks(request, reply) {
       const data = JSON.parse(request.body.toString());
 
