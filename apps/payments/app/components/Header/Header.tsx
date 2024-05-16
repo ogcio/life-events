@@ -40,8 +40,8 @@ export default async ({ locale }: HeaderProps) => {
           }}
         >
           <div className={styles.leftSideContainer}>
-            <Hamburger userName={`${firstName} ${lastName}`} locale={locale} />
             <BuildingBlocksTiles locale={locale} />
+            <Hamburger userName={`${firstName} ${lastName}`} locale={locale} />
             <a
               href="/"
               className="govie-header__link govie-header__link--homepage"
