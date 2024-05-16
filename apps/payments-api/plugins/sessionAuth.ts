@@ -1,10 +1,9 @@
-// authPlugin.ts
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
-import { getSessionData } from "auth/sessions";
 
 interface User {
   id: string;
+  publicServant?: boolean;
 }
 
 declare module "fastify" {
@@ -13,7 +12,6 @@ declare module "fastify" {
   }
 }
 
-// Very secure, isn't it?
 const sessionAuthPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.decorate(
     "verifyUserWithSessionId",
@@ -24,10 +22,41 @@ const sessionAuthPlugin: FastifyPluginAsync = async (fastify) => {
         return;
       }
 
-      //TODO: validate the session
-      const sessionData = await getSessionData(sessionId);
+      try {
+        const response = await fetch(
+          `${process.env.AUTH_SERVICE_URL}/session/validate?sessionId=${sessionId}`,
+        );
 
-      //request.user = { id: ... };
+        if (!response.ok) {
+          reply.code(401).send({ message: "Unauthorized" });
+          return;
+        }
+
+        const sessionData = await response.json();
+
+        if (!sessionData || !sessionData.userId) {
+          reply.code(401).send({ message: "Unauthorized" });
+          return;
+        }
+
+        request.user = {
+          id: sessionData.userId,
+          publicServant: sessionData.publicServant,
+        };
+      } catch (err) {
+        reply.code(500).send({ message: "Internal Server Error" });
+      }
+    },
+  );
+
+  fastify.decorate(
+    "validateIsPublicServant",
+    async function (request: FastifyRequest, reply: FastifyReply) {
+      await fastify.verifyUserWithSessionId(request, reply);
+
+      if (!request.user?.publicServant) {
+        reply.code(403).send({ message: "You cannot access this API" });
+      }
     },
   );
 };

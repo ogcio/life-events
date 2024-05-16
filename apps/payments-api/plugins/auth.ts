@@ -2,16 +2,6 @@
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 
-interface User {
-  id: string;
-}
-
-declare module "fastify" {
-  interface FastifyRequest {
-    user?: User;
-  }
-}
-
 // Very secure, isn't it?
 const authPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.decorate(

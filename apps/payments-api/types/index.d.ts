@@ -26,6 +26,11 @@ declare module "fastify" {
       reply: FastifyReply,
     ) => Promise<void>;
 
+    validateIsPublicServant: (
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ) => Promise<void>;
+
     providers: ProvidersPlugin;
   }
 }

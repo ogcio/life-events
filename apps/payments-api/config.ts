@@ -13,6 +13,7 @@ export const envSchema = {
     "REALEX_PAYMENT_ACCOUNT",
     "REALEX_PAYMENT_URL",
     "PAYMENTS_HOST_URL",
+    "AUTH_SERVICE_URL",
   ],
   properties: {
     POSTGRES_USER: {
@@ -49,6 +50,9 @@ export const envSchema = {
       type: "string",
     },
     PAYMENTS_HOST_URL: {
+      type: "string",
+    },
+    AUTH_SERVICE_URL: {
       type: "string",
     },
   },
