@@ -28,7 +28,7 @@ ARG NEXT_PUBLIC_API_ENDPOINT
 ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
 RUN npm run build --workspace=apps/web
 
-from base-deps as runner
+FROM base-deps as runner
 
 WORKDIR /app
 
