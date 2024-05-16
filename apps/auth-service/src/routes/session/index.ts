@@ -20,7 +20,6 @@ export default async (app: FastifyInstance) => {
 
       const query = await app.pg.query<
         {
-          token: string;
           userId: string;
           publicServant: boolean;
         },
