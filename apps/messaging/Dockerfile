@@ -29,7 +29,7 @@ ENV LOG_LEVEL=trace
 
 RUN npm run build --workspace=apps/messaging
 
-from base-deps as runner
+FROM base-deps as runner
 
 WORKDIR /app
 
