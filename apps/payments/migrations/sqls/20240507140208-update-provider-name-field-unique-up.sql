@@ -4,8 +4,8 @@ DO $$ BEGIN
     FROM (
         SELECT provider_id, provider_name, row_number(*) over (partition by provider_name order by provider_id) as rn
         FROM public.payment_providers
-    ) dublicate
-    where providers.provider_id = dublicate.provider_id AND dublicate.rn > 1;
+    ) duplicate
+    where providers.provider_id = duplicate.provider_id AND duplicate.rn > 1;
 
     IF NOT EXISTS (
         SELECT FROM pg_constraint 
