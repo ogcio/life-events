@@ -9,4 +9,4 @@ variables:
   nextPublicPaymentsServiceEntryPoint: https://payments.sta.blocks.gov.ie/
   nextPublicLifeEventsServiceEntryPoint: https://sta.life.gov.ie/
   nextPublicBuildingBlocksLandingPage: https://blocks.gov.ie/
-  authServiceUrl: https://auth.dev.blocks.gov.ie/
+  authServiceUrl: https://auth.sta.blocks.gov.ie/
