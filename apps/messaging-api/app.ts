@@ -69,14 +69,5 @@ export async function build(opts?: FastifyServerOptions) {
     sharedSchemaId: "HttpError",
   });
 
-  app.setErrorHandler((error, request, reply) => {
-    app.log.error(error);
-    if (error instanceof Error && error.name !== "error") {
-      reply.type("application/json").send({ error });
-      return;
-    }
-    reply.code(500).type("application/json").send({ error });
-  });
-
   return app;
 }

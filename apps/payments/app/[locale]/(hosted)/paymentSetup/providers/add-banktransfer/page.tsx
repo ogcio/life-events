@@ -5,7 +5,7 @@ import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 import { Payments } from "building-blocks-sdk";
 import BankTransferForm from "./BankTransferForm";
 import getRequestConfig from "../../../../../../i18n";
-import { getValidationErrors } from "../../../../../utils";
+import { errorHandler, getValidationErrors } from "../../../../../utils";
 
 type Props = {
   params: {
@@ -32,7 +32,10 @@ export default async (props: Props) => {
       errors: {},
     };
 
-    const result = await new Payments(userId).createBankTransferProvider({
+
+    const { data: result, error } = await new Payments(
+      userId,
+    ).createProvider({
       name: formData.get("provider_name") as string,
       type: "banktransfer",
       data: {
@@ -41,12 +44,16 @@ export default async (props: Props) => {
       },
     });
 
-    if (result.data && !result.error) {
+    if (error) {
+      errorHandler(error);
+    }
+
+    if (result) {
       redirect("./");
     }
 
-    if (result.error.validation) {
-      validation.errors = getValidationErrors(result.error.validation);
+    if (error.validation) {
+      validation.errors = getValidationErrors(error.validation);
     }
 
     return validation;

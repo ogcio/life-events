@@ -1,9 +1,20 @@
+import * as url from "url";
+import path from "path";
 import { FastifyInstance } from "fastify";
 import { PostAuthFormData } from "../../types/schemaDefinitions.js";
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors.js";
 import decodeJWT from "./utils/decodeJWT.js";
 import { deleteCookie, setCookie } from "./utils/cookies.js";
+import fs from "fs";
+import streamToString from "./utils/streamToString.js";
+import {
+  REDIRECT_TIMEOUT,
+  REDIRECT_URL,
+  SESSION_ID,
+} from "./utils/replacementConstants.js";
+
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 export default async (app: FastifyInstance) => {
   app.post<{
@@ -57,7 +68,7 @@ export default async (app: FastifyInstance) => {
         ],
       );
 
-      const [{ id: user_id, is_public_servant }] = q.rows;
+      const [{ id: user_id }] = q.rows;
 
       const query = await app.pg.query<{ id: string }, string[]>(
         `INSERT INTO govid_sessions(token, user_id) VALUES($1, $2) RETURNING id`,
@@ -70,15 +81,20 @@ export default async (app: FastifyInstance) => {
 
       const [{ id: ssid }] = query.rows;
 
-      deleteCookie(request, reply, "redirectUrl", "", app.config);
+      deleteCookie(request, reply, "redirectUrl", "");
 
-      setCookie(request, reply, "sessionId", ssid, app.config);
+      setCookie(request, reply, "sessionId", ssid);
 
-      if (is_public_servant) {
-        return reply.redirect(`${redirectUrl}/admin`);
-      }
+      const stream = fs.createReadStream(
+        path.join(__dirname, "..", "static", "redirect.html"),
+      );
 
-      return reply.redirect(`${redirectUrl}/`);
+      let result = await streamToString(stream);
+      result = result.replace(SESSION_ID, ssid);
+      result = result.replace(REDIRECT_URL, redirectUrl);
+      result = result.replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
+
+      return reply.type("text/html").send(result);
     },
   );
 };

@@ -4,13 +4,18 @@ import ProviderStatusTag from "./ProviderStatusTag";
 import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
+import { errorHandler } from "../../../../utils";
 
 export default async () => {
   const t = useTranslations("PaymentSetup.Providers");
 
   const { userId } = await PgSessions.get();
 
-  const { data: providers } = await new Payments(userId).getProviders();
+  const { data: providers, error } = await new Payments(userId).getProviders();
+
+  if (error) {
+    errorHandler(error);
+  }
 
   if (!providers || providers.length === 0) {
     return (
