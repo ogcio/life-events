@@ -1,6 +1,6 @@
 BEGIN;
 
 ALTER TABLE payment_providers
-DROP CONSTRAINT unique_provider_name;
+DROP CONSTRAINT IF EXISTS unique_provider_name;
 
 COMMIT;

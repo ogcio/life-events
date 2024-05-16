@@ -27,7 +27,7 @@ ENV LOG_LEVEL=trace
 
 RUN npm run build --workspace=apps/profile
 
-from base-deps as runner
+FROM base-deps as runner
 
 WORKDIR /app
 
@@ -36,6 +36,10 @@ ENV NODE_ENV=production
 
 COPY --from=builder /app/apps/profile/.next/standalone ./
 COPY --from=builder /app/apps/profile/.next/static ./apps/profile/.next/static
+# TODO: Filter and remove whatever is not necessary for db-migrate and db-migrate-pg
+COPY --from=deps /app/node_modules/ /app/node_modules/
+COPY --from=deps /app/apps/profile/database.json /app/apps/profile/
+COPY --from=deps /app/apps/profile/migrations /app/apps/profile/migrations
 
 EXPOSE 3003
 
