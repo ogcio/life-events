@@ -2,7 +2,9 @@ import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreateTransactionBody,
+  GenericResponse,
   Id,
+  PaginationParams,
   ParamsWithTransactionId,
   PaymentIntentId,
   TransactionDetails,
@@ -11,6 +13,8 @@ import {
   UpdateTransactionBody,
 } from "../schemas";
 import { Type } from "@sinclair/typebox";
+import { PaginationDetails } from "../../utils/pagination";
+import { formatAPIResponse } from "../../utils/responseFormatter";
 
 export default async function transactions(app: FastifyInstance) {
   app.get<{
@@ -67,49 +71,79 @@ export default async function transactions(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: Transactions | Error;
+    Reply: GenericResponse<Transactions> | Error;
+    Querystring: PaginationParams;
   }>(
     "/",
     {
       preValidation: app.validateIsPublicServant,
       schema: {
         tags: ["Transactions"],
+        querystring: PaginationParams,
         response: {
-          200: Transactions,
+          200: GenericResponse(Transactions),
           404: HttpError,
         },
       },
     },
     async (request, reply) => {
+      const { offset = 0, limit = 10 } = request.query;
       const userId = request.user?.id;
 
       let result;
+      let totalCountResult;
       try {
         result = await app.pg.query(
           `SELECT
-            t.transaction_id as "transactionId",
-            t.status,
-            t.user_id as "userId",
-            t.user_data as "userData",
-            pr.title,
-            pr.payment_request_id as "paymentRequestId",
-            t.ext_payment_id as "extPaymentId",
-            t.amount,
-            t.updated_at as "updatedAt",
-            pp.provider_name as "providerName",
-            pp.provider_type as "providerType"
-          FROM payment_transactions t
-          INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.user_id = $1
-          INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
-          JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
-          ORDER BY t.updated_at DESC
-          `,
+              t.transaction_id as "transactionId",
+              t.status,
+              t.user_id as "userId",
+              t.user_data as "userData",
+              pr.title,
+              pr.payment_request_id as "paymentRequestId",
+              t.ext_payment_id as "extPaymentId",
+              t.amount,
+              t.updated_at as "updatedAt",
+              pp.provider_name as "providerName",
+              pp.provider_type as "providerType"
+            FROM payment_transactions t
+            INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.user_id = $1
+            INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
+            JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
+            ORDER BY t.updated_at DESC
+            LIMIT $2 OFFSET $3`,
+          [userId, limit, offset],
+        );
+
+        totalCountResult = await app.pg.query(
+          `SELECT
+              count(*) as "totalCount"
+            FROM payment_transactions t
+            INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.user_id = $1
+            INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
+            JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id`,
           [userId],
         );
       } catch (err) {
         app.log.error((err as Error).message);
       }
-      reply.send(result?.rows);
+
+      const totalCount = totalCountResult?.rows[0].totalCount;
+      const data = result?.rows ?? [];
+      const url = request.url.split("?")[0];
+
+      const paginationDetails: PaginationDetails = {
+        offset,
+        limit,
+        totalCount,
+        url: url,
+      };
+
+      reply
+        .headers({
+          "X-Total-Count": totalCount,
+        })
+        .send(formatAPIResponse(data, paginationDetails));
     },
   );
 

@@ -100,3 +100,47 @@ export const errorHandler = (error) => {
   console.error(error);
   return redirect("/error", RedirectType.replace);
 };
+
+/**
+ * Pagination
+ */
+
+export const offsetToPage = (offset: number, limit: number) => {
+  return Math.floor(offset / limit) + 1;
+};
+
+export const pageToOffset = (page: number, limit: number) => {
+  return (page - 1) * limit;
+};
+
+export const buildPaginationLinks = (
+  targetUrl: string,
+  links?: Record<string, { href?: string }>,
+) => {
+  if (!links) {
+    return {};
+  }
+
+  return Object.entries(links).reduce<Record<string, { href?: string }>>(
+    (acc, [key, link]) => {
+      if (!link.href) {
+        acc[key] = {
+          href: undefined,
+        };
+
+        return acc;
+      }
+
+      const url = new URL(link.href, process.env.PAYMENTS_BACKEND_URL);
+      const offset = parseInt(url.searchParams.get("offset") ?? "0");
+      const limit = parseInt(url.searchParams.get("limit") ?? "10");
+
+      acc[key] = {
+        href: `${targetUrl}?limit=${limit}&page=${offsetToPage(offset, limit)}`,
+      };
+
+      return acc;
+    },
+    {},
+  );
+};

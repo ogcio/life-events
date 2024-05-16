@@ -602,13 +602,25 @@ export interface paths {
   };
   "/api/v1/transactions/": {
     get: {
+      parameters: {
+        query?: {
+          offset?: number;
+          limit?: number;
+        };
+      };
       responses: {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": ({
+            "application/json": {
+              data: {
                 transactionId: string;
-                status: "initiated" | "pending" | "succeeded" | "cancelled" | "failed";
+                status:
+                  | "initiated"
+                  | "pending"
+                  | "succeeded"
+                  | "cancelled"
+                  | "failed";
                 amount: number;
                 updatedAt: string;
                 title: string;
@@ -621,7 +633,27 @@ export interface paths {
                 providerName: string;
                 providerType: string;
                 paymentRequestId: string;
-              })[];
+              }[];
+              metadata: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next: {
+                    href?: string;
+                  };
+                  prev: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                };
+              };
+            };
           };
         };
         /** @description Default Response */
