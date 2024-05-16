@@ -46,6 +46,10 @@ ENV NODE_ENV=production
 
 COPY --from=builder /app/apps/payments/.next/standalone ./
 COPY --from=builder /app/apps/payments/.next/static ./apps/payments/.next/static
+# TODO: Filter and remove whatever is not necessary for db-migrate and db-migrate-pg
+COPY --from=deps /app/node_modules/ /app/node_modules/
+COPY --from=deps /app/apps/payments/database.json /app/apps/payments/
+COPY --from=deps /app/apps/payments/migrations /app/apps/payments/migrations
 
 EXPOSE 3001
 
