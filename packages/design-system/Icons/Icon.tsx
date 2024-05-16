@@ -21,7 +21,10 @@ type Props = {
     | "logout"
     | "notification"
     | "search"
-    | "hamburger-menu";
+    | "hamburger-menu"
+    | "tiles"
+    | "messaging-service"
+    | "payments-service";
 };
 
 export default ({ className, color, icon, size, heigth, width }: Props) => {

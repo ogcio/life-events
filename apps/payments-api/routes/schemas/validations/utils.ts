@@ -15,13 +15,12 @@ export const getValidationPayload = (
 };
 
 export const getValidationError = (
-  statusCode: number,
   message: string,
   name: string,
   validations: Array<Record<string, unknown>>,
 ) => {
   return {
-    statusCode,
+    statusCode: 400,
     message,
     name,
     validation: validations,

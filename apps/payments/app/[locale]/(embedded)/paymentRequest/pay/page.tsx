@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 
 import {
+  errorHandler,
   formatCurrency,
   getRealAmount,
   stringToAmount,
@@ -32,9 +33,13 @@ type Props = {
 };
 
 async function getPaymentRequestDetails(paymentId: string, userId: string) {
-  const details = (
-    await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
-  ).data;
+  const { data: details, error } = await new Payments(
+    userId,
+  ).getPaymentRequestPublicInfo(paymentId);
+
+  if (error) {
+    errorHandler(error);
+  }
 
   if (!details) {
     return undefined;
@@ -212,7 +217,7 @@ export default async function Page(props: Props) {
         flexDirection: "column",
       }}
     >
-      <Header />
+      <Header locale={props.params.locale} />
       {/* All designs are made for 1440 px  */}
       <div
         className="govie-width-container"

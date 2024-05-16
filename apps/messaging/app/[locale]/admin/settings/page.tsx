@@ -9,6 +9,7 @@ export default () => {
         <Link className="govie-link" href="settings/emails">
           {t("emailsLink")}
         </Link>
+        <br />
         <Link className="govie-link" href="settings/sms">
           {t("smsLink")}
         </Link>

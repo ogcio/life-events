@@ -17,6 +17,7 @@ import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
+import providers from "./plugins/entities/providers";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -79,6 +80,8 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(routes, { prefix: "/api/v1" });
 
   app.register(sensible);
+
+  app.register(providers);
 
   return app;
 }

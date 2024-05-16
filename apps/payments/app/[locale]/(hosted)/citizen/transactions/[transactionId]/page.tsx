@@ -3,22 +3,26 @@ import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
 import { getUser } from "../../../../../../libraries/auth";
 import { notFound } from "next/navigation";
-import { formatCurrency } from "../../../../../utils";
+import { errorHandler, formatCurrency } from "../../../../../utils";
 import dayjs from "dayjs";
 
 export default async function ({ params: { transactionId } }) {
   const t = await getTranslations("MyPayments.details");
 
   let userId;
-  if (process.env.USE_LOGTO_AUTH) {
+  if (process.env.USE_LOGTO_AUTH === "true") {
     userId = (await getUser()).id;
   } else {
     userId = (await PgSessions.get()).userId;
   }
 
-  const details = (
-    await new Payments(userId).getCitizenTransactionDetails(transactionId)
-  ).data;
+  const { data: details, error } = await new Payments(
+    userId,
+  ).getCitizenTransactionDetails(transactionId);
+
+  if (error) {
+    errorHandler(error);
+  }
 
   if (!details) {
     return notFound();
