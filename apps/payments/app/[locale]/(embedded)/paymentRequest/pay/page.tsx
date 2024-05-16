@@ -217,7 +217,7 @@ export default async function Page(props: Props) {
         flexDirection: "column",
       }}
     >
-      <Header />
+      <Header locale={props.params.locale} />
       {/* All designs are made for 1440 px  */}
       <div
         className="govie-width-container"

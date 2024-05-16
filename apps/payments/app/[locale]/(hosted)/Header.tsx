@@ -4,11 +4,12 @@ import UserIcon from "./UserIcon";
 import { getUser } from "../../../libraries/auth";
 import { headers } from "next/headers";
 import "./Header.css";
+import BuildingBlocksTiles from "./buildingBlocksTiles";
 
-export default async () => {
+export default async ({ locale }: { locale }) => {
   let user;
 
-  if (process.env.USE_LOGTO_AUTH) {
+  if (process.env.USE_LOGTO_AUTH === "true") {
     user = await getUser();
   }
 
@@ -45,6 +46,7 @@ export default async () => {
               gap: "15px",
             }}
           >
+            <BuildingBlocksTiles locale={locale} />
             <a
               href="/"
               className="govie-header__link govie-header__link--homepage"
@@ -129,7 +131,7 @@ export default async () => {
             }}
           >
             <div className="govie-!-font-size-12">
-              {process.env.USE_LOGTO_AUTH && (
+              {process.env.USE_LOGTO_AUTH === "true" && (
                 <>
                   Logto enabled{" "}
                   {user && user.isAuthenticated ? (
@@ -169,7 +171,11 @@ export default async () => {
             </div>
             <UserIcon />
 
-            <Link href="/logout" prefetch={false} style={{ display: "flex" }}>
+            <Link
+              href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
+              prefetch={false}
+              style={{ display: "flex" }}
+            >
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
             </Link>
           </div>

@@ -1,4 +1,4 @@
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 import { form, routes } from "../../../../utils";
@@ -9,7 +9,7 @@ import { Profile } from "building-blocks-sdk";
 import Link from "next/link";
 
 export default async (props: NextPageProps) => {
-  const { userId } = await AuthServicePgSessions.get();
+  const { userId } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
   const errors = await form.getErrorsQuery(

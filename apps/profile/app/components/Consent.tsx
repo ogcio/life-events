@@ -1,12 +1,11 @@
 import { getTranslations } from "next-intl/server";
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import { Profile } from "building-blocks-sdk";
 
 async function submitAction(formData: FormData) {
   "use server";
 
-  const { firstName, lastName, email, userId } =
-    await AuthServicePgSessions.get();
+  const { firstName, lastName, email, userId } = await PgSessions.get();
 
   const consentToPrefillData = formData.get("consentToPrefillData");
   const isUserConsenting = consentToPrefillData === "on";
@@ -40,7 +39,7 @@ async function submitAction(formData: FormData) {
 }
 
 async function getConsentData() {
-  const { userId } = await AuthServicePgSessions.get();
+  const { userId } = await PgSessions.get();
 
   const { data, error } = await new Profile(userId).getUser();
 

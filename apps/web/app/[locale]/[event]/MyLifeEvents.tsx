@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import OpenEventStatusImage from "./components/OpenEventStatusImage";
 import { renewDriverLicenceRules } from "./[...action]/RenewDriversLicence/RenewDriversLicence";
 import { postgres, routes, workflow } from "../../utils";
@@ -115,7 +115,7 @@ function eventFlowMapper(
 async function getFlows(hasGovIdVerifiedAccount: boolean) {
   "use server";
 
-  const { userId } = await AuthServicePgSessions.get();
+  const { userId } = await PgSessions.get();
 
   const flowsQueryResult = await postgres.pgpool.query<
     { flow: string; category: string; data: workflow.Workflow },
@@ -143,7 +143,7 @@ async function getFlows(hasGovIdVerifiedAccount: boolean) {
 
 export default async ({ locale }) => {
   const t = await getTranslations("MyLifeEvents");
-  const { userId, hasGovIdVerifiedAccount } = await AuthServicePgSessions.get();
+  const { userId, hasGovIdVerifiedAccount } = await PgSessions.get();
   const [flow, events] = await Promise.all([
     getFlows(hasGovIdVerifiedAccount),
     getEvents(),
