@@ -7,7 +7,7 @@ import Footer from "./[locale]/(hosted)/Footer";
 export default async function () {
   return (
     <>
-      <Header />
+      <Header locale="en" />
       <div
         className="govie-width-container"
         style={{ maxWidth: "1440px", width: "100%" }}
