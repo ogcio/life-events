@@ -5,7 +5,7 @@
  * must derive from either Workflow types.
  */
 
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import { postgres } from ".";
 
 // ===== Base =====
@@ -344,7 +344,7 @@ export async function getFlowData<T extends Workflow>(
 ) {
   // Session details
   const { userId, email, firstName, lastName, myGovIdEmail } =
-    await AuthServicePgSessions.get();
+    await PgSessions.get();
 
   const flowQuery = postgres.pgpool.query<{ data: Workflow }, [string, string]>(
     `

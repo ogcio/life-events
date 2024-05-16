@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { routes, web, workflow } from "../../../../utils";
 import FormLayout from "../../../../components/FormLayout";
 import Introduction from "./Introduction";
-import { AuthServicePgSessions } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import BenefitsEntitlements from "./BenefitsEntitlements";
 import Requirements from "./Requirements";
 import Rates from "./Rates";
@@ -378,7 +378,7 @@ const FormComponentsMap = {
 };
 
 export default async (props: web.NextPageProps) => {
-  const { userId } = await AuthServicePgSessions.get();
+  const { userId } = await PgSessions.get();
   const data = await workflow.getFlowData(
     workflow.keys.applyJobseekersAllowance,
     workflow.emptyApplyJobseekersAllowance(),
