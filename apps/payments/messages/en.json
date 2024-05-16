@@ -56,12 +56,13 @@
     "cancel": "Cancel",
     "close": "Close"
   },
+  "Menu": {
+    "payments": "Payments",
+    "paymentRequests": "Payment requests",
+    "providers": "Providers",
+    "logout": "Logout"
+  },
   "PaymentSetup": {
-    "menu": {
-      "payments": "Payments",
-      "paymentRequests": "Payment requests",
-      "providers": "Providers"
-    },
     "details": "Payment request details",
     "Providers": {
       "title": "Your payment providers",
