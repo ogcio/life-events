@@ -12,6 +12,7 @@ create table scheduled_events(
 create table event_logs(
     event_id uuid not null,
     status_code text not null,
+    process_id text not null,
     created_at timestamptz not null default now()
 );
 

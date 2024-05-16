@@ -133,10 +133,11 @@ async function unitOfWork(
           logValues,
         );
       } catch (err) {
-        console.log("Massivt fel\n", err);
+        app.log.error(
+          { processId, err },
+          "failed to update events and create logs",
+        );
       }
-    } else {
-      console.log("Hittade ingenting");
     }
   } catch (err) {
     app.log.error(

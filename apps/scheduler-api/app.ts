@@ -13,11 +13,11 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
-// import {
-//   initializeLoggingHooks,
-//   getLoggingConfiguration,
-// } from "logging-wrapper";
-// import { initializeErrorHandler } from "error-handler";
+import {
+  initializeLoggingHooks,
+  getLoggingConfiguration,
+} from "logging-wrapper";
+import { initializeErrorHandler } from "error-handler";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -27,11 +27,11 @@ dotenv.config();
 export async function build(opts?: FastifyServerOptions) {
   const app = fastify({
     ...opts,
-    // ...getLoggingConfiguration(),
+    ...getLoggingConfiguration(),
   }).withTypeProvider<TypeBoxTypeProvider>();
 
-  // initializeErrorHandler(app);
-  // initializeLoggingHooks(app);
+  initializeErrorHandler(app);
+  initializeLoggingHooks(app);
 
   app.register(authPlugin);
   app.register(fastifyEnv, {

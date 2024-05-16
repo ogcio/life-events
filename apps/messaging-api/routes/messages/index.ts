@@ -794,7 +794,7 @@ export default async function messages(app: FastifyInstance) {
         const body = jobs.map((job) => {
           const callbackUrl = new URL(
             `/api/v1/messages/jobs/${job.id}`,
-            "http:localhost:8002",
+            process.env.WEBHOOK_URL_BASE,
           );
 
           return {
@@ -804,39 +804,17 @@ export default async function messages(app: FastifyInstance) {
           };
         });
 
-        const url = new URL("/api/v1/tasks", "http://localhost:8004");
+        const url = new URL("/api/v1/tasks", process.env.SCHEDULER_API_URL);
         await fetch(url.toString(), {
           method: "POST",
-          body: JSON.stringify(
-            // ids.map((id) => {
-            //   const callbackUrl = new URL(
-            //     `/api/v1/messages/scheduled-message/${id.id}`,
-            //     "http:localhost:8002",
-            //   );
-
-            //   return {
-            //     webhookUrl: callbackUrl.toString(),
-            //     webhookAuth: id.userId,
-            //     executeAt: scheduleAt,
-            //   };
-            // }),
-            body,
-          ),
+          body: JSON.stringify(body),
         });
       } else if (template) {
         const client = await this.pg.pool.connect();
 
         try {
           client.query("begin");
-          // // Create schedules for n users and then jobs returning job_id and user_id
 
-          // const schedules = await client.query<{ id: string }>(`
-          //   insert into scheduled_message_by_templates(template_meta_id, preferred_transports, message_type)
-          // `);
-
-          // // send a body with job_id and user_id
-
-          // Dragons
           const scheduleBase = await client
             .query<{ id: string }>(
               `
@@ -886,7 +864,7 @@ export default async function messages(app: FastifyInstance) {
             const body = jobs.map((job) => {
               const callback = new URL(
                 `/api/v1/messages/jobs/${job.id}`,
-                "http://localhost:8002",
+                process.env.WEBHOOK_URL_BASE,
               );
               return {
                 executeAt: scheduleAt,
@@ -917,8 +895,7 @@ export default async function messages(app: FastifyInstance) {
               );
             }
 
-            // TODO .env
-            const url = new URL("/api/v1/tasks", "http://localhost:8004");
+            const url = new URL("/api/v1/tasks", process.env.SCHEDULER_API_URL);
             await fetch(url.toString(), {
               method: "POST",
               body: JSON.stringify(body),
