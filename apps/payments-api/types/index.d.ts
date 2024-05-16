@@ -21,6 +21,11 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     verifyUser: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    verifyUserWithSessionId: (
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ) => Promise<void>;
+
     providers: ProvidersPlugin;
   }
 }
