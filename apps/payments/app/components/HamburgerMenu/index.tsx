@@ -1,42 +1,19 @@
-"use client";
-import ds from "design-system/";
-import { useCallback, useState } from "react";
+import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import HamburgerMenuWrapper from "./HamburgerMenuWrapper";
-import styles from "./HamburgerMenu.module.scss";
+import { getMessages } from "next-intl/server";
 
-export default ({ userName }: { userName: string }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+type HamburgerProps = {
+  userName: string;
+  locale: string;
+};
 
-  const onClick = useCallback(() => setMenuOpen(false), [setMenuOpen]);
+export default async ({ userName, locale }: HamburgerProps) => {
+  const messages = await getMessages({ locale });
+  const menuMessages = (await messages.Menu) as unknown as AbstractIntlMessages;
 
   return (
-    <>
-      <button
-        aria-label="events-menu"
-        className={styles.hamburgerButton}
-        style={{
-          cursor: "pointer",
-          background: "none",
-          color: "inherit",
-          border: "none",
-          padding: 0,
-          font: "inherit",
-          outline: "inherit",
-        }}
-        onClick={() => setMenuOpen(true)}
-      >
-        <ds.Icon
-          icon="hamburger-menu"
-          color={ds.colours.ogcio.white}
-          heigth={12}
-          width={18}
-        />
-      </button>
-      <HamburgerMenuWrapper
-        userName={userName}
-        menuOpen={menuOpen}
-        handleClick={onClick}
-      />
-    </>
+    <NextIntlClientProvider messages={menuMessages}>
+      <HamburgerMenuWrapper userName={userName} />
+    </NextIntlClientProvider>
   );
 };

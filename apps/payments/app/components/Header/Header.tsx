@@ -1,7 +1,5 @@
 import Link from "next/link";
 import ds from "design-system/";
-import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
-import { getMessages } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import Hamburger from "../HamburgerMenu";
 import HeaderSvg from "./HeaderSvg";
@@ -17,9 +15,6 @@ type HeaderProps = {
 };
 
 export default async ({ locale }: HeaderProps) => {
-  const messages = await getMessages({ locale });
-  const menuMessages = (await messages.Menu) as unknown as AbstractIntlMessages;
-
   let user;
 
   if (process.env.USE_LOGTO_AUTH) {
@@ -45,9 +40,7 @@ export default async ({ locale }: HeaderProps) => {
           }}
         >
           <div className={styles.leftSideContainer}>
-            <NextIntlClientProvider messages={menuMessages}>
-              <Hamburger userName={`${firstName} ${lastName}`} />
-            </NextIntlClientProvider>
+            <Hamburger userName={`${firstName} ${lastName}`} locale={locale} />
             <BuildingBlocksTiles locale={locale} />
             <a
               href="/"
