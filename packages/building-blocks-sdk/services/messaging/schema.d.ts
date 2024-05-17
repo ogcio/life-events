@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/health": {
     get: {
@@ -14,7 +15,7 @@ export interface paths {
       };
     };
   };
-  "/api/v1/messages/scheduled-message/{id}": {
+  "/api/v1/messages/jobs/{id}": {
     post: {
       parameters: {
         path: {
@@ -23,65 +24,39 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
-        200: {
+        202: {
           content: never;
         };
-      };
-    };
-  };
-  "/api/v1/messages/scheduled-template/{id}": {
-    post: {
-      parameters: {
-        path: {
-          id: string;
-        };
-      };
-      responses: {
         /** @description Default Response */
-        200: {
-          content: never;
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
         };
-      };
-    };
-  };
-  "/api/v1/messages/yolo/{id}": {
-    post: {
-      parameters: {
-        path: {
-          id: string;
-        };
-      };
-      responses: {
         /** @description Default Response */
-        200: {
-          content: never;
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
         };
       };
     };
   };
   "/api/v1/messages/": {
     get: {
-      parameters: {
-        query?: {
-          type?: string;
-        };
-      };
       responses: {
         /** @description Default Response */
         200: {
           content: {
             "application/json": {
               data: {
-                id: string;
-                subject: string;
-                excerpt: string;
-                plainText: string;
-                richText: string;
-                links: string[];
-                createdAt: string;
-                messageType: string;
-                paymentRequestId?: string;
-              }[];
+                  id: string;
+                  subject: string;
+                  excerpt: string;
+                  plainText: string;
+                  richText: string;
+                  createdAt: string;
+                }[];
             };
           };
         };
@@ -104,10 +79,7 @@ export interface paths {
               excerpt: string;
               richText: string;
               plainText: string;
-              links: string[];
               lang: string;
-              /** Format: uuid */
-              paymentRequestId?: string;
             };
             template?: {
               /** Format: uuid */
@@ -119,7 +91,6 @@ export interface paths {
             preferredTransports: string[];
             userIds: string[];
             security: string;
-            messageType: string;
             /** Format: date-time */
             scheduleAt: string;
           };
@@ -158,8 +129,6 @@ export interface paths {
                 excerpt: string;
                 plainText: string;
                 richText: string;
-                links: string[];
-                paymentRequestId?: string;
               };
             };
           };
@@ -187,16 +156,16 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                id: string;
-                name: string;
-                host: string;
-                port: number;
-                username: string;
-                password: string;
-                throttle?: number;
-                fromAddress: string;
-              }[];
+                  /** Format: uuid */
+                  id: string;
+                  name: string;
+                  host: string;
+                  port: number;
+                  username: string;
+                  password: string;
+                  throttle?: number;
+                  fromAddress: string;
+                }[];
             };
           };
         };
@@ -361,11 +330,11 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                id: string;
-                name: string;
-                type: string;
-              }[];
+                  /** Format: uuid */
+                  id: string;
+                  name: string;
+                  type: string;
+                }[];
             };
           };
         };
@@ -524,11 +493,11 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                templateMetaId: string;
-                lang: string;
-                templateName: string;
-              }[];
+                  /** Format: uuid */
+                  templateMetaId: string;
+                  lang: string;
+                  templateName: string;
+                }[];
             };
           };
         };
@@ -551,17 +520,18 @@ export interface paths {
         content: {
           "application/json": {
             contents: {
-              templateName: string;
-              lang: string;
-              subject: string;
-              excerpt: string;
-              plainText: string;
-              richText: string;
-            }[];
+                templateName: string;
+                lang: string;
+                subject: string;
+                excerpt: string;
+                plainText: string;
+                richText: string;
+              }[];
             variables: {
-              name: string;
-              type: string;
-            }[];
+                name: string;
+                type: string;
+                languages: string[];
+              }[];
           };
         };
       };
@@ -606,17 +576,17 @@ export interface paths {
             "application/json": {
               data: {
                 contents: {
-                  templateName: string;
-                  subject: string;
-                  excerpt: string;
-                  plainText: string;
-                  richText: string;
-                  lang: string;
-                }[];
+                    templateName: string;
+                    subject: string;
+                    excerpt: string;
+                    plainText: string;
+                    richText: string;
+                    lang: string;
+                  }[];
                 fields: {
-                  fieldName: string;
-                  fieldType: string;
-                }[];
+                    fieldName: string;
+                    fieldType: string;
+                  }[];
               };
             };
           };
@@ -645,19 +615,19 @@ export interface paths {
         content: {
           "application/json": {
             contents: {
-              /** Format: uuid */
-              id: string;
-              templateName: string;
-              lang: string;
-              subject: string;
-              excerpt: string;
-              plainText: string;
-              richText: string;
-            }[];
+                /** Format: uuid */
+                id: string;
+                templateName: string;
+                lang: string;
+                subject: string;
+                excerpt: string;
+                plainText: string;
+                richText: string;
+              }[];
             variables: {
-              name: string;
-              type: string;
-            }[];
+                name: string;
+                type: string;
+              }[];
           };
         };
       };

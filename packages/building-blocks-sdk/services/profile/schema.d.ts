@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/health": {
     get: {
@@ -21,18 +22,18 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              addressId: string;
-              addressLine1: string;
-              addressLine2: string;
-              town: string;
-              county: string;
-              eirecode: string;
-              updatedAt: string;
-              moveInDate?: string;
-              moveOutDate?: string;
-              isPrimary?: boolean;
-              ownershipStatus?: string;
-            }[];
+                addressId: string;
+                addressLine1: string;
+                addressLine2: string;
+                town: string;
+                county: string;
+                eirecode: string;
+                updatedAt: string;
+                moveInDate?: string;
+                moveOutDate?: string;
+                isPrimary?: boolean;
+                ownershipStatus?: string;
+              }[];
           };
         };
         /** @description Default Response */
@@ -293,13 +294,13 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              firstname: string;
-              lastname: string;
-              type: string;
-              issueDate: string;
-              expiryDate?: string;
-              documentNumber: string;
-            }[];
+                firstname: string;
+                lastname: string;
+                type: string;
+                issueDate: string;
+                expiryDate?: string;
+                documentNumber: string;
+              }[];
           };
         };
         /** @description Default Response */
@@ -505,7 +506,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 
 export interface components {
-  schemas: {};
+  schemas: {
+  };
   responses: never;
   parameters: never;
   requestBodies: never;
