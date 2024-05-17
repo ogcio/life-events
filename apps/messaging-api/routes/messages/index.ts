@@ -165,10 +165,6 @@ async function scheduledTemplate(
 ): Promise<ServiceError[]> {
   const errors: ServiceError[] = [];
 
-  let transportationSubject: string | undefined;
-  let transportationBody: string | undefined;
-  let transportationExcerpt: string | undefined;
-
   const templateMeta = await pool
     .query<{
       id: string;
@@ -289,9 +285,9 @@ async function scheduledTemplate(
     templateContent.excerpt,
   );
 
-  transportationSubject = subject;
-  transportationBody = richText || plainText;
-  transportationExcerpt = excerpt;
+  const transportationSubject = subject;
+  const transportationBody = richText || plainText;
+  const transportationExcerpt = excerpt;
 
   // Values for each language insert
   const values = [
@@ -453,7 +449,6 @@ interface GetMessage {
 
 interface CreateMessage {
   Body: {
-    messageType: string;
     message?: {
       threadName?: string;
       messageName: string;
@@ -461,9 +456,7 @@ interface CreateMessage {
       excerpt: string;
       richText: string;
       plainText: string;
-      links: string[];
       lang: string;
-      paymentRequestId?: string;
     };
     template?: {
       id: string;
@@ -644,11 +637,7 @@ export default async function messages(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Messages"],
-        querystring: Type.Optional(
-          Type.Object({
-            type: Type.Optional(Type.String()),
-          }),
-        ),
+        querystring: Type.Optional(Type.Object({})),
         response: {
           200: Type.Object({
             data: Type.Array(
@@ -658,10 +647,7 @@ export default async function messages(app: FastifyInstance) {
                 excerpt: Type.String(),
                 plainText: Type.String(),
                 richText: Type.String(),
-                links: Type.Array(Type.String()),
                 createdAt: Type.String(),
-                messageType: Type.String(),
-                paymentRequestId: Type.Optional(Type.String()),
               }),
             ),
           }),
@@ -674,18 +660,6 @@ export default async function messages(app: FastifyInstance) {
       const userId = request.user?.id;
 
       try {
-        const { type } = request.query;
-
-        let where = "";
-        let argIndex = 2;
-        const values: (string | number | null)[] = [];
-
-        if (type) {
-          where += `and message_type = $${argIndex}`;
-          values.push(type);
-          argIndex += 1;
-        }
-
         const data = await app.pg
           .query<{
             id: string;
@@ -693,10 +667,7 @@ export default async function messages(app: FastifyInstance) {
             excerpt: string;
             plainText: string;
             richText: string;
-            links: string[];
             createdAt: string;
-            messageType: string;
-            paymentRequestId?: string;
           }>(
             `
         select 
@@ -705,16 +676,12 @@ export default async function messages(app: FastifyInstance) {
             excerpt, 
             plain_text as "plainText",
             rich_text as "richText",
-            links,
-            payment_request_id as "paymentRequestId",
-            created_at as "createdAt",
-            message_type as "messageType"
+            created_at as "createdAt"
         from messages
         where user_id = $1 and is_delivered = true
-        ${where}
         order by created_at desc
       `,
-            [userId, ...values],
+            [userId],
           )
           .then((res) => res.rows);
 
@@ -746,8 +713,6 @@ export default async function messages(app: FastifyInstance) {
               excerpt: Type.String(),
               plainText: Type.String(),
               richText: Type.String(),
-              links: Type.Array(Type.String()),
-              paymentRequestId: Type.Optional(Type.String()),
             }),
           }),
           "4xx": { $ref: "HttpError" },
@@ -764,17 +729,13 @@ export default async function messages(app: FastifyInstance) {
           excerpt: string;
           plainText: string;
           richText: string;
-          links: string[];
-          paymentRequestId?: string;
         }>(
           `
           select 
             subject, 
             excerpt, 
             plain_text as "plainText",
-            rich_text as "richText",
-            links,
-            payment_request_id as "paymentRequestId"
+            rich_text as "richText"
           from messages
           where user_id = $1 and id=$2
           order by created_at desc
@@ -809,9 +770,7 @@ export default async function messages(app: FastifyInstance) {
               excerpt: Type.String(),
               richText: Type.String(),
               plainText: Type.String(),
-              links: Type.Array(Type.String()),
               lang: Type.String(),
-              paymentRequestId: Type.Optional(Type.String({ format: "uuid" })),
             }),
           ),
           template: Type.Optional(
@@ -823,7 +782,6 @@ export default async function messages(app: FastifyInstance) {
           preferredTransports: Type.Array(Type.String()),
           userIds: Type.Array(Type.String({ format: "uuid" })),
           security: Type.String(),
-          messageType: Type.String(),
           scheduleAt: Type.String({ format: "date-time" }),
         }),
         response: {
@@ -839,11 +797,8 @@ export default async function messages(app: FastifyInstance) {
         preferredTransports,
         security,
         userIds,
-        messageType,
         scheduleAt,
       } = request.body;
-
-      console.log("BRODER TUCK!!!", JSON.stringify(request.body, null, 4));
 
       if (!message && !template) {
         const error = utils.buildApiError(
@@ -856,10 +811,8 @@ export default async function messages(app: FastifyInstance) {
 
       if (message) {
         const {
-          links,
           messageName,
           threadName,
-          paymentRequestId,
           excerpt,
           plainText,
           richText,
@@ -875,7 +828,6 @@ export default async function messages(app: FastifyInstance) {
           excerpt,
           richText,
           plainText,
-          links.length ? utils.postgresArrayify(links) : null,
           organisationId,
           security,
           preferredTransports.length
@@ -883,8 +835,6 @@ export default async function messages(app: FastifyInstance) {
             : null,
           messageName,
           threadName || null,
-          paymentRequestId || null,
-          messageType,
           lang,
         );
         const originalValueSize = values.length;
@@ -898,20 +848,17 @@ export default async function messages(app: FastifyInstance) {
           i += 1;
         }
 
-        let insertQuery = `
+        const insertQuery = `
             insert into messages(
                 subject,
                 excerpt, 
                 rich_text,
                 plain_text,
-                links,
                 organisation_id,
                 security_level,
                 preferred_transports,
                 message_name,
                 thread_name,
-                payment_request_id,
-                message_type,
                 lang,
                 user_id
             )
@@ -973,15 +920,11 @@ export default async function messages(app: FastifyInstance) {
           const scheduleBase = await client
             .query<{ id: string }>(
               `
-                insert into scheduled_message_by_templates(template_meta_id, preferred_transports, message_type)
+                insert into scheduled_message_by_templates(template_meta_id, preferred_transports)
                 values($1, $2, $3)
                 returning id 
           `,
-              [
-                template.id,
-                utils.postgresArrayify(preferredTransports),
-                messageType,
-              ],
+              [template.id, utils.postgresArrayify(preferredTransports)],
             )
             .then((res) => res.rows.at(0));
 

@@ -42,13 +42,11 @@ export default (props: MessageCreateProps) => {
     } else {
       message = {
         excerpt: props.state.excerpt,
-        links: props.state.links,
         messageName: "",
         plainText: props.state.plainText,
         richText: props.state.richText,
         subject: props.state.subject,
         threadName: props.state.threadName,
-        paymentRequestId: props.state.paymentRequestId || undefined,
         lang: props.state.lang,
       };
     }
@@ -60,7 +58,6 @@ export default (props: MessageCreateProps) => {
       preferredTransports: props.state.transportations,
       userIds: props.state.userIds,
       security: "high",
-      messageType: props.state.messageType,
       scheduleAt,
     });
 
@@ -90,7 +87,6 @@ export default (props: MessageCreateProps) => {
 
       q.rows.length &&
         (await messagesClient.createMessage({
-          messageType: "message",
           preferredTransports: [],
           scheduleAt: dayjs().toISOString(),
           security: "..",
@@ -101,7 +97,6 @@ export default (props: MessageCreateProps) => {
             messageName: "bruh",
             lang: "en",
             plainText: "text text",
-            links: [],
             richText: "text text",
           },
         }));
