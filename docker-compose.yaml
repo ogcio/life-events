@@ -58,6 +58,8 @@ services:
       - 8005:8005
     env_file:
       - './apps/scheduler-api/.env'
+    environment:
+      - POSTGRES_HOST=postgresql
     depends_on:
       scheduler_migrations:
         condition: service_completed_successfully
