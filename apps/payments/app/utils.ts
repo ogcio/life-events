@@ -114,8 +114,8 @@ export type PaginationLink = {
 };
 export type PaginationLinks = {
   self: PaginationLink;
-  next: PaginationLink;
-  prev: PaginationLink;
+  next?: PaginationLink;
+  prev?: PaginationLink;
   first: PaginationLink;
   last: PaginationLink;
   pages: Record<string, PaginationLink>;

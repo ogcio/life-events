@@ -15,7 +15,7 @@ export default async function Pagination({ links }: PaginationProps) {
         role="navigation"
         className="govie-pagination"
       >
-        {links.prev.href && (
+        {links.prev?.href && (
           <div className="govie-pagination__prev">
             <a
               className="govie-link govie-pagination__link"
@@ -85,7 +85,7 @@ export default async function Pagination({ links }: PaginationProps) {
                     </li> */}
         </ul>
 
-        {links.next.href && (
+        {links.next?.href && (
           <div className="govie-pagination__next">
             <a
               className="govie-link govie-pagination__link"

@@ -634,15 +634,15 @@ export interface paths {
                 providerType: string;
                 paymentRequestId: string;
               }[];
-              metadata: {
+              metadata?: {
                 links?: {
                   self: {
                     href?: string;
                   };
-                  next: {
+                  next?: {
                     href?: string;
                   };
-                  prev: {
+                  prev?: {
                     href?: string;
                   };
                   first: {
@@ -657,6 +657,7 @@ export interface paths {
                     };
                   };
                 };
+                totalCount?: number;
               };
             };
           };
