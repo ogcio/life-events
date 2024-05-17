@@ -25,13 +25,11 @@ export default (props: MessageCreateProps) => {
     } else {
       message = {
         excerpt: props.state.excerpt,
-        links: props.state.links,
         messageName: "",
         plainText: props.state.plainText,
         richText: props.state.richText,
         subject: props.state.subject,
         threadName: props.state.threadName,
-        paymentRequestId: props.state.paymentRequestId || undefined,
         lang: props.state.lang,
       };
     }
@@ -43,7 +41,6 @@ export default (props: MessageCreateProps) => {
       preferredTransports: props.state.transportations,
       userIds: props.state.userIds,
       security: "high",
-      messageType: props.state.messageType,
     });
 
     await api.upsertMessageState(

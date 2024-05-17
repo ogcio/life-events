@@ -78,7 +78,6 @@
       "email": "Email",
       "sms": "SMS",
       "postalService": "Postal service",
-      "chooseMessageType": "Choose message type",
       "message": "Message",
       "event": "Event",
       "submitText": "Continue",
@@ -89,14 +88,11 @@
       "title": "Send a message",
       "subject": "Subject",
       "message": "Message",
-      "link": "Link",
       "submitText": "Continue to preview",
       "backLink": "Back",
-      "addPaymentTitle": "Add a payment",
       "excerptLabel": "Excerpt",
       "richTextLabel": "Rich text",
-      "plainTextLabel": "Plain text",
-      "emptyPaymentOption": "Select payment..."
+      "plainTextLabel": "Plain text"
     },
     "EmailPreview": {
       "submitText": "Continue to recipients",

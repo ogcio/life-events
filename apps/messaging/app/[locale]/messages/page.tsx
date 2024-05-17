@@ -76,12 +76,6 @@ export default async (props: { searchParams: any }) => {
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
-              >
-                {msg.messageType}
-              </th>
-              <th
-                className="govie-table__cell govie-!-font-weight-regular"
-                scope="row"
               ></th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
