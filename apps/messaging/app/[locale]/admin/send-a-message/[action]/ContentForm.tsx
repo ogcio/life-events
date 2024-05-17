@@ -8,99 +8,147 @@ import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
 
+type FormProperties = {
+  link: string | undefined;
+  paymentRequestId: string;
+  subject: string | undefined;
+  richText: string | undefined;
+  plainText: string | undefined;
+  excerpt: string | undefined;
+};
+
+type PaymentRequest = {
+  requestId: string;
+  userId: string;
+  title: string;
+  redirectUrl: string;
+};
+
+type FormError = {
+  field: string;
+  messageKey: string;
+  errorValue: string;
+};
+
+const extractFormProperties = (formData: FormData): FormProperties => ({
+  paymentRequestId: formData.get("paymentRequestId")?.toString() || "",
+  subject: formData.get("subject")?.toString(),
+  richText: formData.get("richText")?.toString(),
+  plainText: formData.get("plainText")?.toString(),
+  excerpt: formData.get("excerpt")?.toString(),
+  link: formData.get("link")?.toString(),
+});
+
+const extractFormErrors = (
+  formProperties: FormProperties,
+): Parameters<typeof temporaryMockUtils.createErrors>[0] => {
+  const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] = [];
+  const required = ["subject", "plainText", "excerpt"];
+  for (const key of required) {
+    if (!formProperties[key]) {
+      formErrors.push({
+        errorValue: "",
+        field: key,
+        messageKey: "empty",
+      });
+    }
+  }
+
+  return formErrors;
+};
+
+const prepareSubmit = async (params: {
+  props: MessageCreateProps;
+  formData: FormData;
+}) => {
+  const { props, formData } = params;
+  // Maybe components should require a state id
+  if (!props.stateId) {
+    return;
+  }
+
+  const formProperties = extractFormProperties(formData);
+  const formErrors = extractFormErrors(formProperties);
+
+  if (Boolean(formErrors.length)) {
+    await temporaryMockUtils.createErrors(
+      formErrors,
+      props.userId,
+      props.stateId,
+    );
+    return revalidatePath("/");
+  }
+
+  const next: ApiMessageState = Object.assign({}, props.state, {
+    links: formProperties.link ? [formProperties.link] : [],
+    ...formProperties,
+    submittedContentAt: dayjs().toISOString(),
+    paymentRequestId: formProperties.paymentRequestId,
+  });
+
+  await api.upsertMessageState(next, props.userId, props.stateId);
+
+  revalidatePath("/");
+};
+
+const prepareGoBack = async (params: { props: MessageCreateProps }) => {
+  const next = Object.assign({}, params.props.state, { submittedMetaAt: "" });
+  await api.upsertMessageState(next, params.props.userId, params.props.stateId);
+  revalidatePath("/");
+};
+
+const getPaymentRequests = async (): Promise<PaymentRequest[]> => {
+  try {
+    const requestURL = new URL("api/requests", process.env.PAYMENTS_URL);
+    const paymentRequestRespone = await fetch(requestURL.href);
+    const parsed = (await paymentRequestRespone.json()) as PaymentRequest[];
+
+    return parsed;
+  } catch (err) {
+    console.log(err);
+  }
+
+  return [];
+};
+
+const loadErrors = async (params: {
+  props: MessageCreateProps;
+}): Promise<Record<string, FormError>> => {
+  if (!params.props.stateId) {
+    return {};
+  }
+  const errors = await temporaryMockUtils.getErrors(
+    params.props.userId,
+    params.props.stateId,
+  );
+  const outputErrors: Record<string, FormError> = {};
+  for (const error of errors) {
+    outputErrors[error.field] = error;
+  }
+
+  return outputErrors;
+};
+
 export default async (props: MessageCreateProps) => {
   const [t, tError] = await Promise.all([
     getTranslations("sendAMessage.EmailForm"),
     getTranslations("formErrors"),
   ]);
 
-  type request = {
-    requestId: string;
-    userId: string;
-    title: string;
-    redirectUrl: string;
+  const paymentRequests = await getPaymentRequests();
+  const errors = await loadErrors({ props });
+
+  const submit = async (formData: FormData) => {
+    "use server";
+
+    return prepareSubmit({ formData, props });
   };
 
-  const paymentRequests: request[] = [];
-  try {
-    const requestURL = new URL("api/requests", process.env.PAYMENTS_URL);
-    const paymentRequestRespone = await fetch(requestURL.href);
-    const parsed = (await paymentRequestRespone.json()) as request[];
-    paymentRequests.push(...parsed);
-  } catch (err) {
-    console.log(err);
-  }
-
-  const errors = props.stateId
-    ? await temporaryMockUtils.getErrors(props.userId, props.stateId)
-    : [];
-
-  async function submit(formData: FormData) {
+  const goBack = async () => {
     "use server";
 
-    // Maybe components should require a state id
-    if (!props.stateId) {
-      return;
-    }
-
-    const paymentRequestId = formData.get("paymentRequestId")?.toString() || "";
-
-    const subject = formData.get("subject")?.toString();
-    const richText = formData.get("richText")?.toString();
-    const plainText = formData.get("plainText")?.toString();
-    const excerpt = formData.get("excerpt")?.toString();
-
-    const link = formData.get("link")?.toString();
-
-    const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] =
-      [];
-
-    const required = { subject, plainText, excerpt };
-
-    for (const key of Object.keys(required)) {
-      if (!required[key]) {
-        formErrors.push({
-          errorValue: "",
-          field: key,
-          messageKey: "empty",
-        });
-      }
-    }
-
-    if (Boolean(formErrors.length)) {
-      await temporaryMockUtils.createErrors(
-        formErrors,
-        props.userId,
-        props.stateId,
-      );
-      return revalidatePath("/");
-    }
-
-    const links = link ? [link] : [];
-    const next: ApiMessageState = Object.assign({}, props.state, {
-      links,
-      ...required,
-      richText,
-      submittedContentAt: dayjs().toISOString(),
-      paymentRequestId,
-    });
-
-    await api.upsertMessageState(next, props.userId, props.stateId);
-    revalidatePath("/");
-  }
-
-  async function goBack() {
-    "use server";
-
-    const next = Object.assign({}, props.state, { submittedMetaAt: "" });
-    await api.upsertMessageState(next, props.userId, props.stateId);
-    revalidatePath("/");
-  }
-
-  const subjectError = errors.find((error) => error.field === "subject");
-  const excerptError = errors.find((error) => error.field === "excerpt");
-  const plainTextError = errors.find((error) => error.field === "plainText");
-  const richTextError = errors.find((error) => error.field === "richText");
+    return prepareGoBack({ props });
+  };
 
   return (
     <>
@@ -110,16 +158,16 @@ export default async (props: MessageCreateProps) => {
         {/* Subject */}
         <div
           className={
-            subjectError
+            errors["subject"]
               ? "govie-form-group govie-form-group--error"
               : "govie-form-group"
           }
         >
-          {subjectError && (
+          {errors["subject"] && (
             <p id="input-field-error" className="govie-error-message">
               <span className="govie-visually-hidden">Error:</span>
-              {tError(subjectError.messageKey, {
-                field: tError(`fields.${subjectError.field}`),
+              {tError(errors["subject"].messageKey, {
+                field: tError(`fields.${errors["subject"].field}`),
                 indArticleCheck: "",
               })}
             </p>
@@ -140,11 +188,20 @@ export default async (props: MessageCreateProps) => {
         {/* Excerpt */}
         <div
           className={
-            excerptError
+            errors["excerpt"]
               ? "govie-form-group govie-form-group--error"
               : "govie-form-group"
           }
         >
+          {errors["excerpt"] && (
+            <p id="input-field-error" className="govie-error-message">
+              <span className="govie-visually-hidden">Error:</span>
+              {tError(errors["excerpt"].messageKey, {
+                field: tError(`fields.${errors["excerpt"].field}`),
+                indArticleCheck: "",
+              })}
+            </p>
+          )}
           <h3>
             <label htmlFor="excerpt" className="govie-label--s govie-label--l">
               {t("excerptLabel")}
@@ -162,7 +219,7 @@ export default async (props: MessageCreateProps) => {
         {/* Rich text (html) */}
         <div
           className={
-            richTextError
+            errors["richText"]
               ? "govie-form-group govie-form-group--error"
               : "govie-form-group"
           }
@@ -172,11 +229,11 @@ export default async (props: MessageCreateProps) => {
               {t("richTextLabel")}
             </label>
           </h1>
-          {richTextError && (
+          {errors["richText"] && (
             <p id="input-field-error" className="govie-error-message">
               <span className="govie-visually-hidden">Error:</span>
-              {tError(richTextError.messageKey, {
-                field: tError(`fields.${richTextError.field}`),
+              {tError(errors["richText"].messageKey, {
+                field: tError(`fields.${errors["richText"].field}`),
                 indArticleCheck: "",
               })}
             </p>
@@ -193,7 +250,7 @@ export default async (props: MessageCreateProps) => {
         {/* Plain text */}
         <div
           className={
-            plainTextError
+            errors["plainText"]
               ? "govie-form-group govie-form-group--error"
               : "govie-form-group"
           }
@@ -206,11 +263,11 @@ export default async (props: MessageCreateProps) => {
               {t("plainTextLabel")}
             </label>
           </h1>
-          {plainTextError && (
+          {errors["plainText"] && (
             <p id="input-field-error" className="govie-error-message">
               <span className="govie-visually-hidden">Error:</span>
-              {tError(plainTextError.messageKey, {
-                field: tError(`fields.${plainTextError.field}`),
+              {tError(errors["plainText"].messageKey, {
+                field: tError(`fields.${errors["plainText"].field}`),
                 indArticleCheck: "",
               })}
             </p>
