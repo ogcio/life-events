@@ -63,7 +63,6 @@ export default ({
           {userName}
         </label>
       </li>
-
       <>
         {publicServant &&
           options.map((option) => {

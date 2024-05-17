@@ -28,6 +28,7 @@ export interface Sessions {
       //The values below will likely be extracted from session token  once we integrate with GOV ID
       myGovIdEmail: string;
       hasGovIdVerifiedAccount: boolean;
+      sessionId: string;
     }
   >;
   isAuthenticated(): Promise<boolean>;
@@ -87,6 +88,21 @@ export function decodeJwt(token: string) {
   };
 }
 
+export const getSessionData = async (sessionId: string) => {
+  const session = await getPgSession(sessionId);
+  if (!session) return null;
+
+  return {
+    ...decodeJwt(session.token),
+    userId: session.userId,
+    publicServant: session.publicServant,
+    //The values below will likely be extracted from session token once we integrate with GOV ID
+    myGovIdEmail: "testMyGovIdEmail@test.com",
+    hasGovIdVerifiedAccount: true,
+    sessionId,
+  };
+};
+
 export const PgSessions: Sessions = {
   async get() {
     const authServiceUrl = process.env.AUTH_SERVICE_URL;
@@ -102,20 +118,13 @@ export const PgSessions: Sessions = {
       return redirect(loginUrl, RedirectType.replace);
     }
 
-    const session = await getPgSession(sessionId); //PgSessions.get(sessionId);
+    const sessionData = await getSessionData(sessionId); //PgSessions.get(sessionId);
 
-    if (!session) {
+    if (!sessionData) {
       return redirect(loginUrl, RedirectType.replace);
     }
 
-    return {
-      ...decodeJwt(session.token),
-      userId: session.userId,
-      publicServant: session.publicServant,
-      //The values below will likely be extracted from session token once we integrate with GOV ID
-      myGovIdEmail: "testMyGovIdEmail@test.com",
-      hasGovIdVerifiedAccount: true,
-    };
+    return sessionData;
   },
   async isAuthenticated() {
     const sessionId = cookies().get("sessionId")?.value;

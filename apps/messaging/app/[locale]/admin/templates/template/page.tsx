@@ -5,9 +5,7 @@ import { pgpool } from "messages/dbConnection";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { QueryResult } from "pg";
-
-const AVAILABLE_LANGUAGES = ["en", "ga"];
+import { AVAILABLE_LANGUAGES } from "../../../../../types/shared";
 
 function options(base: string[], current?: string[]): string[] {
   if (!current) {

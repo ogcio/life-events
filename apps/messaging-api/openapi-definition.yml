@@ -781,9 +781,14 @@ paths:
                         type: string
                       type:
                         type: string
+                      languages:
+                        type: array
+                        items:
+                          type: string
                     required:
                       - name
                       - type
+                      - languages
               required:
                 - contents
                 - variables

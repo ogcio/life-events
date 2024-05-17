@@ -28,7 +28,7 @@ export default ({ theme }: { theme: Theme }) => {
         style={{
           height: "14px",
           width: "1px",
-          borderLeft: `1px solid ${ds.colours.ogcio.darkGreen}`,
+          borderLeft: `1px solid ${colors[theme]}`,
         }}
       />
 
