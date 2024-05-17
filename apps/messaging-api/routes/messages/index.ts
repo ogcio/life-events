@@ -62,7 +62,6 @@ export default async function messages(app: FastifyInstance) {
     async function getMessagesHandler(request, reply) {
       // Validation?
       const userId = request.user?.id;
-      console.log({ userId });
       try {
         const data = await app.pg
           .query<{
