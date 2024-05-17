@@ -1208,6 +1208,18 @@ paths:
         - Transactions
       parameters:
         - schema:
+            default: 0
+            type: number
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 10
+            type: number
+          in: query
+          name: limit
+          required: false
+        - schema:
             type: string
           in: path
           name: requestId
@@ -1218,41 +1230,91 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    transactionId:
-                      type: string
-                    status:
-                      anyOf:
-                        - type: string
-                          enum:
-                            - initiated
-                        - type: string
-                          enum:
-                            - pending
-                        - type: string
-                          enum:
-                            - succeeded
-                        - type: string
-                          enum:
-                            - cancelled
-                        - type: string
-                          enum:
-                            - failed
-                    amount:
-                      type: number
-                    updatedAt:
-                      type: string
-                    title:
-                      type: string
-                  required:
-                    - transactionId
-                    - status
-                    - amount
-                    - updatedAt
-                    - title
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        transactionId:
+                          type: string
+                        status:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - initiated
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - succeeded
+                            - type: string
+                              enum:
+                                - cancelled
+                            - type: string
+                              enum:
+                                - failed
+                        amount:
+                          type: number
+                        updatedAt:
+                          type: string
+                        title:
+                          type: string
+                      required:
+                        - transactionId
+                        - status
+                        - amount
+                        - updatedAt
+                        - title
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
   /api/v1/transactions/{transactionId}:
     get:
       tags:

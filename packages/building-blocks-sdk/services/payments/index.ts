@@ -106,6 +106,7 @@ export class Payments {
 
   async getPaymentRequestTransactions(
     requestId: paths["/api/v1/requests/{requestId}/transactions"]["get"]["parameters"]["path"]["requestId"],
+    query: paths["/api/v1/requests/{requestId}/transactions"]["get"]["parameters"]["query"],
   ) {
     return formatQueryResult(
       this.client.GET("/api/v1/requests/{requestId}/transactions", {
@@ -113,6 +114,7 @@ export class Payments {
           path: {
             requestId,
           },
+          query,
         },
       }),
     );

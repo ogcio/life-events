@@ -12,9 +12,13 @@ export const getPageFromOffset = (offset: number, limit: number): number => {
   return Math.floor(offset / limit + 1);
 };
 
-export const getPaginationLinks = (details: PaginationDetails) => {
+const generatePageLinks = (details: PaginationDetails) => {
   const pageLinks: Record<string, { href: string }> = {};
   const nrOfBatches = Math.ceil(details.totalCount / details.limit);
+
+  if (nrOfBatches <= 1) {
+    return pageLinks;
+  }
 
   if (nrOfBatches <= 5) {
     for (
@@ -26,36 +30,56 @@ export const getPaginationLinks = (details: PaginationDetails) => {
         href: `${details.url}?limit=${details.limit}&offset=${calculatedOffset}`,
       };
     }
-  } else {
-    pageLinks[1] = {
-      href: `${details.url}?limit=${details.limit}&offset=0`,
-    };
-    pageLinks[nrOfBatches] = {
-      href: `${details.url}?limit=${details.limit}&offset=${(nrOfBatches - 1) * details.limit}`,
-    };
 
-    const midIndex = Math.floor(nrOfBatches / 2);
-    pageLinks[midIndex] = {
-      href: `${details.url}?limit=${details.limit}&offset=${(midIndex - 1) * details.limit}`,
-    };
-    pageLinks[midIndex + 1] = {
-      href: `${details.url}?limit=${details.limit}&offset=${midIndex * details.limit}`,
-    };
-
-    if (nrOfBatches % 2 !== 0) {
-      pageLinks[midIndex - 1] = {
-        href: `${details.url}?limit=${details.limit}&offset=${(midIndex - 2) * details.limit}`,
-      };
-    }
+    return pageLinks;
   }
 
+  pageLinks[1] = {
+    href: `${details.url}?limit=${details.limit}&offset=0`,
+  };
+  pageLinks[nrOfBatches] = {
+    href: `${details.url}?limit=${details.limit}&offset=${(nrOfBatches - 1) * details.limit}`,
+  };
+
+  const currentBatch = Math.floor(details.offset / details.limit) + 1;
+
+  if (currentBatch === 1) {
+    pageLinks[2] = {
+      href: `${details.url}?limit=${details.limit}&offset=${1 * details.limit}`,
+    };
+    pageLinks[3] = {
+      href: `${details.url}?limit=${details.limit}&offset=${3 * details.limit}`,
+    };
+  } else if (currentBatch === nrOfBatches) {
+    pageLinks[nrOfBatches - 2] = {
+      href: `${details.url}?limit=${details.limit}&offset=${(nrOfBatches - 3) * details.limit}`,
+    };
+    pageLinks[nrOfBatches - 1] = {
+      href: `${details.url}?limit=${details.limit}&offset=${(nrOfBatches - 2) * details.limit}`,
+    };
+  } else {
+    pageLinks[currentBatch - 1] = {
+      href: `${details.url}?limit=${details.limit}&offset=${(currentBatch - 2) * details.limit}`,
+    };
+    pageLinks[currentBatch] = {
+      href: `${details.url}?limit=${details.limit}&offset=${(currentBatch - 1) * details.limit}`,
+    };
+    pageLinks[currentBatch + 1] = {
+      href: `${details.url}?limit=${details.limit}&offset=${currentBatch * details.limit}`,
+    };
+  }
+
+  return pageLinks;
+};
+
+export const getPaginationLinks = (details: PaginationDetails) => {
   return {
     self: {
       href: `${details.url}?limit=${details.limit}&offset=${details.offset}`,
     },
     next: {
       href:
-        details.offset + details.limit <= details.totalCount
+        details.offset + details.limit < details.totalCount
           ? `${details.url}?limit=${details.limit}&offset=${details.offset + details.limit}`
           : undefined,
     },
@@ -74,6 +98,6 @@ export const getPaginationLinks = (details: PaginationDetails) => {
           ? `${details.url}?limit=${details.limit}&offset=${Math.ceil(details.totalCount / details.limit) * details.limit - details.limit}`
           : `${details.url}?limit=${details.limit}&offset=0`,
     },
-    pages: pageLinks,
+    pages: generatePageLinks(details),
   };
 };

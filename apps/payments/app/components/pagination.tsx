@@ -1,15 +1,26 @@
 import { getTranslations } from "next-intl/server";
-import { PaginationLinks } from "../utils";
+import { PAGINATION_PAGE_DEFAULT, PaginationLinks } from "../utils";
 
 export type PaginationProps = {
   links: PaginationLinks;
+  currentPage: number | undefined;
 };
 
-export default async function Pagination({ links }: PaginationProps) {
+export default async function Pagination({
+  links,
+  currentPage = PAGINATION_PAGE_DEFAULT,
+}: PaginationProps) {
   const t = await getTranslations("Pagination");
+  let previousPage = 0;
 
   return (
-    <div className="pagination">
+    <div
+      className="pagination"
+      style={{
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
       <nav
         aria-label="navigation results"
         role="navigation"
@@ -39,51 +50,34 @@ export default async function Pagination({ links }: PaginationProps) {
           </div>
         )}
 
-        <ul className="govie-pagination__list">
-          {Object.entries(links.pages).map(([page, link]) => {
-            return (
-              <li className="govie-pagination__item">
+        {Object.entries(links.pages).map(([page, link]) => {
+          const pageNr = parseInt(page);
+          const isGap = pageNr - previousPage > 1;
+          previousPage = pageNr;
+
+          return (
+            <ul className="govie-pagination__list">
+              {isGap && (
+                <li className="govie-pagination__item govie-pagination__item--ellipses">
+                  ⋯
+                </li>
+              )}
+              <li
+                className={`govie-pagination__item ${pageNr === currentPage ? "govie-pagination__item--current" : ""}`}
+                key={page}
+              >
                 <a
                   className="govie-link govie-pagination__link"
                   href={link.href}
-                  aria-label="Page 1"
+                  aria-label={`Page ${page}`}
                   aria-current="page"
                 >
                   {page}
                 </a>
               </li>
-            );
-          })}
-
-          {/* <li className="govie-pagination__item">
-                        <a
-                            className="govie-link govie-pagination__link"
-                            href="#"
-                            aria-label="Page 1"
-                            aria-current="page"
-                        >
-                            1
-                        </a>
-                    </li>
-
-                    <li className="govie-pagination__item govie-pagination__item--ellipses">⋯</li>
-
-                    <li className="govie-pagination__item">
-                        <a className="govie-link govie-pagination__link" href="#" aria-label="Page 2" aria-current="page">6</a>
-                    </li>
-                    <li className="govie-pagination__item govie-pagination__item--current">
-                        <a className="govie-link govie-pagination__link" href="#" aria-label="Page 3" aria-current="page">7</a>
-                    </li>
-                    <li className="govie-pagination__item">
-                        <a className="govie-link govie-pagination__link" href="#" aria-label="Page 4" aria-current="page">8</a>
-                    </li>
-
-                    <li className="govie-pagination__item govie-pagination__item--ellipses">⋯</li>
-
-                    <li className="govie-pagination__item">
-                        <a className="govie-link govie-pagination__link" href="#" aria-label="Page 5" aria-current="page">40</a>
-                    </li> */}
-        </ul>
+            </ul>
+          );
+        })}
 
         {links.next?.href && (
           <div className="govie-pagination__next">

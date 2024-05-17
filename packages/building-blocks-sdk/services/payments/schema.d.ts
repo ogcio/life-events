@@ -513,6 +513,10 @@ export interface paths {
   "/api/v1/requests/{requestId}/transactions": {
     get: {
       parameters: {
+        query?: {
+          offset?: number;
+          limit?: number;
+        };
         path: {
           requestId: string;
         };
@@ -521,13 +525,45 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": ({
+            "application/json": {
+              data: {
                 transactionId: string;
-                status: "initiated" | "pending" | "succeeded" | "cancelled" | "failed";
+                status:
+                  | "initiated"
+                  | "pending"
+                  | "succeeded"
+                  | "cancelled"
+                  | "failed";
                 amount: number;
                 updatedAt: string;
                 title: string;
-              })[];
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
           };
         };
       };

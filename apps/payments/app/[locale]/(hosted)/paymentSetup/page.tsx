@@ -21,12 +21,15 @@ export default async function ({
   searchParams: { page, limit },
 }: {
   params: { locale: string };
-  searchParams: { page?: number; limit?: number };
+  searchParams: { page?: string; limit?: string };
 }) {
   const t = await getTranslations("PaymentSetup.Payments");
+  const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
+  const pageLimit = limit ? parseInt(limit) : PAGINATION_LIMIT_DEFAULT;
+
   const pagination = {
-    offset: pageToOffset(page, limit),
-    limit,
+    offset: pageToOffset(currentPage, pageLimit),
+    limit: pageLimit,
   };
 
   //Let's assume Logto is not enabled yet
@@ -45,7 +48,7 @@ export default async function ({
     url,
     transactionsResponse?.metadata?.links,
   );
-  console.log(links);
+
   return (
     <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
       <section
@@ -127,7 +130,7 @@ export default async function ({
                 ))}
               </tbody>
             </table>
-            <Pagination links={links}></Pagination>
+            <Pagination links={links} currentPage={currentPage}></Pagination>
           </div>
         )}
       </section>
