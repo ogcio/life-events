@@ -9,7 +9,6 @@ import {
   mapTransactionStatusColorClassName,
   pageToOffset,
 } from "../../../utils";
-import { getUser } from "../../../../libraries/auth";
 import { EmptyStatus } from "../../../components/EmptyStatus";
 import { Payments } from "building-blocks-sdk";
 import Pagination from "../../../components/pagination";
@@ -23,17 +22,10 @@ export default async function ({
   searchParams: { page?: number; limit?: number };
 }) {
   const t = await getTranslations("PaymentSetup.Payments");
-  let userId;
   const pagination = {
     offset: pageToOffset(page ?? 1, limit ?? 10),
     limit,
   };
-
-  if (process.env.USE_LOGTO_AUTH === "true") {
-    userId = (await getUser()).id;
-  } else {
-    userId = (await PgSessions.get()).userId;
-  }
 
   //Let's assume Logto is not enabled yet
   const sessionId = (await PgSessions.get()).sessionId;
