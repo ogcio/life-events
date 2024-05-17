@@ -42,7 +42,6 @@ export default async function messages(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Messages"],
-        querystring: Type.Optional(Type.Object({})),
         response: {
           200: Type.Object({
             data: Type.Array(
@@ -63,10 +62,8 @@ export default async function messages(app: FastifyInstance) {
     async function getMessagesHandler(request, reply) {
       // Validation?
       const userId = request.user?.id;
-
+      console.log({ userId });
       try {
-        const values: (string | number | null)[] = [];
-
         const data = await app.pg
           .query<{
             id: string;
@@ -83,17 +80,18 @@ export default async function messages(app: FastifyInstance) {
             excerpt, 
             plain_text as "plainText",
             rich_text as "richText",
-            created_at as "createdAt",
+            created_at as "createdAt"
         from messages
         where user_id = $1
         order by created_at desc
       `,
-            [userId, ...values],
+            [userId],
           )
           .then((res) => res.rows);
 
         return { data };
       } catch (err) {
+        reply.log.error({ error: err, msg: "Failed to get all messages" });
         const error = utils.buildApiError("failed to get all messages", 500);
         reply.statusCode = error.statusCode;
         return error;
@@ -142,7 +140,7 @@ export default async function messages(app: FastifyInstance) {
             subject, 
             excerpt, 
             plain_text as "plainText",
-            rich_text as "richText",
+            rich_text as "richText"
           from messages
           where user_id = $1 and id=$2
           order by created_at desc

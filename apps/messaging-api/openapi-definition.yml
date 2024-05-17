@@ -27,12 +27,6 @@ paths:
     get:
       tags:
         - Messages
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: type
-          required: false
       responses:
         "200":
           description: Default Response
