@@ -50,12 +50,6 @@ paths:
     get:
       tags:
         - Messages
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: type
-          required: false
       responses:
         "200":
           description: Default Response
@@ -79,15 +73,7 @@ paths:
                           type: string
                         richText:
                           type: string
-                        links:
-                          type: array
-                          items:
-                            type: string
                         createdAt:
-                          type: string
-                        messageType:
-                          type: string
-                        paymentRequestId:
                           type: string
                       required:
                         - id
@@ -95,9 +81,7 @@ paths:
                         - excerpt
                         - plainText
                         - richText
-                        - links
                         - createdAt
-                        - messageType
                 required:
                   - data
         "400":
@@ -130,14 +114,7 @@ paths:
                       type: string
                     plainText:
                       type: string
-                    links:
-                      type: array
-                      items:
-                        type: string
                     lang:
-                      type: string
-                    paymentRequestId:
-                      format: uuid
                       type: string
                   required:
                     - messageName
@@ -145,7 +122,6 @@ paths:
                     - excerpt
                     - richText
                     - plainText
-                    - links
                     - lang
                 template:
                   type: object
@@ -171,8 +147,6 @@ paths:
                     type: string
                 security:
                   type: string
-                messageType:
-                  type: string
                 scheduleAt:
                   format: date-time
                   type: string
@@ -180,7 +154,6 @@ paths:
                 - preferredTransports
                 - userIds
                 - security
-                - messageType
                 - scheduleAt
         required: true
       responses:
@@ -226,18 +199,11 @@ paths:
                         type: string
                       richText:
                         type: string
-                      links:
-                        type: array
-                        items:
-                          type: string
-                      paymentRequestId:
-                        type: string
                     required:
                       - subject
                       - excerpt
                       - plainText
                       - richText
-                      - links
                 required:
                   - data
         4XX:

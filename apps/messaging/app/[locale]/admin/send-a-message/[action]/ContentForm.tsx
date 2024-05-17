@@ -80,10 +80,8 @@ const prepareSubmit = async (params: {
   }
 
   const next: ApiMessageState = Object.assign({}, props.state, {
-    links: formProperties.link ? [formProperties.link] : [],
     ...formProperties,
     submittedContentAt: dayjs().toISOString(),
-    paymentRequestId: formProperties.paymentRequestId,
   });
 
   await api.upsertMessageState(next, props.userId, props.stateId);
@@ -279,19 +277,6 @@ export default async (props: MessageCreateProps) => {
             rows={15}
             defaultValue={props.state.plainText}
           ></textarea>
-        </div>
-
-        <div className="govie-form-group">
-          <label htmlFor="link" className="govie-label--s">
-            {t("link")}
-          </label>
-          <input
-            type="text"
-            id="link"
-            name="link"
-            className="govie-input"
-            defaultValue={props.state.links.at(0) ?? ""}
-          />
         </div>
 
         {Boolean(paymentRequests.length) ? (
