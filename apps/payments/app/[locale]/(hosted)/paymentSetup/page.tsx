@@ -25,8 +25,11 @@ export default async function ({
     userId = (await PgSessions.get()).userId;
   }
 
+  //Let's assume Logto is not enabled yet
+  const sessionId = (await PgSessions.get()).sessionId;
+
   const { data: transactions, error } = await new Payments(
-    userId,
+    sessionId,
   ).getTransactions();
 
   if (error) {

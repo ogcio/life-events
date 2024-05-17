@@ -156,5 +156,16 @@ paths:
       responses:
         "200":
           description: Default Response
+  /session/validate:
+    get:
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: sessionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
 tags:
   - name: AuthService
