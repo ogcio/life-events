@@ -5,11 +5,7 @@ import { mailService } from "../providers/services";
 import { utils, organisationId } from "../../utils";
 import { awsSnsSmsService } from "../../services/sms/aws";
 
-interface GetAllMessages {
-  Querystring: {
-    type?: string;
-  };
-}
+interface GetAllMessages {}
 
 interface GetMessage {
   Params: {
@@ -46,11 +42,7 @@ export default async function messages(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Messages"],
-        querystring: Type.Optional(
-          Type.Object({
-            type: Type.Optional(Type.String()),
-          }),
-        ),
+        querystring: Type.Optional(Type.Object({})),
         response: {
           200: Type.Object({
             data: Type.Array(
