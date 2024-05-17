@@ -19,8 +19,6 @@ export default (props: MessageCreateProps) => {
     const hour = formData.get("schedule-date-hour")?.toString();
     const minute = formData.get("schedule-date-minute")?.toString();
 
-    console.log({ schedule, year, month, day, hour, minute });
-
     let scheduleAt = "";
     if (schedule === "future" && year && month && day && hour && minute) {
       scheduleAt = dayjs(
@@ -85,7 +83,6 @@ export default (props: MessageCreateProps) => {
     let offset = 0;
     const limit = 1000;
     while (currentBatch && limit - currentBatch === 0) {
-      console.log({ currentBatch, offset });
       const q = await pgpool.query<{ id: string }>(
         `select id from users offset $1 limit $2`,
         [offset, limit],

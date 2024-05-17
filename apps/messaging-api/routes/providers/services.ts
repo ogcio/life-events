@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { Pool } from "pg";
+import { ServiceError } from "../../utils";
 
 export type EmailProvider = {
   id: string;
@@ -12,6 +13,13 @@ export type EmailProvider = {
   fromAddress: string;
 };
 
+export interface SendMailParams {
+  providerId: string;
+  email: string;
+  subject: string;
+  body: string;
+}
+
 export interface MailService {
   createProvider(
     params: Omit<EmailProvider, "id">,
@@ -20,23 +28,11 @@ export interface MailService {
   getProvider(id: string): Promise<EmailProvider | undefined>;
   getProviders(): Promise<EmailProvider[]>;
   deleteProvider(id: string): Promise<void>;
-  sendMails(params: {
-    providerId: string;
-    recipients: string[];
-    subject: string;
-    body: string;
-  }): Promise<any>;
-
-  sendMail(params: {
-    providerId: string;
-    recipient: string;
-    subject: string;
-    body: string;
-  }): Promise<void>;
+  sendMail(params: SendMailParams): Promise<ServiceError | undefined>;
   getFirstOrEtherealMailProvider(): Promise<string>;
 }
 
-export function mailService(pool: Pool) {
+export function mailService(pool: Pool): MailService {
   return {
     async createProvider({
       host,
@@ -58,7 +54,7 @@ export function mailService(pool: Pool) {
         )
         .then((res) => res.rows.at(0)?.id);
     },
-    async updateProvier(data: EmailProvider) {
+    async updateProvider(data: EmailProvider) {
       pool.query(
         `
           UPDATE email_providers set 
@@ -123,17 +119,13 @@ export function mailService(pool: Pool) {
     async deleteProvider(id: string) {
       await pool.query(`delete from email_providers where id = $1`, [id]);
     },
-    async sendMail(params: {
-      providerId: string;
-      email: string;
-      subject: string;
-      body: string;
-    }): Promise<{ error: object; msg: string } | undefined> {
+    async sendMail(params: SendMailParams): Promise<ServiceError | undefined> {
       try {
         const provider = await this.getProvider(params.providerId);
 
         if (!provider) {
           return {
+            critical: false,
             error: {
               ...params,
             },
@@ -160,6 +152,7 @@ export function mailService(pool: Pool) {
         });
       } catch (err) {
         return {
+          critical: false,
           error: { err, ...params },
           msg: "failed to send email",
         };

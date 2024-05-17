@@ -485,7 +485,7 @@ export default async function messages(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         response: {
-          202: Type.Void(),
+          202: Type.Null(),
           "5xx": { $ref: "HttpError" },
           "4xx": { $ref: "HttpError" },
         },
@@ -842,6 +842,9 @@ export default async function messages(app: FastifyInstance) {
         messageType,
         scheduleAt,
       } = request.body;
+
+      console.log("BRODER TUCK!!!", JSON.stringify(request.body, null, 4));
+
       if (!message && !template) {
         const error = utils.buildApiError(
           "body must contain either a message or a template object",
@@ -955,9 +958,11 @@ export default async function messages(app: FastifyInstance) {
         });
 
         const url = new URL("/api/v1/tasks", process.env.SCHEDULER_API_URL);
+
         await fetch(url.toString(), {
           method: "POST",
           body: JSON.stringify(body),
+          headers: { "x-user-id": "tmp", "Content-Type": "application/json" },
         });
       } else if (template) {
         const client = await this.pg.pool.connect();
@@ -1047,6 +1052,7 @@ export default async function messages(app: FastifyInstance) {
             await fetch(url.toString(), {
               method: "POST",
               body: JSON.stringify(body),
+              headers: { "x-user-id": "tmp" },
             });
           }
 

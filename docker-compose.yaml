@@ -34,8 +34,12 @@ services:
     build:
       context: .
       dockerfile: ./apps/scheduler-api/Dockerfile
-    env_file:
-      - './apps/scheduler-api/.env'
+    environment:
+      - POSTGRES_SCHEDULER_USER=postgres
+      - POSTGRES_SCHEDULER_PASSWORD=postgres
+      - POSTGRES_SCHEDULER_HOST=postgresql
+      - POSTGRES_SCHEDULER_PORT=5432
+      - POSTGRES_SCHEDULER_DB_NAME=scheduler
     command:
       [
         "npm",

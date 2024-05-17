@@ -32,8 +32,20 @@ paths:
           name: id
           required: true
       responses:
-        "200":
+        "202":
           description: Default Response
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
   /api/v1/messages/:
     get:
       tags:

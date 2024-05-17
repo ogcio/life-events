@@ -408,7 +408,6 @@ export const temporaryMockUtils = {
       .then((res) => res.rows);
   },
   async createErrors(errors: FormError[], userId: string, stateId: string) {
-    console.log({ errors, userId, stateId });
     let i = 3;
     const values: string[] = [];
     for (const _ of errors) {

@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
-import { Type } from "@sinclair/typebox";
+import { Static, Type } from "@sinclair/typebox";
 
 type RequestBody = {
   executeAt: string;
@@ -23,32 +23,40 @@ export default async function tasks(app: FastifyInstance) {
         ),
         tags: ["Tasks"],
         response: {
-          202: Type.Void(),
+          202: Type.Null(),
           500: HttpError,
         },
       },
     },
     async function handleScheduleTasks(request, reply) {
-      const data = JSON.parse(request.body.toString());
+      try {
+        const values: string[] = [];
+        const args: string[] = [];
+        let i = 0;
+        for (const set of request.body) {
+          values.push(set.webhookUrl, set.webhookAuth, set.executeAt);
+          args.push(`($${++i}, $${++i}, $${++i})`);
+        }
 
-      // Let's insert this thing first off. Any worker will pick it up
-
-      const values: string[] = [];
-      const args: string[] = [];
-      let i = 0;
-      for (const set of data) {
-        values.push(set.webhookUrl, set.webhookAuth, set.executeAt);
-        args.push(`($${++i}, $${++i}, $${++i})`);
-      }
-
-      await app.pg.pool.query(
-        `
+        await app.pg.pool.query(
+          `
             insert into scheduled_events(
                 webhook_url, webhook_auth, execute_at
             ) values ${args.join(", ")}
         `,
-        values,
-      );
+          values,
+        );
+      } catch (err) {
+        reply.statusCode = 500;
+        const httpError: Static<typeof HttpError> = {
+          code: "failed_to_parse",
+          error: JSON.stringify(err),
+          message: "failed to parse request",
+          statusCode: 500,
+          time: new Date().toISOString(),
+        };
+        return httpError;
+      }
     },
   );
 }

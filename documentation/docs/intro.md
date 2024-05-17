@@ -42,13 +42,14 @@ Service URLs
 
 APIs
 
-| API Name     | URL                     |
-| ------------ | ----------------------- |
-| mock-api     | `http://localhost:8000` |
-| payments-api | `http://localhost:8001` |
-| messages-api | `http://localhost:8002` |
-| profile-api  | `http://localhost:8003` |
-| timeline-api | `http://localhost:8004` |
+| API Name      | URL                     |
+| ------------- | ----------------------- |
+| mock-api      | `http://localhost:8000` |
+| payments-api  | `http://localhost:8001` |
+| messages-api  | `http://localhost:8002` |
+| profile-api   | `http://localhost:8003` |
+| timeline-api  | `http://localhost:8004` |
+| scheduler-api | `http://localhost:8005` |
 
 ## Localisation
 
