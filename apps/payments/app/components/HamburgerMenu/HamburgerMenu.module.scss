@@ -69,22 +69,10 @@
   }
 }
 
-.languagesContainer {
-  align-items: center;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 30px;
-
-  @media ((min-width: ($breakpoint-md + 1))) {
-    display: none;
-  }
-}
-
 .logoutContainer {
   margin-top: 30px;
 
-  @media ((min-width: ($breakpoint-sm + 1))) {
+  @media ((min-width: ($breakpoint-sm))) {
     display: none;
   }
 }

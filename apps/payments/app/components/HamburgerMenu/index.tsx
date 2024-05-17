@@ -1,6 +1,7 @@
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
-import HamburgerMenuWrapper from "./HamburgerMenuWrapper";
+import HamburgerMenuProvider from "./HamburgerMenuProvider";
 import { getMessages } from "next-intl/server";
+import LanguageSwitch from "../Header/LanguageSwitch";
 
 type HamburgerProps = {
   userName: string;
@@ -14,7 +15,11 @@ export default async ({ userName, locale, publicServant }: HamburgerProps) => {
 
   return (
     <NextIntlClientProvider messages={menuMessages}>
-      <HamburgerMenuWrapper userName={userName} publicServant={publicServant} />
+      <HamburgerMenuProvider
+        userName={userName}
+        publicServant={publicServant}
+        languageSwitch={<LanguageSwitch theme={"light"} />}
+      ></HamburgerMenuProvider>
     </NextIntlClientProvider>
   );
 };

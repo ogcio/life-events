@@ -97,7 +97,6 @@ export default (props: MessageCreateProps) => {
             messageName: "bruh",
             lang: "en",
             plainText: "text text",
-            links: [],
             richText: "text text",
           },
         }));

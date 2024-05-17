@@ -165,17 +165,23 @@ async function scheduledTemplate(
 ): Promise<ServiceError[]> {
   const errors: ServiceError[] = [];
 
+  let transportationSubject: string | undefined;
+  let transportationBody: string | undefined;
+  let transportationExcerpt: string | undefined;
+
   const templateMeta = await pool
     .query<{
       id: string;
       preferredTransports: string[];
       security: string;
+      messageType: string;
     }>(
       `
       select 
         template_meta_id as "id",
         message_security as "security",
-        preferred_transports as "preferredTransports"
+        preferred_transports as "preferredTransports",
+        message_type as "messageType"
       from scheduled_message_by_templates
       where id = $1
   `,
@@ -283,9 +289,9 @@ async function scheduledTemplate(
     templateContent.excerpt,
   );
 
-  const transportationSubject = subject;
-  const transportationBody = richText || plainText;
-  const transportationExcerpt = excerpt;
+  transportationSubject = subject;
+  transportationBody = richText || plainText;
+  transportationExcerpt = excerpt;
 
   // Values for each language insert
   const values = [
@@ -302,6 +308,7 @@ async function scheduledTemplate(
     templateMeta.preferredTransports
       ? utils.postgresArrayify(templateMeta.preferredTransports)
       : null,
+    templateMeta.messageType,
     userId,
   ];
 
@@ -323,6 +330,7 @@ async function scheduledTemplate(
           message_name,
           thread_name,
           preferred_transports,
+          message_type,
           user_id
         ) values (${values.map((_, i) => `$${i + 1}`).join(", ")})
     `,
@@ -431,7 +439,11 @@ async function scheduledTemplate(
   return errors;
 }
 
-interface GetAllMessages {}
+interface GetAllMessages {
+  Querystring: {
+    type?: string;
+  };
+}
 
 interface GetMessage {
   Params: {
@@ -673,6 +685,7 @@ export default async function messages(app: FastifyInstance) {
             created_at as "createdAt"
         from messages
         where user_id = $1 and is_delivered = true
+        ${where}
         order by created_at desc
       `,
             [userId, ...values],
@@ -793,8 +806,6 @@ export default async function messages(app: FastifyInstance) {
         userIds,
         scheduleAt,
       } = request.body;
-
-      console.log("BRODER TUCK!!!", JSON.stringify(request.body, null, 4));
 
       if (!message && !template) {
         const error = utils.buildApiError(

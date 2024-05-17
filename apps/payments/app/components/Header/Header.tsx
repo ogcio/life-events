@@ -72,7 +72,7 @@ export default async ({ locale }: HeaderProps) => {
               )}
             </div>
 
-            <LanguageSwitch />
+            <LanguageSwitch theme="dark" />
             <UserIcon initials={initials} />
 
             <Link

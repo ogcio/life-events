@@ -12,6 +12,7 @@ type MenuProps = {
   userName: string;
   publicServant: boolean;
   handleClick: () => void;
+  languageSwitch: React.ReactNode;
 };
 
 const options = [
@@ -34,13 +35,17 @@ const options = [
 
 const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
 
-export default ({ userName, publicServant, handleClick }: MenuProps) => {
+export default ({
+  userName,
+  publicServant,
+  handleClick,
+  languageSwitch,
+}: MenuProps) => {
   const t = useTranslations();
 
   const pathname = usePathname();
   const pathSplitted = pathname.split("/");
   const locale = pathSplitted[1];
-  const pathSlice = pathSplitted.slice(2).join("/");
 
   return (
     <ol className={`govie-list govie-list--spaced ${styles.hamburgerMenu}`}>
@@ -58,7 +63,6 @@ export default ({ userName, publicServant, handleClick }: MenuProps) => {
           {userName}
         </label>
       </li>
-
       <>
         {publicServant &&
           options.map((option) => {
@@ -96,38 +100,7 @@ export default ({ userName, publicServant, handleClick }: MenuProps) => {
             {t("logout")}
           </Link>
         </div>
-        <div className={styles.languagesContainer}>
-          <Link
-            className={`govie-link govie-link--no-underline`}
-            style={{
-              fontWeight: locale === "en" ? "bold" : "normal",
-              color: ds.colours.ogcio.darkGreen,
-            }}
-            href={"/en/" + pathSlice}
-            prefetch={false}
-          >
-            English
-          </Link>
-          <div
-            style={{
-              height: "14px",
-              width: "1px",
-              borderLeft: `1px solid ${ds.colours.ogcio.darkGreen}`,
-            }}
-          />
-
-          <Link
-            className={`govie-link govie-link--no-underline`}
-            style={{
-              fontWeight: locale === "ga" ? "bold" : "normal",
-              color: ds.colours.ogcio.darkGreen,
-            }}
-            href={"/ga/" + pathSlice}
-            prefetch={false}
-          >
-            Gaelic
-          </Link>
-        </div>
+        {languageSwitch}
       </>
     </ol>
   );
