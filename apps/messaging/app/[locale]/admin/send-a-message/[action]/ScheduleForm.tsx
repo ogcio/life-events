@@ -5,11 +5,28 @@ import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { useTranslations } from "next-intl";
 import { Messaging } from "building-blocks-sdk";
+import { pgpool } from "auth/sessions";
 
 export default (props: MessageCreateProps) => {
   const t = useTranslations("sendAMessage.ScheduleForm");
-  async function submit() {
+  async function submit(formData: FormData) {
     "use server";
+
+    const schedule = formData.get("schedule")?.toString();
+    const year = formData.get("schedule-date-year")?.toString();
+    const month = formData.get("schedule-date-month")?.toString();
+    const day = formData.get("schedule-date-day")?.toString();
+    const hour = formData.get("schedule-date-hour")?.toString();
+    const minute = formData.get("schedule-date-minute")?.toString();
+
+    let scheduleAt = "";
+    if (schedule === "future" && year && month && day && hour && minute) {
+      scheduleAt = dayjs(
+        `${year}-${month}-${day} ${hour}:${minute}`,
+      ).toISOString();
+    } else {
+      scheduleAt = dayjs().toISOString();
+    }
 
     const messagesClient = new Messaging(props.userId);
     let message: Parameters<typeof messagesClient.createMessage>[0]["message"];
@@ -44,6 +61,7 @@ export default (props: MessageCreateProps) => {
       userIds: props.state.userIds,
       security: "high",
       messageType: props.state.messageType,
+      scheduleAt,
     });
 
     await api.upsertMessageState(
@@ -55,6 +73,41 @@ export default (props: MessageCreateProps) => {
     );
 
     revalidatePath("/");
+  }
+
+  async function omegaSubmit() {
+    "use server";
+    const messagesClient = new Messaging(props.userId);
+
+    let currentBatch = 1000;
+    let offset = 0;
+    const limit = 1000;
+    while (currentBatch && limit - currentBatch === 0) {
+      const q = await pgpool.query<{ id: string }>(
+        `select id from users offset $1 limit $2`,
+        [offset, limit],
+      );
+
+      q.rows.length &&
+        (await messagesClient.createMessage({
+          messageType: "message",
+          preferredTransports: [],
+          scheduleAt: dayjs().toISOString(),
+          security: "..",
+          userIds: q.rows.map((o) => o.id),
+          message: {
+            excerpt: "This is excerpt",
+            subject: `Message from ${dayjs().format("DD/MM HH:mm")}`,
+            messageName: "bruh",
+            lang: "en",
+            plainText: "text text",
+            links: [],
+            richText: "text text",
+          },
+        }));
+      currentBatch = q.rows.length;
+      offset += limit;
+    }
   }
 
   async function goBack() {
@@ -83,16 +136,16 @@ export default (props: MessageCreateProps) => {
           <div className="govie-radios govie-radios--small ">
             <div className="govie-radios__item">
               <input
-                id="changed-name-0"
-                name="changed-name"
+                id="now"
+                name="schedule"
                 type="radio"
-                value="yes"
+                value="now"
                 className="govie-radios__input"
                 defaultChecked
               />
               <label
                 className="govie-label--s govie-radios__label"
-                htmlFor="changed-name-0"
+                htmlFor="now"
               >
                 {t("sendNow")}
               </label>
@@ -105,23 +158,22 @@ export default (props: MessageCreateProps) => {
           <div className="govie-radios govie-radios--small ">
             <div className="govie-radios__item">
               <input
-                id="changed-name-0"
-                name="changed-name"
+                id="future"
+                name="schedule"
                 type="radio"
-                value="yes"
+                value="future"
                 className="govie-radios__input"
-                disabled
               />
               <label
                 className="govie-label--s govie-radios__label"
-                htmlFor="changed-name-0"
+                htmlFor="future"
               >
                 {t("sendLater")}
               </label>
             </div>
           </div>
         </div>
-        <div className="govie-form-group" style={{ color: "gray" }}>
+        <div className="govie-form-group">
           <fieldset
             className="govie-fieldset"
             role="group"
@@ -143,7 +195,6 @@ export default (props: MessageCreateProps) => {
                     name="schedule-date-day"
                     type="text"
                     inputMode="numeric"
-                    disabled
                   />
                 </div>
               </div>
@@ -162,7 +213,6 @@ export default (props: MessageCreateProps) => {
                     name="schedule-date-month"
                     type="text"
                     inputMode="numeric"
-                    disabled
                   />
                 </div>
               </div>
@@ -181,7 +231,6 @@ export default (props: MessageCreateProps) => {
                     name="schedule-date-year"
                     type="text"
                     inputMode="numeric"
-                    disabled
                   />
                 </div>
               </div>
@@ -193,18 +242,17 @@ export default (props: MessageCreateProps) => {
                 <div className="govie-form-group">
                   <label
                     className="govie-label--s govie-date-input__label"
-                    htmlFor="schedule-date-day"
+                    htmlFor="schedule-date-hour"
                   >
                     {t("hour")}
                   </label>
                   <input
                     style={{ border: "2px solid gray" }}
                     className="govie-input govie-date-input__input govie-input--width-2"
-                    id="schedule-date-day"
-                    name="schedule-date-day"
+                    id="schedule-date-hour"
+                    name="schedule-date-hour"
                     type="text"
                     inputMode="numeric"
-                    disabled
                   />
                 </div>
               </div>
@@ -212,18 +260,17 @@ export default (props: MessageCreateProps) => {
                 <div className="govie-form-group">
                   <label
                     className="govie-label--s govie-date-input__label"
-                    htmlFor="schedule-date-day"
+                    htmlFor="schedule-date-minute"
                   >
                     {t("minute")}
                   </label>
                   <input
                     style={{ border: "2px solid gray" }}
                     className="govie-input govie-date-input__input govie-input--width-2"
-                    id="schedule-date-day"
-                    name="schedule-date-day"
+                    id="schedule-date-minute"
+                    name="schedule-date-minute"
                     type="text"
                     inputMode="numeric"
-                    disabled
                   />
                 </div>
               </div>
@@ -237,6 +284,10 @@ export default (props: MessageCreateProps) => {
       </form>
       <form action={goBack}>
         <BackButton>{t("backLink")}</BackButton>
+      </form>
+
+      <form action={omegaSubmit}>
+        <button>The yolo push</button>
       </form>
     </>
   );
