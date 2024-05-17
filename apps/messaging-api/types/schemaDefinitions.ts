@@ -4,7 +4,7 @@ import { Static, Type } from "@sinclair/typebox";
  * Providers types
  */
 
-export const Provider = Type.Union([
+export const ProviderSchema = Type.Union([
   Type.Object({
     id: Type.String(),
     name: Type.String(),
@@ -20,21 +20,21 @@ export const Provider = Type.Union([
     ]),
   }),
 ]);
-export type Provider = Static<typeof Provider>;
+export type Provider = Static<typeof ProviderSchema>;
 
-export const CreateProvider = Type.Omit(Provider, ["id", "status"]);
-export type CreateProvider = Static<typeof CreateProvider>;
+export const CreateProviderSchema = Type.Omit(ProviderSchema, ["id", "status"]);
+export type CreateProvider = Static<typeof CreateProviderSchema>;
 
-export const ProvidersList = Type.Union([Type.Array(Provider)]);
-export type ProvidersList = Static<typeof ProvidersList>;
+export const ProvidersListSchema = Type.Union([Type.Array(ProviderSchema)]);
+export type ProvidersList = Static<typeof ProvidersListSchema>;
 
-export const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
-export type UpdateProvider = Static<typeof UpdateProvider>;
+export const UpdateProviderSchema = Type.Omit(ProviderSchema, ["id", "type"]);
+export type UpdateProvider = Static<typeof UpdateProviderSchema>;
 
-export const ParamsWithProviderId = Type.Object({
+export const ParamsWithProviderIdSchema = Type.Object({
   providerId: Type.String(),
 });
-export type ParamsWithProviderId = Static<typeof ParamsWithProviderId>;
+export type ParamsWithProviderId = Static<typeof ParamsWithProviderIdSchema>;
 
 /**
  * Payment requests types
@@ -54,7 +54,7 @@ export const ProviderDetails = Type.Object({
   createdAt: Type.String(),
 });
 
-export const PaymentRequest = Type.Object({
+export const PaymentRequestSchema = Type.Object({
   paymentRequestId: Type.String(),
   title: Type.String(),
   description: Type.String(),
@@ -62,19 +62,19 @@ export const PaymentRequest = Type.Object({
   reference: Type.String(),
   providers: Type.Array(ProviderDetails),
 });
-export type PaymentRequest = Static<typeof PaymentRequest>;
+export type PaymentRequest = Static<typeof PaymentRequestSchema>;
 
-export const PaymentRequestDetails = Type.Composite([
-  PaymentRequest,
+export const PaymentRequestDetailsSchema = Type.Composite([
+  PaymentRequestSchema,
   Type.Object({
     redirectUrl: Type.String(),
     allowAmountOverride: Type.Boolean(),
     allowCustomAmount: Type.Boolean(),
   }),
 ]);
-export type PaymentRequestDetails = Static<typeof PaymentRequestDetails>;
+export type PaymentRequestDetails = Static<typeof PaymentRequestDetailsSchema>;
 
-export const CreatePaymentRequest = Type.Object({
+export const CreatePaymentRequestSchema = Type.Object({
   title: Type.String(),
   description: Type.String(),
   reference: Type.String(),
@@ -84,10 +84,10 @@ export const CreatePaymentRequest = Type.Object({
   allowCustomAmount: Type.Boolean(),
   providers: Type.Array(Type.String()),
 });
-export type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
+export type CreatePaymentRequest = Static<typeof CreatePaymentRequestSchema>;
 
-export const EditPaymentRequest = Type.Composite([
-  Type.Omit(CreatePaymentRequest, ["providers"]),
+export const EditPaymentRequestSchema = Type.Composite([
+  Type.Omit(CreatePaymentRequestSchema, ["providers"]),
   Type.Object({
     paymentRequestId: Type.String(),
     providersUpdate: Type.Object({
@@ -96,13 +96,13 @@ export const EditPaymentRequest = Type.Composite([
     }),
   }),
 ]);
-export type EditPaymentRequest = Static<typeof EditPaymentRequest>;
+export type EditPaymentRequest = Static<typeof EditPaymentRequestSchema>;
 
-export const ParamsWithPaymentRequestId = Type.Object({
+export const ParamsWithPaymentRequestIdSchema = Type.Object({
   requestId: Type.String(),
 });
 export type ParamsWithPaymentRequestId = Static<
-  typeof ParamsWithPaymentRequestId
+  typeof ParamsWithPaymentRequestIdSchema
 >;
 
 /**
@@ -116,20 +116,20 @@ export enum TransactionStatusesEnum {
   Failed = "failed",
 }
 
-export const TransactionStatuses = Type.Union([
+export const TransactionStatusesSchema = Type.Union([
   Type.Literal("initiated"),
   Type.Literal("pending"),
   Type.Literal("succeeded"),
   Type.Literal("cancelled"),
   Type.Literal("failed"),
 ]);
-export type TransactionStatuses = Static<typeof TransactionStatuses>;
+export type TransactionStatuses = Static<typeof TransactionStatusesSchema>;
 
 /**
  * Transactions types
  */
 
-export const FullTransaction = Type.Object({
+export const FullTransactionSchema = Type.Object({
   transactionId: Type.String(),
   paymentRequestId: Type.String(),
   extPaymentId: Type.String(),
@@ -144,10 +144,10 @@ export const FullTransaction = Type.Object({
     email: Type.String(),
   }),
 });
-export type FullTransaction = Static<typeof FullTransaction>;
+export type FullTransaction = Static<typeof FullTransactionSchema>;
 
-export const Transaction = Type.Composite([
-  Type.Pick(FullTransaction, [
+export const TransactionSchema = Type.Composite([
+  Type.Pick(FullTransactionSchema, [
     "transactionId",
     "status",
     "amount",
@@ -157,30 +157,34 @@ export const Transaction = Type.Composite([
     title: Type.String(),
   }),
 ]);
-export type Transaction = Static<typeof Transaction>;
+export type Transaction = Static<typeof TransactionSchema>;
 
 export const TransactionDetails = Type.Composite([
-  Transaction,
-  Type.Pick(FullTransaction, ["extPaymentId", "userData"]),
+  TransactionSchema,
+  Type.Pick(FullTransactionSchema, ["extPaymentId", "userData"]),
   Type.Object({
     providerName: Type.String(),
     providerType: Type.String(),
   }),
 ]);
-export type TransactionDetails = Static<typeof TransactionDetails>;
+export type TransactionDetailsSchema = Static<typeof TransactionDetails>;
 
-export const UpdateTransactionBody = Type.Pick(Transaction, ["status"]);
-export type UpdateTransactionBody = Static<typeof UpdateTransactionBody>;
+export const UpdateTransactionBodySchema = Type.Pick(TransactionSchema, [
+  "status",
+]);
+export type UpdateTransactionBody = Static<typeof UpdateTransactionBodySchema>;
 
-export const CreateTransactionBody = Type.Omit(FullTransaction, [
+export const CreateTransactionBodySchema = Type.Omit(FullTransactionSchema, [
   "transactionId",
   "status",
   "createdAt",
   "updatedAt",
 ]);
-export type CreateTransactionBody = Static<typeof CreateTransactionBody>;
+export type CreateTransactionBody = Static<typeof CreateTransactionBodySchema>;
 
-export const ParamsWithTransactionId = Type.Object({
+export const ParamsWithTransactionIdSchema = Type.Object({
   transactionId: Type.String(),
 });
-export type ParamsWithTransactionId = Static<typeof ParamsWithTransactionId>;
+export type ParamsWithTransactionId = Static<
+  typeof ParamsWithTransactionIdSchema
+>;

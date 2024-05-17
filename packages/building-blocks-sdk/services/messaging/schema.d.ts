@@ -32,10 +32,7 @@ export interface paths {
                 excerpt: string;
                 plainText: string;
                 richText: string;
-                links: string[];
                 createdAt: string;
-                messageType: string;
-                paymentRequestId?: string;
               }[];
             };
           };
@@ -59,10 +56,7 @@ export interface paths {
               excerpt: string;
               richText: string;
               plainText: string;
-              links: string[];
               lang: string;
-              /** Format: uuid */
-              paymentRequestId?: string;
             };
             template?: {
               /** Format: uuid */
@@ -74,7 +68,6 @@ export interface paths {
             preferredTransports: string[];
             userIds: string[];
             security: string;
-            messageType: string;
           };
         };
       };
@@ -111,8 +104,6 @@ export interface paths {
                 excerpt: string;
                 plainText: string;
                 richText: string;
-                links: string[];
-                paymentRequestId?: string;
               };
             };
           };
@@ -514,6 +505,7 @@ export interface paths {
             variables: {
               name: string;
               type: string;
+              languages: string[];
             }[];
           };
         };

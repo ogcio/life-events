@@ -207,6 +207,7 @@ export const api = {
 
     pgpool.query(query, args);
   },
+
   /**
    * Let's assume that a user can only have one active message state at the time for simplicity
    */
