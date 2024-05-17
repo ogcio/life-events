@@ -71,7 +71,7 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: app.validateIsPublicServant,
       schema: {
         tags: ["Transactions"],
         response: {
