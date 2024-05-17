@@ -50,34 +50,39 @@ export default async function Pagination({
           </div>
         )}
 
-        {Object.entries(links.pages).map(([page, link]) => {
-          const pageNr = parseInt(page);
-          const isGap = pageNr - previousPage > 1;
-          previousPage = pageNr;
+        <ul className="govie-pagination__list">
+          {Object.entries(links.pages).map(([page, link]) => {
+            const pageNr = parseInt(page);
+            const isGap = pageNr - previousPage > 1;
+            previousPage = pageNr;
 
-          return (
-            <ul className="govie-pagination__list">
-              {isGap && (
-                <li className="govie-pagination__item govie-pagination__item--ellipses">
-                  ⋯
-                </li>
-              )}
-              <li
-                className={`govie-pagination__item ${pageNr === currentPage ? "govie-pagination__item--current" : ""}`}
-                key={page}
-              >
-                <a
-                  className="govie-link govie-pagination__link"
-                  href={link.href}
-                  aria-label={`Page ${page}`}
-                  aria-current="page"
+            return (
+              <>
+                {isGap && (
+                  <li
+                    className="govie-pagination__item govie-pagination__item--ellipses"
+                    key={`space-${page}`}
+                  >
+                    ⋯
+                  </li>
+                )}
+                <li
+                  className={`govie-pagination__item ${pageNr === currentPage ? "govie-pagination__item--current" : ""}`}
+                  key={page}
                 >
-                  {page}
-                </a>
-              </li>
-            </ul>
-          );
-        })}
+                  <a
+                    className="govie-link govie-pagination__link"
+                    href={link.href}
+                    aria-label={`Page ${page}`}
+                    aria-current="page"
+                  >
+                    {page}
+                  </a>
+                </li>
+              </>
+            );
+          })}
+        </ul>
 
         {links.next?.href && (
           <div className="govie-pagination__next">
