@@ -27,14 +27,10 @@ type MessageState = {
   submittedContentAt: string;
   confirmedContentAt: string;
   transportations: string[];
-  links: string[];
   schedule: string;
   userIds: string[];
   confirmedRecipientsAt: string;
   confirmedScheduleAt: string;
-  messageType: string;
-  paymentRequestId: string;
-  paymentUserId: string;
   templateMetaId: string;
   templateInterpolations: Record<string, string>;
 };
@@ -240,11 +236,7 @@ export const api = {
                 confirmedScheduleAt: "",
                 excerpt: "",
                 lang: "",
-                links: [],
-                messageType: "",
                 organisationId: "",
-                paymentRequestId: "",
-                paymentUserId: "",
                 plainText: "",
                 richText: "",
                 schedule: "",
