@@ -1052,7 +1052,10 @@ export default async function messages(app: FastifyInstance) {
             await fetch(url.toString(), {
               method: "POST",
               body: JSON.stringify(body),
-              headers: { "x-user-id": "tmp" },
+              headers: {
+                "x-user-id": "tmp",
+                "Content-Type": "application/json",
+              },
             });
           }
 
