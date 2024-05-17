@@ -14,6 +14,33 @@ export interface paths {
       };
     };
   };
+  "/api/v1/messages/jobs/{id}": {
+    post: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: never;
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+  };
   "/api/v1/messages/": {
     get: {
       responses: {
@@ -63,6 +90,8 @@ export interface paths {
             preferredTransports: string[];
             userIds: string[];
             security: string;
+            /** Format: date-time */
+            scheduleAt: string;
           };
         };
       };

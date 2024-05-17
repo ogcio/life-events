@@ -1,0 +1,12 @@
+{
+  "defaultEnv": "prd",
+  "prd": {
+    "driver": "pg",
+    "user": { "ENV": "POSTGRES_SCHEDULER_USER" },
+    "password": { "ENV": "POSTGRES_SCHEDULER_PASSWORD" },
+    "host": { "ENV": "POSTGRES_SCHEDULER_HOST" },
+    "database": { "ENV": "POSTGRES_SCHEDULER_DB_NAME" },
+    "port": { "ENV": "POSTGRES_SCHEDULER_PORT" },
+    "schema": "public"
+  }
+}
