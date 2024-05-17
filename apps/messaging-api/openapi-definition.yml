@@ -23,6 +23,29 @@ paths:
       responses:
         "200":
           description: Default Response
+  /api/v1/messages/jobs/{id}:
+    post:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+      responses:
+        "202":
+          description: Default Response
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
   /api/v1/messages/:
     get:
       tags:
@@ -150,11 +173,15 @@ paths:
                   type: string
                 messageType:
                   type: string
+                scheduleAt:
+                  format: date-time
+                  type: string
               required:
                 - preferredTransports
                 - userIds
                 - security
                 - messageType
+                - scheduleAt
         required: true
       responses:
         4XX:

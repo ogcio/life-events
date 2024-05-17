@@ -1,6 +1,6 @@
 # Life Events Platform
 
-Welcome in the Life Events Platform, using the [OGCIO](https://www.ogcio.gov.ie/) building blocks.
+Welcome to the Life Events Platform, using the [OGCIO](https://www.ogcio.gov.ie/) building blocks.
 This repository contains the Live Events application and two Building Blocks: Messaging and Payments.
 
 To read more about the project you can refer to the [Documentation](documentation/docs/) folder.
