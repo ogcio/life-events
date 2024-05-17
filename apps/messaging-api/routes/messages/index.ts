@@ -165,10 +165,6 @@ async function scheduledTemplate(
 ): Promise<ServiceError[]> {
   const errors: ServiceError[] = [];
 
-  let transportationSubject: string | undefined;
-  let transportationBody: string | undefined;
-  let transportationExcerpt: string | undefined;
-
   const templateMeta = await pool
     .query<{
       id: string;
@@ -289,9 +285,9 @@ async function scheduledTemplate(
     templateContent.excerpt,
   );
 
-  transportationSubject = subject;
-  transportationBody = richText || plainText;
-  transportationExcerpt = excerpt;
+  const transportationSubject = subject;
+  const transportationBody = richText || plainText;
+  const transportationExcerpt = excerpt;
 
   // Values for each language insert
   const values = [
@@ -664,8 +660,6 @@ export default async function messages(app: FastifyInstance) {
       const userId = request.user?.id;
 
       try {
-        const values: (string | number | null)[] = [];
-
         const data = await app.pg
           .query<{
             id: string;
@@ -685,10 +679,9 @@ export default async function messages(app: FastifyInstance) {
             created_at as "createdAt"
         from messages
         where user_id = $1 and is_delivered = true
-        ${where}
         order by created_at desc
       `,
-            [userId, ...values],
+            [userId],
           )
           .then((res) => res.rows);
 
