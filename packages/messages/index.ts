@@ -1,9 +1,6 @@
 import { pgpool } from "./dbConnection";
 import { send as twilioSend } from "./strategies/twilio/index";
 import nodemailer from "nodemailer";
-import { TableMessage } from "./types/mesages";
-import { randomUUID } from "crypto";
-import { PgSessions, getUsersForIds } from "auth/sessions";
 // In case we need to do it, we can replace this with another provider
 // We just need to keep the same SendEmail interface
 export const send = twilioSend;
