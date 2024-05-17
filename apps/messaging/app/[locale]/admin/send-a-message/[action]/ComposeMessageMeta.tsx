@@ -87,7 +87,7 @@ export default async (props: MessageCreateProps) => {
               />
               <label
                 className="govie-label--s govie-checkboxes__label"
-                htmlFor="organisation-2"
+                htmlFor="sms"
               >
                 {t("sms")}
               </label>

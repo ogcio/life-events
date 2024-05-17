@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
         },
       },
       messageType: "message",
+      scheduleAt: new Date().toISOString(),
     });
   }
 
@@ -63,6 +64,7 @@ export async function GET(request: NextRequest) {
         },
       },
       messageType: "message",
+      scheduleAt: new Date().toISOString(),
     });
   }
 

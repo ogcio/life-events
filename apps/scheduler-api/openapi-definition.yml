@@ -1,0 +1,18 @@
+openapi: 3.0.3
+info:
+  title: OGCIO Scheduler API
+  description: API for OGCIO Scheduler
+  version: 0.1.0
+components:
+  schemas: {}
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/tasks/:
+    post:
+      responses:
+        "200":
+          description: Default Response
