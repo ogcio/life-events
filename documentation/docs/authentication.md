@@ -29,9 +29,22 @@ sequenceDiagram
     OGCIO App->>-User Browser: return Data
 ```
 
-To implement authentication in a NextJS app, you can use the `auth` package and call `PgSessions.get()`. This function will handle retrieving session data using the `sessionID` cookie or redirecting to the `AuthService` specified by the `AUTH_SERVICE_URL` environment variable.
+## Integrating Auth service in your webapp
 
-To log out, simply make a GET request to `/auth/logout`. Make sure to include the `redirectUrl` query parameter to specify where users should be redirected after logging out and potentially logging back in.
+Auth service checklist integration:
+
+- [ ] ENV VARS: HOST_URL set to the current application URL and AUTH_SERVICE_URL pointing to the auth service
+- [ ] Expose an API route for logging in /app/api/auth/route.ts
+
+Ideally this file should contain
+
+```typescript
+import route from "auth/route";
+export const POST = route;
+```
+
+- [ ] Logout URL set to `AUTH_SERVICE_URL/auth/logout?redirectUrl=HOST_URL`
+- [ ] Protect routes with `PgSessions.get()`, this API will return session data or redirect to Login
 
 ## old flow
 
