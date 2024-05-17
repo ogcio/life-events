@@ -31,7 +31,7 @@ jobs:
         repository: life-events-${{ parameters.serviceName }}
         dockerfile: apps/${{ parameters.serviceName }}/Dockerfile
         buildContext: '$(Build.SourcesDirectory)'
-        arguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicApiEndpoint)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicMessagingServiceEntryPoint)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicPaymentsServiceEntryPoint)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicLifeEventsServiceEntryPoint)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicBuildingBlocksLandingPage)"'
+        arguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicApiEndpoint)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicMessagingServiceEntryPoint)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicPaymentsServiceEntryPoint)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicLifeEventsServiceEntryPoint)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicBuildingBlocksLandingPage)" --build-arg "AUTH_SERVICE_URL=$(authServiceUrl)"'
     - task: Docker@0
       displayName: 'Run a Docker command'
       condition: ${{ parameters.pushArtefacts }}

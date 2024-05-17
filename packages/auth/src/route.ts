@@ -37,19 +37,17 @@ export default async (req: Request) => {
   const authServiceUrl = process.env.AUTH_SERVICE_URL;
 
   const loginUrl = `${authServiceUrl}/auth?redirectUrl=${process.env.HOST_URL}`;
-
   if (!sessionId) {
     return redirect(loginUrl, RedirectType.replace);
   }
 
   const session = await getPgSession(sessionId); //PgSessions.get(sessionId);
 
-  cookies().set(getSessionIdCookieConfig(req, sessionId));
-
   if (!session) {
     return redirect(loginUrl, RedirectType.replace);
   }
 
+  cookies().set(getSessionIdCookieConfig(req, sessionId));
   const { publicServant } = session;
 
   if (publicServant) {
