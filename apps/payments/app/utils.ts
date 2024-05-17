@@ -105,6 +105,10 @@ export const errorHandler = (error) => {
  * Pagination
  */
 
+export const PAGINATION_PAGE_DEFAULT = 1;
+export const PAGINATION_LIMIT_DEFAULT = 10;
+export const PAGINATION_OFFSET_DEFAULT = 0;
+
 export type PaginationLink = {
   href?: string;
 };
@@ -117,11 +121,17 @@ export type PaginationLinks = {
   pages: Record<string, PaginationLink>;
 };
 
-export const offsetToPage = (offset: number, limit: number) => {
+export const offsetToPage = (
+  offset: number = PAGINATION_OFFSET_DEFAULT,
+  limit: number = PAGINATION_LIMIT_DEFAULT,
+) => {
   return Math.floor(offset / limit) + 1;
 };
 
-export const pageToOffset = (page: number, limit: number) => {
+export const pageToOffset = (
+  page: number = PAGINATION_PAGE_DEFAULT,
+  limit: number = PAGINATION_LIMIT_DEFAULT,
+) => {
   return (page - 1) * limit;
 };
 

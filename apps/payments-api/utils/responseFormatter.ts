@@ -7,11 +7,13 @@ export const formatAPIResponse = <T>(
 ): GenericResponse<T> => {
   const response: GenericResponse<T> = {
     data,
-    metadata: {},
   };
 
   if (pagination) {
-    response.metadata.links = getPaginationLinks(pagination);
+    response.metadata = {
+      links: getPaginationLinks(pagination),
+      totalCount: pagination.totalCount,
+    };
   }
 
   return response;

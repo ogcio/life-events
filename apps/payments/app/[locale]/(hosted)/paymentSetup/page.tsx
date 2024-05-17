@@ -8,6 +8,8 @@ import {
   formatCurrency,
   mapTransactionStatusColorClassName,
   pageToOffset,
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_PAGE_DEFAULT,
 } from "../../../utils";
 import { EmptyStatus } from "../../../components/EmptyStatus";
 import { Payments } from "building-blocks-sdk";
@@ -23,7 +25,7 @@ export default async function ({
 }) {
   const t = await getTranslations("PaymentSetup.Payments");
   const pagination = {
-    offset: pageToOffset(page ?? 1, limit ?? 10),
+    offset: pageToOffset(page, limit),
     limit,
   };
 

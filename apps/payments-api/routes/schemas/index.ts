@@ -1,4 +1,8 @@
 import { Static, TSchema, Type } from "@sinclair/typebox";
+import {
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_OFFSET_DEFAULT,
+} from "../../utils/pagination";
 
 export const Id = Type.Object({
   id: Type.String(),
@@ -339,8 +343,8 @@ export type CitizenTransactions = Static<typeof CitizenTransactions>;
  */
 
 export const PaginationParams = Type.Object({
-  offset: Type.Optional(Type.Number()),
-  limit: Type.Optional(Type.Number()),
+  offset: Type.Optional(Type.Number({ default: PAGINATION_OFFSET_DEFAULT })),
+  limit: Type.Optional(Type.Number({ default: PAGINATION_LIMIT_DEFAULT })),
 });
 export type PaginationParams = Static<typeof PaginationParams>;
 
@@ -351,8 +355,8 @@ export type PaginationLink = Static<typeof PaginationLink>;
 
 export const PaginationLinks = Type.Object({
   self: PaginationLink,
-  next: PaginationLink,
-  prev: PaginationLink,
+  next: Type.Optional(PaginationLink),
+  prev: Type.Optional(PaginationLink),
   first: PaginationLink,
   last: PaginationLink,
   pages: Type.Record(Type.String(), PaginationLink),
@@ -366,13 +370,17 @@ export type PaginationLinks = Static<typeof PaginationLinks>;
 export const GenericResponse = <T extends TSchema>(T: T) =>
   Type.Object({
     data: T,
-    metadata: Type.Object({
-      links: Type.Optional(PaginationLinks),
-    }),
+    metadata: Type.Optional(
+      Type.Object({
+        links: Type.Optional(PaginationLinks),
+        totalCount: Type.Optional(Type.Number()),
+      }),
+    ),
   });
 export type GenericResponse<T> = {
   data: T;
-  metadata: {
+  metadata?: {
     links?: PaginationLinks;
+    totalCount?: number;
   };
 };

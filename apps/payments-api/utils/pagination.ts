@@ -5,6 +5,9 @@ export type PaginationDetails = {
   url: string;
 };
 
+export const PAGINATION_OFFSET_DEFAULT = 0;
+export const PAGINATION_LIMIT_DEFAULT = 10;
+
 export const getPageFromOffset = (offset: number, limit: number): number => {
   return Math.floor(offset / limit + 1);
 };

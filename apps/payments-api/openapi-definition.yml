@@ -1400,11 +1400,13 @@ paths:
         - Transactions
       parameters:
         - schema:
+            default: 0
             type: number
           in: query
           name: offset
           required: false
         - schema:
+            default: 10
             type: number
           in: query
           name: limit
@@ -1519,14 +1521,13 @@ paths:
                                   type: string
                         required:
                           - self
-                          - next
-                          - prev
                           - first
                           - last
                           - pages
+                      totalCount:
+                        type: number
                 required:
                   - data
-                  - metadata
         "404":
           description: Default Response
           content:
