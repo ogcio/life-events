@@ -72,39 +72,6 @@ export default (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  async function omegaSubmit() {
-    "use server";
-    const messagesClient = new Messaging(props.userId);
-
-    let currentBatch = 1000;
-    let offset = 0;
-    const limit = 1000;
-    while (currentBatch && limit - currentBatch === 0) {
-      const q = await pgpool.query<{ id: string }>(
-        `select id from users offset $1 limit $2`,
-        [offset, limit],
-      );
-
-      q.rows.length &&
-        (await messagesClient.createMessage({
-          preferredTransports: [],
-          scheduleAt: dayjs().toISOString(),
-          security: "..",
-          userIds: q.rows.map((o) => o.id),
-          message: {
-            excerpt: "This is excerpt",
-            subject: `Message from ${dayjs().format("DD/MM HH:mm")}`,
-            messageName: "bruh",
-            lang: "en",
-            plainText: "text text",
-            richText: "text text",
-          },
-        }));
-      currentBatch = q.rows.length;
-      offset += limit;
-    }
-  }
-
   async function goBack() {
     "use server";
 
@@ -279,10 +246,6 @@ export default (props: MessageCreateProps) => {
       </form>
       <form action={goBack}>
         <BackButton>{t("backLink")}</BackButton>
-      </form>
-
-      <form action={omegaSubmit}>
-        <button>The yolo push</button>
       </form>
     </>
   );
