@@ -5,6 +5,7 @@ export const organisationId = randomUUID().toString();
 import { HttpErrors } from "@fastify/sensible";
 
 export type HttpError = Pick<HttpErrors["HttpError"], "statusCode" | "message">;
+export type ServiceError = { error: object; msg: string; critical: boolean };
 
 type AwsSmsProviderConfig = {
   secretAccessKey: string;
@@ -59,5 +60,8 @@ export const utils = {
         "accessKey" in check &&
         "secretAccessKey" in check,
     );
+  },
+  isError(error: unknown): error is Error {
+    return error instanceof Error;
   },
 };

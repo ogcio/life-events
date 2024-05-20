@@ -32,10 +32,7 @@ export interface paths {
                 excerpt: string;
                 plainText: string;
                 richText: string;
-                links: string[];
                 createdAt: string;
-                messageType: string;
-                paymentRequestId?: string;
               }[];
             };
           };

@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/health": {
     get: {
@@ -32,20 +33,20 @@ export interface paths {
               minYear: number;
               maxYear: number;
               data: {
-                year: number;
-                minYear: number;
-                maxYear: number;
-                months: {
-                  month: string;
-                  events: {
-                    service: string;
-                    date: string;
-                    title: string;
-                    description: string;
-                    weight: number;
-                  }[];
+                  year: number;
+                  minYear: number;
+                  maxYear: number;
+                  months: {
+                      month: string;
+                      events: {
+                          service: string;
+                          date: string;
+                          title: string;
+                          description: string;
+                          weight: number;
+                        }[];
+                    }[];
                 }[];
-              }[];
             };
           };
         };
@@ -69,7 +70,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 
 export interface components {
-  schemas: {};
+  schemas: {
+  };
   responses: never;
   parameters: never;
   requestBodies: never;

@@ -4,12 +4,17 @@ import { useCallback, useState } from "react";
 import styles from "./HamburgerMenu.module.scss";
 import HamburgerMenu from "./HamburgerMenu";
 
-type MenuWrapperProps = {
+type MenuProviderProps = {
   userName: string;
   publicServant: boolean;
+  languageSwitch: React.ReactNode;
 };
 
-export default ({ userName, publicServant }: MenuWrapperProps) => {
+export default ({
+  userName,
+  publicServant,
+  languageSwitch,
+}: MenuProviderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleClick = useCallback(() => setMenuOpen(false), [setMenuOpen]);
@@ -37,6 +42,7 @@ export default ({ userName, publicServant }: MenuWrapperProps) => {
             userName={userName}
             publicServant={publicServant}
             handleClick={handleClick}
+            languageSwitch={languageSwitch}
           />
         </div>
       </div>

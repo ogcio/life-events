@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { api } from "messages";
 import { revalidatePath } from "next/cache";
-import { MessageCreateProps, MessageType } from "../../../../utils/messaging";
+import { MessageCreateProps } from "../../../../utils/messaging";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import { Messaging } from "building-blocks-sdk";
@@ -22,16 +22,10 @@ export default async (props: MessageCreateProps) => {
       preferredTransportations.push("sms");
     }
 
-    const messageType = formData.get("messageType")?.toString();
-    if (!messageType) {
-      return;
-    }
-
     await api.upsertMessageState(
       Object.assign({}, props.state, {
         submittedMetaAt: dayjs().toISOString(),
         transportations: preferredTransportations,
-        messageType,
         templateMetaId: formData.get("templateMetaId")?.toString(),
       }),
       props.userId,
@@ -87,7 +81,7 @@ export default async (props: MessageCreateProps) => {
               />
               <label
                 className="govie-label--s govie-checkboxes__label"
-                htmlFor="organisation-2"
+                htmlFor="sms"
               >
                 {t("sms")}
               </label>
@@ -110,50 +104,6 @@ export default async (props: MessageCreateProps) => {
             </div>
           </div>
         </fieldset>
-      </div>
-
-      <hr />
-
-      <div className="govie-form-group ">
-        <h3 className="govie-heading-s">{t("chooseMessageType")}</h3>
-
-        <div className="govie-radios govie-radios--small ">
-          <div className="govie-radios__item">
-            <input
-              id={MessageType.Message}
-              name="messageType"
-              type="radio"
-              value={MessageType.Message}
-              className="govie-radios__input"
-              defaultChecked={
-                !props.state.messageType ||
-                props.state.messageType === MessageType.Message
-              }
-            />
-            <label
-              className="govie-label--s govie-radios__label"
-              htmlFor={MessageType.Message}
-            >
-              {t("message")}
-            </label>
-          </div>
-          <div className="govie-radios__item">
-            <input
-              id={MessageType.Event}
-              name="messageType"
-              type="radio"
-              value={MessageType.Event}
-              className="govie-radios__input"
-              defaultChecked={props.state.messageType === MessageType.Event}
-            />
-            <label
-              className="govie-label--s govie-radios__label"
-              htmlFor={MessageType.Event}
-            >
-              {t("event")}
-            </label>
-          </div>
-        </div>
       </div>
 
       <hr />
