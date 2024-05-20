@@ -18,7 +18,7 @@ export default async function users(app: FastifyInstance) {
     },
     // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     async function jobHandler(request, _reply) {
-      await importCsvFromRequest({ req: request, pool: this.pg.pool });
+      await importCsvFromRequest({ req: request, pool: app.pg.pool });
     },
   );
 }
