@@ -36,13 +36,13 @@ async function deletePaymentRequest(requestId: string, userId: string) {
 async function hasTransactions(requestId: string, userId: string) {
   const { data: transactions, error } = await new Payments(
     userId,
-  ).getPaymentRequestTransactions(requestId);
+  ).getPaymentRequestTransactions(requestId, { limit: 1, offset: 0 });
 
   if (error) {
     errorHandler(error);
   }
 
-  return transactions && transactions.length > 0;
+  return transactions?.data && transactions.data.length > 0;
 }
 
 export const RequestDetails = async ({

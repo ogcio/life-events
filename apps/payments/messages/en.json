@@ -399,5 +399,9 @@
     "title": "Ops, something went wrong",
     "description": "We're sorry, but something unexpected happened and we couldn't process your request. Please try refreshing the page or come back later. If the problem persists, contact our support team for assistance. Thank you for your patience!",
     "action": "Return Home"
+  },
+  "Pagination": {
+    "previous": "Previous",
+    "next": "Next"
   }
 }
