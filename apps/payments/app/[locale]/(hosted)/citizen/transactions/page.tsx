@@ -6,11 +6,16 @@ import { Payments } from "building-blocks-sdk";
 import { getUser } from "../../../../../libraries/auth";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import {
+  buildPaginationLinks,
   errorHandler,
   formatCurrency,
   mapTransactionStatusColorClassName,
+  pageToOffset,
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_PAGE_DEFAULT,
 } from "../../../../utils";
 import { routeDefinitions } from "../../../../routeDefinitions";
+import Pagination from "../../../../components/pagination";
 
 import styles from "./MyPaymentsPage.module.scss";
 
@@ -18,6 +23,7 @@ type Props = {
   params: {
     locale: string;
   };
+  searchParams: { page?: string; limit?: string };
 };
 
 export default async function (props: Props) {
@@ -30,13 +36,30 @@ export default async function (props: Props) {
     userId = (await PgSessions.get()).userId;
   }
 
-  const { data: transactions, error } = await new Payments(
+  const currentPage = props.searchParams.page
+    ? parseInt(props.searchParams.page)
+    : PAGINATION_PAGE_DEFAULT;
+  const pageLimit = props.searchParams.limit
+    ? parseInt(props.searchParams.limit)
+    : PAGINATION_LIMIT_DEFAULT;
+
+  const pagination = {
+    offset: pageToOffset(currentPage, pageLimit),
+    limit: pageLimit,
+  };
+
+  const { data: transactionsData, error } = await new Payments(
     userId,
-  ).getCitizenTransactions();
+  ).getCitizenTransactions(pagination);
 
   if (error) {
     errorHandler(error);
   }
+
+  const url = `/${props.params.locale}/${routeDefinitions.citizen.transactions.path()}`;
+  const links = buildPaginationLinks(url, transactionsData?.metadata?.links);
+
+  const transactions = transactionsData?.data ?? [];
 
   return (
     <div className="table-container">
@@ -113,6 +136,7 @@ export default async function (props: Props) {
                 ))}
               </tbody>
             </table>
+            <Pagination links={links} currentPage={currentPage}></Pagination>
           </div>
         )}
       </section>
