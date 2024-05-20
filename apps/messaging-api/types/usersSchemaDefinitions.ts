@@ -25,6 +25,11 @@ const ImportStatusUnionType = Type.Union(
   { default: Type.Literal("pending") },
 );
 
+const CorrelationQualityUnionType = Type.Union([
+  Type.Literal("full"),
+  Type.Literal("partial"),
+]);
+
 const NullableStringType = Type.Union([Type.Null(), Type.String()], {
   default: Type.Null(),
 });
@@ -34,6 +39,7 @@ export const UserSchema = Type.Object({
   userProfileId: NullableStringType,
   importerOrganisationId: Type.String(),
   userStatus: UserStatusUnionType,
+  correlationQuality: CorrelationQualityUnionType,
 });
 
 export type User = Static<typeof UserSchema>;
@@ -71,6 +77,7 @@ export const ToImportUserSchema = Type.Object({
   ),
   importStatus: ImportStatusUnionType,
   importError: NullableStringType,
+  relatedUserProfileId: NullableStringType,
 });
 
 export type ToImportUser = Static<typeof ToImportUserSchema>;
