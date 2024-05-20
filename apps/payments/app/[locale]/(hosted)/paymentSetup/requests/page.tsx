@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
+import { Payments } from "building-blocks-sdk";
+import { EmptyStatus } from "../../../../components/EmptyStatus";
 import {
   buildPaginationLinks,
   errorHandler,
@@ -9,10 +11,9 @@ import {
   PAGINATION_LIMIT_DEFAULT,
   PAGINATION_PAGE_DEFAULT,
 } from "../../../../utils";
-import { EmptyStatus } from "../../../../components/EmptyStatus";
-import { Payments } from "building-blocks-sdk";
 import { routeDefinitions } from "../../../../routeDefinitions";
 import Pagination from "../../../../components/pagination";
+import styles from "./PaymentRequests.module.scss";
 
 export default async function ({
   params: { locale },
@@ -48,7 +49,7 @@ export default async function ({
   const paymentRequests = paymentRequestsData?.data ?? [];
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
+    <div className="table-container">
       <section
         style={{
           flex: 1,
@@ -56,15 +57,8 @@ export default async function ({
           flexDirection: "column",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <div className={styles.headingButtonWrapper}>
           <h1 className="govie-heading-m">{t("paymentRequests")}</h1>
-
           <Link href={`/${locale}/paymentSetup/create`}>
             <button
               id="button"
@@ -83,7 +77,7 @@ export default async function ({
           />
         ) : (
           <div>
-            <table className="govie-table">
+            <table className="govie-table scrollable-table">
               <thead className="govie-table__head">
                 <tr className="govie-table__row">
                   <th scope="col" className="govie-table__header">

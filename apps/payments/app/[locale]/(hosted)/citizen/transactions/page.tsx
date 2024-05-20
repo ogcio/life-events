@@ -62,7 +62,7 @@ export default async function (props: Props) {
   const transactions = transactionsData?.data ?? [];
 
   return (
-    <div className={styles.pageWrapper}>
+    <div className="table-container">
       <section
         style={{
           margin: "1rem 0",
@@ -84,7 +84,7 @@ export default async function (props: Props) {
               overflowX: "auto",
             }}
           >
-            <table className={`govie-table ${styles.table}`}>
+            <table className={`govie-table scrollable-table`}>
               <thead className="govie-table__head">
                 <tr className="govie-table__row">
                   <th scope="col" className="govie-table__header">
