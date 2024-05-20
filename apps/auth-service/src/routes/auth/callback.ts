@@ -89,10 +89,10 @@ export default async (app: FastifyInstance) => {
         path.join(__dirname, "..", "static", "redirect.html"),
       );
 
-      let result = await streamToString(stream);
-      result = result.replace(SESSION_ID, ssid);
-      result = result.replace(REDIRECT_URL, redirectUrl);
-      result = result.replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
+      const result = (await streamToString(stream))
+        .replace(SESSION_ID, ssid)
+        .replace(REDIRECT_URL, redirectUrl)
+        .replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
 
       return reply.type("text/html").send(result);
     },
@@ -120,9 +120,10 @@ export default async (app: FastifyInstance) => {
     async (request, reply) => {
       console.log(request.query.code);
 
-      let tokenUrl = app.config.TOKEN_URL;
-      tokenUrl = tokenUrl.replace(CODE, request.query.code);
-      tokenUrl = tokenUrl.replace(CLIENT_SECRET, app.config.CLIENT_SECRET);
+      const tokenUrl = app.config.TOKEN_URL.replace(
+        CODE,
+        request.query.code,
+      ).replace(CLIENT_SECRET, app.config.CLIENT_SECRET);
 
       let data: TokenType;
       try {
@@ -184,10 +185,10 @@ export default async (app: FastifyInstance) => {
       );
       const redirectUrl = request.cookies.redirectUrl || "/auth";
 
-      let result = await streamToString(stream);
-      result = result.replace(SESSION_ID, ssid);
-      result = result.replace(REDIRECT_URL, redirectUrl);
-      result = result.replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
+      const result = (await streamToString(stream))
+        .replace(SESSION_ID, ssid)
+        .replace(REDIRECT_URL, redirectUrl)
+        .replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
 
       return reply.type("text/html").send(result);
     },

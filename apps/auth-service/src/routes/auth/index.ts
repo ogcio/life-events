@@ -55,13 +55,10 @@ export default async function login(app: FastifyInstance) {
             path.join(__dirname, "..", "static", "redirect.html"),
           );
 
-          let result = await streamToString(stream);
-          result = result.replace(SESSION_ID, sessionId);
-          result = result.replace(REDIRECT_URL, redirectUrl);
-          result = result.replaceAll(
-            REDIRECT_TIMEOUT,
-            app.config.REDIRECT_TIMEOUT,
-          );
+          const result = (await streamToString(stream))
+            .replace(SESSION_ID, sessionId)
+            .replace(REDIRECT_URL, redirectUrl)
+            .replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
 
           return reply.type("text/html").send(result);
         }
@@ -72,12 +69,10 @@ export default async function login(app: FastifyInstance) {
       setCookie(request, reply, "redirectUrl", redirectUrl);
 
       if (app.config.USE_MYGOVID) {
-        redirectUrl = app.config.MYGOVID_URL;
-        redirectUrl = redirectUrl.replace(
+        redirectUrl = app.config.MYGOVID_URL.replace(
           CALLBACK_URL,
           app.config.CALLBACK_URL,
-        );
-        redirectUrl = redirectUrl.replace(CLIENT_ID, app.config.CLIENT_ID);
+        ).replace(CLIENT_ID, app.config.CLIENT_ID);
         return reply.redirect(redirectUrl);
       }
 
