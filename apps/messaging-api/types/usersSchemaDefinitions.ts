@@ -55,31 +55,37 @@ export const OrganisationUserSchema = Type.Object({
 
 export type OrganisationUser = Static<typeof OrganisationUserSchema>;
 
-export const ToImportUserSchema = Type.Object({
+const BasicToImportUserSchema = Type.Object({
+  importIndex: Type.Integer(),
   publicIdentityId: NullableStringType,
   firstName: NullableStringType,
   lastName: NullableStringType,
   phoneNumber: NullableStringType,
   birthDate: NullableStringType,
   emailAddress: NullableStringType,
-  address: Type.Union(
-    [
-      Type.Object({
-        city: NullableStringType,
-        zipCode: NullableStringType,
-        street: NullableStringType,
-        country: NullableStringType,
-        region: NullableStringType,
-      }),
-      Type.Null(),
-    ],
-    { default: Type.Null() },
-  ),
-  importStatus: ImportStatusUnionType,
-  importError: NullableStringType,
-  relatedUserProfileId: NullableStringType,
-  importIndex: Type.Integer(),
 });
+
+export const ToImportUserSchema = Type.Composite([
+  BasicToImportUserSchema,
+  Type.Object({
+    address: Type.Union(
+      [
+        Type.Object({
+          city: NullableStringType,
+          zipCode: NullableStringType,
+          street: NullableStringType,
+          country: NullableStringType,
+          region: NullableStringType,
+        }),
+        Type.Null(),
+      ],
+      { default: Type.Null() },
+    ),
+    importStatus: ImportStatusUnionType,
+    importError: NullableStringType,
+    relatedUserProfileId: NullableStringType,
+  }),
+]);
 
 export type ToImportUser = Static<typeof ToImportUserSchema>;
 
@@ -93,3 +99,16 @@ export const UsersImportSchema = Type.Object({
 });
 
 export type UsersImport = Static<typeof UsersImportSchema>;
+
+export const CsvRecordSchema = Type.Composite([
+  BasicToImportUserSchema,
+  Type.Object({
+    addressCity: NullableStringType,
+    addressZipCode: NullableStringType,
+    addressStreet: NullableStringType,
+    addressCountry: NullableStringType,
+    addressRegion: NullableStringType,
+  }),
+]);
+
+export type CsvRecord = Static<typeof CsvRecordSchema>;

@@ -1,25 +1,20 @@
-// export interface CsvRecord {
-//     index: number,
-//     publicIdentityId: string | nullable
-//     firstName:
-// }
+import { CsvRecord } from "../../types/usersSchemaDefinitions";
 
-// publicIdentityId: NullableStringType,
-//   firstName: NullableStringType,
-//   lastName: NullableStringType,
-//   phoneNumber: NullableStringType,
-//   birthDate: NullableStringType,
-//   emailAddress: NullableStringType,
-//   address: Type.Union(
-//     [
-//       Type.Object({
-//         city: NullableStringType,
-//         zipCode: NullableStringType,
-//         street: NullableStringType,
-//         country: NullableStringType,
-//         region: NullableStringType,
-//       }),
-//       Type.Null(),
-//     ],
-//     { default: Type.Null() },
-//   ),
+export const getCsvHeader = (): string => {
+  const mockCsvRecord: CsvRecord = {
+    importIndex: 0,
+    publicIdentityId: null,
+    firstName: null,
+    lastName: null,
+    phoneNumber: null,
+    birthDate: null,
+    emailAddress: null,
+    addressCity: null,
+    addressZipCode: null,
+    addressStreet: null,
+    addressCountry: null,
+    addressRegion: null,
+  };
+
+  return Object.keys(mockCsvRecord).join(";");
+};
