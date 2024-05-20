@@ -4,12 +4,20 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreatePaymentRequest,
   EditPaymentRequest,
+  GenericResponse,
   Id,
+  PaginationParams,
   ParamsWithPaymentRequestId,
   PaymentRequest,
   PaymentRequestDetails,
   Transaction,
 } from "../schemas";
+import {
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_OFFSET_DEFAULT,
+  PaginationDetails,
+} from "../../utils/pagination";
+import { formatAPIResponse } from "../../utils/responseFormatter";
 
 export default async function paymentRequests(app: FastifyInstance) {
   app.get<{ Reply: PaymentRequest[] }>(
@@ -415,22 +423,36 @@ export default async function paymentRequests(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Reply: Transaction[]; Params: ParamsWithPaymentRequestId }>(
+  app.get<{
+    Reply: GenericResponse<Transaction[]>;
+    Params: ParamsWithPaymentRequestId;
+    Querystring: PaginationParams;
+  }>(
     "/:requestId/transactions",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Transactions"],
+        querystring: PaginationParams,
         response: {
-          200: Type.Array(Transaction),
+          200: GenericResponse(Type.Array(Transaction)),
         },
       },
     },
     async (request, reply) => {
       const { requestId } = request.params;
+      const {
+        offset = PAGINATION_OFFSET_DEFAULT,
+        limit = PAGINATION_LIMIT_DEFAULT,
+      } = request.query;
 
       let result;
+      let totalCountResult;
       try {
+        const from = `FROM payment_transactions t`;
+        const joins = `INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+        INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id`;
+        const condition = `WHERE pr.payment_request_id = $1`;
         result = await app.pg.query(
           `SELECT
             t.transaction_id as "transactionId",
@@ -438,11 +460,20 @@ export default async function paymentRequests(app: FastifyInstance) {
             pr.title,
             pt.amount,
             t.updated_at as "updatedAt"
-          FROM payment_transactions t
-          INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
-          INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
-          WHERE pr.payment_request_id = $1
-          ORDER BY t.updated_at DESC`,
+          ${from}
+          ${joins}
+          ${condition}
+          ORDER BY t.updated_at DESC
+          LIMIT $2 OFFSET $3`,
+          [requestId, limit, offset],
+        );
+
+        totalCountResult = await app.pg.query(
+          `SELECT
+              count(*) as "totalCount"
+            ${from}
+            ${joins}
+            ${condition}`,
           [requestId],
         );
       } catch (err) {
@@ -452,7 +483,18 @@ export default async function paymentRequests(app: FastifyInstance) {
         );
       }
 
-      reply.send(result.rows);
+      const totalCount = totalCountResult?.rows[0].totalCount;
+      const data = result?.rows ?? [];
+      const url = request.url.split("?")[0];
+
+      const paginationDetails: PaginationDetails = {
+        offset,
+        limit,
+        totalCount,
+        url: url,
+      };
+
+      reply.send(formatAPIResponse(data, paginationDetails));
     },
   );
 }

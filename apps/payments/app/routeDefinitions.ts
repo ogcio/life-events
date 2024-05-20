@@ -22,6 +22,18 @@ export const routeDefinitions = {
         return `/${routeDefinitions.paymentSetup.slug}/${routeDefinitions.paymentSetup.createComplete.slug}/${requestId}`;
       },
     },
+    requests: {
+      slug: "requests",
+      path() {
+        return `/${routeDefinitions.paymentSetup.slug}/${routeDefinitions.paymentSetup.requests.slug}`;
+      },
+    },
+    requestDetails: {
+      slug: "requests",
+      path(requestId: string) {
+        return `/${routeDefinitions.paymentSetup.slug}/${routeDefinitions.paymentSetup.requestDetails.slug}/${requestId}`;
+      },
+    },
   },
   paymentRequest: {
     slug: "paymentRequest",

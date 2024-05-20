@@ -6,6 +6,7 @@ const formatQueryResult = async <T, O>(
 ) => {
   try {
     const result = await promise;
+
     return { data: result.data, error: result.error };
   } catch (error) {
     return { data: undefined, error };
@@ -105,6 +106,7 @@ export class Payments {
 
   async getPaymentRequestTransactions(
     requestId: paths["/api/v1/requests/{requestId}/transactions"]["get"]["parameters"]["path"]["requestId"],
+    query: paths["/api/v1/requests/{requestId}/transactions"]["get"]["parameters"]["query"],
   ) {
     return formatQueryResult(
       this.client.GET("/api/v1/requests/{requestId}/transactions", {
@@ -112,6 +114,7 @@ export class Payments {
           path: {
             requestId,
           },
+          query,
         },
       }),
     );
@@ -169,8 +172,16 @@ export class Payments {
    * TRANSACTIONS
    */
 
-  async getTransactions() {
-    return formatQueryResult(this.client.GET("/api/v1/transactions/"));
+  async getTransactions(
+    query: paths["/api/v1/transactions/"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/transactions/", {
+        params: {
+          query,
+        },
+      }),
+    );
   }
 
   async getTransactionDetails(transactionId: string) {
