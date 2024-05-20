@@ -2,10 +2,11 @@ import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
 import { PgSessions } from "auth/sessions";
 import Footer from "./Footer";
-import FeedbackBanner from "./FeedbackBanner";
 import { redirect, RedirectType } from "next/navigation";
 import { routeDefinitions } from "../../routeDefinitions";
 import Header from "../../components/Header/Header";
+import Banner from "../../components/Banner";
+import { getTranslations } from "next-intl/server";
 
 export default async function RootLayout({
   children,
@@ -21,6 +22,8 @@ export default async function RootLayout({
       RedirectType.replace,
     );
 
+  const t = await getTranslations("FeedbackBanner");
+
   return (
     <html lang={locale}>
       <body
@@ -34,7 +37,19 @@ export default async function RootLayout({
       >
         <Header locale={locale} />
         <div className="width-container">
-          <FeedbackBanner />
+          <Banner
+            tag={t("tag")}
+            text={t.rich("bannerText", {
+              mail: (chunks) => (
+                <a
+                  className="govie-link"
+                  href="mailto:tiago.ramos@nearform.com?subject=Feedback"
+                >
+                  {chunks}
+                </a>
+              ),
+            })}
+          />
           <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
             {children}
           </div>
