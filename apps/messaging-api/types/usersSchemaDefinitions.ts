@@ -16,7 +16,12 @@ const ImportChannelUnionType = Type.Union(
 );
 
 const ImportStatusUnionType = Type.Union(
-  [Type.Literal("pending"), Type.Literal("imported"), Type.Literal("error")],
+  [
+    Type.Literal("pending"),
+    Type.Literal("imported"),
+    Type.Literal("not_found"),
+    Type.Literal("error"),
+  ],
   { default: Type.Literal("pending") },
 );
 
