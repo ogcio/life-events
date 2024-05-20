@@ -1,13 +1,14 @@
 import React from "react";
-import { getTranslations } from "next-intl/server";
-import { errorHandler, formatCurrency } from "../../../../../utils";
-import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import Tooltip from "../../../../../components/Tooltip";
-import CopyLink from "./CopyBtn";
+import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
-import Modal from "../../../../../components/Modal";
 import { Payments } from "building-blocks-sdk";
+import CopyLink from "./CopyBtn";
+import { errorHandler, formatCurrency } from "../../../../../utils";
+import Tooltip from "../../../../../components/Tooltip";
+import Modal from "../../../../../components/Modal";
+import styles from "../PaymentRequests.module.scss";
 
 async function showDeleteModal() {
   "use server";
@@ -98,14 +99,7 @@ export const RequestDetails = async ({
         ></Modal>
       )}
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem",
-        }}
-      >
+      <div className={styles.headingButtonWrapper}>
         <h2 className="govie-heading-m">{tSetup("details")}</h2>
         <div
           style={{
