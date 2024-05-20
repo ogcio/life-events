@@ -33,10 +33,7 @@ export default async function RootLayout({
         }}
       >
         <Header locale={locale} />
-        <div
-          className="govie-width-container"
-          style={{ maxWidth: "1440px", width: "100%" }}
-        >
+        <div className="width-container">
           <FeedbackBanner />
           <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
             {children}
