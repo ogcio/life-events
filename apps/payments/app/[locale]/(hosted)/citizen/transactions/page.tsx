@@ -12,6 +12,8 @@ import {
 } from "../../../../utils";
 import { routeDefinitions } from "../../../../routeDefinitions";
 
+import styles from "./MyPaymentsPage.module.scss";
+
 type Props = {
   params: {
     locale: string;
