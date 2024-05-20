@@ -33,6 +33,16 @@ export default async (props: Props) => {
         <Header />
 
         <div className="govie-width-container" style={{ maxWidth: "1440px" }}>
+          <div className="govie-phase-banner">
+            <p className="govie-phase-banner__content">
+              <strong className="govie-tag govie-phase-banner__content__tag">
+                {t("AlphaBanner.tag")}
+              </strong>
+              <span className="govie-phase-banner__text">
+                {t("AlphaBanner.bannerText")}
+              </span>
+            </p>
+          </div>
           <div style={{ width: "100%", margin: "0 auto", paddingTop: "40px" }}>
             <div
               style={{
@@ -42,7 +52,11 @@ export default async (props: Props) => {
               }}
             >
               <div style={{ flex: "1 1 auto", maxWidth: "700px" }}>
-                <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
+                <h1 className="govie-heading-l">
+                  {t("sections.main.serviceName")}
+                </h1>
+
+                <h2 className="govie-heading-l">{t("sections.main.title")}</h2>
                 <p className="govie-body">{t("sections.main.description")}</p>
                 <a href="/paymentSetup">
                   <button
@@ -65,7 +79,7 @@ export default async (props: Props) => {
             <div className="govie-grid-column-full">
               <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
             </div>
-            <h1 className="govie-heading-l">{t("benefits")}</h1>
+            <h2 className="govie-heading-l">{t("benefits")}</h2>
 
             <div
               style={{
