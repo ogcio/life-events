@@ -327,16 +327,14 @@ export type RealexHppResponse = Static<typeof RealexHppResponse>;
  * Citizen
  */
 
-export const CitizenTransactions = Type.Array(
-  Type.Pick(Transaction, [
-    "transactionId",
-    "status",
-    "title",
-    "updatedAt",
-    "amount",
-  ]),
-);
-export type CitizenTransactions = Static<typeof CitizenTransactions>;
+export const CitizenTransaction = Type.Pick(Transaction, [
+  "transactionId",
+  "status",
+  "title",
+  "updatedAt",
+  "amount",
+]);
+export const CitizenTransactions = Type.Array(CitizenTransaction);
 
 /**
  * Pagination
@@ -346,12 +344,10 @@ export const PaginationParams = Type.Object({
   offset: Type.Optional(Type.Number({ default: PAGINATION_OFFSET_DEFAULT })),
   limit: Type.Optional(Type.Number({ default: PAGINATION_LIMIT_DEFAULT })),
 });
-export type PaginationParams = Static<typeof PaginationParams>;
 
 export const PaginationLink = Type.Object({
   href: Type.Optional(Type.String()),
 });
-export type PaginationLink = Static<typeof PaginationLink>;
 
 export const PaginationLinks = Type.Object({
   self: PaginationLink,
@@ -361,7 +357,6 @@ export const PaginationLinks = Type.Object({
   last: PaginationLink,
   pages: Type.Record(Type.String(), PaginationLink),
 });
-export type PaginationLinks = Static<typeof PaginationLinks>;
 
 /**
  * Generics
@@ -377,10 +372,3 @@ export const GenericResponse = <T extends TSchema>(T: T) =>
       }),
     ),
   });
-export type GenericResponse<T> = {
-  data: T;
-  metadata?: {
-    links?: PaginationLinks;
-    totalCount?: number;
-  };
-};

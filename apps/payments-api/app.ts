@@ -19,6 +19,7 @@ import schemaValidators from "./routes/schemas/validations";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 import providers from "./plugins/entities/providers";
+import citizen from "./plugins/entities/citizen";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -85,6 +86,7 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(sensible);
 
   app.register(providers);
+  app.register(citizen);
 
   return app;
 }

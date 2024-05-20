@@ -10,6 +10,7 @@ import {
   RawServerDefault,
 } from "fastify";
 import { ProvidersPlugin } from "../plugins/entities/providers";
+import { CitizenPlugin } from "../plugins/entities/citizen";
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -32,5 +33,6 @@ declare module "fastify" {
     ) => Promise<void>;
 
     providers: ProvidersPlugin;
+    citizen: CitizenPlugin;
   }
 }

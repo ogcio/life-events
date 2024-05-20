@@ -1,4 +1,4 @@
-import { GenericResponse } from "../routes/schemas";
+import { GenericResponse } from "../types/genericResponse";
 import { getPaginationLinks, PaginationDetails } from "./pagination";
 
 export const formatAPIResponse = <T>(
