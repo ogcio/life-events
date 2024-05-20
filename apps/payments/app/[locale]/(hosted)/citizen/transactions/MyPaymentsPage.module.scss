@@ -1,0 +1,18 @@
+@import "app/styles/globals.scss";
+
+.pageWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+@media (max-width: $breakpoint-sm) {
+  .pageWrapper {
+    display: block;
+  }
+
+  .table {
+    display: block;
+    overflow-x: auto;
+  }
+}
