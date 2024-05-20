@@ -108,57 +108,6 @@ export default async () => {
               <span className="govie-visually-hidden">gov.ie</span>
             </a>
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: "20px",
-              marginTop: "3px",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <a
-                className={`govie-link govie-link--inverse govie-link--no-underline ${
-                  pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
-                }`.trim()}
-                href={new URL("/en/" + path, process.env.HOST_URL).href}
-              >
-                EN
-              </a>
-              <div
-                style={{
-                  height: "14px",
-                  width: "1px",
-                  borderLeft: `1px solid ${ds.colours.ogcio.white}`,
-                }}
-              />
-
-              <a
-                className={`govie-link govie-link--inverse govie-link--no-underline  ${
-                  pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
-                }`.trim()}
-                href={new URL("/ga/" + path, process.env.HOST_URL).href}
-                style={{
-                  marginRight: "10px",
-                }}
-              >
-                GA
-              </a>
-              <a href="/paymentSetup">
-                <button
-                  id="button"
-                  data-module="govie-button"
-                  className="govie-button govie-button--secondary"
-                  style={{
-                    marginBottom: "0",
-                  }}
-                >
-                  {t("actions.login")}
-                </button>
-              </a>
-            </div>
-          </div>
         </div>
       </div>
     </header>
