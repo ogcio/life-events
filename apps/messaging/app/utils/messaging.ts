@@ -79,5 +79,3 @@ export type MessageCreateProps = {
   stateId?: string;
   disabledSubmit?: boolean;
 };
-
-export const MessageType = { Message: "message", Event: "event" };

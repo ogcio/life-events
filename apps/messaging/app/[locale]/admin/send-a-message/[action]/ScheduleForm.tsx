@@ -5,11 +5,28 @@ import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { useTranslations } from "next-intl";
 import { Messaging } from "building-blocks-sdk";
+import { pgpool } from "auth/sessions";
 
 export default (props: MessageCreateProps) => {
   const t = useTranslations("sendAMessage.ScheduleForm");
-  async function submit() {
+  async function submit(formData: FormData) {
     "use server";
+
+    const schedule = formData.get("schedule")?.toString();
+    const year = formData.get("schedule-date-year")?.toString();
+    const month = formData.get("schedule-date-month")?.toString();
+    const day = formData.get("schedule-date-day")?.toString();
+    const hour = formData.get("schedule-date-hour")?.toString();
+    const minute = formData.get("schedule-date-minute")?.toString();
+
+    let scheduleAt = "";
+    if (schedule === "future" && year && month && day && hour && minute) {
+      scheduleAt = dayjs(
+        `${year}-${month}-${day} ${hour}:${minute}`,
+      ).toISOString();
+    } else {
+      scheduleAt = dayjs().toISOString();
+    }
 
     const messagesClient = new Messaging(props.userId);
     let message: Parameters<typeof messagesClient.createMessage>[0]["message"];
@@ -25,13 +42,11 @@ export default (props: MessageCreateProps) => {
     } else {
       message = {
         excerpt: props.state.excerpt,
-        links: props.state.links,
         messageName: "",
         plainText: props.state.plainText,
         richText: props.state.richText,
         subject: props.state.subject,
         threadName: props.state.threadName,
-        paymentRequestId: props.state.paymentRequestId || undefined,
         lang: props.state.lang,
       };
     }
@@ -43,7 +58,7 @@ export default (props: MessageCreateProps) => {
       preferredTransports: props.state.transportations,
       userIds: props.state.userIds,
       security: "high",
-      messageType: props.state.messageType,
+      scheduleAt,
     });
 
     await api.upsertMessageState(
@@ -83,16 +98,16 @@ export default (props: MessageCreateProps) => {
           <div className="govie-radios govie-radios--small ">
             <div className="govie-radios__item">
               <input
-                id="changed-name-0"
-                name="changed-name"
+                id="now"
+                name="schedule"
                 type="radio"
-                value="yes"
+                value="now"
                 className="govie-radios__input"
                 defaultChecked
               />
               <label
                 className="govie-label--s govie-radios__label"
-                htmlFor="changed-name-0"
+                htmlFor="now"
               >
                 {t("sendNow")}
               </label>
@@ -105,23 +120,22 @@ export default (props: MessageCreateProps) => {
           <div className="govie-radios govie-radios--small ">
             <div className="govie-radios__item">
               <input
-                id="changed-name-0"
-                name="changed-name"
+                id="future"
+                name="schedule"
                 type="radio"
-                value="yes"
+                value="future"
                 className="govie-radios__input"
-                disabled
               />
               <label
                 className="govie-label--s govie-radios__label"
-                htmlFor="changed-name-0"
+                htmlFor="future"
               >
                 {t("sendLater")}
               </label>
             </div>
           </div>
         </div>
-        <div className="govie-form-group" style={{ color: "gray" }}>
+        <div className="govie-form-group">
           <fieldset
             className="govie-fieldset"
             role="group"
@@ -143,7 +157,6 @@ export default (props: MessageCreateProps) => {
                     name="schedule-date-day"
                     type="text"
                     inputMode="numeric"
-                    disabled
                   />
                 </div>
               </div>
@@ -162,7 +175,6 @@ export default (props: MessageCreateProps) => {
                     name="schedule-date-month"
                     type="text"
                     inputMode="numeric"
-                    disabled
                   />
                 </div>
               </div>
@@ -181,7 +193,6 @@ export default (props: MessageCreateProps) => {
                     name="schedule-date-year"
                     type="text"
                     inputMode="numeric"
-                    disabled
                   />
                 </div>
               </div>
@@ -193,18 +204,17 @@ export default (props: MessageCreateProps) => {
                 <div className="govie-form-group">
                   <label
                     className="govie-label--s govie-date-input__label"
-                    htmlFor="schedule-date-day"
+                    htmlFor="schedule-date-hour"
                   >
                     {t("hour")}
                   </label>
                   <input
                     style={{ border: "2px solid gray" }}
                     className="govie-input govie-date-input__input govie-input--width-2"
-                    id="schedule-date-day"
-                    name="schedule-date-day"
+                    id="schedule-date-hour"
+                    name="schedule-date-hour"
                     type="text"
                     inputMode="numeric"
-                    disabled
                   />
                 </div>
               </div>
@@ -212,18 +222,17 @@ export default (props: MessageCreateProps) => {
                 <div className="govie-form-group">
                   <label
                     className="govie-label--s govie-date-input__label"
-                    htmlFor="schedule-date-day"
+                    htmlFor="schedule-date-minute"
                   >
                     {t("minute")}
                   </label>
                   <input
                     style={{ border: "2px solid gray" }}
                     className="govie-input govie-date-input__input govie-input--width-2"
-                    id="schedule-date-day"
-                    name="schedule-date-day"
+                    id="schedule-date-minute"
+                    name="schedule-date-minute"
                     type="text"
                     inputMode="numeric"
-                    disabled
                   />
                 </div>
               </div>

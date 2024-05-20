@@ -54,12 +54,6 @@ export default async (props: { searchParams: any }) => {
               {t("date")}
             </th>
             <th scope="col" className="govie-table__header">
-              {t("type")}
-            </th>
-            <th scope="col" className="govie-table__header">
-              {t("status")}
-            </th>
-            <th scope="col" className="govie-table__header">
               {t("subject")}
             </th>
           </tr>
@@ -73,16 +67,6 @@ export default async (props: { searchParams: any }) => {
               >
                 {dayjs(msg.createdAt).format("DD/MM/YYYY")}
               </th>
-              <th
-                className="govie-table__cell govie-!-font-weight-regular"
-                scope="row"
-              >
-                {msg.messageType}
-              </th>
-              <th
-                className="govie-table__cell govie-!-font-weight-regular"
-                scope="row"
-              ></th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"

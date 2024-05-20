@@ -78,10 +78,6 @@ export default async (props: MessageCreateProps) => {
           <p className="govie-body">{excerpt}</p>
           <p className="govie-body">{richText}</p>
           <p className="govie-body">{plainText}</p>
-
-          <a href={""} className="govie-link">
-            {props.state.links.at(0) ?? ""}
-          </a>
         </div>
         <button className="govie-button">{t("submitText")}</button>
       </form>

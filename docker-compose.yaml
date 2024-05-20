@@ -10,7 +10,11 @@ services:
       - 5432:5432
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/01_init.sql
-      - ./packages/messages/schema.sql:/docker-entrypoint-initdb.d/02_schema.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-U", "postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   localstack:
     image: localstack/localstack:2.3.2
@@ -25,7 +29,40 @@ services:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh' # ready hook
+  scheduler_migrations:
+    image: scheduler-api-container:latest
+    build:
+      context: .
+      dockerfile: ./apps/scheduler-api/Dockerfile
+    environment:
+      - POSTGRES_SCHEDULER_USER=postgres
+      - POSTGRES_SCHEDULER_PASSWORD=postgres
+      - POSTGRES_SCHEDULER_HOST=postgresql
+      - POSTGRES_SCHEDULER_PORT=5432
+      - POSTGRES_SCHEDULER_DB_NAME=scheduler
+    command:
+      [
+        "npm",
+        "--prefix",
+        "packages/scheduler",
+        "run",
+        "migrate"
+      ]
+    depends_on:
+      postgresql:
+        condition: service_healthy
 
+  scheduler:
+    image: scheduler-api-container:latest
+    ports:
+      - 8005:8005
+    env_file:
+      - './apps/scheduler-api/.env'
+    environment:
+      - POSTGRES_HOST=postgresql
+    depends_on:
+      scheduler_migrations:
+        condition: service_completed_successfully
 volumes:
   db:
     driver: local

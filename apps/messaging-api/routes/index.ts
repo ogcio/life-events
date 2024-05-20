@@ -13,9 +13,5 @@ export default async function routes(app: FastifyInstance) {
 }
 
 export interface SMSService {
-  Send: (
-    message: string,
-    subject: string,
-    E164numbers: string[],
-  ) => Promise<void>;
+  Send: (message: string, E164number: string) => Promise<void>;
 }
