@@ -1,0 +1,24 @@
+@import "app/styles/globals.scss";
+
+.headingButtonWrapper {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.copyButton {
+  display: none;
+}
+
+@media (min-width: $breakpoint-sm) {
+  .copyButton {
+    display: block;
+  }
+
+  .headingButtonWrapper {
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+  }
+}

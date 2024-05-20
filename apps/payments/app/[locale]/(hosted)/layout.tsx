@@ -50,7 +50,7 @@ export default async function RootLayout({
               ),
             })}
           />
-          <div className="pageContainer">{children}</div>
+          <div className="page-container">{children}</div>
         </div>
         <Footer />
       </body>
