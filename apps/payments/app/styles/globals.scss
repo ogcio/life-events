@@ -3,3 +3,24 @@ $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
 $breakpoint-xl: 1200px;
 $breakpoint-xxl: 1400px;
+
+.width-container {
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+  box-sizing: border-box;
+
+  @media (min-width: $breakpoint-xxl) {
+    max-width: 1400px;
+  }
+}
+
+.pageContainer {
+  width: 100%;
+  margin: 0 auto;
+
+  @media (min-width: $breakpoint-md) {
+    width: 80%;
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "home",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon",
+    "build": "next build",
+    "start": "next start -p 3004",
+    "test:e2e": "playwright test e2e",
+    "test:visual": "playwright test --ui",
+    "lint": "next lint"
+  },
+  "nodemonConfig": {
+    "watch": [],
+    "ext": "ts,tsx, json",
+    "exec": "next dev -p 3004"
+  },
+  "dependencies": {
+    "design-system": "*",
+    "dotenv": "^16.4.5",
+    "next": "14.2.2",
+    "next-intl": "^3.7.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.1",
+    "@types/node": "20.10.4",
+    "@types/react": "18.2.45",
+    "eslint-config-next": "^14.1.4",
+    "eslint-config-prettier": "^9.1.0",
+    "tsx": "^4.7.1",
+    "typescript": "5.3.3"
+  }
+}
