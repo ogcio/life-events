@@ -55,7 +55,7 @@ export const OrganisationUserSchema = Type.Object({
 
 export type OrganisationUser = Static<typeof OrganisationUserSchema>;
 
-const BasicToImportUserSchema = Type.Object({
+export const ToImportUserSchema = Type.Object({
   importIndex: Type.Integer(),
   publicIdentityId: NullableStringType,
   firstName: NullableStringType,
@@ -63,29 +63,23 @@ const BasicToImportUserSchema = Type.Object({
   phoneNumber: NullableStringType,
   birthDate: NullableStringType,
   emailAddress: NullableStringType,
+  address: Type.Union(
+    [
+      Type.Object({
+        city: NullableStringType,
+        zipCode: NullableStringType,
+        street: NullableStringType,
+        country: NullableStringType,
+        region: NullableStringType,
+      }),
+      Type.Null(),
+    ],
+    { default: Type.Null() },
+  ),
+  importStatus: ImportStatusUnionType,
+  importError: Type.Optional(NullableStringType),
+  relatedUserProfileId: Type.Optional(NullableStringType),
 });
-
-export const ToImportUserSchema = Type.Composite([
-  BasicToImportUserSchema,
-  Type.Object({
-    address: Type.Union(
-      [
-        Type.Object({
-          city: NullableStringType,
-          zipCode: NullableStringType,
-          street: NullableStringType,
-          country: NullableStringType,
-          region: NullableStringType,
-        }),
-        Type.Null(),
-      ],
-      { default: Type.Null() },
-    ),
-    importStatus: ImportStatusUnionType,
-    importError: NullableStringType,
-    relatedUserProfileId: NullableStringType,
-  }),
-]);
 
 export type ToImportUser = Static<typeof ToImportUserSchema>;
 
@@ -100,15 +94,21 @@ export const UsersImportSchema = Type.Object({
 
 export type UsersImport = Static<typeof UsersImportSchema>;
 
-export const CsvRecordSchema = Type.Composite([
-  BasicToImportUserSchema,
-  Type.Object({
-    addressCity: NullableStringType,
-    addressZipCode: NullableStringType,
-    addressStreet: NullableStringType,
-    addressCountry: NullableStringType,
-    addressRegion: NullableStringType,
-  }),
-]);
+const NullableOptionalStringType = Type.Optional(NullableStringType);
+
+export const CsvRecordSchema = Type.Object({
+  importIndex: Type.Integer(),
+  publicIdentityId: NullableOptionalStringType,
+  firstName: NullableOptionalStringType,
+  lastName: NullableOptionalStringType,
+  phoneNumber: NullableOptionalStringType,
+  birthDate: NullableOptionalStringType,
+  emailAddress: NullableOptionalStringType,
+  addressCity: NullableOptionalStringType,
+  addressZipCode: NullableOptionalStringType,
+  addressStreet: NullableOptionalStringType,
+  addressCountry: NullableOptionalStringType,
+  addressRegion: NullableOptionalStringType,
+});
 
 export type CsvRecord = Static<typeof CsvRecordSchema>;
