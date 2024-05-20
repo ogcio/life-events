@@ -50,9 +50,7 @@ export default async function RootLayout({
               ),
             })}
           />
-          <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
-            {children}
-          </div>
+          <div className="pageContainer">{children}</div>
         </div>
         <Footer />
       </body>
