@@ -9,5 +9,9 @@
     "skipLibCheck": true,
     "typeRoots": ["src/types"],
     "outDir": "dist"
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
   }
 }
