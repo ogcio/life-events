@@ -1,1 +1,39 @@
-{}
+{
+  "LandingPage": {
+    "sections": {
+      "main": {
+        "title": "Build and run online services easily",
+        "description": "Use this design system to make your service consistentwith gov.ie. Learn from the research and experience of otherservice teams and avoid repeating work that’s already been done.",
+        "cta": "Sign up to learn more",
+        "secondaryTitle": "What GOV.IE Digital Service Platform offers",
+        "secondaryP1": "Your users can complete a form, send you information, pay for things and receive notifications with GOV.IE Digital Service Platform. It's low cost, easy to set up and has accessibility built in from the start.",
+        "secondaryP2": "You can use one, some, or all of the digital tools to support your service."
+      },
+      "payments": {
+        "title": "Payments",
+        "description": "Make your service look like gov.ie with guides for applying layout, typography, colour and images.Make your service look like gov.ie with guides for applying layout, typography, colour and images.",
+        "cta": "Explore Payments"
+      },
+      "messaging": {
+        "title": "Messaging",
+        "description": "Make your service look like gov.ie with guides for applying layout, typography, colour and images.Make your service look like gov.ie with guides for applying layout, typography, colour and images.",
+        "cta": "Browse Messaging"
+      },
+      "designSystem": {
+        "inDev": "in development",
+        "title": "Design System",
+        "description": "Make your service look like gov.ie with guides for applying layout, typography, colour and images.Make your service look like gov.ie with guides for applying layout, typography, colour and images.",
+        "cta": "Learn more"
+      },
+      "forms": {
+        "title": "Forms",
+        "description": "Make your service look like gov.ie with guides for applying layout, typography, colour and images.Make your service look like gov.ie with guides for applying layout, typography, colour and images.",
+        "cta": "Browse Forms"
+      },
+      "advantages": {
+        "title": "Why use GOV.IE Digital Service Platform",
+        "description": "GOV.IE Digital Service Platform is provided by the Government Digital Service (GDS)."
+      }
+    }
+  }
+}
