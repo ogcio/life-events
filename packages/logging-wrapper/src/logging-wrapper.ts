@@ -109,7 +109,7 @@ const parseLoggingError = (error: FastifyError): LoggingError => ({
 });
 
 export const getLoggerConfiguration = (
-  mininumLevel: LogLevel = "debug",
+  minimumLevel: LogLevel = "debug",
 ): PinoLoggerOptions => ({
   base: { hostname: hostname() },
   messageKey: MESSAGE_KEY,
@@ -128,5 +128,5 @@ export const getLoggerConfiguration = (
       level_name: name.toUpperCase(),
     }),
   },
-  level: mininumLevel,
+  level: minimumLevel,
 });
