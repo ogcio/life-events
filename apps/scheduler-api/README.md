@@ -63,7 +63,7 @@ someApp.Post(
 );
 ```
 
-Recall same endpoint after a day, to simulate a cron like behaviour
+Recall same endpoint after an interval, to simulate a cron like behaviour
 It's important to take into consideration when implementing the work logic, that the scheduler can deem the callback taking too long if the work is awaited, terminate the request, treat it as failed and increment retries.
 If a task has exhausted it's retries, it will simply stall and not be invoked again.
 
