@@ -86,8 +86,16 @@ export class Payments {
    * PAYMENT REQUESTS
    */
 
-  async getPaymentRequests() {
-    return formatQueryResult(this.client.GET("/api/v1/requests/"));
+  async getPaymentRequests(
+    query: paths["/api/v1/requests/"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/requests/", {
+        params: {
+          query,
+        },
+      }),
+    );
   }
 
   async getPaymentRequest(
@@ -243,8 +251,16 @@ export class Payments {
    * Citizen
    */
 
-  async getCitizenTransactions() {
-    return formatQueryResult(this.client.GET("/api/v1/citizen/transactions"));
+  async getCitizenTransactions(
+    query: paths["/api/v1/citizen/transactions"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/citizen/transactions", {
+        params: {
+          query,
+        },
+      }),
+    );
   }
 
   async getCitizenTransactionDetails(transactionId: string) {

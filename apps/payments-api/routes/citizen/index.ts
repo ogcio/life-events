@@ -2,30 +2,48 @@ import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
   CitizenTransactions,
+  GenericResponse,
+  PaginationParams,
   ParamsWithTransactionId,
   TransactionDetails,
 } from "../schemas";
+import {
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_OFFSET_DEFAULT,
+  PaginationDetails,
+} from "../../utils/pagination";
+import { formatAPIResponse } from "../../utils/responseFormatter";
 
 export default async function citizen(app: FastifyInstance) {
   app.get<{
-    Reply: CitizenTransactions | Error;
+    Reply: GenericResponse<CitizenTransactions> | Error;
+    Querystring: PaginationParams;
   }>(
     "/transactions",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Citizen"],
+        querystring: PaginationParams,
         response: {
-          200: CitizenTransactions,
+          200: GenericResponse(CitizenTransactions),
           404: HttpError,
         },
       },
     },
     async (request, reply) => {
       const userId = request.user?.id;
+      const {
+        offset = PAGINATION_OFFSET_DEFAULT,
+        limit = PAGINATION_LIMIT_DEFAULT,
+      } = request.query;
 
       let result;
+      let totalCountResult;
       try {
+        const from = `FROM payment_transactions t`;
+        const joins = `INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id`;
+        const condition = `WHERE t.user_id = $1`;
         result = await app.pg.query(
           `SELECT
             t.transaction_id as "transactionId",
@@ -33,15 +51,38 @@ export default async function citizen(app: FastifyInstance) {
             pr.title,
             t.amount,
             t.updated_at as "updatedAt"
-          FROM payment_transactions t
-          INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
-          WHERE t.user_id = $1`,
+          ${from}
+          ${joins}
+          ${condition}
+          ORDER BY t.updated_at DESC
+          LIMIT $2 OFFSET $3`,
+          [userId, limit, offset],
+        );
+
+        totalCountResult = await app.pg.query(
+          `SELECT
+            count(*) as "totalCount"
+          ${from}
+          ${joins}
+          ${condition}`,
           [userId],
         );
       } catch (err) {
         app.log.error((err as Error).message);
       }
-      reply.send(result?.rows);
+
+      const totalCount = totalCountResult?.rows[0].totalCount;
+      const data = result?.rows ?? [];
+      const url = request.url.split("?")[0];
+
+      const paginationDetails: PaginationDetails = {
+        offset,
+        limit,
+        totalCount,
+        url: url,
+      };
+
+      reply.send(formatAPIResponse(data, paginationDetails));
     },
   );
 

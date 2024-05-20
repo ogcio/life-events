@@ -48,10 +48,10 @@ export default async function ({
   );
 
   return (
-    <div>
+    <div className="table-container">
       <RequestDetails requestId={requestId} action={action} locale={locale} />
 
-      <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
+      <div>
         <section
           style={{
             margin: "1rem 0",
@@ -69,7 +69,7 @@ export default async function ({
             />
           ) : (
             <div>
-              <table className="govie-table">
+              <table className="govie-table scrollable-table">
                 <thead className="govie-table__head">
                   <tr className="govie-table__row">
                     <th scope="col" className="govie-table__header">
@@ -100,7 +100,6 @@ export default async function ({
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         {dayjs(trx.updatedAt).format("DD/MM/YYYY - HH:mm")}
                       </td>
-
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         {formatCurrency(trx.amount)}
                       </td>

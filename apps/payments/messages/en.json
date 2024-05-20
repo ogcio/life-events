@@ -351,12 +351,17 @@
     "bannerText": "This is a preview. Public servants are not allowed to make payments. If you want to proceed with payments, you must be logged in as a citizen."
   },
   "LandingPage": {
+    "AlphaBanner": {
+      "tag": "Alpha",
+      "bannerText": "This is a new service - your feedback will help us to improve it."
+    },
     "actions": {
       "login": "Login"
     },
     "benefits": "Benefits",
     "sections": {
       "main": {
+        "serviceName": "Payments",
         "title": "Seamless secure payments you can trust",
         "description": "Our solution provides seamless integration for secure payments, built with a robust infrastructure to meet government standards. From tax payments to licensing fees, our system enables efficient financial transactions, instilling trust and peace of mind in every interaction.",
         "cta": "Learn about Payments"

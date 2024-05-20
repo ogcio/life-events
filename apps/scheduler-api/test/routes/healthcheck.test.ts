@@ -1,8 +1,7 @@
-import { test } from "node:test";
-import assert from "node:assert";
+import t from "tap";
 import { build } from "../../app";
 
-test("healthCheck", async (t) => {
+t.test("healthCheck", async (t) => {
   const app = await build();
   t.after(async () => {
     await app.close();
@@ -12,10 +11,8 @@ test("healthCheck", async (t) => {
     method: "GET",
     url: "/health",
   });
-  assert.strictEqual(res.statusCode, 200);
-  assert.strictEqual(
-    res.headers["content-type"],
-    "application/json; charset=utf-8",
-  );
-  assert.deepEqual(res.json(), { status: "ok" });
+  t.equal(res.statusCode, 200);
+  t.equal(res.headers["content-type"], "application/json; charset=utf-8");
+  t.same(res.json(), { status: "ok" });
+  t.end();
 });
