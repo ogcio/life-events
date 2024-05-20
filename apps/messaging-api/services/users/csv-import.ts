@@ -1,45 +1,47 @@
 import { FastifyRequest } from "fastify";
 import { CsvRecord, ToImportUser } from "../../types/usersSchemaDefinitions";
 import "@fastify/multipart";
-import fs from "fs";
 import * as csv from "fast-csv";
+import { Pool } from "pg";
+import { organisationId } from "../../utils";
 
-export const getUsersFromCsv = async (filePath: string) => {
-  const records = [];
-  const parser = fs
-    .createReadStream(filePath)
-    .pipe(csv.parse({ headers: true }))
-    // pipe the parsed input into a csv formatter
-    .pipe(csv.format<CsvRecord, ToImportUser>({ headers: true }))
-    // Using the transform function from the formatting stream
-    .transform((row, next): void => {
-      return next(null, {
-        importIndex: row.importIndex,
-        publicIdentityId: row.publicIdentityId ?? null,
-        firstName: row.firstName ?? null,
-        lastName: row.lastName ?? null,
-        phoneNumber: row.phoneNumber ?? null,
-        birthDate: row.birthDate ?? null,
-        emailAddress: row.emailAddress ?? null,
+const normalizeValue = (value: string | undefined | null): string | null =>
+  typeof value === "string" && value.length > 0 ? value : null;
+
+export const getUsersFromCsv = async (
+  filePath: string,
+): Promise<ToImportUser[]> => {
+  const records: ToImportUser[] = [];
+  const parser = csv
+    .parseFile<CsvRecord, ToImportUser>(filePath, { headers: true })
+    .transform(
+      (row: CsvRecord): ToImportUser => ({
+        importIndex: Number(row.importIndex),
+        publicIdentityId: normalizeValue(row.publicIdentityId),
+        firstName: normalizeValue(row.firstName),
+        lastName: normalizeValue(row.lastName),
+        phoneNumber: normalizeValue(row.phoneNumber),
+        birthDate: normalizeValue(row.birthDate),
+        emailAddress: normalizeValue(row.emailAddress),
         address: {
-          city: row.addressCity ?? null,
-          country: row.addressCountry ?? null,
-          region: row.addressRegion ?? null,
-          zipCode: row.addressZipCode ?? null,
-          street: row.addressStreet ?? null,
+          city: normalizeValue(row.addressCity),
+          country: normalizeValue(row.addressCountry),
+          region: normalizeValue(row.addressRegion),
+          zipCode: normalizeValue(row.addressZipCode),
+          street: normalizeValue(row.addressStreet),
         },
         importStatus: "pending",
-      });
-    });
+      }),
+    );
 
-  for await (const record of parser) {
-    records.push(record);
+  for await (const row of parser) {
+    records.push(row);
   }
 
   return records;
 };
 
-export const importCsvFromRequest = async (
+const extractUsersFromRequest = async (
   req: FastifyRequest,
 ): Promise<ToImportUser[]> => {
   const file = await req.files();
@@ -50,4 +52,31 @@ export const importCsvFromRequest = async (
   const savedFiles = await req.saveRequestFiles();
 
   return getUsersFromCsv(savedFiles[0].filepath);
+};
+
+export const importCsvFromRequest = async (params: {
+  req: FastifyRequest;
+  pool: Pool;
+}): Promise<void> => {
+  const usersToImport = await extractUsersFromRequest(params.req);
+
+  if (usersToImport.length === 0) {
+    throw new Error("Files must have at least one user");
+  }
+
+  const client = await params.pool.connect();
+  try {
+    await client.query(
+      `
+        insert into users_imports(
+            organisation_id,
+            users_data,
+            import_channel
+        ) values ($1, $2, $3)
+    `,
+      [organisationId, JSON.stringify(usersToImport), "csv"],
+    );
+  } finally {
+    client.release;
+  }
 };
