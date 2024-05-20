@@ -1,9 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { PgSessions } from "auth/sessions";
+import { Payments } from "building-blocks-sdk";
 import { errorHandler, formatCurrency } from "../../../../utils";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
-import { Payments } from "building-blocks-sdk";
+import styles from "./PaymentRequests.module.scss";
 
 export default async function ({
   params: { locale },
@@ -24,7 +25,7 @@ export default async function ({
   }
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
+    <div className="table-container">
       <section
         style={{
           flex: 1,
@@ -32,15 +33,8 @@ export default async function ({
           flexDirection: "column",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <div className={styles.headingButtonWrapper}>
           <h1 className="govie-heading-m">{t("paymentRequests")}</h1>
-
           <Link href={`/${locale}/paymentSetup/create`}>
             <button
               id="button"
@@ -58,7 +52,7 @@ export default async function ({
             description={t("empty.description")}
           />
         ) : (
-          <table className="govie-table">
+          <table className="govie-table scrollable-table">
             <thead className="govie-table__head">
               <tr className="govie-table__row">
                 <th scope="col" className="govie-table__header">

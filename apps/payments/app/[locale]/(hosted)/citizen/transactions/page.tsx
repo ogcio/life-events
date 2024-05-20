@@ -12,8 +12,6 @@ import {
 } from "../../../../utils";
 import { routeDefinitions } from "../../../../routeDefinitions";
 
-import styles from "./MyPaymentsPage.module.scss";
-
 type Props = {
   params: {
     locale: string;
@@ -39,7 +37,7 @@ export default async function (props: Props) {
   }
 
   return (
-    <div className={styles.pageWrapper}>
+    <div className="table-container">
       <section
         style={{
           margin: "1rem 0",
@@ -61,7 +59,7 @@ export default async function (props: Props) {
               overflowX: "auto",
             }}
           >
-            <table className={`govie-table ${styles.table}`}>
+            <table className={`govie-table scrollable-table`}>
               <thead className="govie-table__head">
                 <tr className="govie-table__row">
                   <th scope="col" className="govie-table__header">
