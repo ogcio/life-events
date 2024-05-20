@@ -63,15 +63,28 @@ someApp.Post(
 );
 ```
 
-Recall same endpoint to simulate a cron like behaviour
+Recall same endpoint after a day, to simulate a cron like behaviour
+It's important to take into consideration when implementing the work logic, that the scheduler can deem the callback taking too long if the work is awaited, terminate the request, treat it as failed and increment retries.
+If a task has exhausted it's retries, it will simply stall and not be invoked again.
 
 ```javascript
 someApp.Post(
   "your.client.handler/jobs/:id",
   async function jobHandler(req, res) {
     const id = req.params.id;
-    await logic(id);
-    fetch(...same original call with execute at now() + arbitrary unit of time)
+
+    const { isRetry } = await logic(id);
+
+    if(!isRetry){
+      fetch(new URL("/api/v1/tasks", <scheduler host:port>).href, {
+        method: POST,
+        body: JSON.stringify({
+          webhookUrl: `your.client.handler/jobs/${id}`,
+            webhookAuth: "...",
+            executeAt: dayjs(nextJobAt).add(dayjs.duration(jobInterval)).toISOString()
+        })
+      })
+    }
   },
 );
 ```
