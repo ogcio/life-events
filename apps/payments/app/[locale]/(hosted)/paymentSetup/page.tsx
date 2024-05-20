@@ -50,7 +50,7 @@ export default async function ({
   );
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
+    <div className="table-container">
       <section
         style={{
           margin: "1rem 0",
