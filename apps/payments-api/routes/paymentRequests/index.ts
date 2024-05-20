@@ -20,47 +20,85 @@ import {
 import { formatAPIResponse } from "../../utils/responseFormatter";
 
 export default async function paymentRequests(app: FastifyInstance) {
-  app.get<{ Reply: PaymentRequest[] }>(
+  app.get<{
+    Reply: GenericResponse<PaymentRequest[]>;
+    Querystring: PaginationParams;
+  }>(
     "/",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["PaymentRequests"],
-        response: { 200: Type.Array(PaymentRequest) },
+        querystring: PaginationParams,
+        response: { 200: GenericResponse(Type.Array(PaymentRequest)) },
       },
     },
     async (request, reply) => {
       const userId = request.user?.id;
+      const {
+        offset = PAGINATION_OFFSET_DEFAULT,
+        limit = PAGINATION_LIMIT_DEFAULT,
+      } = request.query;
 
-      const result = await app.pg.query(
-        `select pr.title,
-          pr.payment_request_id as "paymentRequestId",
-          pr.description,
-          pr.amount,
-          pr.reference,
-          pr.status,
-          CASE 
-              WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
-                  'userId', pp.user_id,
-                  'id', pp.provider_id,
-                  'name', pp.provider_name,
-                  'type', pp.provider_type,
-                  'status', pp.status,
-                  'data', pp.provider_data,
-                  'createdAt', pp.created_at
-              ))
-            ELSE '[]'::json
-            END as providers
-        from payment_requests pr
-        left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-        left join payment_providers pp on ppr.provider_id = pp.provider_id
-        where pr.user_id = $1
-        group by pr.payment_request_id
-        ORDER BY pr.created_at DESC`,
-        [userId],
-      );
+      let result;
+      let totalCountResult;
+      try {
+        const from = `from payment_requests pr`;
+        const joins = `left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
+        left join payment_providers pp on ppr.provider_id = pp.provider_id`;
+        const conditions = `where pr.user_id = $1`;
+        result = await app.pg.query(
+          `select pr.title,
+            pr.payment_request_id as "paymentRequestId",
+            pr.description,
+            pr.amount,
+            pr.reference,
+            pr.status,
+            CASE 
+                WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
+                    'userId', pp.user_id,
+                    'id', pp.provider_id,
+                    'name', pp.provider_name,
+                    'type', pp.provider_type,
+                    'status', pp.status,
+                    'data', pp.provider_data,
+                    'createdAt', pp.created_at
+                ))
+              ELSE '[]'::json
+              END as providers
+          ${from}
+          ${joins}
+          ${conditions}
+          group by pr.payment_request_id
+          ORDER BY pr.created_at DESC
+          LIMIT $2 OFFSET $3`,
+          [userId, limit, offset],
+        );
 
-      reply.send(result.rows);
+        totalCountResult = await app.pg.query(
+          `select 
+            count(*) as "totalCount"
+          ${from}
+          ${joins}
+          ${conditions}`,
+          [userId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      const totalCount = totalCountResult?.rows[0].totalCount;
+      const data = result?.rows ?? [];
+      const url = request.url.split("?")[0];
+
+      const paginationDetails: PaginationDetails = {
+        offset,
+        limit,
+        totalCount,
+        url: url,
+      };
+
+      reply.send(formatAPIResponse(data, paginationDetails));
     },
   );
 

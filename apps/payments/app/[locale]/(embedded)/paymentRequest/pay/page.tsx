@@ -12,10 +12,10 @@ import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
 import { Payments } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
-import PreviewBanner from "../../PreviewBanner";
 import Footer from "../../../(hosted)/Footer";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import Header from "../../../../components/Header/Header";
+import Banner from "../../../../components/Banner";
 
 type Props = {
   params: {
@@ -68,9 +68,10 @@ export default async function Page(props: Props) {
 
   const embed = props.searchParams?.embed === "true";
 
-  const [details, t, tCommon] = await Promise.all([
+  const [details, t, tBanner, tCommon] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId, userId),
     getTranslations("PayPaymentRequest"),
+    getTranslations("PreviewBanner"),
     getTranslations("Common"),
   ]);
 
@@ -198,7 +199,9 @@ export default async function Page(props: Props) {
           flexDirection: "column",
         }}
       >
-        {publicServant && <PreviewBanner />}
+        {publicServant && (
+          <Banner text={tBanner("bannerText")} tag={tBanner("tag")} />
+        )}
         {content}
       </body>
     );
@@ -222,7 +225,9 @@ export default async function Page(props: Props) {
         className="govie-width-container"
         style={{ maxWidth: "1440px", width: "100%" }}
       >
-        {publicServant && <PreviewBanner />}
+        {publicServant && (
+          <Banner text={tBanner("bannerText")} tag={tBanner("tag")} />
+        )}
         <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
           {content}
         </div>

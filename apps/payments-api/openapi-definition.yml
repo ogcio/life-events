@@ -537,137 +537,200 @@ paths:
     get:
       tags:
         - PaymentRequests
+      parameters:
+        - schema:
+            default: 0
+            type: number
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 10
+            type: number
+          in: query
+          name: limit
+          required: false
       responses:
         "200":
           description: Default Response
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    paymentRequestId:
-                      type: string
-                    title:
-                      type: string
-                    description:
-                      type: string
-                    amount:
-                      type: number
-                    reference:
-                      type: string
-                    providers:
-                      type: array
-                      items:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        paymentRequestId:
+                          type: string
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        amount:
+                          type: number
+                        reference:
+                          type: string
+                        providers:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              userId:
+                                type: string
+                              id:
+                                type: string
+                              name:
+                                type: string
+                              type:
+                                anyOf:
+                                  - type: string
+                                    enum:
+                                      - banktransfer
+                                  - type: string
+                                    enum:
+                                      - openbanking
+                                  - type: string
+                                    enum:
+                                      - stripe
+                                  - type: string
+                                    enum:
+                                      - realex
+                                  - type: string
+                                    enum:
+                                      - worldpay
+                              status:
+                                anyOf:
+                                  - type: string
+                                    enum:
+                                      - connected
+                                  - type: string
+                                    enum:
+                                      - disconnected
+                              data:
+                                anyOf:
+                                  - type: object
+                                    properties:
+                                      iban:
+                                        validator: IBANValidator
+                                        type: string
+                                      accountHolderName:
+                                        type: string
+                                    required:
+                                      - iban
+                                      - accountHolderName
+                                  - type: object
+                                    properties:
+                                      iban:
+                                        validator: IBANValidator
+                                        type: string
+                                      accountHolderName:
+                                        type: string
+                                    required:
+                                      - iban
+                                      - accountHolderName
+                                  - type: object
+                                    properties:
+                                      livePublishableKey:
+                                        type: string
+                                      liveSecretKey:
+                                        type: string
+                                    required:
+                                      - livePublishableKey
+                                      - liveSecretKey
+                                  - type: object
+                                    properties:
+                                      merchantCode:
+                                        type: string
+                                      installationId:
+                                        type: string
+                                    required:
+                                      - merchantCode
+                                      - installationId
+                                  - type: object
+                                    properties:
+                                      merchantId:
+                                        type: string
+                                      sharedSecret:
+                                        type: string
+                                    required:
+                                      - merchantId
+                                      - sharedSecret
+                              createdAt:
+                                type: string
+                            required:
+                              - userId
+                              - id
+                              - name
+                              - type
+                              - status
+                              - data
+                              - createdAt
+                        status:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - active
+                            - type: string
+                              enum:
+                                - inactive
+                      required:
+                        - paymentRequestId
+                        - title
+                        - description
+                        - amount
+                        - reference
+                        - providers
+                        - status
+                  metadata:
+                    type: object
+                    properties:
+                      links:
                         type: object
                         properties:
-                          userId:
-                            type: string
-                          id:
-                            type: string
-                          name:
-                            type: string
-                          type:
-                            anyOf:
-                              - type: string
-                                enum:
-                                  - banktransfer
-                              - type: string
-                                enum:
-                                  - openbanking
-                              - type: string
-                                enum:
-                                  - stripe
-                              - type: string
-                                enum:
-                                  - realex
-                              - type: string
-                                enum:
-                                  - worldpay
-                          status:
-                            anyOf:
-                              - type: string
-                                enum:
-                                  - connected
-                              - type: string
-                                enum:
-                                  - disconnected
-                          data:
-                            anyOf:
-                              - type: object
-                                properties:
-                                  iban:
-                                    validator: IBANValidator
-                                    type: string
-                                  accountHolderName:
-                                    type: string
-                                required:
-                                  - iban
-                                  - accountHolderName
-                              - type: object
-                                properties:
-                                  iban:
-                                    validator: IBANValidator
-                                    type: string
-                                  accountHolderName:
-                                    type: string
-                                required:
-                                  - iban
-                                  - accountHolderName
-                              - type: object
-                                properties:
-                                  livePublishableKey:
-                                    type: string
-                                  liveSecretKey:
-                                    type: string
-                                required:
-                                  - livePublishableKey
-                                  - liveSecretKey
-                              - type: object
-                                properties:
-                                  merchantCode:
-                                    type: string
-                                  installationId:
-                                    type: string
-                                required:
-                                  - merchantCode
-                                  - installationId
-                              - type: object
-                                properties:
-                                  merchantId:
-                                    type: string
-                                  sharedSecret:
-                                    type: string
-                                required:
-                                  - merchantId
-                                  - sharedSecret
-                          createdAt:
-                            type: string
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
                         required:
-                          - userId
-                          - id
-                          - name
-                          - type
-                          - status
-                          - data
-                          - createdAt
-                    status:
-                      anyOf:
-                        - type: string
-                          enum:
-                            - active
-                        - type: string
-                          enum:
-                            - inactive
-                  required:
-                    - paymentRequestId
-                    - title
-                    - description
-                    - amount
-                    - reference
-                    - providers
-                    - status
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
     post:
       tags:
         - PaymentRequests
@@ -1728,47 +1791,110 @@ paths:
     get:
       tags:
         - Citizen
+      parameters:
+        - schema:
+            default: 0
+            type: number
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 10
+            type: number
+          in: query
+          name: limit
+          required: false
       responses:
         "200":
           description: Default Response
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    transactionId:
-                      type: string
-                    status:
-                      anyOf:
-                        - type: string
-                          enum:
-                            - initiated
-                        - type: string
-                          enum:
-                            - pending
-                        - type: string
-                          enum:
-                            - succeeded
-                        - type: string
-                          enum:
-                            - cancelled
-                        - type: string
-                          enum:
-                            - failed
-                    title:
-                      type: string
-                    updatedAt:
-                      type: string
-                    amount:
-                      type: number
-                  required:
-                    - transactionId
-                    - status
-                    - title
-                    - updatedAt
-                    - amount
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        transactionId:
+                          type: string
+                        status:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - initiated
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - succeeded
+                            - type: string
+                              enum:
+                                - cancelled
+                            - type: string
+                              enum:
+                                - failed
+                        title:
+                          type: string
+                        updatedAt:
+                          type: string
+                        amount:
+                          type: number
+                      required:
+                        - transactionId
+                        - status
+                        - title
+                        - updatedAt
+                        - amount
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
         "404":
           description: Default Response
           content:
