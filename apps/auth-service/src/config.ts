@@ -7,6 +7,12 @@ export const envSchema = {
     "POSTGRES_PORT",
     "POSTGRES_DB_NAME_SHARED",
     "REDIRECT_TIMEOUT",
+    "USE_MYGOVID",
+    "CALLBACK_URL",
+    "CLIENT_ID",
+    "MYGOVID_URL",
+    "CLIENT_SECRET",
+    "TOKEN_URL",
   ],
   properties: {
     POSTGRES_USER: {
@@ -26,6 +32,24 @@ export const envSchema = {
     },
     REDIRECT_TIMEOUT: {
       type: "number",
+    },
+    USE_MYGOVID: {
+      type: "boolean",
+    },
+    MYGOVID_URL: {
+      type: "string",
+    },
+    CLIENT_ID: {
+      type: "string",
+    },
+    CALLBACK_URL: {
+      type: "string",
+    },
+    CLIENT_SECRET: {
+      type: "string",
+    },
+    TOKEN_URL: {
+      type: "string",
     },
   },
 };

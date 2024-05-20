@@ -8,6 +8,8 @@ import { setCookie } from "./utils/cookies.js";
 import callback from "./callback.js";
 import streamToString from "./utils/streamToString.js";
 import {
+  CALLBACK_URL,
+  CLIENT_ID,
   REDIRECT_TIMEOUT,
   REDIRECT_URL,
   SESSION_ID,
@@ -68,6 +70,16 @@ export default async function login(app: FastifyInstance) {
       redirectUrl = redirectUrl || "/";
 
       setCookie(request, reply, "redirectUrl", redirectUrl);
+
+      if (app.config.USE_MYGOVID) {
+        redirectUrl = app.config.MYGOVID_URL;
+        redirectUrl = redirectUrl.replace(
+          CALLBACK_URL,
+          app.config.CALLBACK_URL,
+        );
+        redirectUrl = redirectUrl.replace(CLIENT_ID, app.config.CLIENT_ID);
+        return reply.redirect(redirectUrl);
+      }
 
       const stream = fs.createReadStream(
         path.join(__dirname, "..", "static", "index.html"),
