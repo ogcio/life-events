@@ -78,6 +78,7 @@ export const ToImportUserSchema = Type.Object({
   importStatus: ImportStatusUnionType,
   importError: NullableStringType,
   relatedUserProfileId: NullableStringType,
+  importIndex: Type.Integer(),
 });
 
 export type ToImportUser = Static<typeof ToImportUserSchema>;
