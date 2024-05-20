@@ -23,5 +23,7 @@ CREATE TABLE
         organisation_id uuid NOT NULL,
         imported_at timestamptz DEFAULT now(),
         users_data jsonb NOT NULL,
-        import_channel text NOT NULL DEFAULT 'api'
+        import_channel text NOT NULL DEFAULT 'api',
+        retry_count int NOT NULL DEFAULT 0,
+        last_retry_at timestamptz
     );

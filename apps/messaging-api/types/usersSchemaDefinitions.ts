@@ -1,24 +1,27 @@
 import { Static, Type } from "@sinclair/typebox";
 
-const InvitationStatusUnionType = Type.Union([
-  Type.Literal("pending"),
-  Type.Literal("accepted"),
-  Type.Literal("declined"),
-]);
+const InvitationStatusUnionType = Type.Union(
+  [Type.Literal("pending"), Type.Literal("accepted"), Type.Literal("declined")],
+  { default: Type.Literal("pending") },
+);
 
-const UserStatusUnionType = Type.Union([
-  Type.Literal("pending"),
-  Type.Literal("disabled"),
-  Type.Literal("active"),
-]);
+const UserStatusUnionType = Type.Union(
+  [Type.Literal("pending"), Type.Literal("disabled"), Type.Literal("active")],
+  { default: Type.Literal("pending") },
+);
 
-const ImportChannelUnionType = Type.Union([
-  Type.Literal("api"),
-  Type.Literal("csv"),
-]);
+const ImportChannelUnionType = Type.Union(
+  [Type.Literal("api"), Type.Literal("csv")],
+  { default: Type.Literal("api") },
+);
+
+const ImportStatusUnionType = Type.Union(
+  [Type.Literal("pending"), Type.Literal("imported"), Type.Literal("error")],
+  { default: Type.Literal("pending") },
+);
 
 const NullableStringType = Type.Union([Type.Null(), Type.String()], {
-  default: null,
+  default: Type.Null(),
 });
 
 export const UserSchema = Type.Object({
@@ -59,8 +62,10 @@ export const ToImportUserSchema = Type.Object({
       }),
       Type.Null(),
     ],
-    { default: null },
+    { default: Type.Null() },
   ),
+  importStatus: ImportStatusUnionType,
+  importError: NullableStringType,
 });
 
 export type ToImportUser = Static<typeof ToImportUserSchema>;
@@ -70,4 +75,8 @@ export const UsersImportSchema = Type.Object({
   importedAt: Type.String(),
   usersData: Type.Array(ToImportUserSchema),
   importChannel: ImportChannelUnionType,
+  retryCount: Type.Integer({ default: 0 }),
+  lastRetryAt: NullableStringType,
 });
+
+export type UsersImport = Static<typeof UsersImportSchema>;
