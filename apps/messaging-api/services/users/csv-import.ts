@@ -1,4 +1,5 @@
 import { FastifyRequest } from "fastify";
+import { createError } from "@fastify/error";
 import { CsvRecord, ToImportUser } from "../../types/usersSchemaDefinitions";
 import "@fastify/multipart";
 import * as csv from "fast-csv";
@@ -72,10 +73,18 @@ export const importCsvFromRequest = async (params: {
             organisation_id,
             users_data,
             import_channel
-        ) values ($1, $2, $3)
+         values ($1, $2, $3)
     `,
       [organisationId, JSON.stringify(usersToImport), "csv"],
     );
+  } catch (error) {
+    const toOutput = createError(
+      "SERVER_ERROR",
+      `Error during CSV file store on db: ${(error as Error).message}`,
+      500,
+    )();
+    params.req.log.error({ error: toOutput });
+    throw toOutput;
   } finally {
     client.release;
   }
