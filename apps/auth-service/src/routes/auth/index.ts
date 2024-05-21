@@ -67,19 +67,11 @@ export default async function login(app: FastifyInstance) {
       redirectUrl = redirectUrl || "/";
 
       setCookie(request, reply, "redirectUrl", redirectUrl);
-
-      if (app.config.USE_MYGOVID) {
-        redirectUrl = app.config.MYGOVID_URL.replace(
-          CALLBACK_URL,
-          app.config.CALLBACK_URL,
-        ).replace(CLIENT_ID, app.config.CLIENT_ID);
-        return reply.redirect(redirectUrl);
-      }
-
-      const stream = fs.createReadStream(
-        path.join(__dirname, "..", "static", "index.html"),
-      );
-      return reply.type("text/html").send(stream);
+      const authorizeUrl = app.config.MYGOVID_URL.replace(
+        CALLBACK_URL,
+        app.config.CALLBACK_URL,
+      ).replace(CLIENT_ID, app.config.CLIENT_ID);
+      return reply.redirect(authorizeUrl);
     },
   );
 
