@@ -67,6 +67,9 @@ export const importCsvFromRequest = async (params: {
 
   const client = await params.pool.connect();
   try {
+    // for now the organisation id is randomic, we have
+    // to decide where to store that value in relation to the
+    // user
     await client.query(
       `
         insert into users_imports(
