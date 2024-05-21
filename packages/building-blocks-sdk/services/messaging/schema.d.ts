@@ -703,6 +703,18 @@ export interface paths {
       };
     };
   };
+  "/api/v1/users/csv/template": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": string;
+          };
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
