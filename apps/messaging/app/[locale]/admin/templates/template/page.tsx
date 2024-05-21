@@ -712,7 +712,8 @@ export default async (props: {
           className="govie-button"
           type="submit"
           disabled={
-            !newState?.content.every((c) => c.subject && c.templateName)
+            !newState?.content.every((c) => c.subject && c.templateName) ||
+            newState?.content.length < AVAILABLE_LANGUAGES.length
           }
         >
           {props.searchParams.id
