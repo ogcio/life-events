@@ -61,25 +61,18 @@ export default async (app: FastifyInstance) => {
       // // Note, this is purely conceptual. There's no signing at this time. Read description of jose.decodeJwt for further info once we're at that stage.
       const { email, firstName, lastName } = decodeJWT(id_token);
 
-      // enforce this check with a stronger logic
-      const publicServantBoolean = email.includes("gov.");
       const q = await app.pg.query(
         `
           WITH get AS (
               SELECT id, is_public_servant FROM users WHERE govid_email=$1
             ), insert_new AS (
-                INSERT INTO users(govid_email, govid, user_name, is_public_servant)
-                values($1, $2, $3, $4)
+                INSERT INTO users(govid_email, govid, user_name)
+                values($1, $2, $3)
                 ON CONFLICT DO NOTHING
                 RETURNING id, is_public_servant
             )
             SELECT * FROM get UNION SELECT * FROM insert_new`,
-        [
-          email,
-          "not needed atm",
-          [firstName, lastName].join(" "),
-          publicServantBoolean,
-        ],
+        [email, "not needed atm", [firstName, lastName].join(" ")],
       );
 
       const [{ id: user_id }] = q.rows;

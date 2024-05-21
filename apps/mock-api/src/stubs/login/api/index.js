@@ -19,11 +19,14 @@ export default async function (app, opts) {
     const { password, public_servant, firstName, lastName, redirect_url } =
       request.body;
 
+    const publicServantBoolean = new Boolean(public_servant);
     if (password !== "123") {
       reply.redirect("/static/login/api/authorize");
     }
 
-    const createUnsecuredJwt = (firstName, lastName) => {
+    const email = `${firstName}.${lastName}@mail.ie`;
+
+    const createUnsecuredJwt = (firstName, lastName, email) => {
       // Based on the govid jwt token, filled with some random data
       const body = {
         ver: "1.0",
@@ -35,7 +38,7 @@ export default async function (app, opts) {
           "638433403850391380.ZWI3ZmJlMzgtM2U5MS00NmZhLTkxZmItZjg3MjI4OTZmZDA1NjQzNzQ5NjctZjVlYi00YjA1LThlYTItOWM3ZDhiODkwN2Y0",
         iat: 1707743623,
         auth_time: Date.now(),
-        email: `${firstName}.${lastName}@${public_servant && "gov."}mail.ie`,
+        email: email,
         oid: Math.round(Math.random() * 100000).toString(),
         LastJourney: "Login",
         givenName: firstName,
@@ -55,7 +58,26 @@ export default async function (app, opts) {
       return new jose.UnsecuredJWT(body).encode();
     };
 
-    const id_token = createUnsecuredJwt(firstName, lastName);
+    const q = await app.pg.query(
+      `
+              WITH get AS (
+                  SELECT id, is_public_servant FROM users WHERE govid_email=$1
+                ), insert_new AS (
+                    INSERT INTO users(govid_email, govid, user_name, is_public_servant)
+                    values($1, $2, $3, $4)
+                    ON CONFLICT DO NOTHING
+                    RETURNING id, is_public_servant
+                )
+                SELECT * FROM get UNION SELECT * FROM insert_new`,
+      [
+        email,
+        "not needed atm",
+        [firstName, lastName].join(" "),
+        publicServantBoolean,
+      ],
+    );
+
+    const id_token = createUnsecuredJwt(firstName, lastName, email);
 
     return reply.redirect(`${redirect_url}?code=${id_token}`);
   });
