@@ -14,8 +14,6 @@ COPY --from=design-system-container /app/packages/design-system/ /app/packages/d
 FROM deps AS builder
 WORKDIR /app
 
-RUN npm run build --workspace=auth
-
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
