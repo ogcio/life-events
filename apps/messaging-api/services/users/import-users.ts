@@ -5,6 +5,7 @@ import {
   ImportChannel,
   ImportStatus,
   ToImportUser,
+  UsersImport,
 } from "../../types/usersSchemaDefinitions";
 import "@fastify/multipart";
 import { parseFile, writeToBuffer } from "fast-csv";
@@ -125,22 +126,24 @@ const insertToImportUsers = async (params: {
   logger: FastifyBaseLogger;
   toImportUsers: ToImportUser[];
   channel: ImportChannel;
-}): Promise<void> => {
+}): Promise<string> => {
   const client = await params.pool.connect();
   try {
     // for now the organisation id is randomic, we have
     // to decide where to store that value in relation to the
     // user
-    await client.query(
+    const result = await client.query<{ import_id: string }>(
       `
         insert into users_imports(
             organisation_id,
             users_data,
             import_channel)
-         values ($1, $2, $3)
+         values ($1, $2, $3) RETURNING import_id
     `,
       [organisationId, JSON.stringify(params.toImportUsers), params.channel],
     );
+
+    return result.rows[0].import_id;
   } catch (error) {
     const toOutput = createError(
       "SERVER_ERROR",
@@ -160,7 +163,69 @@ const processUserImport = async (params: {
   toImportUsers: ToImportUser[];
   channel: ImportChannel;
 }): Promise<void> => {
-  await insertToImportUsers(params);
+  // insert a transaction that includes everything
+  const importId = await insertToImportUsers(params);
+
+  if (process.env.SYNCHRONOUS_USER_IMPORT ?? 0) {
+    await mapUsers({ logger: params.logger, pool: params.pool, importId });
+    return;
+  }
+
+  await mapUsersAsync(importId);
 };
 
-//const mapUsers = async ()
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+const mapUsersAsync = async (_importId: string) => {
+  throw new Error("Not implemented yet");
+};
+
+const mapUsers = async (params: {
+  importId: string;
+  pool: Pool;
+  logger: FastifyBaseLogger;
+}) => {
+  const userImport = await getUsersImport(params);
+
+  console.log({ userImport });
+};
+
+const getUsersImport = async (params: {
+  importId: string;
+  pool: Pool;
+  logger: FastifyBaseLogger;
+}): Promise<UsersImport> => {
+  const client = await params.pool.connect();
+  try {
+    // for now the organisation id is randomic, we have
+    // to decide where to store that value in relation to the
+    // user
+    const result = await client.query<UsersImport>(
+      `
+        select 
+          organisation_id as "organisationId",
+          imported_at as "importedAt",
+          users_data as "usersData",
+          import_channel as "importChannel",
+          retry_count as "retryCount",
+          last_retry_at as "lastRetryAt",
+          import_id as "importId"
+        from users_imports where import_id = $1
+    `,
+      [params.importId],
+    );
+    if (!result.rowCount) {
+      throw new Error("Import id not found");
+    }
+    return result.rows[0];
+  } catch (error) {
+    const toOutput = createError(
+      "SERVER_ERROR",
+      `Error during gettings users import from db: ${(error as Error).message}`,
+      500,
+    )();
+    params.logger.error({ error: toOutput });
+    throw toOutput;
+  } finally {
+    client.release;
+  }
+};

@@ -32,7 +32,6 @@ export async function build(opts?: FastifyServerOptions) {
     schema: envSchema,
     dotenv: true,
   });
-
   app.register(fastifySwagger, {
     openapi: {
       info: {
