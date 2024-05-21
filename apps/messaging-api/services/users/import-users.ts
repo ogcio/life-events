@@ -78,6 +78,48 @@ const extractUsersFromRequest = async (
   return getUsersFromCsv(savedFiles[0].filepath);
 };
 
+export const importCsvFromRequest = async (params: {
+  req: FastifyRequest;
+  pool: Pool;
+}): Promise<void> => {
+  const usersToImport = await extractUsersFromRequest(params.req);
+
+  if (usersToImport.length === 0) {
+    throw new Error("Files must have at least one user");
+  }
+
+  await processUserImport({
+    pool: params.pool,
+    logger: params.req.log,
+    toImportUsers: usersToImport,
+    channel: "csv",
+  });
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getCsvExample = (): Promise<Buffer> =>
+  writeToBuffer([getMockCsvRecord()], {
+    headers: true,
+    alwaysWriteHeaders: true,
+  });
+
+export const importCsvRecords = async (params: {
+  pool: Pool;
+  logger: FastifyBaseLogger;
+  csvRecords: CsvRecord[];
+}): Promise<void> => {
+  const toImportUsers: ToImportUser[] = params.csvRecords.map((record) =>
+    csvRecordToToImportUser(record),
+  );
+
+  await processUserImport({
+    pool: params.pool,
+    logger: params.logger,
+    toImportUsers,
+    channel: "api",
+  });
+};
+
 const insertToImportUsers = async (params: {
   pool: Pool;
   logger: FastifyBaseLogger;
@@ -112,44 +154,13 @@ const insertToImportUsers = async (params: {
   }
 };
 
-export const importCsvFromRequest = async (params: {
-  req: FastifyRequest;
-  pool: Pool;
-}): Promise<void> => {
-  const usersToImport = await extractUsersFromRequest(params.req);
-
-  if (usersToImport.length === 0) {
-    throw new Error("Files must have at least one user");
-  }
-
-  await insertToImportUsers({
-    pool: params.pool,
-    logger: params.req.log,
-    toImportUsers: usersToImport,
-    channel: "csv",
-  });
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getCsvExample = (): Promise<Buffer> =>
-  writeToBuffer([getMockCsvRecord()], {
-    headers: true,
-    alwaysWriteHeaders: true,
-  });
-
-export const importCsvRecords = async (params: {
+const processUserImport = async (params: {
   pool: Pool;
   logger: FastifyBaseLogger;
-  csvRecords: CsvRecord[];
+  toImportUsers: ToImportUser[];
+  channel: ImportChannel;
 }): Promise<void> => {
-  const toImportUsers: ToImportUser[] = params.csvRecords.map((record) =>
-    csvRecordToToImportUser(record),
-  );
-
-  await insertToImportUsers({
-    pool: params.pool,
-    logger: params.logger,
-    toImportUsers,
-    channel: "api",
-  });
+  await insertToImportUsers(params);
 };
+
+//const mapUsers = async ()
