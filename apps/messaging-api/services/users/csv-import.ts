@@ -5,6 +5,22 @@ import "@fastify/multipart";
 import * as csv from "fast-csv";
 import { Pool } from "pg";
 import { organisationId } from "../../utils";
+import { format } from "fast-csv";
+
+const getEmptyCsvRecord = (): CsvRecord => ({
+  importIndex: 0,
+  publicIdentityId: null,
+  firstName: null,
+  lastName: null,
+  phoneNumber: null,
+  birthDate: null,
+  emailAddress: null,
+  addressCity: null,
+  addressZipCode: null,
+  addressStreet: null,
+  addressCountry: null,
+  addressRegion: null,
+});
 
 const normalizeValue = (value: string | undefined | null): string | null =>
   typeof value === "string" && value.length > 0 ? value : null;
@@ -92,3 +108,10 @@ export const importCsvFromRequest = async (params: {
     client.release;
   }
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getCsvHeader = (): Promise<Buffer> =>
+  csv.writeToBuffer([], {
+    headers: Object.keys(getEmptyCsvRecord()),
+    alwaysWriteHeaders: true,
+  });

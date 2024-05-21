@@ -1032,3 +1032,12 @@ paths:
                   - detail
                   - request_id
                   - name
+  /api/v1/users/csv/template:
+    get:
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string

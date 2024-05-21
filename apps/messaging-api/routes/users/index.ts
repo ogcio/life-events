@@ -1,6 +1,9 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
-import { importCsvFromRequest } from "../../services/users/csv-import";
+import {
+  getCsvHeader,
+  importCsvFromRequest,
+} from "../../services/users/csv-import";
 import { HttpError } from "../../types/httpErrors";
 
 export default async function users(app: FastifyInstance) {
@@ -17,8 +20,25 @@ export default async function users(app: FastifyInstance) {
       },
     },
     // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-    async function jobHandler(request, _reply) {
+    async (request: FastifyRequest, _reply: FastifyReply) => {
       await importCsvFromRequest({ req: request, pool: app.pg.pool });
+    },
+  );
+
+  app.get(
+    "/csv/template",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        response: {
+          200: Type.String(),
+        },
+      },
+    },
+    async (_request: FastifyRequest, reply: FastifyReply) => {
+      const buffer = await getCsvHeader();
+
+      reply.type("text/csv").send(buffer);
     },
   );
 }
