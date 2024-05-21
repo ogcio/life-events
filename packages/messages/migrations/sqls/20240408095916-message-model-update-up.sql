@@ -1,9 +1,3 @@
-/* Replace with your SQL commands */
-
-drop table email_template_translations;
-drop table email_templates;
-
-
 create table messages (
     id uuid not null default gen_random_uuid(),
     organisation_id uuid not null,
