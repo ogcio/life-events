@@ -1,3 +1,5 @@
+@import "../styles/globals.scss";
+
 .three-columns-layout {
   display: flex;
   flex-wrap: wrap;
@@ -9,13 +11,13 @@
   min-width: 0;
 }
 
-@media (max-width: 1024px) {
+@include tablet {
   .three-columns-layout .column {
     flex: 1 1 calc(50% - 25px);
   }
 }
 
-@media (max-width: 768px) {
+@include phone {
   .three-columns-layout .column {
     flex: 1 1 100%;
   }
@@ -36,7 +38,7 @@
   min-width: 0;
 }
 
-@media (max-width: 768px) {
+@include phone {
   .two-columns-layout .column {
     flex: 1 1 100%;
   }
