@@ -7,7 +7,7 @@ export default async function users(app: FastifyInstance) {
   app.post(
     "/csv",
     {
-      //preValidation: app.verifyUser,
+      preValidation: app.verifyUser,
       schema: {
         response: {
           202: Type.Null(),
