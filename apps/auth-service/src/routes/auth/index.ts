@@ -8,6 +8,8 @@ import { setCookie } from "./utils/cookies.js";
 import callback from "./callback.js";
 import streamToString from "./utils/streamToString.js";
 import {
+  CALLBACK_URL,
+  CLIENT_ID,
   REDIRECT_TIMEOUT,
   REDIRECT_URL,
   SESSION_ID,
@@ -53,13 +55,10 @@ export default async function login(app: FastifyInstance) {
             path.join(__dirname, "..", "static", "redirect.html"),
           );
 
-          let result = await streamToString(stream);
-          result = result.replace(SESSION_ID, sessionId);
-          result = result.replace(REDIRECT_URL, redirectUrl);
-          result = result.replaceAll(
-            REDIRECT_TIMEOUT,
-            app.config.REDIRECT_TIMEOUT,
-          );
+          const result = (await streamToString(stream))
+            .replace(SESSION_ID, sessionId)
+            .replace(REDIRECT_URL, redirectUrl)
+            .replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
 
           return reply.type("text/html").send(result);
         }
@@ -68,11 +67,11 @@ export default async function login(app: FastifyInstance) {
       redirectUrl = redirectUrl || "/";
 
       setCookie(request, reply, "redirectUrl", redirectUrl);
-
-      const stream = fs.createReadStream(
-        path.join(__dirname, "..", "static", "index.html"),
-      );
-      return reply.type("text/html").send(stream);
+      const authorizeUrl = app.config.MYGOVID_URL.replace(
+        CALLBACK_URL,
+        app.config.CALLBACK_URL,
+      ).replace(CLIENT_ID, app.config.CLIENT_ID);
+      return reply.redirect(authorizeUrl);
     },
   );
 

@@ -1,7 +1,7 @@
 import * as url from "url";
 import path from "path";
 import { FastifyInstance } from "fastify";
-import { PostAuthFormData } from "../../types/schemaDefinitions.js";
+import { TokenType } from "../../types/schemaDefinitions.js";
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors.js";
 import decodeJWT from "./utils/decodeJWT.js";
@@ -9,6 +9,8 @@ import { deleteCookie, setCookie } from "./utils/cookies.js";
 import fs from "fs";
 import streamToString from "./utils/streamToString.js";
 import {
+  CLIENT_SECRET,
+  CODE,
   REDIRECT_TIMEOUT,
   REDIRECT_URL,
   SESSION_ID,
@@ -17,15 +19,16 @@ import {
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 export default async (app: FastifyInstance) => {
-  app.post<{
-    Body: PostAuthFormData;
+  app.get<{
+    Querystring: { code: string };
   }>(
     "/callback",
     {
       schema: {
         tags: ["Auth"],
-        body: PostAuthFormData,
+        querystring: Type.Object({ code: Type.String() }),
         response: {
+          200: { type: "string" },
           302: {
             headers: {
               location: Type.String(),
@@ -36,17 +39,26 @@ export default async (app: FastifyInstance) => {
       },
     },
     async (request, reply) => {
-      const { id_token, password, public_servant = false } = request.body;
+      const tokenUrl = app.config.TOKEN_URL.replace(
+        CODE,
+        request.query.code,
+      ).replace(CLIENT_SECRET, app.config.CLIENT_SECRET);
 
-      const publicServantBoolean = new Boolean(public_servant);
+      let data: TokenType;
+      try {
+        const response = await fetch(tokenUrl, {
+          method: "POST",
+        });
 
-      const redirectUrl = request.cookies.redirectUrl || "/auth";
-
-      if (!id_token || password !== "123") {
-        reply.redirect("/auth");
+        data = (await response.json()) as TokenType;
+      } catch (error) {
+        app.log.error(error);
+        return reply.redirect("/auth");
       }
 
-      // Note, this is purely conceptual. There's no signing at this time. Read description of jose.decodeJwt for further info once we're at that stage.
+      const { id_token } = data;
+
+      // // Note, this is purely conceptual. There's no signing at this time. Read description of jose.decodeJwt for further info once we're at that stage.
       const { email, firstName, lastName } = decodeJWT(id_token);
 
       const q = await app.pg.query(
@@ -54,18 +66,13 @@ export default async (app: FastifyInstance) => {
           WITH get AS (
               SELECT id, is_public_servant FROM users WHERE govid_email=$1
             ), insert_new AS (
-                INSERT INTO users(govid_email, govid, user_name, is_public_servant)
-                values($1, $2, $3, $4)
+                INSERT INTO users(govid_email, govid, user_name)
+                values($1, $2, $3)
                 ON CONFLICT DO NOTHING
                 RETURNING id, is_public_servant
             )
             SELECT * FROM get UNION SELECT * FROM insert_new`,
-        [
-          email,
-          "not needed atm",
-          [firstName, lastName].join(" "),
-          publicServantBoolean,
-        ],
+        [email, "not needed atm", [firstName, lastName].join(" ")],
       );
 
       const [{ id: user_id }] = q.rows;
@@ -81,6 +88,7 @@ export default async (app: FastifyInstance) => {
 
       const [{ id: ssid }] = query.rows;
 
+      const redirectUrl = request.cookies.redirectUrl || "/auth";
       deleteCookie(request, reply, "redirectUrl", "");
 
       setCookie(request, reply, "sessionId", ssid);
@@ -89,10 +97,10 @@ export default async (app: FastifyInstance) => {
         path.join(__dirname, "..", "static", "redirect.html"),
       );
 
-      let result = await streamToString(stream);
-      result = result.replace(SESSION_ID, ssid);
-      result = result.replace(REDIRECT_URL, redirectUrl);
-      result = result.replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
+      const result = (await streamToString(stream))
+        .replace(SESSION_ID, ssid)
+        .replace(REDIRECT_URL, redirectUrl)
+        .replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
 
       return reply.type("text/html").send(result);
     },

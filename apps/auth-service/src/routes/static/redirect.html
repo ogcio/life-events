@@ -65,12 +65,12 @@
       class="icon-mygovid_logo"
     ></span>
 
-    <form id="redirect-form" method="POST" action="%redirectUrl%/api/auth">
+    <form id="redirect-form" method="POST" action="%REDIRECT_URL%/api/auth">
       <span
         >You are being redirected back to the application, if redirection does
         not happen within a few seconds,
         
-        <input type="text" style="display: none;" name="sessionId" value="%sessionId%">
+        <input type="text" style="display: none;" name="sessionId" value="%SESSION_ID%">
         
         <button
           type="submit"
