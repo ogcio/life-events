@@ -1,6 +1,10 @@
 import { FastifyRequest } from "fastify";
 import { createError } from "@fastify/error";
-import { CsvRecord, ToImportUser } from "../../types/usersSchemaDefinitions";
+import {
+  CsvRecord,
+  ImportStatus,
+  ToImportUser,
+} from "../../types/usersSchemaDefinitions";
 import "@fastify/multipart";
 import { parseFile, writeToBuffer } from "fast-csv";
 import { Pool } from "pg";
@@ -24,31 +28,34 @@ const getMockCsvRecord = (): CsvRecord => ({
 const normalizeValue = (value: string | undefined | null): string | null =>
   typeof value === "string" && value.length > 0 ? value : null;
 
+const csvRecordToToImportUser = (
+  toMap: CsvRecord,
+  importStatus: ImportStatus = "pending",
+): ToImportUser => ({
+  importIndex: Number(toMap.importIndex),
+  publicIdentityId: normalizeValue(toMap.publicIdentityId),
+  firstName: normalizeValue(toMap.firstName),
+  lastName: normalizeValue(toMap.lastName),
+  phoneNumber: normalizeValue(toMap.phoneNumber),
+  birthDate: normalizeValue(toMap.birthDate),
+  emailAddress: normalizeValue(toMap.emailAddress),
+  address: {
+    city: normalizeValue(toMap.addressCity),
+    country: normalizeValue(toMap.addressCountry),
+    region: normalizeValue(toMap.addressRegion),
+    zipCode: normalizeValue(toMap.addressZipCode),
+    street: normalizeValue(toMap.addressStreet),
+  },
+  importStatus: importStatus,
+});
+
 export const getUsersFromCsv = async (
   filePath: string,
 ): Promise<ToImportUser[]> => {
   const records: ToImportUser[] = [];
   const parser = parseFile<CsvRecord, ToImportUser>(filePath, {
     headers: true,
-  }).transform(
-    (row: CsvRecord): ToImportUser => ({
-      importIndex: Number(row.importIndex),
-      publicIdentityId: normalizeValue(row.publicIdentityId),
-      firstName: normalizeValue(row.firstName),
-      lastName: normalizeValue(row.lastName),
-      phoneNumber: normalizeValue(row.phoneNumber),
-      birthDate: normalizeValue(row.birthDate),
-      emailAddress: normalizeValue(row.emailAddress),
-      address: {
-        city: normalizeValue(row.addressCity),
-        country: normalizeValue(row.addressCountry),
-        region: normalizeValue(row.addressRegion),
-        zipCode: normalizeValue(row.addressZipCode),
-        street: normalizeValue(row.addressStreet),
-      },
-      importStatus: "pending",
-    }),
-  );
+  }).transform((row: CsvRecord): ToImportUser => csvRecordToToImportUser(row));
 
   for await (const row of parser) {
     records.push(row);
@@ -114,3 +121,5 @@ export const getCsvExample = (): Promise<Buffer> =>
     headers: true,
     alwaysWriteHeaders: true,
   });
+
+// TODO Write a method that gets csv records as input and stores to to import
