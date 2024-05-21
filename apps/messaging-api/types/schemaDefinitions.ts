@@ -108,14 +108,6 @@ export type ParamsWithPaymentRequestId = Static<
 /**
  * Transaction status
  */
-export enum TransactionStatusesEnum {
-  Initiated = "initiated",
-  Pending = "pending",
-  Succeeded = "succeeded",
-  Cancelled = "cancelled",
-  Failed = "failed",
-}
-
 export const TransactionStatusesSchema = Type.Union([
   Type.Literal("initiated"),
   Type.Literal("pending"),

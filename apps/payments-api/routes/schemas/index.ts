@@ -168,14 +168,6 @@ export type ParamsWithPaymentRequestId = Static<
 /**
  * Transaction status
  */
-export enum TransactionStatusesEnum {
-  Initiated = "initiated",
-  Pending = "pending",
-  Succeeded = "succeeded",
-  Cancelled = "cancelled",
-  Failed = "failed",
-}
-
 export const TransactionStatuses = Type.Union([
   Type.Literal("initiated"),
   Type.Literal("pending"),
@@ -183,7 +175,6 @@ export const TransactionStatuses = Type.Union([
   Type.Literal("cancelled"),
   Type.Literal("failed"),
 ]);
-export type TransactionStatuses = Static<typeof TransactionStatuses>;
 
 /**
  * Transactions types
@@ -205,7 +196,6 @@ export const FullTransaction = Type.Object({
     email: Type.String(),
   }),
 });
-export type FullTransaction = Static<typeof FullTransaction>;
 
 export const Transaction = Type.Composite([
   Type.Pick(FullTransaction, [
@@ -218,7 +208,6 @@ export const Transaction = Type.Composite([
     title: Type.String(),
   }),
 ]);
-export type Transaction = Static<typeof Transaction>;
 
 export const TransactionDetails = Type.Composite([
   Transaction,
@@ -229,13 +218,11 @@ export const TransactionDetails = Type.Composite([
     paymentRequestId: Type.String(),
   }),
 ]);
-export type TransactionDetails = Static<typeof TransactionDetails>;
 
 export const Transactions = Type.Array(TransactionDetails);
 export type Transactions = Static<typeof Transactions>;
 
 export const UpdateTransactionBody = Type.Pick(Transaction, ["status"]);
-export type UpdateTransactionBody = Static<typeof UpdateTransactionBody>;
 
 export const CreateTransactionBody = Type.Omit(FullTransaction, [
   "transactionId",
@@ -244,7 +231,6 @@ export const CreateTransactionBody = Type.Omit(FullTransaction, [
   "updatedAt",
   "userId",
 ]);
-export type CreateTransactionBody = Static<typeof CreateTransactionBody>;
 
 export const ParamsWithTransactionId = Type.Object({
   transactionId: Type.String(),

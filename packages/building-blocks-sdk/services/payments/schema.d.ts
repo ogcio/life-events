@@ -668,25 +668,52 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              transactionId: string;
-              status:
-                | "initiated"
-                | "pending"
-                | "succeeded"
-                | "cancelled"
-                | "failed";
-              amount: number;
-              updatedAt: string;
-              title: string;
-              extPaymentId: string;
-              userId: string;
-              userData: {
-                name: string;
-                email: string;
+              data: {
+                transactionId: string;
+                status:
+                  | "initiated"
+                  | "pending"
+                  | "succeeded"
+                  | "cancelled"
+                  | "failed";
+                amount: number;
+                updatedAt: string;
+                title: string;
+                extPaymentId: string;
+                userId: string;
+                userData: {
+                  name: string;
+                  email: string;
+                };
+                providerName: string;
+                providerType: string;
+                paymentRequestId: string;
               };
-              providerName: string;
-              providerType: string;
-              paymentRequestId: string;
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -831,7 +858,34 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              id: string;
+              data: {
+                id: string;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -858,7 +912,34 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              intentId: string;
+              data: {
+                intentId: string;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -959,25 +1040,52 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              transactionId: string;
-              status:
-                | "initiated"
-                | "pending"
-                | "succeeded"
-                | "cancelled"
-                | "failed";
-              amount: number;
-              updatedAt: string;
-              title: string;
-              extPaymentId: string;
-              userId: string;
-              userData: {
-                name: string;
-                email: string;
+              data: {
+                transactionId: string;
+                status:
+                  | "initiated"
+                  | "pending"
+                  | "succeeded"
+                  | "cancelled"
+                  | "failed";
+                amount: number;
+                updatedAt: string;
+                title: string;
+                extPaymentId: string;
+                userId: string;
+                userData: {
+                  name: string;
+                  email: string;
+                };
+                providerName: string;
+                providerType: string;
+                paymentRequestId: string;
               };
-              providerName: string;
-              providerType: string;
-              paymentRequestId: string;
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
