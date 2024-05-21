@@ -95,6 +95,7 @@ export const UsersImportSchema = Type.Object({
   importChannel: ImportChannelUnionType,
   retryCount: Type.Integer({ default: 0 }),
   lastRetryAt: NullableStringType,
+  importId: Type.String(),
 });
 
 export type UsersImport = Static<typeof UsersImportSchema>;
