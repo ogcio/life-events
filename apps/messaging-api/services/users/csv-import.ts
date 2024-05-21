@@ -2,24 +2,23 @@ import { FastifyRequest } from "fastify";
 import { createError } from "@fastify/error";
 import { CsvRecord, ToImportUser } from "../../types/usersSchemaDefinitions";
 import "@fastify/multipart";
-import * as csv from "fast-csv";
+import { parseFile, writeToBuffer } from "fast-csv";
 import { Pool } from "pg";
 import { organisationId } from "../../utils";
-import { format } from "fast-csv";
 
-const getEmptyCsvRecord = (): CsvRecord => ({
-  importIndex: 0,
-  publicIdentityId: null,
-  firstName: null,
-  lastName: null,
-  phoneNumber: null,
-  birthDate: null,
-  emailAddress: null,
-  addressCity: null,
-  addressZipCode: null,
-  addressStreet: null,
-  addressCountry: null,
-  addressRegion: null,
+const getMockCsvRecord = (): CsvRecord => ({
+  importIndex: 1,
+  publicIdentityId: "PUBLIC_IDENTITY_ID",
+  firstName: "First",
+  lastName: "Surname",
+  phoneNumber: "+313124532112",
+  birthDate: "01/01/1990",
+  emailAddress: "stub@email.address.com",
+  addressCity: "City",
+  addressZipCode: "00000",
+  addressStreet: "Long Street 123",
+  addressCountry: "Country",
+  addressRegion: "Region",
 });
 
 const normalizeValue = (value: string | undefined | null): string | null =>
@@ -29,27 +28,27 @@ export const getUsersFromCsv = async (
   filePath: string,
 ): Promise<ToImportUser[]> => {
   const records: ToImportUser[] = [];
-  const parser = csv
-    .parseFile<CsvRecord, ToImportUser>(filePath, { headers: true })
-    .transform(
-      (row: CsvRecord): ToImportUser => ({
-        importIndex: Number(row.importIndex),
-        publicIdentityId: normalizeValue(row.publicIdentityId),
-        firstName: normalizeValue(row.firstName),
-        lastName: normalizeValue(row.lastName),
-        phoneNumber: normalizeValue(row.phoneNumber),
-        birthDate: normalizeValue(row.birthDate),
-        emailAddress: normalizeValue(row.emailAddress),
-        address: {
-          city: normalizeValue(row.addressCity),
-          country: normalizeValue(row.addressCountry),
-          region: normalizeValue(row.addressRegion),
-          zipCode: normalizeValue(row.addressZipCode),
-          street: normalizeValue(row.addressStreet),
-        },
-        importStatus: "pending",
-      }),
-    );
+  const parser = parseFile<CsvRecord, ToImportUser>(filePath, {
+    headers: true,
+  }).transform(
+    (row: CsvRecord): ToImportUser => ({
+      importIndex: Number(row.importIndex),
+      publicIdentityId: normalizeValue(row.publicIdentityId),
+      firstName: normalizeValue(row.firstName),
+      lastName: normalizeValue(row.lastName),
+      phoneNumber: normalizeValue(row.phoneNumber),
+      birthDate: normalizeValue(row.birthDate),
+      emailAddress: normalizeValue(row.emailAddress),
+      address: {
+        city: normalizeValue(row.addressCity),
+        country: normalizeValue(row.addressCountry),
+        region: normalizeValue(row.addressRegion),
+        zipCode: normalizeValue(row.addressZipCode),
+        street: normalizeValue(row.addressStreet),
+      },
+      importStatus: "pending",
+    }),
+  );
 
   for await (const row of parser) {
     records.push(row);
@@ -110,8 +109,8 @@ export const importCsvFromRequest = async (params: {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getCsvHeader = (): Promise<Buffer> =>
-  csv.writeToBuffer([], {
-    headers: Object.keys(getEmptyCsvRecord()),
+export const getCsvExample = (): Promise<Buffer> =>
+  writeToBuffer([getMockCsvRecord()], {
+    headers: true,
     alwaysWriteHeaders: true,
   });
