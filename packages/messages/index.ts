@@ -6,7 +6,6 @@ import nodemailer from "nodemailer";
 // We just need to keep the same SendEmail interface
 export const send = twilioSend;
 
-export * from "./templates";
 export * from "./notifications";
 export * from "./types";
 
