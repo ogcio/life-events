@@ -249,7 +249,7 @@ const storeState = async (params: {
    insert into message_template_states(user_id, state)
    values($1, $2)
    on conflict(user_id) do update
-   set state = message_template_states.state || $2
+   set state = $2
    where message_template_states.user_id = $1
   `,
     [params.userId, params.state],
@@ -270,9 +270,9 @@ export default async (props: {
     const langAdded = formData.get("lang-add")?.toString();
 
     const { userId } = await PgSessions.get();
+
     const lang = props.searchParams.lang!;
     let state = (await getState(userId)) ?? { content: [], fields: [] };
-
     const stateForUrlQueryLang = state?.content?.find(
       (c) => c.lang === props.searchParams.lang!,
     );
@@ -467,6 +467,7 @@ export default async (props: {
     userId: string;
   }> => {
     const { userId } = await PgSessions.get();
+
     const client = new Messaging(userId);
     const state = await pgpool
       .query<{ state: StoredState }>(
@@ -545,7 +546,7 @@ export default async (props: {
       currentLanguage: props.searchParams.lang || "en",
     });
 
-  if (!previousState) {
+  if (!previousState && newState) {
     await storeState({ state: newState!, userId });
   }
 
