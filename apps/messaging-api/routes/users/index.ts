@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
 import {
-  getCsvHeader,
+  getCsvExample,
   importCsvFromRequest,
 } from "../../services/users/csv-import";
 import { HttpError } from "../../types/httpErrors";
@@ -36,7 +36,7 @@ export default async function users(app: FastifyInstance) {
       },
     },
     async (_request: FastifyRequest, reply: FastifyReply) => {
-      const buffer = await getCsvHeader();
+      const buffer = await getCsvExample();
 
       reply.type("text/csv").send(buffer);
     },
