@@ -1,5 +1,9 @@
 {
   "LandingPage": {
+    "AlphaBanner": {
+      "tag": "Alpha",
+      "bannerText": "This is a new service - your <url>feedback</url> will help us to improve it."
+    },
     "sections": {
       "main": {
         "title": "Build and run online services easily",
@@ -11,12 +15,12 @@
       },
       "payments": {
         "title": "Payments",
-        "description": "Make your service look like gov.ie with guides for applying layout, typography, colour and images.Make your service look like gov.ie with guides for applying layout, typography, colour and images.",
+        "description": "Empower your public sector department with a robust payment system designed to streamline financial transactions securely and efficiently.Payments Building Block is secure and Payment Card Industry (PCI) compliant. Revolutionise the way you manage payments and elevate the experience for civil servants and citizens with Payments Building Block today.",
         "cta": "Explore Payments"
       },
       "messaging": {
         "title": "Messaging",
-        "description": "Make your service look like gov.ie with guides for applying layout, typography, colour and images.Make your service look like gov.ie with guides for applying layout, typography, colour and images.",
+        "description": "Integrate Messaging, the centralised platform for all-inclusive communication solution tailored for public sector entities, to streamline interactions with citizens.",
         "cta": "Browse Messaging"
       },
       "designSystem": {
@@ -27,7 +31,7 @@
       },
       "forms": {
         "title": "Forms",
-        "description": "Make your service look like gov.ie with guides for applying layout, typography, colour and images.Make your service look like gov.ie with guides for applying layout, typography, colour and images.",
+        "description": "Enhance your public sector department's operations with FormsIE, a comprehensive solution tailored for crafting and handling online forms.",
         "cta": "Browse Forms"
       },
       "advantages": {
@@ -64,7 +68,7 @@
         "descriptionP1": "Your users can complete a form, send you information, pay for things and receive notifications with GOV.IE Digital Service Platform. It's low cost, easy to set up and has accessibility built in from the start.",
 
         "descriptionP2": "You can use one, some, or all of the digital tools to support your service.",
-        "cta": "View full suite"
+        "cta": "Sign up to learn more"
       }
     }
   }
