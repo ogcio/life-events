@@ -3,9 +3,10 @@ import { Type } from "@sinclair/typebox";
 import {
   getCsvExample,
   importCsvFromRequest,
-} from "../../services/users/csv-import";
+  importCsvRecords,
+} from "../../services/users/import-users";
 import { HttpError } from "../../types/httpErrors";
-import { CsvRecordSchema } from "../../types/usersSchemaDefinitions";
+import { CsvRecord, CsvRecordSchema } from "../../types/usersSchemaDefinitions";
 
 const tags = ["Users"];
 
@@ -47,10 +48,10 @@ export default async function users(app: FastifyInstance) {
     },
   );
 
-  app.post(
+  app.post<{ Body: CsvRecord[] }>(
     "/import",
     {
-      preValidation: app.verifyUser,
+      //preValidation: app.verifyUser,
       schema: {
         tags,
         body: Type.Array(CsvRecordSchema),
@@ -63,7 +64,11 @@ export default async function users(app: FastifyInstance) {
     },
     // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     async (request: FastifyRequest, _reply: FastifyReply) => {
-      await importCsvFromRequest({ req: request, pool: app.pg.pool });
+      await importCsvRecords({
+        pool: app.pg.pool,
+        logger: request.log,
+        csvRecords: request.body as CsvRecord[],
+      });
     },
   );
 }

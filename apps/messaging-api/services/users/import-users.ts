@@ -1,7 +1,8 @@
-import { FastifyRequest } from "fastify";
+import { FastifyBaseLogger, FastifyRequest } from "fastify";
 import { createError } from "@fastify/error";
 import {
   CsvRecord,
+  ImportChannel,
   ImportStatus,
   ToImportUser,
 } from "../../types/usersSchemaDefinitions";
@@ -77,16 +78,12 @@ const extractUsersFromRequest = async (
   return getUsersFromCsv(savedFiles[0].filepath);
 };
 
-export const importCsvFromRequest = async (params: {
-  req: FastifyRequest;
+const insertToImportUsers = async (params: {
   pool: Pool;
+  logger: FastifyBaseLogger;
+  toImportUsers: ToImportUser[];
+  channel: ImportChannel;
 }): Promise<void> => {
-  const usersToImport = await extractUsersFromRequest(params.req);
-
-  if (usersToImport.length === 0) {
-    throw new Error("Files must have at least one user");
-  }
-
   const client = await params.pool.connect();
   try {
     // for now the organisation id is randomic, we have
@@ -97,10 +94,10 @@ export const importCsvFromRequest = async (params: {
         insert into users_imports(
             organisation_id,
             users_data,
-            import_channel
+            import_channel)
          values ($1, $2, $3)
     `,
-      [organisationId, JSON.stringify(usersToImport), "csv"],
+      [organisationId, JSON.stringify(params.toImportUsers), params.channel],
     );
   } catch (error) {
     const toOutput = createError(
@@ -108,11 +105,29 @@ export const importCsvFromRequest = async (params: {
       `Error during CSV file store on db: ${(error as Error).message}`,
       500,
     )();
-    params.req.log.error({ error: toOutput });
+    params.logger.error({ error: toOutput });
     throw toOutput;
   } finally {
     client.release;
   }
+};
+
+export const importCsvFromRequest = async (params: {
+  req: FastifyRequest;
+  pool: Pool;
+}): Promise<void> => {
+  const usersToImport = await extractUsersFromRequest(params.req);
+
+  if (usersToImport.length === 0) {
+    throw new Error("Files must have at least one user");
+  }
+
+  await insertToImportUsers({
+    pool: params.pool,
+    logger: params.req.log,
+    toImportUsers: usersToImport,
+    channel: "csv",
+  });
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -122,4 +137,19 @@ export const getCsvExample = (): Promise<Buffer> =>
     alwaysWriteHeaders: true,
   });
 
-// TODO Write a method that gets csv records as input and stores to to import
+export const importCsvRecords = async (params: {
+  pool: Pool;
+  logger: FastifyBaseLogger;
+  csvRecords: CsvRecord[];
+}): Promise<void> => {
+  const toImportUsers: ToImportUser[] = params.csvRecords.map((record) =>
+    csvRecordToToImportUser(record),
+  );
+
+  await insertToImportUsers({
+    pool: params.pool,
+    logger: params.logger,
+    toImportUsers,
+    channel: "api",
+  });
+};
