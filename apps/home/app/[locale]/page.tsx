@@ -18,156 +18,150 @@ export default async function () {
     <>
       <Header />
 
-      <div className="govie-width-container" style={{ maxWidth: "1200px" }}>
-        <div style={{ width: "100%", margin: "0 auto", paddingTop: "40px" }}>
-          <div className="two-columns-layout">
-            <div className="column">
-              <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
+      <div className="govie-width-container custom-width-container">
+        <hr className="govie-section-break  govie-section-break--m" />
 
-              <p className="govie-body">{t("sections.main.description")}</p>
-              <a href="/">
-                <button
-                  id="button"
-                  data-module="govie-button"
-                  className="govie-button govie-button--primary"
-                >
-                  {t("sections.main.cta")}
-                  <svg
-                    className="govie-button__icon-right"
-                    width="16"
-                    height="17"
-                    viewBox="0 0 16 17"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M8 0.5L6.59 1.91L12.17 7.5H0V9.5H12.17L6.59 15.09L8 16.5L16 8.5L8 0.5Z"
-                      fill="white"
-                    ></path>
-                  </svg>
-                </button>
-              </a>
+        <div className="two-columns-layout">
+          <div className="column">
+            <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
 
-              <hr className="govie-section-break" />
-
-              <h1 className="govie-heading-l">
-                {t("sections.main.secondaryTitle")}
-              </h1>
-              <p className="govie-body">{t("sections.main.secondaryP1")}</p>
-              <p className="govie-body">{t("sections.main.secondaryP2")}</p>
-            </div>
-            <div className="column">
-              <Image
-                src={hero}
-                alt={t("sections.main.title")}
-                layout="responsive"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
-
-      <div className="govie-width-container" style={{ maxWidth: "1200px" }}>
-        <div style={{ width: "100%", margin: "0 auto" }}>
-          <div className="two-columns-layout align-items-center">
-            <div className="column">
-              <h1 className="govie-heading-l">
-                {t("sections.payments.title")}
-              </h1>
-
-              <p className="govie-body">{t("sections.payments.description")}</p>
-              <a className="govie-link" href="/">
-                {t("sections.payments.cta")}
-              </a>
-            </div>
-            <div className="column">
-              <Image
-                src={payments}
-                alt={t("sections.payments.title")}
-                layout="responsive"
-              />
-            </div>
-          </div>
-
-          <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
-
-          <div className="two-columns-layout align-items-center">
-            <div className="column">
-              <Image
-                src={messaging}
-                alt={t("sections.messaging.title")}
-                layout="responsive"
-              />
-            </div>
-            <div className="column">
-              <h1 className="govie-heading-l">
-                {t("sections.messaging.title")}
-              </h1>
-
-              <p className="govie-body">{t("sections.payments.description")}</p>
-              <a className="govie-link" href="/">
-                {t("sections.messaging.cta")}
-              </a>
-            </div>
-          </div>
-
-          <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
-
-          <div className="two-columns-layout align-items-center">
-            <div className="column">
-              <strong
-                className="govie-tag govie-tag--green govie-phase-banner__content__tag"
-                style={{
-                  marginBottom: "10px",
-                }}
+            <p className="govie-body">{t("sections.main.description")}</p>
+            <a href="/">
+              <button
+                id="button"
+                data-module="govie-button"
+                className="govie-button govie-button--primary"
               >
-                {t("sections.designSystem.inDev").toUpperCase()}
-              </strong>
-              <h1 className="govie-heading-l">
-                {t("sections.designSystem.title")}
-              </h1>
+                {t("sections.main.cta")}
+                <svg
+                  className="govie-button__icon-right"
+                  width="16"
+                  height="17"
+                  viewBox="0 0 16 17"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 0.5L6.59 1.91L12.17 7.5H0V9.5H12.17L6.59 15.09L8 16.5L16 8.5L8 0.5Z"
+                    fill="white"
+                  ></path>
+                </svg>
+              </button>
+            </a>
 
-              <p className="govie-body">
-                {t("sections.designSystem.description")}
-              </p>
-              <a className="govie-link" href="/">
-                {t("sections.designSystem.cta")}
-              </a>
-            </div>
-            <div className="column">
-              <Image
-                src={designSystem}
-                alt={t("sections.designSystem.title")}
-                layout="responsive"
-              />
-            </div>
+            <hr className="govie-section-break" />
+
+            <h1 className="govie-heading-l">
+              {t("sections.main.secondaryTitle")}
+            </h1>
+            <p className="govie-body">{t("sections.main.secondaryP1")}</p>
+            <p className="govie-body">{t("sections.main.secondaryP2")}</p>
           </div>
+          <div className="column">
+            <Image
+              src={hero}
+              alt={t("sections.main.title")}
+              layout="responsive"
+            />
+          </div>
+        </div>
+      </div>
+      <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
-          <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
-          <div className="two-columns-layout align-items-center">
-            <div className="column">
-              <Image
-                src={forms}
-                alt={t("sections.forms.title")}
-                layout="responsive"
-              />
-            </div>
-            <div className="column">
-              <h1 className="govie-heading-l">{t("sections.forms.title")}</h1>
+      <div className="govie-width-container custom-width-container">
+        <div className="two-columns-layout align-items-center">
+          <div className="column">
+            <h1 className="govie-heading-l">{t("sections.payments.title")}</h1>
 
-              <p className="govie-body">{t("sections.payments.description")}</p>
-              <a className="govie-link" href="/">
-                {t("sections.forms.cta")}
-              </a>
-            </div>
+            <p className="govie-body">{t("sections.payments.description")}</p>
+            <a className="govie-link" href="/">
+              {t("sections.payments.cta")}
+            </a>
+          </div>
+          <div className="column">
+            <Image
+              src={payments}
+              alt={t("sections.payments.title")}
+              layout="responsive"
+            />
+          </div>
+        </div>
+
+        <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
+
+        <div className="two-columns-layout align-items-center">
+          <div className="column">
+            <Image
+              src={messaging}
+              alt={t("sections.messaging.title")}
+              layout="responsive"
+            />
+          </div>
+          <div className="column">
+            <h1 className="govie-heading-l">{t("sections.messaging.title")}</h1>
+
+            <p className="govie-body">{t("sections.payments.description")}</p>
+            <a className="govie-link" href="/">
+              {t("sections.messaging.cta")}
+            </a>
+          </div>
+        </div>
+
+        <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
+
+        <div className="two-columns-layout align-items-center">
+          <div className="column">
+            <strong
+              className="govie-tag govie-tag--green govie-phase-banner__content__tag"
+              style={{
+                marginBottom: "10px",
+              }}
+            >
+              {t("sections.designSystem.inDev").toUpperCase()}
+            </strong>
+            <h1 className="govie-heading-l">
+              {t("sections.designSystem.title")}
+            </h1>
+
+            <p className="govie-body">
+              {t("sections.designSystem.description")}
+            </p>
+            <a className="govie-link" href="/">
+              {t("sections.designSystem.cta")}
+            </a>
+          </div>
+          <div className="column">
+            <Image
+              src={designSystem}
+              alt={t("sections.designSystem.title")}
+              layout="responsive"
+            />
+          </div>
+        </div>
+
+        <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
+        <div className="two-columns-layout align-items-center">
+          <div className="column">
+            <Image
+              src={forms}
+              alt={t("sections.forms.title")}
+              layout="responsive"
+            />
+          </div>
+          <div className="column">
+            <h1 className="govie-heading-l">{t("sections.forms.title")}</h1>
+
+            <p className="govie-body">{t("sections.payments.description")}</p>
+            <a className="govie-link" href="/">
+              {t("sections.forms.cta")}
+            </a>
           </div>
         </div>
       </div>
 
       <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
-      <div className="govie-width-container" style={{ maxWidth: "1200px" }}>
+      <div className="govie-width-container custom-width-container">
         <div>
           <h1 className="govie-heading-l">{t("sections.advantages.title")}</h1>
           <p className="govie-body">{t("sections.advantages.description")}</p>
