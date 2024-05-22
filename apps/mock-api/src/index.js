@@ -49,6 +49,8 @@ await fastify.register(fastifyPostgres, {
   database: fastify.config.POSTGRES_DB_NAME_SHARED,
 });
 
+await fastify.register(import("@fastify/formbody"));
+
 fastify.get("/health", async function handler() {
   return { ping: "pong" };
 });

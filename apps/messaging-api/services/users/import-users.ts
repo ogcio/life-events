@@ -12,6 +12,10 @@ import { parseFile, writeToBuffer } from "fast-csv";
 import { Pool } from "pg";
 import { organisationId } from "../../utils";
 
+const isError = (err: unknown): err is Error => {
+  return err instanceof Error && "message" in err;
+};
+
 const getMockCsvRecord = (): CsvRecord => ({
   importIndex: 1,
   publicIdentityId: "PUBLIC_IDENTITY_ID",
@@ -145,12 +149,14 @@ const insertToImportUsers = async (params: {
 
     return result.rows[0].import_id;
   } catch (error) {
+    const message = isError(error) ? error.message : "unknown error";
     const toOutput = createError(
       "SERVER_ERROR",
-      `Error during CSV file store on db: ${(error as Error).message}`,
+      `Error during CSV file store on db: ${message}`,
       500,
     )();
     params.logger.error({ error: toOutput });
+
     throw toOutput;
   } finally {
     client.release;
@@ -174,7 +180,6 @@ const processUserImport = async (params: {
   await mapUsersAsync(importId);
 };
 
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const mapUsersAsync = async (_importId: string) => {
   throw new Error("Not implemented yet");
 };
@@ -218,9 +223,10 @@ const getUsersImport = async (params: {
     }
     return result.rows[0];
   } catch (error) {
+    const message = isError(error) ? error.message : "unknown error";
     const toOutput = createError(
       "SERVER_ERROR",
-      `Error during gettings users import from db: ${(error as Error).message}`,
+      `Error during gettings users import from db: ${message}`,
       500,
     )();
     params.logger.error({ error: toOutput });
