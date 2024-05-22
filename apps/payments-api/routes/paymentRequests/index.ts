@@ -44,8 +44,6 @@ export default async function paymentRequests(app: FastifyInstance) {
       let totalCountResult;
       try {
         const from = `from payment_requests pr`;
-        const joins = `left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-        left join payment_providers pp on ppr.provider_id = pp.provider_id`;
         const conditions = `where pr.user_id = $1`;
         result = await app.pg.query(
           `select pr.title,
@@ -67,7 +65,8 @@ export default async function paymentRequests(app: FastifyInstance) {
               ELSE '[]'::json
               END as providers
           ${from}
-          ${joins}
+          left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id 
+          left join payment_providers pp on ppr.provider_id = pp.provider_id
           ${conditions}
           group by pr.payment_request_id
           ORDER BY pr.created_at DESC
@@ -78,7 +77,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         totalCountResult = await app.pg.query(
           `select 
             count(*) as "totalCount"
-          FROM payment_requests pr
+          ${from}
           ${conditions}`,
           [userId],
         );
