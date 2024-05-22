@@ -74,7 +74,7 @@
   "sendAMessage": {
     "ComposeMessageMeta": {
       "title": "Send a message",
-      "chooseTransportation": "Choose preferred transport",
+      "chooseTransportation": "Choose a preferred transport",
       "email": "Email",
       "sms": "SMS",
       "postalService": "Postal service",
@@ -95,8 +95,13 @@
       "plainTextLabel": "Plain text"
     },
     "EmailPreview": {
+      "title": "Preview",
       "submitText": "Continue to recipients",
-      "backLink": "Back to edit"
+      "backLink": "Back",
+      "subject": "Subject",
+      "excerpt": "Excerpt",
+      "richText": "Rich text",
+      "plainText": "Plain text"
     },
     "EmailRecipients": {
       "title": "Add recipients",
@@ -104,7 +109,7 @@
       "addRecipientHint": "Added recipients will be added below",
       "add": "Add",
       "submitText": "Continue to schedule",
-      "backLink": "Back to message",
+      "backLink": "Back",
       "tableRecipientsHeader": "Recipients",
       "tableRemoveButtonText": "Remove"
     },
@@ -130,7 +135,7 @@
       "hour": "HH",
       "minute": "MM",
       "submitText": "Send message",
-      "backLink": "Back to recipients"
+      "backLink": "Back"
     },
     "SuccessForm": {
       "title": "Your message has been sent",

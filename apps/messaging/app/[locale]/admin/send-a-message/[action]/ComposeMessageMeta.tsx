@@ -41,97 +41,101 @@ export default async (props: MessageCreateProps) => {
   );
 
   return (
-    <form action={submit}>
-      <h1 className="govie-heading-l">{t("title")}</h1>
+    <div className="govie-grid-column-two-thirds-from-desktop">
+      <form action={submit}>
+        <h1>
+          <span style={{ margin: "unset" }} className="govie-heading-xl">
+            {t("title")}
+          </span>
+        </h1>
 
-      <hr />
-
-      {/* Select transportation checkboxes */}
-      <div className="govie-form-group">
-        <h3 className="govie-heading-s">{t("chooseTransportation")}</h3>
-
-        <fieldset className="govie-fieldset">
-          <div
-            className="govie-checkboxes govie-checkboxes--small"
-            data-module="govie-checkboxes"
-          >
-            <div className="govie-checkboxes__item">
-              <input
-                className="govie-checkboxes__input"
-                id="email"
-                name="email"
-                type="checkbox"
-                value="email"
-                defaultChecked={true}
-              />
-              <label
-                className="govie-label--s govie-checkboxes__label"
-                htmlFor="email"
-              >
-                {t("email")}
-              </label>
-            </div>
-            <div className="govie-checkboxes__item">
-              <input
-                className="govie-checkboxes__input"
-                id="sms"
-                name="sms"
-                type="checkbox"
-                value="sms"
-              />
-              <label
-                className="govie-label--s govie-checkboxes__label"
-                htmlFor="sms"
-              >
-                {t("sms")}
-              </label>
-            </div>
-            <div className="govie-checkboxes__item">
-              <input
-                className="govie-checkboxes__input"
-                id="postal"
-                name="postal"
-                type="checkbox"
-                value="postal"
-                disabled
-              />
-              <label
-                className="govie-label--s govie-checkboxes__label"
-                htmlFor="postal"
-              >
-                {t("postalService")}
-              </label>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      <hr />
-
-      {Boolean(templates?.length) ? (
+        {/* Select transportation checkboxes */}
         <div className="govie-form-group">
-          <h3>
-            <span className="govie-heading-s">
-              {t("chooseTemplateHeading")}
-            </span>
-          </h3>
-          <select className="govie-select" name="templateMetaId">
-            <option value="">{t("emptyTemplateOption")}</option>
-            {templates?.map((template) => (
-              <option
-                key={template.templateMetaId}
-                value={template.templateMetaId}
-              >
-                {template.templateName}
-              </option>
-            ))}
-          </select>
-        </div>
-      ) : null}
+          <h3 className="govie-heading-s">{t("chooseTransportation")}</h3>
 
-      <button className="govie-button" type="submit">
-        {t("submitText")}
-      </button>
-    </form>
+          <fieldset className="govie-fieldset">
+            <div
+              className="govie-checkboxes govie-checkboxes--small"
+              data-module="govie-checkboxes"
+            >
+              <div className="govie-checkboxes__item">
+                <input
+                  className="govie-checkboxes__input"
+                  id="email"
+                  name="email"
+                  type="checkbox"
+                  value="email"
+                  defaultChecked={true}
+                />
+                <label
+                  className="govie-label--s govie-checkboxes__label"
+                  htmlFor="email"
+                >
+                  {t("email")}
+                </label>
+              </div>
+              <div className="govie-checkboxes__item">
+                <input
+                  className="govie-checkboxes__input"
+                  id="sms"
+                  name="sms"
+                  type="checkbox"
+                  value="sms"
+                />
+                <label
+                  className="govie-label--s govie-checkboxes__label"
+                  htmlFor="sms"
+                >
+                  {t("sms")}
+                </label>
+              </div>
+              <div className="govie-checkboxes__item">
+                <input
+                  className="govie-checkboxes__input"
+                  id="postal"
+                  name="postal"
+                  type="checkbox"
+                  value="postal"
+                  disabled
+                />
+                <label
+                  className="govie-label--s govie-checkboxes__label"
+                  htmlFor="postal"
+                >
+                  {t("postalService")}
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <hr className="govie-section-break govie-section-break--visible" />
+
+        {Boolean(templates?.length) ? (
+          <div className="govie-form-group">
+            <h3>
+              <span className="govie-heading-s">
+                {t("chooseTemplateHeading")}
+              </span>
+            </h3>
+            <select className="govie-select" name="templateMetaId">
+              <option value="">{t("emptyTemplateOption")}</option>
+              {templates?.map((template) => (
+                <option
+                  key={template.templateMetaId}
+                  value={template.templateMetaId}
+                >
+                  {template.templateName}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
+
+        <button className="govie-button" type="submit">
+          {t("submitText")}
+        </button>
+      </form>
+    </div>
   );
 };
