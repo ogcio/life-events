@@ -5,7 +5,11 @@ import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 import { Payments } from "building-blocks-sdk";
 import BankTransferForm from "./BankTransferForm";
 import getRequestConfig from "../../../../../../i18n";
-import { errorHandler, getValidationErrors } from "../../../../../utils";
+import {
+  errorHandler,
+  getValidationErrors,
+  ValidationErrorTypes,
+} from "../../../../../utils";
 
 type Props = {
   params: {
@@ -18,6 +22,28 @@ export default async (props: Props) => {
   const { messages } = await getRequestConfig({ locale: props.params.locale });
 
   const { userId } = await PgSessions.get();
+
+  const errorFieldMapping = {
+    name: {
+      field: "providerName",
+      errorMessage: {
+        [ValidationErrorTypes.REQUIRED]: t("nameRequired"),
+      },
+    },
+    iban: {
+      field: "iban",
+      errorMessage: {
+        [ValidationErrorTypes.REQUIRED]: t("ibanRequired"),
+        [ValidationErrorTypes.INVALID]: t("ibanInvalid"),
+      },
+    },
+    accountHolderName: {
+      field: "accountHolderName",
+      errorMessage: {
+        [ValidationErrorTypes.REQUIRED]: t("accountHolderNameRequired"),
+      },
+    },
+  };
 
   async function handleSubmit(
     prevState: FormData,
@@ -32,10 +58,7 @@ export default async (props: Props) => {
       errors: {},
     };
 
-
-    const { data: result, error } = await new Payments(
-      userId,
-    ).createProvider({
+    const { data: result, error } = await new Payments(userId).createProvider({
       name: formData.get("provider_name") as string,
       type: "banktransfer",
       data: {
@@ -53,7 +76,10 @@ export default async (props: Props) => {
     }
 
     if (error.validation) {
-      validation.errors = getValidationErrors(error.validation);
+      validation.errors = getValidationErrors(
+        error.validation,
+        errorFieldMapping,
+      );
     }
 
     return validation;

@@ -1,60 +1,47 @@
-import { getTranslations } from "next-intl/server";
+"use client";
+import { useTranslations } from "next-intl";
+import InputField from "../../../../../components/InputField";
 
 type Props = {
-  providerName?: string;
-  merchantId?: string;
-  sharedSecret?: string;
+  state: {
+    errors: {
+      [key: string]: string;
+    };
+    defaultState: {
+      providerName?: string;
+      merchantId?: string;
+      sharedSecret?: string;
+    };
+  };
 };
 
-export default async ({
-  providerName = "",
-  merchantId = "",
-  sharedSecret = "",
-}: Props) => {
-  const t = await getTranslations("PaymentSetup.AddRealex");
+export default ({ state }: Props) => {
+  const t = useTranslations("AddRealex");
 
   return (
     <div className="govie-form-group ">
-      <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="provider_name">
-          {t("name")}
-        </label>
-        <div className="govie-hint">{t("nameHint")}</div>
-        <input
-          type="text"
-          id="provider_name"
-          name="provider_name"
-          className="govie-input"
-          defaultValue={providerName}
-        />
-      </div>
-      <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="merchant_id">
-          {t("merchantId")}
-        </label>
-        <div className="govie-hint">{t("merchantIdHint")}</div>
-        <input
-          type="text"
-          id="merchant_id"
-          name="merchant_id"
-          className="govie-input"
-          defaultValue={merchantId}
-        />
-      </div>
-      <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="shared_secret">
-          {t("sharedSecret")}
-        </label>
-        <div className="govie-hint">{t("sharedSecretHint")}</div>
-        <input
-          type="password"
-          id="shared_secret"
-          name="shared_secret"
-          className="govie-input"
-          defaultValue={sharedSecret}
-          autoComplete="off"
-        />
-      </div>
+      <InputField
+        name="provider_name"
+        label={t("name")}
+        hint={t("nameHint")}
+        error={state.errors.providerName}
+        defaultValue={state.defaultState?.providerName}
+      />
+      <InputField
+        name="merchant_id"
+        label={t("merchantId")}
+        hint={t("merchantIdHint")}
+        error={state.errors.merchantId}
+        defaultValue={state.defaultState?.merchantId}
+      />
+      <InputField
+        name="shared_secret"
+        label={t("sharedSecret")}
+        hint={t("sharedSecretHint")}
+        error={state.errors.sharedSecret}
+        defaultValue={state.defaultState?.sharedSecret}
+        autoComplete="off"
+      />
     </div>
   );
 };

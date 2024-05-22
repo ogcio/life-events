@@ -1,8 +1,13 @@
+import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
-import { errorHandler, getValidationErrors } from "../../../../../utils";
+import {
+  errorHandler,
+  getValidationErrors,
+  ValidationErrorTypes,
+} from "../../../../../utils";
 import RealexForm from "./RealexForm";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 
@@ -13,9 +18,31 @@ type Props = {
 };
 
 export default async (props: Props) => {
+  const t = await getTranslations("PaymentSetup.AddRealex");
   const { messages } = await getRequestConfig({ locale: props.params.locale });
 
   const { userId } = await PgSessions.get();
+
+  const errorFieldMapping = {
+    name: {
+      field: "providerName",
+      errorMessage: {
+        [ValidationErrorTypes.REQUIRED]: t("nameRequired"),
+      },
+    },
+    merchantId: {
+      field: "merchantId",
+      errorMessage: {
+        [ValidationErrorTypes.REQUIRED]: t("merchantIdRequired"),
+      },
+    },
+    sharedSecret: {
+      field: "sharedSecret",
+      errorMessage: {
+        [ValidationErrorTypes.REQUIRED]: t("sharedSecretRequired"),
+      },
+    },
+  };
 
   async function handleSubmit(
     prevState: FormData,
@@ -29,10 +56,7 @@ export default async (props: Props) => {
 
     const validation = { errors: {} };
 
-
-    const { data: result, error } = await new Payments(
-      userId,
-    ).createProvider({
+    const { data: result, error } = await new Payments(userId).createProvider({
       name: formData.get("provider_name") as string,
       type: "realex",
       data: {
@@ -48,7 +72,10 @@ export default async (props: Props) => {
     if (result) redirect("./");
 
     if (error.validation) {
-      validation.errors = getValidationErrors(error.validation);
+      validation.errors = getValidationErrors(
+        error.validation,
+        errorFieldMapping,
+      );
     }
 
     return validation;
