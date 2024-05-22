@@ -78,8 +78,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         totalCountResult = await app.pg.query(
           `select 
             count(*) as "totalCount"
-          ${from}
-          ${joins}
+          FROM payment_requests pr
           ${conditions}`,
           [userId],
         );
