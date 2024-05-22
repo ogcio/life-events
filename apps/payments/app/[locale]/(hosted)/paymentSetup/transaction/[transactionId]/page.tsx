@@ -18,7 +18,7 @@ async function getTransactionDetails(transactionId: string) {
     errorHandler(error);
   }
 
-  return result;
+  return result?.data;
 }
 
 async function confirmTransaction(transactionId: string) {
