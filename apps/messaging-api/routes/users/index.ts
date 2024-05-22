@@ -2,9 +2,9 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
 import {
   getCsvExample,
-  importCsvFromRequest,
+  importCsvFileFromRequest,
   importCsvRecords,
-} from "../../services/users/import-users";
+} from "../../services/users/import/import-users";
 import { HttpError } from "../../types/httpErrors";
 import { CsvRecord, CsvRecordSchema } from "../../types/usersSchemaDefinitions";
 
@@ -26,7 +26,7 @@ export default async function users(app: FastifyInstance) {
     },
     // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     async (request: FastifyRequest, _reply: FastifyReply) => {
-      await importCsvFromRequest({ req: request, pool: app.pg.pool });
+      await importCsvFileFromRequest({ req: request, pool: app.pg.pool });
     },
   );
 

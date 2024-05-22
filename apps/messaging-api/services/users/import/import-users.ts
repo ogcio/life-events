@@ -5,16 +5,13 @@ import {
   ImportChannel,
   ImportStatus,
   ToImportUser,
-  UsersImport,
-} from "../../types/usersSchemaDefinitions";
+} from "../../../types/usersSchemaDefinitions";
 import "@fastify/multipart";
 import { parseFile, writeToBuffer } from "fast-csv";
 import { Pool, PoolClient } from "pg";
-import { organisationId } from "../../utils";
-
-const isError = (err: unknown): err is Error => {
-  return err instanceof Error && "message" in err;
-};
+import { organisationId } from "../../../utils";
+import { isNativeError } from "util/types";
+import { mapUsers } from "./map-users";
 
 const getMockCsvRecord = (): CsvRecord => ({
   importIndex: 1,
@@ -70,7 +67,7 @@ export const getUsersFromCsv = async (
   return records;
 };
 
-const extractUsersFromRequest = async (
+const extractUsersFromMultipartRequest = async (
   req: FastifyRequest,
 ): Promise<ToImportUser[]> => {
   const file = await req.files();
@@ -83,11 +80,11 @@ const extractUsersFromRequest = async (
   return getUsersFromCsv(savedFiles[0].filepath);
 };
 
-export const importCsvFromRequest = async (params: {
+export const importCsvFileFromRequest = async (params: {
   req: FastifyRequest;
   pool: Pool;
 }): Promise<void> => {
-  const usersToImport = await extractUsersFromRequest(params.req);
+  const usersToImport = await extractUsersFromMultipartRequest(params.req);
 
   if (usersToImport.length === 0) {
     throw new Error("Files must have at least one user");
@@ -152,7 +149,7 @@ const insertToImportUsers = async (params: {
 
     return result.rows[0].import_id;
   } catch (error) {
-    const message = isError(error) ? error.message : "unknown error";
+    const message = isNativeError(error) ? error.message : "unknown error";
     const toOutput = createError(
       "SERVER_ERROR",
       `Error during CSV file store on db: ${message}`,
@@ -182,73 +179,5 @@ const processUserImport = async (params: {
     await client.query("ROLLBACK");
   } finally {
     client.release();
-  }
-};
-
-const mapUsers = async (params: {
-  importId: string;
-  client: PoolClient;
-  logger: FastifyBaseLogger;
-}): Promise<void> => {
-  if (process.env.SYNCHRONOUS_USER_IMPORT ?? 0) {
-    return mapUsersSync(params);
-  }
-
-  return mapUsersAsync(params);
-};
-
-const mapUsersAsync = async (_params: {
-  importId: string;
-  client: PoolClient;
-  logger: FastifyBaseLogger;
-}) => {
-  throw new Error("Not implemented yet");
-};
-
-const mapUsersSync = async (params: {
-  importId: string;
-  client: PoolClient;
-  logger: FastifyBaseLogger;
-}) => {
-  const userImport = await getUsersImport(params);
-
-  console.log({ userImport });
-};
-
-const getUsersImport = async (params: {
-  importId: string;
-  client: PoolClient;
-  logger: FastifyBaseLogger;
-}): Promise<UsersImport> => {
-  try {
-    // for now the organisation id is randomic, we have
-    // to decide where to store that value in relation to the
-    // user
-    const result = await params.client.query<UsersImport>(
-      `
-        select 
-          organisation_id as "organisationId",
-          imported_at as "importedAt",
-          users_data as "usersData",
-          import_channel as "importChannel",
-          retry_count as "retryCount",
-          last_retry_at as "lastRetryAt",
-          import_id as "importId"
-        from users_imports where import_id = $1
-    `,
-      [params.importId],
-    );
-    if (!result.rowCount) {
-      throw new Error("Import id not found");
-    }
-    return result.rows[0];
-  } catch (error) {
-    const message = isError(error) ? error.message : "unknown error";
-    const toOutput = createError(
-      "SERVER_ERROR",
-      `Error during gettings users import from db: ${message}`,
-      500,
-    )();
-    throw toOutput;
   }
 };
