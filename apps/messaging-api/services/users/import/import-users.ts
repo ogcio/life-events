@@ -12,6 +12,7 @@ import { Pool, PoolClient } from "pg";
 import { organisationId } from "../../../utils";
 import { isNativeError } from "util/types";
 import { mapUsers } from "./map-users";
+import { RequestUser } from "../../../plugins/auth";
 
 const getMockCsvRecord = (): CsvRecord => ({
   importIndex: 1,
@@ -95,6 +96,7 @@ export const importCsvFileFromRequest = async (params: {
     logger: params.req.log,
     toImportUsers: usersToImport,
     channel: "csv",
+    requestUser: params.req.user!,
   });
 };
 
@@ -109,6 +111,7 @@ export const importCsvRecords = async (params: {
   pool: Pool;
   logger: FastifyBaseLogger;
   csvRecords: CsvRecord[];
+  requestUser: RequestUser;
 }): Promise<void> => {
   const toImportUsers: ToImportUser[] = params.csvRecords.map((record) =>
     csvRecordToToImportUser(record),
@@ -123,6 +126,7 @@ export const importCsvRecords = async (params: {
     logger: params.logger,
     toImportUsers,
     channel: "api",
+    requestUser: params.requestUser,
   });
 };
 
@@ -165,13 +169,19 @@ const processUserImport = async (params: {
   logger: FastifyBaseLogger;
   toImportUsers: ToImportUser[];
   channel: ImportChannel;
+  requestUser: RequestUser;
 }): Promise<void> => {
   const client = await params.pool.connect();
   try {
     await client.query("BEGIN");
 
     const importId = await insertToImportUsers({ ...params, client });
-    await mapUsers({ importId, client, logger: params.logger });
+    await mapUsers({
+      importId,
+      client,
+      logger: params.logger,
+      requestUser: params.requestUser,
+    });
 
     await client.query("COMMIT");
   } catch (error) {

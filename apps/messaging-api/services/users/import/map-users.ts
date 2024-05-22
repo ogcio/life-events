@@ -10,9 +10,9 @@ import {
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
 import { isNativeError } from "util/types";
-import { PgSessions } from "auth/sessions";
 import { Profile } from "building-blocks-sdk";
 import { bool } from "aws-sdk/clients/signer";
+import { RequestUser } from "../../../plugins/auth";
 
 interface TempUserDetails {
   id: string;
@@ -32,6 +32,7 @@ export const mapUsers = async (params: {
   importId: string;
   client: PoolClient;
   logger: FastifyBaseLogger;
+  requestUser: RequestUser;
 }): Promise<void> => {
   if (process.env.SYNCHRONOUS_USER_IMPORT ?? 0) {
     return mapUsersSync(params);
@@ -44,6 +45,7 @@ const mapUsersAsync = async (_params: {
   importId: string;
   client: PoolClient;
   logger: FastifyBaseLogger;
+  requestUser: RequestUser;
 }) => {
   // Here we will invoke the scheduler
   throw new Error("Not implemented yet");
@@ -53,10 +55,10 @@ const mapUsersSync = async (params: {
   importId: string;
   client: PoolClient;
   logger: FastifyBaseLogger;
+  requestUser: RequestUser;
 }) => {
   const userImport = await getUsersImport(params);
-  const { userId } = await PgSessions.get();
-  const profile = new Profile(userId);
+  const profile = new Profile(params.requestUser.id);
 
   const processingUsers = userImport.usersData.map(
     (toImportUser: ToImportUser) =>

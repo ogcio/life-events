@@ -68,6 +68,7 @@ export default async function users(app: FastifyInstance) {
         pool: app.pg.pool,
         logger: request.log,
         csvRecords: request.body as CsvRecord[],
+        requestUser: request.user!,
       });
     },
   );

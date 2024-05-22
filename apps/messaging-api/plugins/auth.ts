@@ -2,13 +2,13 @@
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 
-interface User {
+export interface RequestUser {
   id: string;
 }
 
 declare module "fastify" {
   interface FastifyRequest {
-    user?: User;
+    user?: RequestUser;
   }
 }
 
