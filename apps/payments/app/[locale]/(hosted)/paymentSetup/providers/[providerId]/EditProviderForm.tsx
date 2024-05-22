@@ -49,7 +49,14 @@ export default async ({
   return (
     <form action={updateProviderAction}>
       {children}
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "1rem",
+          paddingTop: ".5rem",
+        }}
+      >
         <button
           id="button"
           type="submit"

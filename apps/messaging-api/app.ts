@@ -15,6 +15,7 @@ import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
+import fastifyMultipart from "@fastify/multipart";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -60,6 +61,8 @@ export async function build(opts?: FastifyServerOptions) {
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB_NAME,
   });
+
+  app.register(fastifyMultipart);
 
   app.register(healthCheck);
 
