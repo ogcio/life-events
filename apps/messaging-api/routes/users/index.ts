@@ -50,7 +50,7 @@ export default async function users(app: FastifyInstance) {
   app.post<{ Body: CsvRecord[] }>(
     "/import",
     {
-      //preValidation: app.verifyUser,
+      preValidation: app.verifyUser,
       schema: {
         tags,
         body: Type.Array(CsvRecordSchema),
