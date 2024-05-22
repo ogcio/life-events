@@ -176,8 +176,7 @@ async function scheduledTemplate(
       select 
         template_meta_id as "id",
         message_security as "security",
-        preferred_transports as "preferredTransports",
-        message_type as "messageType"
+        preferred_transports as "preferredTransports"
       from scheduled_message_by_templates
       where id = $1
   `,
@@ -304,7 +303,6 @@ async function scheduledTemplate(
     templateMeta.preferredTransports
       ? utils.postgresArrayify(templateMeta.preferredTransports)
       : null,
-    templateMeta.messageType,
     userId,
   ];
 
@@ -326,7 +324,6 @@ async function scheduledTemplate(
           message_name,
           thread_name,
           preferred_transports,
-          message_type,
           user_id
         ) values (${values.map((_, i) => `$${i + 1}`).join(", ")})
     `,
@@ -921,7 +918,7 @@ export default async function messages(app: FastifyInstance) {
             .query<{ id: string }>(
               `
                 insert into scheduled_message_by_templates(template_meta_id, preferred_transports)
-                values($1, $2, $3)
+                values($1, $2)
                 returning id 
           `,
               [template.id, utils.postgresArrayify(preferredTransports)],
