@@ -65,7 +65,9 @@ export default async function transactions(app: FastifyInstance) {
         querystring: PaginationParams,
         response: {
           200: GenericResponse(Transactions),
+          401: HttpError,
           404: HttpError,
+          500: HttpError,
         },
       },
     },
@@ -112,6 +114,7 @@ export default async function transactions(app: FastifyInstance) {
         body: UpdateTransactionBody,
         response: {
           200: Type.Object({}),
+          500: HttpError,
         },
       },
     },
@@ -140,6 +143,7 @@ export default async function transactions(app: FastifyInstance) {
         body: CreateTransactionBody,
         response: {
           200: GenericResponse(Id),
+          401: HttpError,
           500: HttpError,
         },
       },
@@ -173,7 +177,7 @@ export default async function transactions(app: FastifyInstance) {
         tags: ["Transactions"],
         response: {
           200: GenericResponse(PaymentIntentId),
-          400: HttpError,
+          404: HttpError,
         },
       },
     },

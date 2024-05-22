@@ -31,7 +31,9 @@ export default async function citizen(app: FastifyInstance) {
         querystring: PaginationParams,
         response: {
           200: GenericResponse(CitizenTransactions),
+          401: HttpError,
           404: HttpError,
+          500: HttpError,
         },
       },
     },

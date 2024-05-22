@@ -94,9 +94,7 @@ const buildUpdateTransactionStatus =
     } catch (err) {
       log.error((err as Error).message);
     }
-    console.log(transactionId);
-    console.log(status);
-    console.log(JSON.stringify(result, undefined, 2));
+
     if (!result?.rows[0]?.transactionId) {
       throw httpErrors.internalServerError("Something went wrong!");
     }
