@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { PAGINATION_PAGE_DEFAULT, PaginationLinks } from "../utils";
+import styles from "./Pagination.module.scss";
 
 export type PaginationProps = {
   links: PaginationLinks;
@@ -14,13 +15,7 @@ export default async function Pagination({
   let previousPage = 0;
 
   return (
-    <div
-      className="pagination"
-      style={{
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
+    <div className={styles.pagination}>
       <nav
         aria-label="navigation results"
         role="navigation"
@@ -67,7 +62,7 @@ export default async function Pagination({
                   </li>
                 )}
                 <li
-                  className={`govie-pagination__item ${pageNr === currentPage ? "govie-pagination__item--current" : ""}`}
+                  className={`govie-pagination__item item ${pageNr === currentPage ? "govie-pagination__item--current" : ""}`}
                   key={page}
                 >
                   <a
