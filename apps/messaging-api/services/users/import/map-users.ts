@@ -1,8 +1,32 @@
 import { createError } from "@fastify/error";
 import { FastifyBaseLogger } from "fastify";
 import { PoolClient } from "pg";
-import { UsersImport } from "../../../types/usersSchemaDefinitions";
+import {
+  CorrelationQuality,
+  OrganisationUser,
+  ToImportUser,
+  User,
+  UserStatus,
+  UsersImport,
+} from "../../../types/usersSchemaDefinitions";
 import { isNativeError } from "util/types";
+import { PgSessions } from "auth/sessions";
+import { Profile } from "building-blocks-sdk";
+import { bool } from "aws-sdk/clients/signer";
+
+interface TempUserDetails {
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  title: string;
+  dateOfBirth?: string;
+  ppsn: string;
+  ppsnVisible: bool;
+  gender: string;
+  phone: string;
+  consentToPrefillData: bool;
+}
 
 export const mapUsers = async (params: {
   importId: string;
@@ -21,6 +45,7 @@ const mapUsersAsync = async (_params: {
   client: PoolClient;
   logger: FastifyBaseLogger;
 }) => {
+  // Here we will invoke the scheduler
   throw new Error("Not implemented yet");
 };
 
@@ -30,8 +55,22 @@ const mapUsersSync = async (params: {
   logger: FastifyBaseLogger;
 }) => {
   const userImport = await getUsersImport(params);
+  const { userId } = await PgSessions.get();
+  const profile = new Profile(userId);
 
-  console.log({ userImport });
+  const processingUsers = userImport.usersData.map(
+    (toImportUser: ToImportUser) =>
+      processToImportUser({
+        profile,
+        toImportUser,
+        organisationId: userImport.organisationId,
+        client: params.client,
+      }),
+  );
+
+  const _processedUsers = await Promise.all(processingUsers);
+
+  // will send invitations here
 };
 
 const getUsersImport = async (params: {
@@ -70,4 +109,250 @@ const getUsersImport = async (params: {
     )();
     throw toOutput;
   }
+};
+
+const processUser = async (params: {
+  userProfile: TempUserDetails;
+  organisationId: string;
+  client: PoolClient;
+}): Promise<User> => {
+  const { userProfile, organisationId, client } = params;
+
+  const userFromDb = await getUserIfMapped({
+    userProfileId: userProfile.id,
+    client: params.client,
+  });
+
+  if (userFromDb) {
+    return userFromDb;
+  }
+
+  const user = userProfileToUser({
+    userProfile,
+    organisationId: organisationId,
+    status: "to_be_invited",
+  });
+
+  return insertNewUser({ toInsert: user, client });
+};
+
+const processOrganizationUserRelation = async (params: {
+  userId: string;
+  client: PoolClient;
+  organisationId: string;
+}): Promise<OrganisationUser> => {
+  const orgUserRelation = await getUserOrganisationRelation(params);
+
+  if (orgUserRelation) {
+    return orgUserRelation;
+  }
+  return insertNewOrganizationUserRelation({
+    toInsert: {
+      invitationFeedbackAt: null,
+      invitationSentAt: null,
+      invitationStatus: "to_be_invited",
+      organisationId: params.organisationId,
+      userId: params.userId,
+      preferredTransports: [],
+    },
+    client: params.client,
+  });
+};
+
+const processToImportUser = async (params: {
+  profile: Profile;
+  toImportUser: ToImportUser;
+  organisationId: string;
+  client: PoolClient;
+}): Promise<{
+  user?: User;
+  organisationUser?: OrganisationUser;
+  importedUser: ToImportUser;
+}> => {
+  const userProfile = await getUserProfile(params);
+  if (!userProfile) {
+    // User profile not found, cannot map
+    params.toImportUser.importStatus = "not_found";
+    return { importedUser: params.toImportUser };
+  }
+
+  const user = await processUser({
+    userProfile,
+    organisationId: params.organisationId,
+    client: params.client,
+  });
+
+  const organisationUser = await processOrganizationUserRelation({
+    client: params.client,
+    userId: user.id!,
+    organisationId: params.organisationId,
+  });
+
+  params.toImportUser.importStatus = "imported";
+  params.toImportUser.relatedUserProfileId = userProfile.id;
+
+  return { user, organisationUser, importedUser: params.toImportUser };
+};
+
+const insertNewUser = async (params: {
+  toInsert: User;
+  client: PoolClient;
+}): Promise<User> => {
+  try {
+    const { toInsert, client } = params;
+    const result = await client.query<{ id: string }>(
+      `
+            INSERT INTO users
+                (user_profile_id, importer_organisation_id, user_status, correlation_quality)
+            VALUES( $1, $2, $3, $4) RETURNING id as "id";
+        `,
+      [
+        toInsert.userProfileId,
+        toInsert.importerOrganisationId,
+        toInsert.userStatus,
+        toInsert.correlationQuality,
+      ],
+    );
+    toInsert.id = result.rows[0].id;
+
+    return toInsert;
+  } catch (error) {
+    const message = isNativeError(error) ? error.message : "unknown error";
+    const toOutput = createError(
+      "SERVER_ERROR",
+      `Error inserting new user: ${message}`,
+      500,
+    )();
+
+    throw toOutput;
+  }
+};
+
+const getUserOrganisationRelation = async (params: {
+  userId: string;
+  organisationId: string;
+  client: PoolClient;
+}): Promise<OrganisationUser | undefined> => {
+  try {
+    const result = await params.client.query<OrganisationUser>(
+      `
+          select 
+              user_id as "userId",
+              organisation_id as "organisationId",
+              invitation_status as "invitationStatus",
+              invitation_sent_at as "invitationSentAt",
+              invitation_feedback_at as "invitationFeedbackAt",
+              preferred_transports as "preferredTransports"
+          from organisations_users where user_id = $1 and organisation_id = $2 limit 1
+        `,
+      [params.userId, params.organisationId],
+    );
+
+    if (result.rowCount === 0) {
+      return undefined;
+    }
+
+    return result.rows[0];
+  } catch (error) {
+    const message = isNativeError(error) ? error.message : "unknown error";
+    const toOutput = createError(
+      "SERVER_ERROR",
+      `Error retrieving organisation user relation: ${message}`,
+      500,
+    )();
+
+    throw toOutput;
+  }
+};
+
+const insertNewOrganizationUserRelation = async (params: {
+  toInsert: OrganisationUser;
+  client: PoolClient;
+}): Promise<OrganisationUser> => {
+  try {
+    const { toInsert, client } = params;
+    await client.query(
+      `
+            INSERT INTO organisations_users
+                (organisation_id, user_id, invitation_status, invitation_sent_at, invitation_feedback_at, preferred_transports)
+            VALUES($1, $2, $3, $4, $5, $6);
+        `,
+      [
+        toInsert.organisationId,
+        toInsert.userId,
+        toInsert.invitationStatus,
+        toInsert.invitationSentAt,
+        toInsert.invitationFeedbackAt,
+        toInsert.preferredTransports,
+      ],
+    );
+
+    return toInsert;
+  } catch (error) {
+    const message = isNativeError(error) ? error.message : "unknown error";
+    const toOutput = createError(
+      "SERVER_ERROR",
+      `Error inserting new organization user relation: ${message}`,
+      500,
+    )();
+
+    throw toOutput;
+  }
+};
+
+const getUserIfMapped = async (params: {
+  userProfileId: string;
+  client: PoolClient;
+}): Promise<User | undefined> => {
+  try {
+    const result = await params.client.query<User>(
+      `
+        SELECT 
+            id as "id",
+            user_profile_id as "userProfileId",
+            importer_organisation_id as "importerOrganisationId",
+            user_status as "userStatus",
+            correlation_quality as "correlationQuality"    
+        FROM users where user_profile_id = $1 LIMIT 1
+      `,
+      [params.userProfileId],
+    );
+
+    if (result.rowCount === 0) {
+      return undefined;
+    }
+
+    return result.rows[0];
+  } catch (error) {
+    const message = isNativeError(error) ? error.message : "unknown error";
+    const toOutput = createError(
+      "SERVER_ERROR",
+      `Error retrieving user by user profile id: ${message}`,
+      500,
+    )();
+
+    throw toOutput;
+  }
+};
+
+const userProfileToUser = (params: {
+  userProfile: TempUserDetails;
+  userId?: string;
+  organisationId: string;
+  status?: UserStatus;
+  correlationQuality?: CorrelationQuality;
+}): User => ({
+  id: params.userId,
+  importerOrganisationId: params.organisationId,
+  userProfileId: params.userProfile.id,
+  userStatus: params.status ?? "pending",
+  correlationQuality: params.correlationQuality ?? "full",
+});
+
+const getUserProfile = async (_params: {
+  profile: Profile;
+  toImportUser: ToImportUser;
+}): Promise<TempUserDetails | undefined> => {
+  // TODO To be implemented once we have an API on user-profile service to search for users
+  return undefined;
 };

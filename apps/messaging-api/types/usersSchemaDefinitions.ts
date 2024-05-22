@@ -1,13 +1,23 @@
 import { Static, Type } from "@sinclair/typebox";
 
 export const InvitationStatusUnionType = Type.Union(
-  [Type.Literal("pending"), Type.Literal("accepted"), Type.Literal("declined")],
+  [
+    Type.Literal("to_be_invited"),
+    Type.Literal("pending"),
+    Type.Literal("accepted"),
+    Type.Literal("declined"),
+  ],
   { default: Type.Literal("pending") },
 );
 export type InvitationStatus = Static<typeof InvitationStatusUnionType>;
 
 export const UserStatusUnionType = Type.Union(
-  [Type.Literal("pending"), Type.Literal("disabled"), Type.Literal("active")],
+  [
+    Type.Literal("to_be_invited"),
+    Type.Literal("pending"),
+    Type.Literal("disabled"),
+    Type.Literal("active"),
+  ],
   { default: Type.Literal("pending") },
 );
 export type UserStatus = Static<typeof UserStatusUnionType>;
@@ -40,7 +50,7 @@ const NullableStringType = Type.Union([Type.Null(), Type.String()], {
 });
 
 export const UserSchema = Type.Object({
-  id: Type.String(),
+  id: Type.Optional(Type.String()),
   userProfileId: NullableStringType,
   importerOrganisationId: Type.String(),
   userStatus: UserStatusUnionType,
