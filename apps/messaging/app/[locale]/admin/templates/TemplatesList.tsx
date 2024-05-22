@@ -1,6 +1,5 @@
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
-import { deleteEmailTemplate } from "messages";
 import Link from "next/link";
 import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";

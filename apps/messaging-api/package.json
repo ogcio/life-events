@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node --import=tsx --test ./test/*.ts",
+    "test": "TAP_RCFILE=tap.yml tap",
     "start": "node --import tsx index.ts",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
@@ -56,6 +56,7 @@
     "openapi-typescript": "^6.7.5",
     "pino-pretty": "^11.0.0",
     "prettier": "^3.2.5",
+    "tap": "^18.8.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.7.1",
     "typescript": "^5.4.2"
