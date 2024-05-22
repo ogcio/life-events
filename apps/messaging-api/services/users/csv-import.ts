@@ -6,6 +6,10 @@ import { parseFile, writeToBuffer } from "fast-csv";
 import { Pool } from "pg";
 import { organisationId } from "../../utils";
 
+const isError = (err: unknown): err is Error => {
+  return err instanceof Error && "message" in err;
+};
+
 const getMockCsvRecord = (): CsvRecord => ({
   importIndex: 1,
   publicIdentityId: "PUBLIC_IDENTITY_ID",
@@ -96,19 +100,20 @@ export const importCsvFromRequest = async (params: {
       [organisationId, JSON.stringify(usersToImport), "csv"],
     );
   } catch (error) {
+    const message = isError(error) ? error.message : "unknown error";
     const toOutput = createError(
       "SERVER_ERROR",
-      `Error during CSV file store on db: ${(error as Error).message}`,
+      `Error during CSV file store on db: ${message}`,
       500,
     )();
     params.req.log.error({ error: toOutput });
+
     throw toOutput;
   } finally {
     client.release;
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getCsvExample = (): Promise<Buffer> =>
   writeToBuffer([getMockCsvRecord()], {
     headers: true,
