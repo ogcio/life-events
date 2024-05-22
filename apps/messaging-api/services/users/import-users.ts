@@ -9,7 +9,7 @@ import {
 } from "../../types/usersSchemaDefinitions";
 import "@fastify/multipart";
 import { parseFile, writeToBuffer } from "fast-csv";
-import { Pool } from "pg";
+import { Pool, PoolClient } from "pg";
 import { organisationId } from "../../utils";
 
 const isError = (err: unknown): err is Error => {
@@ -117,6 +117,10 @@ export const importCsvRecords = async (params: {
     csvRecordToToImportUser(record),
   );
 
+  if (toImportUsers.length) {
+    throw new Error("At least one user needed");
+  }
+
   await processUserImport({
     pool: params.pool,
     logger: params.logger,
@@ -126,17 +130,16 @@ export const importCsvRecords = async (params: {
 };
 
 const insertToImportUsers = async (params: {
-  pool: Pool;
+  client: PoolClient;
   logger: FastifyBaseLogger;
   toImportUsers: ToImportUser[];
   channel: ImportChannel;
 }): Promise<string> => {
-  const client = await params.pool.connect();
   try {
     // for now the organisation id is randomic, we have
     // to decide where to store that value in relation to the
     // user
-    const result = await client.query<{ import_id: string }>(
+    const result = await params.client.query<{ import_id: string }>(
       `
         insert into users_imports(
             organisation_id,
@@ -155,11 +158,8 @@ const insertToImportUsers = async (params: {
       `Error during CSV file store on db: ${message}`,
       500,
     )();
-    params.logger.error({ error: toOutput });
 
     throw toOutput;
-  } finally {
-    client.release;
   }
 };
 
@@ -169,24 +169,45 @@ const processUserImport = async (params: {
   toImportUsers: ToImportUser[];
   channel: ImportChannel;
 }): Promise<void> => {
-  // insert a transaction that includes everything
-  const importId = await insertToImportUsers(params);
+  const client = await params.pool.connect();
+  try {
+    await client.query("BEGIN");
 
-  if (process.env.SYNCHRONOUS_USER_IMPORT ?? 0) {
-    await mapUsers({ logger: params.logger, pool: params.pool, importId });
-    return;
+    const importId = await insertToImportUsers({ ...params, client });
+    await mapUsers({ importId, client, logger: params.logger });
+
+    await client.query("COMMIT");
+  } catch (error) {
+    params.logger.error({ error });
+    await client.query("ROLLBACK");
+  } finally {
+    client.release();
   }
-
-  await mapUsersAsync(importId);
-};
-
-const mapUsersAsync = async (_importId: string) => {
-  throw new Error("Not implemented yet");
 };
 
 const mapUsers = async (params: {
   importId: string;
-  pool: Pool;
+  client: PoolClient;
+  logger: FastifyBaseLogger;
+}): Promise<void> => {
+  if (process.env.SYNCHRONOUS_USER_IMPORT ?? 0) {
+    return mapUsersSync(params);
+  }
+
+  return mapUsersAsync(params);
+};
+
+const mapUsersAsync = async (_params: {
+  importId: string;
+  client: PoolClient;
+  logger: FastifyBaseLogger;
+}) => {
+  throw new Error("Not implemented yet");
+};
+
+const mapUsersSync = async (params: {
+  importId: string;
+  client: PoolClient;
   logger: FastifyBaseLogger;
 }) => {
   const userImport = await getUsersImport(params);
@@ -196,15 +217,14 @@ const mapUsers = async (params: {
 
 const getUsersImport = async (params: {
   importId: string;
-  pool: Pool;
+  client: PoolClient;
   logger: FastifyBaseLogger;
 }): Promise<UsersImport> => {
-  const client = await params.pool.connect();
   try {
     // for now the organisation id is randomic, we have
     // to decide where to store that value in relation to the
     // user
-    const result = await client.query<UsersImport>(
+    const result = await params.client.query<UsersImport>(
       `
         select 
           organisation_id as "organisationId",
@@ -229,9 +249,6 @@ const getUsersImport = async (params: {
       `Error during gettings users import from db: ${message}`,
       500,
     )();
-    params.logger.error({ error: toOutput });
     throw toOutput;
-  } finally {
-    client.release;
   }
 };
