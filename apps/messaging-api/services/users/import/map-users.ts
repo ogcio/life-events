@@ -10,9 +10,10 @@ import {
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
 import { isNativeError } from "util/types";
-import { Profile } from "building-blocks-sdk";
+// import { Profile } from "building-blocks-sdk";
 import { bool } from "aws-sdk/clients/signer";
 import { RequestUser } from "../../../plugins/auth";
+import { IMPORT_USERS_ERROR } from "./import-users";
 
 interface TempUserDetails {
   id: string;
@@ -57,22 +58,59 @@ const mapUsersSync = async (params: {
   logger: FastifyBaseLogger;
   requestUser: RequestUser;
 }) => {
-  const userImport = await getUsersImport(params);
-  const profile = new Profile(params.requestUser.id);
+  const usersImport = await getUsersImport(params);
+  //const profile = new Profile(params.requestUser.id);
 
-  const processingUsers = userImport.usersData.map(
+  const processingUsers = usersImport.usersData.map(
     (toImportUser: ToImportUser) =>
       processToImportUser({
-        profile,
+        //profile,
         toImportUser,
-        organisationId: userImport.organisationId,
+        organisationId: usersImport.organisationId,
         client: params.client,
       }),
   );
 
-  const _processedUsers = await Promise.all(processingUsers);
+  const processedUsers = await Promise.all(processingUsers);
 
+  usersImport.usersData = processedUsers.map((user) => user.importedUser);
+  usersImport.retryCount += 1;
+  usersImport.lastRetryAt = new Date().toISOString();
+
+  await updateUsersImport({ client: params.client, usersImport });
   // will send invitations here
+};
+
+const updateUsersImport = async (params: {
+  client: PoolClient;
+  usersImport: UsersImport;
+}): Promise<UsersImport> => {
+  try {
+    const { usersImport, client } = params;
+    await client.query(
+      `
+        UPDATE public.users_imports
+        SET users_data=$1, retry_count=$2, last_retry_at=$3
+        WHERE import_id=$4;
+      `,
+      [
+        JSON.stringify(usersImport.usersData),
+        usersImport.retryCount,
+        usersImport.lastRetryAt,
+        usersImport.importId,
+      ],
+    );
+
+    return usersImport;
+  } catch (error) {
+    const message = isNativeError(error) ? error.message : "unknown error";
+    const toOutput = createError(
+      IMPORT_USERS_ERROR,
+      `Error during updating users import on db: ${message}`,
+      500,
+    )();
+    throw toOutput;
+  }
 };
 
 const getUsersImport = async (params: {
@@ -105,7 +143,7 @@ const getUsersImport = async (params: {
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
     const toOutput = createError(
-      "SERVER_ERROR",
+      IMPORT_USERS_ERROR,
       `Error during gettings users import from db: ${message}`,
       500,
     )();
@@ -162,7 +200,7 @@ const processOrganizationUserRelation = async (params: {
 };
 
 const processToImportUser = async (params: {
-  profile: Profile;
+  //profile: Profile;
   toImportUser: ToImportUser;
   organisationId: string;
   client: PoolClient;
@@ -221,7 +259,7 @@ const insertNewUser = async (params: {
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
     const toOutput = createError(
-      "SERVER_ERROR",
+      IMPORT_USERS_ERROR,
       `Error inserting new user: ${message}`,
       500,
     )();
@@ -258,7 +296,7 @@ const getUserOrganisationRelation = async (params: {
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
     const toOutput = createError(
-      "SERVER_ERROR",
+      IMPORT_USERS_ERROR,
       `Error retrieving organisation user relation: ${message}`,
       500,
     )();
@@ -293,7 +331,7 @@ const insertNewOrganizationUserRelation = async (params: {
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
     const toOutput = createError(
-      "SERVER_ERROR",
+      IMPORT_USERS_ERROR,
       `Error inserting new organization user relation: ${message}`,
       500,
     )();
@@ -328,7 +366,7 @@ const getUserIfMapped = async (params: {
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
     const toOutput = createError(
-      "SERVER_ERROR",
+      IMPORT_USERS_ERROR,
       `Error retrieving user by user profile id: ${message}`,
       500,
     )();
@@ -352,7 +390,7 @@ const userProfileToUser = (params: {
 });
 
 const getUserProfile = async (_params: {
-  profile: Profile;
+  //profile: Profile;
   toImportUser: ToImportUser;
 }): Promise<TempUserDetails | undefined> => {
   // TODO To be implemented once we have an API on user-profile service to search for users

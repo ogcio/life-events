@@ -24,7 +24,6 @@ export default async function users(app: FastifyInstance) {
         },
       },
     },
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     async (request: FastifyRequest, _reply: FastifyReply) => {
       await importCsvFileFromRequest({ req: request, pool: app.pg.pool });
     },
@@ -62,7 +61,6 @@ export default async function users(app: FastifyInstance) {
         },
       },
     },
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     async (request: FastifyRequest, _reply: FastifyReply) => {
       await importCsvRecords({
         pool: app.pg.pool,

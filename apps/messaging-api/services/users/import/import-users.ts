@@ -14,6 +14,8 @@ import { isNativeError } from "util/types";
 import { mapUsers } from "./map-users";
 import { RequestUser } from "../../../plugins/auth";
 
+export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
+
 const getMockCsvRecord = (): CsvRecord => ({
   importIndex: 1,
   publicIdentityId: "PUBLIC_IDENTITY_ID",
@@ -100,7 +102,6 @@ export const importCsvFileFromRequest = async (params: {
   });
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getCsvExample = (): Promise<Buffer> =>
   writeToBuffer([getMockCsvRecord()], {
     headers: true,
@@ -117,7 +118,7 @@ export const importCsvRecords = async (params: {
     csvRecordToToImportUser(record),
   );
 
-  if (toImportUsers.length) {
+  if (toImportUsers.length === 0) {
     throw new Error("At least one user needed");
   }
 
@@ -155,7 +156,7 @@ const insertToImportUsers = async (params: {
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
     const toOutput = createError(
-      "SERVER_ERROR",
+      IMPORT_USERS_ERROR,
       `Error during CSV file store on db: ${message}`,
       500,
     )();
@@ -185,8 +186,9 @@ const processUserImport = async (params: {
 
     await client.query("COMMIT");
   } catch (error) {
-    params.logger.error({ error });
     await client.query("ROLLBACK");
+
+    throw error;
   } finally {
     client.release();
   }
