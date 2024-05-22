@@ -56,6 +56,7 @@ export const OrganisationUserSchema = Type.Object({
 export type OrganisationUser = Static<typeof OrganisationUserSchema>;
 
 export const ToImportUserSchema = Type.Object({
+  importIndex: Type.Integer(),
   publicIdentityId: NullableStringType,
   firstName: NullableStringType,
   lastName: NullableStringType,
@@ -76,8 +77,8 @@ export const ToImportUserSchema = Type.Object({
     { default: Type.Null() },
   ),
   importStatus: ImportStatusUnionType,
-  importError: NullableStringType,
-  relatedUserProfileId: NullableStringType,
+  importError: Type.Optional(NullableStringType),
+  relatedUserProfileId: Type.Optional(NullableStringType),
 });
 
 export type ToImportUser = Static<typeof ToImportUserSchema>;
@@ -92,3 +93,22 @@ export const UsersImportSchema = Type.Object({
 });
 
 export type UsersImport = Static<typeof UsersImportSchema>;
+
+const NullableOptionalStringType = Type.Optional(NullableStringType);
+
+export const CsvRecordSchema = Type.Object({
+  importIndex: Type.Integer(),
+  publicIdentityId: NullableOptionalStringType,
+  firstName: NullableOptionalStringType,
+  lastName: NullableOptionalStringType,
+  phoneNumber: NullableOptionalStringType,
+  birthDate: NullableOptionalStringType,
+  emailAddress: NullableOptionalStringType,
+  addressCity: NullableOptionalStringType,
+  addressZipCode: NullableOptionalStringType,
+  addressStreet: NullableOptionalStringType,
+  addressCountry: NullableOptionalStringType,
+  addressRegion: NullableOptionalStringType,
+});
+
+export type CsvRecord = Static<typeof CsvRecordSchema>;
