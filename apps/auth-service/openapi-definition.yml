@@ -96,26 +96,22 @@ paths:
                   - message
                   - time
   /auth/callback:
-    post:
+    get:
       tags:
         - Auth
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                public_servant:
-                  type: string
-                id_token:
-                  type: string
-                password:
-                  type: string
-              required:
-                - id_token
-                - password
-        required: true
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: code
+          required: true
       responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
         "302":
           description: Default Response
           content:

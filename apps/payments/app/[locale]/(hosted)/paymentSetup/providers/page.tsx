@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import ProvidersList from "./ProvidersList";
+import styles from "./Providers.module.scss";
 
 export default () => {
   const t = useTranslations("PaymentSetup.Providers");
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", flex: 1 }}>
+    <div className="table-container">
       <section
         style={{
           margin: "1rem 0",
@@ -15,12 +16,7 @@ export default () => {
           flexDirection: "column",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
+        <div className={styles.headerWrapper}>
           <h1 className="govie-heading-l">{t("title")}</h1>
           <Link href="providers/add">
             <button
