@@ -16,45 +16,6 @@ import { RequestUser } from "../../../plugins/auth";
 
 export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
 
-const getMockCsvRecord = (): CsvRecord => ({
-  importIndex: 1,
-  publicIdentityId: "PUBLIC_IDENTITY_ID",
-  firstName: "First",
-  lastName: "Surname",
-  phoneNumber: "+313124532112",
-  birthDate: "01/01/1990",
-  emailAddress: "stub@email.address.com",
-  addressCity: "City",
-  addressZipCode: "00000",
-  addressStreet: "Long Street 123",
-  addressCountry: "Country",
-  addressRegion: "Region",
-});
-
-const normalizeValue = (value: string | undefined | null): string | null =>
-  typeof value === "string" && value.length > 0 ? value : null;
-
-const csvRecordToToImportUser = (
-  toMap: CsvRecord,
-  importStatus: ImportStatus = "pending",
-): ToImportUser => ({
-  importIndex: Number(toMap.importIndex),
-  publicIdentityId: normalizeValue(toMap.publicIdentityId),
-  firstName: normalizeValue(toMap.firstName),
-  lastName: normalizeValue(toMap.lastName),
-  phoneNumber: normalizeValue(toMap.phoneNumber),
-  birthDate: normalizeValue(toMap.birthDate),
-  emailAddress: normalizeValue(toMap.emailAddress),
-  address: {
-    city: normalizeValue(toMap.addressCity),
-    country: normalizeValue(toMap.addressCountry),
-    region: normalizeValue(toMap.addressRegion),
-    zipCode: normalizeValue(toMap.addressZipCode),
-    street: normalizeValue(toMap.addressStreet),
-  },
-  importStatus: importStatus,
-});
-
 export const getUsersFromCsv = async (
   filePath: string,
 ): Promise<ToImportUser[]> => {
@@ -68,19 +29,6 @@ export const getUsersFromCsv = async (
   }
 
   return records;
-};
-
-const extractUsersFromMultipartRequest = async (
-  req: FastifyRequest,
-): Promise<ToImportUser[]> => {
-  const file = await req.files();
-  if (!file) {
-    throw new Error("file is missing");
-  }
-
-  const savedFiles = await req.saveRequestFiles();
-
-  return getUsersFromCsv(savedFiles[0].filepath);
 };
 
 export const importCsvFileFromRequest = async (params: {
@@ -129,6 +77,58 @@ export const importCsvRecords = async (params: {
     channel: "api",
     requestUser: params.requestUser,
   });
+};
+
+const getMockCsvRecord = (): CsvRecord => ({
+  importIndex: 1,
+  publicIdentityId: "PUBLIC_IDENTITY_ID",
+  firstName: "First",
+  lastName: "Surname",
+  phoneNumber: "+313124532112",
+  birthDate: "01/01/1990",
+  emailAddress: "stub@email.address.com",
+  addressCity: "City",
+  addressZipCode: "00000",
+  addressStreet: "Long Street 123",
+  addressCountry: "Country",
+  addressRegion: "Region",
+});
+
+const normalizeValue = (value: string | undefined | null): string | null =>
+  typeof value === "string" && value.length > 0 ? value : null;
+
+const csvRecordToToImportUser = (
+  toMap: CsvRecord,
+  importStatus: ImportStatus = "pending",
+): ToImportUser => ({
+  importIndex: Number(toMap.importIndex),
+  publicIdentityId: normalizeValue(toMap.publicIdentityId),
+  firstName: normalizeValue(toMap.firstName),
+  lastName: normalizeValue(toMap.lastName),
+  phoneNumber: normalizeValue(toMap.phoneNumber),
+  birthDate: normalizeValue(toMap.birthDate),
+  emailAddress: normalizeValue(toMap.emailAddress),
+  address: {
+    city: normalizeValue(toMap.addressCity),
+    country: normalizeValue(toMap.addressCountry),
+    region: normalizeValue(toMap.addressRegion),
+    zipCode: normalizeValue(toMap.addressZipCode),
+    street: normalizeValue(toMap.addressStreet),
+  },
+  importStatus: importStatus,
+});
+
+const extractUsersFromMultipartRequest = async (
+  req: FastifyRequest,
+): Promise<ToImportUser[]> => {
+  const file = await req.files();
+  if (!file) {
+    throw new Error("file is missing");
+  }
+
+  const savedFiles = await req.saveRequestFiles();
+
+  return getUsersFromCsv(savedFiles[0].filepath);
 };
 
 const insertToImportUsers = async (params: {

@@ -15,6 +15,7 @@ import { bool } from "aws-sdk/clients/signer";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
 
+// waiting to integrate building block sdks
 interface TempUserDetails {
   id: string;
   firstname: string;
