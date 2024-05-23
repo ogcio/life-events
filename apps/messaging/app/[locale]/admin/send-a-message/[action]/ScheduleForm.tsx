@@ -85,11 +85,19 @@ export default (props: MessageCreateProps) => {
   }
 
   return (
-    <>
+    <div className="govie-grid-column-two-thirds-from-desktop">
       <form action={submit}>
-        <h1 className="govie-heading-l">{t("title")}</h1>
+        <h1>
+          <span style={{ margin: "unset" }} className="govie-heading-xl">
+            {t("title")}
+          </span>
+        </h1>
 
-        <h3 className="govie-heading-s">{t("schedule")}</h3>
+        <h3 style={{ margin: "0 0 5px 0" }}>
+          <span style={{ margin: "unset" }} className="govie-heading-m">
+            {t("schedule")}
+          </span>
+        </h3>
         <div id="changed-name-hint" className="govie-hint">
           {t("scheduleHint")}
         </div>
@@ -114,7 +122,6 @@ export default (props: MessageCreateProps) => {
             </div>
           </div>
         </div>
-        <hr />
 
         <div className="govie-form-group" style={{ margin: "unset" }}>
           <div className="govie-radios govie-radios--small ">
@@ -247,6 +254,6 @@ export default (props: MessageCreateProps) => {
       <form action={goBack}>
         <BackButton>{t("backLink")}</BackButton>
       </form>
-    </>
+    </div>
   );
 };

@@ -59,9 +59,9 @@ export default async (props: MessageCreateProps) => {
   );
 
   return (
-    <>
+    <div className="govie-grid-column-two-thirds-from-desktop">
       <h1>
-        <span className="govie-heading-l">
+        <span style={{ margin: "unset" }} className="govie-heading-xl">
           {t("title", { name: template?.templateName })}
         </span>
       </h1>
@@ -77,10 +77,12 @@ export default async (props: MessageCreateProps) => {
       <label className="govie-label--s">{t("plainTextLabel")}</label>
       <p className="govie-body">{template?.plainText}</p>
 
-      <hr />
+      <hr className="govie-section-break govie-section-break--visible" />
 
       <h3>
-        <span className="govie-heading-s">{t("variablesLabel")}</span>
+        <span style={{ margin: "unset" }} className="govie-heading-l">
+          {t("variablesLabel")}
+        </span>
       </h3>
       <form action={action}>
         {templateResult?.fields?.map((field) => (
@@ -92,7 +94,7 @@ export default async (props: MessageCreateProps) => {
                 : "govie-form-group govie-form-group--error"
             }
           >
-            <label htmlFor="host" className="govie-label--s">
+            <label htmlFor="host" className="govie-body">
               {field.fieldName}
             </label>
             <div className="govie-hint" id="input-field-hint">
@@ -110,6 +112,6 @@ export default async (props: MessageCreateProps) => {
       <form action={goBack}>
         <BackButton>{t("back")}</BackButton>
       </form>
-    </>
+    </div>
   );
 };

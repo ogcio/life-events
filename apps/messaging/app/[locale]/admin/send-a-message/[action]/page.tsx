@@ -10,6 +10,8 @@ import ScheduleForm from "./ScheduleForm";
 import SuccessForm from "./SuccessForm";
 import TemplateForm from "./TemplateForm";
 
+import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
+
 const metaSlug = "meta";
 const contentSlug = "content";
 const previewSlug = "preview";
@@ -73,7 +75,7 @@ const rules: Parameters<typeof getCurrentStep<ApiMessageState>>[0] = [
 
 const urlStateHandler = (url: string, key: string) => (Cmp: JSX.Element) => {
   if (url === key) {
-    return Cmp;
+    return <FlexMenuWrapper>{Cmp}</FlexMenuWrapper>;
   }
   redirect(key);
 };

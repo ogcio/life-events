@@ -151,7 +151,11 @@ export default async (props: MessageCreateProps) => {
   return (
     <>
       <form action={submit}>
-        <h1 className="govie-heading-l">{t("title")}</h1>
+        <h1>
+          <span style={{ margin: "unset" }} className="govie-heading-xl">
+            {t("title")}
+          </span>
+        </h1>
 
         {/* Subject */}
         <div
@@ -200,11 +204,10 @@ export default async (props: MessageCreateProps) => {
               })}
             </p>
           )}
-          <h3>
-            <label htmlFor="excerpt" className="govie-label--s govie-label--l">
-              {t("excerptLabel")}
-            </label>
-          </h3>
+
+          <label htmlFor="excerpt" className="govie-label--s govie-label--l">
+            {t("excerptLabel")}
+          </label>
           <textarea
             id="excerpt"
             name="excerpt"
@@ -215,7 +218,7 @@ export default async (props: MessageCreateProps) => {
         </div>
 
         {/* Rich text (html) */}
-        <div
+        {/* <div
           className={
             errors["richText"]
               ? "govie-form-group govie-form-group--error"
@@ -240,10 +243,10 @@ export default async (props: MessageCreateProps) => {
             id="richText"
             name="richText"
             className="govie-textarea"
-            rows={15}
+            rows={10}
             defaultValue={props.state.richText}
           ></textarea>
-        </div>
+        </div> */}
 
         {/* Plain text */}
         <div
@@ -274,7 +277,7 @@ export default async (props: MessageCreateProps) => {
             id="plainText"
             name="plainText"
             className="govie-textarea"
-            rows={15}
+            rows={10}
             defaultValue={props.state.plainText}
           ></textarea>
         </div>

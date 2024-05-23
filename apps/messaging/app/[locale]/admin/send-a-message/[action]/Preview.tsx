@@ -71,12 +71,44 @@ export default async (props: MessageCreateProps) => {
     : props.state.excerpt;
 
   return (
-    <>
+    <div className="govie-grid-column-two-thirds-from-desktop">
       <form action={submit}>
         <div style={{ marginBottom: "30px" }}>
-          <h1 className="govie-heading-l">{subject}</h1>
+          <h1>
+            <span style={{ margin: "unset" }} className="govie-heading-xl">
+              {t("title")}
+            </span>
+          </h1>
+          <div
+            style={{ margin: "unset" }}
+            className="govie-body govie-!-font-weight-bold"
+          >
+            {t("subject")}
+          </div>
+          <p className="govie-body">{subject}</p>
+
+          <div
+            style={{ margin: "unset" }}
+            className="govie-body govie-!-font-weight-bold"
+          >
+            {t("excerpt")}
+          </div>
           <p className="govie-body">{excerpt}</p>
-          <p className="govie-body">{richText}</p>
+
+          {/* <div
+            style={{ margin: "unset" }}
+            className="govie-body govie-!-font-weight-bold"
+          >
+            {t("richText")}
+          </div>
+          <p className="govie-body">{richText}</p> */}
+
+          <div
+            style={{ margin: "unset" }}
+            className="govie-body govie-!-font-weight-bold"
+          >
+            {t("plainText")}
+          </div>
           <p className="govie-body">{plainText}</p>
         </div>
         <button className="govie-button">{t("submitText")}</button>
@@ -84,6 +116,6 @@ export default async (props: MessageCreateProps) => {
       <form action={goBack}>
         <BackButton>{t("backLink")}</BackButton>
       </form>
-    </>
+    </div>
   );
 };
