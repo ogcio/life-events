@@ -6,7 +6,13 @@ export default ({
   hint,
   defaultValue,
   error,
+  prefix,
   autoComplete = "on",
+  required = false,
+  type = "text",
+  min,
+  max,
+  step,
 }: {
   name: string;
   label: string;
@@ -14,6 +20,12 @@ export default ({
   defaultValue?: string;
   error?: string;
   autoComplete?: "off" | "on";
+  prefix?: string;
+  required?: boolean;
+  type?: string;
+  min?: string;
+  max?: string;
+  step?: string;
 }) => {
   return (
     <div className={`govie-form-group ${error && "govie-form-group--error"}`}>
@@ -27,14 +39,25 @@ export default ({
           {error}
         </p>
       )}
-      <input
-        type="text"
-        id={name}
-        name={name}
-        className="govie-input"
-        defaultValue={defaultValue}
-        autoComplete={autoComplete}
-      />
+      <div className="govie-input__wrapper">
+        {prefix && (
+          <div aria-hidden="true" className="govie-input__prefix">
+            {prefix}
+          </div>
+        )}
+        <input
+          type={type}
+          id={name}
+          name={name}
+          className="govie-input"
+          defaultValue={defaultValue}
+          autoComplete={autoComplete}
+          // required={required}
+          min={min}
+          max={max}
+          step={step}
+        />
+      </div>
     </div>
   );
 };

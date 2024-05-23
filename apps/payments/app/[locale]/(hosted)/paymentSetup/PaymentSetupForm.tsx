@@ -4,21 +4,29 @@ import { PaymentRequestDetails } from "./db";
 import { paymentMethodToProviderType, paymentMethods } from "../../../utils";
 import { ProvidersMap } from "./PaymentSetupFormPage";
 import { useFormState } from "react-dom";
+import InputField from "../../../components/InputField";
 
 type PaymentSetupFormProps = {
-  details?: PaymentRequestDetails;
-  action: (formData: FormData) => void;
-  providerAccounts: ProvidersMap;
-  defaultState?: any;
+  action: (
+    prevState: FormData,
+    formData: FormData,
+  ) => Promise<{
+    errors: {
+      [key: string]: string;
+    };
+    defaultState: {
+      details?: Partial<PaymentRequestDetails>;
+      providerAccounts: ProvidersMap;
+    };
+  }>;
+  defaultState?: {
+    details?: Partial<PaymentRequestDetails>;
+    providerAccounts: ProvidersMap;
+  };
 };
 
-export default function ({
-  details,
-  providerAccounts,
-  action,
-  defaultState,
-}: PaymentSetupFormProps) {
-  const t = useTranslations("CreatePayment");
+export default function ({ action, defaultState }: PaymentSetupFormProps) {
+  const t = useTranslations("PaymentSetup.CreatePayment");
   const tCommon = useTranslations("Common");
 
   const [state, serverAction] = useFormState(action, {
@@ -29,19 +37,13 @@ export default function ({
   return (
     <form style={{ maxWidth: "500px" }} action={serverAction}>
       <h1 className="govie-heading-l">{t("title")}</h1>
-      <div className="govie-form-group">
-        <label htmlFor="title" className="govie-label--s">
-          {t("form.title")}
-        </label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          className="govie-input"
-          required
-          defaultValue={details?.title}
-        />
-      </div>
+      <InputField
+        name="title"
+        label={t("form.title")}
+        error={state.errors.title}
+        defaultValue={state.defaultState?.details?.title}
+        required={true}
+      />
       <div className="govie-form-group">
         <label htmlFor="description" className="govie-label--s">
           {t("form.description")}
@@ -51,11 +53,11 @@ export default function ({
           name="description"
           className="govie-textarea"
           rows={5}
-          defaultValue={details?.description}
+          defaultValue={state.defaultState?.details?.description}
         ></textarea>
       </div>
       {paymentMethods.map((paymentMethod, index) => {
-        const provider = details?.providers.find((p) =>
+        const provider = state.defaultState?.details?.providers.find((p) =>
           paymentMethodToProviderType[paymentMethod].includes(p.type),
         );
         return (
@@ -74,52 +76,41 @@ export default function ({
               defaultValue={provider?.id}
               style={{ width: "350px" }}
             >
-              <option value={""}>Disabled</option>
-              {(providerAccounts.get(paymentMethod) ?? []).map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.name}
-                </option>
-              ))}
+              <option value={""}>{tCommon("disabled")}</option>
+              {(state.defaultState.providerAccounts[paymentMethod] ?? []).map(
+                (account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.name}
+                  </option>
+                ),
+              )}
             </select>
           </div>
         );
       })}
-      <div className="govie-form-group">
-        <label htmlFor="reference" className="govie-label--s">
-          {t("form.reference")}
-        </label>
-        <input
-          type="text"
-          id="reference"
-          name="reference"
-          className="govie-input"
-          required
-          defaultValue={details?.reference}
-        />
-      </div>
-      <div className="govie-form-group">
-        <label htmlFor="amount" className="govie-label--s">
-          {t("form.amount")}
-        </label>
-        <div className="govie-input__wrapper">
-          <div aria-hidden="true" className="govie-input__prefix">
-            {t("form.currencySymbol")}
-          </div>
-          <input
-            type="number"
-            id="amount"
-            name="amount"
-            className="govie-input"
-            min="0.00"
-            max="10000.00"
-            step="0.01"
-            required
-            defaultValue={
-              details?.amount ? (details?.amount / 100).toFixed(2) : undefined
-            }
-          />
-        </div>
-      </div>
+      <InputField
+        name="reference"
+        label={t("form.reference")}
+        error={state.errors.reference}
+        defaultValue={state.defaultState?.details?.reference}
+        required={true}
+      />
+      <InputField
+        type="number"
+        name="amount"
+        label={t("form.amount")}
+        prefix={t("form.currencySymbol")}
+        error={state.errors.amount}
+        min="0.00"
+        max="10000.00"
+        step="0.01"
+        defaultValue={
+          state.defaultState?.details?.amount
+            ? (state.defaultState?.details?.amount / 100).toFixed(2)
+            : undefined
+        }
+        required={true}
+      />
       <div className="govie-form-group">
         <div className="govie-checkboxes__item">
           <input
@@ -127,7 +118,7 @@ export default function ({
             id="allow-override-hint"
             name="allowAmountOverride"
             type="checkbox"
-            defaultChecked={details?.allowAmountOverride}
+            defaultChecked={state.defaultState?.details?.allowAmountOverride}
           />
           <label
             className="govie-label--s govie-checkboxes__label"
@@ -144,7 +135,7 @@ export default function ({
             id="allow-custom-hint"
             name="allowCustomAmount"
             type="checkbox"
-            defaultChecked={details?.allowCustomAmount}
+            defaultChecked={state.defaultState?.details?.allowCustomAmount}
           />
           <label
             className="govie-label--s govie-checkboxes__label"
@@ -154,19 +145,13 @@ export default function ({
           </label>
         </div>
       </div>
-      <div className="govie-form-group">
-        <label htmlFor="redirect-url" className="govie-label--s">
-          {t("form.redirectUrl")}
-        </label>
-        <input
-          type="text"
-          id="reference"
-          name="redirect-url"
-          className="govie-input"
-          required
-          defaultValue={details?.redirectUrl}
-        />
-      </div>
+      <InputField
+        name="redirect-url"
+        label={t("form.redirectUrl")}
+        error={state.errors.redirectUrl}
+        defaultValue={state.defaultState?.details?.redirectUrl}
+        required={true}
+      />
 
       <h2 className="govie-heading-m">{t("form.status.header")}</h2>
       <div
@@ -181,9 +166,9 @@ export default function ({
             value="active"
             className="govie-radios__input"
             defaultChecked={
-              typeof details === "undefined"
+              typeof state.defaultState?.details === "undefined"
                 ? true
-                : details?.status === "active"
+                : state.defaultState?.details?.status === "active"
             }
           />
           <label
@@ -202,7 +187,7 @@ export default function ({
             type="radio"
             value="inactive"
             className="govie-radios__input"
-            defaultChecked={details?.status === "inactive"}
+            defaultChecked={state.defaultState?.details?.status === "inactive"}
           />
 
           <label
@@ -216,6 +201,12 @@ export default function ({
       </div>
 
       <input type="submit" value={tCommon("save")} className="govie-button" />
+
+      <input
+        type="hidden"
+        name="providerAccounts"
+        value={JSON.stringify(state.defaultState?.providerAccounts)}
+      ></input>
     </form>
   );
 }

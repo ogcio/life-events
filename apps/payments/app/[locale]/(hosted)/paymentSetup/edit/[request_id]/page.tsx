@@ -12,6 +12,8 @@ import {
   PaymentRequestStatus,
   ProviderWithUnknownData,
 } from "../../../../../../types/common";
+import { getTranslations } from "next-intl/server";
+import { paymentRequestValidationMap } from "../../../../../validationMaps";
 
 async function editPayment(
   userId: string,
@@ -93,9 +95,12 @@ type Props = {
 
 export default async function ({ params: { request_id, locale } }: Props) {
   const { userId } = await PgSessions.get();
+  const t = await getTranslations("PaymentSetup.CreatePayment.form");
   const { data: details, error } = await new Payments(userId).getPaymentRequest(
     request_id,
   );
+
+  const validationMap = paymentRequestValidationMap(t);
 
   if (error) {
     errorHandler(error);

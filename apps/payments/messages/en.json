@@ -4,7 +4,8 @@
     "edit": "Edit",
     "save": "Save",
     "currencySymbol": "€",
-    "delete": "Delete"
+    "delete": "Delete",
+    "disabled": "Disabled"
   },
   "EmptyStatus": {
     "title": "Nothing to show...",
@@ -262,6 +263,7 @@
           "inactiveDescription": "This payment request is inactive and cannot be used to receive payments."
         },
         "title": "Title",
+        "titleRequired": "Title is required.",
         "description": "Description",
         "beneficiaryAccount": "Beneficiary Account",
         "paymentProvider": {
@@ -273,9 +275,12 @@
           "stripe": "Stripe Account"
         },
         "reference": "Reference",
+        "referenceRequired": "Reference is required.",
         "amount": "Amount",
+        "amountRequired": "amount is required.",
         "currencySymbol": "€",
         "redirectUrl": "Redirect URL",
+        "redirectUrlRequired": "Redirect URL is required.",
         "allowAmountOverride": "Allow amount override from url",
         "allowCustomAmount": "Allow the user to pay a custom amount",
         "submit": "Continue"
