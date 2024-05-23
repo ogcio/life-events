@@ -1,21 +1,34 @@
 import { Static, Type } from "@sinclair/typebox";
 
-const InvitationStatusUnionType = Type.Union(
-  [Type.Literal("pending"), Type.Literal("accepted"), Type.Literal("declined")],
+export const InvitationStatusUnionType = Type.Union(
+  [
+    Type.Literal("to_be_invited"),
+    Type.Literal("pending"),
+    Type.Literal("accepted"),
+    Type.Literal("declined"),
+  ],
   { default: Type.Literal("pending") },
 );
+export type InvitationStatus = Static<typeof InvitationStatusUnionType>;
 
-const UserStatusUnionType = Type.Union(
-  [Type.Literal("pending"), Type.Literal("disabled"), Type.Literal("active")],
+export const UserStatusUnionType = Type.Union(
+  [
+    Type.Literal("to_be_invited"),
+    Type.Literal("pending"),
+    Type.Literal("disabled"),
+    Type.Literal("active"),
+  ],
   { default: Type.Literal("pending") },
 );
+export type UserStatus = Static<typeof UserStatusUnionType>;
 
-const ImportChannelUnionType = Type.Union(
+export const ImportChannelUnionType = Type.Union(
   [Type.Literal("api"), Type.Literal("csv")],
   { default: Type.Literal("api") },
 );
+export type ImportChannel = Static<typeof ImportChannelUnionType>;
 
-const ImportStatusUnionType = Type.Union(
+export const ImportStatusUnionType = Type.Union(
   [
     Type.Literal("pending"),
     Type.Literal("imported"),
@@ -24,18 +37,20 @@ const ImportStatusUnionType = Type.Union(
   ],
   { default: Type.Literal("pending") },
 );
+export type ImportStatus = Static<typeof ImportStatusUnionType>;
 
-const CorrelationQualityUnionType = Type.Union([
+export const CorrelationQualityUnionType = Type.Union([
   Type.Literal("full"),
   Type.Literal("partial"),
 ]);
+export type CorrelationQuality = Static<typeof CorrelationQualityUnionType>;
 
 const NullableStringType = Type.Union([Type.Null(), Type.String()], {
   default: Type.Null(),
 });
 
 export const UserSchema = Type.Object({
-  id: Type.String(),
+  id: Type.Optional(Type.String()),
   userProfileId: NullableStringType,
   importerOrganisationId: Type.String(),
   userStatus: UserStatusUnionType,
@@ -44,7 +59,7 @@ export const UserSchema = Type.Object({
 
 export type User = Static<typeof UserSchema>;
 
-export const OrganisationUserSchema = Type.Object({
+export const OrganisationUserConfigSchema = Type.Object({
   organisationId: Type.String(),
   userId: Type.String(),
   invitationStatus: InvitationStatusUnionType,
@@ -53,9 +68,12 @@ export const OrganisationUserSchema = Type.Object({
   preferredTransports: Type.Array(Type.String()),
 });
 
-export type OrganisationUser = Static<typeof OrganisationUserSchema>;
+export type OrganisationUserConfig = Static<
+  typeof OrganisationUserConfigSchema
+>;
 
 export const ToImportUserSchema = Type.Object({
+  importIndex: Type.Integer(),
   publicIdentityId: NullableStringType,
   firstName: NullableStringType,
   lastName: NullableStringType,
@@ -76,8 +94,8 @@ export const ToImportUserSchema = Type.Object({
     { default: Type.Null() },
   ),
   importStatus: ImportStatusUnionType,
-  importError: NullableStringType,
-  relatedUserProfileId: NullableStringType,
+  importError: Type.Optional(NullableStringType),
+  relatedUserProfileId: Type.Optional(NullableStringType),
 });
 
 export type ToImportUser = Static<typeof ToImportUserSchema>;
@@ -89,6 +107,26 @@ export const UsersImportSchema = Type.Object({
   importChannel: ImportChannelUnionType,
   retryCount: Type.Integer({ default: 0 }),
   lastRetryAt: NullableStringType,
+  importId: Type.String(),
 });
 
 export type UsersImport = Static<typeof UsersImportSchema>;
+
+const NullableOptionalStringType = Type.Optional(NullableStringType);
+
+export const CsvRecordSchema = Type.Object({
+  importIndex: Type.Integer(),
+  publicIdentityId: NullableOptionalStringType,
+  firstName: NullableOptionalStringType,
+  lastName: NullableOptionalStringType,
+  phoneNumber: NullableOptionalStringType,
+  birthDate: NullableOptionalStringType,
+  emailAddress: NullableOptionalStringType,
+  addressCity: NullableOptionalStringType,
+  addressZipCode: NullableOptionalStringType,
+  addressStreet: NullableOptionalStringType,
+  addressCountry: NullableOptionalStringType,
+  addressRegion: NullableOptionalStringType,
+});
+
+export type CsvRecord = Static<typeof CsvRecordSchema>;

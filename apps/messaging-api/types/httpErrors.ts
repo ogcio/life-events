@@ -1,9 +1,10 @@
 import { Type } from "@sinclair/typebox";
 
 export const HttpError = Type.Object({
-  statusCode: Type.Number(),
   code: Type.String(),
-  error: Type.String(),
-  message: Type.String(),
-  time: Type.String(),
+  detail: Type.String(),
+  request_id: Type.String(),
+  name: Type.String(),
+  validation: Type.Optional(Type.Any()),
+  validationContext: Type.Optional(Type.String()),
 });

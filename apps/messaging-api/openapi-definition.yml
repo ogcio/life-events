@@ -981,3 +981,196 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/def-0"
+  /api/v1/users/csv:
+    post:
+      tags: &a4
+        - Users
+      responses:
+        "202":
+          description: Default Response
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/csv/template:
+    get:
+      tags: *a4
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
+  /api/v1/users/import:
+    post:
+      tags: *a4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  importIndex:
+                    type: integer
+                  publicIdentityId:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  firstName:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  lastName:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  phoneNumber:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  birthDate:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  emailAddress:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressCity:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressZipCode:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressStreet:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressCountry:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressRegion:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                required:
+                  - importIndex
+      responses:
+        "202":
+          description: Default Response
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name

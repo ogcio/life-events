@@ -3,7 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
   "/health": {
     get: {
@@ -50,13 +49,13 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                  id: string;
-                  subject: string;
-                  excerpt: string;
-                  plainText: string;
-                  richText: string;
-                  createdAt: string;
-                }[];
+                id: string;
+                subject: string;
+                excerpt: string;
+                plainText: string;
+                richText: string;
+                createdAt: string;
+              }[];
             };
           };
         };
@@ -156,16 +155,16 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                  /** Format: uuid */
-                  id: string;
-                  name: string;
-                  host: string;
-                  port: number;
-                  username: string;
-                  password: string;
-                  throttle?: number;
-                  fromAddress: string;
-                }[];
+                /** Format: uuid */
+                id: string;
+                name: string;
+                host: string;
+                port: number;
+                username: string;
+                password: string;
+                throttle?: number;
+                fromAddress: string;
+              }[];
             };
           };
         };
@@ -330,11 +329,11 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                  /** Format: uuid */
-                  id: string;
-                  name: string;
-                  type: string;
-                }[];
+                /** Format: uuid */
+                id: string;
+                name: string;
+                type: string;
+              }[];
             };
           };
         };
@@ -493,11 +492,11 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                  /** Format: uuid */
-                  templateMetaId: string;
-                  lang: string;
-                  templateName: string;
-                }[];
+                /** Format: uuid */
+                templateMetaId: string;
+                lang: string;
+                templateName: string;
+              }[];
             };
           };
         };
@@ -520,18 +519,18 @@ export interface paths {
         content: {
           "application/json": {
             contents: {
-                templateName: string;
-                lang: string;
-                subject: string;
-                excerpt: string;
-                plainText: string;
-                richText: string;
-              }[];
+              templateName: string;
+              lang: string;
+              subject: string;
+              excerpt: string;
+              plainText: string;
+              richText: string;
+            }[];
             variables: {
-                name: string;
-                type: string;
-                languages: string[];
-              }[];
+              name: string;
+              type: string;
+              languages: string[];
+            }[];
           };
         };
       };
@@ -576,17 +575,17 @@ export interface paths {
             "application/json": {
               data: {
                 contents: {
-                    templateName: string;
-                    subject: string;
-                    excerpt: string;
-                    plainText: string;
-                    richText: string;
-                    lang: string;
-                  }[];
+                  templateName: string;
+                  subject: string;
+                  excerpt: string;
+                  plainText: string;
+                  richText: string;
+                  lang: string;
+                }[];
                 fields: {
-                    fieldName: string;
-                    fieldType: string;
-                  }[];
+                  fieldName: string;
+                  fieldType: string;
+                }[];
               };
             };
           };
@@ -615,19 +614,19 @@ export interface paths {
         content: {
           "application/json": {
             contents: {
-                /** Format: uuid */
-                id: string;
-                templateName: string;
-                lang: string;
-                subject: string;
-                excerpt: string;
-                plainText: string;
-                richText: string;
-              }[];
+              /** Format: uuid */
+              id: string;
+              templateName: string;
+              lang: string;
+              subject: string;
+              excerpt: string;
+              plainText: string;
+              richText: string;
+            }[];
             variables: {
-                name: string;
-                type: string;
-              }[];
+              name: string;
+              type: string;
+            }[];
           };
         };
       };
@@ -663,6 +662,163 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": components["schemas"]["def-0"];
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/csv": {
+    post: {
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: never;
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/csv/template": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": string;
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/import": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": {
+            importIndex: number;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            publicIdentityId?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            firstName?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            lastName?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            phoneNumber?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            birthDate?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            emailAddress?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressCity?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressZipCode?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressStreet?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressCountry?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressRegion?: null | string;
+          }[];
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: never;
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
           };
         };
       };
