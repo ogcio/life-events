@@ -1,5 +1,5 @@
 import { createError } from "@fastify/error";
-import { FastifyBaseLogger } from "fastify";
+import { FastifyBaseLogger, FastifyError } from "fastify";
 import { PoolClient } from "pg";
 import {
   CorrelationQuality,
@@ -19,14 +19,6 @@ interface TempUserDetails {
   id: string;
   firstname: string;
   lastname: string;
-  email: string;
-  title: string;
-  dateOfBirth?: string;
-  ppsn: string;
-  ppsnVisible: boolean;
-  gender: string;
-  phone: string;
-  consentToPrefillData: boolean;
 }
 
 export const mapUsers = async (params: {
@@ -176,6 +168,15 @@ const processUser = async (params: {
   return insertNewUser({ toInsert: user, client });
 };
 
+const isFastifyError = (error: unknown): error is FastifyError => {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    "statusCode" in error
+  );
+};
+
 const processOrganizationUserRelation = async (params: {
   userId: string;
   client: PoolClient;
@@ -185,7 +186,7 @@ const processOrganizationUserRelation = async (params: {
   try {
     orgUserRelation = await getUserOrganisationRelation(params);
   } catch (error) {
-    const nativeError = isNativeError(error) ? error : null;
+    const nativeError = isFastifyError(error) ? error : null;
     if (
       nativeError === null ||
       !nativeError.message.endsWith(USER_ORGANIZATION_RELATION_MISSING_ERROR)
