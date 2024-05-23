@@ -35,7 +35,13 @@ export const importCsvFileFromRequest = async (params: {
   req: FastifyRequest;
   pool: Pool;
 }): Promise<void> => {
-  const usersToImport = await extractUsersFromMultipartRequest(params.req);
+  const file = await params.req.files();
+  if (!file) {
+    throw new Error("file is missing");
+  }
+
+  const savedFiles = await params.req.saveRequestFiles();
+  const usersToImport = await getUsersFromCsv(savedFiles[0].filepath);
 
   if (usersToImport.length === 0) {
     throw new Error("Files must have at least one user");
@@ -117,19 +123,6 @@ const csvRecordToToImportUser = (
   },
   importStatus: importStatus,
 });
-
-const extractUsersFromMultipartRequest = async (
-  req: FastifyRequest,
-): Promise<ToImportUser[]> => {
-  const file = await req.files();
-  if (!file) {
-    throw new Error("file is missing");
-  }
-
-  const savedFiles = await req.saveRequestFiles();
-
-  return getUsersFromCsv(savedFiles[0].filepath);
-};
 
 const insertToImportUsers = async (params: {
   client: PoolClient;
