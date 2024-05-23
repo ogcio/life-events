@@ -71,6 +71,17 @@ export const findUser = async (params: {
   return undefined;
 };
 
+const normalizeBirthDate = (
+  birthDate: string | undefined,
+): string | undefined => {
+  const cleared = clearField(birthDate);
+  if (!cleared) {
+    return undefined;
+  }
+
+  return `${cleared}::timestamp`;
+};
+
 const clearField = (valueToClear: string | undefined): string | undefined =>
   valueToClear && valueToClear.trim().length > 0
     ? valueToClear.trim()
@@ -81,7 +92,7 @@ const clearFields = (params: FindUserParams): FindUserParams => ({
   phone: clearField(params.phone),
   lastname: clearField(params.lastname),
   firstname: clearField(params.firstname),
-  dateOfBirth: clearField(params.dateOfBirth),
+  dateOfBirth: normalizeBirthDate(params.dateOfBirth),
   email: clearField(params.email),
   gender: clearField(params.gender),
 });
