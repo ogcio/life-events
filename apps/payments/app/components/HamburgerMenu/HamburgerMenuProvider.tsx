@@ -8,12 +8,14 @@ type MenuProviderProps = {
   userName: string;
   publicServant: boolean;
   languageSwitch: React.ReactNode;
+  logout: React.ReactNode;
 };
 
 export default ({
   userName,
   publicServant,
   languageSwitch,
+  logout,
 }: MenuProviderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -43,6 +45,7 @@ export default ({
             publicServant={publicServant}
             handleClick={handleClick}
             languageSwitch={languageSwitch}
+            logout={logout}
           />
         </div>
       </div>
