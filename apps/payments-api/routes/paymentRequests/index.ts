@@ -18,11 +18,14 @@ import {
   PaginationDetails,
 } from "../../utils/pagination";
 import { formatAPIResponse } from "../../utils/responseFormatter";
+import { PaginationParams as PaginationParamsType } from "../../types/pagination";
+import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
+import { TransactionDO } from "../../plugins/entities/transactions/types";
 
 export default async function paymentRequests(app: FastifyInstance) {
   app.get<{
-    Reply: GenericResponse<PaymentRequest[]>;
-    Querystring: PaginationParams;
+    Reply: GenericResponseType<PaymentRequest[]>;
+    Querystring: PaginationParamsType;
   }>(
     "/",
     {
@@ -460,9 +463,9 @@ export default async function paymentRequests(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: GenericResponse<Transaction[]>;
+    Reply: GenericResponseType<TransactionDO[]>;
     Params: ParamsWithPaymentRequestId;
-    Querystring: PaginationParams;
+    Querystring: PaginationParamsType;
   }>(
     "/:requestId/transactions",
     {
