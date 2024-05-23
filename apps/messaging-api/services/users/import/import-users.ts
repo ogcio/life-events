@@ -151,6 +151,7 @@ const insertToImportUsers = async (params: {
     `,
       [organisationId, JSON.stringify(params.toImportUsers), params.channel],
     );
+
     if (result.rowCount === 0) {
       throw new Error("Cannot store the users_import data");
     }
