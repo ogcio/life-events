@@ -62,7 +62,7 @@ export default async function Pagination({
                   </li>
                 )}
                 <li
-                  className={`govie-pagination__item item ${pageNr === currentPage ? "govie-pagination__item--current" : ""}`}
+                  className={`govie-pagination__item ${pageNr === currentPage ? "govie-pagination__item--current" : ""}`}
                   key={page}
                 >
                   <a
