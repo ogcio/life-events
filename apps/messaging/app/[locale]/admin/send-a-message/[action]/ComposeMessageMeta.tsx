@@ -12,6 +12,8 @@ export default async (props: MessageCreateProps) => {
   async function submit(formData: FormData) {
     "use server";
 
+    const templateMetaId = formData.get("templateMetaId")?.toString();
+
     const preferredTransportations: string[] = [];
 
     if (Boolean(formData.get("email"))) {
@@ -26,7 +28,7 @@ export default async (props: MessageCreateProps) => {
       Object.assign({}, props.state, {
         submittedMetaAt: dayjs().toISOString(),
         transportations: preferredTransportations,
-        templateMetaId: formData.get("templateMetaId")?.toString(),
+        templateMetaId,
       }),
       props.userId,
       props.stateId,
@@ -111,27 +113,24 @@ export default async (props: MessageCreateProps) => {
 
         <hr className="govie-section-break govie-section-break--visible" />
 
-        {Boolean(templates?.length) ? (
-          <div className="govie-form-group">
-            <h3>
-              <span className="govie-heading-s">
-                {t("chooseTemplateHeading")}
-              </span>
-            </h3>
-            <select className="govie-select" name="templateMetaId">
-              <option value="">{t("emptyTemplateOption")}</option>
-              {templates?.map((template) => (
-                <option
-                  key={template.templateMetaId}
-                  value={template.templateMetaId}
-                >
-                  {template.templateName}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : null}
-
+        <div className="govie-form-group">
+          <h3>
+            <span className="govie-heading-s">
+              {t("chooseTemplateHeading")}
+            </span>
+          </h3>
+          <select className="govie-select" name="templateMetaId">
+            <option value="">{t("emptyTemplateOption")}</option>
+            {templates?.map((template) => (
+              <option
+                key={template.templateMetaId}
+                value={template.templateMetaId}
+              >
+                {template.templateName}
+              </option>
+            ))}
+          </select>
+        </div>
         <button className="govie-button" type="submit">
           {t("submitText")}
         </button>

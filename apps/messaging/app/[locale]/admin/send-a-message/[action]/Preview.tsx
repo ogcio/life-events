@@ -95,13 +95,13 @@ export default async (props: MessageCreateProps) => {
           </div>
           <p className="govie-body">{excerpt}</p>
 
-          <div
+          {/* <div
             style={{ margin: "unset" }}
             className="govie-body govie-!-font-weight-bold"
           >
             {t("richText")}
           </div>
-          <p className="govie-body">{richText}</p>
+          <p className="govie-body">{richText}</p> */}
 
           <div
             style={{ margin: "unset" }}
