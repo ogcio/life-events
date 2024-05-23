@@ -2,9 +2,13 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
 import {
   getCsvExample,
-  importCsvFromRequest,
-} from "../../services/users/csv-import";
+  importCsvFileFromRequest,
+  importCsvRecords,
+} from "../../services/users/import/import-users";
 import { HttpError } from "../../types/httpErrors";
+import { CsvRecord, CsvRecordSchema } from "../../types/usersSchemaDefinitions";
+
+const tags = ["Users"];
 
 export default async function users(app: FastifyInstance) {
   app.post(
@@ -12,6 +16,7 @@ export default async function users(app: FastifyInstance) {
     {
       preValidation: app.verifyUser,
       schema: {
+        tags,
         response: {
           202: Type.Null(),
           "5xx": HttpError,
@@ -19,9 +24,8 @@ export default async function users(app: FastifyInstance) {
         },
       },
     },
-    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     async (request: FastifyRequest, _reply: FastifyReply) => {
-      await importCsvFromRequest({ req: request, pool: app.pg.pool });
+      await importCsvFileFromRequest({ req: request, pool: app.pg.pool });
     },
   );
 
@@ -30,6 +34,7 @@ export default async function users(app: FastifyInstance) {
     {
       preValidation: app.verifyUser,
       schema: {
+        tags,
         response: {
           200: Type.String(),
         },
@@ -39,6 +44,30 @@ export default async function users(app: FastifyInstance) {
       const buffer = await getCsvExample();
 
       reply.type("text/csv").send(buffer);
+    },
+  );
+
+  app.post<{ Body: CsvRecord[] }>(
+    "/import",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags,
+        body: Type.Array(CsvRecordSchema),
+        response: {
+          202: Type.Null(),
+          "5xx": HttpError,
+          "4xx": HttpError,
+        },
+      },
+    },
+    async (request: FastifyRequest, _reply: FastifyReply) => {
+      await importCsvRecords({
+        pool: app.pg.pool,
+        logger: request.log,
+        csvRecords: request.body as CsvRecord[],
+        requestUser: request.user!,
+      });
     },
   );
 }

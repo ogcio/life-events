@@ -28,6 +28,7 @@ export async function build(opts?: FastifyServerOptions) {
   initializeErrorHandler(app);
 
   app.register(authPlugin);
+
   app.register(fastifyEnv, {
     schema: envSchema,
     dotenv: true,
