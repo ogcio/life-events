@@ -211,12 +211,11 @@ const runFindQuery = async (params: {
   values: WhereClauseTypes[];
 }): Promise<PartialFoundUser | undefined> => {
   try {
-    console.log({ q: params.query, v: params.values });
     const result = await params.client.query<FoundUser>(
       params.query,
       params.values,
     );
-    console.log(result.fields);
+
     return result.rows[0] ?? undefined;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
