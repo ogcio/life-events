@@ -1,0 +1,1 @@
+ALTER TABLE organisations_users RENAME TO organisation_user_configurations;

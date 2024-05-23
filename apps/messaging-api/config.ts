@@ -27,5 +27,9 @@ export const envSchema = {
     POSTGRES_DB_NAME_SHARED: {
       type: "string",
     },
+    SYNCHRONOUS_USER_IMPORT: {
+      type: "boolean",
+      default: true,
+    },
   },
 };
