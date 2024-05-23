@@ -2,6 +2,7 @@
 import { useTranslations } from "next-intl";
 import { useFormState } from "react-dom";
 import OpenBankingFields from "./OpenBankingFields";
+import { OpenBankingFormState } from "./page";
 
 export default ({
   action,
@@ -10,11 +11,7 @@ export default ({
   action: (
     prevState: FormData,
     formData: FormData,
-  ) => Promise<{
-    errors: {
-      [key: string]: string;
-    };
-  }>;
+  ) => Promise<OpenBankingFormState>;
   defaultState?: {
     providerName: string;
     accountHolderName: string;

@@ -5,12 +5,10 @@ import { getTranslations } from "next-intl/server";
 import RealexFields from "../add-realex/RealexFields";
 import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
-import {
-  errorHandler,
-  getValidationErrors,
-  ValidationErrorTypes,
-} from "../../../../../utils";
+import { errorHandler, getValidationErrors } from "../../../../../utils";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import { realexValidationMap } from "../../../../../validationMaps";
+import { RealexFormState } from "../add-realex/page";
 
 type Props = {
   provider: RealexProvider;
@@ -22,40 +20,12 @@ export default async ({ provider, userId, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddRealex");
   const { messages } = await getRequestConfig({ locale });
 
-  const errorFieldMapping = {
-    name: {
-      field: "providerName",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("nameRequired"),
-      },
-    },
-    merchantId: {
-      field: "merchantId",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("merchantIdRequired"),
-      },
-    },
-    sharedSecret: {
-      field: "sharedSecret",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("sharedSecretRequired"),
-      },
-    },
-  };
+  const errorFieldMapping = realexValidationMap(t);
 
   async function handleSubmit(
     prevState: FormData,
     formData: FormData,
-  ): Promise<{
-    errors: {
-      [key: string]: string;
-    };
-    defaultState: {
-      providerName: string;
-      merchantId: string;
-      sharedSecret: string;
-    };
-  }> {
+  ): Promise<RealexFormState> {
     "use server";
     const nameField = formData.get("provider_name") as string;
     const merchantIdField = formData.get("merchant_id") as string;

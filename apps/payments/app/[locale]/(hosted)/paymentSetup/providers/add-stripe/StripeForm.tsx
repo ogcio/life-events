@@ -2,19 +2,13 @@
 import { useTranslations } from "next-intl";
 import { useFormState } from "react-dom";
 import StripeFields from "./StripeFields";
+import { StripeFormState } from "./page";
 
 export default ({
   action,
   defaultState,
 }: {
-  action: (
-    prevState: FormData,
-    formData: FormData,
-  ) => Promise<{
-    errors: {
-      [key: string]: string;
-    };
-  }>;
+  action: (prevState: FormData, formData: FormData) => Promise<StripeFormState>;
   defaultState?: {
     providerName: string;
     livePublishableKey: string;

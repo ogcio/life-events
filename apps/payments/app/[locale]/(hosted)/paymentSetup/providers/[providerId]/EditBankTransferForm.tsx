@@ -4,13 +4,11 @@ import EditProviderForm from "./EditProviderForm";
 import type { BankTransferProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import { Payments } from "building-blocks-sdk";
-import {
-  errorHandler,
-  getValidationErrors,
-  ValidationErrorTypes,
-} from "../../../../../utils";
+import { errorHandler, getValidationErrors } from "../../../../../utils";
 import getRequestConfig from "../../../../../../i18n";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import { bankTransferValidationMap } from "../../../../../validationMaps";
+import { BankTransferFormState } from "../add-banktransfer/page";
 
 type Props = {
   provider: BankTransferProvider;
@@ -22,41 +20,12 @@ export default async ({ provider, userId, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddBankTransfer");
   const { messages } = await getRequestConfig({ locale });
 
-  const errorFieldMapping = {
-    name: {
-      field: "providerName",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("nameRequired"),
-      },
-    },
-    iban: {
-      field: "iban",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("ibanRequired"),
-        [ValidationErrorTypes.INVALID]: t("ibanInvalid"),
-      },
-    },
-    accountHolderName: {
-      field: "accountHolderName",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("accountHolderNameRequired"),
-      },
-    },
-  };
+  const errorFieldMapping = bankTransferValidationMap(t);
 
   async function handleSubmit(
     prevState: FormData,
     formData: FormData,
-  ): Promise<{
-    errors: {
-      [key: string]: string;
-    };
-    defaultState?: {
-      providerName: string;
-      accountHolderName: string;
-      iban: string;
-    };
-  }> {
+  ): Promise<BankTransferFormState> {
     "use server";
     const nameField = formData.get("provider_name") as string;
     const accountHolderNameField = formData.get(

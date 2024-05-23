@@ -4,16 +4,24 @@ import { redirect } from "next/navigation";
 import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
-import {
-  errorHandler,
-  getValidationErrors,
-  ValidationErrorTypes,
-} from "../../../../../utils";
+import { errorHandler, getValidationErrors } from "../../../../../utils";
 import StripeForm from "./StripeForm";
+import { stripeValidationMap } from "../../../../../validationMaps";
 
 type Props = {
   params: {
     locale: string;
+  };
+};
+
+export type StripeFormState = {
+  errors: {
+    [key: string]: string;
+  };
+  defaultState?: {
+    providerName: string;
+    livePublishableKey: string;
+    liveSecretKey: string;
   };
 };
 
@@ -23,40 +31,12 @@ export default async (props: Props) => {
 
   const { userId } = await PgSessions.get();
 
-  const errorFieldMapping = {
-    name: {
-      field: "providerName",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("nameRequired"),
-      },
-    },
-    liveSecretKey: {
-      field: "liveSecretKey",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("liveSecretKeyRequired"),
-      },
-    },
-    livePublishableKey: {
-      field: "livePublishableKey",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("livePublishableKeyRequired"),
-      },
-    },
-  };
+  const errorFieldMapping = stripeValidationMap(t);
 
   async function handleSubmit(
     prevState: FormData,
     formData: FormData,
-  ): Promise<{
-    errors: {
-      [key: string]: string;
-    };
-    defaultState?: {
-      providerName: string;
-      livePublishableKey: string;
-      liveSecretKey: string;
-    };
-  }> {
+  ): Promise<StripeFormState> {
     "use server";
     const nameField = formData.get("provider_name") as string;
     const livePublishableKeyField = formData.get(

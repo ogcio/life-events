@@ -3,17 +3,25 @@ import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
-import {
-  errorHandler,
-  getValidationErrors,
-  ValidationErrorTypes,
-} from "../../../../../utils";
+import { errorHandler, getValidationErrors } from "../../../../../utils";
 import RealexForm from "./RealexForm";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import { realexValidationMap } from "../../../../../validationMaps";
 
 type Props = {
   params: {
     locale: string;
+  };
+};
+
+export type RealexFormState = {
+  errors: {
+    [key: string]: string;
+  };
+  defaultState: {
+    providerName: string;
+    merchantId: string;
+    sharedSecret: string;
   };
 };
 
@@ -23,40 +31,12 @@ export default async (props: Props) => {
 
   const { userId } = await PgSessions.get();
 
-  const errorFieldMapping = {
-    name: {
-      field: "providerName",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("nameRequired"),
-      },
-    },
-    merchantId: {
-      field: "merchantId",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("merchantIdRequired"),
-      },
-    },
-    sharedSecret: {
-      field: "sharedSecret",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("sharedSecretRequired"),
-      },
-    },
-  };
+  const errorFieldMapping = realexValidationMap(t);
 
   async function handleSubmit(
     prevState: FormData,
     formData: FormData,
-  ): Promise<{
-    errors: {
-      [key: string]: string;
-    };
-    defaultState: {
-      providerName: string;
-      merchantId: string;
-      sharedSecret: string;
-    };
-  }> {
+  ): Promise<RealexFormState> {
     "use server";
     const nameField = formData.get("provider_name") as string;
     const merchantIdField = formData.get("merchant_id") as string;

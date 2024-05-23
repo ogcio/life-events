@@ -5,12 +5,10 @@ import type { OpenBankingProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
-import {
-  errorHandler,
-  getValidationErrors,
-  ValidationErrorTypes,
-} from "../../../../../utils";
+import { errorHandler, getValidationErrors } from "../../../../../utils";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import { openBankingValidationMap } from "../../../../../validationMaps";
+import { OpenBankingFormState } from "../add-openbanking/page";
 
 type Props = {
   provider: OpenBankingProvider;
@@ -22,41 +20,12 @@ export default async ({ provider, userId, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddOpenbanking");
   const { messages } = await getRequestConfig({ locale });
 
-  const errorFieldMapping = {
-    name: {
-      field: "providerName",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("nameRequired"),
-      },
-    },
-    iban: {
-      field: "iban",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("ibanRequired"),
-        [ValidationErrorTypes.INVALID]: t("ibanInvalid"),
-      },
-    },
-    accountHolderName: {
-      field: "accountHolderName",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("accountHolderNameRequired"),
-      },
-    },
-  };
+  const errorFieldMapping = openBankingValidationMap(t);
 
   async function handleSubmit(
     prevState: FormData,
     formData: FormData,
-  ): Promise<{
-    errors: {
-      [key: string]: string;
-    };
-    defaultState?: {
-      providerName: string;
-      accountHolderName: string;
-      iban: string;
-    };
-  }> {
+  ): Promise<OpenBankingFormState> {
     "use server";
     const nameField = formData.get("provider_name") as string;
     const accountHolderNameField = formData.get(

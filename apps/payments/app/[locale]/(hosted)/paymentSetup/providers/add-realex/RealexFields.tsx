@@ -1,18 +1,10 @@
 "use client";
 import { useTranslations } from "next-intl";
 import InputField from "../../../../../components/InputField";
+import { RealexFormState } from "./page";
 
 type Props = {
-  state: {
-    errors: {
-      [key: string]: string;
-    };
-    defaultState: {
-      providerName?: string;
-      merchantId?: string;
-      sharedSecret?: string;
-    };
-  };
+  state: RealexFormState;
 };
 
 export default ({ state }: Props) => {

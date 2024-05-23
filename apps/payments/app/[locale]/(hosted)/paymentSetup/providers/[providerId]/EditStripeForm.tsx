@@ -5,12 +5,10 @@ import { getTranslations } from "next-intl/server";
 import StripeFields from "../add-stripe/StripeFields";
 import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
-import {
-  errorHandler,
-  getValidationErrors,
-  ValidationErrorTypes,
-} from "../../../../../utils";
+import { errorHandler, getValidationErrors } from "../../../../../utils";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import { stripeValidationMap } from "../../../../../validationMaps";
+import { StripeFormState } from "../add-stripe/page";
 
 type Props = {
   provider: StripeProvider;
@@ -22,40 +20,12 @@ export default async ({ provider, userId, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddStripe");
   const { messages } = await getRequestConfig({ locale });
 
-  const errorFieldMapping = {
-    name: {
-      field: "providerName",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("nameRequired"),
-      },
-    },
-    liveSecretKey: {
-      field: "liveSecretKey",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("liveSecretKeyRequired"),
-      },
-    },
-    livePublishableKey: {
-      field: "livePublishableKey",
-      errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("livePublishableKeyRequired"),
-      },
-    },
-  };
+  const errorFieldMapping = stripeValidationMap(t);
 
   async function handleSubmit(
     prevState: FormData,
     formData: FormData,
-  ): Promise<{
-    errors: {
-      [key: string]: string;
-    };
-    defaultState?: {
-      providerName: string;
-      livePublishableKey: string;
-      liveSecretKey: string;
-    };
-  }> {
+  ): Promise<StripeFormState> {
     "use server";
     const nameField = formData.get("provider_name") as string;
     const livePublishableKeyField = formData.get(

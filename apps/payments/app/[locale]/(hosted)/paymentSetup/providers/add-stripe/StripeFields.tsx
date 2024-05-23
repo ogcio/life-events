@@ -1,18 +1,10 @@
 "use client";
 import { useTranslations } from "next-intl";
 import InputField from "../../../../../components/InputField";
+import { StripeFormState } from "./page";
 
 type Props = {
-  state: {
-    errors: {
-      [key: string]: string;
-    };
-    defaultState: {
-      providerName?: string;
-      livePublishableKey?: string;
-      liveSecretKey?: string;
-    };
-  };
+  state: StripeFormState;
 };
 
 export default ({ state }: Props) => {
