@@ -13,7 +13,11 @@ type PartialFoundUser = Omit<FoundUser, "matchQuality">;
 const buildFindQuery = (whereClauses: {
   [x: string]:
     | WhereClauseTypes
-    | { value: WhereClauseTypes; operator: "=" | "LIKE" | "ILIKE" };
+    | {
+        value: WhereClauseTypes;
+        operator: "=" | "LIKE" | "ILIKE";
+        isDate: boolean;
+      };
 }): { query: string; values: WhereClauseTypes[] } => {
   let baseQuery = `
         SELECT 
@@ -30,11 +34,15 @@ const buildFindQuery = (whereClauses: {
   for (const fieldName in whereClauses) {
     let operator = "=";
     let value = whereClauses[fieldName];
+    let date = "";
     if (typeof value === "object") {
       operator = value!.operator;
+      date = value!.isDate ? "::date" : "";
       value = value!.value;
     }
-    queryClauses.push(` ${fieldName} ${operator} $${whereValuesIndex++} `);
+    queryClauses.push(
+      ` ${fieldName} ${operator} $${whereValuesIndex++}${date} `,
+    );
     whereValues.push(value);
   }
   if (whereValues.length > 0) {
@@ -50,6 +58,7 @@ export const findUser = async (params: {
   findUserParams: FindUserParams;
 }): Promise<FoundUser | undefined> => {
   const findUserParams = clearFields(params.findUserParams);
+
   const client = await params.pool.connect();
   const orderedMethodsToInvoke = [
     findByPpsn,
@@ -71,17 +80,6 @@ export const findUser = async (params: {
   return undefined;
 };
 
-const normalizeBirthDate = (
-  birthDate: string | undefined,
-): string | undefined => {
-  const cleared = clearField(birthDate);
-  if (!cleared) {
-    return undefined;
-  }
-
-  return `${cleared}::timestamp`;
-};
-
 const clearField = (valueToClear: string | undefined): string | undefined =>
   valueToClear && valueToClear.trim().length > 0
     ? valueToClear.trim()
@@ -92,7 +90,7 @@ const clearFields = (params: FindUserParams): FindUserParams => ({
   phone: clearField(params.phone),
   lastname: clearField(params.lastname),
   firstname: clearField(params.firstname),
-  dateOfBirth: normalizeBirthDate(params.dateOfBirth),
+  dateOfBirth: clearField(params.dateOfBirth),
   email: clearField(params.email),
   gender: clearField(params.gender),
 });
@@ -103,13 +101,19 @@ const findBy = async (params: {
     name: string;
     operator?: "LIKE" | "ILIKE" | "=";
     mandatory: boolean;
+    column?: string;
+    is_date?: boolean;
   }[];
   client: PoolClient;
   findUserParams: FindUserParams;
 }) => {
   const { matchQuality, fields, client, findUserParams } = params;
   const toQuery: {
-    [x: string]: { value: WhereClauseTypes; operator: "=" | "LIKE" | "ILIKE" };
+    [x: string]: {
+      value: WhereClauseTypes;
+      operator: "=" | "LIKE" | "ILIKE";
+      isDate: boolean;
+    };
   } = {};
   const indexedUserParams: { [x: string]: undefined | string } = findUserParams;
   const indexedColumnsMapping: { [x: string]: string } =
@@ -121,14 +125,15 @@ const findBy = async (params: {
       return undefined;
     }
 
-    if (!(field.name in indexedColumnsMapping)) {
+    if (!field.column && !(field.name in indexedColumnsMapping)) {
       return undefined;
     }
 
     if (indexedUserParams[field.name]) {
-      toQuery[indexedColumnsMapping[field.name]] = {
+      toQuery[field.column ?? indexedColumnsMapping[field.name]] = {
         operator: field.operator ?? "=",
         value: indexedUserParams[field.name]!,
+        isDate: field.is_date ?? false,
       };
     }
   }
@@ -166,7 +171,13 @@ const findByBirthDate = async (params: {
     fields: [
       { name: "firstname", operator: "ILIKE", mandatory: true },
       { name: "lastname", operator: "ILIKE", mandatory: true },
-      { name: "dateOfBirth", operator: "=", mandatory: true },
+      {
+        name: "dateOfBirth",
+        operator: "=",
+        mandatory: true,
+        column: "date_of_birth::date",
+        is_date: true,
+      },
     ],
   });
 
@@ -200,11 +211,12 @@ const runFindQuery = async (params: {
   values: WhereClauseTypes[];
 }): Promise<PartialFoundUser | undefined> => {
   try {
+    console.log({ q: params.query, v: params.values });
     const result = await params.client.query<FoundUser>(
       params.query,
       params.values,
     );
-
+    console.log(result.fields);
     return result.rows[0] ?? undefined;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
