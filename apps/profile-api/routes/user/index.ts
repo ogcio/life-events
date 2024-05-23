@@ -3,6 +3,10 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreateUser,
   CreateUserSchema,
+  FindUserParams,
+  FindUserParamsSchema,
+  FoundUser,
+  FoundUserSchema,
   PatchUser,
   PatchUserSchema,
   UpdateUser,
@@ -255,5 +259,22 @@ export default async function user(app: FastifyInstance) {
 
       reply.send({ id: result.rows[0].id });
     },
+  );
+
+  app.get<{ Reply: FoundUser | Error; Params: FindUserParams }>(
+    "/find",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: USER_TAGS,
+        params: FindUserParamsSchema,
+        response: {
+          200: FoundUserSchema,
+          404: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {},
   );
 }
