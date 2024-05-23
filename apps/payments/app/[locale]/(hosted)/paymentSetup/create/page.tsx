@@ -1,6 +1,6 @@
 import { PgSessions } from "auth/sessions";
 import { RedirectType, redirect } from "next/navigation";
-import PaymentSetupForm from "../PaymentSetupForm";
+import PaymentSetupFormPage from "../PaymentSetupFormPage";
 import { errorHandler, stringToAmount } from "../../../../utils";
 import { Payments } from "building-blocks-sdk";
 import { PaymentRequestStatus } from "../../../../../types/common";
@@ -35,9 +35,21 @@ async function createPayment(userId: string, formData: FormData) {
   redirect(`./requests/${paymentRequest?.id}`, RedirectType.replace);
 }
 
-export default async function Page() {
+type Props = {
+  params: {
+    locale: string;
+  };
+};
+
+export default async function Page({ params: { locale } }: Props) {
   const { userId } = await PgSessions.get();
   const submitPayment = createPayment.bind(this, userId);
 
-  return <PaymentSetupForm userId={userId} action={submitPayment} />;
+  return (
+    <PaymentSetupFormPage
+      userId={userId}
+      locale={locale}
+      action={submitPayment}
+    />
+  );
 }

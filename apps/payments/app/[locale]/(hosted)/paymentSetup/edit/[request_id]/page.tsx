@@ -1,6 +1,6 @@
 import { PgSessions } from "auth/sessions";
 import { notFound, redirect } from "next/navigation";
-import PaymentSetupForm from "../../PaymentSetupForm";
+import PaymentSetupFormPage from "../../PaymentSetupFormPage";
 import { Payments } from "building-blocks-sdk";
 import {
   errorHandler,
@@ -84,10 +84,17 @@ async function editPayment(
   redirect(`/paymentSetup/requests/${updateRes?.id}`);
 }
 
-export default async function (props: { params: { request_id: string } }) {
+type Props = {
+  params: {
+    request_id: string;
+    locale: string;
+  };
+};
+
+export default async function ({ params: { request_id, locale } }: Props) {
   const { userId } = await PgSessions.get();
   const { data: details, error } = await new Payments(userId).getPaymentRequest(
-    props.params.request_id,
+    request_id,
   );
 
   if (error) {
@@ -106,8 +113,9 @@ export default async function (props: { params: { request_id: string } }) {
   );
 
   return (
-    <PaymentSetupForm
+    <PaymentSetupFormPage
       userId={userId}
+      locale={locale}
       action={submitPayment}
       details={details}
     />
