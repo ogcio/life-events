@@ -1,11 +1,12 @@
-import { headers } from "next/headers";
-import { messages } from "../../utils";
-import SideMenu from "../SideMenu";
 import { PgSessions } from "auth/sessions";
+import { headers } from "next/headers";
 import { RedirectType, redirect } from "next/navigation";
+import SideMenu from "../SideMenu";
+import { messages } from "../../utils";
 
-export default async ({ children }: React.PropsWithChildren) => {
-  const { publicServant } = await PgSessions.get();
+export default async ({ children }: { children: React.ReactNode }) => {
+  const { publicServant, firstName, lastName } = await PgSessions.get();
+
   if (!publicServant) {
     redirect("/messages", RedirectType.replace);
   }
@@ -18,8 +19,9 @@ export default async ({ children }: React.PropsWithChildren) => {
       <SideMenu
         options={await messages.sideMenuOptions(publicServant)}
         selected={selected}
+        userName={`${firstName} ${lastName}`}
       />
-      <div style={{ width: "100%" }}>{children}</div>
+      <div style={{ width: "100%", margin: "0 0 50px 0" }}>{children}</div>
     </div>
   );
 };

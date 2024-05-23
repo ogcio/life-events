@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import TemplatesList from "./TemplatesList";
-import { redirect } from "next/navigation";
+import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
 import Link from "next/link";
 
 export default async () => {
@@ -11,13 +11,15 @@ export default async () => {
 
   return (
     <main className="govie-main-wrapper " id="main-content" role="main">
-      <h1 className="govie-heading-l">{t("title")}</h1>
+      <FlexMenuWrapper>
+        <h1 className="govie-heading-l">{t("title")}</h1>
 
-      <Link href={url.href} className="govie-link">
-        Create
-      </Link>
+        <Link href={url.href} className="govie-link">
+          Create
+        </Link>
 
-      <TemplatesList />
+        <TemplatesList />
+      </FlexMenuWrapper>
     </main>
   );
 };
