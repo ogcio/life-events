@@ -3,6 +3,7 @@ import {
   FindUserParams,
   FoundUser,
   MatchQuality,
+  UserDetailColumnsMapping,
 } from "../../types/schemaDefinitions";
 import { isNativeError } from "util/types";
 import { createError } from "@fastify/error";
@@ -102,7 +103,8 @@ const findBy = async (params: {
     [x: string]: { value: WhereClauseTypes; operator: "=" | "LIKE" | "ILIKE" };
   } = {};
   const indexedUserParams: { [x: string]: undefined | string } = findUserParams;
-
+  const indexedColumnsMapping: { [x: string]: string } =
+    UserDetailColumnsMapping;
   for (const field of fields) {
     // if the field is needed for querying but it is empty
     // we don't run the query and return not found user
@@ -110,8 +112,12 @@ const findBy = async (params: {
       return undefined;
     }
 
+    if (!(field.name in indexedColumnsMapping)) {
+      return undefined;
+    }
+
     if (indexedUserParams[field.name]) {
-      toQuery[field.name] = {
+      toQuery[indexedColumnsMapping[field.name]] = {
         operator: field.operator ?? "=",
         value: indexedUserParams[field.name]!,
       };
