@@ -11,14 +11,14 @@ export default async (props: {
   flow: string;
 }) => {
   const { data, userId, urlBase, flow } = props;
-  const t = await getTranslations("GetDigitalWallet.YourEmployment");
+  const t = await getTranslations("GetDigitalWallet.GovernmentDetails");
   const errorT = await getTranslations("formErrors");
 
   const red = ds.colours.ogcio.red;
 
   const errors = await form.getErrorsQuery(
     props.userId,
-    routes.digitalWallet.getDigitalWallet.yourEmployment.slug,
+    routes.digitalWallet.getDigitalWallet.governmentDetails.slug,
     props.flow,
   );
 
@@ -55,7 +55,7 @@ export default async (props: {
       await form.insertErrors(
         formErrors,
         userId,
-        routes.digitalWallet.getDigitalWallet.yourEmployment.slug,
+        routes.digitalWallet.getDigitalWallet.governmentDetails.slug,
         flow,
       );
 

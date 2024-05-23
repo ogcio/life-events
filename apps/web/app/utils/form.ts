@@ -35,6 +35,7 @@ export const fieldTranslationKeys = {
   PPSN: "PPSN",
   referenceNumber: "referenceNumber",
   deceasedSurname: "deceasedSurname",
+  deviceType: "deviceType",
   appStoreEmail: "appStoreEmail",
   myGovIdEmail: "myGovIdEmail",
   govIEEmail: "govIEEmail",

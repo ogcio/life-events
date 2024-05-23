@@ -285,22 +285,28 @@ export const digitalWallet = {
     path() {
       return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}`;
     },
-    beforeYouBegin: {
-      slug: "before-you-begin",
+    beforeYouStart: {
+      slug: "before-you-start",
       path() {
-        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.beforeYouBegin.slug}`;
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.beforeYouStart.slug}`;
+      },
+    },
+    governmentDetails: {
+      slug: "government-details",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.governmentDetails.slug}`;
+      },
+    },
+    deviceSelection: {
+      slug: "device-selection",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.deviceSelection.slug}`;
       },
     },
     aboutYou: {
       slug: "about-you",
       path() {
         return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.aboutYou.slug}`;
-      },
-    },
-    yourEmployment: {
-      slug: "your-employment",
-      path() {
-        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.yourEmployment.slug}`;
       },
     },
     yourDevice: {

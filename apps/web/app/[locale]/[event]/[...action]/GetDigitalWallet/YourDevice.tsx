@@ -11,7 +11,13 @@ export default async (props: {
   flow: string;
 }) => {
   const { data, userId, urlBase, flow } = props;
+  const deviceType = data.deviceType as "ios" | "android";
+
   const t = await getTranslations("GetDigitalWallet.YourDevice");
+  const tMainText = await getTranslations(
+    `GetDigitalWallet.YourDevice.${deviceType}`,
+  );
+
   const errorT = await getTranslations("formErrors");
 
   const red = ds.colours.ogcio.red;
@@ -111,7 +117,7 @@ export default async (props: {
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds-from-desktop">
         <h1 className="govie-heading-l">{t("title")}</h1>
-        <p className="govie-heading-s">{t("subTitle")}</p>
+        <p className="govie-heading-s">{tMainText("text")}</p>
         <form action={submitAction} style={{ maxWidth: "590px" }}>
           <div
             className={`govie-form-group ${
@@ -120,7 +126,7 @@ export default async (props: {
           >
             <h1 className="govie-label-wrapper">
               <label htmlFor="email" className="govie-label--s govie-label--l">
-                {t.rich("appStoreEmail", {
+                {tMainText.rich("appStoreEmail", {
                   red: (chunks) => <span style={{ color: red }}>{chunks}</span>,
                 })}
               </label>

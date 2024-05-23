@@ -227,6 +227,7 @@ export type GetDigitalWallet = Base & {
   lastName: string;
   hasReadIntro: boolean;
   hasConfirmedPersonalDetails: boolean;
+  deviceType: "ios" | "android" | undefined;
   appStoreEmail: string;
   myGovIdEmail: string;
   govIEEmail: string;
@@ -244,6 +245,7 @@ export function emptyGetDigitalWallet(): GetDigitalWallet {
     lastName: "",
     hasReadIntro: false,
     hasConfirmedPersonalDetails: false,
+    deviceType: undefined,
     appStoreEmail: "",
     myGovIdEmail: "",
     govIEEmail: "",
