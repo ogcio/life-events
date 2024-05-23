@@ -62,22 +62,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
     post:
       tags: *a1
       requestBody:
@@ -125,22 +125,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
   /api/v1/addresses/{addressId}:
     get:
       tags: *a1
@@ -195,22 +195,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
         "500":
           description: Default Response
           content:
@@ -218,22 +218,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
     put:
       tags: *a1
       requestBody:
@@ -293,22 +293,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
         "500":
           description: Default Response
           content:
@@ -316,22 +316,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
     patch:
       tags: *a1
       requestBody:
@@ -369,22 +369,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
         "500":
           description: Default Response
           content:
@@ -392,22 +392,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
     delete:
       tags: *a1
       parameters:
@@ -435,22 +435,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
         "500":
           description: Default Response
           content:
@@ -458,22 +458,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
   /api/v1/entitlements/:
     get:
       tags:
@@ -513,22 +513,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
   /api/v1/user/:
     get:
       tags: &a2
@@ -578,22 +578,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
         "500":
           description: Default Response
           content:
@@ -601,22 +601,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
     post:
       tags: *a2
       requestBody:
@@ -669,22 +669,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
     put:
       tags: *a2
       requestBody:
@@ -743,22 +743,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
         "500":
           description: Default Response
           content:
@@ -766,22 +766,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
     patch:
       tags: *a2
       requestBody:
@@ -813,22 +813,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
         "500":
           description: Default Response
           content:
@@ -836,61 +836,61 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
   /api/v1/user/find:
     get:
       tags: *a2
       parameters:
         - schema:
             type: string
-          in: path
+          in: query
           name: firstname
-          required: true
+          required: false
         - schema:
             type: string
-          in: path
+          in: query
           name: lastname
-          required: true
+          required: false
         - schema:
             type: string
-          in: path
+          in: query
           name: email
-          required: true
+          required: false
         - schema:
             type: string
-          in: path
+          in: query
           name: dateOfBirth
-          required: true
+          required: false
         - schema:
             type: string
-          in: path
+          in: query
           name: ppsn
-          required: true
+          required: false
         - schema:
             type: string
-          in: path
+          in: query
           name: gender
-          required: true
+          required: false
         - schema:
             type: string
-          in: path
+          in: query
           name: phone
-          required: true
+          required: false
       responses:
         "200":
           description: Default Response
@@ -927,22 +927,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
 tags:
   - name: User
   - name: Addresses

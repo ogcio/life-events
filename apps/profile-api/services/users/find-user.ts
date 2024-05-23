@@ -34,10 +34,8 @@ const buildFindQuery = (whereClauses: {
       operator = value!.operator;
       value = value!.value;
     }
-    queryClauses.push(
-      ` $${whereValuesIndex++} $${whereValuesIndex++} $${whereValuesIndex++} `,
-    );
-    whereValues.push(fieldName, operator, value);
+    queryClauses.push(` ${fieldName} ${operator} $${whereValuesIndex++} `);
+    whereValues.push(value);
   }
   if (whereValues.length > 0) {
     baseQuery = `${baseQuery} WHERE ${queryClauses.join("AND")}`;
@@ -157,7 +155,7 @@ const findByBirthDate = async (params: {
     fields: [
       { name: "firstname", operator: "ILIKE", mandatory: true },
       { name: "lastname", operator: "ILIKE", mandatory: true },
-      { name: "dateOfBirth", operator: "ILIKE", mandatory: true },
+      { name: "dateOfBirth", operator: "=", mandatory: true },
     ],
   });
 

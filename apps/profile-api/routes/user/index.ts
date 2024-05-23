@@ -262,13 +262,13 @@ export default async function user(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Reply: FoundUser | null; Params: FindUserParams }>(
+  app.get<{ Reply: FoundUser | null; Querystring: FindUserParams }>(
     "/find",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: USER_TAGS,
-        params: FindUserParamsSchema,
+        querystring: FindUserParamsSchema,
         response: {
           200: FoundUserSchema,
           404: Type.Null(),
@@ -279,7 +279,7 @@ export default async function user(app: FastifyInstance) {
     async (request, reply) => {
       const foundUser = await findUser({
         pool: app.pg.pool,
-        findUserParams: request.params,
+        findUserParams: request.query,
       });
 
       if (foundUser) {
