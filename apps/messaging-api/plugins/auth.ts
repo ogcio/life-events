@@ -1,6 +1,7 @@
 // authPlugin.ts
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
+import { createError } from "@fastify/error";
 
 export interface RequestUser {
   id: string;
@@ -16,11 +17,10 @@ declare module "fastify" {
 const authPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.decorate(
     "verifyUser",
-    async function (request: FastifyRequest, reply: FastifyReply) {
+    async function (request: FastifyRequest, _reply: FastifyReply) {
       const userId = request.headers["x-user-id"] as string | undefined;
       if (!userId) {
-        reply.code(401).send({ message: "Unauthorized" });
-        return;
+        throw createError("UNAUTHORIZED", "unauthorized", 401)();
       }
       request.user = { id: userId };
     },

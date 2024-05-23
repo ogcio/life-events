@@ -59,7 +59,7 @@ export const UserSchema = Type.Object({
 
 export type User = Static<typeof UserSchema>;
 
-export const OrganisationUserSchema = Type.Object({
+export const OrganisationUserConfigSchema = Type.Object({
   organisationId: Type.String(),
   userId: Type.String(),
   invitationStatus: InvitationStatusUnionType,
@@ -68,7 +68,9 @@ export const OrganisationUserSchema = Type.Object({
   preferredTransports: Type.Array(Type.String()),
 });
 
-export type OrganisationUser = Static<typeof OrganisationUserSchema>;
+export type OrganisationUserConfig = Static<
+  typeof OrganisationUserConfigSchema
+>;
 
 export const ToImportUserSchema = Type.Object({
   importIndex: Type.Integer(),

@@ -1,9 +1,9 @@
 import { createError } from "@fastify/error";
-import { FastifyBaseLogger } from "fastify";
+import { FastifyBaseLogger, FastifyError } from "fastify";
 import { PoolClient } from "pg";
 import {
   CorrelationQuality,
-  OrganisationUser,
+  OrganisationUserConfig,
   ToImportUser,
   User,
   UserStatus,
@@ -19,14 +19,6 @@ interface TempUserDetails {
   id: string;
   firstname: string;
   lastname: string;
-  email: string;
-  title: string;
-  dateOfBirth?: string;
-  ppsn: string;
-  ppsnVisible: boolean;
-  gender: string;
-  phone: string;
-  consentToPrefillData: boolean;
 }
 
 export const mapUsers = async (params: {
@@ -176,16 +168,25 @@ const processUser = async (params: {
   return insertNewUser({ toInsert: user, client });
 };
 
+const isFastifyError = (error: unknown): error is FastifyError => {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    "statusCode" in error
+  );
+};
+
 const processOrganizationUserRelation = async (params: {
   userId: string;
   client: PoolClient;
   organisationId: string;
-}): Promise<OrganisationUser> => {
+}): Promise<OrganisationUserConfig> => {
   let orgUserRelation = undefined;
   try {
     orgUserRelation = await getUserOrganisationRelation(params);
   } catch (error) {
-    const nativeError = isNativeError(error) ? error : null;
+    const nativeError = isFastifyError(error) ? error : null;
     if (
       nativeError === null ||
       !nativeError.message.endsWith(USER_ORGANIZATION_RELATION_MISSING_ERROR)
@@ -217,7 +218,7 @@ const processToImportUser = async (params: {
   client: PoolClient;
 }): Promise<{
   user?: User;
-  organisationUser?: OrganisationUser;
+  organisationUser?: OrganisationUserConfig;
   importedUser: ToImportUser;
 }> => {
   const userProfile = await getUserProfile(params);
@@ -286,9 +287,9 @@ const getUserOrganisationRelation = async (params: {
   userId: string;
   organisationId: string;
   client: PoolClient;
-}): Promise<OrganisationUser> => {
+}): Promise<OrganisationUserConfig> => {
   try {
-    const result = await params.client.query<OrganisationUser>(
+    const result = await params.client.query<OrganisationUserConfig>(
       `
           select 
               user_id as "userId",
@@ -297,7 +298,7 @@ const getUserOrganisationRelation = async (params: {
               invitation_sent_at as "invitationSentAt",
               invitation_feedback_at as "invitationFeedbackAt",
               preferred_transports as "preferredTransports"
-          from organisations_users where user_id = $1 and organisation_id = $2 limit 1
+          from organisation_user_configurations where user_id = $1 and organisation_id = $2 limit 1
         `,
       [params.userId, params.organisationId],
     );
@@ -320,17 +321,17 @@ const getUserOrganisationRelation = async (params: {
 };
 
 const insertNewOrganizationUserRelation = async (params: {
-  toInsert: OrganisationUser;
+  toInsert: OrganisationUserConfig;
   client: PoolClient;
-}): Promise<OrganisationUser> => {
+}): Promise<OrganisationUserConfig> => {
   try {
     const { toInsert, client } = params;
     await client.query(
       `
-            INSERT INTO organisations_users
-                (organisation_id, user_id, invitation_status, invitation_sent_at, invitation_feedback_at, preferred_transports)
-            VALUES($1, $2, $3, $4, $5, $6);
-        `,
+        INSERT INTO organisation_user_configurations
+          (organisation_id, user_id, invitation_status, invitation_sent_at, invitation_feedback_at, preferred_transports)
+        VALUES($1, $2, $3, $4, $5, $6);
+      `,
       [
         toInsert.organisationId,
         toInsert.userId,
