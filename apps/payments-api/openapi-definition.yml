@@ -22,6 +22,7 @@ paths:
               type: object
               properties:
                 name:
+                  validator: StringValidator
                   type: string
                 type:
                   anyOf:
@@ -409,6 +410,7 @@ paths:
               type: object
               properties:
                 name:
+                  validator: StringValidator
                   type: string
                 type:
                   anyOf:
