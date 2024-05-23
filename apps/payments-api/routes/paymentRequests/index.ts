@@ -18,11 +18,14 @@ import {
   PaginationDetails,
 } from "../../utils/pagination";
 import { formatAPIResponse } from "../../utils/responseFormatter";
+import { PaginationParams as PaginationParamsType } from "../../types/pagination";
+import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
+import { TransactionDO } from "../../plugins/entities/transactions/types";
 
 export default async function paymentRequests(app: FastifyInstance) {
   app.get<{
-    Reply: GenericResponse<PaymentRequest[]>;
-    Querystring: PaginationParams;
+    Reply: GenericResponseType<PaymentRequest[]>;
+    Querystring: PaginationParamsType;
   }>(
     "/",
     {
@@ -44,8 +47,6 @@ export default async function paymentRequests(app: FastifyInstance) {
       let totalCountResult;
       try {
         const from = `from payment_requests pr`;
-        const joins = `left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-        left join payment_providers pp on ppr.provider_id = pp.provider_id`;
         const conditions = `where pr.user_id = $1`;
         result = await app.pg.query(
           `select pr.title,
@@ -67,7 +68,8 @@ export default async function paymentRequests(app: FastifyInstance) {
               ELSE '[]'::json
               END as providers
           ${from}
-          ${joins}
+          left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id 
+          left join payment_providers pp on ppr.provider_id = pp.provider_id
           ${conditions}
           group by pr.payment_request_id
           ORDER BY pr.created_at DESC
@@ -79,7 +81,6 @@ export default async function paymentRequests(app: FastifyInstance) {
           `select 
             count(*) as "totalCount"
           ${from}
-          ${joins}
           ${conditions}`,
           [userId],
         );
@@ -462,9 +463,9 @@ export default async function paymentRequests(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: GenericResponse<Transaction[]>;
+    Reply: GenericResponseType<TransactionDO[]>;
     Params: ParamsWithPaymentRequestId;
-    Querystring: PaginationParams;
+    Querystring: PaginationParamsType;
   }>(
     "/:requestId/transactions",
     {

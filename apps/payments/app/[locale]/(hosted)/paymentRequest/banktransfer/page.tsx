@@ -69,13 +69,13 @@ async function generatePaymentIntentId(userId: string): Promise<string> {
     errorHandler(error);
   }
 
-  if (!result?.intentId) {
+  if (!result?.data?.intentId) {
     // Handle edge case when intentId was not possible to generate
     console.error("Payment intentId was not possible to generate.");
     return redirect("error", RedirectType.replace);
   }
 
-  return result.intentId;
+  return result.data.intentId;
 }
 
 export default async function Bank(params: {
@@ -133,7 +133,7 @@ export default async function Bank(params: {
   const paymentMade = confirmPayment.bind(
     this,
     userId,
-    transaction?.id,
+    transaction?.data?.id,
     paymentDetails.redirectUrl,
   );
 
