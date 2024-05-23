@@ -524,7 +524,7 @@
         "pre": "A line of text to support this statement",
         "mid": "A line of text to support this statement",
         "post": "You should now have access to your Digital Wallet",
-        "rejected": "{rejectedReason}"
+        "rejected": "Reason: {rejectedReason}"
       }
     }
   },
@@ -743,6 +743,9 @@
       "applyJobseekersAllowance": "Jobseeker's Allowance"
     },
     "GetDigitalWalletDetails": {
+      "submittedOn": "Submitted on",
+      "review": "Review Digital Wallet application",
+      "view": "View Digital Wallet application",
       "title": "Review Digital Wallet application",
       "getDigitalWallet": "Digital Wallet copy",
       "firstName": "First name",
@@ -753,7 +756,18 @@
       "jobTitle": "Job title",
       "appStoreEmail": "Apple/Android app store email",
       "reject": "Reject",
-      "approve": "Approve"
+      "approve": "Approve",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "pending": "Pending",
+      "status": "Status",
+      "reviewer": "Reviewer",
+      "stage": "Stage",
+      "approvalSteps": "Approval steps",
+      "of": "of",
+      "rejectReason": "Rejection reason",
+      "date": "Date",
+      "step": "Step"
     },
     "RejectReasonForm": {
       "title": "Reason for rejection",
@@ -764,10 +778,12 @@
     "EventsTable": {
       "title": "Life events",
       "renewDriversLicence": "Driving licence renewal",
+      "idColumn": "ID",
       "dateColumn": "Date",
       "typeColumn": "Submission",
       "statusColumn": "Status",
       "actionColumn": "Action",
+      "stageColumn": "Approval Stage",
       "view": "View",
       "back": "Back",
       "eventNotFound": "Event not found",
@@ -775,13 +791,19 @@
       "orderBirthCertificate": "Application for a copy of the birth certificate",
       "notifyDeath": "Death notification",
       "applyJobseekersAllowance": "Application for Jobseeker's Allowance",
-      "getDigitalWallet": "Application for a Digital Wallet"
+      "getDigitalWallet": "Application for a Digital Wallet",
+      "pending": "Pending",
+      "approvedby": "Approved by",
+      "rejectedby": "Rejected by",
+      "of": "of",
+      "review": "Review",
+      "steps": "steps"
     },
     "StatusMenu": {
       "all": "All",
       "pending": "Pending",
       "approved": "Approved",
-      "closed": "Closed"
+      "rejected": "Rejected"
     }
   },
   "Timeline": {
@@ -832,7 +854,8 @@
       "myGovIdEmail": "email",
       "govIEEmail": "email",
       "lineManagerName": "line manager name",
-      "jobTitle": "job title"
+      "jobTitle": "job title",
+      "reason": "reason"
     }
   },
   "Notifications": {

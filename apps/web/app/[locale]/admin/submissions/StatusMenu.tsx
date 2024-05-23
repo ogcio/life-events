@@ -28,12 +28,12 @@ const linkClassName = (selected: boolean): string =>
 
 export default ({ searchParams }: Pick<web.NextPageProps, "searchParams">) => {
   const t = useTranslations("Admin.StatusMenu");
-  const isAll = searchParams?.status === "all";
-  const isPending =
-    searchParams?.status === "pending" ||
+  const isAll =
+    searchParams?.status === "all" ||
     Boolean(!Object.keys(searchParams ?? {}).length);
+  const isPending = searchParams?.status === "pending";
   const isApproved = searchParams?.status === "approved";
-  const isClosed = searchParams?.status === "closed";
+  const isRejected = searchParams?.status === "rejected";
 
   return (
     <nav style={{ display: "flex", width: "fit-content", gap: "15px" }}>
@@ -64,12 +64,12 @@ export default ({ searchParams }: Pick<web.NextPageProps, "searchParams">) => {
         </Link>
       </div>
 
-      <div style={linkStyle(isClosed)}>
+      <div style={linkStyle(isRejected)}>
         <Link
-          href={"?" + new URLSearchParams({ status: "closed" }).toString()}
-          className={linkClassName(isClosed)}
+          href={"?" + new URLSearchParams({ status: "rejected" }).toString()}
+          className={linkClassName(isRejected)}
         >
-          {t("closed")}
+          {t("rejected")}
         </Link>
       </div>
     </nav>

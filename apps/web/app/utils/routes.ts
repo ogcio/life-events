@@ -272,6 +272,18 @@ export const death = {
 
 export const admin = {
   slug: "admin",
+  submissions: {
+    slug: "submissions",
+    path() {
+      return `${admin.slug}/${admin.submissions.slug}`;
+    },
+    getDigitalWallet: {
+      slug: "getDigitalWallet",
+      path(userId: string) {
+        return `${admin.slug}/${admin.submissions.slug}/${admin.submissions.getDigitalWallet.slug}/${userId}`;
+      },
+    },
+  },
 };
 
 export const timeline = {

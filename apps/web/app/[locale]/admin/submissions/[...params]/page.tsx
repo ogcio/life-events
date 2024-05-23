@@ -8,6 +8,7 @@ import OrderBirthCertificateUserDetails from "./OrderBirthCertificateUserDetails
 import NotifyDeathDetails from "./NotifyDeathDetails";
 import ApplyJobseekersAllowanceDetails from "./ApplyJobseekersAllowanceDetails";
 import GetDigitalWalletDetails from "./GetDigitalWalletDetails";
+import NewRejectReasonForm from "./NewRejectReasonForm";
 
 const isOrderEHICData = (
   flow: string,
@@ -43,43 +44,45 @@ const isGetDigitalWalletData = (
 ): flowData is workflow.GetDigitalWallet =>
   flow === workflow.keys.getDigitalWallet;
 
-export default async (props: { params: { params: string[] } }) => {
-  const [flow, userId, action] = props.params.params;
+export default async (props: {
+  searchParams: { action: string; status: string };
+  params: { params: string[] };
+}) => {
+  const [flow, userId, redirectPath] = props.params.params;
+  const { action, status } = props.searchParams;
 
   if (!flow || !userId) {
-    return <h1>Invalid path</h1>;
+    throw notFound();
   }
 
   let data: workflow.Workflow | undefined;
-  let isDbError = false;
+
   try {
     const queryResult = await pgpool.query<{ data: workflow.Workflow }>(
       `
       SELECT flow_data as "data" FROM user_flow_data
       WHERE user_id = $1 
       AND flow = $2 
-      AND ("flow_data" ->> 'rejectReason') = ''
-      AND ("flow_data" ->> 'successfulAt') = ''
-      AND ("flow_data" ->> 'paymentId') IS NULL
+      AND ("flow_data" ->> 'submittedAt') != ''
       `,
       [userId, flow],
     );
     data = queryResult.rows.at(0)?.data;
   } catch (err) {
     console.log(err);
-    isDbError = true;
-  }
-
-  if (isDbError) {
-    return <h1>Server error</h1>;
+    throw new Error("Could not get flow data");
   }
 
   if (!data) {
-    return <h1>Not found</h1>;
+    throw notFound();
   }
 
-  if (action === "reject") {
+  if (redirectPath === "reject") {
     return <RejectReasonForm flow={flow} userId={userId} />;
+  }
+
+  if (redirectPath === "reject-new" && isGetDigitalWalletData(flow, data)) {
+    return <NewRejectReasonForm flow={flow} userId={userId} flowData={data} />;
   }
 
   if (
@@ -130,7 +133,13 @@ export default async (props: { params: { params: string[] } }) => {
     isGetDigitalWalletData(flow, data)
   ) {
     return (
-      <GetDigitalWalletDetails flow={flow} flowData={data} userId={userId} />
+      <GetDigitalWalletDetails
+        flow={flow}
+        flowData={data}
+        userId={userId}
+        action={action}
+        status={status}
+      />
     );
   }
 

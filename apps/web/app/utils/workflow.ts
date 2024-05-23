@@ -222,21 +222,32 @@ export function emptyApplyJobseekersAllowance(): ApplyJobseekersAllowance {
   };
 }
 
-export type GetDigitalWallet = Base & {
-  firstName: string;
-  lastName: string;
-  hasReadIntro: boolean;
-  hasConfirmedPersonalDetails: boolean;
-  appStoreEmail: string;
-  myGovIdEmail: string;
-  govIEEmail: string;
-  lineManagerName: string;
-  jobTitle: string;
-  confirmedApplication: string;
-  rejectReason: string;
-  status: string;
-  submittedAt: string;
+type ApprovalStages = {
+  approvalStages: {
+    stageNumber: number;
+    stageKey: string;
+    status: "approved" | "rejected";
+    rejectReason?: string;
+    reviewer: string;
+    date: string;
+  }[];
 };
+
+export type GetDigitalWallet = Base &
+  ApprovalStages & {
+    firstName: string;
+    lastName: string;
+    hasReadIntro: boolean;
+    hasConfirmedPersonalDetails: boolean;
+    appStoreEmail: string;
+    myGovIdEmail: string;
+    govIEEmail: string;
+    lineManagerName: string;
+    jobTitle: string;
+    confirmedApplication: string;
+    status: string;
+    submittedAt: string;
+  };
 
 export function emptyGetDigitalWallet(): GetDigitalWallet {
   return {
@@ -250,11 +261,12 @@ export function emptyGetDigitalWallet(): GetDigitalWallet {
     lineManagerName: "",
     jobTitle: "",
     confirmedApplication: "",
+    status: "",
+    submittedAt: "",
+    approvalStages: [],
     successfulAt: "",
     rejectedAt: "",
     rejectReason: "",
-    status: "",
-    submittedAt: "",
   };
 }
 
@@ -293,6 +305,23 @@ export const keys = {
   housingAssociationHomes: "housingAssociationHomes",
   housingOmbudsman: "housingOmbudsman",
   getDigitalWallet: "getDigitalWallet",
+};
+
+// ===== workflow approval stages =====
+
+export const workFlowApprovalStages = {
+  [keys.getDigitalWallet]: {
+    isPublicServant: {
+      name: "Is Public Servant",
+      description: "Verify if applicant is a public servant",
+      allowedReviewerRoles: [],
+    },
+    digitalWalletAccess: {
+      name: "Digital Wallet Pilot Access",
+      description: "Grant access to the digital wallet pilot",
+      allowedReviewerRoles: [],
+    },
+  },
 };
 
 // ===== categories =====
