@@ -12,7 +12,7 @@ $breakpoint-xxl: 1400px;
   box-sizing: border-box;
 
   @media (min-width: $breakpoint-xxl) {
-    max-width: 1400px;
+    max-width: $breakpoint-xxl;
   }
 }
 
@@ -29,6 +29,18 @@ $breakpoint-xxl: 1400px;
   display: flex;
   flex-wrap: wrap;
   flex: 1;
+}
+
+@media (min-width: $breakpoint-lg) {
+  .width-container {
+    max-width: $breakpoint-lg;
+  }
+}
+
+@media (min-width: $breakpoint-xl) {
+  .width-container {
+    max-width: $breakpoint-xl;
+  }
 }
 
 @media (max-width: $breakpoint-sm) {

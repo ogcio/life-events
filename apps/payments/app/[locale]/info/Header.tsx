@@ -1,25 +1,14 @@
-import ds from "design-system/";
-import { headers } from "next/headers";
 import "./Header.css";
-import { getTranslations } from "next-intl/server";
 
 export default async () => {
-  const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
-  const path = pathSlice.slice(2)?.join("/") || "";
-  const t = await getTranslations("LandingPage");
-
   return (
     <header role="banner" data-module="govie-header" className="govie-header">
       <div
-        className="govie-width-container"
-        // all designs are made for 1440px
+        className="width-container"
         style={{
-          maxWidth: "1440px",
           display: "flex",
           alignItems: "center",
-          gap: "8px",
           height: "80px",
-          boxSizing: "border-box",
         }}
       >
         <div
