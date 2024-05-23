@@ -13,6 +13,7 @@ type MenuProps = {
   publicServant: boolean;
   handleClick: () => void;
   languageSwitch: React.ReactNode;
+  logout: React.ReactNode;
 };
 
 const options = [
@@ -40,6 +41,7 @@ export default ({
   publicServant,
   handleClick,
   languageSwitch,
+  logout,
 }: MenuProps) => {
   const t = useTranslations();
 
@@ -86,20 +88,7 @@ export default ({
               </li>
             );
           })}
-        <div className={styles.logoutContainer}>
-          <Link
-            href="/logout"
-            prefetch={false}
-            className={`govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16 ${styles.menuLink}`}
-          >
-            <ds.Icon
-              icon="logout"
-              className="govie-button__icon-left"
-              color={ds.colours.ogcio.darkGreen}
-            />
-            {t("logout")}
-          </Link>
-        </div>
+        {logout}
         {languageSwitch}
       </>
     </ol>
