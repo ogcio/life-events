@@ -32,7 +32,7 @@ export default async (props: Props) => {
       >
         <Header />
 
-        <div className="govie-width-container" style={{ maxWidth: "1440px" }}>
+        <div className="width-container">
           <div className="govie-phase-banner">
             <p className="govie-phase-banner__content">
               <strong className="govie-tag govie-phase-banner__content__tag">

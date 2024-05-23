@@ -2,6 +2,7 @@ import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import HamburgerMenuProvider from "./HamburgerMenuProvider";
 import { getMessages } from "next-intl/server";
 import LanguageSwitch from "../Header/LanguageSwitch";
+import Logout from "./Logout";
 
 type HamburgerProps = {
   userName: string;
@@ -19,6 +20,7 @@ export default async ({ userName, locale, publicServant }: HamburgerProps) => {
         userName={userName}
         publicServant={publicServant}
         languageSwitch={<LanguageSwitch theme={"light"} />}
+        logout={<Logout />}
       ></HamburgerMenuProvider>
     </NextIntlClientProvider>
   );
