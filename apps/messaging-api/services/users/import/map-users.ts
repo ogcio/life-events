@@ -11,7 +11,6 @@ import {
 } from "../../../types/usersSchemaDefinitions";
 import { isNativeError } from "util/types";
 // import { Profile } from "building-blocks-sdk";
-import { bool } from "aws-sdk/clients/signer";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
 
@@ -24,10 +23,10 @@ interface TempUserDetails {
   title: string;
   dateOfBirth?: string;
   ppsn: string;
-  ppsnVisible: bool;
+  ppsnVisible: boolean;
   gender: string;
   phone: string;
-  consentToPrefillData: bool;
+  consentToPrefillData: boolean;
 }
 
 export const mapUsers = async (params: {
