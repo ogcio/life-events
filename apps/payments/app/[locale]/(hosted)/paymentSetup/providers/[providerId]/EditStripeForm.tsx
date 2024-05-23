@@ -50,10 +50,26 @@ export default async ({ provider, userId, locale }: Props) => {
     errors: {
       [key: string]: string;
     };
+    defaultState?: {
+      providerName: string;
+      livePublishableKey: string;
+      liveSecretKey: string;
+    };
   }> {
     "use server";
-    const validation = {
+    const nameField = formData.get("provider_name") as string;
+    const livePublishableKeyField = formData.get(
+      "live_publishable_key",
+    ) as string;
+    const liveSecretKeyField = formData.get("live_secret_key") as string;
+
+    const formResult = {
       errors: {},
+      defaultState: {
+        providerName: nameField,
+        livePublishableKey: livePublishableKeyField,
+        liveSecretKey: liveSecretKeyField,
+      },
     };
 
     const action = formData.get("action");
@@ -77,10 +93,10 @@ export default async ({ provider, userId, locale }: Props) => {
         break;
       default:
         providerData = {
-          name: formData.get("provider_name") as string,
+          name: nameField,
           data: {
-            livePublishableKey: formData.get("live_publishable_key") as string,
-            liveSecretKey: formData.get("live_secret_key") as string,
+            livePublishableKey: livePublishableKeyField,
+            liveSecretKey: liveSecretKeyField,
           },
           type: provider.type,
           status: provider.status,
@@ -101,13 +117,13 @@ export default async ({ provider, userId, locale }: Props) => {
     }
 
     if (error?.validation) {
-      validation.errors = getValidationErrors(
+      formResult.errors = getValidationErrors(
         error.validation,
         errorFieldMapping,
       );
     }
 
-    return validation;
+    return formResult;
   }
 
   return (

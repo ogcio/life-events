@@ -51,10 +51,26 @@ export default async ({ provider, userId, locale }: Props) => {
     errors: {
       [key: string]: string;
     };
+    defaultState?: {
+      providerName: string;
+      accountHolderName: string;
+      iban: string;
+    };
   }> {
     "use server";
-    const validation = {
+    const nameField = formData.get("provider_name") as string;
+    const accountHolderNameField = formData.get(
+      "account_holder_name",
+    ) as string;
+    const ibanField = (formData.get("iban") as string).replaceAll(" ", "");
+
+    const formResult = {
       errors: {},
+      defaultState: {
+        providerName: nameField,
+        accountHolderName: accountHolderNameField,
+        iban: ibanField,
+      },
     };
 
     const action = formData.get("action");
@@ -78,10 +94,10 @@ export default async ({ provider, userId, locale }: Props) => {
         break;
       default:
         providerData = {
-          name: formData.get("provider_name") as string,
+          name: nameField,
           data: {
-            iban: (formData.get("iban") as string).replaceAll(" ", ""),
-            accountHolderName: formData.get("account_holder_name") as string,
+            iban: ibanField,
+            accountHolderName: accountHolderNameField,
           },
           type: provider.type,
           status: provider.status,
@@ -102,13 +118,13 @@ export default async ({ provider, userId, locale }: Props) => {
     }
 
     if (error?.validation) {
-      validation.errors = getValidationErrors(
+      formResult.errors = getValidationErrors(
         error.validation,
         errorFieldMapping,
       );
     }
 
-    return validation;
+    return formResult;
   }
 
   return (

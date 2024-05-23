@@ -16,9 +16,9 @@ export default ({
     };
   }>;
   defaultState?: {
-    providerName?: string;
-    livePublishableKey?: string;
-    liveSecretKey?: string;
+    providerName: string;
+    livePublishableKey: string;
+    liveSecretKey: string;
   };
 }) => {
   const t = useTranslations("AddStripe");

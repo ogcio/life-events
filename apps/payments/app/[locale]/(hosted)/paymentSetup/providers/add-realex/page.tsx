@@ -51,17 +51,32 @@ export default async (props: Props) => {
     errors: {
       [key: string]: string;
     };
+    defaultState: {
+      providerName: string;
+      merchantId: string;
+      sharedSecret: string;
+    };
   }> {
     "use server";
+    const nameField = formData.get("provider_name") as string;
+    const merchantIdField = formData.get("merchant_id") as string;
+    const sharedSecretField = formData.get("shared_secret") as string;
 
-    const validation = { errors: {} };
+    const formResult = {
+      errors: {},
+      defaultState: {
+        providerName: nameField,
+        merchantId: merchantIdField,
+        sharedSecret: sharedSecretField,
+      },
+    };
 
     const { data: result, error } = await new Payments(userId).createProvider({
-      name: formData.get("provider_name") as string,
+      name: nameField,
       type: "realex",
       data: {
-        merchantId: formData.get("merchant_id") as string,
-        sharedSecret: formData.get("shared_secret") as string,
+        merchantId: merchantIdField,
+        sharedSecret: sharedSecretField,
       },
     });
 
@@ -72,13 +87,13 @@ export default async (props: Props) => {
     if (result) redirect("./");
 
     if (error.validation) {
-      validation.errors = getValidationErrors(
+      formResult.errors = getValidationErrors(
         error.validation,
         errorFieldMapping,
       );
     }
 
-    return validation;
+    return formResult;
   }
 
   return (

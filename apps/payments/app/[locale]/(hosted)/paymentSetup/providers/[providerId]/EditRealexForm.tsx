@@ -50,10 +50,24 @@ export default async ({ provider, userId, locale }: Props) => {
     errors: {
       [key: string]: string;
     };
+    defaultState: {
+      providerName: string;
+      merchantId: string;
+      sharedSecret: string;
+    };
   }> {
     "use server";
-    const validation = {
+    const nameField = formData.get("provider_name") as string;
+    const merchantIdField = formData.get("merchant_id") as string;
+    const sharedSecretField = formData.get("shared_secret") as string;
+
+    const formResult = {
       errors: {},
+      defaultState: {
+        providerName: nameField,
+        merchantId: merchantIdField,
+        sharedSecret: sharedSecretField,
+      },
     };
 
     const action = formData.get("action");
@@ -77,10 +91,10 @@ export default async ({ provider, userId, locale }: Props) => {
         break;
       default:
         providerData = {
-          name: formData.get("provider_name") as string,
+          name: nameField,
           data: {
-            merchantId: formData.get("merchant_id") as unknown as string,
-            sharedSecret: formData.get("shared_secret") as unknown as string,
+            merchantId: merchantIdField,
+            sharedSecret: sharedSecretField,
           },
           type: provider.type,
           status: provider.status,
@@ -101,13 +115,13 @@ export default async ({ provider, userId, locale }: Props) => {
     }
 
     if (error?.validation) {
-      validation.errors = getValidationErrors(
+      formResult.errors = getValidationErrors(
         error.validation,
         errorFieldMapping,
       );
     }
 
-    return validation;
+    return formResult;
   }
 
   return (

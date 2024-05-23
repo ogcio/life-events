@@ -16,9 +16,9 @@ export default ({
     };
   }>;
   defaultState?: {
-    providerName?: string;
-    merchantId?: string;
-    sharedSecret?: string;
+    providerName: string;
+    merchantId: string;
+    sharedSecret: string;
   };
 }) => {
   const t = useTranslations("AddRealex");
