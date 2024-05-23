@@ -13,7 +13,7 @@ paths:
           description: Default Response
   /api/v1/addresses/:
     get:
-      tags:
+      tags: &a1
         - Addresses
       responses:
         "200":
@@ -79,8 +79,7 @@ paths:
                   - message
                   - time
     post:
-      tags:
-        - Addresses
+      tags: *a1
       requestBody:
         content:
           application/json:
@@ -144,8 +143,7 @@ paths:
                   - time
   /api/v1/addresses/{addressId}:
     get:
-      tags:
-        - Addresses
+      tags: *a1
       parameters:
         - schema:
             type: string
@@ -237,8 +235,7 @@ paths:
                   - message
                   - time
     put:
-      tags:
-        - Addresses
+      tags: *a1
       requestBody:
         content:
           application/json:
@@ -336,8 +333,7 @@ paths:
                   - message
                   - time
     patch:
-      tags:
-        - Addresses
+      tags: *a1
       requestBody:
         content:
           application/json:
@@ -413,8 +409,7 @@ paths:
                   - message
                   - time
     delete:
-      tags:
-        - Addresses
+      tags: *a1
       parameters:
         - schema:
             type: string
@@ -536,8 +531,8 @@ paths:
                   - time
   /api/v1/user/:
     get:
-      tags:
-        - User
+      tags: &a2
+        - user
       responses:
         "200":
           description: Default Response
@@ -623,8 +618,7 @@ paths:
                   - message
                   - time
     post:
-      tags:
-        - User
+      tags: *a2
       requestBody:
         content:
           application/json:
@@ -692,8 +686,7 @@ paths:
                   - message
                   - time
     put:
-      tags:
-        - User
+      tags: *a2
       requestBody:
         content:
           application/json:
@@ -790,8 +783,7 @@ paths:
                   - message
                   - time
     patch:
-      tags:
-        - User
+      tags: *a2
       requestBody:
         content:
           application/json:
@@ -837,6 +829,97 @@ paths:
                   - error
                   - message
                   - time
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
+  /api/v1/user/find:
+    get:
+      tags: *a2
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: firstname
+          required: true
+        - schema:
+            type: string
+          in: path
+          name: lastname
+          required: true
+        - schema:
+            type: string
+          in: path
+          name: email
+          required: true
+        - schema:
+            type: string
+          in: path
+          name: dateOfBirth
+          required: true
+        - schema:
+            type: string
+          in: path
+          name: ppsn
+          required: true
+        - schema:
+            type: string
+          in: path
+          name: gender
+          required: true
+        - schema:
+            type: string
+          in: path
+          name: phone
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  firstname:
+                    type: string
+                  lastname:
+                    type: string
+                  matchQuality:
+                    anyOf:
+                      - type: string
+                        enum:
+                          - exact
+                      - type: string
+                        enum:
+                          - approximate
+                required:
+                  - id
+                  - firstname
+                  - lastname
+                  - matchQuality
+        "404":
+          description: Default Response
         "500":
           description: Default Response
           content:
