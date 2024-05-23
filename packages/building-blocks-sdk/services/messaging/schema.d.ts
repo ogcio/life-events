@@ -715,6 +715,115 @@ export interface paths {
       };
     };
   };
+  "/api/v1/users/import": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": {
+            importIndex: number;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            publicIdentityId?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            firstName?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            lastName?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            phoneNumber?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            birthDate?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            emailAddress?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressCity?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressZipCode?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressStreet?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressCountry?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressRegion?: null | string;
+          }[];
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: never;
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
