@@ -73,7 +73,7 @@ async function editPayment(
     providersUpdate,
   };
 
-  const { data: requestId, error } = await new Payments(
+  const { data: updateRes, error } = await new Payments(
     userId,
   ).updatePaymentRequest(data);
 
@@ -81,7 +81,7 @@ async function editPayment(
     errorHandler(error);
   }
 
-  redirect(`/paymentSetup/requests/${requestId}`);
+  redirect(`/paymentSetup/requests/${updateRes?.id}`);
 }
 
 export default async function (props: { params: { request_id: string } }) {
