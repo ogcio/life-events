@@ -94,7 +94,7 @@ const getMockCsvRecord = (): CsvRecord => ({
   addressRegion: "Region",
 });
 
-const normalizeValue = (value: string | undefined | null): string | null =>
+const normalizeCsvValue = (value: string | undefined | null): string | null =>
   typeof value === "string" && value.length > 0 ? value : null;
 
 const csvRecordToToImportUser = (
@@ -102,18 +102,18 @@ const csvRecordToToImportUser = (
   importStatus: ImportStatus = "pending",
 ): ToImportUser => ({
   importIndex: Number(toMap.importIndex),
-  publicIdentityId: normalizeValue(toMap.publicIdentityId),
-  firstName: normalizeValue(toMap.firstName),
-  lastName: normalizeValue(toMap.lastName),
-  phoneNumber: normalizeValue(toMap.phoneNumber),
-  birthDate: normalizeValue(toMap.birthDate),
-  emailAddress: normalizeValue(toMap.emailAddress),
+  publicIdentityId: normalizeCsvValue(toMap.publicIdentityId),
+  firstName: normalizeCsvValue(toMap.firstName),
+  lastName: normalizeCsvValue(toMap.lastName),
+  phoneNumber: normalizeCsvValue(toMap.phoneNumber),
+  birthDate: normalizeCsvValue(toMap.birthDate),
+  emailAddress: normalizeCsvValue(toMap.emailAddress),
   address: {
-    city: normalizeValue(toMap.addressCity),
-    country: normalizeValue(toMap.addressCountry),
-    region: normalizeValue(toMap.addressRegion),
-    zipCode: normalizeValue(toMap.addressZipCode),
-    street: normalizeValue(toMap.addressStreet),
+    city: normalizeCsvValue(toMap.addressCity),
+    country: normalizeCsvValue(toMap.addressCountry),
+    region: normalizeCsvValue(toMap.addressRegion),
+    zipCode: normalizeCsvValue(toMap.addressZipCode),
+    street: normalizeCsvValue(toMap.addressStreet),
   },
   importStatus: importStatus,
 });
