@@ -24,11 +24,11 @@ export default () => (
             ></path>
           </svg>
           <span className="govie-footer__licence-description">
-            All content is available under the
+            {"All content is available under the "}
             <a className="govie-footer__link" href="#" rel="license">
-              Open Government Licence v3.0
+              {"Open Government Licence v3.0"}
             </a>
-            , except where otherwise stated
+            {", except where otherwise stated"}
           </span>
         </div>
         <div className="govie-footer__meta-item">
