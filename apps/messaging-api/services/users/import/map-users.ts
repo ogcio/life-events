@@ -297,7 +297,7 @@ const getUserOrganisationRelation = async (params: {
               invitation_sent_at as "invitationSentAt",
               invitation_feedback_at as "invitationFeedbackAt",
               preferred_transports as "preferredTransports"
-          from organisations_users where user_id = $1 and organisation_id = $2 limit 1
+          from organisation_user_configurations where user_id = $1 and organisation_id = $2 limit 1
         `,
       [params.userId, params.organisationId],
     );
@@ -327,10 +327,10 @@ const insertNewOrganizationUserRelation = async (params: {
     const { toInsert, client } = params;
     await client.query(
       `
-            INSERT INTO organisations_users
-                (organisation_id, user_id, invitation_status, invitation_sent_at, invitation_feedback_at, preferred_transports)
-            VALUES($1, $2, $3, $4, $5, $6);
-        `,
+        INSERT INTO organisation_user_configurations
+          (organisation_id, user_id, invitation_status, invitation_sent_at, invitation_feedback_at, preferred_transports)
+        VALUES($1, $2, $3, $4, $5, $6);
+      `,
       [
         toInsert.organisationId,
         toInsert.userId,
