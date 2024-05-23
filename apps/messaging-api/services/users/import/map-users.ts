@@ -181,7 +181,18 @@ const processOrganizationUserRelation = async (params: {
   client: PoolClient;
   organisationId: string;
 }): Promise<OrganisationUser> => {
-  const orgUserRelation = await getUserOrganisationRelation(params);
+  let orgUserRelation = undefined;
+  try {
+    orgUserRelation = await getUserOrganisationRelation(params);
+  } catch (error) {
+    const nativeError = isNativeError(error) ? error : null;
+    if (
+      nativeError === null ||
+      !nativeError.message.endsWith(USER_ORGANIZATION_RELATION_MISSING_ERROR)
+    ) {
+      throw error;
+    }
+  }
 
   if (orgUserRelation) {
     return orgUserRelation;
@@ -268,11 +279,14 @@ const insertNewUser = async (params: {
   }
 };
 
+const USER_ORGANIZATION_RELATION_MISSING_ERROR =
+  "The relation between the user and the organisation doesn't exist";
+
 const getUserOrganisationRelation = async (params: {
   userId: string;
   organisationId: string;
   client: PoolClient;
-}): Promise<OrganisationUser | undefined> => {
+}): Promise<OrganisationUser> => {
   try {
     const result = await params.client.query<OrganisationUser>(
       `
@@ -289,7 +303,7 @@ const getUserOrganisationRelation = async (params: {
     );
 
     if (result.rowCount === 0) {
-      return undefined;
+      throw new Error(USER_ORGANIZATION_RELATION_MISSING_ERROR);
     }
 
     return result.rows[0];
