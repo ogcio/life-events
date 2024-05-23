@@ -1,5 +1,9 @@
-import { PoolClient } from "pg";
-import { FindUserParams, FoundUser } from "../../types/schemaDefinitions";
+import { Pool, PoolClient } from "pg";
+import {
+  FindUserParams,
+  FoundUser,
+  MatchQuality,
+} from "../../types/schemaDefinitions";
 import { isNativeError } from "util/types";
 import { createError } from "@fastify/error";
 
@@ -43,36 +47,137 @@ const buildFindQuery = (whereClauses: {
 };
 
 export const findUser = async (params: {
-  client: PoolClient;
+  pool: Pool;
   findUserParams: FindUserParams;
 }): Promise<FoundUser | undefined> => {
-  const byPpsn = await findByPpsn(params);
-  if (byPpsn) {
-    return byPpsn;
+  const findUserParams = clearFields(params.findUserParams);
+  const client = await params.pool.connect();
+  const orderedMethodsToInvoke = [
+    findByPpsn,
+    findByEmailAddress,
+    findByPhoneNumber,
+    findByBirthDate,
+  ];
+  try {
+    for (const method of orderedMethodsToInvoke) {
+      const methodResult = await method({ client, findUserParams });
+      if (methodResult) {
+        return methodResult;
+      }
+    }
+  } finally {
+    client.release();
   }
+
+  return undefined;
 };
 
-const findByPpsn = async (params: {
+const clearField = (valueToClear: string | undefined): string | undefined =>
+  valueToClear && valueToClear.trim().length > 0
+    ? valueToClear.trim()
+    : undefined;
+
+const clearFields = (params: FindUserParams): FindUserParams => ({
+  ppsn: clearField(params.ppsn),
+  phone: clearField(params.phone),
+  lastname: clearField(params.lastname),
+  firstname: clearField(params.firstname),
+  dateOfBirth: clearField(params.dateOfBirth),
+  email: clearField(params.email),
+  gender: clearField(params.gender),
+});
+
+const findBy = async (params: {
+  matchQuality: MatchQuality;
+  fields: {
+    name: string;
+    operator?: "LIKE" | "ILIKE" | "=";
+    mandatory: boolean;
+  }[];
   client: PoolClient;
   findUserParams: FindUserParams;
-}): Promise<FoundUser | undefined> => {
-  const { client, findUserParams } = params;
-  const ppsn = findUserParams.ppsn ? findUserParams.ppsn.trim() : null;
-  if (!ppsn || ppsn.length === 0) {
-    return undefined;
-  }
-  const queryValues = buildFindQuery({
-    ppsn: { operator: "ILIKE", value: ppsn },
-  });
+}) => {
+  const { matchQuality, fields, client, findUserParams } = params;
+  const toQuery: {
+    [x: string]: { value: WhereClauseTypes; operator: "=" | "LIKE" | "ILIKE" };
+  } = {};
+  const indexedUserParams: { [x: string]: undefined | string } = findUserParams;
 
-  const found = await runFindQuery({ client, ...queryValues });
+  for (const field of fields) {
+    // if the field is needed for querying but it is empty
+    // we don't run the query and return not found user
+    if (!indexedUserParams[field.name] && field.mandatory) {
+      return undefined;
+    }
+
+    if (indexedUserParams[field.name]) {
+      toQuery[field.name] = {
+        operator: field.operator ?? "=",
+        value: indexedUserParams[field.name]!,
+      };
+    }
+  }
+
+  const found = await runFindQuery({ client, ...buildFindQuery(toQuery) });
 
   if (!found) {
     return found;
   }
 
-  return { ...found, matchQuality: "exact" };
+  return { ...found, matchQuality };
 };
+
+const findByPhoneNumber = async (params: {
+  client: PoolClient;
+  findUserParams: FindUserParams;
+}): Promise<FoundUser | undefined> =>
+  findBy({
+    ...params,
+    matchQuality: "exact",
+    fields: [
+      { name: "firstname", operator: "ILIKE", mandatory: true },
+      { name: "lastname", operator: "ILIKE", mandatory: true },
+      { name: "phone", operator: "ILIKE", mandatory: true },
+    ],
+  });
+
+const findByBirthDate = async (params: {
+  client: PoolClient;
+  findUserParams: FindUserParams;
+}): Promise<FoundUser | undefined> =>
+  findBy({
+    ...params,
+    matchQuality: "approximate",
+    fields: [
+      { name: "firstname", operator: "ILIKE", mandatory: true },
+      { name: "lastname", operator: "ILIKE", mandatory: true },
+      { name: "dateOfBirth", operator: "ILIKE", mandatory: true },
+    ],
+  });
+
+const findByEmailAddress = async (params: {
+  client: PoolClient;
+  findUserParams: FindUserParams;
+}): Promise<FoundUser | undefined> =>
+  findBy({
+    ...params,
+    matchQuality: "exact",
+    fields: [
+      { name: "firstname", operator: "ILIKE", mandatory: true },
+      { name: "lastname", operator: "ILIKE", mandatory: true },
+      { name: "email", operator: "ILIKE", mandatory: true },
+    ],
+  });
+
+const findByPpsn = async (params: {
+  client: PoolClient;
+  findUserParams: FindUserParams;
+}): Promise<FoundUser | undefined> =>
+  findBy({
+    ...params,
+    matchQuality: "exact",
+    fields: [{ name: "ppsn", mandatory: true, operator: "ILIKE" }],
+  });
 
 const runFindQuery = async (params: {
   client: PoolClient;

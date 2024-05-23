@@ -15,6 +15,7 @@ import {
   UserDetailsSchema,
 } from "../../types/schemaDefinitions";
 import { Type } from "@sinclair/typebox";
+import { findUser } from "../../services/users/find-user";
 
 const USER_TAGS = ["user"];
 
@@ -275,6 +276,8 @@ export default async function user(app: FastifyInstance) {
         },
       },
     },
-    async (request, reply) => {},
+    async (request, reply) => {
+      const foundUser = await findUser({ client: app.pg.pool });
+    },
   );
 }
