@@ -3,7 +3,7 @@ import { FastifyBaseLogger } from "fastify";
 import { PoolClient } from "pg";
 import {
   CorrelationQuality,
-  OrganisationUser,
+  OrganisationUserConfig,
   ToImportUser,
   User,
   UserStatus,
@@ -180,7 +180,7 @@ const processOrganizationUserRelation = async (params: {
   userId: string;
   client: PoolClient;
   organisationId: string;
-}): Promise<OrganisationUser> => {
+}): Promise<OrganisationUserConfig> => {
   let orgUserRelation = undefined;
   try {
     orgUserRelation = await getUserOrganisationRelation(params);
@@ -217,7 +217,7 @@ const processToImportUser = async (params: {
   client: PoolClient;
 }): Promise<{
   user?: User;
-  organisationUser?: OrganisationUser;
+  organisationUser?: OrganisationUserConfig;
   importedUser: ToImportUser;
 }> => {
   const userProfile = await getUserProfile(params);
@@ -286,9 +286,9 @@ const getUserOrganisationRelation = async (params: {
   userId: string;
   organisationId: string;
   client: PoolClient;
-}): Promise<OrganisationUser> => {
+}): Promise<OrganisationUserConfig> => {
   try {
-    const result = await params.client.query<OrganisationUser>(
+    const result = await params.client.query<OrganisationUserConfig>(
       `
           select 
               user_id as "userId",
@@ -320,9 +320,9 @@ const getUserOrganisationRelation = async (params: {
 };
 
 const insertNewOrganizationUserRelation = async (params: {
-  toInsert: OrganisationUser;
+  toInsert: OrganisationUserConfig;
   client: PoolClient;
-}): Promise<OrganisationUser> => {
+}): Promise<OrganisationUserConfig> => {
   try {
     const { toInsert, client } = params;
     await client.query(
