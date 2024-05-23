@@ -87,6 +87,9 @@ export default async function ({
                     {t("table.beneficiaryAccount")}
                   </th>
                   <th scope="col" className="govie-table__header">
+                    {t("table.status")}
+                  </th>
+                  <th scope="col" className="govie-table__header">
                     {t("table.reference")}
                   </th>
                   <th scope="col" className="govie-table__header">
@@ -105,6 +108,9 @@ export default async function ({
                     </td>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                       {req.providers.map(({ name }) => name).join(", ")}
+                    </td>
+                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                      {req.status}
                     </td>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                       {req.reference}
