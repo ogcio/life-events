@@ -35,21 +35,23 @@ export default async (props: {
       ),
     );
 
-    const lineManagerName = formData.get("lineManagerName")?.toString();
+    const deviceType = formData.get("deviceType")?.toString() as
+      | "android"
+      | "ios";
     formErrors.push(
       ...form.validation.stringNotEmpty(
-        form.fieldTranslationKeys.lineManagerName,
-        lineManagerName,
+        form.fieldTranslationKeys.deviceType,
+        deviceType,
       ),
     );
 
-    const jobTitle = formData.get("jobTitle")?.toString();
-    formErrors.push(
-      ...form.validation.stringNotEmpty(
-        form.fieldTranslationKeys.jobTitle,
-        jobTitle,
-      ),
-    );
+    // const jobTitle = formData.get("jobTitle")?.toString();
+    // formErrors.push(
+    //   ...form.validation.stringNotEmpty(
+    //     form.fieldTranslationKeys.jobTitle,
+    //     jobTitle,
+    //   ),
+    // );
 
     const appStoreEmail = formData.get("appStoreEmail")?.toString();
     formErrors.push(
@@ -72,23 +74,20 @@ export default async (props: {
 
     const data: Pick<
       workflow.GetDigitalWallet,
-      "govIEEmail" | "lineManagerName" | "jobTitle" | "appStoreEmail"
+      "govIEEmail" | "jobTitle" | "appStoreEmail" | "deviceType"
     > = {
       govIEEmail: "",
-      lineManagerName: "",
       jobTitle: "",
       appStoreEmail: "",
+      deviceType: "android",
     };
     const formIterator = formData.entries();
     let iterResult = formIterator.next();
 
     while (!iterResult.done) {
       const [key, value] = iterResult.value;
-
       if (
-        ["govIEEmail", "lineManagerName", "jobTitle", "appStoreEmail"].includes(
-          key,
-        )
+        ["govIEEmail", "jobTitle", "appStoreEmail", "deviceType"].includes(key)
       ) {
         data[key] = value;
       }
@@ -141,16 +140,16 @@ export default async (props: {
     (row) => row.field === form.fieldTranslationKeys.govIEEmail,
   );
 
-  const lineManagerNameError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.lineManagerName,
-  );
-
   const jobTitleError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.jobTitle,
   );
 
   const appStoreEmailError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.appStoreEmail,
+  );
+
+  const deviceTypeError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.deviceType,
   );
 
   return (
@@ -197,46 +196,6 @@ export default async (props: {
 
           <div
             className={`govie-form-group ${
-              lineManagerNameError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <h1 className="govie-label-wrapper">
-              <label htmlFor="email" className="govie-label--s govie-label--l">
-                {t.rich("lineManagerName", {
-                  red: (chunks) => <span style={{ color: red }}>{chunks}</span>,
-                })}
-              </label>
-            </h1>
-            {lineManagerNameError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(lineManagerNameError.messageKey, {
-                  field: errorT(`fields.${lineManagerNameError.field}`),
-                  indArticleCheck:
-                    lineManagerNameError.messageKey ===
-                    form.errorTranslationKeys.empty
-                      ? "an"
-                      : "",
-                })}
-              </p>
-            )}
-            <input
-              type="text"
-              id="lineManagerName"
-              name="lineManagerName"
-              className={`govie-input ${
-                lineManagerNameError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={
-                lineManagerNameError
-                  ? lineManagerNameError.errorValue
-                  : data.lineManagerName
-              }
-            />
-          </div>
-
-          <div
-            className={`govie-form-group ${
               jobTitleError ? "govie-form-group--error" : ""
             }`.trim()}
           >
@@ -270,6 +229,53 @@ export default async (props: {
                 jobTitleError ? jobTitleError.errorValue : data.jobTitle
               }
             />
+          </div>
+
+          <div
+            className={`govie-form-group ${
+              deviceTypeError ? "govie-form-group--error" : ""
+            }`.trim()}
+          >
+            <legend className="govie-fieldset__legend govie-fieldset__legend--s">
+              <p className="govie-fieldset__heading">{t("selectDeviceText")}</p>
+            </legend>
+            {deviceTypeError && (
+              <p id="device-type-error" className="govie-error-message">
+                <span className="govie-visually-hidden">Error:</span>Select an
+                option
+              </p>
+            )}
+            <div
+              data-module="govie-radios"
+              className="govie-radios govie-radios--small "
+            >
+              <div className="govie-radios__item">
+                <input
+                  defaultChecked={data.deviceType === "ios"}
+                  id="device-type-0"
+                  name="deviceType"
+                  type="radio"
+                  value="ios"
+                  className="govie-radios__input"
+                />
+                <label className="govie-radios__label" htmlFor="device-type-0">
+                  Apple iOS
+                </label>
+              </div>
+              <div className="govie-radios__item">
+                <input
+                  defaultChecked={data.deviceType === "android"}
+                  id="device-type-1"
+                  name="deviceType"
+                  type="radio"
+                  value="android"
+                  className="govie-radios__input"
+                />
+                <label className="govie-radios__label" htmlFor="device-type-1">
+                  Android (eg. Samsung, Google, Huawei, Xiaomi, LG)
+                </label>
+              </div>
+            </div>
           </div>
 
           <div

@@ -50,7 +50,7 @@ const getDigitalWalletRulesVerified: Parameters<
   //       },
   //Rule 2: Check if employment details are populated
   (params) =>
-    Boolean(params.govIEEmail && params.lineManagerName && params.jobTitle)
+    Boolean(params.govIEEmail && params.isGovernmentEmployee)
       ? { key: null, isStepValid: true }
       : {
           key: routes.digitalWallet.getDigitalWallet.governmentDetails.slug,

@@ -27,10 +27,9 @@ export default async (props: {
 
     const formErrors: form.Error[] = [];
 
-    const deviceType = formData.get("device-type")?.toString() as
+    const deviceType = formData.get("deviceType")?.toString() as
       | "android"
       | "ios";
-
     formErrors.push(
       ...form.validation.stringNotEmpty(
         form.fieldTranslationKeys.deviceType,
@@ -62,7 +61,6 @@ export default async (props: {
       `,
       [userId, workflow.keys.getDigitalWallet],
     );
-    console.log("currentDataResults", data);
 
     let dataToUpdate: workflow.GetDigitalWallet;
     if (currentDataResults.rowCount) {
@@ -125,31 +123,25 @@ export default async (props: {
               <div className="govie-radios__item">
                 <input
                   id="device-type-0"
-                  name="device-type"
+                  name="deviceType"
                   type="radio"
                   value="ios"
                   className="govie-radios__input"
                 />
-                <label
-                  className="govie-label--s govie-radios__label"
-                  htmlFor="device-type-0"
-                >
-                  iOS
+                <label className="govie-radios__label" htmlFor="device-type-0">
+                  Apple iOS
                 </label>
               </div>
               <div className="govie-radios__item">
                 <input
                   id="device-type-1"
-                  name="device-type"
+                  name="deviceType"
                   type="radio"
                   value="android"
                   className="govie-radios__input"
                 />
-                <label
-                  className="govie-label--s govie-radios__label"
-                  htmlFor="device-type-1"
-                >
-                  Android
+                <label className="govie-radios__label" htmlFor="device-type-1">
+                  Android (eg. Samsung, Google, Huawei, Xiaomi, LG)
                 </label>
               </div>
             </div>

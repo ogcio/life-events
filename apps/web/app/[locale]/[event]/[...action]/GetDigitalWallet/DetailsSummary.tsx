@@ -50,15 +50,15 @@ export default (props: {
             <ListRow
               change={{ key: t("change"), value: changeDetailsHref }}
               item={{
-                key: t("lineManagerName"),
-                value: data.lineManagerName,
+                key: t("jobTitle"),
+                value: data.jobTitle,
               }}
             />
             <ListRow
               change={{ key: t("change"), value: changeDetailsHref }}
               item={{
-                key: t("jobTitle"),
-                value: data.jobTitle,
+                key: t("selectDeviceText"),
+                value: data.deviceType?.toString() as string,
               }}
             />
             <ListRow

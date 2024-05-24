@@ -332,9 +332,9 @@
     "GovernmentDetails": {
       "title": "About your work",
       "subTitle": "The pilot is only for government users. We will need you to verify your work email address before adding the user to the pilot.",
-      "lineManagerName": "Your line manager name <red>*</red>",
-      "govIEEmail": "Gov.ie work email <red>*</red>",
-      "jobTitle": "Your job title <red>*</red>",
+      "govIEEmail": "Your work email <red>*</red>",
+      "jobTitle": "Your job title",
+      "checkbox": "I confirm that I am a government employee and I consent to take part in the government digital wallet pilot.",
       "submitText": "Confirm and continue"
     },
     "DeviceSelection": {
@@ -363,9 +363,9 @@
       "firstName": "First name",
       "lastName": "Last name",
       "myGovIdEmail": "MyGovID email",
-      "lineManagerName": "Your line manager name",
       "govIEEmail": "Gov.ie work email",
       "jobTitle": "Your job title",
+      "selectDeviceText": "Your device type selection",
       "appStoreEmail": "Apple/Android app store email",
       "change": "Change",
       "submitText": "Confirm and continue"
@@ -386,9 +386,9 @@
       "firstName": "First name <red>*</red>",
       "lastName": "Last name <red>*</red>",
       "myGovIdEmail": "MyGovID email <red>*</red>",
-      "lineManagerName": "Your line manager name <red>*</red>",
       "govIEEmail": "Gov.ie work email <red>*</red>",
-      "jobTitle": "Your job title <red>*</red>",
+      "jobTitle": "Your job title",
+      "selectDeviceText": "Your device type selection",
       "appStoreEmail": "Apple/Android app store email <red>*</red>",
       "submitText": "Confirm and continue"
     },
@@ -794,6 +794,7 @@
       "govIEEmail": "Gov.ie work email",
       "lineManagerName": "line manager name",
       "jobTitle": "Job title",
+      "selectDeviceText": "Your device type selection",
       "appStoreEmail": "Apple/Android app store email",
       "reject": "Reject",
       "approve": "Approve"
@@ -847,6 +848,7 @@
     "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
     "invalidField": "Enter {indArticleCheck, select, an {an} other {a}} valid {field}",
     "emptySelection": "No selection",
+    "checkboxRequired": "You must agree to continue",
     "noFile": "No required file selected",
     "fileUploadFail": "Failed to upload file",
     "internalServerError": "Server error",

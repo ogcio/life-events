@@ -27,27 +27,27 @@ export default async (props: {
 
     const formErrors: form.Error[] = [];
 
+    const isGovernmentEmployee = Boolean(formData.get("isGovernmentEmployee"));
+    formErrors.push(
+      ...form.validation.checkboxRequired(
+        form.fieldTranslationKeys.isGovernmentEmployee,
+        isGovernmentEmployee,
+      ),
+    );
+
+    // const jobTitle = formData.get("jobTitle")?.toString();
+    // formErrors.push(
+    //   ...form.validation.stringNotEmpty(
+    //     form.fieldTranslationKeys.jobTitle,
+    //     jobTitle,
+    //   ),
+    // );
+
     const govIEEmail = formData.get("govIEEmail")?.toString();
     formErrors.push(
       ...form.validation.emailErrors(
         form.fieldTranslationKeys.govIEEmail,
         govIEEmail,
-      ),
-    );
-
-    const lineManagerName = formData.get("lineManagerName")?.toString();
-    formErrors.push(
-      ...form.validation.stringNotEmpty(
-        form.fieldTranslationKeys.lineManagerName,
-        lineManagerName,
-      ),
-    );
-
-    const jobTitle = formData.get("jobTitle")?.toString();
-    formErrors.push(
-      ...form.validation.stringNotEmpty(
-        form.fieldTranslationKeys.jobTitle,
-        jobTitle,
       ),
     );
 
@@ -64,11 +64,11 @@ export default async (props: {
 
     const data: Pick<
       workflow.GetDigitalWallet,
-      "govIEEmail" | "lineManagerName" | "jobTitle"
+      "govIEEmail" | "jobTitle" | "isGovernmentEmployee"
     > = {
       govIEEmail: "",
-      lineManagerName: "",
       jobTitle: "",
+      isGovernmentEmployee: false,
     };
 
     const formIterator = formData.entries();
@@ -77,7 +77,7 @@ export default async (props: {
     while (!iterResult.done) {
       const [key, value] = iterResult.value;
 
-      if (["govIEEmail", "lineManagerName", "jobTitle"].includes(key)) {
+      if (["govIEEmail", "jobTitle", "isGovernmentEmployee"].includes(key)) {
         data[key] = value;
       }
 
@@ -128,12 +128,12 @@ export default async (props: {
     (row) => row.field === form.fieldTranslationKeys.govIEEmail,
   );
 
-  const lineManagerNameError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.lineManagerName,
-  );
-
   const jobTitleError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.jobTitle,
+  );
+
+  const isGovernmentEmployeeError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.isGovernmentEmployee,
   );
 
   return (
@@ -182,46 +182,6 @@ export default async (props: {
 
           <div
             className={`govie-form-group ${
-              lineManagerNameError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <h1 className="govie-label-wrapper">
-              <label htmlFor="email" className="govie-label--s govie-label--l">
-                {t.rich("lineManagerName", {
-                  red: (chunks) => <span style={{ color: red }}>{chunks}</span>,
-                })}
-              </label>
-            </h1>
-            {lineManagerNameError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(lineManagerNameError.messageKey, {
-                  field: errorT(`fields.${lineManagerNameError.field}`),
-                  indArticleCheck:
-                    lineManagerNameError.messageKey ===
-                    form.errorTranslationKeys.empty
-                      ? "an"
-                      : "",
-                })}
-              </p>
-            )}
-            <input
-              type="text"
-              id="lineManagerName"
-              name="lineManagerName"
-              className={`govie-input ${
-                lineManagerNameError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={
-                lineManagerNameError
-                  ? lineManagerNameError.errorValue
-                  : data.lineManagerName
-              }
-            />
-          </div>
-
-          <div
-            className={`govie-form-group ${
               jobTitleError ? "govie-form-group--error" : ""
             }`.trim()}
           >
@@ -255,6 +215,41 @@ export default async (props: {
                 jobTitleError ? jobTitleError.errorValue : data.jobTitle
               }
             />
+          </div>
+
+          <div
+            className={`govie-form-group ${
+              isGovernmentEmployeeError ? "govie-form-group--error" : ""
+            }`.trim()}
+          >
+            <fieldset className="govie-fieldset" aria-describedby="">
+              {isGovernmentEmployeeError && (
+                <p id="nationality-error" className="govie-error-message">
+                  <span className="govie-visually-hidden">Error:</span>{" "}
+                  {errorT(isGovernmentEmployeeError.messageKey)}
+                </p>
+              )}
+              <div
+                className="govie-checkboxes govie-checkboxes--small"
+                data-module="govie-checkboxes"
+              >
+                <div className="govie-checkboxes__item">
+                  <input
+                    className="govie-checkboxes__input"
+                    id="isGovernmentEmployee"
+                    name="isGovernmentEmployee"
+                    type="checkbox"
+                    value="employment-tribunal"
+                  />
+                  <label
+                    className="govie-checkboxes__label"
+                    htmlFor="isGovernmentEmployee"
+                  >
+                    {t("checkbox")}
+                  </label>
+                </div>
+              </div>
+            </fieldset>
           </div>
 
           <button type="submit" className="govie-button">

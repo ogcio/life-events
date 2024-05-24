@@ -230,8 +230,8 @@ export type GetDigitalWallet = Base & {
   deviceType: "ios" | "android" | undefined;
   appStoreEmail: string;
   myGovIdEmail: string;
+  isGovernmentEmployee: boolean;
   govIEEmail: string;
-  lineManagerName: string;
   jobTitle: string;
   confirmedApplication: string;
   rejectReason: string;
@@ -247,9 +247,9 @@ export function emptyGetDigitalWallet(): GetDigitalWallet {
     hasConfirmedPersonalDetails: false,
     deviceType: undefined,
     appStoreEmail: "",
+    isGovernmentEmployee: false,
     myGovIdEmail: "",
     govIEEmail: "",
-    lineManagerName: "",
     jobTitle: "",
     confirmedApplication: "",
     successfulAt: "",
