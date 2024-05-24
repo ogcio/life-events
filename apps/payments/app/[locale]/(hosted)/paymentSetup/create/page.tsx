@@ -1,43 +1,141 @@
 import { PgSessions } from "auth/sessions";
 import { RedirectType, redirect } from "next/navigation";
-import PaymentSetupForm from "../PaymentSetupForm";
-import { errorHandler, stringToAmount } from "../../../../utils";
+import PaymentSetupFormPage, { ProvidersMap } from "../PaymentSetupFormPage";
+import {
+  errorHandler,
+  getValidationErrors,
+  paymentMethods,
+  stringToAmount,
+} from "../../../../utils";
 import { Payments } from "building-blocks-sdk";
 import { PaymentRequestStatus } from "../../../../../types/common";
+import { PaymentRequestDetails } from "../db";
+import { ProviderType } from "../providers/types";
+import { paymentRequestValidationMap } from "../../../../validationMaps";
+import { getTranslations } from "next-intl/server";
 
-async function createPayment(userId: string, formData: FormData) {
-  "use server";
+type Props = {
+  params: {
+    locale: string;
+  };
+};
 
-  const providers: string[] = [
-    formData.get("openbanking-account")?.toString(),
-    formData.get("banktransfer-account")?.toString(),
-    formData.get("card-account")?.toString(),
-  ].filter((provider): provider is string => !!provider);
+export type PaymentRequestFormState = {
+  errors: {
+    [key: string]: string;
+  };
+  defaultState: {
+    details?: Partial<PaymentRequestDetails>;
+    providerAccounts: ProvidersMap;
+  };
+};
 
-  const { data: paymentRequest, error } = await new Payments(
-    userId,
-  ).createPaymentRequest({
-    title: formData.get("title") as string,
-    description: formData.get("description") as string,
-    reference: formData.get("reference") as string,
-    amount: stringToAmount(formData.get("amount")?.toString() as string),
-    redirectUrl: formData.get("redirect-url") as string,
-    allowAmountOverride: formData.get("allowAmountOverride") === "on",
-    allowCustomAmount: formData.get("allowCustomAmount") === "on",
-    status: formData.get("status") as PaymentRequestStatus,
-    providers,
-  });
+export default async function Page({ params: { locale } }: Props) {
+  const t = await getTranslations("PaymentSetup.CreatePayment.form");
+  const { userId } = await PgSessions.get();
 
-  if (error) {
-    errorHandler(error);
+  const validationMap = paymentRequestValidationMap(t);
+
+  async function handleSubmit(
+    prevState: FormData,
+    formData: FormData,
+  ): Promise<PaymentRequestFormState> {
+    "use server";
+    const providerAccountsField = formData.get("providerAccounts") as string;
+
+    const titleField = formData.get("title") as string;
+    const descriptionField = formData.get("description") as string;
+    const referenceField = formData.get("reference") as string;
+    const amountField = stringToAmount(
+      formData.get("amount")?.toString() as string,
+    );
+    const allowAmountOverrideField =
+      formData.get("allowAmountOverride") === "on";
+    const allowCustomAmountField = formData.get("allowCustomAmount") === "on";
+    const redirectUrlField = formData.get("redirect-url") as string;
+    const statusField = formData.get("status") as PaymentRequestStatus;
+
+    const providerDetails: {
+      id: string;
+      name: string;
+      type: ProviderType;
+    }[] = [];
+
+    const formResult = {
+      errors: {},
+      defaultState: {
+        details: {
+          title: titleField,
+          description: descriptionField,
+          reference: referenceField,
+          amount: amountField,
+          allowAmountOverride: allowAmountOverrideField,
+          allowCustomAmount: allowCustomAmountField,
+          redirectUrl: redirectUrlField,
+          status: statusField,
+          providers: providerDetails,
+        },
+        providerAccounts: JSON.parse(providerAccountsField),
+      },
+    };
+
+    if (providerAccountsField) {
+      formResult.defaultState.providerAccounts = JSON.parse(
+        providerAccountsField,
+      );
+    }
+
+    const providers: string[] = [];
+
+    paymentMethods.forEach((paymentMethod) => {
+      const selectedAccount = formData
+        .get(`${paymentMethod}-account`)
+        ?.toString();
+
+      if (!!selectedAccount) {
+        const providerData = formResult.defaultState.providerAccounts[
+          paymentMethod
+        ].find((provider) => provider.id === selectedAccount);
+        providerDetails.push(providerData);
+
+        providers.push(selectedAccount);
+      }
+    });
+
+    const { data: paymentRequest, error } = await new Payments(
+      userId,
+    ).createPaymentRequest({
+      title: titleField,
+      description: descriptionField,
+      reference: referenceField,
+      amount: amountField,
+      redirectUrl: redirectUrlField,
+      allowAmountOverride: allowAmountOverrideField,
+      allowCustomAmount: allowCustomAmountField,
+      status: statusField,
+      providers,
+    });
+
+    if (error) {
+      errorHandler(error);
+    }
+
+    if (!error?.validation && paymentRequest?.id) {
+      redirect(`./requests/${paymentRequest?.id}`, RedirectType.replace);
+    }
+
+    if (error?.validation) {
+      formResult.errors = getValidationErrors(error.validation, validationMap);
+    }
+
+    return formResult;
   }
 
-  redirect(`./requests/${paymentRequest?.id}`, RedirectType.replace);
-}
-
-export default async function Page() {
-  const { userId } = await PgSessions.get();
-  const submitPayment = createPayment.bind(this, userId);
-
-  return <PaymentSetupForm userId={userId} action={submitPayment} />;
+  return (
+    <PaymentSetupFormPage
+      userId={userId}
+      locale={locale}
+      action={handleSubmit}
+    />
+  );
 }
