@@ -277,7 +277,7 @@
         "reference": "Reference",
         "referenceRequired": "Reference is required.",
         "amount": "Amount",
-        "amountRequired": "amount is required.",
+        "amountRequired": "Amount is required.",
         "currencySymbol": "€",
         "redirectUrl": "Redirect URL",
         "redirectUrlRequired": "Redirect URL is required.",
