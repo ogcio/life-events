@@ -1,54 +1,40 @@
-import { redirect } from "next/navigation";
-import type { Provider, ProviderStatus } from "../types";
-import type { PropsWithChildren } from "react";
-import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
-import { Payments } from "building-blocks-sdk";
-import { errorHandler } from "../../../../../utils";
+"use client";
+import type { Provider } from "../types";
+import { createElement, type PropsWithChildren } from "react";
+import { useTranslations } from "next-intl";
+import { useFormState } from "react-dom";
+
 type Props = {
   provider: Provider;
-  updateProviderAction: (formData: FormData) => void;
+  action: (
+    prevState: FormData,
+    formData: FormData,
+  ) => Promise<{
+    errors: {
+      [key: string]: string;
+    };
+  }>;
+  formComponent: (state: any) => JSX.Element;
+  defaultState?: any;
 };
 
-export default async ({
+export default ({
   provider,
-  updateProviderAction,
+  action,
+  formComponent,
+  defaultState,
   children,
 }: PropsWithChildren<Props>) => {
-  const t = await getTranslations("PaymentSetup.Providers.edit");
-
-  async function setProviderStatus(status: ProviderStatus) {
-    "use server";
-
-    const { userId } = await PgSessions.get();
-
-    const { error } = await new Payments(userId).updateProvider(provider.id, {
-      name: provider.name,
-      data: provider.data,
-      type: provider.type,
-      status,
-    });
-
-    if (error) {
-      errorHandler(error);
-    }
-
-    redirect("./");
-  }
-
-  async function enableProvider() {
-    "use server";
-    return setProviderStatus("connected");
-  }
-
-  async function disableProvider() {
-    "use server";
-    return setProviderStatus("disconnected");
-  }
+  const t = useTranslations("Providers.edit");
+  const [state, serverAction] = useFormState(action, {
+    defaultState,
+    errors: {},
+  });
 
   return (
-    <form action={updateProviderAction}>
+    <form action={serverAction}>
       {children}
+      {createElement(formComponent, { state })}
       <div
         style={{
           display: "flex",
@@ -58,8 +44,9 @@ export default async ({
         }}
       >
         <button
-          id="button"
           type="submit"
+          name="action"
+          value="update"
           data-module="govie-button"
           className="govie-button"
         >
@@ -67,20 +54,22 @@ export default async ({
         </button>
         {provider.status === "connected" && (
           <button
-            id="button"
+            type="submit"
+            name="action"
+            value="disable"
             data-module="govie-button"
             className="govie-button govie-button--tertiary"
-            formAction={disableProvider}
           >
             {t("disable")}
           </button>
         )}
         {provider.status === "disconnected" && (
           <button
-            id="button"
+            type="submit"
+            name="action"
+            value="enable"
             data-module="govie-button"
             className="govie-button govie-button--secondary"
-            formAction={enableProvider}
           >
             {t("enable")}
           </button>

@@ -117,10 +117,14 @@
       "editTitle": "Edit OpenBanking Payment Provider",
       "name": "Name",
       "nameHint": "Give a name to this payment provider to help you recognize it",
+      "nameRequired": "Name is required.",
       "accountHolderName": "Bank Account Holder Name",
       "accountHolderNameHint": "Enter the name of the account holder as it appears on the bank account. This ensures payments are correctly attributed.",
+      "accountHolderNameRequired": "Bank Account Holder Name is required.",
       "iban": "IBAN",
       "ibanHint": "Enter your International Bank Account Number (IBAN) for secure transactions.",
+      "ibanRequired": "IBAN is required.",
+      "ibanInvalid": "IBAN is not valid.",
       "confirm": "Confirm"
     },
     "AddBankTransfer": {
@@ -128,10 +132,14 @@
       "editTitle": "Edit Manual Bank Transfer Payment Provider",
       "name": "Name",
       "nameHint": "Give a name to this payment provider to help you recognize it",
+      "nameRequired": "Name is required.",
       "accountHolderName": "Bank Account Holder Name",
       "accountHolderNameHint": "Enter the name of the bank account holder exactly as it appears on the account. This is required to match payments to their source accurately.",
+      "accountHolderNameRequired": "Bank Account Holder Name is required.",
       "iban": "IBAN",
       "ibanHint": "Enter your International Bank Account Number (IBAN) for secure transactions.",
+      "ibanRequired": "IBAN is required.",
+      "ibanInvalid": "IBAN is not valid.",
       "confirm": "Confirm"
     },
     "AddStripe": {
@@ -139,10 +147,13 @@
       "editTitle": "Edit Stripe Payment Provider",
       "name": "Name",
       "nameHint": "Assign a name to this Stripe configuration to easily identify it later",
+      "nameRequired": "Name is required.",
       "livePublishableKey": "Live Publishable Key",
       "livePublishableKeyHint": "This is the public key from your Stripe account used in the live environment. It allows your site to communicate with Stripe for payment processing.",
+      "livePublishableKeyRequired": "Live Publishable Key is required.",
       "liveSecretKey": "Live Secret Key",
       "liveSecretKeyHint": "Your secret key for the live environment from Stripe.",
+      "liveSecretKeyRequired": "Live Secret Key is required.",
       "confirm": "Confirm"
     },
     "AddWorldpay": {
@@ -161,10 +172,13 @@
       "editTitle": "Edit Realex Payment Provider",
       "name": "Name",
       "nameHint": "Create a name for this Realex configuration to easily identify it among your payment options, such as 'Main Site Payments' or 'Event Registrations'.",
+      "nameRequired": "Name is required.",
       "merchantId": "Merchant Id",
       "merchantIdHint": "This is the unique identifier assigned to your Realex account. It's used to ensure that payments are sent to the correct merchant account.",
+      "merchantIdRequired": "Merchant Id is required.",
       "sharedSecret": "Shared secret",
       "sharedSecretHint": "This is the Shared Secret from Realex, required for integrating your payment gateway with the web application. This ties the payments to your account.",
+      "sharedSecretRequired": "Shared Secret is required.",
       "confirm": "Confirm"
     },
     "Payments": {

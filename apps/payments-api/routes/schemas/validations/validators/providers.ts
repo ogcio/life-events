@@ -1,4 +1,4 @@
-import { ValidatorFn } from ".";
+import { ErrorTypes, ValidatorFn } from ".";
 import {
   mapProviderData,
   ProviderDataErrors,
@@ -11,7 +11,10 @@ const validate: ValidatorFn = (value, field, rootData, errors) => {
   if (mappingErrors.length) {
     mappingErrors.forEach((err) => {
       errors.push({
-        keyword: "invalid",
+        keyword:
+          err.error === ProviderDataErrors.INVALID
+            ? ErrorTypes.INVALID
+            : ErrorTypes.REQUIRED,
         message:
           err.error === ProviderDataErrors.INVALID
             ? `Field ${err.field} is invalid.`

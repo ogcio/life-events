@@ -24,7 +24,10 @@ type Props = {
     | "hamburger-menu"
     | "tiles"
     | "messaging-service"
-    | "payments-service";
+    | "payments-service"
+    | "send-a-message"
+    | "template"
+    | "settings";
 };
 
 export default ({ className, color, icon, size, heigth, width }: Props) => {

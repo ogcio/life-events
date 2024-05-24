@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
@@ -5,6 +6,7 @@ import getRequestConfig from "../../../../../../i18n";
 import { errorHandler, getValidationErrors } from "../../../../../utils";
 import RealexForm from "./RealexForm";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import { realexValidationMap } from "../../../../../validationMaps";
 
 type Props = {
   params: {
@@ -12,32 +14,49 @@ type Props = {
   };
 };
 
+export type RealexFormState = {
+  errors: {
+    [key: string]: string;
+  };
+  defaultState: {
+    providerName: string;
+    merchantId: string;
+    sharedSecret: string;
+  };
+};
+
 export default async (props: Props) => {
+  const t = await getTranslations("PaymentSetup.AddRealex");
   const { messages } = await getRequestConfig({ locale: props.params.locale });
 
   const { userId } = await PgSessions.get();
 
+  const errorFieldMapping = realexValidationMap(t);
+
   async function handleSubmit(
     prevState: FormData,
     formData: FormData,
-  ): Promise<{
-    errors: {
-      [key: string]: string;
-    };
-  }> {
+  ): Promise<RealexFormState> {
     "use server";
+    const nameField = formData.get("provider_name") as string;
+    const merchantIdField = formData.get("merchant_id") as string;
+    const sharedSecretField = formData.get("shared_secret") as string;
 
-    const validation = { errors: {} };
+    const formResult = {
+      errors: {},
+      defaultState: {
+        providerName: nameField,
+        merchantId: merchantIdField,
+        sharedSecret: sharedSecretField,
+      },
+    };
 
-
-    const { data: result, error } = await new Payments(
-      userId,
-    ).createProvider({
-      name: formData.get("provider_name") as string,
+    const { data: result, error } = await new Payments(userId).createProvider({
+      name: nameField,
       type: "realex",
       data: {
-        merchantId: formData.get("merchant_id") as string,
-        sharedSecret: formData.get("shared_secret") as string,
+        merchantId: merchantIdField,
+        sharedSecret: sharedSecretField,
       },
     });
 
@@ -48,10 +67,13 @@ export default async (props: Props) => {
     if (result) redirect("./");
 
     if (error.validation) {
-      validation.errors = getValidationErrors(error.validation);
+      formResult.errors = getValidationErrors(
+        error.validation,
+        errorFieldMapping,
+      );
     }
 
-    return validation;
+    return formResult;
   }
 
   return (
