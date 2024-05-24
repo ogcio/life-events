@@ -19,10 +19,14 @@ export default async (props: MessageCreateProps) => {
 
   return (
     <>
-      <h1 className="govie-heading-l">{t("title")}</h1>
+      <h1>
+        <span style={{ margin: "unset" }} className="govie-heading-l">
+          {t("title")}
+        </span>
+      </h1>
       <p className="govie-body">{t("body")}</p>
       <form action={action}>
-        <button className="govie-button govie-button--secondary" type="submit">
+        <button className="govie-button" type="submit">
           {t("submitText")}
         </button>
       </form>

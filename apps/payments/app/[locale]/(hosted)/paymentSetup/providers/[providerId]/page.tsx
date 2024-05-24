@@ -37,23 +37,53 @@ export default async ({ params: { providerId, locale } }: Props) => {
   }
 
   if (provider.type === "openbanking") {
-    return <EditOpenBankingForm provider={provider as OpenBankingProvider} />;
+    return (
+      <EditOpenBankingForm
+        provider={provider as OpenBankingProvider}
+        userId={userId}
+        locale={locale}
+      />
+    );
   }
 
   if (provider.type === "banktransfer") {
-    return <EditBankTransferForm provider={provider as BankTransferProvider} />;
+    return (
+      <EditBankTransferForm
+        provider={provider as BankTransferProvider}
+        userId={userId}
+        locale={locale}
+      />
+    );
   }
 
   if (provider.type === "stripe") {
-    return <EditStripeForm provider={provider as StripeProvider} />;
+    return (
+      <EditStripeForm
+        provider={provider as StripeProvider}
+        userId={userId}
+        locale={locale}
+      />
+    );
   }
 
   if (provider.type === "worldpay") {
-    return <EditWorldpayForm provider={provider as WorldpayProvider} />;
+    return (
+      <EditWorldpayForm
+        provider={provider as WorldpayProvider}
+        userId={userId}
+        locale={locale}
+      />
+    );
   }
 
   if (provider.type === "realex") {
-    return <EditRealexForm provider={provider as RealexProvider} />;
+    return (
+      <EditRealexForm
+        provider={provider as RealexProvider}
+        userId={userId}
+        locale={locale}
+      />
+    );
   }
 
   redirect("/paymentsetup/providers");

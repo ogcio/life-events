@@ -25,19 +25,19 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
         key: routes.sendAMessage.slug,
         label: t("sendMessage"),
         url: routes.sendAMessage.url,
-        type: "button",
+        icon: "send-a-message",
       },
       {
         key: routes.emailTemplates.slug,
         label: t("templates"),
         url: routes.emailTemplates.url,
-        icon: "employment",
+        icon: "template",
       },
       {
         key: routes.settings.slug,
         label: t("settings"),
         url: `admin/${routes.settings.slug}`,
-        icon: "about",
+        icon: "settings",
       },
     );
   } else {

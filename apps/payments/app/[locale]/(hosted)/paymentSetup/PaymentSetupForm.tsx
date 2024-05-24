@@ -20,6 +20,8 @@ async function getRegisteredAccounts(userId: string) {
   }
 
   const accounts = providers.reduce((acc, provider) => {
+    if (provider.status === "disconnected") return acc;
+
     const paymentMethod = providerTypeToPaymentMethod[provider.type];
     if (!acc.get(paymentMethod)) {
       acc.set(paymentMethod, []);
