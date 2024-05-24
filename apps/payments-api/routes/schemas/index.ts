@@ -19,12 +19,12 @@ export type OkResponse = Static<typeof OkResponse>;
  */
 
 export const OpenBankingData = Type.Object({
-  iban: Type.String({ validator: "IBANValidator" }),
+  iban: Type.String(),
   accountHolderName: Type.String(),
 });
 
 export const BankTransferData = Type.Object({
-  iban: Type.String({ validator: "IBANValidator" }),
+  iban: Type.String(),
   accountHolderName: Type.String(),
 });
 
@@ -70,7 +70,7 @@ export const ProviderStatus = Type.Union([
 
 export const Provider = Type.Object({
   id: Type.String(),
-  name: Type.String({ validator: "StringValidator" }),
+  name: Type.String({ validator: "RequiredValidator" }),
   type: ProviderTypes,
   data: Type.Record(Type.String(), Type.String(), {
     validator: "ProvidersValidator",
@@ -134,11 +134,11 @@ export const PaymentRequestDetails = Type.Composite([
 export type PaymentRequestDetails = Static<typeof PaymentRequestDetails>;
 
 export const CreatePaymentRequest = Type.Object({
-  title: Type.String(),
+  title: Type.String({ validator: "RequiredValidator" }),
   description: Type.String(),
-  reference: Type.String(),
-  amount: Type.Number(),
-  redirectUrl: Type.String(),
+  reference: Type.String({ validator: "RequiredValidator" }),
+  amount: Type.Number({ validator: "RequiredValidator" }),
+  redirectUrl: Type.String({ validator: "RequiredValidator" }),
   allowAmountOverride: Type.Boolean(),
   allowCustomAmount: Type.Boolean(),
   providers: Type.Array(Type.String()),
