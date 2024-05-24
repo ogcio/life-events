@@ -10,15 +10,15 @@ import {
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
 import { isNativeError } from "util/types";
-// import { Profile } from "building-blocks-sdk";
+import { Profile } from "building-blocks-sdk";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
 
-// waiting to integrate building block sdks
-interface TempUserDetails {
+interface FoundUser {
   id: string;
   firstname: string;
   lastname: string;
+  matchQuality: "exact" | "approximate";
 }
 
 export const mapUsers = async (params: {
@@ -51,12 +51,12 @@ const mapUsersSync = async (params: {
   requestUser: RequestUser;
 }) => {
   const usersImport = await getUsersImport(params);
-  //const profile = new Profile(params.requestUser.id);
+  const profile = new Profile(params.requestUser.id);
 
   const processingUsers = usersImport.usersData.map(
     (toImportUser: ToImportUser) =>
       processToImportUser({
-        //profile,
+        profile,
         toImportUser,
         organisationId: usersImport.organisationId,
         client: params.client,
@@ -144,7 +144,7 @@ const getUsersImport = async (params: {
 };
 
 const processUser = async (params: {
-  userProfile: TempUserDetails;
+  userProfile: FoundUser;
   organisationId: string;
   client: PoolClient;
 }): Promise<User> => {
@@ -163,6 +163,8 @@ const processUser = async (params: {
     userProfile,
     organisationId: organisationId,
     status: "to_be_invited",
+    correlationQuality:
+      userProfile.matchQuality === "exact" ? "full" : "partial",
   });
 
   return insertNewUser({ toInsert: user, client });
@@ -212,7 +214,7 @@ const processOrganizationUserRelation = async (params: {
 };
 
 const processToImportUser = async (params: {
-  //profile: Profile;
+  profile: Profile;
   toImportUser: ToImportUser;
   organisationId: string;
   client: PoolClient;
@@ -221,7 +223,8 @@ const processToImportUser = async (params: {
   organisationUser?: OrganisationUserConfig;
   importedUser: ToImportUser;
 }> => {
-  const userProfile = await getUserProfile(params);
+  const response = await getUserProfile(params);
+  const userProfile = response.data;
   if (!userProfile) {
     // User profile not found, cannot map
     params.toImportUser.importStatus = "not_found";
@@ -391,7 +394,7 @@ const getUserIfMapped = async (params: {
 };
 
 const userProfileToUser = (params: {
-  userProfile: TempUserDetails;
+  userProfile: FoundUser;
   userId?: string;
   organisationId: string;
   status?: UserStatus;
@@ -404,10 +407,18 @@ const userProfileToUser = (params: {
   correlationQuality: params.correlationQuality ?? "full",
 });
 
-const getUserProfile = async (_params: {
-  //profile: Profile;
+const getUserProfile = async (params: {
+  profile: Profile;
   toImportUser: ToImportUser;
-}): Promise<TempUserDetails | undefined> => {
-  // TODO To be implemented once we have an API on user-profile service to search for users
-  return undefined;
+}): Promise<{ data: FoundUser | undefined }> => {
+  const { profile, toImportUser } = params;
+
+  return profile.findUser({
+    ppsn: toImportUser.publicIdentityId ?? undefined,
+    firstname: toImportUser.firstName ?? undefined,
+    lastname: toImportUser.lastName ?? undefined,
+    dateOfBirth: toImportUser.birthDate ?? undefined,
+    email: toImportUser.emailAddress ?? undefined,
+    phone: toImportUser.phoneNumber ?? undefined,
+  });
 };
