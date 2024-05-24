@@ -4,6 +4,7 @@ import PaymentSetupFormPage, { ProvidersMap } from "../PaymentSetupFormPage";
 import {
   errorHandler,
   getValidationErrors,
+  paymentMethods,
   stringToAmount,
 } from "../../../../utils";
 import { Payments } from "building-blocks-sdk";
@@ -19,6 +20,16 @@ type Props = {
   };
 };
 
+export type PaymentRequestFormState = {
+  errors: {
+    [key: string]: string;
+  };
+  defaultState: {
+    details?: Partial<PaymentRequestDetails>;
+    providerAccounts: ProvidersMap;
+  };
+};
+
 export default async function Page({ params: { locale } }: Props) {
   const t = await getTranslations("PaymentSetup.CreatePayment.form");
   const { userId } = await PgSessions.get();
@@ -28,15 +39,7 @@ export default async function Page({ params: { locale } }: Props) {
   async function handleSubmit(
     prevState: FormData,
     formData: FormData,
-  ): Promise<{
-    errors: {
-      [key: string]: string;
-    };
-    defaultState: {
-      details?: Partial<PaymentRequestDetails>;
-      providerAccounts: ProvidersMap;
-    };
-  }> {
+  ): Promise<PaymentRequestFormState> {
     "use server";
     const providerAccountsField = formData.get("providerAccounts") as string;
 
@@ -51,12 +54,6 @@ export default async function Page({ params: { locale } }: Props) {
     const allowCustomAmountField = formData.get("allowCustomAmount") === "on";
     const redirectUrlField = formData.get("redirect-url") as string;
     const statusField = formData.get("status") as PaymentRequestStatus;
-
-    const openBankingAccount = formData.get("openbanking-account")?.toString();
-    const bankTransferAccount = formData
-      .get("banktransfer-account")
-      ?.toString();
-    const cardAccount = formData.get("card-account")?.toString();
 
     const providerDetails: {
       id: string;
@@ -88,32 +85,22 @@ export default async function Page({ params: { locale } }: Props) {
       );
     }
 
-    if (openBankingAccount) {
-      const provider = formResult.defaultState.providerAccounts[
-        "openbanking"
-      ].find((provider) => provider.id === openBankingAccount);
-      providerDetails.push(provider);
-    }
+    const providers: string[] = [];
 
-    if (bankTransferAccount) {
-      const provider = formResult.defaultState.providerAccounts[
-        "banktransfer"
-      ].find((provider) => provider.id === bankTransferAccount);
-      providerDetails.push(provider);
-    }
+    paymentMethods.forEach((paymentMethod) => {
+      const selectedAccount = formData
+        .get(`${paymentMethod}-account`)
+        ?.toString();
 
-    if (cardAccount) {
-      const provider = formResult.defaultState.providerAccounts["card"].find(
-        (provider) => provider.id === cardAccount,
-      );
-      providerDetails.push(provider);
-    }
+      if (!!selectedAccount) {
+        const providerData = formResult.defaultState.providerAccounts[
+          paymentMethod
+        ].find((provider) => provider.id === selectedAccount);
+        providerDetails.push(providerData);
 
-    const providers: string[] = [
-      openBankingAccount,
-      bankTransferAccount,
-      cardAccount,
-    ].filter((provider): provider is string => !!provider);
+        providers.push(selectedAccount);
+      }
+    });
 
     const { data: paymentRequest, error } = await new Payments(
       userId,

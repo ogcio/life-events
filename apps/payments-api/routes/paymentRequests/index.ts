@@ -256,63 +256,63 @@ export default async function paymentRequests(app: FastifyInstance) {
         status,
       } = request.body;
 
-      // try {
-      //   const result = await app.pg.transact(async (client) => {
-      //     const paymentRequestQueryResult = await client.query(
-      //       `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override, allow_custom_amount)
-      //         values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      //         returning payment_request_id`,
-      //       [
-      //         userId,
-      //         title,
-      //         description,
-      //         reference,
-      //         amount,
-      //         redirectUrl,
-      //         status,
-      //         allowAmountOverride,
-      //         allowCustomAmount,
-      //       ],
-      //     );
+      try {
+        const result = await app.pg.transact(async (client) => {
+          const paymentRequestQueryResult = await client.query(
+            `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override, allow_custom_amount)
+              values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+              returning payment_request_id`,
+            [
+              userId,
+              title,
+              description,
+              reference,
+              amount,
+              redirectUrl,
+              status,
+              allowAmountOverride,
+              allowCustomAmount,
+            ],
+          );
 
-      //     if (!paymentRequestQueryResult.rowCount) {
-      //       // handle creation failure
-      //       throw new Error("Failed to create payment");
-      //     }
+          if (!paymentRequestQueryResult.rowCount) {
+            // handle creation failure
+            throw new Error("Failed to create payment");
+          }
 
-      //     const paymentRequestId =
-      //       paymentRequestQueryResult.rows[0].payment_request_id;
+          const paymentRequestId =
+            paymentRequestQueryResult.rows[0].payment_request_id;
 
-      //     const sqlData = [paymentRequestId, ...providers];
+          const sqlData = [paymentRequestId, ...providers];
 
-      //     if (!providers.length) {
-      //       return paymentRequestId;
-      //     }
+          if (!providers.length) {
+            return paymentRequestId;
+          }
 
-      //     const queryValues = providers
-      //       .map((_, index) => {
-      //         return `($${index + 2}, $1, true)`;
-      //       })
-      //       .join(",");
+          const queryValues = providers
+            .map((_, index) => {
+              return `($${index + 2}, $1, true)`;
+            })
+            .join(",");
 
-      //     const paymentRequestProviderQueryResult = await client.query(
-      //       `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
-      //       values ${queryValues} RETURNING payment_request_id`,
-      //       sqlData,
-      //     );
+          const paymentRequestProviderQueryResult = await client.query(
+            `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
+            values ${queryValues} RETURNING payment_request_id`,
+            sqlData,
+          );
 
-      //     if (paymentRequestProviderQueryResult.rowCount !== providers.length) {
-      //       // handle creation failure
-      //       throw new Error("Failed to create payment");
-      //     }
+          if (paymentRequestProviderQueryResult.rowCount !== providers.length) {
+            // handle creation failure
+            throw new Error("Failed to create payment");
+          }
 
-      //     return paymentRequestId;
-      //   });
+          return paymentRequestId;
+        });
 
-      //   reply.send({ id: result });
-      // } catch (error) {
-      //   throw app.httpErrors.internalServerError((error as Error).message);
-      // }
+        reply.send({ id: result });
+      } catch (error) {
+        throw app.httpErrors.internalServerError((error as Error).message);
+      }
     },
   );
 

@@ -5,20 +5,13 @@ import { paymentMethodToProviderType, paymentMethods } from "../../../utils";
 import { ProvidersMap } from "./PaymentSetupFormPage";
 import { useFormState } from "react-dom";
 import InputField from "../../../components/InputField";
+import { PaymentRequestFormState } from "./create/page";
 
 type PaymentSetupFormProps = {
   action: (
     prevState: FormData,
     formData: FormData,
-  ) => Promise<{
-    errors: {
-      [key: string]: string;
-    };
-    defaultState: {
-      details?: Partial<PaymentRequestDetails>;
-      providerAccounts: ProvidersMap;
-    };
-  }>;
+  ) => Promise<PaymentRequestFormState>;
   defaultState?: {
     details?: Partial<PaymentRequestDetails>;
     providerAccounts: ProvidersMap;

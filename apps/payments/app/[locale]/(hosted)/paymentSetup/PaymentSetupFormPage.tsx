@@ -5,6 +5,7 @@ import PaymentSetupForm from "./PaymentSetupForm";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import getRequestConfig from "../../../../i18n";
 import { ProviderType } from "./providers/types";
+import { PaymentRequestFormState } from "./create/page";
 
 export type ProvidersMap = Record<
   string,
@@ -51,15 +52,7 @@ type PaymentSetupFormPageProps = {
   action: (
     prevState: FormData,
     formData: FormData,
-  ) => Promise<{
-    errors: {
-      [key: string]: string;
-    };
-    defaultState: {
-      details?: Partial<PaymentRequestDetails>;
-      providerAccounts: ProvidersMap;
-    };
-  }>;
+  ) => Promise<PaymentRequestFormState>;
 };
 
 export default async function ({
