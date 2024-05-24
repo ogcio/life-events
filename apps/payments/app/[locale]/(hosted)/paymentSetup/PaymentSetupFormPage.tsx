@@ -28,6 +28,8 @@ async function getRegisteredAccounts(userId: string): Promise<ProvidersMap> {
   }
 
   const accounts = providers.reduce<ProvidersMap>((acc, provider) => {
+    if (provider.status === "disconnected") return acc;
+
     const paymentMethod = providerTypeToPaymentMethod[provider.type];
     if (!acc[paymentMethod]) {
       acc[paymentMethod] = [];
