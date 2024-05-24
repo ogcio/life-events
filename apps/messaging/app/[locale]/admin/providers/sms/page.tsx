@@ -61,7 +61,6 @@ export default async (props: { searchParams?: { id: string } }) => {
 
     const name = formData.get("name")?.toString();
 
-    console.log("bror", state, isAwsState(state));
     if (isAwsState(state)) {
       const secretAccessKey = formData.get("secretAccessKey")?.toString();
       const accessKey = formData.get("accessKey")?.toString();

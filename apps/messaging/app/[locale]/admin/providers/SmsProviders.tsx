@@ -55,7 +55,7 @@ export default async () => {
                 <Link
                   href={(() => {
                     const url = new URL(
-                      `${providerRoutes.url}`,
+                      providerRoutes.url,
                       process.env.HOST_URL,
                     );
                     url.searchParams.append(searchKeyDeleteId, provider.id);
