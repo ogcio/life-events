@@ -27,7 +27,7 @@ export default async () => {
             }}
           >
             <a
-              href="/"
+              href="https://dev.blocks.gov.ie"
               className="govie-header__link govie-header__link--homepage"
               style={{ display: "block" }}
             >
