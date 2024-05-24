@@ -35,7 +35,7 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
         icon: "template",
       },
       {
-        key: "providers",
+        key: providerRoutes.slug,
         label: t("providers"),
         url: providerRoutes.url,
         icon: "settings",
