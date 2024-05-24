@@ -14,8 +14,7 @@ import { Profile } from "building-blocks-sdk";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
 
-// waiting to integrate building block sdks
-interface TempUserDetails {
+interface FoundUser {
   id: string;
   firstname: string;
   lastname: string;
@@ -145,7 +144,7 @@ const getUsersImport = async (params: {
 };
 
 const processUser = async (params: {
-  userProfile: TempUserDetails;
+  userProfile: FoundUser;
   organisationId: string;
   client: PoolClient;
 }): Promise<User> => {
@@ -395,7 +394,7 @@ const getUserIfMapped = async (params: {
 };
 
 const userProfileToUser = (params: {
-  userProfile: TempUserDetails;
+  userProfile: FoundUser;
   userId?: string;
   organisationId: string;
   status?: UserStatus;
@@ -411,7 +410,7 @@ const userProfileToUser = (params: {
 const getUserProfile = async (params: {
   profile: Profile;
   toImportUser: ToImportUser;
-}): Promise<{ data: TempUserDetails | undefined }> => {
+}): Promise<{ data: FoundUser | undefined }> => {
   const { profile, toImportUser } = params;
 
   return profile.findUser({
