@@ -5,6 +5,7 @@ import {
   ImportChannel,
   ImportStatus,
   ToImportUser,
+  UsersImport,
 } from "../../../types/usersSchemaDefinitions";
 import "@fastify/multipart";
 import { parseFile, writeToBuffer } from "fast-csv";
@@ -47,7 +48,7 @@ export const importCsvFileFromRequest = async (params: {
     throw new Error("Files must have at least one user");
   }
 
-  await processUserImport({
+  const importedUsers = await processUserImport({
     pool: params.pool,
     logger: params.req.log,
     toImportUsers: usersToImport,
@@ -76,7 +77,7 @@ export const importCsvRecords = async (params: {
     throw new Error("At least one user needed");
   }
 
-  await processUserImport({
+  const importedUsers = await processUserImport({
     pool: params.pool,
     logger: params.logger,
     toImportUsers,
@@ -168,13 +169,14 @@ const processUserImport = async (params: {
   toImportUsers: ToImportUser[];
   channel: ImportChannel;
   requestUser: RequestUser;
-}): Promise<void> => {
+}): Promise<UsersImport> => {
   const client = await params.pool.connect();
+  let importedUsers: UsersImport;
   try {
     await client.query("BEGIN");
 
     const importId = await insertToImportUsers({ ...params, client });
-    await mapUsers({
+    importedUsers = await mapUsers({
       importId,
       client,
       logger: params.logger,
@@ -189,4 +191,6 @@ const processUserImport = async (params: {
   } finally {
     client.release();
   }
+
+  return importedUsers;
 };

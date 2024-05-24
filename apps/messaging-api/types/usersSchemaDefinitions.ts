@@ -130,3 +130,17 @@ export const CsvRecordSchema = Type.Object({
 });
 
 export type CsvRecord = Static<typeof CsvRecordSchema>;
+
+export const UserInvitationSchema = Type.Object({
+  id: Type.String(),
+  userProfileId: Type.String(),
+  organisationId: Type.String(),
+  organisationInvitationStatus: InvitationStatusUnionType,
+  organisationInvitationSentAt: Type.Optional(Type.String()),
+  organisationInvitationFeedbackAt: Type.Optional(Type.String()),
+  organisationPreferredTransports: Type.Optional(Type.Array(Type.String())),
+  correlationQuality: CorrelationQualityUnionType,
+  userStatus: UserStatusUnionType,
+});
+
+export type UserInvitation = Static<typeof UserInvitationSchema>;
