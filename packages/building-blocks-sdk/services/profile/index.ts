@@ -134,4 +134,16 @@ export class Profile {
       }),
     );
   }
+
+  async findUser(
+    query: paths["/api/v1/user/find"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/user/find", {
+        params: {
+          query,
+        },
+      }),
+    );
+  }
 }
