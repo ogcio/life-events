@@ -7,9 +7,13 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { temporaryMockUtils } from "messages";
 import { FormElement } from "../../FormElement";
-
+import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
+import { providerRoutes } from "../../../../utils/routes";
 const awsErrorKey = "aws-provider-form";
 const providerTypeErrorKey = "provider-type";
+
+// Union any other provider types here..
+type State = AwsState;
 
 type AwsState = {
   name: string;
@@ -23,16 +27,24 @@ function isAwsState(state: unknown): state is AwsState {
   return (state as AwsState)?.type === "AWS";
 }
 
-async function getState(userId: string) {
+async function getState(
+  userId: string,
+  deleteOnFetch = false,
+): Promise<State | undefined> {
   "use server";
+
+  const query = deleteOnFetch
+    ? `
+    delete from sms_provider_states
+    where user_id = $1
+    returning state
+  `
+    : `
+    select state from sms_provider_states
+    where user_id = $1
+  `;
   return pgpool
-    .query<{ state: any }>(
-      `
-        select state from sms_provider_states
-        where user_id = $1
-    `,
-      [userId],
-    )
+    .query<{ state: any }>(query, [userId])
     .then((res) => res.rows.at(0)?.state);
 }
 
@@ -49,6 +61,7 @@ export default async (props: { searchParams?: { id: string } }) => {
 
     const name = formData.get("name")?.toString();
 
+    console.log("bror", state, isAwsState(state));
     if (isAwsState(state)) {
       const secretAccessKey = formData.get("secretAccessKey")?.toString();
       const accessKey = formData.get("accessKey")?.toString();
@@ -104,7 +117,10 @@ export default async (props: { searchParams?: { id: string } }) => {
         error = createError;
       }
       if (!error) {
-        redirect("/admin/settings/sms");
+        redirect(
+          new URL(`${providerRoutes.url}?provider=sms`, process.env.HOST_URL)
+            .href,
+        );
       }
     }
   }
@@ -161,7 +177,7 @@ export default async (props: { searchParams?: { id: string } }) => {
   const regionError = awsErrors.find((error) => error.field === "region");
 
   return (
-    <>
+    <FlexMenuWrapper>
       <h1>
         <span className="govie-heading-l">
           {data?.id ? t("titleUpdate") : t("titleAdd")}
@@ -279,13 +295,21 @@ export default async (props: { searchParams?: { id: string } }) => {
             </FormElement>
           </>
         ) : null}
-        <button className="govie-button">
+
+        <button className="govie-button" disabled={!Boolean(state?.type)}>
           {props.searchParams?.id ? t("submitUpdate") : t("submitCreate")}
         </button>
       </form>
-      <Link href="/admin/settings/sms" className="govie-back-link">
+
+      <Link
+        href={
+          new URL(`${providerRoutes.url}?provider=sms`, process.env.HOST_URL)
+            .href
+        }
+        className="govie-back-link"
+      >
         {t("backLink")}
       </Link>
-    </>
+    </FlexMenuWrapper>
   );
 };

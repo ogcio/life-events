@@ -2,7 +2,7 @@
   "SideMenu": {
     "sendMessage": "Send a message",
     "messages": "Messages",
-    "settings": "Settings",
+    "providers": "Providers",
     "templates": "Message templates"
   },
   "MessageTemplates": {
@@ -179,8 +179,8 @@
       "deleteButton": "Delete"
     },
     "EmailProvider": {
-      "titleAdd": "Add provider",
-      "titleUpdate": "Update provider",
+      "titleAdd": "Add email provider",
+      "titleUpdate": "Update email provider",
       "nameLabel": "Name",
       "hostLabel": "Host",
       "portLabel": "Port",
@@ -204,8 +204,8 @@
       "editLink": "Edit"
     },
     "SmsProvider": {
-      "titleAdd": "Add provider",
-      "titleUpdate": "Update provider",
+      "titleAdd": "Add SMS provider",
+      "titleUpdate": "Update SMS provider",
       "submitProviderTypeSelect": "Select",
       "nameLabel": "Name",
       "accessKeyLabel": "Access key",

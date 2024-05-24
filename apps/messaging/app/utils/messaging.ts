@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { ComponentProps } from "react";
 import ds from "design-system";
 import { api } from "messages";
+import { providerRoutes } from "./routes";
 
 export const languages = {
   EN: "EN",
@@ -28,15 +29,15 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
         icon: "send-a-message",
       },
       {
-        key: routes.emailTemplates.slug,
+        key: routes.messageTemplates.slug,
         label: t("templates"),
-        url: routes.emailTemplates.url,
+        url: routes.messageTemplates.url,
         icon: "template",
       },
       {
-        key: routes.settings.slug,
-        label: t("settings"),
-        url: `admin/${routes.settings.slug}`,
+        key: "providers",
+        label: t("providers"),
+        url: providerRoutes.url,
         icon: "settings",
       },
     );
