@@ -91,18 +91,6 @@ export const UserDetailsSchema = Type.Object({
   consentToPrefillData: Type.Boolean(),
 });
 export type UserDetails = Static<typeof UserDetailsSchema>;
-export const UserDetailColumnsMapping: Record<keyof UserDetails, string> = {
-  firstname: "firstname",
-  lastname: "lastname",
-  email: "email",
-  title: "title",
-  dateOfBirth: "date_of_birth",
-  ppsn: "ppsn",
-  ppsnVisible: "ppsn_visible",
-  gender: "gender",
-  phone: "phone",
-  consentToPrefillData: "consent_to_prefill_data",
-};
 
 /* Only firstname, lastname and email are required to create a user right now because 
  those are the only fields we always have access to via the current auth session -
