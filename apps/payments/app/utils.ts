@@ -36,15 +36,31 @@ export const getRealAmount = ({
   return amount;
 };
 
+export enum ValidationErrorTypes {
+  REQUIRED = "required",
+  INVALID = "invalid",
+}
+
+export type ValidationFieldMap = Record<
+  string,
+  {
+    field: string;
+    errorMessage: { [key in ValidationErrorTypes]?: string };
+  }
+>;
+
 export const getValidationErrors = (
   validations: any[],
+  fieldMap: ValidationFieldMap,
 ): Record<string, string> => {
   return validations.reduce((errors, validation) => {
-    switch (validation.keyword) {
-      case "invalid": {
-        errors[validation.params.field] = validation.message;
-      }
-    }
+    const field =
+      fieldMap[validation.params.field]?.field ?? validation.params.field;
+    const message =
+      fieldMap[validation.params.field]?.errorMessage[validation.keyword] ??
+      validation.message;
+
+    errors[field] = message;
 
     return errors;
   }, {});
