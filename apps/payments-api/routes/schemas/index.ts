@@ -70,7 +70,7 @@ export const ProviderStatus = Type.Union([
 
 export const Provider = Type.Object({
   id: Type.String(),
-  name: Type.String({ validator: "StringValidator" }),
+  name: Type.String({ validator: "RequiredValidator" }),
   type: ProviderTypes,
   data: Type.Record(Type.String(), Type.String(), {
     validator: "ProvidersValidator",
