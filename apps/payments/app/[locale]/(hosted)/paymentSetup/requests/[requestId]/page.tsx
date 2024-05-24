@@ -51,7 +51,7 @@ export default async function ({
     <div className="table-container">
       <RequestDetails requestId={requestId} action={action} locale={locale} />
 
-      <div>
+      <div style={{ width: "100%" }}>
         <section
           style={{
             margin: "1rem 0",
