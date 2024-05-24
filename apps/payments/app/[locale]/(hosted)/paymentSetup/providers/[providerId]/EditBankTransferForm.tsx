@@ -20,6 +20,7 @@ export default async ({ provider, userId, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddBankTransfer");
   const { messages } = await getRequestConfig({ locale });
 
+
   const errorFieldMapping = bankTransferValidationMap(t);
 
   async function handleSubmit(
