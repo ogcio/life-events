@@ -370,7 +370,7 @@
   "LandingPage": {
     "AlphaBanner": {
       "tag": "Alpha",
-      "bannerText": "This is a new service - your feedback will help us to improve it."
+      "bannerText": "This is a new service - your <anchor>feedback</anchor> will help us to improve it."
     },
     "actions": {
       "login": "Login"

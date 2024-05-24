@@ -39,8 +39,16 @@ export default async (props: Props) => {
                 {t("AlphaBanner.tag")}
               </strong>
               <span className="govie-phase-banner__text">
-                {/* CHANGE HERE */}
-                {t("AlphaBanner.bannerText")}
+                {t.rich("AlphaBanner.bannerText", {
+                  anchor: (chunks) => (
+                    <a
+                      className="govie-link"
+                      href="https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294"
+                    >
+                      {chunks}
+                    </a>
+                  ),
+                })}
               </span>
             </p>
           </div>
