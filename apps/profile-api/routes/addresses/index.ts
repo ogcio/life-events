@@ -3,12 +3,20 @@ import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
 import {
   AddressesList,
+  AddressesListSchema,
   CreateAddress,
+  CreateAddressSchema,
   Address,
+  AddressSchema,
   ParamsWithAddressId,
+  ParamsWithAddressIdSchema,
   UpdateAddress,
+  UpdateAddressSchema,
   PatchAddress,
+  PatchAddressSchema,
 } from "../../types/schemaDefinitions";
+
+const ADDRESSES_TAGS = ["Addresses"];
 
 export default async function addresses(app: FastifyInstance) {
   app.get<{ Reply: AddressesList }>(
@@ -16,9 +24,9 @@ export default async function addresses(app: FastifyInstance) {
     {
       preValidation: app.verifyUser,
       schema: {
-        tags: ["Addresses"],
+        tags: ADDRESSES_TAGS,
         response: {
-          200: AddressesList,
+          200: AddressesListSchema,
           500: HttpError,
         },
       },
@@ -53,8 +61,8 @@ export default async function addresses(app: FastifyInstance) {
     {
       preValidation: app.verifyUser,
       schema: {
-        tags: ["Addresses"],
-        body: CreateAddress,
+        tags: ADDRESSES_TAGS,
+        body: CreateAddressSchema,
         response: {
           200: Type.Object({
             id: Type.String(),
@@ -106,9 +114,10 @@ export default async function addresses(app: FastifyInstance) {
     {
       preValidation: app.verifyUser,
       schema: {
-        tags: ["Addresses"],
+        tags: ADDRESSES_TAGS,
+        params: ParamsWithAddressIdSchema,
         response: {
-          200: Address,
+          200: AddressSchema,
           404: HttpError,
           500: HttpError,
         },
@@ -154,8 +163,8 @@ export default async function addresses(app: FastifyInstance) {
     {
       preValidation: app.verifyUser,
       schema: {
-        tags: ["Addresses"],
-        body: UpdateAddress,
+        tags: ADDRESSES_TAGS,
+        body: UpdateAddressSchema,
         response: {
           200: Type.Object({
             id: Type.String(),
@@ -220,8 +229,8 @@ export default async function addresses(app: FastifyInstance) {
     {
       preValidation: app.verifyUser,
       schema: {
-        tags: ["Addresses"],
-        body: PatchAddress,
+        tags: ADDRESSES_TAGS,
+        body: PatchAddressSchema,
         response: {
           200: Type.Object({
             id: Type.String(),
@@ -273,12 +282,12 @@ export default async function addresses(app: FastifyInstance) {
     },
   );
 
-  app.delete<{ Reply: {} | Error; Params: ParamsWithAddressId }>(
+  app.delete<{ Reply: { id: string } | Error; Params: ParamsWithAddressId }>(
     "/:addressId",
     {
       preValidation: app.verifyUser,
       schema: {
-        tags: ["Addresses"],
+        tags: ADDRESSES_TAGS,
         response: {
           200: Type.Object({
             id: Type.String(),
