@@ -13,13 +13,13 @@ import { isNativeError } from "util/types";
 import { Profile } from "building-blocks-sdk";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
-import { profile } from "console";
 
 // waiting to integrate building block sdks
 interface TempUserDetails {
   id: string;
   firstname: string;
   lastname: string;
+  matchQuality: "exact" | "approximate";
 }
 
 export const mapUsers = async (params: {
@@ -164,6 +164,8 @@ const processUser = async (params: {
     userProfile,
     organisationId: organisationId,
     status: "to_be_invited",
+    correlationQuality:
+      userProfile.matchQuality === "exact" ? "full" : "partial",
   });
 
   return insertNewUser({ toInsert: user, client });
@@ -222,7 +224,8 @@ const processToImportUser = async (params: {
   organisationUser?: OrganisationUserConfig;
   importedUser: ToImportUser;
 }> => {
-  const userProfile = await getUserProfile(params);
+  const response = await getUserProfile(params);
+  const userProfile = response.data;
   if (!userProfile) {
     // User profile not found, cannot map
     params.toImportUser.importStatus = "not_found";
@@ -408,6 +411,15 @@ const userProfileToUser = (params: {
 const getUserProfile = async (params: {
   profile: Profile;
   toImportUser: ToImportUser;
-}): Promise<TempUserDetails | undefined> => {
-  return undefined;
+}): Promise<{ data: TempUserDetails | undefined }> => {
+  const { profile, toImportUser } = params;
+
+  return profile.findUser({
+    ppsn: toImportUser.publicIdentityId ?? undefined,
+    firstname: toImportUser.firstName ?? undefined,
+    lastname: toImportUser.lastName ?? undefined,
+    dateOfBirth: toImportUser.birthDate ?? undefined,
+    email: toImportUser.emailAddress ?? undefined,
+    phone: toImportUser.phoneNumber ?? undefined,
+  });
 };
