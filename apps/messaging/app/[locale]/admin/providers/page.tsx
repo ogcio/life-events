@@ -10,6 +10,11 @@ import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 import EmailProviders from "./EmailProviders";
 import { getTranslations } from "next-intl/server";
+import {
+  searchKeyProvider,
+  searchValueEmail,
+  searchValueSms,
+} from "../../../utils/messaging";
 
 const linkStyle = (selected: boolean): CSSProperties => {
   const props: CSSProperties = {
@@ -32,11 +37,6 @@ const linkClassName = (selected: boolean): string =>
   `govie-link govie-!-font-size-19 govie-link--no-visited-state ${
     selected ? "govie-link--no-underline" : ""
   }`.trim();
-
-export const searchKeyProvider = "provider";
-export const searchValueEmail = "email";
-export const searchValueSms = "sms";
-export const searchKeyDeleteId = "deleteId";
 
 export default async (props: {
   params: { locale: string };

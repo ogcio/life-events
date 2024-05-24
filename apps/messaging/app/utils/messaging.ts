@@ -80,3 +80,8 @@ export type MessageCreateProps = {
   stateId?: string;
   disabledSubmit?: boolean;
 };
+
+export const searchKeyProvider = "provider";
+export const searchValueEmail = "email";
+export const searchValueSms = "sms";
+export const searchKeyDeleteId = "deleteId";

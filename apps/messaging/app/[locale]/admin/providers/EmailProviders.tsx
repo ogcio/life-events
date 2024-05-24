@@ -3,7 +3,11 @@ import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { providerRoutes } from "../../../utils/routes";
-import { searchKeyDeleteId, searchKeyProvider, searchValueEmail } from "./page";
+import {
+  searchKeyDeleteId,
+  searchKeyProvider,
+  searchValueEmail,
+} from "../../../utils/messaging";
 
 export default async () => {
   const t = await getTranslations("settings.Emails");
