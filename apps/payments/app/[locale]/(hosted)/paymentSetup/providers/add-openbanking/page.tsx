@@ -4,7 +4,10 @@ import { redirect } from "next/navigation";
 import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
-import { errorHandler, getValidationErrors } from "../../../../../utils";
+import {
+  errorHandler,
+  getValidationErrors,
+} from "../../../../../utils";
 import OpenBankingForm from "./OpenBankingForm";
 import { openBankingValidationMap } from "../../../../../validationMaps";
 

@@ -22,7 +22,7 @@ paths:
               type: object
               properties:
                 name:
-                  validator: StringValidator
+                  validator: RequiredValidator
                   type: string
                 type:
                   anyOf:
@@ -171,7 +171,6 @@ paths:
                         - type: object
                           properties:
                             iban:
-                              validator: IBANValidator
                               type: string
                             accountHolderName:
                               type: string
@@ -181,7 +180,6 @@ paths:
                         - type: object
                           properties:
                             iban:
-                              validator: IBANValidator
                               type: string
                             accountHolderName:
                               type: string
@@ -296,7 +294,6 @@ paths:
                       - type: object
                         properties:
                           iban:
-                            validator: IBANValidator
                             type: string
                           accountHolderName:
                             type: string
@@ -306,7 +303,6 @@ paths:
                       - type: object
                         properties:
                           iban:
-                            validator: IBANValidator
                             type: string
                           accountHolderName:
                             type: string
@@ -410,7 +406,7 @@ paths:
               type: object
               properties:
                 name:
-                  validator: StringValidator
+                  validator: RequiredValidator
                   type: string
                 type:
                   anyOf:
@@ -616,7 +612,6 @@ paths:
                                   - type: object
                                     properties:
                                       iban:
-                                        validator: IBANValidator
                                         type: string
                                       accountHolderName:
                                         type: string
@@ -626,7 +621,6 @@ paths:
                                   - type: object
                                     properties:
                                       iban:
-                                        validator: IBANValidator
                                         type: string
                                       accountHolderName:
                                         type: string
@@ -743,14 +737,18 @@ paths:
               type: object
               properties:
                 title:
+                  validator: RequiredValidator
                   type: string
                 description:
                   type: string
                 reference:
+                  validator: RequiredValidator
                   type: string
                 amount:
+                  validator: RequiredValidator
                   type: number
                 redirectUrl:
+                  validator: RequiredValidator
                   type: string
                 allowAmountOverride:
                   type: boolean
@@ -801,14 +799,18 @@ paths:
               type: object
               properties:
                 title:
+                  validator: RequiredValidator
                   type: string
                 description:
                   type: string
                 reference:
+                  validator: RequiredValidator
                   type: string
                 amount:
+                  validator: RequiredValidator
                   type: number
                 redirectUrl:
+                  validator: RequiredValidator
                   type: string
                 allowAmountOverride:
                   type: boolean
@@ -931,7 +933,6 @@ paths:
                             - type: object
                               properties:
                                 iban:
-                                  validator: IBANValidator
                                   type: string
                                 accountHolderName:
                                   type: string
@@ -941,7 +942,6 @@ paths:
                             - type: object
                               properties:
                                 iban:
-                                  validator: IBANValidator
                                   type: string
                                 accountHolderName:
                                   type: string
@@ -1165,7 +1165,6 @@ paths:
                             - type: object
                               properties:
                                 iban:
-                                  validator: IBANValidator
                                   type: string
                                 accountHolderName:
                                   type: string
@@ -1175,7 +1174,6 @@ paths:
                             - type: object
                               properties:
                                 iban:
-                                  validator: IBANValidator
                                   type: string
                                 accountHolderName:
                                   type: string
