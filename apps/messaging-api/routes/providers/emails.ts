@@ -45,7 +45,7 @@ const EmailProviderWithoutIdType = Type.Object({
 });
 
 export default async function emails(app: FastifyInstance) {
-  const _mailService = mailService(app);
+  const _mailService = mailService(app.pg.pool);
   app.get(
     "/",
     {
@@ -146,7 +146,7 @@ export default async function emails(app: FastifyInstance) {
     },
     async function handler(request, reply) {
       try {
-        await _mailService.updateProvier(request.body);
+        await _mailService.updateProvider(request.body);
       } catch (err) {
         app.log.error(err);
         const error = buildApiError("failed to update email provider", 500);

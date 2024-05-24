@@ -3,6 +3,10 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreateUser,
   CreateUserSchema,
+  FindUserParams,
+  FindUserParamsSchema,
+  FoundUser,
+  FoundUserSchema,
   PatchUser,
   PatchUserSchema,
   UpdateUser,
@@ -11,6 +15,7 @@ import {
   UserDetailsSchema,
 } from "../../types/schemaDefinitions";
 import { Type } from "@sinclair/typebox";
+import { findUser } from "../../services/users/find-user";
 
 const USER_TAGS = ["user"];
 
@@ -254,6 +259,35 @@ export default async function user(app: FastifyInstance) {
       }
 
       reply.send({ id: result.rows[0].id });
+    },
+  );
+
+  app.get<{ Reply: FoundUser | null; Querystring: FindUserParams }>(
+    "/find",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags: USER_TAGS,
+        querystring: FindUserParamsSchema,
+        response: {
+          200: FoundUserSchema,
+          404: Type.Null(),
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const foundUser = await findUser({
+        pool: app.pg.pool,
+        findUserParams: request.query,
+      });
+
+      if (foundUser) {
+        reply.send(foundUser);
+        return;
+      }
+
+      reply.code(404);
     },
   );
 }

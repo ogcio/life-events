@@ -6,6 +6,7 @@ COPY ./package*.json /app/
 COPY ./apps/messaging-api/ /app/apps/messaging-api/
 COPY ./packages/logging-wrapper/ /app/packages/logging-wrapper/
 COPY ./packages/error-handler/ /app/packages/error-handler/
+COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 RUN npm ci
 
 WORKDIR /app/packages/logging-wrapper/
