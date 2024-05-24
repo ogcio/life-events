@@ -39,6 +39,7 @@ export default async (props: Props) => {
                 {t("AlphaBanner.tag")}
               </strong>
               <span className="govie-phase-banner__text">
+                {/* CHANGE HERE */}
                 {t("AlphaBanner.bannerText")}
               </span>
             </p>
@@ -58,7 +59,7 @@ export default async (props: Props) => {
 
                 <h2 className="govie-heading-l">{t("sections.main.title")}</h2>
                 <p className="govie-body">{t("sections.main.description")}</p>
-                <a href="/paymentSetup">
+                <a href="https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22">
                   <button
                     id="button"
                     data-module="govie-button"
@@ -197,7 +198,7 @@ export default async (props: Props) => {
               <p className="govie-body">
                 {t("sections.getStarted.description")}
               </p>
-              <a href="/paymentSetup">
+              <a href="https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22">
                 <button
                   id="button"
                   data-module="govie-button"
