@@ -3,9 +3,9 @@ export const sendAMessage = {
   url: "admin/send-a-message",
 };
 
-export const emailTemplates = {
-  slug: "templates",
-  url: "admin/templates",
+export const messageTemplates = {
+  slug: "message-templates",
+  url: "admin/message-templates",
 };
 
 export const messages = {
@@ -14,4 +14,9 @@ export const messages = {
 
 export const settings = {
   slug: "settings",
+};
+
+export const providerRoutes = {
+  slug: "providers",
+  url: "admin/providers",
 };
