@@ -162,9 +162,11 @@
   },
   "settings": {
     "Page": {
-      "emailsLink": "Emails",
+      "emailsLink": "Email",
       "smsLink": "SMS",
-      "backLink": "Back"
+      "backLink": "Back",
+      "addProvider": "Add provider",
+      "header": "Providers"
     },
     "Emails": {
       "title": "Email",

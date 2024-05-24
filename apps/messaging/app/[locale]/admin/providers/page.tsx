@@ -9,6 +9,7 @@ import ConfirmDeleteModal from "../ConfirmDeleteModal";
 import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 import EmailProviders from "./EmailProviders";
+import { getTranslations } from "next-intl/server";
 
 const linkStyle = (selected: boolean): CSSProperties => {
   const props: CSSProperties = {
@@ -41,6 +42,7 @@ export default async (props: {
   params: { locale: string };
   searchParams?: { provider?: string; deleteId?: string };
 }) => {
+  const t = await getTranslations("settings.Page");
   const provider = props.searchParams?.provider;
   const isEmail = provider === searchValueEmail || !provider;
   const isSms = provider === searchValueSms;
@@ -152,7 +154,7 @@ export default async (props: {
       )}
       <h1>
         <span style={{ margin: "unset" }} className="govie-heading-xl">
-          Providers
+          {t("header")}
         </span>
       </h1>
       <form action={handleAddProvider}>
@@ -161,7 +163,7 @@ export default async (props: {
           name="provider"
           value={isEmail ? searchValueEmail : isSms ? searchValueSms : ""}
         />
-        <button className="govie-button">Add provider</button>
+        <button className="govie-button">{t("addProvider")}</button>
       </form>
       <nav style={{ display: "flex", width: "fit-content", gap: "15px" }}>
         <div style={linkStyle(isEmail)}>
@@ -173,7 +175,7 @@ export default async (props: {
             })()}
             className={linkClassName(isEmail)}
           >
-            Email
+            {t("emailsLink")}
           </Link>
         </div>
         <div style={linkStyle(isSms)}>
@@ -185,7 +187,7 @@ export default async (props: {
             })()}
             className={linkClassName(isSms)}
           >
-            Sms
+            {t("smsLink")}
           </Link>
         </div>
       </nav>
