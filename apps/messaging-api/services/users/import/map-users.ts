@@ -10,7 +10,7 @@ import {
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
 import { isNativeError } from "util/types";
-// import { Profile } from "building-blocks-sdk";
+import { Profile } from "building-blocks-sdk";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
 
@@ -51,7 +51,7 @@ const mapUsersSync = async (params: {
   requestUser: RequestUser;
 }) => {
   const usersImport = await getUsersImport(params);
-  //const profile = new Profile(params.requestUser.id);
+  const profile = new Profile(params.requestUser.id);
 
   const processingUsers = usersImport.usersData.map(
     (toImportUser: ToImportUser) =>
