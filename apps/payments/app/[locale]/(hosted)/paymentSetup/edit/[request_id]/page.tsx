@@ -133,7 +133,7 @@ export default async function ({ params: { request_id, locale } }: Props) {
         return;
       }
     });
-    console.log(">>>", providerDetails);
+
     const data = {
       title: titleField,
       description: descriptionField,

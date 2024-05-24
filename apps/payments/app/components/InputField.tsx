@@ -52,7 +52,7 @@ export default ({
           className="govie-input"
           defaultValue={defaultValue}
           autoComplete={autoComplete}
-          // required={required}
+          required={required}
           min={min}
           max={max}
           step={step}
