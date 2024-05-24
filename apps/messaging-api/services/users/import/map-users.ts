@@ -13,6 +13,7 @@ import { isNativeError } from "util/types";
 import { Profile } from "building-blocks-sdk";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
+import { profile } from "console";
 
 // waiting to integrate building block sdks
 interface TempUserDetails {
@@ -56,7 +57,7 @@ const mapUsersSync = async (params: {
   const processingUsers = usersImport.usersData.map(
     (toImportUser: ToImportUser) =>
       processToImportUser({
-        //profile,
+        profile,
         toImportUser,
         organisationId: usersImport.organisationId,
         client: params.client,
@@ -212,7 +213,7 @@ const processOrganizationUserRelation = async (params: {
 };
 
 const processToImportUser = async (params: {
-  //profile: Profile;
+  profile: Profile;
   toImportUser: ToImportUser;
   organisationId: string;
   client: PoolClient;
@@ -404,10 +405,9 @@ const userProfileToUser = (params: {
   correlationQuality: params.correlationQuality ?? "full",
 });
 
-const getUserProfile = async (_params: {
-  //profile: Profile;
+const getUserProfile = async (params: {
+  profile: Profile;
   toImportUser: ToImportUser;
 }): Promise<TempUserDetails | undefined> => {
-  // TODO To be implemented once we have an API on user-profile service to search for users
   return undefined;
 };
