@@ -7,12 +7,16 @@ type GovIdJwtPayload = {
   surname: string;
   givenName: string;
   email: string;
+  BirthDate: string;
+  PublicServiceNumber: string;
 };
 
 type SessionTokenDecoded = {
   firstName: string;
   lastName: string;
   email: string;
+  birthDate: string;
+  publicServiceNumber: string;
 };
 
 type Session = {
@@ -85,6 +89,8 @@ export function decodeJwt(token: string) {
     firstName: decoded.givenName,
     lastName: decoded.surname,
     email: decoded.email,
+    birthDate: decoded.BirthDate,
+    publicServiceNumber: decoded.PublicServiceNumber,
   };
 }
 
@@ -92,13 +98,15 @@ export const getSessionData = async (sessionId: string) => {
   const session = await getPgSession(sessionId);
   if (!session) return null;
 
+  const decodedJWT = decodeJwt(session.token);
+  const { publicServiceNumber, birthDate } = decodedJWT;
   return {
-    ...decodeJwt(session.token),
+    ...decodedJWT,
     userId: session.userId,
     publicServant: session.publicServant,
     //The values below will likely be extracted from session token once we integrate with GOV ID
     myGovIdEmail: "testMyGovIdEmail@test.com",
-    hasGovIdVerifiedAccount: true,
+    hasGovIdVerifiedAccount: publicServiceNumber && birthDate ? true : false,
     sessionId,
   };
 };
