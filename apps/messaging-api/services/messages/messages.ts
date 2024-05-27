@@ -5,6 +5,7 @@ import {
   CreateTranslatableMessage,
   ReadMessage,
   ReadMessages,
+  DEFAULT_LANGUAGE,
 } from "../../types/schemaDefinitions";
 import { HttpError, ServiceError, organisationId, utils } from "../../utils";
 import { createError } from "@fastify/error";
@@ -16,7 +17,6 @@ import { awsSnsSmsService } from "../sms/aws";
 //import { Profile } from "building-blocks-sdk";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
-const DEFAULT_LANGUAGE = "en";
 
 export const createTranslatableMessage = async (params: {
   payload: CreateTranslatableMessage;
