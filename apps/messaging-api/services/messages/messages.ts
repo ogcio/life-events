@@ -40,6 +40,10 @@ export const createTranslatableMessage = async (params: {
         message: availableMessages[language],
         userIds: preferredLanguages[language],
       };
+
+      // Need to think on how to manage transactions
+      // given that at the moment we will invoke scheduler api
+      // for each request
       messagesSent.push(createMessage({ payload: toSent, pg }));
     }
   }
