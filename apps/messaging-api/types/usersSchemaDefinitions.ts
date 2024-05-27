@@ -131,6 +131,20 @@ export const CsvRecordSchema = Type.Object({
 
 export type CsvRecord = Static<typeof CsvRecordSchema>;
 
+export const TagSchema = Type.Object({
+  id: Type.String(),
+  tagName: Type.String(),
+  parentId: Type.Union([Type.String(), Type.Null()], { default: null }),
+});
+export type Tag = Static<typeof TagSchema>;
+
+export const TagForUserSchema = Type.Object({
+  userId: Type.String(),
+  tagId: Type.String(),
+  inherited: Type.Boolean({ default: false }),
+});
+export type TagForUser = Static<typeof TagForUserSchema>;
+
 export const UserInvitationSchema = Type.Object({
   id: Type.String(),
   userProfileId: Type.String(),
@@ -142,5 +156,4 @@ export const UserInvitationSchema = Type.Object({
   correlationQuality: CorrelationQualityUnionType,
   userStatus: UserStatusUnionType,
 });
-
 export type UserInvitation = Static<typeof UserInvitationSchema>;
