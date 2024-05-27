@@ -14,7 +14,7 @@ export const sendInvitationsForUsersImport = async (params: {
   logger: FastifyBaseLogger;
   toImportUsers: UsersImport;
 }): Promise<void> => {
-  const { pool, logger, toImportUsers } = params;
+  const { pool, toImportUsers } = params;
   const importedUserProfileIds = toImportUsers.usersData
     .filter((ud) => ud.relatedUserProfileId)
     .map((ud) => ud.relatedUserProfileId) as string[];
