@@ -1,6 +1,8 @@
 import { PostgresDb } from "@fastify/postgres";
 import {
+  MessageInput,
   CreateMessage,
+  CreateTranslatableMessage,
   ReadMessage,
   ReadMessages,
 } from "../../types/schemaDefinitions";
@@ -11,13 +13,59 @@ import { JobType } from "aws-sdk/clients/importexport";
 import { Pool } from "pg";
 import { mailService } from "../../routes/providers/services";
 import { awsSnsSmsService } from "../sms/aws";
+//import { Profile } from "building-blocks-sdk";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
+const DEFAULT_LANGUAGE = "en";
+
+export const createTranslatableMessage = async (params: {
+  payload: CreateTranslatableMessage;
+  pg: PostgresDb;
+  requestUserId: string;
+}): Promise<void> => {
+  const { payload, requestUserId, pg } = params;
+  const availableMessages = payload.messages as { [x: string]: MessageInput };
+  const availableLanguages = Object.keys(availableMessages);
+
+  const preferredLanguages = getUsersForLanguage({
+    userIdsToSearchFor: payload.userIds,
+    requestUserId: requestUserId,
+  });
+  const messagesSent: Promise<void>[] = [];
+
+  for (const language of Object.keys(preferredLanguages)) {
+    if (availableLanguages.includes(language)) {
+      const toSent: CreateMessage = {
+        ...payload,
+        message: availableMessages[language],
+        userIds: preferredLanguages[language],
+      };
+      messagesSent.push(createMessage({ payload: toSent, pg }));
+    }
+  }
+
+  await Promise.all(messagesSent);
+};
+
+const getUsersForLanguage = (params: {
+  userIdsToSearchFor: string[];
+  requestUserId: string;
+}): { [x: string]: string[] } => {
+  if (params.userIdsToSearchFor.length === 0) {
+    return {};
+  }
+
+  // Here I will invoke the user profile SDKS to get the preferred languages
+  //const profileClient = new Profile(params.requestUserId);
+
+  // Temporarily mocked
+  return { [DEFAULT_LANGUAGE]: params.userIdsToSearchFor };
+};
 
 export const createMessage = async (params: {
   payload: CreateMessage;
   pg: PostgresDb;
-}) => {
+}): Promise<void> => {
   if (params.payload.message) {
     return createSingleMessage({
       pg: params.pg,
