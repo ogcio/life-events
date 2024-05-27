@@ -10,6 +10,11 @@ import payments from "../../public/landingPage/payments.png";
 import messaging from "../../public/landingPage/messaging.png";
 import designSystem from "../../public/landingPage/designSystem.png";
 import forms from "../../public/landingPage/forms.png";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Building Blocks",
+};
 
 const availableLinks = {
   DEV: {
@@ -60,9 +65,15 @@ export default async function () {
         <div className="two-columns-layout">
           <div className="column">
             <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
+            <h2 className="govie-heading-m">{t("sections.main.subtitle")}</h2>
 
             <p className="govie-body">{t("sections.main.description")}</p>
-            <a href={links.learnMoreForm} target="_blank">
+
+            <hr className="govie-section-break" />
+            <p className="govie-body">{t("sections.main.secondaryP1")}</p>
+            <p className="govie-body">{t("sections.main.secondaryP2")}</p>
+
+            <a href={links.learnMoreForm}>
               <button
                 id="button"
                 data-module="govie-button"
@@ -84,14 +95,6 @@ export default async function () {
                 </svg>
               </button>
             </a>
-
-            <hr className="govie-section-break" />
-
-            <h1 className="govie-heading-l">
-              {t("sections.main.secondaryTitle")}
-            </h1>
-            <p className="govie-body">{t("sections.main.secondaryP1")}</p>
-            <p className="govie-body">{t("sections.main.secondaryP2")}</p>
           </div>
           <div className="column">
             <Image
@@ -265,7 +268,7 @@ export default async function () {
           <h1 className="govie-heading-l">{t("sections.footer.title")}</h1>
           <p className="govie-body">{t("sections.footer.descriptionP1")}</p>
           <p className="govie-body">{t("sections.footer.descriptionP2")}</p>
-          <a href={links.learnMoreForm} target="_blank">
+          <a href={links.learnMoreForm}>
             <button
               id="button"
               data-module="govie-button"

@@ -6,12 +6,13 @@
     },
     "sections": {
       "main": {
-        "title": "Build and run online services easily",
-        "description": "Use this design system to make your service consistent with gov.ie. Learn from the research and experience of other service teams and avoid repeating work that’s already been done.",
+        "title": "Building Blocks",
+        "subtitle": "Build and run online services easily",
+
+        "description": "Building Blocks are reusable, interoperable software components that can be combined to create a wide range of digital solutions, empowering government to rapidly deliver essential services.",
         "cta": "Sign up to learn more",
-        "secondaryTitle": "What GOV.IE Digital Service Platform offers",
-        "secondaryP1": "Your users can complete a form, send you information, pay for things and receive notifications with GOV.IE Digital Service Platform. It's low cost, easy to set up and has accessibility built in from the start.",
-        "secondaryP2": "You can use one, some, or all of the digital tools to support your service."
+        "secondaryP1": "Your users can complete a form, send you information, pay for things and receive notifications with Building Blocks. It's low cost, easy to set up and has accessibility built in from the start.",
+        "secondaryP2": "Public sector departments can use one, some or all of the Building Blocks to ensure that solutions are adaptable to the unique needs of citizens."
       },
       "payments": {
         "title": "Payments",
@@ -35,8 +36,8 @@
         "cta": "Browse Forms"
       },
       "advantages": {
-        "title": "Why use GOV.IE Digital Service Platform",
-        "description": "GOV.IE Digital Service Platform is provided by the Government Digital Service (GDS).",
+        "title": "Why use Building Blocks",
+        "description": "Building Blocks is provided by the Government Digital Service (GDS).",
         "noProcurement": {
           "title": "No procurement",
           "description": "As a Government owned product, there is no need for lengthy times procuring us as a supplier"
@@ -65,7 +66,7 @@
       "footer": {
         "title": "The Building Blocks",
 
-        "descriptionP1": "Your users can complete a form, send you information, pay for things and receive notifications with GOV.IE Digital Service Platform. It's low cost, easy to set up and has accessibility built in from the start.",
+        "descriptionP1": "Your users can complete a form, send you information, pay for things and receive notifications with Building Blocks. It's low cost, easy to set up and has accessibility built in from the start.",
 
         "descriptionP2": "You can use one, some, or all of the digital tools to support your service.",
         "cta": "Sign up to learn more"
