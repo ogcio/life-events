@@ -3,6 +3,7 @@ import { Type } from "@sinclair/typebox";
 import {
   CreateMessage,
   CreateMessageSchema,
+  CreateTranslatableMessage,
   ReadMessageSchema,
   ReadMessagesSchema,
 } from "../../types/schemaDefinitions";

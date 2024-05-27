@@ -1,5 +1,7 @@
 import { Static, Type } from "@sinclair/typebox";
 
+export const AVAILABLE_LANGUAGES = ["en", "ga"];
+
 export const ReadMessagesSchema = Type.Array(
   Type.Object({
     id: Type.String(),
@@ -53,3 +55,13 @@ export const CreateMessageSchema = Type.Composite([
   }),
 ]);
 export type CreateMessage = Static<typeof CreateMessageSchema>;
+
+export const CreateTranslatableMessageSchema = Type.Composite([
+  CreateMessageOptionsSchema,
+  Type.Object({
+    messages: Type.Mapped(AVAILABLE_LANGUAGES, () => MessageInputSchema),
+  }),
+]);
+export type CreateTranslatableMessage = Static<
+  typeof CreateTranslatableMessageSchema
+>;
