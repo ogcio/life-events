@@ -1,0 +1,76 @@
+{
+  "LandingPage": {
+    "AlphaBanner": {
+      "tag": "Alpha",
+      "bannerText": "This is a new service - your <url>feedback</url> will help us to improve it."
+    },
+    "sections": {
+      "main": {
+        "title": "Building Blocks",
+        "subtitle": "Build and run online services easily",
+
+        "description": "Building Blocks are reusable, interoperable software components that can be combined to create a wide range of digital solutions, empowering government to rapidly deliver essential services.",
+        "cta": "Sign up to learn more",
+        "secondaryP1": "Your users can complete a form, send you information, pay for things and receive notifications with Building Blocks. It's low cost, easy to set up and has accessibility built in from the start.",
+        "secondaryP2": "Public sector departments can use one, some or all of the Building Blocks to ensure that solutions are adaptable to the unique needs of citizens."
+      },
+      "payments": {
+        "title": "Payments",
+        "description": "Empower your public sector department with a robust payment system designed to streamline financial transactions securely and efficiently.Payments Building Block is secure and Payment Card Industry (PCI) compliant. Revolutionise the way you manage payments and elevate the experience for civil servants and citizens with Payments Building Block today.",
+        "cta": "Explore Payments"
+      },
+      "messaging": {
+        "title": "Messaging",
+        "description": "Integrate Messaging, the centralised platform for all-inclusive communication solution tailored for public sector entities, to streamline interactions with citizens.",
+        "cta": "Browse Messaging"
+      },
+      "designSystem": {
+        "inDev": "in development",
+        "title": "Design System",
+        "description": "Make your service look like gov.ie with guides for applying layout, typography, colour and images.Make your service look like gov.ie with guides for applying layout, typography, colour and images.",
+        "cta": "Learn more"
+      },
+      "forms": {
+        "title": "Forms",
+        "description": "Enhance your public sector department's operations with FormsIE, a comprehensive solution tailored for crafting and handling online forms.",
+        "cta": "Browse Forms"
+      },
+      "advantages": {
+        "title": "Why use Building Blocks",
+        "description": "Building Blocks is provided by the Government Digital Service (GDS).",
+        "noProcurement": {
+          "title": "No procurement",
+          "description": "As a Government owned product, there is no need for lengthy times procuring us as a supplier"
+        },
+        "noCode": {
+          "title": "No code",
+          "description": "All our tools offer solutions that can be implemented with no technical knowledge"
+        },
+        "lowCost": {
+          "title": "Low cost",
+          "description": "Our tools are competitively priced against other software on the market"
+        },
+        "accessible": {
+          "title": "Accessible",
+          "description": "All our tools are fully accessible for both civil servants and end users"
+        },
+        "trustedExperience": {
+          "title": "Trusted experience",
+          "description": "Put your users at ease with government branded comms and familiar GOV.IE styles"
+        },
+        "test": {
+          "title": "Test before you launch",
+          "description": "Quickly test your ideas for your service before you build it, saving time and money and reducing risk"
+        }
+      },
+      "footer": {
+        "title": "The Building Blocks",
+
+        "descriptionP1": "Your users can complete a form, send you information, pay for things and receive notifications with Building Blocks. It's low cost, easy to set up and has accessibility built in from the start.",
+
+        "descriptionP2": "You can use one, some, or all of the digital tools to support your service.",
+        "cta": "Sign up to learn more"
+      }
+    }
+  }
+}
