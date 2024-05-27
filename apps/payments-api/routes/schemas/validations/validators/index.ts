@@ -1,5 +1,5 @@
 import providersValidator from "./providers";
-import stringValidator from "./validString";
+import requiredValidator from "./required";
 
 export type ValidatorFn = (
   value: any,
@@ -15,7 +15,7 @@ export enum ErrorTypes {
 
 const validators: Record<string, ValidatorFn> = {
   ProvidersValidator: providersValidator,
-  StringValidator: stringValidator,
+  RequiredValidator: requiredValidator,
 };
 
 export default function validator(

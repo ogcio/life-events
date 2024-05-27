@@ -4,7 +4,8 @@
     "edit": "Edit",
     "save": "Save",
     "currencySymbol": "€",
-    "delete": "Delete"
+    "delete": "Delete",
+    "disabled": "Disabled"
   },
   "EmptyStatus": {
     "title": "Nothing to show...",
@@ -262,6 +263,7 @@
           "inactiveDescription": "This payment request is inactive and cannot be used to receive payments."
         },
         "title": "Title",
+        "titleRequired": "Title is required.",
         "description": "Description",
         "beneficiaryAccount": "Beneficiary Account",
         "paymentProvider": {
@@ -273,9 +275,12 @@
           "stripe": "Stripe Account"
         },
         "reference": "Reference",
+        "referenceRequired": "Reference is required.",
         "amount": "Amount",
+        "amountRequired": "Amount is required.",
         "currencySymbol": "€",
         "redirectUrl": "Redirect URL",
+        "redirectUrlRequired": "Redirect URL is required.",
         "allowAmountOverride": "Allow amount override from url",
         "allowCustomAmount": "Allow the user to pay a custom amount",
         "submit": "Continue"
@@ -370,7 +375,7 @@
   "LandingPage": {
     "AlphaBanner": {
       "tag": "Alpha",
-      "bannerText": "This is a new service - your feedback will help us to improve it."
+      "bannerText": "This is a new service - your <anchor>feedback</anchor> will help us to improve it."
     },
     "actions": {
       "login": "Login"
@@ -381,7 +386,7 @@
         "serviceName": "Payments",
         "title": "Seamless secure payments you can trust",
         "description": "Our solution provides seamless integration for secure payments, built with a robust infrastructure to meet government standards. From tax payments to licensing fees, our system enables efficient financial transactions, instilling trust and peace of mind in every interaction.",
-        "cta": "Learn about Payments"
+        "cta": "Learn more"
       },
       "integration": {
         "title": "Seamless Integration",
