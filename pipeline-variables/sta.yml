@@ -10,3 +10,4 @@ variables:
   nextPublicLifeEventsServiceEntryPoint: https://sta.life.gov.ie/
   nextPublicBuildingBlocksLandingPage: https://blocks.gov.ie/
   authServiceUrl: https://auth.sta.blocks.gov.ie/
+  nextPublicFormsUrl: https://www.formsg.testing.gov.ie/
