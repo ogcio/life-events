@@ -43,7 +43,7 @@ export default async (props: Props) => {
                   anchor: (chunks) => (
                     <a
                       className="govie-link"
-                      href="https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294"
+                      href={`${process.env.NEXT_PUBLIC_FORMS_URL}${props.params.locale}/664c61ba5f7c9800231db294`}
                     >
                       {chunks}
                     </a>
@@ -67,7 +67,9 @@ export default async (props: Props) => {
 
                 <h2 className="govie-heading-l">{t("sections.main.title")}</h2>
                 <p className="govie-body">{t("sections.main.description")}</p>
-                <a href="https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22">
+                <a
+                  href={`${process.env.NEXT_PUBLIC_FORMS_URL}${props.params.locale}/664b6de45f7c9800231daf22`}
+                >
                   <button
                     id="button"
                     data-module="govie-button"
@@ -206,7 +208,9 @@ export default async (props: Props) => {
               <p className="govie-body">
                 {t("sections.getStarted.description")}
               </p>
-              <a href="https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22">
+              <a
+                href={`${process.env.NEXT_PUBLIC_FORMS_URL}${props.params.locale}/664b6de45f7c9800231daf22`}
+              >
                 <button
                   id="button"
                   data-module="govie-button"
