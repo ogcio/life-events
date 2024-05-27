@@ -22,8 +22,12 @@ export default () => (
             ></path>
           </svg>
           <span className="govie-footer__licence-description">
-            All content is available under the
-            <a className="govie-footer__link" href="#" rel="license">
+            All content is available under the{" "}
+            <a
+              className="govie-footer__link"
+              href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+              rel="license"
+            >
               Open Government Licence v3.0
             </a>
             , except where otherwise stated
