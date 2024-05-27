@@ -16,13 +16,21 @@ export default async function (app, opts) {
   });
 
   app.post("/auth", async (request, reply) => {
-    const { password, public_servant, firstName, lastName, redirect_url } =
-      request.body;
+    const {
+      password,
+      public_servant,
+      firstName,
+      lastName,
+      redirect_url,
+      verifiedUser,
+    } = request.body;
 
-    const publicServantBoolean = new Boolean(public_servant);
+    const publicServantBoolean = public_servant === "on";
     if (password !== "123") {
       reply.redirect("/static/login/api/authorize");
     }
+
+    const verifiedUserBoolean = verifiedUser === "on";
 
     const email = `${firstName}.${lastName}@mail.ie`;
 
@@ -30,30 +38,39 @@ export default async function (app, opts) {
       // Based on the govid jwt token, filled with some random data
       const body = {
         ver: "1.0",
-        iss: `https://account.mygovid.ie/123/`,
-        sub: "rayareP7P1tpbKlhdCIP3bUrvnBubjTulLynzBDwIWI=", // This is what we use for id?
-        aud: "90b25d29-392c-4572-9c98-0fba36185a9f",
+        iss: "https://nonprod-account.mygovid-nonprod.ie/89792a6d-1ea4-4126-94df-a71d292debc7/v2.0/",
+        sub: "FUG1jTLAJeuDPqxWYzHAVBQtFhVgNY0FE4tw6P3nnH8=",
+        aud: "174db9b2-7ff3-4df1-ad58-23633a1de8cf",
         exp: Date.now() + 1000 + 60,
-        nonce:
-          "638433403850391380.ZWI3ZmJlMzgtM2U5MS00NmZhLTkxZmItZjg3MjI4OTZmZDA1NjQzNzQ5NjctZjVlYi00YjA1LThlYTItOWM3ZDhiODkwN2Y0",
-        iat: 1707743623,
+        nonce: "manual-te",
+        iat: 1716804749,
         auth_time: Date.now(),
         email: email,
         oid: Math.round(Math.random() * 100000).toString(),
+        AlternateIds: "",
+        ...(verifiedUserBoolean
+          ? { BirthDate: "13/06/1941", PublicServiceNumber: "0111019P" }
+          : {}),
         LastJourney: "Login",
         givenName: firstName,
         surname: lastName,
         mobile: "+0000000000000",
-        DSPOnlineLevel: "0",
-        DSPOnlineLevelStatic: "0",
+        DSPOnlineLevel: "2",
+        DSPOnlineLevelStatic: "2",
+        CustomerId: "532",
         AcceptedPrivacyTerms: true,
         AcceptedPrivacyTermsVersionNumber: "7",
         SMS2FAEnabled: false,
-        AcceptedPrivacyTermsDateTime: 1707743379,
-        trustFrameworkPolicy: "B2C_1A_signin-V5-LIVE",
-        CorrelationId: "123",
-        nbf: 1707743623,
+        AcceptedPrivacyTermsDateTime: 1715582120,
+        firstName: firstName,
+        lastName: lastName,
+        currentCulture: "en",
+        trustFrameworkPolicy: "B2C_1A_MyGovID_signin-v5-PARTIAL2",
+        CorrelationId: "6a047981-c20e-482a-be2d-4715b5be8764",
+        nbf: 1716804749,
       };
+
+      console.log("body", body);
 
       return new jose.UnsecuredJWT(body).encode();
     };
