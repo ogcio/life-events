@@ -34,6 +34,7 @@
     "migrate:payments": "npm run migrate --workspace=payments",
     "migrate:messaging": "npm run migrate --workspace=messages",
     "migrate:profile": "npm run migrate --workspace=profile",
+    "migrate:scheduler-api": "npm run migrate --workspace=scheduler",
     "start:docs": "cd documentation && npm run start",
     "kill-services": "sudo lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004 | xargs sudo kill -9",
     "build:docker": "docker build -t base-deps:latest  --file Dockerfile . && docker build -t design-system-container:latest --file packages/design-system/Dockerfile ."
