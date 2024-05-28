@@ -48,7 +48,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/messages/:
     get:
-      tags:
+      tags: &a1
         - Messages
       responses:
         "200":
@@ -91,14 +91,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     post:
-      tags:
-        - Messages
+      tags: *a1
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
+                preferredTransports:
+                  type: array
+                  items:
+                    type: string
+                userIds:
+                  type: array
+                  items:
+                    format: uuid
+                    type: string
+                security:
+                  type: string
+                scheduleAt:
+                  format: date-time
+                  type: string
                 message:
                   type: object
                   properties:
@@ -136,20 +149,6 @@ paths:
                   required:
                     - id
                     - interpolations
-                preferredTransports:
-                  type: array
-                  items:
-                    type: string
-                userIds:
-                  type: array
-                  items:
-                    format: uuid
-                    type: string
-                security:
-                  type: string
-                scheduleAt:
-                  format: date-time
-                  type: string
               required:
                 - preferredTransports
                 - userIds
@@ -171,8 +170,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/messages/{messageId}:
     get:
-      tags:
-        - Messages
+      tags: *a1
       parameters:
         - schema:
             format: uuid
@@ -220,7 +218,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/providers/emails/:
     get:
-      tags: &a1
+      tags: &a2
         - Providers - Emails
       responses:
         "200":
@@ -275,7 +273,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     post:
-      tags: *a1
+      tags: *a2
       requestBody:
         content:
           application/json:
@@ -336,7 +334,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/providers/emails/{providerId}:
     get:
-      tags: *a1
+      tags: *a2
       parameters:
         - schema:
             type: string
@@ -394,7 +392,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     put:
-      tags: *a1
+      tags: *a2
       requestBody:
         content:
           application/json:
@@ -447,7 +445,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     delete:
-      tags: *a1
+      tags: *a2
       parameters:
         - schema:
             type: string
@@ -469,7 +467,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/providers/sms/:
     get:
-      tags: &a2
+      tags: &a3
         - Providers - SMS
       responses:
         "200":
@@ -510,7 +508,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     post:
-      tags: *a2
+      tags: *a3
       requestBody:
         content:
           application/json:
@@ -554,7 +552,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/providers/sms/{providerId}:
     get:
-      tags: *a2
+      tags: *a3
       parameters:
         - schema:
             format: uuid
@@ -611,7 +609,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     put:
-      tags: *a2
+      tags: *a3
       requestBody:
         content:
           application/json:
@@ -665,7 +663,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     delete:
-      tags: *a2
+      tags: *a3
       parameters:
         - schema:
             type: string
@@ -687,7 +685,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/templates/:
     get:
-      tags: &a3
+      tags: &a4
         - Templates
       parameters:
         - schema:
@@ -734,7 +732,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     post:
-      tags: *a3
+      tags: *a4
       requestBody:
         content:
           application/json:
@@ -818,7 +816,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/templates/{templateId}:
     get:
-      tags: *a3
+      tags: *a4
       parameters:
         - schema:
             type: string
@@ -890,7 +888,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     put:
-      tags: *a3
+      tags: *a4
       requestBody:
         content:
           application/json:
@@ -961,7 +959,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     delete:
-      tags: *a3
+      tags: *a4
       parameters:
         - schema:
             type: string
@@ -983,7 +981,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/users/csv:
     post:
-      tags: &a4
+      tags: &a5
         - Users
       responses:
         "202":
@@ -1036,7 +1034,7 @@ paths:
                   - name
   /api/v1/users/csv/template:
     get:
-      tags: *a4
+      tags: *a5
       responses:
         "200":
           description: Default Response
@@ -1046,7 +1044,7 @@ paths:
                 type: string
   /api/v1/users/import:
     post:
-      tags: *a4
+      tags: *a5
       requestBody:
         content:
           application/json:

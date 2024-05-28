@@ -71,6 +71,11 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
+            preferredTransports: string[];
+            userIds: string[];
+            security: string;
+            /** Format: date-time */
+            scheduleAt: string;
             message?: {
               threadName?: string;
               messageName: string;
@@ -87,11 +92,6 @@ export interface paths {
                 [key: string]: string;
               };
             };
-            preferredTransports: string[];
-            userIds: string[];
-            security: string;
-            /** Format: date-time */
-            scheduleAt: string;
           };
         };
       };
