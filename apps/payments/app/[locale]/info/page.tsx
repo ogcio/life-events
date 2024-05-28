@@ -13,7 +13,7 @@ import security from "../../../public/landingPage/security.png";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Building Blocks",
+  title: "Payments",
 };
 
 type Props = {
