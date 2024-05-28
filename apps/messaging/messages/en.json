@@ -157,7 +157,10 @@
       "fromAddress": "from address",
       "region": "region",
       "accessKey": "access key",
-      "secretAccessKey": "secret access key"
+      "secretAccessKey": "secret access key",
+      "excerpt": "excerpt",
+      "templateName": "template name",
+      "plainText": "plain text"
     }
   },
   "settings": {
