@@ -35,14 +35,6 @@ export default async (props: {
       ),
     );
 
-    // const jobTitle = formData.get("jobTitle")?.toString();
-    // formErrors.push(
-    //   ...form.validation.stringNotEmpty(
-    //     form.fieldTranslationKeys.jobTitle,
-    //     jobTitle,
-    //   ),
-    // );
-
     const govIEEmail = formData.get("govIEEmail")?.toString();
     formErrors.push(
       ...form.validation.emailErrors(
@@ -64,10 +56,9 @@ export default async (props: {
 
     const data: Pick<
       workflow.GetDigitalWallet,
-      "govIEEmail" | "jobTitle" | "isGovernmentEmployee"
+      "govIEEmail" | "isGovernmentEmployee"
     > = {
       govIEEmail: "",
-      jobTitle: "",
       isGovernmentEmployee: false,
     };
 
@@ -128,10 +119,6 @@ export default async (props: {
     (row) => row.field === form.fieldTranslationKeys.govIEEmail,
   );
 
-  const jobTitleError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.jobTitle,
-  );
-
   const isGovernmentEmployeeError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.isGovernmentEmployee,
   );
@@ -176,43 +163,6 @@ export default async (props: {
               }`.trim()}
               defaultValue={
                 govIEEmailError ? govIEEmailError.errorValue : data.govIEEmail
-              }
-            />
-          </div>
-
-          <div
-            className={`govie-form-group ${
-              jobTitleError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <h1 className="govie-label-wrapper">
-              <label
-                htmlFor="jobTitle"
-                className="govie-label--s govie-label--l"
-              >
-                {t.rich("jobTitle", {
-                  red: (chunks) => <span style={{ color: red }}>{chunks}</span>,
-                })}
-              </label>
-            </h1>
-            {jobTitleError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(jobTitleError.messageKey, {
-                  field: errorT(`fields.${jobTitleError.field}`),
-                  indArticleCheck: "",
-                })}
-              </p>
-            )}
-            <input
-              type="text"
-              id="jobTitle"
-              name="jobTitle"
-              className={`govie-input ${
-                jobTitleError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={
-                jobTitleError ? jobTitleError.errorValue : data.jobTitle
               }
             />
           </div>

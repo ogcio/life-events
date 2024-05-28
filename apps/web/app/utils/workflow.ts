@@ -232,7 +232,6 @@ export type GetDigitalWallet = Base & {
   myGovIdEmail: string;
   isGovernmentEmployee: boolean;
   govIEEmail: string;
-  jobTitle: string;
   confirmedApplication: string;
   rejectReason: string;
   status: string;
@@ -250,7 +249,6 @@ export function emptyGetDigitalWallet(): GetDigitalWallet {
     isGovernmentEmployee: false,
     myGovIdEmail: "",
     govIEEmail: "",
-    jobTitle: "",
     confirmedApplication: "",
     successfulAt: "",
     rejectedAt: "",

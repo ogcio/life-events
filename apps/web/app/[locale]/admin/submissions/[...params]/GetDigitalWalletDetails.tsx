@@ -67,8 +67,6 @@ export default async ({ userId, flow, flowData }: Props) => {
               }}
             />
 
-            <ListRow item={{ key: t("jobTitle"), value: flowData.jobTitle }} />
-
             <ListRow
               item={{
                 key: t("selectDeviceText"),

@@ -28,26 +28,6 @@ const getDigitalWalletRulesVerified: Parameters<
           isStepValid: true,
         };
   },
-  // ({}) => {
-  //   /**handle logic here */
-  //   return {
-  //     key: routes.digitalWallet.getDigitalWallet.governmentDetails.slug,
-  //     isStepValid: false,
-  //   };
-  // },
-  //Rule 2: Check if personal details are populated and confirmed
-  // (params) =>
-  //   Boolean(
-  //     params.firstName &&
-  //       params.lastName &&
-  //       params.myGovIdEmail &&
-  //       params.hasConfirmedPersonalDetails,
-  //   )
-  //     ? { key: null, isStepValid: true }
-  //     : {
-  //         key: routes.digitalWallet.getDigitalWallet.aboutYou.slug,
-  //         isStepValid: false,
-  //       },
   //Rule 2: Check if employment details are populated
   (params) =>
     Boolean(params.govIEEmail && params.isGovernmentEmployee)
