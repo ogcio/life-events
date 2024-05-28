@@ -17,6 +17,7 @@ import HamburgerMenuWrapper from "../components/HamburgerMenu/HamburgerMenuWrapp
 import { getMessages, getTranslations } from "next-intl/server";
 import styles from "./layout.module.scss";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import AnalyticsTracker from "analytics/utils/tracker";
 
 export default async function RootLayout({
   children,
@@ -75,6 +76,8 @@ export default async function RootLayout({
           flexDirection: "column",
         }}
       >
+        <AnalyticsTracker />
+
         {showHamburgerMenu && (
           <NextIntlClientProvider messages={hamburgerMenuMessages}>
             <HamburgerMenuWrapper
