@@ -132,17 +132,16 @@ export const CsvRecordSchema = Type.Object({
 export type CsvRecord = Static<typeof CsvRecordSchema>;
 
 export const TagSchema = Type.Object({
-  id: Type.String(),
+  id: Type.String({ format: "uuid" }),
   tagName: Type.String(),
-  parentId: Type.Union([Type.String(), Type.Null()], { default: null }),
+  tagPath: Type.String(),
 });
 
 export type Tag = Static<typeof TagSchema>;
 
 export const TagForUserSchema = Type.Object({
-  userId: Type.String(),
-  tagId: Type.String(),
-  inherited: Type.Boolean({ default: false }),
+  userId: Type.String({ format: "uuid" }),
+  tagId: Type.String({ format: "uuid" }),
 });
 
 export type TagForUser = Static<typeof TagForUserSchema>;
