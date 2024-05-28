@@ -135,55 +135,6 @@ export default async (props: {
 
   async function previewAction() {
     "use server";
-    const { userId } = await PgSessions.get();
-
-    // grab the state
-    const states = await getStates(userId);
-
-    const formErrors: FormErrors = [];
-
-    // No state at all
-    if (!states.length) {
-    }
-
-    const expectedFields: Array<
-      keyof Pick<Content, "excerpt" | "plainText" | "subject" | "templateName">
-    > = ["excerpt", "plainText", "subject", "templateName"];
-
-    let firstFaultyLang: string | undefined;
-    for (const lang of AVAILABLE_LANGUAGES) {
-      const state = states.find((s) => s.lang === lang);
-      if (!state) {
-        if (!firstFaultyLang) {
-          firstFaultyLang = lang;
-        }
-        for (const field of expectedFields)
-          formErrors.push({ errorValue: "", field, messageKey: "empty" });
-        break;
-      }
-
-      for (const field of Object.keys(state)) {
-        console.log({ state, field });
-        if (!state[field]) {
-          firstFaultyLang = lang;
-          formErrors.push({ errorValue: "", field, messageKey: "empty" });
-        }
-      }
-    }
-
-    console.log(":D", formErrors, firstFaultyLang);
-    if (formErrors.length && firstFaultyLang) {
-      await temporaryMockUtils.createErrors(
-        formErrors,
-        userId,
-        errorStateId(firstFaultyLang),
-      );
-
-      const url = new URL(templateRoutes.url, process.env.HOST_URL);
-      url.searchParams.append(searchLangKey, firstFaultyLang);
-      // revalidatePath("/");
-      return redirect(url.href);
-    }
 
     // let's move to preview!
     console.log("yay lets preview/create?");

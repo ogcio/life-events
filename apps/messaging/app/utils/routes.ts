@@ -4,8 +4,8 @@ export const sendAMessage = {
 };
 
 export const messageTemplates = {
-  slug: "templates",
-  url: "admin/templates",
+  slug: "message-templates",
+  url: "admin/message-templates",
 };
 
 export const messages = {
