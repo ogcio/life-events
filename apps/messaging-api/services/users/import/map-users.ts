@@ -13,6 +13,7 @@ import { isNativeError } from "util/types";
 import { Profile } from "building-blocks-sdk";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
+import { processTagsPerUser } from "../../tags/manage-tags";
 
 interface FoundUser {
   id: string;
@@ -241,6 +242,13 @@ const processToImportUser = async (params: {
     client: params.client,
     userId: user.id!,
     organisationId: params.organisationId,
+  });
+
+  await processTagsPerUser({
+    userId: user.id!,
+    client: params.client,
+    createIfNotExists: true,
+    tags: params.toImportUser.tags ?? [],
   });
 
   params.toImportUser.importStatus = "imported";

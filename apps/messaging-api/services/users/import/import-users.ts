@@ -153,7 +153,7 @@ const insertToImportUsers = async (params: {
             users_data,
             import_channel)
          values ($1, $2, $3) RETURNING import_id
-    `,
+      `,
       [organisationId, JSON.stringify(params.toImportUsers), params.channel],
     );
 
