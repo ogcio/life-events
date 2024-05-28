@@ -55,10 +55,9 @@ export default async (props: Props) => {
 
           <div className="two-columns-layout">
             <div className="column">
-              <h1 className="govie-heading-l">
+              <h1 className="govie-heading-l custom-title">
                 {t("sections.main.serviceName")}
               </h1>
-              <h2 className="govie-heading-m">{t("sections.main.title")}</h2>
               <p className="govie-body">{t("sections.main.description")}</p>
               <a
                 href={`${process.env.NEXT_PUBLIC_FORMS_URL}${props.params.locale}/664b6de45f7c9800231daf22`}
