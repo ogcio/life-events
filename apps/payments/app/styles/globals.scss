@@ -54,3 +54,27 @@ $breakpoint-xxl: 1400px;
     overflow-x: auto;
   }
 }
+
+@mixin phone {
+  @media (max-width: ($breakpoint-md)) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: ($breakpoint-md + 1)) and (max-width: ($breakpoint-lg)) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: ($breakpoint-lg + 1)) and (max-width: ($breakpoint-xl)) {
+    @content;
+  }
+}
+
+@mixin wide-desktop {
+  @media (min-width: ($breakpoint-xl + 1)) {
+    @content;
+  }
+}

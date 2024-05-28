@@ -1,0 +1,47 @@
+{
+  "LandingPage": {
+    "AlphaBanner": {
+      "tag": "Alpha",
+      "bannerText": "This is a new service - your <url>feedback</url> will help us to improve it."
+    },
+    "sections": {
+      "main": {
+        "title": "FormsIE",
+        "note": "FormsIE is currently live as a standalone system that will soon be available as a building block, enhancing its versatility and integration capabilities.",
+        "description": "Revamp your public sector department's workflow with FormsIE, an integrated solution designed for the creation and management of online forms. Bid farewell to conventional paper and PDF formats and introduce a new era of efficiency and cost savings. FormsIE is responsive, compliant with accessibility regulations and highly performant, ensuring seamless digital interactions for both administrators and users."
+      },
+      "benefits": {
+        "title": "Benefits",
+        "section1": {
+          "title": "Modern and Intuitive Interfaces",
+          "description": "Neat interface that adapts seamlessly to any device. FormsIE platform not only simplifies form creation and management but also incorporates real-time validations to provide immediate feedback to users, ensuring a smooth and efficient experience for administrators and users alike."
+        },
+        "section2": {
+          "title": "Secure Digital Forms",
+          "description": "Utilising encryption and access controls, we ensure that sensitive information remains safeguarded. Additionally, FormsIE ensures compliance with data protection regulations like GDPR, providing peace of mind regarding data privacy and security."
+        },
+        "section3": {
+          "title": "Tailored Forms",
+          "description": "With FormsIE intuitive interface it is easy to design bespoke forms to suit specific needs, powered with logic features reducing the time and effort traditionally associated with form creation and maintenance. Create dynamic forms that adapt to user inputs, providing a personalised and intuitive user experience."
+        },
+        "section4": {
+          "title": "Online Payment Services",
+          "description": "Streamline your payment processes by integrating online payment options into your forms. With FormsIE, collect payments seamlessly and securely, simplifying financial transactions for both your public sector department and users."
+        },
+        "section5": {
+          "title": "Accessibility Compliance",
+          "description": "Accessibility is a top priority. FormsIE is designed to meet accessibility regulations such as Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users, regardless of their abilities, can access and interact with online forms with ease."
+        },
+        "section6": {
+          "title": "Dedicated Support",
+          "description": "Our team of experts is here to assist you every step of the way. Whether you have technical questions or need assistance with implementation, FormsIE's dedicated support team ensures a smooth experience."
+        }
+      },
+      "getStarted": {
+        "title": "Get Started",
+        "description": "Ready to transition to the next level of digital forms? Contact us to schedule a demo or learn more about how FormsIE can empower your public sector department.",
+        "cta": "Get started now"
+      }
+    }
+  }
+}
