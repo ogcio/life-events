@@ -30,23 +30,11 @@ export const sendInvitationsForUsersImport = async (params: {
       organisationId: toImportUsers.organisationId,
       client,
     });
+
+    const toSend = prepareInvitations({ userInvitations });
+    sendInvitations({ toSend });
   } finally {
     client.release();
-  }
-};
-
-const prepareInvitations = (params: { userInvitations: UserInvitation[] }) => {
-  for (const toInvite of params.userInvitations) {
-    if (toInvite.userStatus === "to_be_invited") {
-      // send invitation to messaging
-
-      //if we send invitation to platform we don't send another email for organisation
-      continue;
-    }
-
-    if (toInvite.organisationInvitationStatus === "to_be_invited") {
-      // send invitation to accept comunication from org
-    }
   }
 };
 
@@ -87,5 +75,46 @@ const getUserInvitations = async (params: {
     )();
 
     throw toOutput;
+  }
+};
+
+interface ToSendInvitations {
+  joinMessaging: { invitations: UserInvitation[]; ids: string[] };
+  joinOrganisation: { invitations: UserInvitation[]; ids: string[] };
+}
+
+const prepareInvitations = (params: {
+  userInvitations: UserInvitation[];
+}): ToSendInvitations => {
+  const toSend: ToSendInvitations = {
+    joinMessaging: { invitations: [], ids: [] },
+    joinOrganisation: { invitations: [], ids: [] },
+  };
+  for (const toInvite of params.userInvitations) {
+    if (toInvite.userStatus === "to_be_invited") {
+      // send invitation to messaging
+      //if we send invitation to platform we don't send another email for organisation
+      toSend.joinMessaging.ids.push(toInvite.userProfileId);
+      toSend.joinMessaging.invitations.push(toInvite);
+      continue;
+    }
+
+    if (toInvite.organisationInvitationStatus === "to_be_invited") {
+      // send invitation to accept comunication from org
+      toSend.joinOrganisation.ids.push(toInvite.userProfileId);
+      toSend.joinOrganisation.invitations.push(toInvite);
+    }
+  }
+
+  return toSend;
+};
+
+const sendInvitations = (params: { toSend: ToSendInvitations }): void => {
+  if (params.toSend.joinMessaging.ids.length) {
+    // send invitations here
+  }
+
+  if (params.toSend.joinOrganisation.ids.length) {
+    // send invitations here
   }
 };
