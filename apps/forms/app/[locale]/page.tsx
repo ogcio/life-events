@@ -21,10 +21,12 @@ const availableLinks = {
   DEV: {
     feedbackLink:
       "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
+    formsLink: "https://www.formsg.testing.gov.ie/",
   },
   STA: {
     feedbackLink:
       "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
+    formsLink: "https://www.formsg.testing.gov.ie/",
   },
 };
 
@@ -102,19 +104,12 @@ export default async function (props: Props) {
               {t("sections.benefits.section1.description")}
             </p>
           </div>
-          <div
-            className="column"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <div className="column flex-center-items">
             <Image
               src={interfaces}
               alt={t("sections.benefits.section1.title")}
               layout="responsive"
-              style={{ maxWidth: "150px" }}
+              className="benefits--img-max-width"
             />
           </div>
         </div>
@@ -199,7 +194,7 @@ export default async function (props: Props) {
         <h2 className="govie-heading-m">{t("sections.getStarted.title")}</h2>
         <p className="govie-body">{t("sections.getStarted.description")}</p>
         <a
-          href={`${process.env.NEXT_PUBLIC_FORMS_URL}${props.params.locale}/664b6de45f7c9800231daf22`}
+          href={`${links.formsLink}${props.params.locale}/664b6de45f7c9800231daf22`}
         >
           <button
             id="button"
