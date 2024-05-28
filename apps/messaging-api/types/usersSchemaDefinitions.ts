@@ -133,15 +133,13 @@ export type CsvRecord = Static<typeof CsvRecordSchema>;
 
 export const TagSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
-  tagName: Type.String(),
-  tagPath: Type.String(),
+  tagName: Type.Lowercase(Type.String()),
+  tagPath: Type.Lowercase(Type.String()),
 });
-
 export type Tag = Static<typeof TagSchema>;
 
 export const TagForUserSchema = Type.Object({
   userId: Type.String({ format: "uuid" }),
   tagId: Type.String({ format: "uuid" }),
 });
-
 export type TagForUser = Static<typeof TagForUserSchema>;
