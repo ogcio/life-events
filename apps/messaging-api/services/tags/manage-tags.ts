@@ -1,6 +1,7 @@
 import { PoolClient } from "pg";
 import { Tag } from "../../types/usersSchemaDefinitions";
 import { createError } from "@fastify/error";
+
 export const processTagsPerUser = async (params: {
   userId: string;
   tags: string[];
@@ -11,10 +12,18 @@ export const processTagsPerUser = async (params: {
     return;
   }
 
+  // explodes all the input tags to get one entry for each
+  // valid path. E.g. input tag: country.region.city
+  // will return
+  // {country: {name: country, path: country}, country.region: {name: region, path: country.region}, ...
   const tagsByPath = getAllPaths(params.tags);
   const allPaths = [...tagsByPath.keys()];
-  let fromDb = await searchTags({ tags: allPaths, client: params.client });
+  let fromDb = await searchTagsByPath({
+    tags: allPaths,
+    client: params.client,
+  });
   const fromDbTagPaths = fromDb.map((tag) => tag.tagPath);
+  // get all the paths that do not exist on the db
   const missingTags = allPaths.filter((x) => !fromDbTagPaths.includes(x));
   if (missingTags.length > 0) {
     if (!params.createIfNotExists) {
@@ -27,7 +36,7 @@ export const processTagsPerUser = async (params: {
 
     const newTags = await createNonExistentTags({
       tagsByPath,
-      toCreateTags: missingTags,
+      toCreateTagPaths: missingTags,
       client: params.client,
     });
 
@@ -86,14 +95,14 @@ const getAllPaths = (
 
 const createNonExistentTags = async (params: {
   tagsByPath: Map<string, { tagName: string; tagPath: string }>;
-  toCreateTags: string[];
+  toCreateTagPaths: string[];
   client: PoolClient;
 }): Promise<Tag[]> => {
   const toInsertValues: string[] = [];
   const toInsertIndexes: string[] = [];
   let indexCount = 1;
 
-  for (const toCreate of params.toCreateTags) {
+  for (const toCreate of params.toCreateTagPaths) {
     const mapped = params.tagsByPath.get(toCreate);
     toInsertValues.push(mapped!.tagName, mapped!.tagPath);
     toInsertIndexes.push(`($${indexCount++}, $${indexCount++})`);
@@ -111,7 +120,7 @@ const createNonExistentTags = async (params: {
   return queryInsert.rows;
 };
 
-const searchTags = async (params: {
+const searchTagsByPath = async (params: {
   tags: string[];
   client: PoolClient;
 }): Promise<Tag[]> => {
