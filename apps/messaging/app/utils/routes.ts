@@ -20,3 +20,8 @@ export const providerRoutes = {
   slug: "providers",
   url: "admin/providers",
 };
+
+export const templateRoutes = {
+  slug: "template",
+  url: `${messageTemplates.url}/template`,
+};

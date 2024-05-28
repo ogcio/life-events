@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
+import { messageTemplates } from "../../../utils/routes";
 
 async function deleteEmailTemplateAction(formData: FormData) {
   "use server";
@@ -38,37 +39,34 @@ export default async () => {
               {template.templateName}
             </th>
 
-            <td className="govie-table__cell">
-              <div style={{ display: "flex", gap: "10px" }}>
-                <form action={deleteEmailTemplateAction}>
-                  <input
-                    name="id"
-                    type="hidden"
-                    value={template.templateMetaId}
-                  />
-                  <button
-                    id="button"
-                    data-module="govie-button"
-                    className="govie-button govie-button--small govie-button--tertiary"
-                    type="submit"
-                  >
-                    {t("list.actions.delete")}
-                  </button>
-                </form>
-                <Link
-                  href={`/admin/templates/template?${new URLSearchParams({
-                    id: template.templateMetaId,
-                    lang: "en",
-                  }).toString()}`}
-                >
-                  <button
-                    data-module="govie-button"
-                    className="govie-button govie-button--small govie-button--primary"
-                  >
-                    {t("list.actions.edit")}
-                  </button>
-                </Link>
-              </div>
+            <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+              <Link
+                className="govie-link govie-!-margin-right-3"
+                href={(() => {
+                  const url = new URL(
+                    `${messageTemplates.url}/template`,
+                    process.env.HOST_URL,
+                  );
+                  url.searchParams.append("id", template.templateMetaId);
+                  url.searchParams.append("lang", "en");
+                  return url.href;
+                })()}
+              >
+                {t("list.actions.edit")}
+              </Link>
+              <Link
+                className="govie-link govie-!-margin-right-3"
+                href={(() => {
+                  const url = new URL(
+                    messageTemplates.url,
+                    process.env.HOST_URL,
+                  );
+                  url.searchParams.append("delete_id", template.templateMetaId);
+                  return url.href;
+                })()}
+              >
+                {t("list.actions.delete")}
+              </Link>
             </td>
           </tr>
         ))}
