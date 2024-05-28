@@ -56,13 +56,3 @@ export const CreateMessageSchema = Type.Composite([
   }),
 ]);
 export type CreateMessage = Static<typeof CreateMessageSchema>;
-
-export const CreateTranslatableMessageSchema = Type.Composite([
-  CreateMessageOptionsSchema,
-  Type.Object({
-    messages: Type.Mapped(AVAILABLE_LANGUAGES, () => MessageInputSchema),
-  }),
-]);
-export type CreateTranslatableMessage = Static<
-  typeof CreateTranslatableMessageSchema
->;

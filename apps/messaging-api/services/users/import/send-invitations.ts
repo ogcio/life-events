@@ -6,15 +6,23 @@ import {
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
 import { isNativeError } from "util/types";
+import {
+  DEFAULT_LANGUAGE,
+  MessageInput,
+} from "../../../types/schemaDefinitions";
+import { createMessage } from "../../messages/messages";
+import { PostgresDb } from "@fastify/postgres";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
+const AVAILABLE_TRANSPORTS = ["sms", "email"];
 
 export const sendInvitationsForUsersImport = async (params: {
-  pool: Pool;
+  pg: PostgresDb;
   logger: FastifyBaseLogger;
   toImportUsers: UsersImport;
+  requestUserId: string;
 }): Promise<void> => {
-  const { pool, toImportUsers } = params;
+  const { pg, toImportUsers } = params;
   const importedUserProfileIds = toImportUsers.usersData
     .filter((ud) => ud.relatedUserProfileId)
     .map((ud) => ud.relatedUserProfileId) as string[];
@@ -22,8 +30,11 @@ export const sendInvitationsForUsersImport = async (params: {
   if (importedUserProfileIds.length === 0) {
     return;
   }
-
-  const client = await pool.connect();
+  const languagePerUser = getLanguagePerUser({
+    userIdsToSearchFor: importedUserProfileIds,
+    requestUserId: params.requestUserId,
+  });
+  const client = await pg.connect();
   try {
     const userInvitations = await getUserInvitations({
       userProfileIds: importedUserProfileIds,
@@ -31,8 +42,16 @@ export const sendInvitationsForUsersImport = async (params: {
       client,
     });
 
-    const toSend = prepareInvitations({ userInvitations });
-    sendInvitations({ toSend });
+    const toSend = prepareInvitations({
+      userInvitations,
+      perIdLanguage: languagePerUser,
+    });
+
+    await sendInvitations({
+      toSend,
+      pg: params.pg,
+      organisationId: toImportUsers.organisationId,
+    });
   } finally {
     client.release();
   }
@@ -78,43 +97,133 @@ const getUserInvitations = async (params: {
   }
 };
 
+interface InvitationsPerLanguage {
+  [x: string]: { invitations: UserInvitation[]; ids: string[] };
+}
+
 interface ToSendInvitations {
-  joinMessaging: { invitations: UserInvitation[]; ids: string[] };
-  joinOrganisation: { invitations: UserInvitation[]; ids: string[] };
+  joinMessaging: InvitationsPerLanguage;
+  joinOrganisation: InvitationsPerLanguage;
 }
 
 const prepareInvitations = (params: {
   userInvitations: UserInvitation[];
+  perIdLanguage: { [x: string]: string };
 }): ToSendInvitations => {
   const toSend: ToSendInvitations = {
-    joinMessaging: { invitations: [], ids: [] },
-    joinOrganisation: { invitations: [], ids: [] },
+    joinMessaging: {},
+    joinOrganisation: {},
   };
   for (const toInvite of params.userInvitations) {
+    const language = params.perIdLanguage[toInvite.userProfileId];
     if (toInvite.userStatus === "to_be_invited") {
       // send invitation to messaging
       //if we send invitation to platform we don't send another email for organisation
-      toSend.joinMessaging.ids.push(toInvite.userProfileId);
-      toSend.joinMessaging.invitations.push(toInvite);
+      if (!toSend.joinMessaging[language]) {
+        toSend.joinMessaging[language] = { invitations: [], ids: [] };
+      }
+      toSend.joinMessaging[language].ids.push(toInvite.userProfileId);
+      toSend.joinMessaging[language].invitations.push(toInvite);
       continue;
     }
 
     if (toInvite.organisationInvitationStatus === "to_be_invited") {
       // send invitation to accept comunication from org
-      toSend.joinOrganisation.ids.push(toInvite.userProfileId);
-      toSend.joinOrganisation.invitations.push(toInvite);
+      if (!toSend.joinOrganisation[language]) {
+        toSend.joinOrganisation[language] = { invitations: [], ids: [] };
+      }
+      toSend.joinOrganisation[language].ids.push(toInvite.userProfileId);
+      toSend.joinOrganisation[language].invitations.push(toInvite);
     }
   }
 
   return toSend;
 };
 
-const sendInvitations = (params: { toSend: ToSendInvitations }): void => {
-  if (params.toSend.joinMessaging.ids.length) {
-    // send invitations here
+const sendInvitations = async (params: {
+  toSend: ToSendInvitations;
+  pg: PostgresDb;
+  organisationId: string;
+}): Promise<void> => {
+  const sending: Promise<void>[] = [];
+  for (const language of Object.keys(params.toSend.joinMessaging)) {
+    const messageInput = getJoinMessagingMessageForLanguage(language);
+    const userIds = params.toSend.joinMessaging[language].ids;
+    sending.push(
+      createMessage({
+        payload: {
+          message: messageInput,
+          preferredTransports: AVAILABLE_TRANSPORTS,
+          userIds,
+          scheduleAt: Date.now().toString(),
+          security: "high",
+        },
+        pg: params.pg,
+      }),
+    );
   }
 
-  if (params.toSend.joinOrganisation.ids.length) {
-    // send invitations here
+  for (const language of Object.keys(params.toSend.joinOrganisation)) {
+    const messageInput = getJoinOrgMessageForLanguage(language);
+    const userIds = params.toSend.joinOrganisation[language].ids;
+    sending.push(
+      createMessage({
+        payload: {
+          message: messageInput,
+          preferredTransports: AVAILABLE_TRANSPORTS,
+          userIds,
+          scheduleAt: Date.now().toString(),
+          security: "high",
+        },
+        pg: params.pg,
+      }),
+    );
   }
+
+  await Promise.all(sending);
+};
+
+const getLanguagePerUser = (params: {
+  userIdsToSearchFor: string[];
+  requestUserId: string;
+}): { [x: string]: string } => {
+  if (params.userIdsToSearchFor.length === 0) {
+    return {};
+  }
+
+  // Here I will invoke the user profile SDKS to get the preferred languages
+  //const profileClient = new Profile(params.requestUserId);
+
+  // Temporarily mocked
+  const output: { [x: string]: string } = {};
+  for (const id of params.userIdsToSearchFor) {
+    output[id] = DEFAULT_LANGUAGE;
+  }
+  return output;
+};
+
+const getJoinMessagingMessageForLanguage = (language: string): MessageInput => {
+  // TODO This one will be updated and translated in a next PR
+  return {
+    subject: "Join Messaging Platform",
+    excerpt: "Join the messaging platform!",
+    plainText: "Click here to join our platform",
+    richText: "Click here to join our platform",
+    messageName: "Join Messaging Platform",
+    threadName: "JoinMessaging",
+    lang: language,
+  };
+};
+
+const getJoinOrgMessageForLanguage = (language: string): MessageInput => {
+  // TODO This one will be updated and translated in a next PR
+  return {
+    subject: "An organisation wants to send you messages!",
+    excerpt: "An organisation wants to send you messages!",
+    plainText: "Click here to join our platform",
+    richText: "Click here to join our platform",
+    messageName: "Join Organisation",
+    threadName: "JoinOrganisation",
+    lang: language,
+  };
 };
