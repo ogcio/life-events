@@ -66,14 +66,26 @@
     ></span>
 
     <form id="login-form" method="POST" action="/static/login/api/auth">
-      <label>
-        <input
-          type="checkbox"
-          name="public_servant"
-          style="vertical-align: middle; position: relative; bottom: 4px"
-        />
-        Public Servant
-      </label>
+      <div style="display: flex; flex-direction: column">
+        <label>
+          <input
+            type="checkbox"
+            name="public_servant"
+            style="vertical-align: middle; position: relative; bottom: 4px"
+          />
+          Public Servant
+        </label>
+
+        <label>
+          <input
+            checked
+            type="checkbox"
+            name="verifiedUser"
+            style="vertical-align: middle; position: relative; bottom: 4px"
+          />
+          Verified User
+        </label>
+      </div>
 
       <div
         style="
