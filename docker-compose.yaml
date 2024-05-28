@@ -34,11 +34,11 @@ services:
       context: .
       dockerfile: ./apps/scheduler-api/Dockerfile
     environment:
-      - POSTGRES_SCHEDULER_USER=postgres
-      - POSTGRES_SCHEDULER_PASSWORD=postgres
-      - POSTGRES_SCHEDULER_HOST=postgresql
-      - POSTGRES_SCHEDULER_PORT=5432
-      - POSTGRES_SCHEDULER_DB_NAME=scheduler
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgresql
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB_NAME=scheduler
     command: [ "npm", "run", "migrate:scheduler-api" ]
     depends_on:
       postgresql:
