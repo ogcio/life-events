@@ -14,6 +14,8 @@ import { organisationId } from "../../../utils";
 import { isNativeError } from "util/types";
 import { mapUsers } from "./map-users";
 import { RequestUser } from "../../../plugins/auth";
+import { sendInvitationsForUsersImport } from "./send-invitations";
+import { PostgresDb } from "@fastify/postgres";
 
 export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
 
@@ -34,7 +36,7 @@ export const getUsersFromCsv = async (
 
 export const importCsvFileFromRequest = async (params: {
   req: FastifyRequest;
-  pool: Pool;
+  pg: PostgresDb;
 }): Promise<void> => {
   const file = await params.req.files();
   if (!file) {
@@ -49,11 +51,18 @@ export const importCsvFileFromRequest = async (params: {
   }
 
   const importedUsers = await processUserImport({
-    pool: params.pool,
+    pool: params.pg.pool,
     logger: params.req.log,
     toImportUsers: usersToImport,
     channel: "csv",
     requestUser: params.req.user!,
+  });
+
+  await sendInvitationsForUsersImport({
+    pg: params.pg,
+    toImportUsers: importedUsers,
+    logger: params.req.log,
+    requestUserId: params.req.user!.id,
   });
 };
 
@@ -64,7 +73,7 @@ export const getCsvExample = (): Promise<Buffer> =>
   });
 
 export const importCsvRecords = async (params: {
-  pool: Pool;
+  pg: PostgresDb;
   logger: FastifyBaseLogger;
   csvRecords: CsvRecord[];
   requestUser: RequestUser;
@@ -78,11 +87,18 @@ export const importCsvRecords = async (params: {
   }
 
   const importedUsers = await processUserImport({
-    pool: params.pool,
+    pool: params.pg.pool,
     logger: params.logger,
     toImportUsers,
     channel: "api",
     requestUser: params.requestUser,
+  });
+
+  await sendInvitationsForUsersImport({
+    pg: params.pg,
+    toImportUsers: importedUsers,
+    logger: params.logger,
+    requestUserId: params.requestUser.id,
   });
 };
 
@@ -182,7 +198,6 @@ const processUserImport = async (params: {
       logger: params.logger,
       requestUser: params.requestUser,
     });
-
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");

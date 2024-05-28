@@ -25,7 +25,7 @@ export default async function users(app: FastifyInstance) {
       },
     },
     async (request: FastifyRequest, _reply: FastifyReply) => {
-      await importCsvFileFromRequest({ req: request, pool: app.pg.pool });
+      await importCsvFileFromRequest({ req: request, pg: app.pg });
     },
   );
 
@@ -63,7 +63,7 @@ export default async function users(app: FastifyInstance) {
     },
     async (request: FastifyRequest, _reply: FastifyReply) => {
       await importCsvRecords({
-        pool: app.pg.pool,
+        pg: app.pg,
         logger: request.log,
         csvRecords: request.body as CsvRecord[],
         requestUser: request.user!,
