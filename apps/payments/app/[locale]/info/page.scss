@@ -1,4 +1,12 @@
-@import "../styles/globals.scss";
+@import "../../styles/globals.scss";
+
+.page-wrapper {
+  margin: unset;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
 
 .three-columns-layout {
   display: flex;
@@ -46,14 +54,4 @@
 
 .custom-width-container {
   max-width: 1440px;
-}
-
-.flex-center-items {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.benefits--img-max-width {
-  max-width: 150px;
 }
