@@ -5,7 +5,7 @@ import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 import { Payments } from "building-blocks-sdk";
 import BankTransferForm from "./BankTransferForm";
 import getRequestConfig from "../../../../../../i18n";
-import { errorHandler, getValidationErrors } from "../../../../../utils";
+import { errorHandler } from "../../../../../utils";
 import { bankTransferValidationMap } from "../../../../../validationMaps";
 
 type Props = {
@@ -62,19 +62,10 @@ export default async (props: Props) => {
       },
     });
 
-    if (error) {
-      errorHandler(error);
-    }
+    formResult.errors = errorHandler(error, errorFieldMapping) ?? {};
 
     if (result) {
       redirect("./");
-    }
-
-    if (error.validation) {
-      formResult.errors = getValidationErrors(
-        error.validation,
-        errorFieldMapping,
-      );
     }
 
     return formResult;
