@@ -17,6 +17,7 @@ import { EmptyStatus } from "../../../../../components/EmptyStatus";
 import { Payments } from "building-blocks-sdk";
 import Pagination from "../../../../../components/pagination";
 import { routeDefinitions } from "../../../../../routeDefinitions";
+import { redirect, RedirectType } from "next/navigation";
 
 export default async function ({
   params: { requestId, locale },
@@ -37,8 +38,10 @@ export default async function ({
     userId,
   ).getPaymentRequestTransactions(requestId, pagination);
 
-  if (error) {
-    errorHandler(error);
+  const errors = errorHandler(error);
+
+  if (errors?.limit || errors?.offset) {
+    return redirect("/error", RedirectType.replace);
   }
 
   const url = `/${locale}/${routeDefinitions.paymentSetup.requestDetails.path(requestId)}`;

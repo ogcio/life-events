@@ -3,10 +3,23 @@ import { headers } from "next/headers";
 import "./Header.css";
 import { getTranslations } from "next-intl/server";
 
+const availableLinks = {
+  DEV: {
+    homePageUrl: "https://dev.blocks.gov.ie",
+  },
+  STA: {
+    homePageUrl: "https://sta.blocks.gov.ie",
+  },
+};
+
 export default async () => {
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
   const t = await getTranslations("LandingPage");
+
+  //Let's hardcode Dev for now, in a separate PR - we will add an env var to handle that
+  const environment = "DEV";
+  const links = availableLinks[environment];
 
   return (
     <header role="banner" data-module="govie-header" className="govie-header">
@@ -38,7 +51,7 @@ export default async () => {
             }}
           >
             <a
-              href="/"
+              href={links.homePageUrl}
               className="govie-header__link govie-header__link--homepage"
               style={{ display: "block" }}
             >

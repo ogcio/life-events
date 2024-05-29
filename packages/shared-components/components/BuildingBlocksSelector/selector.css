@@ -1,17 +1,22 @@
-@import "app/styles/globals.scss";
-
 .tilesContainer {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-  left: 0;
   right: 0;
   padding: 20px;
-  position: fixed;
+  position: absolute;
   top: 70px;
   z-index: 100;
+  max-width: 450px;
+}
+
+.tileIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .tile {
@@ -46,7 +51,7 @@
   width: 100%;
 }
 
-@media (max-width: $breakpoint-sm) {
+@media (max-width: 767px) {
   .tilesContainer {
     display: grid;
     grid-gap: 10px;

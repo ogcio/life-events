@@ -7,7 +7,7 @@ export default async (props: {
   flow: string;
   data: workflow.GetDigitalWallet;
 }) => {
-  const t = await getTranslations("GetDigitalWallet.BeforeYouBeginForm");
+  const t = await getTranslations("GetDigitalWallet.BeforeYouStartForm");
   async function submitAction() {
     "use server";
 
@@ -39,23 +39,21 @@ export default async (props: {
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds-from-desktop">
         <div className="govie-heading-l">{t("title")}</div>
-        <p className="govie-heading-s">{t("subTitle")}</p>
+        <p className="govie-body">{t("paragraph1")}</p>
+        <p className="govie-body">{t("paragraph2")}</p>
+        <p className="govie-body">{t("paragraph3")}</p>
+
+        <p className="govie-heading-s">{t("paragraph4")}</p>
         <form action={submitAction}>
           <ul
             className="govie-list govie-list--bullet"
             style={{ marginBottom: "30px" }}
           >
             <li>
-              <p style={{ fontWeight: "bold" }}>{t("myGovIdEmailAddress")}</p>
+              <p style={{ fontWeight: "bold" }}>{t("listItem1")}</p>
             </li>
             <li>
-              <p style={{ fontWeight: "bold" }}>{t("govIEEmaildAddress")}</p>
-            </li>
-            <li>
-              <p style={{ marginBottom: "5px", fontWeight: "bold" }}>
-                {t("appStoreEmailAddress")}
-              </p>
-              <p style={{ marginTop: 0 }}>You can find this by going...</p>
+              <p style={{ fontWeight: "bold" }}>{t("listItem2")}</p>
             </li>
           </ul>
           <button type="submit" className="govie-button">

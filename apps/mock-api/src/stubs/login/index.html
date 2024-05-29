@@ -77,13 +77,15 @@
         </label>
 
         <label>
-          <input
-            checked
-            type="checkbox"
-            name="verifiedUser"
+          Verification level
+          <select
+            name="verificationLevel"
             style="vertical-align: middle; position: relative; bottom: 4px"
-          />
-          Verified User
+          >
+            <option value="0">Level 0</option>
+            <option value="1">Level 1</option>
+            <option value="2" selected>Level 2</option>
+          </select>
         </label>
       </div>
 
@@ -103,6 +105,7 @@
           readonly
         />
         <input id="lastName" type="hidden" name="lastName" value="" readonly />
+        <input id="email" type="hidden" name="email" value="" readonly />
         <input
           id="redirect_url"
           type="hidden"
@@ -248,33 +251,37 @@
       (user) => user.govid_email === e.target.value,
     );
 
-    let firstName, lastName;
+    let firstName, lastName, email;
 
     if (user) {
       const nameSplit = user.user_name.split(" ");
       firstName = nameSplit.at(0);
       lastName = nameSplit.slice(1).join(" ");
+      email = user.govid_email;
       document.querySelector("input[name='public_servant']").checked =
         user.is_public_servant;
       isCurrentUserSet = true;
     } else {
       firstName = faker.person.firstName();
       lastName = faker.person.lastName();
+      email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@mail.ie`;
       isCurrentUserSet = false;
     }
 
     document.querySelector("#firstName").value = firstName;
     document.querySelector("#lastName").value = lastName;
-
+    document.querySelector("#email").value = email;
     document.querySelector("#submit_btn").innerHTML =
       `<div style="margin-top: 5px">Login ${firstName} ${lastName} <span class="icon-signin_id_logo"></span></div>`;
   });
 
   const firstName = faker.person.firstName();
   const lastName = faker.person.lastName();
+  const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@mail.ie`;
 
   document.querySelector("#firstName").value = firstName;
   document.querySelector("#lastName").value = lastName;
+  document.querySelector("#email").value = email;
 
   document.querySelector("#submit_btn").innerHTML =
     `<div style="margin-top: 5px">Login ${firstName} ${lastName} <span class="icon-signin_id_logo"></span></div>`;
