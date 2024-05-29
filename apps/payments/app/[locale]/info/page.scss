@@ -1,5 +1,11 @@
 @import "../../styles/globals.scss";
 
+h1.custom-title {
+  font-size: 56px !important;
+  line-height: 84px;
+  margin-bottom: 48px;
+}
+
 .page-wrapper {
   margin: unset;
   min-height: 100vh;

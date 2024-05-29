@@ -38,9 +38,10 @@ ENV NODE_ENV=production
 
 COPY --from=builder /app/apps/messaging/.next/standalone ./
 COPY --from=builder /app/apps/messaging/.next/static ./apps/messaging/.next/static
-COPY --from=deps /app/packages/messages/migrations /app/apps/messages/migrations
-COPY --from=deps /app/packages/messages/database.json /app/apps/messages/
+
 COPY --from=deps /app/node_modules/ /app/node_modules/
+COPY --from=deps /app/packages/messages/database.json /app/packages/messages/
+COPY --from=deps /app/packages/messages/migrations /app/packages/messages/migrations
 
 EXPOSE 3002
 ENV PORT 3002

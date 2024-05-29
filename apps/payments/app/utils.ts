@@ -39,6 +39,8 @@ export const getRealAmount = ({
 export enum ValidationErrorTypes {
   REQUIRED = "required",
   INVALID = "invalid",
+  MINIMUM = "minimum",
+  MAXIMUM = "maximum",
 }
 
 export type ValidationFieldMap = Record<
@@ -54,10 +56,11 @@ export const getValidationErrors = (
   fieldMap: ValidationFieldMap,
 ): Record<string, string> => {
   return validations.reduce((errors, validation) => {
-    const field =
-      fieldMap[validation.params.field]?.field ?? validation.params.field;
+    const errorField =
+      validation.params.field ?? validation.instancePath.slice(1);
+    const field = fieldMap[errorField]?.field ?? errorField;
     const message =
-      fieldMap[validation.params.field]?.errorMessage[validation.keyword] ??
+      fieldMap[errorField]?.errorMessage[validation.keyword] ??
       validation.message;
 
     errors[field] = message;
@@ -103,9 +106,13 @@ export const paymentMethodToProviderType: Record<
   card: ["stripe", "realex"],
 };
 
-export const errorHandler = (error) => {
-  if (error.validation) {
+export const errorHandler = (error, fieldMap: ValidationFieldMap = {}) => {
+  if (!error) {
     return;
+  }
+
+  if (error.validation) {
+    return getValidationErrors(error.validation, fieldMap);
   }
 
   if (error.name === "NotFoundError") {
