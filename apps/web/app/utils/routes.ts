@@ -327,10 +327,16 @@ export const digitalWallet = {
         return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.applicationSuccess.slug}`;
       },
     },
-    verifyMyGovIdAccount: {
-      slug: "verify-mygovid-account",
+    verifyLevel0: {
+      slug: "verify-mygovid-account-level-0",
       path() {
-        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.verifyMyGovIdAccount.slug}`;
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.verifyLevel0.slug}`;
+      },
+    },
+    verifyLevel1: {
+      slug: "verify-mygovid-account-level-1",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.verifyLevel1.slug}`;
       },
     },
   },

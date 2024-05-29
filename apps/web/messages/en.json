@@ -50,7 +50,8 @@
     "about-you": "About you",
     "your-employment": "Your employment",
     "your-device": "Your device",
-    "verify-mygovid-account": "Verify your MyGovID account"
+    "verify-mygovid-account-level-0": "Verify your MyGovID account",
+    "verify-mygovid-account-level-1": "Verify your MyGovID account"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -345,11 +346,17 @@
       "change": "Change",
       "submitText": "Confirm and continue"
     },
-    "VerifyAccount": {
+    "VerifyAccountLevel0": {
       "title": "Verify your MyGovId account",
-      "whyVerifyFirstParagraph": "To gain access to all the services available through the Digital Wallet, you need to verify your basic MyGovID account.",
-      "whyVerifySecondParagraph": "Please follow <link>this link to the Gov.IE website</link> for instructions on how you can get verified.",
-      "whyVerifyThirdParagraph": "We will send you an email with a link to proceed with your Digital Wallet onboarding once you are verified."
+      "whyVerifyFirstParagraph": "You have a basic MyGovID account. To ensure that your Government Digital Wallet is secure, you need to have a verified MyGovID account.",
+      "whyVerifySecondParagraph": "Please visit <link>MyGovID</link> and it will guide you through the process.",
+      "whyVerifyThirdParagraph": "Once verified, come back to the <link>Life Events portal</link> to apply for the pilot"
+    },
+    "VerifyAccountLevel1": {
+      "title": "Verify your MyGovId account",
+      "whyVerifyFirstParagraph": "You have gone through the SAFE registration process with MyGovID, but to ensure that your wallet is secure, there’s one more step.",
+      "whyVerifySecondParagraph": "The <link>MyGovID portal</link> will show you how to get a verified account that lets you avail of online services.",
+      "whyVerifyThirdParagraph": "Once verified, come back to the <link>Life Events portal</link> to apply for the Digital Wallet pilot."
     },
     "ChangeDetails": {
       "firstName": "First name <red>*</red>",
