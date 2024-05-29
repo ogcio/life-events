@@ -14,6 +14,7 @@ import {
 import { routeDefinitions } from "../../../../routeDefinitions";
 import Pagination from "../../../../components/pagination";
 import styles from "./PaymentRequests.module.scss";
+import { redirect, RedirectType } from "next/navigation";
 
 export default async function ({
   params: { locale },
@@ -39,8 +40,10 @@ export default async function ({
     userId,
   ).getPaymentRequests(pagination);
 
-  if (error) {
-    errorHandler(error);
+  const errors = errorHandler(error);
+
+  if (errors?.limit || errors?.offset) {
+    return redirect("/error", RedirectType.replace);
   }
 
   const url = `/${locale}/${routeDefinitions.paymentSetup.requests.path()}`;

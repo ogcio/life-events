@@ -137,7 +137,7 @@ export const CreatePaymentRequest = Type.Object({
   title: Type.String({ validator: "RequiredValidator" }),
   description: Type.String(),
   reference: Type.String({ validator: "RequiredValidator" }),
-  amount: Type.Number({ validator: "RequiredValidator" }),
+  amount: Type.Number({ minimum: 1 }),
   redirectUrl: Type.String({ validator: "RequiredValidator" }),
   allowAmountOverride: Type.Boolean(),
   allowCustomAmount: Type.Boolean(),
@@ -325,10 +325,21 @@ export const CitizenTransactions = Type.Array(CitizenTransaction);
 /**
  * Pagination
  */
-
 export const PaginationParams = Type.Object({
-  offset: Type.Optional(Type.Number({ default: PAGINATION_OFFSET_DEFAULT })),
-  limit: Type.Optional(Type.Number({ default: PAGINATION_LIMIT_DEFAULT })),
+  offset: Type.Optional(
+    Type.Number({
+      default: PAGINATION_OFFSET_DEFAULT,
+      minimum: 0,
+    }),
+  ),
+  limit: Type.Optional(
+    Type.Number({
+      default: PAGINATION_LIMIT_DEFAULT,
+      minimum: 5,
+      maximum: 50,
+      multipleOf: 5,
+    }),
+  ),
 });
 
 export const PaginationLink = Type.Object({
