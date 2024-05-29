@@ -25,7 +25,7 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const { userId, firstName, lastName } = await PgSessions.get();
+  const { userId, firstName, lastName, publicServant } = await PgSessions.get();
 
   const userName = [firstName, lastName].join(" ");
 
@@ -43,7 +43,8 @@ export default async function RootLayout({
     redirect(url.href, RedirectType.replace);
   }
 
-  const showHamburgerMenu = await isFeatureFlagEnabled("eventsMenu");
+  const showHamburgerMenu =
+    (await isFeatureFlagEnabled("eventsMenu")) && !publicServant;
 
   const enabledEntries = await getAllEnabledFlags(
     menuOptions.map((o) => o.key),

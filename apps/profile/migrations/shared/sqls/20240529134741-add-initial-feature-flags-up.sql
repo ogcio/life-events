@@ -1,0 +1,2 @@
+INSERT INTO feature_flags (application, slug, title, description, is_enabled) VALUES ('portal', 'eventsMenu', 'eventsMenu', 'Displays the hamburger menu for navigation', false);
+INSERT INTO feature_flags (application, slug, title, description, is_enabled) VALUES ('portal', 'messages', 'messages', 'Displays the link to the messages app', false);

@@ -30,13 +30,16 @@ const defaultFeatureFlags = {
     enabled: true,
   },
   eventsMenu: {
-    enabled: true,
+    enabled: false,
   },
   timeline: {
     enabled: false,
   },
   digitalWallet: {
     enabled: true,
+  },
+  messages: {
+    enabled: false,
   },
 };
 
