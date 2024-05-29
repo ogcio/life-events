@@ -4,7 +4,6 @@ import { PgSessions } from "auth/sessions";
 import FormLayout from "../../../../components/FormLayout";
 import ApplicationSuccess from "./ApplicationSuccess";
 import BeforeYouStart from "./BeforeYouStart";
-import AboutYou from "./AboutYou";
 import GovernmentDetails from "./GovernmentDetails";
 import YourDevice from "./YourDevice";
 import DetailsSummary from "./DetailsSummary";
@@ -182,33 +181,6 @@ const DeviceSelectionStep: React.FC<FormProps> = ({
   );
 };
 
-const AboutYouStep: React.FC<FormProps> = ({
-  stepSlug,
-  actionSlug,
-  nextSlug,
-  data,
-  userId,
-  eventsPageHref,
-  urlBase,
-}) => {
-  return stepSlug === nextSlug ? (
-    <FormLayout
-      action={{ slug: actionSlug }}
-      step={stepSlug}
-      backHref={eventsPageHref}
-    >
-      <AboutYou
-        data={data}
-        flow={workflow.keys.getDigitalWallet}
-        userId={userId}
-        urlBase={urlBase}
-      />
-    </FormLayout>
-  ) : (
-    redirect(nextSlug || "")
-  );
-};
-
 const YourDeviceStep: React.FC<FormProps> = ({
   stepSlug,
   actionSlug,
@@ -316,7 +288,6 @@ const ChangeDetailsStep: React.FC<FormProps> = ({
 const FormComponentsMap = {
   [routes.digitalWallet.getDigitalWallet.beforeYouStart.slug]:
     BeforeYouStartStep,
-  // [routes.digitalWallet.getDigitalWallet.aboutYou.slug]: AboutYouStep,
   [routes.digitalWallet.getDigitalWallet.governmentDetails.slug]:
     GovernmentDetailsStep,
   [routes.digitalWallet.getDigitalWallet.deviceSelection.slug]:

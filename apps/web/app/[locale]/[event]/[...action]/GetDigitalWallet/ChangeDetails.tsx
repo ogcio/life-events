@@ -189,8 +189,8 @@ export default async (props: {
             </legend>
             {deviceTypeError && (
               <p id="device-type-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>Select an
-                option
+                <span className="govie-visually-hidden">Error:</span>
+                {t("selectDeviceLabel")}
               </p>
             )}
             <div

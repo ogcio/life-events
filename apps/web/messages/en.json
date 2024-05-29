@@ -321,14 +321,6 @@
       "govIEEmaildAddress": "Your gov.ie work email address",
       "continue": "Continue"
     },
-    "AboutYou": {
-      "title": "About you",
-      "subTitle": "Please check and confirm the information below:",
-      "firstName": "First name <red>*</red>",
-      "lastName": "Last name <red>*</red>",
-      "myGovIdEmail": "MyGovID email <red>*</red>",
-      "submitText": "Confirm and continue"
-    },
     "GovernmentDetails": {
       "title": "About your work",
       "subTitle": "This pilot is for government employees only.",
@@ -342,6 +334,7 @@
       "title": "Device selection",
       "subTitle": "For the pilot, we need to know the email address linked to your phone. We need this information to ensure that you are added to the correct testing platform.",
       "selectDeviceText": "Please tell us which kind of device you are using.",
+      "selectDeviceLabel": "Select an option",
       "submitText": "Confirm and continue"
     },
     "YourDevice": {

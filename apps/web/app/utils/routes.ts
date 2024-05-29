@@ -303,12 +303,6 @@ export const digitalWallet = {
         return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.deviceSelection.slug}`;
       },
     },
-    aboutYou: {
-      slug: "about-you",
-      path() {
-        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.aboutYou.slug}`;
-      },
-    },
     yourDevice: {
       slug: "your-device",
       path() {
