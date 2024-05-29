@@ -71,7 +71,7 @@ const Tile = ({ url, label, icon }: TileProps) => {
   );
 };
 
-export default function ({ locale }: { locale: "en" | "ga" }) {
+export default function ({ locale }: { locale: string }) {
   const [isJsEnabled, setIsJsEnabled] = useState(false);
   const [isTilesBarOpen, setIsTilesBarOpen] = useState(false);
   const handleTilesClick = () => setIsTilesBarOpen((status) => !status);

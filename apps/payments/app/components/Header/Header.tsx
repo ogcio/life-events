@@ -81,10 +81,10 @@ export default async ({ locale }: HeaderProps) => {
             >
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
             </Link>
-            <BuildingBlockSelector locale={locale as "en" | "ga"} />
+            <BuildingBlockSelector locale={locale} />
           </div>
           <div className={styles.buildingBlocksSelector}>
-            <BuildingBlockSelector locale={locale as "en" | "ga"} />
+            <BuildingBlockSelector locale={locale} />
           </div>
         </div>
       </div>
