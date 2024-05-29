@@ -47,7 +47,7 @@ export default async function (props: Props) {
     <>
       <Header />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <div className="govie-phase-banner">
           <p className="govie-phase-banner__content">
             <strong className="govie-tag govie-phase-banner__content__tag">
@@ -93,7 +93,7 @@ export default async function (props: Props) {
 
       <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <div className="two-columns-layout">
           <div className="column">
             <h2 className="govie-heading-m">{t("sections.benefits.title")}</h2>
@@ -190,7 +190,7 @@ export default async function (props: Props) {
 
       <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <h2 className="govie-heading-m">{t("sections.getStarted.title")}</h2>
         <p className="govie-body">{t("sections.getStarted.description")}</p>
         <a

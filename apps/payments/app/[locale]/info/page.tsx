@@ -30,7 +30,7 @@ export default async (props: Props) => {
       <body className="page-wrapper">
         <Header />
 
-        <div className="govie-width-container custom-width-container">
+        <div className="govie-width-container">
           <div className="govie-phase-banner">
             <p className="govie-phase-banner__content">
               <strong className="govie-tag govie-phase-banner__content__tag">
