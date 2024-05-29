@@ -21,6 +21,7 @@ export default async function (app, opts) {
       public_servant,
       firstName,
       lastName,
+      email,
       redirect_url,
       verificationLevel,
     } = request.body;
@@ -31,8 +32,6 @@ export default async function (app, opts) {
     }
 
     const verificationLevelNumber = Number(verificationLevel);
-
-    const email = `${firstName}.${lastName}@mail.ie`;
 
     const createUnsecuredJwt = (firstName, lastName, email) => {
       // Based on the govid jwt token, filled with some random data
