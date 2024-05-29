@@ -105,27 +105,16 @@ export default async (props: Props) => {
           </div>
         </div>
 
-        <hr className="govie-section-break govie-section-break--xl" />
+        <hr className="govie-section-break govie-section-break--m" />
 
-        <div className="two-columns-layout">
-          <div className="column">
-            <h3 className="govie-heading-s">
-              {t("sections.benefits.section2.title")}
-            </h3>
-            <p className="govie-body">
-              {t("sections.benefits.section2.description")}
-            </p>
-          </div>
-          <div className="column">
-            <Image
-              src={template}
-              alt={t("sections.benefits.section2.title")}
-              layout="responsive"
-            />
-          </div>
-        </div>
+        <h3 className="govie-heading-s">
+          {t("sections.benefits.section2.title")}
+        </h3>
+        <p className="govie-body">
+          {t("sections.benefits.section2.description")}
+        </p>
 
-        <hr className="govie-section-break govie-section-break--xl" />
+        <hr className="govie-section-break govie-section-break--m" />
 
         <div className="two-columns-layout">
           <div className="column">
@@ -138,14 +127,14 @@ export default async (props: Props) => {
           </div>
           <div className="column">
             <Image
-              src={postbox}
-              alt={t("sections.benefits.section3.title")}
+              src={template}
+              alt={t("sections.benefits.section2.title")}
               layout="responsive"
             />
           </div>
         </div>
 
-        <hr className="govie-section-break govie-section-break--xl" />
+        <hr className="govie-section-break govie-section-break--m" />
 
         <div className="two-columns-layout">
           <div className="column">
@@ -157,53 +146,31 @@ export default async (props: Props) => {
             </p>
           </div>
           <div className="column">
-            {/* <Image
-                src={""}
-                alt={t("sections.benefits.section4.title")}
-                layout="responsive"
-              /> */}
+            <Image
+              src={postbox}
+              alt={t("sections.benefits.section3.title")}
+              layout="responsive"
+            />
           </div>
         </div>
 
-        <hr className="govie-section-break govie-section-break--xl" />
+        <hr className="govie-section-break govie-section-break--m" />
 
-        <div className="two-columns-layout">
-          <div className="column">
-            <h3 className="govie-heading-s">
-              {t("sections.benefits.section5.title")}
-            </h3>
-            <p className="govie-body">
-              {t("sections.benefits.section5.description")}
-            </p>
-          </div>
-          <div className="column">
-            {/* <Image
-                src={""}
-                alt={t("sections.benefits.section5.title")}
-                layout="responsive"
-              /> */}
-          </div>
-        </div>
+        <h3 className="govie-heading-s">
+          {t("sections.benefits.section5.title")}
+        </h3>
+        <p className="govie-body">
+          {t("sections.benefits.section5.description")}
+        </p>
 
-        <hr className="govie-section-break govie-section-break--xl" />
+        <hr className="govie-section-break govie-section-break--m" />
 
-        <div className="two-columns-layout">
-          <div className="column">
-            <h3 className="govie-heading-s">
-              {t("sections.benefits.section6.title")}
-            </h3>
-            <p className="govie-body">
-              {t("sections.benefits.section6.description")}
-            </p>
-          </div>
-          <div className="column">
-            {/* <Image
-                src={""}
-                alt={t("sections.benefits.section6.title")}
-                layout="responsive"
-              /> */}
-          </div>
-        </div>
+        <h3 className="govie-heading-s">
+          {t("sections.benefits.section6.title")}
+        </h3>
+        <p className="govie-body">
+          {t("sections.benefits.section6.description")}
+        </p>
 
         <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
@@ -216,6 +183,19 @@ export default async (props: Props) => {
             className="govie-button govie-button--primary"
           >
             {t("sections.getStarted.cta")}
+            <svg
+              className="govie-button__icon-right"
+              width="16"
+              height="17"
+              viewBox="0 0 16 17"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 0.5L6.59 1.91L12.17 7.5H0V9.5H12.17L6.59 15.09L8 16.5L16 8.5L8 0.5Z"
+                fill="white"
+              ></path>
+            </svg>
           </button>
         </a>
       </div>

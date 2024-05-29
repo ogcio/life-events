@@ -1,6 +1,19 @@
 import "./Header.css";
 
+const availableLinks = {
+  DEV: {
+    homePageUrl: "https://dev.blocks.gov.ie",
+  },
+  STA: {
+    homePageUrl: "https://sta.blocks.gov.ie",
+  },
+};
+
 export default async () => {
+  //Let's hardcode Dev for now, in a separate PR - we will add an env var to handle that
+  const environment = "DEV";
+  const links = availableLinks[environment];
+
   return (
     <header role="banner" data-module="govie-header" className="govie-header">
       <div
@@ -30,7 +43,7 @@ export default async () => {
             }}
           >
             <a
-              href={process.env.NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE}
+              href={links.homePageUrl}
               className="govie-header__link govie-header__link--homepage"
               style={{ display: "block" }}
             >

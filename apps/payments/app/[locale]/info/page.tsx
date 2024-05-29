@@ -100,7 +100,7 @@ export default async (props: Props) => {
           </div>
         </div>
 
-        <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
+        <hr className="govie-section-break govie-section-break--m" />
 
         <div className="two-columns-layout">
           <div className="column">
@@ -116,7 +116,7 @@ export default async (props: Props) => {
           </div>
         </div>
 
-        <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
+        <hr className="govie-section-break govie-section-break--m" />
 
         <h2 className="govie-heading-m">{t("sections.interface.title")}</h2>
         <p className="govie-body">{t("sections.interface.description")}</p>
@@ -144,7 +144,7 @@ export default async (props: Props) => {
           </div>
         </div>
 
-        <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
+        <hr className="govie-section-break govie-section-break--m" />
 
         <h2 className="govie-heading-m">{t("sections.accessibility.title")}</h2>
         <p className="govie-body">{t("sections.accessibility.description")}</p>

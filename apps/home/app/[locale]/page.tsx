@@ -23,6 +23,7 @@ const availableLinks = {
     paymentsUrl: "https://payments.dev.blocks.gov.ie/en/info",
     formsUrl: "https://forms.dev.blocks.gov.ie/en",
     messagingUrl: "https://messaging.dev.blocks.gov.ie/en/info",
+    designSystemUrl: "https://ds.dev.blocks.gov.ie/",
     feedbackLink:
       "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
   },
@@ -32,6 +33,7 @@ const availableLinks = {
     paymentsUrl: "https://payments.sta.blocks.gov.ie/en/info",
     formsUrl: "https://forms.sta.blocks.gov.ie/en",
     messagingUrl: "https://messaging.sta.blocks.gov.ie/en/info",
+    designSystemUrl: "https://ds.sta.blocks.gov.ie/",
     feedbackLink:
       "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
   },
@@ -169,9 +171,9 @@ export default async function () {
             <p className="govie-body">
               {t("sections.designSystem.description")}
             </p>
-            {/* <a className="govie-link" href="/">
+            <a className="govie-link" href={links.designSystemUrl}>
               {t("sections.designSystem.cta")}
-            </a> */}
+            </a>
           </div>
           <div className="column">
             <Image

@@ -236,16 +236,16 @@
           "description": "The centralised platform for managing messages across various channels. Reach users through their preferred methods, whether it's email, SMS or electronic postbox, Messaging ensures prompt and effective communication delivery."
         },
         "section2": {
+          "title": "Secure",
+          "description": "Messaging offers customisable options to suit your department's unique needs, while also prioritising security to safeguard sensitive information and ensure compliance with data protection regulations."
+        },
+        "section3": {
           "title": "Reusable Templates",
           "description": "Easily create templates for any type of communication - confirmations, reminders, success notifications - endless possibilities, ensuring consistency and streamlining your processes."
         },
-        "section3": {
+        "section4": {
           "title": "Electronic Postbox",
           "description": "Embedded within other systems, the electronic postbox allows users to easily access their messages and take action, enhancing user experience and increasing responsiveness."
-        },
-        "section4": {
-          "title": "Secure",
-          "description": "Messaging offers customisable options to suit your department's unique needs, while also prioritising security to safeguard sensitive information and ensure compliance with data protection regulations."
         },
         "section5": {
           "title": "Accessibility Compliance",
@@ -259,7 +259,7 @@
       "getStarted": {
         "title": "Get started",
         "description": "Ready to elevate your communication strategies? Contact us to schedule a demo or learn more about how Messaging can  transform your engagement efforts.",
-        "cta": "Get started now"
+        "cta": "Sign up to learn more"
       }
     }
   }

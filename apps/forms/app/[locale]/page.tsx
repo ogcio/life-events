@@ -68,13 +68,25 @@ export default async function (props: Props) {
 
         <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
 
-        <div className="govie-warning-text">
-          <span className="govie-warning-text__icon" aria-hidden="true">
-            !
-          </span>
-          <strong className="govie-warning-text__text">
-            {t("sections.main.note")}
-          </strong>
+        <div
+          className="govie-notification-banner"
+          role="region"
+          aria-labelledby="govie-notification-banner-title"
+          data-module="govie-notification-banner"
+        >
+          <div className="govie-notification-banner__header">
+            <h2
+              className="govie-notification-banner__title"
+              id="govie-notification-banner-title"
+            >
+              {t("sections.main.bannerTitle")}
+            </h2>
+          </div>
+          <div className="govie-notification-banner__content">
+            <p className="govie-notification-banner__heading">
+              {t("sections.main.note")}
+            </p>
+          </div>
         </div>
 
         <div className="two-columns-layout">
