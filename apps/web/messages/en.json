@@ -323,9 +323,9 @@
     },
     "GovernmentDetails": {
       "title": "About your work",
-      "subTitle": "This pilot is for government employees only.",
-      "paragraph": "We require your work email address to verify you before adding you to the pilot.",
-      "govIEEmail": "Your work email <red>*</red>",
+      "subTitle": "This pilot is only for government users.",
+      "paragraph": "We will need you to verify your work email address before adding the user to the pilot.",
+      "govIEEmail": "Your work email address <red>*</red>",
       "jobTitle": "Your job title",
       "checkbox": "I confirm that I am a government employee and I consent to taking part in the Government Digital Wallet pilot.",
       "submitText": "Confirm and continue"
