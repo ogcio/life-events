@@ -2,9 +2,11 @@ import Link from "next/link";
 import ds from "design-system/";
 import UserIcon from "./UserIcon";
 import { useTranslations } from "next-intl";
+import { BuildingBlockSelector } from "shared-components";
 import { headers } from "next/headers";
 import "./Header.css";
-export default () => {
+
+export default ({ locale }: { locale: string }) => {
   const t = useTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
@@ -16,6 +18,9 @@ export default () => {
         // all designs are made for 1440px
         style={{ maxWidth: "1440px" }}
       >
+        <div style={{ float: "left", marginTop: "5px", marginRight: "15px" }}>
+          <BuildingBlockSelector locale={locale as "en" | "ga"} />
+        </div>
         <div className="govie-header__logo">
           <a
             href={new URL("/", process.env.HOST_URL).href}

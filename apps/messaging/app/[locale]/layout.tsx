@@ -23,7 +23,7 @@ export default function RootLayout({
           flexDirection: "column",
         }}
       >
-        <Header />
+        <Header locale={params.locale} />
         {/* All designs are made for 1440 px  */}
         <div
           className="govie-width-container"
