@@ -1,5 +1,6 @@
 import { colours } from "./colours.js";
 import Icon from "./Icons/Icon.js";
+import BuildingBlockSelector from "./BuildingBlocksSelector/Selector.js";
 
 /**
  *
@@ -14,5 +15,7 @@ export function hexToRgba(hex: string, o: number) {
     ?.map((item) => parseInt(item, 16)) ?? [0, 0, 0];
   return `rgba(${parts.join(", ")} , 0.${o.toString().padStart(2, "0")})`;
 }
+
+export { BuildingBlockSelector };
 
 export default { colours, Icon, hexToRgba };
