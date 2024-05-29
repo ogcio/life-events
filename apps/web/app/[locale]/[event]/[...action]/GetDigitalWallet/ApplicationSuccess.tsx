@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const t = useTranslations("ApplicationSuccessful");
+  const t = useTranslations("GetDigitalWallet.ApplicationSuccessful");
 
   async function returnToPortalAction() {
     "use server";
@@ -19,6 +19,11 @@ export default (props: Props) => {
     <>
       <div className="govie-grid-column-two-thirds-from-desktop">
         <div className="govie-heading-l">{t("title")}</div>
+
+        <p className="govie-body">{t("paragraph-1")}</p>
+        <p className="govie-body">{t("paragraph-2")}</p>
+        <p className="govie-body">{t("paragraph-3")}</p>
+
         <p className="govie-body">{t("getDigitalWalletBody")}</p>
         <div className="govie-heading-m">{t("summaryTitle")}</div>
         <dl className="govie-summary-list">

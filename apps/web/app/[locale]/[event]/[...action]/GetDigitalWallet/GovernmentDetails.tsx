@@ -11,14 +11,14 @@ export default async (props: {
   flow: string;
 }) => {
   const { data, userId, urlBase, flow } = props;
-  const t = await getTranslations("GetDigitalWallet.YourEmployment");
+  const t = await getTranslations("GetDigitalWallet.GovernmentDetails");
   const errorT = await getTranslations("formErrors");
 
   const red = ds.colours.ogcio.red;
 
   const errors = await form.getErrorsQuery(
     props.userId,
-    routes.digitalWallet.getDigitalWallet.yourEmployment.slug,
+    routes.digitalWallet.getDigitalWallet.governmentDetails.slug,
     props.flow,
   );
 
@@ -26,6 +26,14 @@ export default async (props: {
     "use server";
 
     const formErrors: form.Error[] = [];
+
+    const isGovernmentEmployee = Boolean(formData.get("isGovernmentEmployee"));
+    formErrors.push(
+      ...form.validation.checkboxRequired(
+        form.fieldTranslationKeys.isGovernmentEmployee,
+        isGovernmentEmployee,
+      ),
+    );
 
     const govIEEmail = formData.get("govIEEmail")?.toString();
     formErrors.push(
@@ -35,27 +43,11 @@ export default async (props: {
       ),
     );
 
-    const lineManagerName = formData.get("lineManagerName")?.toString();
-    formErrors.push(
-      ...form.validation.stringNotEmpty(
-        form.fieldTranslationKeys.lineManagerName,
-        lineManagerName,
-      ),
-    );
-
-    const jobTitle = formData.get("jobTitle")?.toString();
-    formErrors.push(
-      ...form.validation.stringNotEmpty(
-        form.fieldTranslationKeys.jobTitle,
-        jobTitle,
-      ),
-    );
-
     if (formErrors.length) {
       await form.insertErrors(
         formErrors,
         userId,
-        routes.digitalWallet.getDigitalWallet.yourEmployment.slug,
+        routes.digitalWallet.getDigitalWallet.governmentDetails.slug,
         flow,
       );
 
@@ -64,11 +56,10 @@ export default async (props: {
 
     const data: Pick<
       workflow.GetDigitalWallet,
-      "govIEEmail" | "lineManagerName" | "jobTitle"
+      "govIEEmail" | "isGovernmentEmployee"
     > = {
       govIEEmail: "",
-      lineManagerName: "",
-      jobTitle: "",
+      isGovernmentEmployee: false,
     };
 
     const formIterator = formData.entries();
@@ -77,7 +68,7 @@ export default async (props: {
     while (!iterResult.done) {
       const [key, value] = iterResult.value;
 
-      if (["govIEEmail", "lineManagerName", "jobTitle"].includes(key)) {
+      if (["govIEEmail", "jobTitle", "isGovernmentEmployee"].includes(key)) {
         data[key] = value;
       }
 
@@ -128,12 +119,8 @@ export default async (props: {
     (row) => row.field === form.fieldTranslationKeys.govIEEmail,
   );
 
-  const lineManagerNameError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.lineManagerName,
-  );
-
-  const jobTitleError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.jobTitle,
+  const isGovernmentEmployeeError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.isGovernmentEmployee,
   );
 
   return (
@@ -142,6 +129,42 @@ export default async (props: {
         <h1 className="govie-heading-l">{t("title")}</h1>
         <p className="govie-heading-s">{t("subTitle")}</p>
         <form action={submitAction} style={{ maxWidth: "590px" }}>
+          <div
+            className={`govie-form-group ${
+              isGovernmentEmployeeError ? "govie-form-group--error" : ""
+            }`.trim()}
+          >
+            <fieldset className="govie-fieldset" aria-describedby="">
+              {isGovernmentEmployeeError && (
+                <p id="nationality-error" className="govie-error-message">
+                  <span className="govie-visually-hidden">Error:</span>{" "}
+                  {errorT(isGovernmentEmployeeError.messageKey)}
+                </p>
+              )}
+              <div
+                className="govie-checkboxes govie-checkboxes--small"
+                data-module="govie-checkboxes"
+              >
+                <div className="govie-checkboxes__item">
+                  <input
+                    className="govie-checkboxes__input"
+                    id="isGovernmentEmployee"
+                    name="isGovernmentEmployee"
+                    type="checkbox"
+                    value="employment-tribunal"
+                  />
+                  <label
+                    className="govie-checkboxes__label"
+                    htmlFor="isGovernmentEmployee"
+                  >
+                    {t("checkbox")}
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+
+          <p className="govie-heading-s">{t("paragraph")}</p>
           <div
             className={`govie-form-group ${
               govIEEmailError ? "govie-form-group--error" : ""
@@ -176,83 +199,6 @@ export default async (props: {
               }`.trim()}
               defaultValue={
                 govIEEmailError ? govIEEmailError.errorValue : data.govIEEmail
-              }
-            />
-          </div>
-
-          <div
-            className={`govie-form-group ${
-              lineManagerNameError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <h1 className="govie-label-wrapper">
-              <label htmlFor="email" className="govie-label--s govie-label--l">
-                {t.rich("lineManagerName", {
-                  red: (chunks) => <span style={{ color: red }}>{chunks}</span>,
-                })}
-              </label>
-            </h1>
-            {lineManagerNameError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(lineManagerNameError.messageKey, {
-                  field: errorT(`fields.${lineManagerNameError.field}`),
-                  indArticleCheck:
-                    lineManagerNameError.messageKey ===
-                    form.errorTranslationKeys.empty
-                      ? "an"
-                      : "",
-                })}
-              </p>
-            )}
-            <input
-              type="text"
-              id="lineManagerName"
-              name="lineManagerName"
-              className={`govie-input ${
-                lineManagerNameError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={
-                lineManagerNameError
-                  ? lineManagerNameError.errorValue
-                  : data.lineManagerName
-              }
-            />
-          </div>
-
-          <div
-            className={`govie-form-group ${
-              jobTitleError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <h1 className="govie-label-wrapper">
-              <label
-                htmlFor="jobTitle"
-                className="govie-label--s govie-label--l"
-              >
-                {t.rich("jobTitle", {
-                  red: (chunks) => <span style={{ color: red }}>{chunks}</span>,
-                })}
-              </label>
-            </h1>
-            {jobTitleError && (
-              <p id="input-field-error" className="govie-error-message">
-                <span className="govie-visually-hidden">Error:</span>
-                {errorT(jobTitleError.messageKey, {
-                  field: errorT(`fields.${jobTitleError.field}`),
-                  indArticleCheck: "",
-                })}
-              </p>
-            )}
-            <input
-              type="text"
-              id="jobTitle"
-              name="jobTitle"
-              className={`govie-input ${
-                jobTitleError ? "govie-input--error" : ""
-              }`.trim()}
-              defaultValue={
-                jobTitleError ? jobTitleError.errorValue : data.jobTitle
               }
             />
           </div>
