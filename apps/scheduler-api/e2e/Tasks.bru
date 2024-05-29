@@ -1,22 +1,32 @@
 meta {
-  name: Healthcheck
+  name: Tasks
   type: http
-  seq: 1
+  seq: 2
 }
 
-get {
-  url: {{baseUrl}}/health
+post {
+  url: {{baseUrl}}/api/v1/tasks
   body: none
   auth: none
 }
 
+headers {
+  x-user-id: "1"
+}
+
 assert {
   res.status: eq 200
-  res.body.status: eq 'ok'
 }
 
 script:pre-request {
   //Placeholder for any setup before making the request
+  const date = new Date().toISOString();
+  
+  req.setBody([{
+    "executeAt": date,
+    "webhookUrl": `https://webhook-test.com/b9b364738010d07583c4eeca932592d9`,
+    "webhookAuth": "..."
+  }]);
 }
 
 script:post-response {
@@ -28,9 +38,5 @@ tests {
   test("res.status should be 200", function() {
     const data = res.getBody();
     expect(res.getStatus()).to.equal(200);
-  });
-  test("res.body should be correct", function() {
-    const data = res.getBody();
-    expect(data.status).to.equal('ok');
   });
 }

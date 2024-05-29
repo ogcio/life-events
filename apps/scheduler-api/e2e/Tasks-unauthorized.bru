@@ -1,0 +1,35 @@
+meta {
+  name: Tasks-unauthorized
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/tasks
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 401
+  res.body.message: eq Unauthorized
+}
+
+script:pre-request {
+  //Placeholder for any setup before making the request
+  const date = new Date().toISOString();
+  
+  req.setBody([{
+    "executeAt": date,
+    "webhookUrl": "webhook",
+    "webhookAuth": "..."
+  }]);
+}
+
+script:post-response {
+  //Placeholder for any post response logic
+}
+
+tests {
+  // Allows for more complex tests on the response beyond the basic inbuilt assert library
+}
