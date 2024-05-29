@@ -4,13 +4,19 @@
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-  left: 0;
   right: 0;
   padding: 20px;
   position: absolute;
   top: 70px;
   z-index: 100;
-  width: 100%;
+  max-width: 450px;
+}
+
+.tileIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .tile {

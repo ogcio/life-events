@@ -84,24 +84,15 @@ export default function ({ locale }: { locale: "en" | "ga" }) {
   // In case JS is not enabled, the tiles are just a link to the main building blocks landing page
   if (!isJsEnabled)
     return (
-      <a href={buildingBlocksMainLandingPage}>
+      <a href={buildingBlocksMainLandingPage} className="tileIcon">
         <ds.Icon icon="tiles" color={ds.colours.ogcio.white} size={22} />
       </a>
     );
 
   return (
     <>
-      <a
-        onClick={handleTilesClick}
-        style={{
-          cursor: "pointer",
-          position: "relative",
-          display: "inline-block",
-        }}
-      >
+      <a className="tileIcon" onClick={handleTilesClick}>
         <ds.Icon icon="tiles" color={ds.colours.ogcio.white} size={22} />
-        {/* White triangle to show on the bottom of the button */}
-        {isTilesBarOpen && <div className="triangle"></div>}
       </a>
 
       {isTilesBarOpen && (

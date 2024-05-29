@@ -40,7 +40,6 @@ export default async ({ locale }: HeaderProps) => {
           }}
         >
           <div className={styles.leftSideContainer}>
-            <BuildingBlockSelector locale={locale as "en" | "ga"} />
             <Hamburger
               userName={`${firstName} ${lastName}`}
               publicServant={publicServant}
@@ -82,6 +81,10 @@ export default async ({ locale }: HeaderProps) => {
             >
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
             </Link>
+            <BuildingBlockSelector locale={locale as "en" | "ga"} />
+          </div>
+          <div className={styles.buildingBlocksSelector}>
+            <BuildingBlockSelector locale={locale as "en" | "ga"} />
           </div>
         </div>
       </div>

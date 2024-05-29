@@ -18,9 +18,6 @@ export default ({ locale }: { locale: string }) => {
         // all designs are made for 1440px
         style={{ maxWidth: "1440px" }}
       >
-        <div style={{ float: "left", marginTop: "5px", marginRight: "15px" }}>
-          <BuildingBlockSelector locale={locale as "en" | "ga"} />
-        </div>
         <div className="govie-header__logo">
           <a
             href={new URL("/", process.env.HOST_URL).href}
@@ -148,6 +145,8 @@ export default ({ locale }: { locale: string }) => {
             >
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
             </Link>
+
+            <BuildingBlockSelector locale={locale as "en" | "ga"} />
           </div>
         </div>
       </div>
