@@ -21,6 +21,8 @@ const availableLinks = {
     learnMoreForm:
       "https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22",
     paymentsUrl: "https://payments.dev.blocks.gov.ie/en/info",
+    formsUrl: "https://forms.dev.blocks.gov.ie/en",
+    messagingUrl: "https://messaging.dev.blocks.gov.ie/en/info",
     feedbackLink:
       "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
   },
@@ -28,6 +30,8 @@ const availableLinks = {
     learnMoreForm:
       "https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22",
     paymentsUrl: "https://payments.sta.blocks.gov.ie/en/info",
+    formsUrl: "https://forms.sta.blocks.gov.ie/en",
+    messagingUrl: "https://messaging.sta.blocks.gov.ie/en/info",
     feedbackLink:
       "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
   },
@@ -140,9 +144,9 @@ export default async function () {
             <h1 className="govie-heading-l">{t("sections.messaging.title")}</h1>
 
             <p className="govie-body">{t("sections.messaging.description")}</p>
-            {/* <a className="govie-link" href="/">
+            <a className="govie-link" href={links.messagingUrl}>
               {t("sections.messaging.cta")}
-            </a> */}
+            </a>
           </div>
         </div>
 
@@ -191,9 +195,9 @@ export default async function () {
             <h1 className="govie-heading-l">{t("sections.forms.title")}</h1>
 
             <p className="govie-body">{t("sections.forms.description")}</p>
-            {/* <a className="govie-link" href="/">
+            <a className="govie-link" href={links.formsUrl}>
               {t("sections.forms.cta")}
-            </a> */}
+            </a>
           </div>
         </div>
       </div>

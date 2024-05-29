@@ -18,7 +18,6 @@ const availableLinks = {
 
 export default async ({ children , params}: { children: React.ReactNode, params: { locale: string } }) => {
   const t = await getTranslations("AlphaBanner");
-  const { publicServant, firstName, lastName } = await PgSessions.get();
   //Let's hardcode Dev for now, in a separate PR - we will add an env var to handle that
   const environment = "DEV";
   const links = availableLinks[environment];
@@ -47,14 +46,7 @@ export default async ({ children , params}: { children: React.ReactNode, params:
           </p>
         </div>
         <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
-          <div style={{ display: "flex", gap: "30px" }}>
-            <SideMenu
-              options={await messages.sideMenuOptions(publicServant)}
-              selected={routes.messages.slug}
-              userName={`${firstName} ${lastName}`}
-            />
-            <div style={{ width: "100%" }}>{children}</div>
-          </div>
+          {children}
         </div>
       </div>
       <Footer />
