@@ -43,7 +43,7 @@ export default async function () {
     <>
       <Header />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <div className="govie-phase-banner">
           <p className="govie-phase-banner__content">
             <strong className="govie-tag govie-phase-banner__content__tag">
@@ -107,7 +107,7 @@ export default async function () {
       </div>
       <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <div className="two-columns-layout align-items-center">
           <div className="column">
             <h1 className="govie-heading-l">{t("sections.payments.title")}</h1>
@@ -200,7 +200,7 @@ export default async function () {
 
       <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <div>
           <h1 className="govie-heading-l">{t("sections.advantages.title")}</h1>
           <p className="govie-body">{t("sections.advantages.description")}</p>
