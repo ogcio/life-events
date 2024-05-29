@@ -383,7 +383,7 @@
     "benefits": "Benefits",
     "sections": {
       "main": {
-        "serviceName": "Payments",
+        "title": "Payments",
         "description": "Our solution provides seamless integration for secure payments, built with a robust infrastructure to meet government standards. From tax payments to licensing fees, our system enables efficient financial transactions, instilling trust and peace of mind in every interaction.",
         "cta": "Learn more"
       },
