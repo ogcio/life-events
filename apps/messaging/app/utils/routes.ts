@@ -25,3 +25,17 @@ export const templateRoutes = {
   slug: "template",
   url: `${messageTemplates.url}/template`,
 };
+
+export function urlWithSearchParams(
+  dir: string,
+  ...searchParams: { key: string; value?: string }[]
+): URL {
+  console.log(dir);
+  const url = new URL(dir, process.env.HOST_URL);
+  for (const param of searchParams) {
+    if (param.value) {
+      url.searchParams.append(param.key, param.value);
+    }
+  }
+  return url;
+}

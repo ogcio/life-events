@@ -1,17 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
-import { messageTemplates } from "../../../utils/routes";
-
-async function deleteEmailTemplateAction(formData: FormData) {
-  "use server";
-  const id = formData.get("id") as string;
-  const { userId } = await PgSessions.get();
-  await new Messaging(userId).deleteTemplate(id);
-  revalidatePath("/");
-}
+import {
+  messageTemplates,
+  templateRoutes,
+  urlWithSearchParams,
+} from "../../../utils/routes";
 
 export default async () => {
   const t = await getTranslations("MessageTemplates");
@@ -42,28 +37,24 @@ export default async () => {
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               <Link
                 className="govie-link govie-!-margin-right-3"
-                href={(() => {
-                  const url = new URL(
-                    `${messageTemplates.url}/template`,
-                    process.env.HOST_URL,
-                  );
-                  url.searchParams.append("id", template.templateMetaId);
-                  url.searchParams.append("lang", "en");
-                  return url.href;
-                })()}
+                href={
+                  urlWithSearchParams(
+                    templateRoutes.url,
+                    { key: "id", value: template.templateMetaId },
+                    { key: "lang", value: "en" },
+                  ).href
+                }
               >
                 {t("list.actions.edit")}
               </Link>
               <Link
                 className="govie-link govie-!-margin-right-3"
-                href={(() => {
-                  const url = new URL(
-                    messageTemplates.url,
-                    process.env.HOST_URL,
-                  );
-                  url.searchParams.append("delete_id", template.templateMetaId);
-                  return url.href;
-                })()}
+                href={
+                  urlWithSearchParams(messageTemplates.url, {
+                    key: "delete_id",
+                    value: template.templateMetaId,
+                  }).href
+                }
               >
                 {t("list.actions.delete")}
               </Link>

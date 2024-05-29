@@ -146,6 +146,7 @@ export default async (props: {
     <FlexMenuWrapper>
       {toDelete && props.searchParams?.deleteId && (
         <ConfirmDeleteModal
+          resourceDescription="the provider"
           id={props.searchParams.deleteId}
           onCancelAction={handleCancelDelete}
           onDeleteAction={handleDeleteProvider}

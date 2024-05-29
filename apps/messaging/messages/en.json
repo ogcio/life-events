@@ -47,7 +47,10 @@
     "saveButton": "Save",
     "updateTemplateButton": "Update template",
     "createTemplateButton": "Create template",
-    "backLink": "Back"
+    "backLink": "Back",
+    "menuEnglish": "English",
+    "menuGaelic": "Gaelic",
+    "previewButton": "Preview"
   },
   "FeedbackBanner": {
     "tag": "prototype",
