@@ -21,8 +21,9 @@ export default async function (app, opts) {
       public_servant,
       firstName,
       lastName,
+      email,
       redirect_url,
-      verifiedUser,
+      verificationLevel,
     } = request.body;
 
     const publicServantBoolean = public_servant === "on";
@@ -30,9 +31,7 @@ export default async function (app, opts) {
       reply.redirect("/static/login/api/authorize");
     }
 
-    const verifiedUserBoolean = verifiedUser === "on";
-
-    const email = `${firstName}.${lastName}@mail.ie`;
+    const verificationLevelNumber = Number(verificationLevel);
 
     const createUnsecuredJwt = (firstName, lastName, email) => {
       // Based on the govid jwt token, filled with some random data
@@ -48,15 +47,14 @@ export default async function (app, opts) {
         email: email,
         oid: Math.round(Math.random() * 100000).toString(),
         AlternateIds: "",
-        ...(verifiedUserBoolean
-          ? { BirthDate: "13/06/1941", PublicServiceNumber: "0111019P" }
-          : {}),
+        BirthDate: "13/06/1941",
+        PublicServiceNumber: "0111019P",
         LastJourney: "Login",
         givenName: firstName,
         surname: lastName,
-        mobile: "+0000000000000",
-        DSPOnlineLevel: "2",
-        DSPOnlineLevelStatic: "2",
+        mobile: verificationLevelNumber > 1 ? "0871234567" : "+0000000000000",
+        DSPOnlineLevel: verificationLevelNumber > 0 ? "2" : "0",
+        DSPOnlineLevelStatic: verificationLevelNumber > 0 ? "2" : "0",
         CustomerId: "532",
         AcceptedPrivacyTerms: true,
         AcceptedPrivacyTermsVersionNumber: "7",
@@ -69,8 +67,6 @@ export default async function (app, opts) {
         CorrelationId: "6a047981-c20e-482a-be2d-4715b5be8764",
         nbf: 1716804749,
       };
-
-      console.log("body", body);
 
       return new jose.UnsecuredJWT(body).encode();
     };

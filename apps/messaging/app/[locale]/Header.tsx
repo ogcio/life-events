@@ -2,9 +2,11 @@ import Link from "next/link";
 import ds from "design-system/";
 import UserIcon from "./UserIcon";
 import { useTranslations } from "next-intl";
+import { BuildingBlockSelector } from "shared-components";
 import { headers } from "next/headers";
 import "./Header.css";
-export default () => {
+
+export default ({ locale }: { locale: string }) => {
   const t = useTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
@@ -143,6 +145,8 @@ export default () => {
             >
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
             </Link>
+
+            <BuildingBlockSelector locale={locale} />
           </div>
         </div>
       </div>

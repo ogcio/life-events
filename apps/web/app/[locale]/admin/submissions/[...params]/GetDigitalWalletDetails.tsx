@@ -66,14 +66,13 @@ export default async ({ userId, flow, flowData }: Props) => {
                 value: flowData.govIEEmail,
               }}
             />
+
             <ListRow
               item={{
-                key: t("lineManagerName"),
-                value: flowData.lineManagerName,
+                key: t("selectDeviceText"),
+                value: flowData.deviceType?.toString() as string,
               }}
             />
-
-            <ListRow item={{ key: t("jobTitle"), value: flowData.jobTitle }} />
             <ListRow
               item={{ key: t("appStoreEmail"), value: flowData.appStoreEmail }}
             />

@@ -3,22 +3,23 @@ import { web, workflow, routes } from "../../../../utils";
 import { PgSessions } from "auth/sessions";
 import FormLayout from "../../../../components/FormLayout";
 import ApplicationSuccess from "./ApplicationSuccess";
-import BeforeYouBegin from "./BeforeYouBegin";
-import AboutYou from "./AboutYou";
-import YourEmployment from "./YourEmployment";
+import BeforeYouStart from "./BeforeYouStart";
+import GovernmentDetails from "./GovernmentDetails";
 import YourDevice from "./YourDevice";
 import DetailsSummary from "./DetailsSummary";
-import VerifyAccount from "./VerifyAccount";
+import VerifyLevel0 from "./VerifyLevel0";
+import VerifyLevel1 from "./VerifyLevel1";
 import ChangeDetails from "./ChangeDetails";
+import DeviceSelection from "./DeviceSelection";
 
-export const getDigitalWalletRulesVerified: Parameters<
+const getDigitalWalletRulesVerified: Parameters<
   typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
 >[0] = [
   // Rule 1: Check if user has read the introduction
   ({ hasReadIntro }) => {
     return !hasReadIntro
       ? {
-          key: routes.digitalWallet.getDigitalWallet.beforeYouBegin.slug,
+          key: routes.digitalWallet.getDigitalWallet.beforeYouStart.slug,
           isStepValid: true,
         }
       : {
@@ -26,27 +27,22 @@ export const getDigitalWalletRulesVerified: Parameters<
           isStepValid: true,
         };
   },
-  //Rule 2: Check if personal details are populated and confirmed
+  //Rule 2: Check if employment details are populated
   (params) =>
-    Boolean(
-      params.firstName &&
-        params.lastName &&
-        params.myGovIdEmail &&
-        params.hasConfirmedPersonalDetails,
-    )
+    Boolean(params.govIEEmail && params.isGovernmentEmployee)
       ? { key: null, isStepValid: true }
       : {
-          key: routes.digitalWallet.getDigitalWallet.aboutYou.slug,
+          key: routes.digitalWallet.getDigitalWallet.governmentDetails.slug,
           isStepValid: false,
         },
-  //Rule 3: Check if employment details are populated
-  (params) =>
-    Boolean(params.govIEEmail && params.lineManagerName && params.jobTitle)
-      ? { key: null, isStepValid: true }
-      : {
-          key: routes.digitalWallet.getDigitalWallet.yourEmployment.slug,
+  //Rule 3: Check if ios or android is selected
+  ({ deviceType }) =>
+    !deviceType
+      ? {
+          key: routes.digitalWallet.getDigitalWallet.deviceSelection.slug,
           isStepValid: false,
-        },
+        }
+      : { key: null, isStepValid: true },
   //Rule 4: Check if device details are populated
   (params) =>
     Boolean(params.appStoreEmail)
@@ -55,6 +51,7 @@ export const getDigitalWalletRulesVerified: Parameters<
           key: routes.digitalWallet.getDigitalWallet.yourDevice.slug,
           isStepValid: false,
         },
+
   // Rule 5: Check if application is confirmed
   ({ confirmedApplication }) =>
     !confirmedApplication
@@ -68,13 +65,25 @@ export const getDigitalWalletRulesVerified: Parameters<
         },
 ];
 
-export const getDigitalWalletRulesNotVerified: Parameters<
+const getDigitalWalletRulesForLevel0: Parameters<
   typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
 >[0] = [
   // Rule 1: Show how to get verified instructions
   () => {
     return {
-      key: routes.digitalWallet.getDigitalWallet.verifyMyGovIdAccount.slug,
+      key: routes.digitalWallet.getDigitalWallet.verifyLevel0.slug,
+      isStepValid: true,
+    };
+  },
+];
+
+export const getDigitalWalletRulesForLevel1: Parameters<
+  typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
+>[0] = [
+  // Rule 1: Show how to get verified instructions
+  () => {
+    return {
+      key: routes.digitalWallet.getDigitalWallet.verifyLevel1.slug,
       isStepValid: true,
     };
   },
@@ -93,7 +102,7 @@ type FormProps = {
   eventsPageHref: string;
 };
 
-const BeforeYouBeginStep: React.FC<FormProps> = ({
+const BeforeYouStartStep: React.FC<FormProps> = ({
   stepSlug,
   actionSlug,
   nextSlug,
@@ -107,7 +116,7 @@ const BeforeYouBeginStep: React.FC<FormProps> = ({
       step={stepSlug}
       backHref={eventsPageHref}
     >
-      <BeforeYouBegin
+      <BeforeYouStart
         data={data}
         flow={workflow.keys.getDigitalWallet}
         userId={userId}
@@ -118,7 +127,7 @@ const BeforeYouBeginStep: React.FC<FormProps> = ({
   );
 };
 
-const AboutYouStep: React.FC<FormProps> = ({
+const GovernmentDetailsStep: React.FC<FormProps> = ({
   stepSlug,
   actionSlug,
   nextSlug,
@@ -133,11 +142,11 @@ const AboutYouStep: React.FC<FormProps> = ({
       step={stepSlug}
       backHref={eventsPageHref}
     >
-      <AboutYou
+      <GovernmentDetails
         data={data}
-        flow={workflow.keys.getDigitalWallet}
-        userId={userId}
         urlBase={urlBase}
+        flow={workflow.keys.getDigitalWallet}
+        userId={userId}
       />
     </FormLayout>
   ) : (
@@ -145,7 +154,7 @@ const AboutYouStep: React.FC<FormProps> = ({
   );
 };
 
-const YourEmploymentStep: React.FC<FormProps> = ({
+const DeviceSelectionStep: React.FC<FormProps> = ({
   stepSlug,
   actionSlug,
   nextSlug,
@@ -160,7 +169,7 @@ const YourEmploymentStep: React.FC<FormProps> = ({
       step={stepSlug}
       backHref={eventsPageHref}
     >
-      <YourEmployment
+      <DeviceSelection
         data={data}
         flow={workflow.keys.getDigitalWallet}
         userId={userId}
@@ -241,10 +250,18 @@ const ApplicationSuccessStep: React.FC<FormProps> = ({
   );
 };
 
-const VerifyAccountStep: React.FC<FormProps> = ({ actionSlug, stepSlug }) => {
+const VerifyLevel0Step: React.FC<FormProps> = ({ actionSlug, stepSlug }) => {
   return (
     <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
-      <VerifyAccount />
+      <VerifyLevel0 />
+    </FormLayout>
+  );
+};
+
+const VerifyLevel1Step: React.FC<FormProps> = ({ actionSlug, stepSlug }) => {
+  return (
+    <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
+      <VerifyLevel1 />
     </FormLayout>
   );
 };
@@ -269,31 +286,37 @@ const ChangeDetailsStep: React.FC<FormProps> = ({
 };
 
 const FormComponentsMap = {
-  [routes.digitalWallet.getDigitalWallet.beforeYouBegin.slug]:
-    BeforeYouBeginStep,
-  [routes.digitalWallet.getDigitalWallet.aboutYou.slug]: AboutYouStep,
-  [routes.digitalWallet.getDigitalWallet.yourEmployment.slug]:
-    YourEmploymentStep,
+  [routes.digitalWallet.getDigitalWallet.beforeYouStart.slug]:
+    BeforeYouStartStep,
+  [routes.digitalWallet.getDigitalWallet.governmentDetails.slug]:
+    GovernmentDetailsStep,
+  [routes.digitalWallet.getDigitalWallet.deviceSelection.slug]:
+    DeviceSelectionStep,
   [routes.digitalWallet.getDigitalWallet.yourDevice.slug]: YourDeviceStep,
+
   [routes.digitalWallet.getDigitalWallet.checkDetails.slug]: DetailsSummaryStep,
   [routes.digitalWallet.getDigitalWallet.applicationSuccess.slug]:
     ApplicationSuccessStep,
-  [routes.digitalWallet.getDigitalWallet.verifyMyGovIdAccount.slug]:
-    VerifyAccountStep,
+  [routes.digitalWallet.getDigitalWallet.verifyLevel0.slug]: VerifyLevel0Step,
+  [routes.digitalWallet.getDigitalWallet.verifyLevel1.slug]: VerifyLevel1Step,
   [routes.digitalWallet.getDigitalWallet.changeDetails.slug]: ChangeDetailsStep,
 };
 
+export const verificationLevelToRulesMap = {
+  0: getDigitalWalletRulesForLevel0,
+  1: getDigitalWalletRulesForLevel1,
+  2: getDigitalWalletRulesVerified,
+};
+
 export default async (props: web.NextPageProps) => {
-  const { userId, hasGovIdVerifiedAccount } = await PgSessions.get();
+  const { userId, verificationLevel } = await PgSessions.get();
 
   const data = await workflow.getFlowData(
     workflow.keys.getDigitalWallet,
     workflow.emptyGetDigitalWallet(),
   );
 
-  const rules = hasGovIdVerifiedAccount
-    ? getDigitalWalletRulesVerified
-    : getDigitalWalletRulesNotVerified;
+  const rules = verificationLevelToRulesMap[verificationLevel];
 
   const { key: nextSlug, isStepValid } = workflow.getCurrentStep(rules, data);
 
