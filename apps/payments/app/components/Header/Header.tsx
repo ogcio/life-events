@@ -6,9 +6,9 @@ import HeaderSvg from "./HeaderSvg";
 import LanguageSwitch from "./LanguageSwitch";
 import UserIcon from "./UserIcon";
 import { getUser } from "../../../libraries/auth";
+import { BuildingBlockSelector } from "shared-components";
 
 import styles from "./Header.module.scss";
-// import BuildingBlocksSelectorWrapper from "./BuildingBlocksSelectorWrapper";
 
 type HeaderProps = {
   locale: string;
@@ -40,7 +40,7 @@ export default async ({ locale }: HeaderProps) => {
           }}
         >
           <div className={styles.leftSideContainer}>
-            {/* <BuildingBlocksSelectorWrapper locale={locale as "en" | "ga"} /> */}
+            <BuildingBlockSelector locale={locale as "en" | "ga"} />
             <Hamburger
               userName={`${firstName} ${lastName}`}
               publicServant={publicServant}

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import ds from "../index.js";
+import ds from "design-system/";
 import { ComponentProps } from "react";
 
 import "./selector.css";

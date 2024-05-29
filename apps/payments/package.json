@@ -14,7 +14,8 @@
   "nodemonConfig": {
     "watch": [
       "../../packages/auth/**/*",
-      "../../packages/feature-flags/**/*"
+      "../../packages/feature-flags/**/*",
+      "../../packages/shared-components/**/*"
     ],
     "ext": "ts,tsx, json",
     "exec": "next dev -p 3001"
@@ -24,6 +25,7 @@
     "@stripe/react-stripe-js": "^2.6.2",
     "@stripe/stripe-js": "^3.0.10",
     "auth": "*",
+    "shared-components": "*",
     "axios": "^1.6.8",
     "building-blocks-sdk": "*",
     "dayjs": "^1.11.10",
