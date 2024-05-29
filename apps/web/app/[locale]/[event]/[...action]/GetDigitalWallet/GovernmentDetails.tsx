@@ -131,6 +131,42 @@ export default async (props: {
         <form action={submitAction} style={{ maxWidth: "590px" }}>
           <div
             className={`govie-form-group ${
+              isGovernmentEmployeeError ? "govie-form-group--error" : ""
+            }`.trim()}
+          >
+            <fieldset className="govie-fieldset" aria-describedby="">
+              {isGovernmentEmployeeError && (
+                <p id="nationality-error" className="govie-error-message">
+                  <span className="govie-visually-hidden">Error:</span>{" "}
+                  {errorT(isGovernmentEmployeeError.messageKey)}
+                </p>
+              )}
+              <div
+                className="govie-checkboxes govie-checkboxes--small"
+                data-module="govie-checkboxes"
+              >
+                <div className="govie-checkboxes__item">
+                  <input
+                    className="govie-checkboxes__input"
+                    id="isGovernmentEmployee"
+                    name="isGovernmentEmployee"
+                    type="checkbox"
+                    value="employment-tribunal"
+                  />
+                  <label
+                    className="govie-checkboxes__label"
+                    htmlFor="isGovernmentEmployee"
+                  >
+                    {t("checkbox")}
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+
+          <p className="govie-heading-s">{t("paragraph")}</p>
+          <div
+            className={`govie-form-group ${
               govIEEmailError ? "govie-form-group--error" : ""
             }`.trim()}
           >
@@ -165,41 +201,6 @@ export default async (props: {
                 govIEEmailError ? govIEEmailError.errorValue : data.govIEEmail
               }
             />
-          </div>
-
-          <div
-            className={`govie-form-group ${
-              isGovernmentEmployeeError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <fieldset className="govie-fieldset" aria-describedby="">
-              {isGovernmentEmployeeError && (
-                <p id="nationality-error" className="govie-error-message">
-                  <span className="govie-visually-hidden">Error:</span>{" "}
-                  {errorT(isGovernmentEmployeeError.messageKey)}
-                </p>
-              )}
-              <div
-                className="govie-checkboxes govie-checkboxes--small"
-                data-module="govie-checkboxes"
-              >
-                <div className="govie-checkboxes__item">
-                  <input
-                    className="govie-checkboxes__input"
-                    id="isGovernmentEmployee"
-                    name="isGovernmentEmployee"
-                    type="checkbox"
-                    value="employment-tribunal"
-                  />
-                  <label
-                    className="govie-checkboxes__label"
-                    htmlFor="isGovernmentEmployee"
-                  >
-                    {t("checkbox")}
-                  </label>
-                </div>
-              </div>
-            </fieldset>
           </div>
 
           <button type="submit" className="govie-button">

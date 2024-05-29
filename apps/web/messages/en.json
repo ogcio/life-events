@@ -46,7 +46,7 @@
     },
     "reject": "Reject",
     "get-digital-wallet": "Digital Wallet Onboarding",
-    "government-details": "Government details",
+    "government-details": "About your work",
     "before-you-start": "Before you start",
     "about-you": "About you",
     "your-employment": "Your employment",
@@ -308,9 +308,9 @@
     "BeforeYouStartForm": {
       "title": "Before you start",
 
-      "paragraph1": "You are here because you have a verified MyGovID account and can be part of the Government Digital Wallet pilot.",
-      "paragraph2": "Since only government employees can take part in the pilot, we need a few details from you for security purposes. This form won't be part of the future roll-out of the Government Digital Wallet.",
-      "paragraph3": "During the pilot, we can only install the Government Digital Wallet on one phone. If you have more than one, please choose which device you will use for now.",
+      "paragraph1": "The Government Digital Wallet is in a testing phase and you are among the first to try it out.",
+      "paragraph2": "Please note during the pilot phase, you can only install the Government Digital Wallet on one phone. Also be aware that this form is for pilot users and will not be part of the future roll-out.",
+      "paragraph3": "Before you can download the Government Digital Wallet, we need a few details from you for security purposes.",
       "paragraph4": "Please ensure that you have the following ready:",
       "listItem1": "Your work email address",
       "listItem2": "The phone that you will use to add the Government Digital Wallet pilot",
@@ -331,26 +331,36 @@
     },
     "GovernmentDetails": {
       "title": "About your work",
-      "subTitle": "The pilot is only for government users. We will need you to verify your work email address before adding the user to the pilot.",
+      "subTitle": "This pilot is for government employees only.",
+      "paragraph": "We require your work email address to verify you before adding you to the pilot.",
       "govIEEmail": "Your work email <red>*</red>",
       "jobTitle": "Your job title",
-      "checkbox": "I confirm that I am a government employee and I consent to take part in the government digital wallet pilot.",
+      "checkbox": "I confirm that I am a government employee and I consent to taking part in the Government Digital Wallet pilot.",
       "submitText": "Confirm and continue"
     },
     "DeviceSelection": {
       "title": "Device selection",
-      "subTitle": "For the pilot, we need to know the email address linked to your phone.",
+      "subTitle": "For the pilot, we need to know the email address linked to your phone. We need this information to ensure that you are added to the correct testing platform.",
       "selectDeviceText": "Please tell us which kind of device you are using.",
       "submitText": "Confirm and continue"
     },
     "YourDevice": {
       "title": "Your device",
       "ios": {
-        "text": "To find the email address linked to your device, open Settings. Select the top option (this probably has your name). Your email address is at the top of the page.",
+        "text": "This is the email address connected to the phone that will host the pilot app.",
+        "subtext": "To find the email address linked to your device:",
+        "point-1": "Open Settings.",
+        "point-2": "Select the top option (this usually has your username).",
+        "point-3": "Your email address is at the top of this page.",
         "appStoreEmail": "Apple App Store email <red>*</red>"
       },
       "android": {
-        "text": "To find the email address linked to your device, open the Play Store application and click on the button at the top-right corner next to the search bar and notifications icon (it is a round button with your profile picture or the initials of your name). This opens a pop-up window with information about your Google account. In the top section, you can find your name and, below it, your registered email address.",
+        "text": "This is the email address connected to the phone that will host the pilot app.",
+        "subtext": "To find the email address linked to your device:",
+        "point-1": "Open the Play Store application",
+        "point-2": "Click on the button at the top-right corner next to the search bar and notifications icon (it is a round button with your profile picture or the initials of your name).",
+        "point-3": "This opens a pop-up window with information about your Google account.",
+        "point-4": "In the top section, you can find your name and, below it, your registered email address.",
         "appStoreEmail": "Google Play Store email <red>*</red>"
       },
       "subTitle": "Please provide the information below:",
@@ -359,7 +369,7 @@
     },
     "DetailsSummary": {
       "title": "Check your details",
-      "subTitle": "Please confirm the details below before proceeding with the application",
+      "subTitle": "Please confirm the details below are correct before submitting your application",
       "firstName": "First name",
       "lastName": "Last name",
       "myGovIdEmail": "MyGovID email",
