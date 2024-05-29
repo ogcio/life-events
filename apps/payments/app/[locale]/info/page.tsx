@@ -54,7 +54,7 @@ export default async (props: Props) => {
         <div className="two-columns-layout">
           <div className="column">
             <h1 className="govie-heading-l custom-title">
-              {t("sections.main.serviceName")}
+              {t("sections.main.title")}
             </h1>
             <p className="govie-body">{t("sections.main.description")}</p>
             <a
