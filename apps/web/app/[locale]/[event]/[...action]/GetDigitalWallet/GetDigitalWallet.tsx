@@ -8,10 +8,11 @@ import AboutYou from "./AboutYou";
 import YourEmployment from "./YourEmployment";
 import YourDevice from "./YourDevice";
 import DetailsSummary from "./DetailsSummary";
-import VerifyAccount from "./VerifyAccount";
+import VerifyLevel0 from "./VerifyLevel0";
+import VerifyLevel1 from "./VerifyLevel1";
 import ChangeDetails from "./ChangeDetails";
 
-export const getDigitalWalletRulesVerified: Parameters<
+const getDigitalWalletRulesVerified: Parameters<
   typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
 >[0] = [
   // Rule 1: Check if user has read the introduction
@@ -68,13 +69,25 @@ export const getDigitalWalletRulesVerified: Parameters<
         },
 ];
 
-export const getDigitalWalletRulesNotVerified: Parameters<
+const getDigitalWalletRulesForLevel0: Parameters<
   typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
 >[0] = [
   // Rule 1: Show how to get verified instructions
   () => {
     return {
-      key: routes.digitalWallet.getDigitalWallet.verifyMyGovIdAccount.slug,
+      key: routes.digitalWallet.getDigitalWallet.verifyLevel0.slug,
+      isStepValid: true,
+    };
+  },
+];
+
+export const getDigitalWalletRulesForLevel1: Parameters<
+  typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
+>[0] = [
+  // Rule 1: Show how to get verified instructions
+  () => {
+    return {
+      key: routes.digitalWallet.getDigitalWallet.verifyLevel1.slug,
       isStepValid: true,
     };
   },
@@ -241,10 +254,18 @@ const ApplicationSuccessStep: React.FC<FormProps> = ({
   );
 };
 
-const VerifyAccountStep: React.FC<FormProps> = ({ actionSlug, stepSlug }) => {
+const VerifyLevel0Step: React.FC<FormProps> = ({ actionSlug, stepSlug }) => {
   return (
     <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
-      <VerifyAccount />
+      <VerifyLevel0 />
+    </FormLayout>
+  );
+};
+
+const VerifyLevel1Step: React.FC<FormProps> = ({ actionSlug, stepSlug }) => {
+  return (
+    <FormLayout action={{ slug: actionSlug }} step={stepSlug}>
+      <VerifyLevel1 />
     </FormLayout>
   );
 };
@@ -278,22 +299,26 @@ const FormComponentsMap = {
   [routes.digitalWallet.getDigitalWallet.checkDetails.slug]: DetailsSummaryStep,
   [routes.digitalWallet.getDigitalWallet.applicationSuccess.slug]:
     ApplicationSuccessStep,
-  [routes.digitalWallet.getDigitalWallet.verifyMyGovIdAccount.slug]:
-    VerifyAccountStep,
+  [routes.digitalWallet.getDigitalWallet.verifyLevel0.slug]: VerifyLevel0Step,
+  [routes.digitalWallet.getDigitalWallet.verifyLevel1.slug]: VerifyLevel1Step,
   [routes.digitalWallet.getDigitalWallet.changeDetails.slug]: ChangeDetailsStep,
 };
 
+export const verificationLevelToRulesMap = {
+  0: getDigitalWalletRulesForLevel0,
+  1: getDigitalWalletRulesForLevel1,
+  2: getDigitalWalletRulesVerified,
+};
+
 export default async (props: web.NextPageProps) => {
-  const { userId, hasGovIdVerifiedAccount } = await PgSessions.get();
+  const { userId, verificationLevel } = await PgSessions.get();
 
   const data = await workflow.getFlowData(
     workflow.keys.getDigitalWallet,
     workflow.emptyGetDigitalWallet(),
   );
 
-  const rules = hasGovIdVerifiedAccount
-    ? getDigitalWalletRulesVerified
-    : getDigitalWalletRulesNotVerified;
+  const rules = verificationLevelToRulesMap[verificationLevel];
 
   const { key: nextSlug, isStepValid } = workflow.getCurrentStep(rules, data);
 

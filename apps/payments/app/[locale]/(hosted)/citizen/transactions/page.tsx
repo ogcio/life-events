@@ -18,6 +18,7 @@ import { routeDefinitions } from "../../../../routeDefinitions";
 import Pagination from "../../../../components/pagination";
 
 import styles from "./MyPaymentsPage.module.scss";
+import { redirect, RedirectType } from "next/navigation";
 
 type Props = {
   params: {
@@ -52,8 +53,10 @@ export default async function (props: Props) {
     userId,
   ).getCitizenTransactions(pagination);
 
-  if (error) {
-    errorHandler(error);
+  const errors = errorHandler(error);
+
+  if (errors?.limit || errors?.offset) {
+    return redirect("/error", RedirectType.replace);
   }
 
   const url = `/${props.params.locale}/${routeDefinitions.citizen.transactions.path()}`;

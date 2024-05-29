@@ -35,7 +35,6 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
         label={t("form.title")}
         error={state.errors.title}
         defaultValue={state.defaultState?.details?.title}
-        required={true}
       />
       <div className="govie-form-group">
         <label htmlFor="description" className="govie-label--s">
@@ -86,7 +85,6 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
         label={t("form.reference")}
         error={state.errors.reference}
         defaultValue={state.defaultState?.details?.reference}
-        required={true}
       />
       <InputField
         type="number"
@@ -102,7 +100,6 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
             ? (state.defaultState?.details?.amount / 100).toFixed(2)
             : undefined
         }
-        required={true}
       />
       <div className="govie-form-group">
         <div className="govie-checkboxes__item">
@@ -143,7 +140,6 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
         label={t("form.redirectUrl")}
         error={state.errors.redirectUrl}
         defaultValue={state.defaultState?.details?.redirectUrl}
-        required={true}
       />
 
       <h2 className="govie-heading-m">{t("form.status.header")}</h2>
