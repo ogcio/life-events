@@ -1,10 +1,9 @@
 import { ErrorTypes, ValidatorFn } from ".";
 
 const validate: ValidatorFn = (value, field, rootData, errors) => {
-  console.log(rootData);
-  const inValid = value === "active" && rootData.providers?.length === 0;
+  const invalid = value === "active" && rootData.providers?.length === 0;
 
-  if (inValid) {
+  if (invalid) {
     errors.push({
       keyword: ErrorTypes.INVALID,
       message: `Field ${field} is invalid.`,
@@ -14,7 +13,7 @@ const validate: ValidatorFn = (value, field, rootData, errors) => {
     });
   }
 
-  return !inValid;
+  return !invalid;
 };
 
 export default validate;
