@@ -23,7 +23,7 @@
   "dependencies": {
     "@logto/next": "^3.2.1",
     "@stripe/react-stripe-js": "^2.6.2",
-    "@stripe/stripe-js": "^3.0.10",
+    "@stripe/stripe-js": "^3.4.1",
     "auth": "*",
     "shared-components": "*",
     "axios": "^1.6.8",
