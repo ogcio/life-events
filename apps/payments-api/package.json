@@ -46,7 +46,7 @@
     "pg": "^8.11.3"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.13.1",
+    "@openapitools/openapi-generator-cli": "^2.13.4",
     "@types/node": "^20.11.28",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^7.5.0",
