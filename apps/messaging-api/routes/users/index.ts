@@ -12,7 +12,7 @@ const tags = ["Users"];
 
 export default async function users(app: FastifyInstance) {
   app.post(
-    "/csv",
+    "/import/csv",
     {
       preValidation: app.verifyUser,
       schema: {
@@ -30,7 +30,7 @@ export default async function users(app: FastifyInstance) {
   );
 
   app.get(
-    "/csv/template",
+    "/import/csv/template",
     {
       preValidation: app.verifyUser,
       schema: {
