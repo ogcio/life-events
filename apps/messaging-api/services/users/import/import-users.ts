@@ -14,7 +14,7 @@ import { organisationId } from "../../../utils";
 import { isNativeError } from "util/types";
 import { mapUsers } from "./map-users";
 import { RequestUser } from "../../../plugins/auth";
-import { sendInvitationsForUsersImport } from "./send-invitations";
+import { sendInvitationsForUsersImport } from "../invitations/send-invitations";
 import { PostgresDb } from "@fastify/postgres";
 
 export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";

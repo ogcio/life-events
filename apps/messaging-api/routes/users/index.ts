@@ -6,7 +6,13 @@ import {
   importCsvRecords,
 } from "../../services/users/import/import-users";
 import { HttpError } from "../../types/httpErrors";
-import { CsvRecord, CsvRecordSchema } from "../../types/usersSchemaDefinitions";
+import {
+  CsvRecord,
+  CsvRecordSchema,
+  UserInvitation,
+  UserInvitationSchema,
+} from "../../types/usersSchemaDefinitions";
+import { getInvitationForUser } from "../../services/users/invitations/accept-invitations";
 
 const tags = ["Users"];
 
@@ -69,5 +75,40 @@ export default async function users(app: FastifyInstance) {
         requestUser: request.user!,
       });
     },
+  );
+
+  app.get<{
+    Params: { organisationId: string };
+    Response: { data: UserInvitation };
+  }>(
+    "/invitations/:organisationId",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags,
+        params: Type.Object({
+          organisationId: Type.String({ format: "uuid" }),
+        }),
+        response: {
+          200: Type.Object({ data: UserInvitationSchema }),
+          400: HttpError,
+          404: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (
+      request: FastifyRequest<{
+        Params: { organisationId: string };
+        Response: { data: UserInvitation };
+      }>,
+      _reply: FastifyReply,
+    ) => ({
+      data: await getInvitationForUser({
+        userId: request.user!.id,
+        organisationId: request.params.organisationId,
+        pg: app.pg,
+      }),
+    }),
   );
 }
