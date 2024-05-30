@@ -47,7 +47,7 @@ export default async function (props: Props) {
     <>
       <Header />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <div className="govie-phase-banner">
           <p className="govie-phase-banner__content">
             <strong className="govie-tag govie-phase-banner__content__tag">
@@ -68,13 +68,25 @@ export default async function (props: Props) {
 
         <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
 
-        <div className="govie-warning-text">
-          <span className="govie-warning-text__icon" aria-hidden="true">
-            !
-          </span>
-          <strong className="govie-warning-text__text">
-            {t("sections.main.note")}
-          </strong>
+        <div
+          className="govie-notification-banner"
+          role="region"
+          aria-labelledby="govie-notification-banner-title"
+          data-module="govie-notification-banner"
+        >
+          <div className="govie-notification-banner__header">
+            <h2
+              className="govie-notification-banner__title"
+              id="govie-notification-banner-title"
+            >
+              {t("sections.main.bannerTitle")}
+            </h2>
+          </div>
+          <div className="govie-notification-banner__content">
+            <p className="govie-notification-banner__heading">
+              {t("sections.main.note")}
+            </p>
+          </div>
         </div>
 
         <div className="two-columns-layout">
@@ -93,7 +105,7 @@ export default async function (props: Props) {
 
       <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <div className="two-columns-layout">
           <div className="column">
             <h2 className="govie-heading-m">{t("sections.benefits.title")}</h2>
@@ -190,7 +202,7 @@ export default async function (props: Props) {
 
       <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <h2 className="govie-heading-m">{t("sections.getStarted.title")}</h2>
         <p className="govie-body">{t("sections.getStarted.description")}</p>
         <a

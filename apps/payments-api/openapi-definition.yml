@@ -538,12 +538,16 @@ paths:
       parameters:
         - schema:
             default: 0
+            minimum: 0
             type: number
           in: query
           name: offset
           required: false
         - schema:
             default: 10
+            minimum: 5
+            maximum: 50
+            multipleOf: 5
             type: number
           in: query
           name: limit
@@ -745,7 +749,7 @@ paths:
                   validator: RequiredValidator
                   type: string
                 amount:
-                  validator: RequiredValidator
+                  minimum: 1
                   type: number
                 redirectUrl:
                   validator: RequiredValidator
@@ -766,6 +770,7 @@ paths:
                     - type: string
                       enum:
                         - inactive
+                  validator: PaymentRequestStatusValidator
               required:
                 - title
                 - description
@@ -807,7 +812,7 @@ paths:
                   validator: RequiredValidator
                   type: string
                 amount:
-                  validator: RequiredValidator
+                  minimum: 1
                   type: number
                 redirectUrl:
                   validator: RequiredValidator
@@ -816,6 +821,10 @@ paths:
                   type: boolean
                 allowCustomAmount:
                   type: boolean
+                providers:
+                  type: array
+                  items:
+                    type: string
                 status:
                   anyOf:
                     - type: string
@@ -824,6 +833,7 @@ paths:
                     - type: string
                       enum:
                         - inactive
+                  validator: PaymentRequestStatusValidator
                 paymentRequestId:
                   type: string
                 providersUpdate:
@@ -848,6 +858,7 @@ paths:
                 - redirectUrl
                 - allowAmountOverride
                 - allowCustomAmount
+                - providers
                 - status
                 - paymentRequestId
                 - providersUpdate
@@ -1272,12 +1283,16 @@ paths:
       parameters:
         - schema:
             default: 0
+            minimum: 0
             type: number
           in: query
           name: offset
           required: false
         - schema:
             default: 10
+            minimum: 5
+            maximum: 50
+            multipleOf: 5
             type: number
           in: query
           name: limit
@@ -1599,12 +1614,16 @@ paths:
       parameters:
         - schema:
             default: 0
+            minimum: 0
             type: number
           in: query
           name: offset
           required: false
         - schema:
             default: 10
+            minimum: 5
+            maximum: 50
+            multipleOf: 5
             type: number
           in: query
           name: limit
@@ -2036,12 +2055,16 @@ paths:
       parameters:
         - schema:
             default: 0
+            minimum: 0
             type: number
           in: query
           name: offset
           required: false
         - schema:
             default: 10
+            minimum: 5
+            maximum: 50
+            multipleOf: 5
             type: number
           in: query
           name: limit

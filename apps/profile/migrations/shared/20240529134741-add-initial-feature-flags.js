@@ -22,7 +22,7 @@ exports.up = function (db) {
   var filePath = path.join(
     __dirname,
     "sqls",
-    "20240527074557-add-tags-for-users-up.sql",
+    "20240529134741-add-initial-feature-flags-up.sql",
   );
   return new Promise(function (resolve, reject) {
     fs.readFile(filePath, { encoding: "utf-8" }, function (err, data) {
@@ -40,7 +40,7 @@ exports.down = function (db) {
   var filePath = path.join(
     __dirname,
     "sqls",
-    "20240527074557-add-tags-for-users-down.sql",
+    "20240529134741-add-initial-feature-flags-down.sql",
   );
   return new Promise(function (resolve, reject) {
     fs.readFile(filePath, { encoding: "utf-8" }, function (err, data) {

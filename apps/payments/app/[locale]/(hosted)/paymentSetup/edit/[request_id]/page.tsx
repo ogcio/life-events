@@ -4,7 +4,6 @@ import PaymentSetupFormPage from "../../PaymentSetupFormPage";
 import { Payments } from "building-blocks-sdk";
 import {
   errorHandler,
-  getValidationErrors,
   paymentMethodToProviderType,
   paymentMethods,
   stringToAmount,
@@ -97,10 +96,15 @@ export default async function ({ params: { request_id, locale } }: Props) {
       toCreate: [],
     };
 
+    const providers: string[] = [];
     paymentMethods.forEach((paymentMethod) => {
       const selectedAccount = formData
         .get(`${paymentMethod}-account`)
         ?.toString();
+
+      if (selectedAccount) {
+        providers.push(selectedAccount);
+      }
 
       if (!!selectedAccount) {
         const providerData = formResult.defaultState.providerAccounts[
@@ -145,22 +149,17 @@ export default async function ({ params: { request_id, locale } }: Props) {
       status: statusField,
       paymentRequestId: details!.paymentRequestId,
       providersUpdate,
+      providers,
     };
 
     const { data: updateRes, error } = await new Payments(
       userId,
     ).updatePaymentRequest(data);
 
-    if (error) {
-      errorHandler(error);
-    }
+    formResult.errors = errorHandler(error, validationMap) ?? {};
 
     if (!error?.validation && updateRes?.id) {
       redirect(`/paymentSetup/requests/${updateRes.id}`);
-    }
-
-    if (error?.validation) {
-      formResult.errors = getValidationErrors(error.validation, validationMap);
     }
 
     return formResult;

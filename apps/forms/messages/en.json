@@ -7,6 +7,7 @@
     "sections": {
       "main": {
         "title": "FormsIE",
+        "bannerTitle": "Important",
         "note": "FormsIE is currently live as a standalone system that will soon be available as a building block, enhancing its versatility and integration capabilities.",
         "description": "Revamp your public sector department's workflow with FormsIE, an integrated solution designed for the creation and management of online forms. Bid farewell to conventional paper and PDF formats and introduce a new era of efficiency and cost savings. FormsIE is responsive, compliant with accessibility regulations and highly performant, ensuring seamless digital interactions for both administrators and users."
       },
@@ -40,7 +41,7 @@
       "getStarted": {
         "title": "Get Started",
         "description": "Ready to transition to the next level of digital forms? Contact us to schedule a demo or learn more about how FormsIE can empower your public sector department.",
-        "cta": "Get started now"
+        "cta": "Sign up to learn more"
       }
     }
   }

@@ -1,5 +1,5 @@
 import { cookies } from "next/headers.js";
-import { getPgSession } from "./sessions.js";
+import { getPgSession } from "./sessions";
 import { redirect, RedirectType } from "next/navigation.js";
 
 enum SAME_SITE_VALUES {

@@ -46,11 +46,14 @@
     },
     "reject": "Reject",
     "get-digital-wallet": "Digital Wallet Onboarding",
-    "before-you-begin": "Before you begin",
+    "government-details": "About your work",
+    "before-you-start": "Before you start",
     "about-you": "About you",
     "your-employment": "Your employment",
+    "device-selection": "Device selection",
     "your-device": "Your device",
-    "verify-mygovid-account": "Verify your MyGovID account"
+    "verify-mygovid-account-level-0": "Verify your MyGovID account",
+    "verify-mygovid-account-level-1": "Verify your MyGovID account"
   },
   "SimpleDetailsForm": {
     "userName": "Name",
@@ -302,64 +305,107 @@
     "continue": "Confirm and submit application"
   },
   "GetDigitalWallet": {
-    "BeforeYouBeginForm": {
-      "title": "Before you begin",
+    "BeforeYouStartForm": {
+      "title": "Before you start",
+
+      "paragraph1": "The Government Digital Wallet is in a testing phase and you are among the first to try it out.",
+      "paragraph2": "Please note during the pilot phase, you can only install the Government Digital Wallet on one phone. Also be aware that this form is for pilot users and will not be part of the future roll-out.",
+      "paragraph3": "Before you can download the Government Digital Wallet, we need a few details from you for security purposes.",
+      "paragraph4": "Please ensure that you have the following ready:",
+      "listItem1": "Your work email address",
+      "listItem2": "The phone that you will use to add the Government Digital Wallet pilot",
+
       "subTitle": "Please have the following information ready to proceed:",
       "appStoreEmailAddress": "Your Apple or Android app store email address",
       "myGovIdEmailAddress": "Your MyGovID email address",
       "govIEEmaildAddress": "Your gov.ie work email address",
       "continue": "Continue"
     },
-    "AboutYou": {
-      "title": "About you",
-      "subTitle": "Please check and confirm the information below:",
-      "firstName": "First name <red>*</red>",
-      "lastName": "Last name <red>*</red>",
-      "myGovIdEmail": "MyGovID email <red>*</red>",
+    "GovernmentDetails": {
+      "title": "About your work",
+      "subTitle": "This pilot is only for government users.",
+      "paragraph": "We will need you to verify your work email address before adding the user to the pilot.",
+      "govIEEmail": "Your work email address <red>*</red>",
+      "jobTitle": "Your job title",
+      "checkbox": "I confirm that I am a government employee and I consent to taking part in the Government Digital Wallet pilot.",
       "submitText": "Confirm and continue"
     },
-    "YourEmployment": {
-      "title": "Your employment",
-      "subTitle": "Please provide the information below:",
-      "lineManagerName": "Your line manager name <red>*</red>",
-      "govIEEmail": "Gov.ie work email <red>*</red>",
-      "jobTitle": "Your job title <red>*</red>",
+    "DeviceSelection": {
+      "title": "Device selection",
+      "subTitle": "For the pilot, we need to know the email address linked to your phone. We need this information to ensure that you are added to the correct testing platform.",
+      "selectDeviceText": "Please tell us which kind of device you are using.",
+      "selectDeviceLabel": "Select an option",
       "submitText": "Confirm and continue"
     },
     "YourDevice": {
       "title": "Your device",
+      "ios": {
+        "text": "This is the email address connected to the phone that will host the pilot app.",
+        "subtext": "To find the email address linked to your device:",
+        "point-1": "Open Settings.",
+        "point-2": "Select the top option (this usually has your username).",
+        "point-3": "Your email address is at the top of this page.",
+        "appStoreEmail": "Apple App Store email <red>*</red>"
+      },
+      "android": {
+        "text": "This is the email address connected to the phone that will host the pilot app.",
+        "subtext": "To find the email address linked to your device:",
+        "point-1": "Open the Play Store application",
+        "point-2": "Click on the button at the top-right corner next to the search bar and notifications icon (it is a round button with your profile picture or the initials of your name).",
+        "point-3": "This opens a pop-up window with information about your Google account.",
+        "point-4": "In the top section, you can find your name and, below it, your registered email address.",
+        "appStoreEmail": "Google Play Store email <red>*</red>"
+      },
       "subTitle": "Please provide the information below:",
       "appStoreEmail": "Apple/Android app store email <red>*</red>",
       "submitText": "Confirm and continue"
     },
     "DetailsSummary": {
       "title": "Check your details",
-      "subTitle": "Please confirm the details below before proceeding with the application",
+      "subTitle": "Please confirm the details below are correct before submitting your application",
       "firstName": "First name",
       "lastName": "Last name",
       "myGovIdEmail": "MyGovID email",
-      "lineManagerName": "Your line manager name",
       "govIEEmail": "Gov.ie work email",
       "jobTitle": "Your job title",
+      "selectDeviceText": "Your device type selection",
       "appStoreEmail": "Apple/Android app store email",
       "change": "Change",
       "submitText": "Confirm and continue"
     },
-    "VerifyAccount": {
+    "VerifyAccountLevel0": {
       "title": "Verify your MyGovId account",
-      "whyVerifyFirstParagraph": "To gain access to all the services available through the Digital Wallet, you need to verify your basic MyGovID account.",
-      "whyVerifySecondParagraph": "Please follow <link>this link to the Gov.IE website</link> for instructions on how you can get verified.",
-      "whyVerifyThirdParagraph": "We will send you an email with a link to proceed with your Digital Wallet onboarding once you are verified."
+      "whyVerifyFirstParagraph": "You have a basic MyGovID account. To ensure that your Government Digital Wallet is secure, you need to have a verified MyGovID account.",
+      "whyVerifySecondParagraph": "Please visit <link>MyGovID</link> and it will guide you through the process.",
+      "whyVerifyThirdParagraph": "Once verified, come back to the <link>Life Events portal</link> to apply for the pilot"
+    },
+    "VerifyAccountLevel1": {
+      "title": "Verify your MyGovId account",
+      "whyVerifyFirstParagraph": "You have gone through the SAFE registration process with MyGovID, but to ensure that your wallet is secure, there’s one more step.",
+      "whyVerifySecondParagraph": "The <link>MyGovID portal</link> will show you how to get a verified account that lets you avail of online services.",
+      "whyVerifyThirdParagraph": "Once verified, come back to the <link>Life Events portal</link> to apply for the Digital Wallet pilot."
     },
     "ChangeDetails": {
       "firstName": "First name <red>*</red>",
       "lastName": "Last name <red>*</red>",
       "myGovIdEmail": "MyGovID email <red>*</red>",
-      "lineManagerName": "Your line manager name <red>*</red>",
       "govIEEmail": "Gov.ie work email <red>*</red>",
-      "jobTitle": "Your job title <red>*</red>",
+      "jobTitle": "Your job title",
+      "selectDeviceText": "Your device type selection",
       "appStoreEmail": "Apple/Android app store email <red>*</red>",
       "submitText": "Confirm and continue"
+    },
+    "ApplicationSuccessful": {
+      "title": "What happens next?",
+      "summaryTitle": "Summary",
+      "submitText": "Return to My Portal",
+      "purpose": "Application for",
+      "date": "Date of application",
+      "getDigitalWalletBody": "Thank you for submitting your application, your request will be reviewed soon.",
+      "getDigitalWallet": "Digital wallet",
+      "paragraph-1": "We are processing your information and making sure you can be part of this exciting pilot.",
+      "paragraph-2": "Next, you need to click the link in the email we send to your government email address. This will confirm that you are a government employee and can download the app.",
+      "paragraph-3": "Soon after you have been verified as a government employee, we will send you an email describing what you need to do to download the Government Digital Wallet on the testing platform."
     }
   },
   "PaymentSuccessful": {
@@ -751,6 +797,7 @@
       "govIEEmail": "Gov.ie work email",
       "lineManagerName": "line manager name",
       "jobTitle": "Job title",
+      "selectDeviceText": "Your device type selection",
       "appStoreEmail": "Apple/Android app store email",
       "reject": "Reject",
       "approve": "Approve"
@@ -804,6 +851,7 @@
     "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
     "invalidField": "Enter {indArticleCheck, select, an {an} other {a}} valid {field}",
     "emptySelection": "No selection",
+    "checkboxRequired": "You must agree to continue",
     "noFile": "No required file selected",
     "fileUploadFail": "Failed to upload file",
     "internalServerError": "Server error",
