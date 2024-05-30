@@ -2,20 +2,23 @@ import Link from "next/link";
 import ds from "design-system/";
 import NotificationsLink from "../[locale]/notifications/NotificationsLink";
 import UserIcon from "./UserIcon";
-import { useTranslations } from "next-intl";
 import { headers } from "next/headers";
 import styles from "./Header.module.scss";
 import HamburgerButton from "./HamburgerButton";
+import { isFeatureFlagEnabled } from "feature-flags/utils";
+import { getTranslations } from "next-intl/server";
 
 type THeaderProps = {
   showHamburgerButton: boolean;
   locale: string;
 };
 
-export default ({ showHamburgerButton, locale }: THeaderProps) => {
-  const t = useTranslations("Header");
+export default async ({ showHamburgerButton, locale }: THeaderProps) => {
+  const t = await getTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
+
+  const isMessagesEnabled = await isFeatureFlagEnabled("messages");
 
   return (
     <header
@@ -127,10 +130,11 @@ export default ({ showHamburgerButton, locale }: THeaderProps) => {
               href={new URL("/ga/" + path, process.env.HOST_URL).href}
               prefetch={false}
             >
-              Gaelic
+              Gaeilge
             </Link>
           </div>
-          <NotificationsLink locale={locale} />
+
+          {isMessagesEnabled && <NotificationsLink locale={locale} />}
           <UserIcon />
 
           <Link

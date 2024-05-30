@@ -118,7 +118,7 @@ export default ({
             href={"/ga/" + pathSlice}
             prefetch={false}
           >
-            Gaelic
+            Gaeilge
           </Link>
         </div>
       </>
