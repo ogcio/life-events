@@ -38,7 +38,7 @@
     "@sinclair/typebox": "^0.32.16",
     "auth": "*",
     "dotenv": "^16.4.5",
-    "fastify": "^4.26.2",
+    "fastify": "^4.27.0",
     "fastify-plugin": "^4.5.1",
     "pg": "^8.11.3",
     "error-handler": "*",
