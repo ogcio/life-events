@@ -40,7 +40,7 @@
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.16",
     "auth": "*",
-    "fastify": "^4.26.2",
+    "fastify": "^4.27.0",
     "fastify-plugin": "^4.5.1",
     "jose": "^5.2.4",
     "pg": "^8.11.3"
