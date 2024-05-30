@@ -133,7 +133,7 @@ export default ({ locale }: { locale: string }) => {
                 }`.trim()}
                 href={new URL("/ga/" + path, process.env.HOST_URL).href}
               >
-                Gaelic
+                Gaeilge
               </Link>
             </div>
             <UserIcon />
