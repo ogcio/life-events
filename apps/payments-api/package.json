@@ -40,7 +40,7 @@
     "auth": "*",
     "dotenv": "^16.4.5",
     "error-handler": "*",
-    "fastify": "^4.26.2",
+    "fastify": "^4.27.0",
     "fastify-plugin": "^4.5.1",
     "logging-wrapper": "*",
     "pg": "^8.11.3"
