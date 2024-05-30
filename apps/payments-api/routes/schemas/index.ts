@@ -142,12 +142,14 @@ export const CreatePaymentRequest = Type.Object({
   allowAmountOverride: Type.Boolean(),
   allowCustomAmount: Type.Boolean(),
   providers: Type.Array(Type.String()),
-  status: PaymentRequestStatus,
+  status: Type.Union([PaymentRequestStatus], {
+    validator: "PaymentRequestStatusValidator",
+  }),
 });
 export type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
 
 export const EditPaymentRequest = Type.Composite([
-  Type.Omit(CreatePaymentRequest, ["providers"]),
+  CreatePaymentRequest,
   Type.Object({
     paymentRequestId: Type.String(),
     providersUpdate: Type.Object({
