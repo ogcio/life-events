@@ -14,7 +14,7 @@
     "build:auth": "npm run build --workspace=auth",
     "build:logging-wrapper": "npm run build --workspace=logging-wrapper",
     "build:error-handler": "npm run build --workspace=error-handler",
-    "build:packages": "npm run build:logging-wrapper && npm run build:error-handler && npm run build:auth",
+    "build:packages": "npm run build:logging-wrapper && npm run build:error-handler",
     "update-env": "MODE=update node scripts/init-env.mjs",
     "init:packages": "npm i && npm run build:packages",
     "init:ds": "[ -d packages/design-system/dist ] || npm run build:ds",

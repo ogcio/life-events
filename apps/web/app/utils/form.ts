@@ -15,6 +15,7 @@ export const errorTranslationKeys = {
   fileUploadFail: "fileUploadFail",
   noAuthority: "noAuthority",
   noRequirements: "noRequirements",
+  checkboxRequired: "checkboxRequired",
 };
 export const fieldTranslationKeys = {
   name: "name",
@@ -35,9 +36,11 @@ export const fieldTranslationKeys = {
   PPSN: "PPSN",
   referenceNumber: "referenceNumber",
   deceasedSurname: "deceasedSurname",
+  deviceType: "deviceType",
   appStoreEmail: "appStoreEmail",
   myGovIdEmail: "myGovIdEmail",
   govIEEmail: "govIEEmail",
+  isGovernmentEmployee: "isGovernmentEmployee",
   lineManagerName: "lineManagerName",
   jobTitle: "jobTitle",
 };
@@ -149,6 +152,17 @@ export const validation = {
             },
           ]
         : [];
+  },
+  checkboxRequired(field: string, value: boolean): Error[] {
+    return !value
+      ? [
+          {
+            field,
+            messageKey: errorTranslationKeys.checkboxRequired,
+            errorValue: value || "",
+          },
+        ]
+      : [];
   },
 };
 

@@ -383,8 +383,7 @@
     "benefits": "Benefits",
     "sections": {
       "main": {
-        "serviceName": "Payments",
-        "title": "Seamless secure payments you can trust",
+        "title": "Payments",
         "description": "Our solution provides seamless integration for secure payments, built with a robust infrastructure to meet government standards. From tax payments to licensing fees, our system enables efficient financial transactions, instilling trust and peace of mind in every interaction.",
         "cta": "Learn more"
       },
@@ -394,17 +393,17 @@
       },
       "security": {
         "title": "Enhanced Security",
-        "description": "Your data security is our top priority. Payments Building Block employs encryption protocols and undergoes regular security audits to safeguard sensitive information and maintain Payment Card Industry (PCI) compliance, giving you peace of mind."
+        "description": "Your data security is our top priority. Payments Building Block employs encryption protocols and payment providers are Payment Card Industry (PCI) compliant, giving you peace of mind."
       },
       "interface": {
         "title": "User-Friendly Interface",
-        "description": "Simplify payment management with our intuitive user interface. From generating invoices to tracking transactions, Payments Building Block's user-friendly dashboard makes payment processing a breeze for both administrators and users",
+        "description": "From generating payment requests to tracking transactions, Payments Building Block's intuitive interface makes payment processing simple for both administrators and users.",
         "citizenPOV": "Citizen Point of View",
         "publicServantPOV": "Public Servant Point of View"
       },
       "accessibility": {
         "title": "Accessibility",
-        "description": "Meet regulatory standards in relation to accessibility directive for Web Content Accessibility Guidelines (WCAG) 2.0. "
+        "description": "Designed to meet accessibility regulations such as Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users can access and interact with online payments with ease."
       },
       "support": {
         "title": "Dedicated Support",

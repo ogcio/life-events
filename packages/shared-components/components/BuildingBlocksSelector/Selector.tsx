@@ -1,30 +1,46 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ds from "design-system/";
 import { ComponentProps } from "react";
-import { useTranslations } from "next-intl";
 
-import styles from "./Tiles.module.scss";
+import "./selector.css";
 
 const buildingBlocksMainLandingPage =
   (process.env.NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE as string) ?? "#";
-const services: TileProps[] = [
+const services: {
+  url: string;
+  labelKey: "payments" | "messaging" | "lifeEvents";
+  icon: ComponentProps<typeof ds.Icon>["icon"];
+}[] = [
   {
     url: process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT ?? "#",
-    label: "payments",
+    labelKey: "payments",
     icon: "payments-service",
   },
   {
     url: process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT ?? "#",
-    label: "messaging",
+    labelKey: "messaging",
     icon: "messaging-service",
   },
   {
     url: process.env.NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT ?? "#",
-    label: "lifeEvents",
+    labelKey: "lifeEvents",
     icon: "events",
   },
 ];
+
+const translations = {
+  en: {
+    payments: "Payments",
+    messaging: "Messaging",
+    lifeEvents: "Life Events",
+  },
+  ga: {
+    payments: "Payments",
+    messaging: "Messaging",
+    lifeEvents: "Life Events",
+  },
+};
 
 const availableServices = services.filter((service) => service.url !== "#");
 
@@ -33,12 +49,12 @@ type TileProps = {
   label: string;
   icon: ComponentProps<typeof ds.Icon>["icon"];
 };
+
 const Tile = ({ url, label, icon }: TileProps) => {
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
-  const t = useTranslations();
 
   return (
-    <a href={url} className={styles.tile} style={{ backgroundColor: tintGold }}>
+    <a href={url} className="tile" style={{ backgroundColor: tintGold }}>
       <ds.Icon icon={icon} color={ds.colours.ogcio.green} size={42} />
       <p
         className="govie-heading-s"
@@ -49,13 +65,13 @@ const Tile = ({ url, label, icon }: TileProps) => {
           fontWeight: "400",
         }}
       >
-        {t(label)}
+        {label}
       </p>
     </a>
   );
 };
 
-export default function () {
+export default function ({ locale }: { locale: string }) {
   const [isJsEnabled, setIsJsEnabled] = useState(false);
   const [isTilesBarOpen, setIsTilesBarOpen] = useState(false);
   const handleTilesClick = () => setIsTilesBarOpen((status) => !status);
@@ -68,41 +84,33 @@ export default function () {
   // In case JS is not enabled, the tiles are just a link to the main building blocks landing page
   if (!isJsEnabled)
     return (
-      <a href={buildingBlocksMainLandingPage}>
+      <a href={buildingBlocksMainLandingPage} className="tileIcon">
         <ds.Icon icon="tiles" color={ds.colours.ogcio.white} size={22} />
       </a>
     );
 
   return (
     <>
-      <a
-        onClick={handleTilesClick}
-        style={{
-          cursor: "pointer",
-          position: "relative",
-          display: "inline-block",
-        }}
-      >
+      <a className="tileIcon" onClick={handleTilesClick}>
         <ds.Icon icon="tiles" color={ds.colours.ogcio.white} size={22} />
-        {/* White triangle to show on the bottom of the button */}
-        {isTilesBarOpen && <div className={styles.triangle}></div>}
       </a>
 
       {isTilesBarOpen && (
         <>
           <div
-            className={styles.tilesContainer}
+            className="tilesContainer"
             style={{ backgroundColor: ds.colours.ogcio.white }}
           >
-            {availableServices.map(({ url, label, icon }, index) => (
-              <Tile key={index} url={url} label={label} icon={icon} />
+            {availableServices.map(({ url, labelKey, icon }, index) => (
+              <Tile
+                key={index}
+                url={url}
+                label={translations[locale][labelKey]}
+                icon={icon}
+              />
             ))}
           </div>
-          <div
-            className={styles.backdrop}
-            id="backdrop"
-            onClick={closeTilesBar}
-          />
+          <div className="backdrop" id="backdrop" onClick={closeTilesBar} />
         </>
       )}
     </>

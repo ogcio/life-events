@@ -5,7 +5,7 @@ import type { OpenBankingProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
-import { errorHandler, getValidationErrors } from "../../../../../utils";
+import { errorHandler } from "../../../../../utils";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { openBankingValidationMap } from "../../../../../validationMaps";
 import { OpenBankingFormState } from "../add-openbanking/page";
@@ -78,19 +78,10 @@ export default async ({ provider, userId, locale }: Props) => {
       providerData,
     );
 
-    if (error) {
-      errorHandler(error);
-    }
+    formResult.errors = errorHandler(error, errorFieldMapping) ?? {};
 
     if (result) {
       redirect("./");
-    }
-
-    if (error?.validation) {
-      formResult.errors = getValidationErrors(
-        error.validation,
-        errorFieldMapping,
-      );
     }
 
     return formResult;
