@@ -15,13 +15,6 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const isAuthenticated = await PgSessions.isAuthenticated();
-  if (!isAuthenticated)
-    return redirect(
-      `${locale}/${routeDefinitions.info.slug}`,
-      RedirectType.replace,
-    );
-
   const t = await getTranslations("FeedbackBanner");
 
   return (
