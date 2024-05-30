@@ -148,7 +148,10 @@ export default async (props: {
       [userId, nextState],
     );
 
-    revalidatePath("/");
+    // If we dont do this check, all paths gets revalidated it seems, flushing the cache.
+    if (states.length || props.searchParams?.id) {
+      revalidatePath("/[locale]/admin/message-template/template", "page");
+    }
   }
 
   async function previewAction() {
