@@ -26,7 +26,7 @@
     "postcss": "^8.4.35",
     "rollup": "^4.9.6",
     "rollup-plugin-copy": "^3.5.0",
-    "rollup-plugin-dts": "^6.1.0",
+    "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-scss": "^4.0.0",
