@@ -34,7 +34,7 @@ export const sendInvitationsForUsersImport = async (params: {
     userIdsToSearchFor: importedUserProfileIds,
     requestUserId: params.requestUserId,
   });
-  const client = await pg.connect();
+  const client = await pg.pool.connect();
   try {
     const userInvitations = await getUserInvitations({
       userProfileIds: importedUserProfileIds,
