@@ -18,6 +18,6 @@
   "dependencies": {
     "@nearform/sql": "^1.10.5",
     "dotenv": "^16.4.5",
-    "pg": "^8.11.3"
+    "pg": "^8.11.5"
   }
 }
