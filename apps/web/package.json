@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.525.0",
-    "@aws-sdk/s3-request-presigner": "^3.525.0",
+    "@aws-sdk/s3-request-presigner": "^3.583.0",
     "auth": "*",
     "building-blocks-sdk": "*",
     "dayjs": "^1.11.10",
