@@ -41,7 +41,7 @@
     "dotenv": "^16.4.5",
     "error-handler": "*",
     "fast-csv": "^5.0.1",
-    "fastify": "^4.26.2",
+    "fastify": "^4.27.0",
     "fastify-plugin": "^4.5.1",
     "logging-wrapper": "*",
     "nodemailer": "^6.9.13",
