@@ -1,2 +1,13 @@
 delete from feature_flags where slug = 'eventsMenu';
 delete from feature_flags where slug = 'messages';
+delete from feature_flags where slug = 'timeline';
+delete from feature_flags where slug = 'digitalWallet';
+delete from feature_flags where slug = 'about-me';
+delete from feature_flags where slug = 'birth';
+delete from feature_flags where slug = 'death';
+delete from feature_flags where slug = 'events';
+delete from feature_flags where slug = 'health';
+delete from feature_flags where slug = 'driving';
+delete from feature_flags where slug = 'employment';
+delete from feature_flags where slug = 'business';
+delete from feature_flags where slug = 'housing';

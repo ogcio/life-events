@@ -42,6 +42,7 @@ export default async function RootLayout({
     url.searchParams.append("redirect_url", path ?? "/");
     redirect(url.href, RedirectType.replace);
   }
+  const someValue = await isFeatureFlagEnabled("sdfsfdsd");
 
   const showHamburgerMenu =
     (await isFeatureFlagEnabled("eventsMenu")) && !publicServant;
