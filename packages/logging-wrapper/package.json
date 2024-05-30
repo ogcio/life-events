@@ -20,7 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "@fastify/error": "^3.4.1",
-    "fastify": "^4.26.2",
+    "fastify": "^4.27.0",
     "hyperid": "^3.2.0"
   },
   "devDependencies": {
