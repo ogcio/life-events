@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@types/node": "20.10.4",
-    "@types/pg": "^8.11.0",
+    "@types/pg": "^8.11.6",
     "@types/react": "18.2.45",
     "typescript": "5.3.3"
   }
