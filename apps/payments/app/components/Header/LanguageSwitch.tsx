@@ -1,6 +1,7 @@
 import ds from "design-system";
 import { headers } from "next/headers";
 import styles from "./Header.module.scss";
+import { redirect, RedirectType } from "next/navigation";
 
 type Theme = "dark" | "light";
 
@@ -9,38 +10,72 @@ const colors: Record<Theme, string> = {
   light: ds.colours.ogcio.darkGreen,
 };
 
-export default ({ theme }: { theme: Theme }) => {
-  const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
-  const path = pathSlice.slice(2)?.join("/") || "";
+export default async ({ theme }: { theme: Theme }) => {
+  const lang = headers().get("x-next-intl-locale");
+
+  const handleLanguageChange = async (lang: string) => {
+    "use server";
+
+    const referer = headers().get("referer");
+
+    if (!referer) {
+      return;
+    }
+
+    const url = new URL(referer);
+    const pathSlice = url.pathname.split("/");
+    let path = pathSlice.slice(2)?.join("/") || "";
+
+    if (url.search) {
+      path += url.search;
+    }
+
+    return redirect(`/${lang}/${path}`, RedirectType.replace);
+  };
+
+  const englishHandler = async () => {
+    "use server";
+    return handleLanguageChange("en");
+  };
+
+  const gaelicHandler = async () => {
+    "use server";
+    return handleLanguageChange("ga");
+  };
 
   return (
-    <div className={styles.languagesContainer}>
-      <a
-        className={`govie-link govie-link--no-underline ${
-          pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
-        }`.trim()}
-        style={{ color: colors[theme] }}
-        href={new URL("/en/" + path, process.env.HOST_URL).href}
-      >
-        English
-      </a>
-      <div
-        style={{
-          height: "14px",
-          width: "1px",
-          borderLeft: `1px solid ${colors[theme]}`,
-        }}
-      />
+    <form>
+      <div className={styles.languagesContainer}>
+        <button
+          className={styles.languageSwitch}
+          style={{
+            color: colors[theme],
+            fontWeight: lang === "en" ? 700 : 400,
+          }}
+          formAction={englishHandler}
+        >
+          English
+        </button>
 
-      <a
-        className={`govie-link govie-link--no-underline  ${
-          pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
-        }`.trim()}
-        style={{ color: colors[theme] }}
-        href={new URL("/ga/" + path, process.env.HOST_URL).href}
-      >
-        Gaeilge
-      </a>
-    </div>
+        <div
+          style={{
+            height: "14px",
+            width: "1px",
+            borderLeft: `1px solid ${colors[theme]}`,
+          }}
+        />
+
+        <button
+          className={styles.languageSwitch}
+          style={{
+            color: colors[theme],
+            fontWeight: lang === "ga" ? 700 : 400,
+          }}
+          formAction={gaelicHandler}
+        >
+          Gaeilge
+        </button>
+      </div>
+    </form>
   );
 };
