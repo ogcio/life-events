@@ -35,7 +35,7 @@
     "react-dom": "^18.2.0",
     "server-only": "^0.0.1",
     "sqids": "^0.3.0",
-    "truelayer-embedded-payment-page": "^0.2.22",
+    "truelayer-embedded-payment-page": "^0.2.24",
     "truelayer-signing": "^0.1.7"
   },
   "devDependencies": {
