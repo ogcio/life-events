@@ -48,7 +48,7 @@
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
     "@playwright/test": "^1.40.1",
-    "@types/node": "20.10.4",
+    "@types/node": "20.12.13",
     "@types/pg": "^8.11.0",
     "@types/react": "18.2.45",
     "eslint-config-next": "^14.1.4",
