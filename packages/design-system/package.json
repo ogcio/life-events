@@ -20,7 +20,7 @@
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
-    "@types/react": "^18.2.55",
+    "@types/react": "^18.3.3",
     "install": "^0.13.0",
     "npm": "^10.4.0",
     "postcss": "^8.4.35",
