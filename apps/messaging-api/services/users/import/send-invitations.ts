@@ -56,7 +56,7 @@ export const sendInvitationsForUsersImport = async (params: {
     await setImportedAsInvited({
       invited: sent,
       toImportUsers: params.toImportUsers,
-      pool: params.pg.pool,
+      client,
     });
   } finally {
     client.release();
@@ -251,19 +251,19 @@ const setImportedAsInvited = async (params: {
     invitedToOrganisation: string[];
   };
   toImportUsers: UsersImport;
-  pool: Pool;
+  client: PoolClient;
 }): Promise<void> => {
   const { invitedToMessaging, invitedToOrganisation } = params.invited;
   if (invitedToMessaging.length === 0 && invitedToOrganisation.length === 0) {
     return;
   }
-  const client = await params.pool.connect();
+
   try {
-    await client.query("BEGIN");
+    await params.client.query("BEGIN");
     if (invitedToMessaging.length) {
       let userIndex = 2;
       const idsIndexes = invitedToMessaging.map(() => `$${userIndex++}`);
-      await client.query(
+      await params.client.query(
         `
           UPDATE users
           SET user_status=$1::text
@@ -275,7 +275,7 @@ const setImportedAsInvited = async (params: {
     if (invitedToOrganisation.length) {
       let userIndex = 4;
       const idsIndexes = invitedToOrganisation.map(() => `$${userIndex++}`);
-      await client.query(
+      await params.client.query(
         `
           UPDATE users
           SET organisation_user_configurations=$1::text, invitation_sent_at = $2
@@ -292,11 +292,9 @@ const setImportedAsInvited = async (params: {
       );
     }
 
-    await client.query("COMMIT");
+    await params.client.query("COMMIT");
   } catch (error) {
-    await client.query("ROLLBACK");
+    await params.client.query("ROLLBACK");
     throw error;
-  } finally {
-    client.release();
   }
 };
