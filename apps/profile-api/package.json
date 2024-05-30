@@ -58,6 +58,6 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.7.1",
     "typescript": "^5.4.2",
-    "openapi-typescript": "^6.7.5"
+    "openapi-typescript": "^6.7.6"
   }
 }
