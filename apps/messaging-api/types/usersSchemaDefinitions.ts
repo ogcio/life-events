@@ -11,6 +11,14 @@ export const InvitationStatusUnionType = Type.Union(
 );
 export type InvitationStatus = Static<typeof InvitationStatusUnionType>;
 
+export const OrgInvitationFeedbackStatusUnionType = Type.Union(
+  [Type.Literal("accepted"), Type.Literal("declined")],
+  { default: Type.Literal("accepted") },
+);
+export type OrgInvitationFeedbackStatus = Static<
+  typeof OrgInvitationFeedbackStatusUnionType
+>;
+
 export const UserStatusUnionType = Type.Union(
   [
     Type.Literal("to_be_invited"),
@@ -21,6 +29,12 @@ export const UserStatusUnionType = Type.Union(
   { default: Type.Literal("pending") },
 );
 export type UserStatus = Static<typeof UserStatusUnionType>;
+
+export const UserStatusFeedbackUnionType = Type.Union(
+  [Type.Literal("disabled"), Type.Literal("active")],
+  { default: Type.Literal("active") },
+);
+export type UserStatusFeedback = Static<typeof UserStatusFeedbackUnionType>;
 
 export const ImportChannelUnionType = Type.Union(
   [Type.Literal("api"), Type.Literal("csv")],
@@ -157,3 +171,16 @@ export const UserInvitationSchema = Type.Object({
   userStatus: UserStatusUnionType,
 });
 export type UserInvitation = Static<typeof UserInvitationSchema>;
+
+export const OrganisationInvitationFeedbackSchema = Type.Object({
+  invitationStatusFeedback: OrgInvitationFeedbackStatusUnionType,
+  preferredTransports: Type.Array(Type.String()),
+});
+export type OrganisationInvitationFeedback = Static<
+  typeof OrganisationInvitationFeedbackSchema
+>;
+
+export const InvitationFeedbackSchema = Type.Object({
+  userStatusFeedback: UserStatusFeedbackUnionType,
+});
+export type InvitationFeedback = Static<typeof InvitationFeedbackSchema>;
