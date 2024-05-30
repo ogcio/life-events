@@ -118,7 +118,7 @@ export default ({ locale }: { locale: string }) => {
               href={new URL("/ga/" + path, process.env.HOST_URL).href}
               prefetch={false}
             >
-              Gaelic
+              Gaeilge
             </Link>
           </div>
 
