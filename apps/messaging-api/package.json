@@ -45,7 +45,7 @@
     "fastify-plugin": "^4.5.1",
     "logging-wrapper": "*",
     "nodemailer": "^6.9.13",
-    "pg": "^8.11.3"
+    "pg": "^8.11.5"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.1",
