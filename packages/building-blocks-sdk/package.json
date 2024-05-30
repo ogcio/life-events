@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "openapi-fetch": "^0.9.3"
+    "openapi-fetch": "^0.9.7"
   },
   "devDependencies": {
     "@types/node": "20.10.4",
