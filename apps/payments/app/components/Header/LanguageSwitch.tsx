@@ -39,7 +39,7 @@ export default ({ theme }: { theme: Theme }) => {
         style={{ color: colors[theme] }}
         href={new URL("/ga/" + path, process.env.HOST_URL).href}
       >
-        Gaelic
+        Gaeilge
       </a>
     </div>
   );

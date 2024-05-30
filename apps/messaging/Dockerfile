@@ -24,11 +24,8 @@ COPY ./packages/shared-components/ /app/packages/shared-components/
 FROM deps AS builder
 WORKDIR /app
 
-RUN npm run build --workspace=auth
-
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
-
 RUN npm run build --workspace=apps/messaging
 
 FROM base-deps as runner

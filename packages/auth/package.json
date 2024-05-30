@@ -2,13 +2,8 @@
   "name": "auth",
   "version": "0.0.1",
   "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "rm -rf dist && tsc -w",
-    "build": "rm -rf dist && tsc"
-  },
   "exports": {
-    "./*": "./dist/*.js"
+    "./*": "./src/*.ts"
   },
   "dependencies": {
     "jose": "^5.2.2",

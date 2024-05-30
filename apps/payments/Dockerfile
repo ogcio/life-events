@@ -22,7 +22,6 @@ COPY ./packages/shared-components/ /app/packages/shared-components/
 FROM deps AS builder
 WORKDIR /app
 
-RUN npm run build --workspace=auth
 ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ARG NEXT_PUBLIC_HOST_URL
 ARG NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT
