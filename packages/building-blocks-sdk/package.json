@@ -6,7 +6,7 @@
     "openapi-fetch": "^0.9.3"
   },
   "devDependencies": {
-    "@types/node": "20.10.4",
+    "@types/node": "20.12.13",
     "typescript": "5.3.3"
   },
   "type": "module",
