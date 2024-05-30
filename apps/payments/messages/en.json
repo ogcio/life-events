@@ -260,7 +260,8 @@
           "active": "Active",
           "inactive": "Inactive",
           "activeDescription": "This payment request is active and can be used to receive payments.",
-          "inactiveDescription": "This payment request is inactive and cannot be used to receive payments."
+          "inactiveDescription": "This payment request is inactive and cannot be used to receive payments.",
+          "invalid": "Payment Request Status cannot be active if no providers are selected."
         },
         "title": "Title",
         "titleRequired": "Title is required.",
