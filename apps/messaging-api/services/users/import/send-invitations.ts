@@ -1,6 +1,6 @@
 import { FastifyBaseLogger } from "fastify";
 import { createError } from "@fastify/error";
-import { Pool, PoolClient } from "pg";
+import { PoolClient } from "pg";
 import {
   UserInvitation,
   UsersImport,
