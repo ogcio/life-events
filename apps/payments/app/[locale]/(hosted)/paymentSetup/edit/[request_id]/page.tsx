@@ -96,10 +96,15 @@ export default async function ({ params: { request_id, locale } }: Props) {
       toCreate: [],
     };
 
+    const providers: string[] = [];
     paymentMethods.forEach((paymentMethod) => {
       const selectedAccount = formData
         .get(`${paymentMethod}-account`)
         ?.toString();
+
+      if (selectedAccount) {
+        providers.push(selectedAccount);
+      }
 
       if (!!selectedAccount) {
         const providerData = formResult.defaultState.providerAccounts[
@@ -144,6 +149,7 @@ export default async function ({ params: { request_id, locale } }: Props) {
       status: statusField,
       paymentRequestId: details!.paymentRequestId,
       providersUpdate,
+      providers,
     };
 
     const { data: updateRes, error } = await new Payments(
