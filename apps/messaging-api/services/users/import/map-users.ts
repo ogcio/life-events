@@ -13,6 +13,7 @@ import { isNativeError } from "util/types";
 import { Profile } from "building-blocks-sdk";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
+import { getUserByUserProfileId } from "../shared-users";
 import { processTagsPerUser } from "../../tags/manage-tags";
 
 interface FoundUser {
@@ -376,34 +377,19 @@ const getUserIfMapped = async (params: {
   userProfileId: string;
   client: PoolClient;
 }): Promise<User | undefined> => {
+  const { userProfileId, client } = params;
   try {
-    const result = await params.client.query<User>(
-      `
-        SELECT 
-            id as "id",
-            user_profile_id as "userProfileId",
-            importer_organisation_id as "importerOrganisationId",
-            user_status as "userStatus",
-            correlation_quality as "correlationQuality"    
-        FROM users where user_profile_id = $1 LIMIT 1
-      `,
-      [params.userProfileId],
-    );
-
-    if (result.rowCount === 0) {
+    return await getUserByUserProfileId({
+      userProfileId,
+      client,
+      errorCode: IMPORT_USERS_ERROR,
+    });
+  } catch (error) {
+    if (isFastifyError(error) && error.statusCode === 404) {
       return undefined;
     }
 
-    return result.rows[0];
-  } catch (error) {
-    const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
-      IMPORT_USERS_ERROR,
-      `Error retrieving user by user profile id: ${message}`,
-      500,
-    )();
-
-    throw toOutput;
+    throw error;
   }
 };
 
