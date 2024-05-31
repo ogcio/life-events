@@ -110,6 +110,7 @@ export const ToImportUserSchema = Type.Object({
   importStatus: ImportStatusUnionType,
   importError: Type.Optional(NullableStringType),
   relatedUserProfileId: Type.Optional(NullableStringType),
+  tags: Type.Optional(Type.Array(Type.String())),
 });
 
 export type ToImportUser = Static<typeof ToImportUserSchema>;
@@ -141,6 +142,7 @@ export const CsvRecordSchema = Type.Object({
   addressStreet: NullableOptionalStringType,
   addressCountry: NullableOptionalStringType,
   addressRegion: NullableOptionalStringType,
+  tags: NullableOptionalStringType,
 });
 
 export type CsvRecord = Static<typeof CsvRecordSchema>;

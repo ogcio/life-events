@@ -1121,6 +1121,12 @@ paths:
                     anyOf:
                       - type: "null"
                       - type: string
+                  tags:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
                 required:
                   - importIndex
       responses:
