@@ -11,6 +11,7 @@ import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 import { pgpool } from "messages/dbConnection";
 import ConfirmDeleteModal from "../ConfirmDeleteModal";
+import { LANG_EN } from "../../../../types/shared";
 
 export default async (props: {
   params: { locale: string };
@@ -23,7 +24,7 @@ export default async (props: {
 
     const url = urlWithSearchParams(templateRoutes.url, {
       key: "lang",
-      value: "en",
+      value: LANG_EN,
     });
     redirect(url.href);
   }
@@ -35,7 +36,7 @@ export default async (props: {
     const client = new Messaging(authToken);
     const tmpl = await client.getTemplate(props.searchParams?.delete_id);
     const content =
-      tmpl.data?.contents.find((content) => content.lang === "en") ||
+      tmpl.data?.contents.find((content) => content.lang === LANG_EN) ||
       tmpl.data?.contents.at(0);
 
     messageNameToDelete = content?.templateName;
@@ -55,7 +56,7 @@ export default async (props: {
   async function handleCancelDelete() {
     "use server";
     const url = urlWithSearchParams(
-      `${props.params.locale || "en"}/${messageTemplates.url}`,
+      `${props.params.locale || LANG_EN}/${messageTemplates.url}`,
     );
     redirect(url.href);
   }

@@ -3,7 +3,11 @@ export const fetchCache = "force-no-store";
 import { PgSessions } from "auth/sessions";
 import { pgpool } from "messages/dbConnection";
 import { getTranslations } from "next-intl/server";
-import { AVAILABLE_LANGUAGES } from "../../../../../types/shared";
+import {
+  AVAILABLE_LANGUAGES,
+  LANG_EN,
+  LANG_GA,
+} from "../../../../../types/shared";
 import { revalidatePath } from "next/cache";
 import { linkClassName, linkStyle } from "../../providers/page";
 import { urlWithSearchParams, templateRoutes } from "../../../../utils/routes";
@@ -43,7 +47,7 @@ export async function getStates(userId: string) {
 
 function parseLang(test?: string) {
   if (!test || !AVAILABLE_LANGUAGES.includes(test)) {
-    return AVAILABLE_LANGUAGES?.[0] ?? "en";
+    return AVAILABLE_LANGUAGES?.[0] ?? LANG_EN;
   }
 
   return test;
@@ -172,8 +176,8 @@ export default async (props: {
   const initStateSize = contents.length;
 
   const lang = parseLang(props.searchParams?.lang);
-  const isEn = lang === "en";
-  const isGa = lang === "ga";
+  const isEn = lang === LANG_EN;
+  const isGa = lang === LANG_GA;
 
   // No editing of existing template case
   if (props.searchParams?.id && !contents.length) {
@@ -228,7 +232,7 @@ export default async (props: {
             href={
               urlWithSearchParams(
                 templateRoutes.url,
-                { key: searchLangKey, value: "en" },
+                { key: searchLangKey, value: LANG_EN },
                 { key: "id", value: props.searchParams?.id },
               ).href
             }
@@ -242,7 +246,7 @@ export default async (props: {
             href={
               urlWithSearchParams(
                 templateRoutes.url,
-                { key: searchLangKey, value: "ga" },
+                { key: searchLangKey, value: LANG_GA },
                 { key: "id", value: props.searchParams?.id },
               ).href
             }

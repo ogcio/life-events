@@ -8,7 +8,8 @@ import {
   templateRoutes,
   urlWithSearchParams,
 } from "../../../../../utils/routes";
-import { getTranslations } from "next-intl/server";
+
+import { LANG_EN, LANG_GA } from "../../../../../../types/shared";
 
 /**
  * Returns unique occurences of values inside double curly brackets {{}}
@@ -119,8 +120,8 @@ export default async (props: {
     );
   }
 
-  const english = states.find((state) => state.lang === "en");
-  const gaelic = states.find((state) => state.lang === "ga");
+  const english = states.find((state) => state.lang === LANG_EN);
+  const gaelic = states.find((state) => state.lang === LANG_GA);
 
   return (
     <FlexMenuWrapper>
