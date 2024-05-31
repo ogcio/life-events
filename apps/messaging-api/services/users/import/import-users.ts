@@ -15,6 +15,7 @@ import { mapUsers } from "./map-users";
 import { RequestUser } from "../../../plugins/auth";
 
 export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
+const TAGS_SEPARATOR = ";";
 
 export const getUsersFromCsv = async (
   filePath: string,
@@ -98,10 +99,20 @@ const getMockCsvRecord = (): CsvRecord => ({
   addressStreet: "Long Street 123",
   addressCountry: "Country",
   addressRegion: "Region",
+  tags: "country.county.city;parent_tag.child_tag",
 });
 
 const normalizeCsvValue = (value: string | undefined | null): string | null =>
   typeof value === "string" && value.length > 0 ? value : null;
+
+const parseTags = (toMap: CsvRecord): string[] => {
+  const tagValue = normalizeCsvValue(toMap.tags);
+  if (!tagValue) {
+    return [];
+  }
+
+  return tagValue.toLowerCase().split(TAGS_SEPARATOR);
+};
 
 const csvRecordToToImportUser = (
   toMap: CsvRecord,
@@ -122,6 +133,7 @@ const csvRecordToToImportUser = (
     street: normalizeCsvValue(toMap.addressStreet),
   },
   importStatus: importStatus,
+  tags: parseTags(toMap),
 });
 
 const insertToImportUsers = async (params: {
@@ -141,7 +153,7 @@ const insertToImportUsers = async (params: {
             users_data,
             import_channel)
          values ($1, $2, $3) RETURNING import_id
-    `,
+      `,
       [organisationId, JSON.stringify(params.toImportUsers), params.channel],
     );
 
