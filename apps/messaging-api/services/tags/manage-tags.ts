@@ -1,41 +1,30 @@
 import { PoolClient } from "pg";
 import { Tag } from "../../types/usersSchemaDefinitions";
-import { createError } from "@fastify/error";
+
+const TAGS_PATH_SEPARATOR = ".";
 
 export const processTagsPerUser = async (params: {
   userId: string;
   tags: string[];
   client: PoolClient;
-  createIfNotExists: boolean;
 }) => {
   if (params.tags.length === 0) {
     return;
   }
 
-  // explodes all the input tags to get one entry for each
-  // valid path. E.g. input tag: country.region.city
-  // will return
-  // {country: {name: country, path: country}, country.region: {name: region, path: country.region}, ...
   const tagsByPath = getAllPaths(params.tags);
-  const allPaths = [...tagsByPath.keys()];
   let fromDb = await searchTagsByPath({
-    tags: allPaths,
+    tags: tagsByPath.paths,
     client: params.client,
   });
   const fromDbTagPaths = fromDb.map((tag) => tag.tagPath);
   // get all the paths that do not exist on the db
-  const missingTags = allPaths.filter((x) => !fromDbTagPaths.includes(x));
+  const missingTags = tagsByPath.paths.filter(
+    (x) => !fromDbTagPaths.includes(x),
+  );
   if (missingTags.length > 0) {
-    if (!params.createIfNotExists) {
-      throw createError(
-        "MANAGE_TAGS_ERROR",
-        `Following tags do not exist ${missingTags.join(",")}`,
-        400,
-      );
-    }
-
     const newTags = await createNonExistentTags({
-      tagsByPath,
+      tagsByPath: tagsByPath.mapped,
       toCreateTagPaths: missingTags,
       client: params.client,
     });
@@ -78,19 +67,29 @@ const linkTagsToUser = async (params: {
 
 const getAllPaths = (
   inputPaths: string[],
-): Map<string, { tagName: string; tagPath: string }> => {
-  const allPaths = new Map<string, { tagName: string; tagPath: string }>();
+): {
+  mapped: Map<string, { tagName: string; tagPath: string }>;
+  paths: string[];
+} => {
+  const mapped = new Map<string, { tagName: string; tagPath: string }>();
+  const allPaths = new Set<string>();
   for (const path of inputPaths) {
-    const paths = path.split(".");
+    // split the tag path
+    // e.g. `country.county.city` becomes [`country`, `county`, `city`]
+    const paths = path.split(TAGS_PATH_SEPARATOR);
     const currentPath: string[] = [];
     for (const tagName of paths) {
+      // join the tags again one by one
+      // 1. `country` 2. `country.county` 3. `country.county.city`
+      // to get all the possible values
       currentPath.push(tagName);
-      const joinedPath = currentPath.join(".");
-      allPaths.set(joinedPath, { tagName, tagPath: joinedPath });
+      const joinedPath = currentPath.join(TAGS_PATH_SEPARATOR);
+      mapped.set(joinedPath, { tagName, tagPath: joinedPath });
+      allPaths.add(joinedPath);
     }
   }
 
-  return allPaths;
+  return { mapped, paths: [...allPaths] };
 };
 
 const createNonExistentTags = async (params: {

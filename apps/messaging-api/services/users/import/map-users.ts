@@ -247,7 +247,6 @@ const processToImportUser = async (params: {
   await processTagsPerUser({
     userId: user.id!,
     client: params.client,
-    createIfNotExists: true,
     tags: params.toImportUser.tags ?? [],
   });
 
