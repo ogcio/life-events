@@ -21,6 +21,9 @@ const availableLinks = {
     learnMoreForm:
       "https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22",
     paymentsUrl: "https://payments.dev.blocks.gov.ie/en/info",
+    formsUrl: "https://forms.dev.blocks.gov.ie/en",
+    messagingUrl: "https://messaging.dev.blocks.gov.ie/en/info",
+    designSystemUrl: "https://ds.dev.blocks.gov.ie/",
     feedbackLink:
       "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
   },
@@ -28,6 +31,9 @@ const availableLinks = {
     learnMoreForm:
       "https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22",
     paymentsUrl: "https://payments.sta.blocks.gov.ie/en/info",
+    formsUrl: "https://forms.sta.blocks.gov.ie/en",
+    messagingUrl: "https://messaging.sta.blocks.gov.ie/en/info",
+    designSystemUrl: "https://ds.sta.blocks.gov.ie/",
     feedbackLink:
       "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
   },
@@ -43,7 +49,7 @@ export default async function () {
     <>
       <Header />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <div className="govie-phase-banner">
           <p className="govie-phase-banner__content">
             <strong className="govie-tag govie-phase-banner__content__tag">
@@ -107,7 +113,7 @@ export default async function () {
       </div>
       <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <div className="two-columns-layout align-items-center">
           <div className="column">
             <h1 className="govie-heading-l">{t("sections.payments.title")}</h1>
@@ -140,9 +146,9 @@ export default async function () {
             <h1 className="govie-heading-l">{t("sections.messaging.title")}</h1>
 
             <p className="govie-body">{t("sections.messaging.description")}</p>
-            {/* <a className="govie-link" href="/">
+            <a className="govie-link" href={links.messagingUrl}>
               {t("sections.messaging.cta")}
-            </a> */}
+            </a>
           </div>
         </div>
 
@@ -165,9 +171,9 @@ export default async function () {
             <p className="govie-body">
               {t("sections.designSystem.description")}
             </p>
-            {/* <a className="govie-link" href="/">
+            <a className="govie-link" href={links.designSystemUrl}>
               {t("sections.designSystem.cta")}
-            </a> */}
+            </a>
           </div>
           <div className="column">
             <Image
@@ -191,16 +197,16 @@ export default async function () {
             <h1 className="govie-heading-l">{t("sections.forms.title")}</h1>
 
             <p className="govie-body">{t("sections.forms.description")}</p>
-            {/* <a className="govie-link" href="/">
+            <a className="govie-link" href={links.formsUrl}>
               {t("sections.forms.cta")}
-            </a> */}
+            </a>
           </div>
         </div>
       </div>
 
       <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
-      <div className="govie-width-container custom-width-container">
+      <div className="govie-width-container">
         <div>
           <h1 className="govie-heading-l">{t("sections.advantages.title")}</h1>
           <p className="govie-body">{t("sections.advantages.description")}</p>

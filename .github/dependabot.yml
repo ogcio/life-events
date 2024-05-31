@@ -1,11 +1,201 @@
 version: 2
 updates:
+  # Define updates for the root package.json
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
-    # Security updates only
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 5
     versioning-strategy: increase
     commit-message:
       prefix: "[npm]"
+
+  # Define updates for each workspace
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/auth-service"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/forms"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/home"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/messaging"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/messaging-api"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/mock-api"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/payments"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/payments-api"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/profile"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/profile-api"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/scheduler-api"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/timeline-api"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/apps/web"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/packages/auth"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/packages/building-blocks-sdk"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/packages/design-system"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/packages/error-handler"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/packages/feature-flags"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+
+  # - package-ecosystem: "npm"
+  #   directory: "/packages/logging-wrapper"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+      
+  # - package-ecosystem: "npm"
+  #   directory: "/packages/scheduler"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"
+      
+  # - package-ecosystem: "npm"
+  #   directory: "/packages/shared-components"
+  #   schedule:
+  #     interval: "daily"
+  #   open-pull-requests-limit: 5
+  #   versioning-strategy: increase
+  #   commit-message:
+  #     prefix: "[npm]"

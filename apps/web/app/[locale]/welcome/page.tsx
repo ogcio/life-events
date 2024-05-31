@@ -3,10 +3,7 @@ import { postgres, web, workflow } from "../../utils";
 import { PgSessions } from "auth/sessions";
 import { revalidatePath } from "next/cache";
 import { RedirectType, redirect } from "next/navigation";
-
-const agreements = {
-  storeUserData: "storeUserData",
-};
+import storeUserConsent from "../../utils/storeUserConsent";
 
 type ConsentState = {
   isInitialized: boolean;
@@ -19,8 +16,12 @@ const rules: Parameters<typeof workflow.getCurrentStep<ConsentState>>[0] = [
 ];
 
 export default async (props: web.NextPageProps) => {
-  const { userId } = await PgSessions.get();
+  const { userId, publicServant } = await PgSessions.get();
   const t = await getTranslations("UserConsentFlow");
+
+  if (publicServant) {
+    await storeUserConsent(userId, "agree");
+  }
 
   const consentsResult = await postgres.pgpool.query(
     `
@@ -36,13 +37,8 @@ export default async (props: web.NextPageProps) => {
   async function consentAction(formData: FormData) {
     "use server";
     const decision = formData.get("identity-selection");
-    await postgres.pgpool.query(
-      `
-      INSERT INTO user_consents(user_id, agreement, is_consenting)
-      VALUES($1, $2, $3)
-    `,
-      [userId, agreements.storeUserData, decision === "agree"],
-    );
+
+    await storeUserConsent(userId, decision as string);
 
     revalidatePath("/");
   }

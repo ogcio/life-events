@@ -4,7 +4,7 @@ import EditProviderForm from "./EditProviderForm";
 import type { BankTransferProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import { Payments } from "building-blocks-sdk";
-import { errorHandler, getValidationErrors } from "../../../../../utils";
+import { errorHandler } from "../../../../../utils";
 import getRequestConfig from "../../../../../../i18n";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { bankTransferValidationMap } from "../../../../../validationMaps";
@@ -19,7 +19,6 @@ type Props = {
 export default async ({ provider, userId, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddBankTransfer");
   const { messages } = await getRequestConfig({ locale });
-
 
   const errorFieldMapping = bankTransferValidationMap(t);
 
@@ -79,19 +78,10 @@ export default async ({ provider, userId, locale }: Props) => {
       providerData,
     );
 
-    if (error) {
-      errorHandler(error);
-    }
+    formResult.errors = errorHandler(error, errorFieldMapping) ?? {};
 
     if (result) {
       redirect("./");
-    }
-
-    if (error?.validation) {
-      formResult.errors = getValidationErrors(
-        error.validation,
-        errorFieldMapping,
-      );
     }
 
     return formResult;

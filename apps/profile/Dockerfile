@@ -20,11 +20,8 @@ COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 FROM deps AS builder
 WORKDIR /app
 
-RUN npm run build --workspace=auth
-
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
-
 RUN npm run build --workspace=apps/profile
 
 FROM base-deps as runner

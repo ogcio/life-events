@@ -111,13 +111,19 @@ export const paymentRequestValidationMap = (t): ValidationFieldMap => {
     amount: {
       field: "amount",
       errorMessage: {
-        [ValidationErrorTypes.REQUIRED]: t("amountRequired"),
+        [ValidationErrorTypes.MINIMUM]: t("amountRequired"),
       },
     },
     redirectUrl: {
       field: "redirectUrl",
       errorMessage: {
         [ValidationErrorTypes.REQUIRED]: t("redirectUrlRequired"),
+      },
+    },
+    status: {
+      field: "status",
+      errorMessage: {
+        [ValidationErrorTypes.INVALID]: t("status.invalid"),
       },
     },
   };

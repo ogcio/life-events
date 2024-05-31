@@ -10,10 +10,7 @@ import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
 import { Messaging } from "building-blocks-sdk";
 import { isFeatureFlagEnabled } from "feature-flags/utils";
-import {
-  getDigitalWalletRulesNotVerified,
-  getDigitalWalletRulesVerified,
-} from "./[...action]/GetDigitalWallet/GetDigitalWallet";
+import { verificationLevelToRulesMap } from "./[...action]/GetDigitalWallet/GetDigitalWallet";
 import styles from "./event.module.scss";
 
 const ChevronIcon = () => {
@@ -29,7 +26,7 @@ const ChevronIcon = () => {
   );
 };
 
-const eventRules = (flow: string, hasGovIdVerifiedAccount: boolean) => {
+const eventRules = (flow: string, verificationLevel: number) => {
   switch (flow) {
     case workflow.keys.orderEHIC:
       return orderEHICRules;
@@ -42,9 +39,7 @@ const eventRules = (flow: string, hasGovIdVerifiedAccount: boolean) => {
     case workflow.keys.applyJobseekersAllowance:
       return applyJobseekersAllowanceRules;
     case workflow.keys.getDigitalWallet:
-      return hasGovIdVerifiedAccount
-        ? getDigitalWalletRulesVerified
-        : getDigitalWalletRulesNotVerified;
+      return verificationLevelToRulesMap[verificationLevel];
     default:
       throw new Error(`Unsupported workflow: ${flow}`);
   }
@@ -67,14 +62,14 @@ function eventFlowMapper(
     category: string;
     data: workflow.Workflow;
   },
-  hasGovIdVerifiedAccount: boolean,
+  verificationLevel: number,
 ) {
   const flowKey = row.flow;
   let descriptionKey = row.flow;
   let titleKey = row.flow;
 
   const { key: step } = workflow.getCurrentStep(
-    eventRules(row.flow, hasGovIdVerifiedAccount),
+    eventRules(row.flow, verificationLevel),
     row.data,
   );
 
@@ -112,7 +107,7 @@ function eventFlowMapper(
   };
 }
 
-async function getFlows(hasGovIdVerifiedAccount: boolean) {
+async function getFlows(verificationLevel: number) {
   "use server";
 
   const { userId } = await PgSessions.get();
@@ -137,15 +132,18 @@ async function getFlows(hasGovIdVerifiedAccount: boolean) {
   }
 
   return flowsQueryResult.rows.map((row) =>
-    eventFlowMapper(row, hasGovIdVerifiedAccount),
+    eventFlowMapper(row, verificationLevel),
   );
 }
 
 export default async ({ locale }) => {
   const t = await getTranslations("MyLifeEvents");
-  const { userId, hasGovIdVerifiedAccount } = await PgSessions.get();
+  const { userId, verificationLevel } = await PgSessions.get();
+
+  const hasGovIdVerifiedAccount = verificationLevel > 1;
+
   const [flow, events] = await Promise.all([
-    getFlows(hasGovIdVerifiedAccount),
+    getFlows(verificationLevel),
     getEvents(),
   ]);
 

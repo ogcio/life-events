@@ -6,9 +6,9 @@ import HeaderSvg from "./HeaderSvg";
 import LanguageSwitch from "./LanguageSwitch";
 import UserIcon from "./UserIcon";
 import { getUser } from "../../../libraries/auth";
+import { BuildingBlockSelector } from "shared-components";
 
 import styles from "./Header.module.scss";
-import BuildingBlocksTiles from "../../[locale]/(hosted)/buildingBlocksTiles";
 
 type HeaderProps = {
   locale: string;
@@ -40,7 +40,6 @@ export default async ({ locale }: HeaderProps) => {
           }}
         >
           <div className={styles.leftSideContainer}>
-            <BuildingBlocksTiles locale={locale} />
             <Hamburger
               userName={`${firstName} ${lastName}`}
               publicServant={publicServant}
@@ -82,6 +81,10 @@ export default async ({ locale }: HeaderProps) => {
             >
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
             </Link>
+            <BuildingBlockSelector locale={locale} />
+          </div>
+          <div className={styles.buildingBlocksSelector}>
+            <BuildingBlockSelector locale={locale} />
           </div>
         </div>
       </div>

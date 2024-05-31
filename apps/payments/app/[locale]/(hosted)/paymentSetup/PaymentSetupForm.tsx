@@ -35,7 +35,6 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
         label={t("form.title")}
         error={state.errors.title}
         defaultValue={state.defaultState?.details?.title}
-        required={true}
       />
       <div className="govie-form-group">
         <label htmlFor="description" className="govie-label--s">
@@ -86,7 +85,6 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
         label={t("form.reference")}
         error={state.errors.reference}
         defaultValue={state.defaultState?.details?.reference}
-        required={true}
       />
       <InputField
         type="number"
@@ -102,7 +100,6 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
             ? (state.defaultState?.details?.amount / 100).toFixed(2)
             : undefined
         }
-        required={true}
       />
       <div className="govie-form-group">
         <div className="govie-checkboxes__item">
@@ -143,53 +140,70 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
         label={t("form.redirectUrl")}
         error={state.errors.redirectUrl}
         defaultValue={state.defaultState?.details?.redirectUrl}
-        required={true}
       />
 
-      <h2 className="govie-heading-m">{t("form.status.header")}</h2>
       <div
-        data-module="govie-radios"
-        className="govie-radios govie-radios--large"
+        className={`govie-form-group ${state.errors.status && "govie-form-group--error"}`}
       >
-        <div className="govie-radios__item">
-          <input
-            id="active"
-            name="status"
-            type="radio"
-            value="active"
-            className="govie-radios__input"
-            defaultChecked={
-              typeof state.defaultState?.details === "undefined"
-                ? true
-                : state.defaultState?.details?.status === "active"
-            }
-          />
-          <label
-            className="govie-label--s govie-radios__label"
-            htmlFor="active"
-          >
-            {t("form.status.active")}
-            <p className="govie-body">{t("form.status.activeDescription")}</p>
+        <legend className="govie-fieldset__legend govie-fieldset__legend--m">
+          <label className="govie-label--s" htmlFor="status">
+            {t("form.status.header")}
           </label>
-        </div>
+        </legend>
+        {state.errors.status && (
+          <p id="input-field-error" className="govie-error-message">
+            <span className="govie-visually-hidden">Error:</span>
+            {state.errors.status}
+          </p>
+        )}
+        <div
+          data-module="govie-radios"
+          className="govie-radios govie-radios--large"
+        >
+          <div className="govie-radios__item">
+            <input
+              id="active"
+              name="status"
+              type="radio"
+              value="active"
+              className="govie-radios__input"
+              defaultChecked={
+                typeof state.defaultState?.details === "undefined"
+                  ? true
+                  : state.defaultState?.details?.status === "active"
+              }
+            />
+            <label
+              className="govie-label--s govie-radios__label"
+              htmlFor="active"
+            >
+              {t("form.status.active")}
+              <p className="govie-body">{t("form.status.activeDescription")}</p>
+            </label>
+          </div>
 
-        <div className="govie-radios__item">
-          <input
-            id="inactive"
-            name="status"
-            type="radio"
-            value="inactive"
-            className="govie-radios__input"
-            defaultChecked={state.defaultState?.details?.status === "inactive"}
-          />
+          <div className="govie-radios__item">
+            <input
+              id="inactive"
+              name="status"
+              type="radio"
+              value="inactive"
+              className="govie-radios__input"
+              defaultChecked={
+                state.defaultState?.details?.status === "inactive"
+              }
+            />
 
-          <label
-            className="govie-label--s govie-radios__label"
-            htmlFor="inactive"
-          >
-            {t("form.status.inactive")}
-            <p className="govie-body">{t("form.status.inactiveDescription")}</p>
-          </label>
+            <label
+              className="govie-label--s govie-radios__label"
+              htmlFor="inactive"
+            >
+              {t("form.status.inactive")}
+              <p className="govie-body">
+                {t("form.status.inactiveDescription")}
+              </p>
+            </label>
+          </div>
         </div>
       </div>
 
