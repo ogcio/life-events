@@ -182,6 +182,9 @@ const sendInvitations = async (params: {
       }),
     );
     output.invitedToMessaging.push(...userIds);
+    // also push to organisation to then update the
+    // invitation on the db
+    output.invitedToOrganisation.push(...userIds);
   }
 
   for (const language of Object.keys(params.toSend.joinOrganisation)) {
@@ -204,7 +207,10 @@ const sendInvitations = async (params: {
 
   await Promise.all(sending);
 
-  return output;
+  return {
+    invitedToMessaging: [...new Set(output.invitedToMessaging)],
+    invitedToOrganisation: [...new Set(output.invitedToOrganisation)],
+  };
 };
 
 const getLanguagePerUser = (params: {
@@ -261,6 +267,7 @@ const setImportedAsInvited = async (params: {
   client: PoolClient;
 }): Promise<void> => {
   const { invitedToMessaging, invitedToOrganisation } = params.invited;
+  console.log({ invited: params.invited });
   if (invitedToMessaging.length === 0 && invitedToOrganisation.length === 0) {
     return;
   }
@@ -282,6 +289,22 @@ const setImportedAsInvited = async (params: {
     if (invitedToOrganisation.length) {
       let userIndex = 4;
       const idsIndexes = invitedToOrganisation.map(() => `$${userIndex++}`);
+      console.log({
+        idsIndexes,
+        query: `
+      UPDATE organisation_user_configurations
+      SET invitation_status=$1, invitation_sent_at = $2
+      WHERE organisation_id = $3 and user_id in (
+        SELECT id from users where user_profile_id in (${idsIndexes.join(", ")})
+      );
+    `,
+        value: [
+          "pending",
+          new Date().toISOString(),
+          params.toImportUsers.organisationId,
+          ...invitedToOrganisation,
+        ],
+      });
       await params.client.query(
         `
           UPDATE organisation_user_configurations
