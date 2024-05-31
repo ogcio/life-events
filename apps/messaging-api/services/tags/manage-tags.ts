@@ -13,26 +13,12 @@ export const processTagsPerUser = async (params: {
   }
 
   const tagsByPath = getAllPaths(params.tags);
-  let fromDb = await searchTagsByPath({
-    tags: tagsByPath.paths,
+  const tagsFromDb = await insertTags({
+    tags: tagsByPath,
     client: params.client,
   });
-  const fromDbTagPaths = fromDb.map((tag) => tag.tagPath);
-  // get all the paths that do not exist on the db
-  const missingTags = tagsByPath.paths.filter(
-    (x) => !fromDbTagPaths.includes(x),
-  );
-  if (missingTags.length > 0) {
-    const newTags = await createNonExistentTags({
-      tagsByPath: tagsByPath.mapped,
-      toCreateTagPaths: missingTags,
-      client: params.client,
-    });
-
-    fromDb = [...newTags, ...fromDb];
-  }
-
-  const toLinkTags = fromDb.filter((t) => params.tags.includes(t.tagPath));
+  // link only the tags requested in params.tags
+  const toLinkTags = tagsFromDb.filter((t) => params.tags.includes(t.tagPath));
 
   await linkTagsToUser({
     toLinkTags,
@@ -67,12 +53,8 @@ const linkTagsToUser = async (params: {
 
 const getAllPaths = (
   inputPaths: string[],
-): {
-  mapped: Map<string, { tagName: string; tagPath: string }>;
-  paths: string[];
-} => {
+): Map<string, { tagName: string; tagPath: string }> => {
   const mapped = new Map<string, { tagName: string; tagPath: string }>();
-  const allPaths = new Set<string>();
   for (const path of inputPaths) {
     // split the tag path
     // e.g. `country.county.city` becomes [`country`, `county`, `city`]
@@ -85,57 +67,35 @@ const getAllPaths = (
       currentPath.push(tagName);
       const joinedPath = currentPath.join(TAGS_PATH_SEPARATOR);
       mapped.set(joinedPath, { tagName, tagPath: joinedPath });
-      allPaths.add(joinedPath);
     }
   }
 
-  return { mapped, paths: [...allPaths] };
+  return mapped;
 };
 
-const createNonExistentTags = async (params: {
-  tagsByPath: Map<string, { tagName: string; tagPath: string }>;
-  toCreateTagPaths: string[];
+const insertTags = async (params: {
+  tags: Map<string, { tagName: string; tagPath: string }>;
   client: PoolClient;
 }): Promise<Tag[]> => {
-  const toInsertValues: string[] = [];
-  const toInsertIndexes: string[] = [];
-  let indexCount = 1;
-
-  for (const toCreate of params.toCreateTagPaths) {
-    const mapped = params.tagsByPath.get(toCreate);
-    toInsertValues.push(mapped!.tagName, mapped!.tagPath);
-    toInsertIndexes.push(`($${indexCount++}, $${indexCount++})`);
+  let valuesIndex = 1;
+  const valuesClauses: string[] = [];
+  const valuesToInsert: string[] = [];
+  for (const tag of params.tags.values()) {
+    valuesClauses.push(`($${valuesIndex++}, $${valuesIndex++})`);
+    valuesToInsert.push(tag.tagName, tag.tagPath);
   }
-
-  const queryInsert = await params.client.query<Tag>(
-    `
-        INSERT INTO tags(tag_name, tag_path)
-        VALUES ${toInsertIndexes.join(", ")}
-        RETURNING id as "id", tag_name as "tagName", tag_path as "tagPath"
-    `,
-    toInsertValues,
-  );
-
-  return queryInsert.rows;
-};
-
-const searchTagsByPath = async (params: {
-  tags: string[];
-  client: PoolClient;
-}): Promise<Tag[]> => {
-  let tagsIndex = 1;
-  const tagsValues = params.tags.map(() => `$${tagsIndex++}`);
-
+  // why "ON CONFLICT DO UPDATE" ?
+  // because in this way the "RETURNING" statement
+  // returns the tag even if it already exists
   const result = await params.client.query<Tag>(
     `
-        SELECT 
-            id as "id",
-            tag_name as "tagName",
-            tag_path as "tagPath"
-        FROM tags
-        WHERE tag_path in (${tagsValues});
+      INSERT INTO tags(tag_name, tag_path)
+        VALUES ${valuesClauses.join(", ")}
+      ON CONFLICT(tag_name, tag_path)
+      DO UPDATE SET "tag_name" = tags.tag_name  
+      RETURNING id as "id", tag_name as "tagName", tag_path as "tagPath"
     `,
-    [...params.tags],
+    valuesToInsert,
   );
 
   return result.rows;
