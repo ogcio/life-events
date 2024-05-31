@@ -8,6 +8,7 @@ type Props = {
   paymentId: string;
   resourceToken: string;
   returnUri: string;
+  maxWaitForResult: string;
 };
 
 export default function Page(props: Props) {
@@ -20,14 +21,9 @@ export default function Page(props: Props) {
       payment_id: props.paymentId,
       resource_token: props.resourceToken,
       return_uri: props.returnUri,
+      max_wait_for_result: props.maxWaitForResult,
       appearance: {
         default_color: ds.colours.ogcio.primaryButton,
-        spinner: {
-          color: ds.colours.ogcio.green,
-        },
-        illustration: {
-          color: ds.colours.ogcio.green,
-        },
       },
       onDone: () => {
         payment.unmount();
