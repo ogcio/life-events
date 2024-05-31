@@ -300,7 +300,7 @@ const setImportedAsInvited = async (params: {
     `,
         value: [
           "pending",
-          new Date().toISOString(),
+          new Date(new Date().toUTCString()).toISOString(),
           params.toImportUsers.organisationId,
           ...invitedToOrganisation,
         ],
@@ -315,7 +315,7 @@ const setImportedAsInvited = async (params: {
         `,
         [
           "pending",
-          new Date().toISOString(),
+          new Date(new Date().toUTCString()).toISOString(),
           params.toImportUsers.organisationId,
           ...invitedToOrganisation,
         ],
