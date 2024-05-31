@@ -36,6 +36,7 @@ export const sendInvitationsForUsersImport = async (params: {
   });
   const client = await pg.pool.connect();
   try {
+    await client.query("BEGIN");
     const userInvitations = await getUserInvitations({
       userProfileIds: importedUserProfileIds,
       organisationId: toImportUsers.organisationId,
@@ -58,6 +59,12 @@ export const sendInvitationsForUsersImport = async (params: {
       toImportUsers: params.toImportUsers,
       client,
     });
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+
+    throw error;
   } finally {
     client.release();
   }

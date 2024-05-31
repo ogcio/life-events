@@ -21,7 +21,7 @@ export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
 const TAGS_SEPARATOR = ";";
 
 export const importCsvFileFromRequest = async (params: {
-  req: FastifyRequest;
+  req: FastifyRequest & { user: RequestUser };
   pg: PostgresDb;
 }): Promise<void> => {
   const file = await params.req.files();
@@ -40,27 +40,14 @@ export const importCsvFileFromRequest = async (params: {
     throw new Error("Files must have at least one user");
   }
 
-  const importedUsers = await processUserImport({
-    pool: params.pg.pool,
+  await importUsers({
+    pg: params.pg,
     logger: params.req.log,
     toImportUsers: usersToImport,
+    requestUser: params.req.user,
     channel: "csv",
-    requestUser: params.req.user!,
-  });
-
-  await sendInvitationsForUsersImport({
-    pg: params.pg,
-    toImportUsers: importedUsers,
-    logger: params.req.log,
-    requestUserId: params.req.user!.id,
   });
 };
-
-export const getCsvExample = (): Promise<Buffer> =>
-  writeToBuffer([getMockCsvRecord()], {
-    headers: true,
-    alwaysWriteHeaders: true,
-  });
 
 export const importCsvRecords = async (params: {
   pg: PostgresDb;
@@ -76,21 +63,20 @@ export const importCsvRecords = async (params: {
     throw new Error("At least one user needed");
   }
 
-  const importedUsers = await processUserImport({
-    pool: params.pg.pool,
+  await importUsers({
+    pg: params.pg,
     logger: params.logger,
     toImportUsers,
-    channel: "api",
     requestUser: params.requestUser,
-  });
-
-  await sendInvitationsForUsersImport({
-    pg: params.pg,
-    toImportUsers: importedUsers,
-    logger: params.logger,
-    requestUserId: params.requestUser.id,
+    channel: "api",
   });
 };
+
+export const getCsvExample = (): Promise<Buffer> =>
+  writeToBuffer([getMockCsvRecord()], {
+    headers: true,
+    alwaysWriteHeaders: true,
+  });
 
 const getMockCsvRecord = (): CsvRecord => ({
   importIndex: 1,
@@ -118,6 +104,31 @@ const parseTags = (toMap: CsvRecord): string[] => {
   }
 
   return tagValue.toLowerCase().split(TAGS_SEPARATOR);
+};
+
+const importUsers = async (params: {
+  pg: PostgresDb;
+  logger: FastifyBaseLogger;
+  toImportUsers: ToImportUser[];
+  channel: ImportChannel;
+  requestUser: RequestUser;
+}): Promise<UsersImport> => {
+  const importedUsers = await processUserImport({
+    pool: params.pg.pool,
+    logger: params.logger,
+    toImportUsers: params.toImportUsers,
+    channel: params.channel,
+    requestUser: params.requestUser,
+  });
+
+  await sendInvitationsForUsersImport({
+    pg: params.pg,
+    toImportUsers: importedUsers,
+    logger: params.logger,
+    requestUserId: params.requestUser.id,
+  });
+
+  return importedUsers;
 };
 
 const csvRecordToToImportUser = (
