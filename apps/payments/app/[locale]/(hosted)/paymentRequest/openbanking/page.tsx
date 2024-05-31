@@ -6,6 +6,8 @@ import { PgSessions } from "auth/sessions";
 import { redirect, RedirectType } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
 
+const MAX_WAIT_FOR_RESULT = "60";
+
 async function getPaymentDetails(
   paymentId: string,
   userId: string,
@@ -116,6 +118,7 @@ export default async function Bank(props: {
       resourceToken={paymentRequest.resource_token}
       paymentId={paymentRequest.id}
       returnUri={returnUri.toString()}
+      maxWaitForResult={MAX_WAIT_FOR_RESULT}
     />
   );
 }
