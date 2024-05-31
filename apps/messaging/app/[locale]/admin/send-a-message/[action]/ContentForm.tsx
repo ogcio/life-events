@@ -95,20 +95,6 @@ const prepareGoBack = async (params: { props: MessageCreateProps }) => {
   revalidatePath("/");
 };
 
-const getPaymentRequests = async (): Promise<PaymentRequest[]> => {
-  try {
-    const requestURL = new URL("api/requests", process.env.PAYMENTS_URL);
-    const paymentRequestRespone = await fetch(requestURL.href);
-    const parsed = (await paymentRequestRespone.json()) as PaymentRequest[];
-
-    return parsed;
-  } catch (err) {
-    console.log(err);
-  }
-
-  return [];
-};
-
 const loadErrors = async (params: {
   props: MessageCreateProps;
 }): Promise<Record<string, FormError>> => {
@@ -133,7 +119,6 @@ export default async (props: MessageCreateProps) => {
     getTranslations("formErrors"),
   ]);
 
-  const paymentRequests = await getPaymentRequests();
   const errors = await loadErrors({ props });
 
   const submit = async (formData: FormData) => {
@@ -281,20 +266,6 @@ export default async (props: MessageCreateProps) => {
             defaultValue={props.state.plainText}
           ></textarea>
         </div>
-
-        {Boolean(paymentRequests.length) ? (
-          <div className="govie-form-group">
-            <h3>
-              <span className="govie-heading-s">{t("addPaymentTitle")}</span>
-            </h3>
-            <select className="govie-select" name="paymentRequestId">
-              <option value="">{t("emptyPaymentOption")}</option>
-              {paymentRequests.map((req) => (
-                <option value={req.requestId}>{req.title}</option>
-              ))}
-            </select>
-          </div>
-        ) : null}
 
         <button type="submit" className="govie-button">
           {t("submitText")}
