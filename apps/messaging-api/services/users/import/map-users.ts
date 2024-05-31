@@ -27,7 +27,7 @@ export const mapUsers = async (params: {
   client: PoolClient;
   logger: FastifyBaseLogger;
   requestUser: RequestUser;
-}): Promise<void> => {
+}): Promise<UsersImport> => {
   if (process.env.SYNCHRONOUS_USER_IMPORT ?? 0) {
     return mapUsersSync(params);
   }
@@ -40,7 +40,7 @@ const mapUsersAsync = async (_params: {
   client: PoolClient;
   logger: FastifyBaseLogger;
   requestUser: RequestUser;
-}) => {
+}): Promise<UsersImport> => {
   // Here we will invoke the scheduler
   throw new Error("Not implemented yet");
 };
@@ -50,7 +50,7 @@ const mapUsersSync = async (params: {
   client: PoolClient;
   logger: FastifyBaseLogger;
   requestUser: RequestUser;
-}) => {
+}): Promise<UsersImport> => {
   const usersImport = await getUsersImport(params);
   const profile = new Profile(params.requestUser.id);
 
@@ -70,8 +70,7 @@ const mapUsersSync = async (params: {
   usersImport.retryCount += 1;
   usersImport.lastRetryAt = new Date().toISOString();
 
-  await updateUsersImport({ client: params.client, usersImport });
-  // will send invitations here
+  return updateUsersImport({ client: params.client, usersImport });
 };
 
 const updateUsersImport = async (params: {
