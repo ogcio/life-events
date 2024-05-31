@@ -6,16 +6,16 @@
     "./*": "./src/*.ts"
   },
   "dependencies": {
-    "jose": "^5.2.2",
+    "jose": "^5.3.0",
     "next": "latest",
-    "pg": "^8.11.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "pg": "^8.11.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@types/node": "20.10.4",
-    "@types/pg": "^8.11.0",
-    "@types/react": "18.2.45",
-    "typescript": "5.3.3"
+    "@types/node": "20.12.13",
+    "@types/pg": "^8.11.6",
+    "@types/react": "18.3.3",
+    "typescript": "5.4.5"
   }
 }

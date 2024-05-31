@@ -1,9 +1,6 @@
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
-import { PgSessions } from "auth/sessions";
 import Footer from "./Footer";
-import { redirect, RedirectType } from "next/navigation";
-import { routeDefinitions } from "../../routeDefinitions";
 import Header from "../../components/Header/Header";
 import Banner from "../../components/Banner";
 import { getTranslations } from "next-intl/server";

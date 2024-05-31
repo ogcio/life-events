@@ -667,7 +667,7 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/csv": {
+  "/api/v1/users/import/csv": {
     post: {
       responses: {
         /** @description Default Response */
@@ -703,7 +703,7 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/csv/template": {
+  "/api/v1/users/import/csv/template": {
     get: {
       responses: {
         /** @description Default Response */
@@ -810,6 +810,283 @@ export interface paths {
         };
         /** @description Default Response */
         "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/invitations/{organisationId}": {
+    get: {
+      parameters: {
+        path: {
+          organisationId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                id: string;
+                userProfileId: string;
+                organisationId: string;
+                /**
+                 * @default {
+                 *   "type": "string",
+                 *   "enum": [
+                 *     "pending"
+                 *   ]
+                 * }
+                 */
+                organisationInvitationStatus:
+                  | "to_be_invited"
+                  | "pending"
+                  | "accepted"
+                  | "declined";
+                organisationInvitationSentAt?: string;
+                organisationInvitationFeedbackAt?: string;
+                organisationPreferredTransports?: string[];
+                correlationQuality: "full" | "partial";
+                /**
+                 * @default {
+                 *   "type": "string",
+                 *   "enum": [
+                 *     "pending"
+                 *   ]
+                 * }
+                 */
+                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+    patch: {
+      parameters: {
+        path: {
+          organisationId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            /**
+             * @default {
+             *   "type": "string",
+             *   "enum": [
+             *     "accepted"
+             *   ]
+             * }
+             */
+            invitationStatusFeedback: "accepted" | "declined";
+            preferredTransports: string[];
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: {
+            "application/json": {
+              data: {
+                id: string;
+                userProfileId: string;
+                organisationId: string;
+                /**
+                 * @default {
+                 *   "type": "string",
+                 *   "enum": [
+                 *     "pending"
+                 *   ]
+                 * }
+                 */
+                organisationInvitationStatus:
+                  | "to_be_invited"
+                  | "pending"
+                  | "accepted"
+                  | "declined";
+                organisationInvitationSentAt?: string;
+                organisationInvitationFeedbackAt?: string;
+                organisationPreferredTransports?: string[];
+                correlationQuality: "full" | "partial";
+                /**
+                 * @default {
+                 *   "type": "string",
+                 *   "enum": [
+                 *     "pending"
+                 *   ]
+                 * }
+                 */
+                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/invitations": {
+    patch: {
+      requestBody: {
+        content: {
+          "application/json": {
+            /**
+             * @default {
+             *   "type": "string",
+             *   "enum": [
+             *     "active"
+             *   ]
+             * }
+             */
+            userStatusFeedback: "disabled" | "active";
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: {
+            "application/json": {
+              data: {
+                id?: string;
+                /**
+                 * @default {
+                 *   "type": "null"
+                 * }
+                 */
+                userProfileId: null | string;
+                importerOrganisationId: string;
+                /**
+                 * @default {
+                 *   "type": "string",
+                 *   "enum": [
+                 *     "pending"
+                 *   ]
+                 * }
+                 */
+                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+                correlationQuality: "full" | "partial";
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
           content: {
             "application/json": {
               code: string;
