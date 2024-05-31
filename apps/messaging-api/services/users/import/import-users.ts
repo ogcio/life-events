@@ -20,28 +20,17 @@ import { PostgresDb } from "@fastify/postgres";
 export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
 const TAGS_SEPARATOR = ";";
 
-export const getUsersFromCsv = async (
-  filePath: string,
-): Promise<ToImportUser[]> => {
-  const records: ToImportUser[] = [];
-  const parser = parseFile<CsvRecord, ToImportUser>(filePath, {
-    headers: true,
-  }).transform((row: CsvRecord): ToImportUser => csvRecordToToImportUser(row));
-
-  for await (const row of parser) {
-    records.push(row);
-  }
-
-  return records;
-};
-
 export const importCsvFileFromRequest = async (params: {
   req: FastifyRequest;
   pg: PostgresDb;
 }): Promise<void> => {
   const file = await params.req.files();
   if (!file) {
-    throw new Error("file is missing");
+    throw createError(
+      IMPORT_USERS_ERROR,
+      "File is missing in the request",
+      400,
+    )();
   }
 
   const savedFiles = await params.req.saveRequestFiles();
@@ -220,4 +209,17 @@ const processUserImport = async (params: {
   }
 
   return importedUsers;
+};
+
+const getUsersFromCsv = async (filePath: string): Promise<ToImportUser[]> => {
+  const records: ToImportUser[] = [];
+  const parser = parseFile<CsvRecord, ToImportUser>(filePath, {
+    headers: true,
+  }).transform((row: CsvRecord): ToImportUser => csvRecordToToImportUser(row));
+
+  for await (const row of parser) {
+    records.push(row);
+  }
+
+  return records;
 };
