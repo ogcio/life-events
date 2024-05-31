@@ -238,14 +238,22 @@ const processToImportUser = async (params: {
     client: params.client,
   });
 
+  if (!user.id) {
+    throw createError(
+      IMPORT_USERS_ERROR,
+      "Error inserting the user in the db",
+      500,
+    )();
+  }
+
   const organisationUser = await processOrganizationUserRelation({
     client: params.client,
-    userId: user.id!,
+    userId: user.id,
     organisationId: params.organisationId,
   });
 
   await processTagsPerUser({
-    userId: user.id!,
+    userId: user.id,
     client: params.client,
     tags: params.toImportUser.tags ?? [],
   });
