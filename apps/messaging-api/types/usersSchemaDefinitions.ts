@@ -145,3 +145,16 @@ export const TagForUserSchema = Type.Object({
   tagId: Type.String({ format: "uuid" }),
 });
 export type TagForUser = Static<typeof TagForUserSchema>;
+
+export const UserInvitationSchema = Type.Object({
+  id: Type.String(),
+  userProfileId: Type.String(),
+  organisationId: Type.String(),
+  organisationInvitationStatus: InvitationStatusUnionType,
+  organisationInvitationSentAt: Type.Optional(Type.String()),
+  organisationInvitationFeedbackAt: Type.Optional(Type.String()),
+  organisationPreferredTransports: Type.Optional(Type.Array(Type.String())),
+  correlationQuality: CorrelationQualityUnionType,
+  userStatus: UserStatusUnionType,
+});
+export type UserInvitation = Static<typeof UserInvitationSchema>;

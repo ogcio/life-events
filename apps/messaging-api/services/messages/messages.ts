@@ -17,7 +17,7 @@ const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 export const createMessage = async (params: {
   payload: CreateMessage;
   pg: PostgresDb;
-}) => {
+}): Promise<void> => {
   if (params.payload.message) {
     return createSingleMessage({
       pg: params.pg,

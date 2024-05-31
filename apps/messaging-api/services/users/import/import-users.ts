@@ -5,6 +5,7 @@ import {
   ImportChannel,
   ImportStatus,
   ToImportUser,
+  UsersImport,
 } from "../../../types/usersSchemaDefinitions";
 import "@fastify/multipart";
 import { parseFile, writeToBuffer } from "fast-csv";
@@ -13,6 +14,8 @@ import { organisationId } from "../../../utils";
 import { isNativeError } from "util/types";
 import { mapUsers } from "./map-users";
 import { RequestUser } from "../../../plugins/auth";
+import { sendInvitationsForUsersImport } from "./send-invitations";
+import { PostgresDb } from "@fastify/postgres";
 
 export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
 const TAGS_SEPARATOR = ";";
@@ -34,7 +37,7 @@ export const getUsersFromCsv = async (
 
 export const importCsvFileFromRequest = async (params: {
   req: FastifyRequest;
-  pool: Pool;
+  pg: PostgresDb;
 }): Promise<void> => {
   const file = await params.req.files();
   if (!file) {
@@ -48,12 +51,19 @@ export const importCsvFileFromRequest = async (params: {
     throw new Error("Files must have at least one user");
   }
 
-  await processUserImport({
-    pool: params.pool,
+  const importedUsers = await processUserImport({
+    pool: params.pg.pool,
     logger: params.req.log,
     toImportUsers: usersToImport,
     channel: "csv",
     requestUser: params.req.user!,
+  });
+
+  await sendInvitationsForUsersImport({
+    pg: params.pg,
+    toImportUsers: importedUsers,
+    logger: params.req.log,
+    requestUserId: params.req.user!.id,
   });
 };
 
@@ -64,7 +74,7 @@ export const getCsvExample = (): Promise<Buffer> =>
   });
 
 export const importCsvRecords = async (params: {
-  pool: Pool;
+  pg: PostgresDb;
   logger: FastifyBaseLogger;
   csvRecords: CsvRecord[];
   requestUser: RequestUser;
@@ -77,12 +87,19 @@ export const importCsvRecords = async (params: {
     throw new Error("At least one user needed");
   }
 
-  await processUserImport({
-    pool: params.pool,
+  const importedUsers = await processUserImport({
+    pool: params.pg.pool,
     logger: params.logger,
     toImportUsers,
     channel: "api",
     requestUser: params.requestUser,
+  });
+
+  await sendInvitationsForUsersImport({
+    pg: params.pg,
+    toImportUsers: importedUsers,
+    logger: params.logger,
+    requestUserId: params.requestUser.id,
   });
 };
 
@@ -180,19 +197,19 @@ const processUserImport = async (params: {
   toImportUsers: ToImportUser[];
   channel: ImportChannel;
   requestUser: RequestUser;
-}): Promise<void> => {
+}): Promise<UsersImport> => {
   const client = await params.pool.connect();
+  let importedUsers: UsersImport;
   try {
     await client.query("BEGIN");
 
     const importId = await insertToImportUsers({ ...params, client });
-    await mapUsers({
+    importedUsers = await mapUsers({
       importId,
       client,
       logger: params.logger,
       requestUser: params.requestUser,
     });
-
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
@@ -201,4 +218,6 @@ const processUserImport = async (params: {
   } finally {
     client.release();
   }
+
+  return importedUsers;
 };

@@ -1,5 +1,8 @@
 import { Static, Type } from "@sinclair/typebox";
 
+export const AVAILABLE_LANGUAGES = ["en", "ga"];
+export const DEFAULT_LANGUAGE = "en";
+
 export const ReadMessagesSchema = Type.Array(
   Type.Object({
     id: Type.String(),
