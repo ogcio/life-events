@@ -222,7 +222,7 @@ export const runErrorTest = async (params: {
   t.ok(typeof response !== "undefined");
   t.equal(response.statusCode, expectedStatusCode);
   const loggedRecords = loggingDestination.getLoggedRecords();
-  t.equal(loggedRecords.length, 5);
+  t.equal(loggedRecords.length, 4);
   checkExpectedRequestEntry({
     requestLogEntry: loggedRecords[0],
     inputPath: path,
@@ -239,20 +239,15 @@ export const runErrorTest = async (params: {
     expectedLevelName: "ERROR",
   });
 
-  // Why not testing the entry at index 2?
-  // Because it is automatically written by Fastify
-  // Should be removed when the following issue will be solved
-  // https://github.com/fastify/fastify/issues/5409
-
   checkExpectedResponseEntry({
-    responseLogEntry: loggedRecords[3],
+    responseLogEntry: loggedRecords[2],
     inputPath: path,
     inputQueryParams: query,
     responseStatusCode: Number(expectedStatusCode),
     expectedMessage: expectedErrorMessage,
   });
   checkExpectedApiTrackEntry({
-    apiTrackLogEntry: loggedRecords[4],
+    apiTrackLogEntry: loggedRecords[3],
     inputPath: path,
     inputQueryParams: query,
     responseStatusCode: Number(expectedStatusCode),
