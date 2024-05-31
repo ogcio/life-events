@@ -2,6 +2,7 @@ export default (props: {
   onCancelAction: () => void;
   onDeleteAction: (formData: FormData) => void;
   toDelete: string;
+  resourceDescription: string;
   id: string;
 }) => (
   <div
@@ -42,7 +43,7 @@ export default (props: {
         </span>
       </div>
       <h1 className="govie-heading-s">
-        Are you sure you want to delete the resource?
+        Are you sure you want to delete {props.resourceDescription}?
       </h1>
 
       <p className="govie-body">
