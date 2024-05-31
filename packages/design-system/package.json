@@ -23,7 +23,7 @@
     "@types/react": "^18.2.55",
     "install": "^0.13.0",
     "npm": "^10.4.0",
-    "postcss": "^8.4.35",
+    "postcss": "^8.4.38",
     "rollup": "^4.9.6",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-dts": "^6.1.0",
