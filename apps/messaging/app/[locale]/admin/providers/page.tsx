@@ -16,7 +16,7 @@ import {
   searchValueSms,
 } from "../../../utils/messaging";
 
-const linkStyle = (selected: boolean): CSSProperties => {
+export const linkStyle = (selected: boolean): CSSProperties => {
   const props: CSSProperties = {
     display: "flex",
     justifyContent: "center",
@@ -33,7 +33,7 @@ const linkStyle = (selected: boolean): CSSProperties => {
   return props;
 };
 
-const linkClassName = (selected: boolean): string =>
+export const linkClassName = (selected: boolean): string =>
   `govie-link govie-!-font-size-19 govie-link--no-visited-state ${
     selected ? "govie-link--no-underline" : ""
   }`.trim();
@@ -146,6 +146,7 @@ export default async (props: {
     <FlexMenuWrapper>
       {toDelete && props.searchParams?.deleteId && (
         <ConfirmDeleteModal
+          resourceDescription="the provider"
           id={props.searchParams.deleteId}
           onCancelAction={handleCancelDelete}
           onDeleteAction={handleDeleteProvider}
