@@ -3,6 +3,10 @@ import { revalidatePath } from "next/cache";
 
 import { ListRow } from "../shared/SummaryListRow";
 import { workflow, postgres, routes, web } from "../../../../utils";
+import {
+  sendConfirmationEmail,
+  sendGovAddressConfirmationEmail,
+} from "./ServerActions";
 
 export default (props: {
   data: workflow.GetDigitalWallet;
@@ -13,6 +17,16 @@ export default (props: {
   const t = useTranslations("GetDigitalWallet.DetailsSummary");
   async function submitAction() {
     "use server";
+
+    const { govIEEmail, appStoreEmail, firstName, lastName, myGovIdEmail } =
+      data;
+
+    try {
+      await sendConfirmationEmail(myGovIdEmail, firstName, lastName);
+      await sendGovAddressConfirmationEmail(govIEEmail, firstName, lastName);
+    } catch (error) {
+      console.error(error);
+    }
 
     await postgres.pgpool.query(
       `
