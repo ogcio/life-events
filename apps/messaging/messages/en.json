@@ -47,7 +47,10 @@
     "saveButton": "Save",
     "updateTemplateButton": "Update template",
     "createTemplateButton": "Create template",
-    "backLink": "Back"
+    "backLink": "Back",
+    "menuEnglish": "English",
+    "menuGaelic": "Gaeilge",
+    "previewButton": "Preview"
   },
   "FeedbackBanner": {
     "tag": "prototype",
@@ -157,7 +160,10 @@
       "fromAddress": "from address",
       "region": "region",
       "accessKey": "access key",
-      "secretAccessKey": "secret access key"
+      "secretAccessKey": "secret access key",
+      "excerpt": "excerpt",
+      "templateName": "template name",
+      "plainText": "plain text"
     }
   },
   "settings": {
