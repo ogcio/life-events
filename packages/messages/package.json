@@ -6,7 +6,7 @@
   "scripts": {
     "migrate": "db-migrate up",
     "migrate:down": "db-migrate down",
-    "migrate:create": "db-migrate create $npm_config_name --sql-file"
+    "migrate:create": "db-migrate create unique_tags_columns --sql-file"
   },
   "author": "",
   "license": "ISC",
