@@ -368,6 +368,7 @@ export interface paths {
             redirectUrl: string;
             allowAmountOverride: boolean;
             allowCustomAmount: boolean;
+            providers: string[];
             status: "active" | "inactive";
             paymentRequestId: string;
             providersUpdate: {

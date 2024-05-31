@@ -770,6 +770,7 @@ paths:
                     - type: string
                       enum:
                         - inactive
+                  validator: PaymentRequestStatusValidator
               required:
                 - title
                 - description
@@ -820,6 +821,10 @@ paths:
                   type: boolean
                 allowCustomAmount:
                   type: boolean
+                providers:
+                  type: array
+                  items:
+                    type: string
                 status:
                   anyOf:
                     - type: string
@@ -828,6 +833,7 @@ paths:
                     - type: string
                       enum:
                         - inactive
+                  validator: PaymentRequestStatusValidator
                 paymentRequestId:
                   type: string
                 providersUpdate:
@@ -852,6 +858,7 @@ paths:
                 - redirectUrl
                 - allowAmountOverride
                 - allowCustomAmount
+                - providers
                 - status
                 - paymentRequestId
                 - providersUpdate
