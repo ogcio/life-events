@@ -43,38 +43,48 @@ export default async ({ theme }: { theme: Theme }) => {
     return handleLanguageChange("ga");
   };
 
+  const languages = [
+    {
+      lang: "en",
+      label: "English",
+      handler: englishHandler,
+    },
+    {
+      lang: "ga",
+      label: "Gaeilge",
+      handler: gaelicHandler,
+    },
+  ];
+
   return (
     <form>
       <div className={styles.languagesContainer}>
-        <button
-          className={styles.languageSwitch}
-          style={{
-            color: colors[theme],
-            fontWeight: lang === "en" ? 700 : 400,
-          }}
-          formAction={englishHandler}
-        >
-          English
-        </button>
+        {languages.map((language, index, arr) => {
+          return (
+            <>
+              <button
+                className={styles.languageSwitch}
+                style={{
+                  color: colors[theme],
+                  fontWeight: lang === language.lang ? 700 : 400,
+                }}
+                formAction={language.handler}
+              >
+                {language.label}
+              </button>
 
-        <div
-          style={{
-            height: "14px",
-            width: "1px",
-            borderLeft: `1px solid ${colors[theme]}`,
-          }}
-        />
-
-        <button
-          className={styles.languageSwitch}
-          style={{
-            color: colors[theme],
-            fontWeight: lang === "ga" ? 700 : 400,
-          }}
-          formAction={gaelicHandler}
-        >
-          Gaeilge
-        </button>
+              {index !== arr.length - 1 && (
+                <div
+                  style={{
+                    height: "14px",
+                    width: "1px",
+                    borderLeft: `1px solid ${colors[theme]}`,
+                  }}
+                />
+              )}
+            </>
+          );
+        })}
       </div>
     </form>
   );
