@@ -284,8 +284,8 @@ const setImportedAsInvited = async (params: {
       const idsIndexes = invitedToOrganisation.map(() => `$${userIndex++}`);
       await params.client.query(
         `
-          UPDATE users
-          SET organisation_user_configurations=$1, invitation_sent_at = $2
+          UPDATE organisation_user_configurations
+          SET invitation_status=$1, invitation_sent_at = $2
           WHERE organisation_id = $3 and user_id in (
             SELECT id from users where user_profile_id in (${idsIndexes.join(", ")})
           );

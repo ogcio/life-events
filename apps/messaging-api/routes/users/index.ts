@@ -156,7 +156,7 @@ export default async function users(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await updateOrganisationFeedback({
-        userId: request.user!.id,
+        userProfileId: request.user!.id,
         organisationId: request.params.organisationId,
         pg: app.pg,
         feedback: request.body,
