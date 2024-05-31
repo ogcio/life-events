@@ -1,11 +1,13 @@
 import { api } from "messages";
 import { MessageCreateProps } from "../../../../utils/messaging";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
+
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { useTranslations } from "next-intl";
 import { Messaging } from "building-blocks-sdk";
-import { pgpool } from "auth/sessions";
 
 export default (props: MessageCreateProps) => {
   const t = useTranslations("sendAMessage.ScheduleForm");
@@ -21,11 +23,11 @@ export default (props: MessageCreateProps) => {
 
     let scheduleAt = "";
     if (schedule === "future" && year && month && day && hour && minute) {
-      scheduleAt = dayjs(
-        `${year}-${month}-${day} ${hour}:${minute}`,
-      ).toISOString();
+      scheduleAt = dayjs(`${year}-${month}-${day} ${hour}:${minute}`)
+        .utc()
+        .format();
     } else {
-      scheduleAt = dayjs().toISOString();
+      scheduleAt = dayjs().utc().format();
     }
 
     const messagesClient = new Messaging(props.userId);
