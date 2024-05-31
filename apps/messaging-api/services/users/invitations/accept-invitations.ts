@@ -1,6 +1,6 @@
 import { createError } from "@fastify/error";
 import { PostgresDb } from "@fastify/postgres";
-import { getUserById, getUserByUserProfileId } from "../shared-users";
+import { getUserByUserProfileId } from "../shared-users";
 import { getUserInvitations } from "./shared-invitations";
 import {
   InvitationFeedback,
@@ -141,15 +141,15 @@ const executeUpdateOrganisationFeedback = async (params: {
 export const updateInvitationStatus = async (params: {
   pg: PostgresDb;
   feedback: InvitationFeedback;
-  userId: string;
+  userProfileId: string;
 }): Promise<User> => {
   const client = await params.pg.connect();
   try {
     // invoking this will check if the user exists
-    await getUserById({
+    await getUserByUserProfileId({
       client,
       errorCode: ACCEPT_INVITATIONS_ERROR,
-      userId: params.userId,
+      userProfileId: params.userProfileId,
     });
 
     return await executeUpdateUserStatus({ client, ...params });
@@ -161,7 +161,7 @@ export const updateInvitationStatus = async (params: {
 const executeUpdateUserStatus = async (params: {
   client: PoolClient;
   feedback: InvitationFeedback;
-  userId: string;
+  userProfileId: string;
 }): Promise<User> => {
   let users: QueryResult<User>;
   try {
@@ -169,15 +169,15 @@ const executeUpdateUserStatus = async (params: {
     users = await params.client.query<User>(
       `
         UPDATE users
-        SET user_status=$1::text
-        WHERE user_id = $2 RETURNING
+        SET user_status = $1
+        WHERE user_profile_id = $2 RETURNING
           id as "id",
           user_profile_id as "userProfileId",
           importer_organisation_id as "importerOrganisationId",
           user_status as "userStatus",
           correlation_quality as "correlationQuality"  
       `,
-      [feedback.userStatusFeedback, params.userId],
+      [feedback.userStatusFeedback, params.userProfileId],
     );
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";

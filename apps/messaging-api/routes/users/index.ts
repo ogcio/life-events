@@ -118,13 +118,17 @@ export default async function users(app: FastifyInstance) {
         Response: { data: UserInvitation };
       }>,
       _reply: FastifyReply,
-    ) => ({
-      data: await getInvitationForUser({
-        userProfileId: request.user!.id,
-        organisationId: request.params.organisationId,
-        pg: app.pg,
-      }),
-    }),
+    ) => {
+      const response = {
+        data: await getInvitationForUser({
+          userProfileId: request.user!.id,
+          organisationId: request.params.organisationId,
+          pg: app.pg,
+        }),
+      };
+
+      return response;
+    },
   );
 
   interface PatchOrgInvitationSchema {
@@ -189,7 +193,7 @@ export default async function users(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await updateInvitationStatus({
-        userId: request.user!.id,
+        userProfileId: request.user!.id,
         pg: app.pg,
         feedback: request.body,
       }),
