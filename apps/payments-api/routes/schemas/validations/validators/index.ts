@@ -1,3 +1,4 @@
+import paymentRequestStatusValidator from "./paymentRequestStatus";
 import providersValidator from "./providers";
 import requiredValidator from "./required";
 
@@ -16,6 +17,7 @@ export enum ErrorTypes {
 const validators: Record<string, ValidatorFn> = {
   ProvidersValidator: providersValidator,
   RequiredValidator: requiredValidator,
+  PaymentRequestStatusValidator: paymentRequestStatusValidator,
 };
 
 export default function validator(

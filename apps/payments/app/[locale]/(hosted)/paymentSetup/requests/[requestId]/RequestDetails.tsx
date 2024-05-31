@@ -37,7 +37,7 @@ async function deletePaymentRequest(requestId: string, userId: string) {
 async function hasTransactions(requestId: string, userId: string) {
   const { data: transactions, error } = await new Payments(
     userId,
-  ).getPaymentRequestTransactions(requestId, { limit: 1, offset: 0 });
+  ).getPaymentRequestTransactions(requestId, { limit: 5, offset: 0 });
 
   if (error) {
     errorHandler(error);
