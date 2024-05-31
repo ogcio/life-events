@@ -1,6 +1,6 @@
 import { createError } from "@fastify/error";
 import { PostgresDb } from "@fastify/postgres";
-import { getUserById } from "../shared-users";
+import { getUserById, getUserByUserProfileId } from "../shared-users";
 import { getUserInvitations } from "./shared-invitations";
 import {
   InvitationFeedback,
@@ -16,13 +16,13 @@ const ACCEPT_INVITATIONS_ERROR = "ACCEPT_INVITATIONS_ERROR";
 
 export const getInvitationForUser = async (params: {
   pg: PostgresDb;
-  userId: string;
+  userProfileId: string;
   organisationId: string;
 }): Promise<UserInvitation> => {
-  const { pg, userId, organisationId } = params;
+  const { pg, userProfileId, organisationId } = params;
   const client = await pg.connect();
   try {
-    return await getInvitation({ client, userId, organisationId });
+    return await getInvitation({ client, userProfileId, organisationId });
   } finally {
     client.release();
   }
@@ -30,13 +30,13 @@ export const getInvitationForUser = async (params: {
 
 const getInvitation = async (params: {
   client: PoolClient;
-  userId: string;
+  userProfileId: string;
   organisationId: string;
 }): Promise<UserInvitation> => {
-  const { client, userId, organisationId } = params;
-  const user = await getUserById({
+  const { client, userProfileId, organisationId } = params;
+  const user = await getUserByUserProfileId({
     client,
-    userId,
+    userProfileId,
     errorCode: ACCEPT_INVITATIONS_ERROR,
   });
   if (!user.userProfileId) {
@@ -78,7 +78,7 @@ export const updateOrganisationFeedback = async (params: {
   pg: PostgresDb;
   feedback: OrganisationInvitationFeedback;
   organisationId: string;
-  userId: string;
+  userProfileId: string;
 }): Promise<UserInvitation> => {
   const client = await params.pg.connect();
   try {
@@ -92,7 +92,11 @@ export const updateOrganisationFeedback = async (params: {
       )();
     }
 
-    await executeUpdateOrganisationFeedback({ client, ...params });
+    await executeUpdateOrganisationFeedback({
+      client,
+      ...params,
+      userId: userInvitation.id,
+    });
 
     return await getInvitation({ client, ...params });
   } finally {

@@ -41,7 +41,12 @@ export default async function users(app: FastifyInstance) {
       },
     },
     async (request: FastifyRequest, _reply: FastifyReply) => {
-      await importCsvFileFromRequest({ req: request, pg: app.pg });
+      // exclamation mark used here because we have
+      // verifyUser preValidation
+      await importCsvFileFromRequest({
+        req: { ...request, user: request.user! },
+        pg: app.pg,
+      });
     },
   );
 
@@ -115,7 +120,7 @@ export default async function users(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await getInvitationForUser({
-        userId: request.user!.id,
+        userProfileId: request.user!.id,
         organisationId: request.params.organisationId,
         pg: app.pg,
       }),
