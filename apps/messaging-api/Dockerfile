@@ -7,13 +7,13 @@ COPY ./apps/messaging-api/ /app/apps/messaging-api/
 COPY ./packages/logging-wrapper/ /app/packages/logging-wrapper/
 COPY ./packages/error-handler/ /app/packages/error-handler/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
-RUN npm ci
+RUN npm ci && \
+    cd /app/packages/logging-wrapper/ && \
+    npm run build && \
+    cd /app/packages/error-handler/ && \
+    npm run build
 
-WORKDIR /app/packages/logging-wrapper/
-RUN npm run build
 
-WORKDIR /app/packages/error-handler/
-RUN npm run build
 
 FROM deps AS builder
 WORKDIR /app
@@ -21,6 +21,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
+COPY --from=deps /app /app
+
 EXPOSE 8002
 
-CMD [ "npm", "--prefix", "apps/messaging-api",  "run", "dev" ]
+CMD [ "node", "--import", "tsx", "apps/messaging-api/index.ts" ]

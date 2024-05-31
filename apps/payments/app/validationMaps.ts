@@ -120,5 +120,11 @@ export const paymentRequestValidationMap = (t): ValidationFieldMap => {
         [ValidationErrorTypes.REQUIRED]: t("redirectUrlRequired"),
       },
     },
+    status: {
+      field: "status",
+      errorMessage: {
+        [ValidationErrorTypes.INVALID]: t("status.invalid"),
+      },
+    },
   };
 };
