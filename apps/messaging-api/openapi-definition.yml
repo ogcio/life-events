@@ -979,7 +979,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/def-0"
-  /api/v1/users/csv:
+  /api/v1/users/import/csv:
     post:
       tags: &a5
         - Users
@@ -1032,7 +1032,7 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/users/csv/template:
+  /api/v1/users/import/csv/template:
     get:
       tags: *a5
       responses:
@@ -1150,6 +1150,492 @@ paths:
                   - request_id
                   - name
         4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/invitations/{organisationId}:
+    get:
+      tags: *a5
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: organisationId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      userProfileId:
+                        type: string
+                      organisationId:
+                        type: string
+                      organisationInvitationStatus:
+                        default:
+                          type: string
+                          enum:
+                            - pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - accepted
+                          - type: string
+                            enum:
+                              - declined
+                      organisationInvitationSentAt:
+                        type: string
+                      organisationInvitationFeedbackAt:
+                        type: string
+                      organisationPreferredTransports:
+                        type: array
+                        items:
+                          type: string
+                      correlationQuality:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - full
+                          - type: string
+                            enum:
+                              - partial
+                      userStatus:
+                        default:
+                          type: string
+                          enum:
+                            - pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - disabled
+                          - type: string
+                            enum:
+                              - active
+                    required:
+                      - id
+                      - userProfileId
+                      - organisationId
+                      - organisationInvitationStatus
+                      - correlationQuality
+                      - userStatus
+                required:
+                  - data
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    patch:
+      tags: *a5
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                invitationStatusFeedback:
+                  default:
+                    type: string
+                    enum:
+                      - accepted
+                  anyOf:
+                    - type: string
+                      enum:
+                        - accepted
+                    - type: string
+                      enum:
+                        - declined
+                preferredTransports:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - invitationStatusFeedback
+                - preferredTransports
+        required: true
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: organisationId
+          required: true
+      responses:
+        "202":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      userProfileId:
+                        type: string
+                      organisationId:
+                        type: string
+                      organisationInvitationStatus:
+                        default:
+                          type: string
+                          enum:
+                            - pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - accepted
+                          - type: string
+                            enum:
+                              - declined
+                      organisationInvitationSentAt:
+                        type: string
+                      organisationInvitationFeedbackAt:
+                        type: string
+                      organisationPreferredTransports:
+                        type: array
+                        items:
+                          type: string
+                      correlationQuality:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - full
+                          - type: string
+                            enum:
+                              - partial
+                      userStatus:
+                        default:
+                          type: string
+                          enum:
+                            - pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - disabled
+                          - type: string
+                            enum:
+                              - active
+                    required:
+                      - id
+                      - userProfileId
+                      - organisationId
+                      - organisationInvitationStatus
+                      - correlationQuality
+                      - userStatus
+                required:
+                  - data
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/invitations:
+    patch:
+      tags: *a5
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userStatusFeedback:
+                  default:
+                    type: string
+                    enum:
+                      - active
+                  anyOf:
+                    - type: string
+                      enum:
+                        - disabled
+                    - type: string
+                      enum:
+                        - active
+              required:
+                - userStatusFeedback
+        required: true
+      responses:
+        "202":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      userProfileId:
+                        default:
+                          type: "null"
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      importerOrganisationId:
+                        type: string
+                      userStatus:
+                        default:
+                          type: string
+                          enum:
+                            - pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - disabled
+                          - type: string
+                            enum:
+                              - active
+                      correlationQuality:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - full
+                          - type: string
+                            enum:
+                              - partial
+                    required:
+                      - userProfileId
+                      - importerOrganisationId
+                      - userStatus
+                      - correlationQuality
+                required:
+                  - data
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
           description: Default Response
           content:
             application/json:
