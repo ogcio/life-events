@@ -1,5 +1,6 @@
 import { PoolClient } from "pg";
 import { Tag } from "../../types/usersSchemaDefinitions";
+import { createError } from "@fastify/error";
 
 const TAGS_PATH_SEPARATOR = ".";
 
@@ -40,7 +41,7 @@ const linkTagsToUser = async (params: {
     toInsertValues.push(params.userId, toCreate.id);
     toInsertIndexes.push(`($${indexCount++}, $${indexCount++})`);
   }
-  await params.client.query(
+  const result = await params.client.query(
     `
         INSERT INTO tags_users (user_id, tag_id)
         VALUES ${toInsertIndexes.join(", ")}
@@ -49,6 +50,10 @@ const linkTagsToUser = async (params: {
     `,
     toInsertValues,
   );
+
+  if (result.rowCount !== params.toLinkTags.length) {
+    throw createError("MANAGE_TAGS_ERROR", "Error linking tags", 500)();
+  }
 };
 
 const getAllPaths = (
@@ -78,9 +83,12 @@ const insertTags = async (params: {
   client: PoolClient;
 }): Promise<Tag[]> => {
   let valuesIndex = 1;
+  let itemsCount = 0;
   const valuesClauses: string[] = [];
   const valuesToInsert: string[] = [];
-  for (const tag of params.tags.values()) {
+  const tagsValues = params.tags.values();
+  for (const tag of tagsValues) {
+    itemsCount++;
     valuesClauses.push(`($${valuesIndex++}, $${valuesIndex++})`);
     valuesToInsert.push(tag.tagName, tag.tagPath);
   }
@@ -97,6 +105,10 @@ const insertTags = async (params: {
     `,
     valuesToInsert,
   );
+
+  if (result.rowCount !== itemsCount) {
+    throw createError("MANAGE_TAGS_ERROR", "Error importing tags", 500)();
+  }
 
   return result.rows;
 };
