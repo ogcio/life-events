@@ -53,9 +53,7 @@ export default async (props: Props) => {
 
         <div className="two-columns-layout">
           <div className="column">
-            <h1 className="govie-heading-l custom-title">
-              {t("sections.main.title")}
-            </h1>
+            <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
             <p className="govie-body">{t("sections.main.description")}</p>
             <a
               href={`${process.env.NEXT_PUBLIC_FORMS_URL}${props.params.locale}/664b6de45f7c9800231daf22`}
@@ -118,7 +116,7 @@ export default async (props: Props) => {
 
         <hr className="govie-section-break govie-section-break--m" />
 
-        <h2 className="govie-heading-m">{t("sections.interface.title")}</h2>
+        <h3 className="govie-heading-m">{t("sections.interface.title")}</h3>
         <p className="govie-body">{t("sections.interface.description")}</p>
 
         <div className="two-columns-layout">
@@ -146,10 +144,10 @@ export default async (props: Props) => {
 
         <hr className="govie-section-break govie-section-break--m" />
 
-        <h2 className="govie-heading-m">{t("sections.accessibility.title")}</h2>
+        <h3 className="govie-heading-m">{t("sections.accessibility.title")}</h3>
         <p className="govie-body">{t("sections.accessibility.description")}</p>
 
-        <h2 className="govie-heading-m">{t("sections.support.title")}</h2>
+        <h3 className="govie-heading-m">{t("sections.support.title")}</h3>
         <p className="govie-body">{t("sections.support.description")}</p>
 
         <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />

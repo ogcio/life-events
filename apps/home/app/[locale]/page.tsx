@@ -116,7 +116,7 @@ export default async function () {
       <div className="govie-width-container">
         <div className="two-columns-layout align-items-center">
           <div className="column">
-            <h1 className="govie-heading-l">{t("sections.payments.title")}</h1>
+            <h2 className="govie-heading-l">{t("sections.payments.title")}</h2>
 
             <p className="govie-body">{t("sections.payments.description")}</p>
             <a className="govie-link" href={links.paymentsUrl}>
@@ -143,7 +143,7 @@ export default async function () {
             />
           </div>
           <div className="column">
-            <h1 className="govie-heading-l">{t("sections.messaging.title")}</h1>
+            <h2 className="govie-heading-l">{t("sections.messaging.title")}</h2>
 
             <p className="govie-body">{t("sections.messaging.description")}</p>
             <a className="govie-link" href={links.messagingUrl}>
@@ -164,9 +164,9 @@ export default async function () {
             >
               {t("sections.designSystem.inDev").toUpperCase()}
             </strong>
-            <h1 className="govie-heading-l">
+            <h2 className="govie-heading-l">
               {t("sections.designSystem.title")}
-            </h1>
+            </h2>
 
             <p className="govie-body">
               {t("sections.designSystem.description")}
@@ -194,7 +194,7 @@ export default async function () {
             />
           </div>
           <div className="column">
-            <h1 className="govie-heading-l">{t("sections.forms.title")}</h1>
+            <h2 className="govie-heading-l">{t("sections.forms.title")}</h2>
 
             <p className="govie-body">{t("sections.forms.description")}</p>
             <a className="govie-link" href={links.formsUrl}>
@@ -208,59 +208,59 @@ export default async function () {
 
       <div className="govie-width-container">
         <div>
-          <h1 className="govie-heading-l">{t("sections.advantages.title")}</h1>
+          <h2 className="govie-heading-l">{t("sections.advantages.title")}</h2>
           <p className="govie-body">{t("sections.advantages.description")}</p>
 
           <div className="three-columns-layout">
             <div className="column">
-              <h2 className="govie-heading-m">
+              <h3 className="govie-heading-m">
                 {t("sections.advantages.noProcurement.title")}
-              </h2>
+              </h3>
               <p className="govie-body">
                 {t("sections.advantages.noProcurement.description")}
               </p>
             </div>
 
             <div className="column">
-              <h2 className="govie-heading-m">
+              <h3 className="govie-heading-m">
                 {t("sections.advantages.noCode.title")}
-              </h2>
+              </h3>
               <p className="govie-body">
                 {t("sections.advantages.noCode.description")}
               </p>
             </div>
 
             <div className="column">
-              <h2 className="govie-heading-m">
+              <h3 className="govie-heading-m">
                 {t("sections.advantages.lowCost.title")}
-              </h2>
+              </h3>
               <p className="govie-body">
                 {t("sections.advantages.lowCost.description")}
               </p>
             </div>
 
             <div className="column">
-              <h2 className="govie-heading-m">
+              <h3 className="govie-heading-m">
                 {t("sections.advantages.accessible.title")}
-              </h2>
+              </h3>
               <p className="govie-body">
                 {t("sections.advantages.accessible.description")}
               </p>
             </div>
 
             <div className="column">
-              <h2 className="govie-heading-m">
+              <h3 className="govie-heading-m">
                 {t("sections.advantages.trustedExperience.title")}
-              </h2>
+              </h3>
               <p className="govie-body">
                 {t("sections.advantages.trustedExperience.description")}
               </p>
             </div>
 
             <div className="column">
-              <h2 className="govie-heading-m">
+              <h3 className="govie-heading-m">
                 {t("sections.advantages.test.title")}
-              </h2>
+              </h3>
               <p className="govie-body">
                 {t("sections.advantages.test.description")}
               </p>
@@ -271,7 +271,7 @@ export default async function () {
         <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
         <div>
-          <h1 className="govie-heading-l">{t("sections.footer.title")}</h1>
+          <h2 className="govie-heading-l">{t("sections.footer.title")}</h2>
           <p className="govie-body">{t("sections.footer.descriptionP1")}</p>
           <p className="govie-body">{t("sections.footer.descriptionP2")}</p>
           <a href={links.learnMoreForm}>

@@ -1,11 +1,5 @@
 @import "../../styles/globals.scss";
 
-h1.custom-title {
-  font-size: 56px !important;
-  line-height: 84px;
-  margin-bottom: 48px;
-}
-
 .page-wrapper {
   margin: unset;
   min-height: 100vh;
@@ -55,5 +49,28 @@ h1.custom-title {
 @include phone {
   .two-columns-layout .column {
     flex: 1 1 100%;
+  }
+}
+
+.govie-width-container {
+  h1 {
+    font-size: 56px !important;
+    line-height: 98px;
+    margin-bottom: 48px;
+    font-weight: 700 !important;
+  }
+
+  h2 {
+    font-size: 36px !important;
+    line-height: 40px;
+    margin-bottom: 32px;
+    font-weight: 700 !important;
+  }
+
+  h3 {
+    font-size: 30px !important;
+    line-height: 40px;
+    margin-bottom: 20px;
+    font-weight: 600 !important;
   }
 }
