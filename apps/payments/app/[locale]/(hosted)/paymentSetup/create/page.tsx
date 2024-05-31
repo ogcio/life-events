@@ -3,7 +3,6 @@ import { RedirectType, redirect } from "next/navigation";
 import PaymentSetupFormPage, { ProvidersMap } from "../PaymentSetupFormPage";
 import {
   errorHandler,
-  getValidationErrors,
   paymentMethods,
   stringToAmount,
 } from "../../../../utils";
@@ -116,16 +115,10 @@ export default async function Page({ params: { locale } }: Props) {
       providers,
     });
 
-    if (error) {
-      errorHandler(error);
-    }
+    formResult.errors = errorHandler(error, validationMap) ?? {};
 
     if (!error?.validation && paymentRequest?.id) {
       redirect(`./requests/${paymentRequest?.id}`, RedirectType.replace);
-    }
-
-    if (error?.validation) {
-      formResult.errors = getValidationErrors(error.validation, validationMap);
     }
 
     return formResult;

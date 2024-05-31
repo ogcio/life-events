@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 export default async () => {
-  const t = await getTranslations("GetDigitalWallet.VerifyAccount");
+  const t = await getTranslations("GetDigitalWallet.VerifyAccountLevel1");
   return (
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds-from-desktop">
@@ -10,16 +10,24 @@ export default async () => {
         <p className="govie-body">
           {t.rich("whyVerifySecondParagraph", {
             link: (chunks) => (
+              <a className="govie-link" href="https://www.mygovid.ie/">
+                {chunks}
+              </a>
+            ),
+          })}
+        </p>
+        <p className="govie-body">
+          {t.rich("whyVerifyThirdParagraph", {
+            link: (chunks) => (
               <a
                 className="govie-link"
-                href="https://www.gov.ie/en/service/b6ecfd-sign-up-for-mygovid/"
+                href={`${process.env.HOST_URL}/digital-wallet/get-digital-wallet`}
               >
                 {chunks}
               </a>
             ),
           })}
         </p>
-        <p className="govie-body">{t("whyVerifyThirdParagraph")}</p>
       </div>
     </div>
   );

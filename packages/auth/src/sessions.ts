@@ -9,6 +9,8 @@ type GovIdJwtPayload = {
   email: string;
   BirthDate: string;
   PublicServiceNumber: string;
+  DSPOnlineLevel: string;
+  mobile: string;
 };
 
 type SessionTokenDecoded = {
@@ -31,7 +33,7 @@ export interface Sessions {
       publicServant: boolean;
       //The values below will likely be extracted from session token  once we integrate with GOV ID
       myGovIdEmail: string;
-      hasGovIdVerifiedAccount: boolean;
+      verificationLevel: number;
       sessionId: string;
     }
   >;
@@ -91,6 +93,8 @@ export function decodeJwt(token: string) {
     email: decoded.email,
     birthDate: decoded.BirthDate,
     publicServiceNumber: decoded.PublicServiceNumber,
+    dspOnlineLevel: decoded.DSPOnlineLevel,
+    mobile: decoded.mobile,
   };
 }
 
@@ -99,14 +103,24 @@ export const getSessionData = async (sessionId: string) => {
   if (!session) return null;
 
   const decodedJWT = decodeJwt(session.token);
-  const { publicServiceNumber, birthDate } = decodedJWT;
+  const { dspOnlineLevel, mobile } = decodedJWT;
+
+  let verificationLevel = 0;
+  if (dspOnlineLevel !== "0") {
+    if (mobile === "+0000000000000") {
+      verificationLevel = 1;
+    } else {
+      verificationLevel = 2;
+    }
+  }
+
   return {
     ...decodedJWT,
     userId: session.userId,
     publicServant: session.publicServant,
     //The values below will likely be extracted from session token once we integrate with GOV ID
     myGovIdEmail: "testMyGovIdEmail@test.com",
-    hasGovIdVerifiedAccount: publicServiceNumber && birthDate ? true : false,
+    verificationLevel,
     sessionId,
   };
 };

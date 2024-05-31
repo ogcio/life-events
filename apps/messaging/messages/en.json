@@ -224,5 +224,49 @@
       "selectProviderLabel": "Select provider",
       "backLink": "Back"
     }
+  },
+  "AlphaBanner": {
+    "tag": "Alpha",
+    "bannerText": "This is a new service - your <anchor>feedback</anchor> will help us to improve it."
+  },
+  "LandingPage": {
+    "sections": {
+      "main": {
+        "title": "Messaging",
+        "description": "Effortlessly send email and SMS notifications, craft reusable templates, set up reminders, success notifications or seamlessly use the electronic postbox component embedded within your systems for users to access their messages."
+      },
+      "benefits": {
+        "title": "Benefits",
+        "section1": {
+          "title": "Unified Platform with Multi-Channel Reach",
+          "description": "The centralised platform for managing messages across various channels. Reach users through their preferred methods, whether it's email, SMS or electronic postbox, Messaging ensures prompt and effective communication delivery."
+        },
+        "section2": {
+          "title": "Secure",
+          "description": "Messaging offers customisable options to suit your department's unique needs, while also prioritising security to safeguard sensitive information and ensure compliance with data protection regulations."
+        },
+        "section3": {
+          "title": "Reusable Templates",
+          "description": "Easily create templates for any type of communication - confirmations, reminders, success notifications - endless possibilities, ensuring consistency and streamlining your processes."
+        },
+        "section4": {
+          "title": "Electronic Postbox",
+          "description": "Embedded within other systems, the electronic postbox allows users to easily access their messages and take action, enhancing user experience and increasing responsiveness."
+        },
+        "section5": {
+          "title": "Accessibility Compliance",
+          "description": "Meet accessibility regulations such as Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users, regardless of their abilities, can access and interact with messages with ease."
+        },
+        "section6": {
+          "title": "Dedicated Support",
+          "description": "Our team of experts is here to assist you every step of the way. Whether you have technical questions or need assistance with implementation, Messaging's dedicated support team ensures a smooth experience."
+        }
+      },
+      "getStarted": {
+        "title": "Get started",
+        "description": "Ready to elevate your communication strategies? Contact us to schedule a demo or learn more about how Messaging can  transform your engagement efforts.",
+        "cta": "Sign up to learn more"
+      }
+    }
   }
 }
