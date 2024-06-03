@@ -35,20 +35,28 @@ const linkTagsToUser = async (params: {
 }) => {
   const toInsertValues: string[] = [];
   const toInsertIndexes: string[] = [];
-  let indexCount = 1;
-
+  const tagIds: string[] = [];
+  const tagIdsIndexes: string[] = [];
+  let indexCount = 2;
+  let tagIdsIndex = params.toLinkTags.length + 3;
   for (const toCreate of params.toLinkTags) {
     toInsertValues.push(params.userId, toCreate.id);
+    tagIds.push(toCreate.id);
+    tagIdsIndexes.push(`$${tagIdsIndex++}`);
     toInsertIndexes.push(`($${indexCount++}, $${indexCount++})`);
   }
+
   const result = await params.client.query(
-    `
+    ` WITH inserted_tags as (
         INSERT INTO tags_users (user_id, tag_id)
         VALUES ${toInsertIndexes.join(", ")}
         ON CONFLICT (user_id, tag_id)
-        DO UPDATE SET "user_id" = tags_users.user_id
+        DO NOTHING 
+      )
+      SELECT tag_id from tags_users
+        where user_id = $1 AND tag_id in (${tagIdsIndexes.join(", ")})
     `,
-    toInsertValues,
+    [params.userId, ...toInsertValues, ...tagIds],
   );
 
   if (result.rowCount !== params.toLinkTags.length) {
