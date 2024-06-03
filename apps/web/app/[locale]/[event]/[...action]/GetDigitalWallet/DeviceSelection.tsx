@@ -129,7 +129,7 @@ export default async (props: {
                   className="govie-radios__input"
                 />
                 <label className="govie-radios__label" htmlFor="device-type-0">
-                  Apple iOS
+                  {t("ios")}
                 </label>
               </div>
               <div className="govie-radios__item">
@@ -141,7 +141,7 @@ export default async (props: {
                   className="govie-radios__input"
                 />
                 <label className="govie-radios__label" htmlFor="device-type-1">
-                  Android (eg. Samsung, Google, Huawei, Xiaomi, LG)
+                  {t("android")}
                 </label>
               </div>
             </div>
