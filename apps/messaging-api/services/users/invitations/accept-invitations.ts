@@ -1,6 +1,6 @@
 import { createError } from "@fastify/error";
 import { PostgresDb } from "@fastify/postgres";
-import { getUserById } from "../shared-users";
+import { getUserByUserProfileId } from "../shared-users";
 import { getUserInvitations } from "./shared-invitations";
 import {
   InvitationFeedback,
@@ -16,13 +16,13 @@ const ACCEPT_INVITATIONS_ERROR = "ACCEPT_INVITATIONS_ERROR";
 
 export const getInvitationForUser = async (params: {
   pg: PostgresDb;
-  userId: string;
+  userProfileId: string;
   organisationId: string;
 }): Promise<UserInvitation> => {
-  const { pg, userId, organisationId } = params;
+  const { pg, userProfileId, organisationId } = params;
   const client = await pg.connect();
   try {
-    return await getInvitation({ client, userId, organisationId });
+    return await getInvitation({ client, userProfileId, organisationId });
   } finally {
     client.release();
   }
@@ -30,13 +30,13 @@ export const getInvitationForUser = async (params: {
 
 const getInvitation = async (params: {
   client: PoolClient;
-  userId: string;
+  userProfileId: string;
   organisationId: string;
 }): Promise<UserInvitation> => {
-  const { client, userId, organisationId } = params;
-  const user = await getUserById({
+  const { client, userProfileId, organisationId } = params;
+  const user = await getUserByUserProfileId({
     client,
-    userId,
+    userProfileId,
     errorCode: ACCEPT_INVITATIONS_ERROR,
   });
   if (!user.userProfileId) {
@@ -78,7 +78,7 @@ export const updateOrganisationFeedback = async (params: {
   pg: PostgresDb;
   feedback: OrganisationInvitationFeedback;
   organisationId: string;
-  userId: string;
+  userProfileId: string;
 }): Promise<UserInvitation> => {
   const client = await params.pg.connect();
   try {
@@ -92,7 +92,11 @@ export const updateOrganisationFeedback = async (params: {
       )();
     }
 
-    await executeUpdateOrganisationFeedback({ client, ...params });
+    await executeUpdateOrganisationFeedback({
+      client,
+      ...params,
+      userId: userInvitation.id,
+    });
 
     return await getInvitation({ client, ...params });
   } finally {
@@ -137,15 +141,15 @@ const executeUpdateOrganisationFeedback = async (params: {
 export const updateInvitationStatus = async (params: {
   pg: PostgresDb;
   feedback: InvitationFeedback;
-  userId: string;
+  userProfileId: string;
 }): Promise<User> => {
   const client = await params.pg.connect();
   try {
     // invoking this will check if the user exists
-    await getUserById({
+    await getUserByUserProfileId({
       client,
       errorCode: ACCEPT_INVITATIONS_ERROR,
-      userId: params.userId,
+      userProfileId: params.userProfileId,
     });
 
     return await executeUpdateUserStatus({ client, ...params });
@@ -157,7 +161,7 @@ export const updateInvitationStatus = async (params: {
 const executeUpdateUserStatus = async (params: {
   client: PoolClient;
   feedback: InvitationFeedback;
-  userId: string;
+  userProfileId: string;
 }): Promise<User> => {
   let users: QueryResult<User>;
   try {
@@ -165,15 +169,15 @@ const executeUpdateUserStatus = async (params: {
     users = await params.client.query<User>(
       `
         UPDATE users
-        SET user_status=$1::text
-        WHERE user_id = $2 RETURNING
+        SET user_status = $1
+        WHERE user_profile_id = $2 RETURNING
           id as "id",
           user_profile_id as "userProfileId",
           importer_organisation_id as "importerOrganisationId",
           user_status as "userStatus",
           correlation_quality as "correlationQuality"  
       `,
-      [feedback.userStatusFeedback, params.userId],
+      [feedback.userStatusFeedback, params.userProfileId],
     );
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";

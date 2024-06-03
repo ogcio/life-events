@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
 import {
+  IMPORT_USERS_ERROR,
   getCsvExample,
   importCsvFileFromRequest,
   importCsvRecords,
@@ -23,6 +24,7 @@ import {
   updateInvitationStatus,
   updateOrganisationFeedback,
 } from "../../services/users/invitations/accept-invitations";
+import { createError } from "@fastify/error";
 
 const tags = ["Users"];
 
@@ -41,7 +43,14 @@ export default async function users(app: FastifyInstance) {
       },
     },
     async (request: FastifyRequest, _reply: FastifyReply) => {
-      await importCsvFileFromRequest({ req: request, pg: app.pg });
+      // exclamation mark used here because we have
+      // verifyUser preValidation
+      await importCsvFileFromRequest({
+        filepath: await saveRequestFile(request),
+        user: request.user!,
+        pg: app.pg,
+        logger: request.log,
+      });
     },
   );
 
@@ -115,7 +124,7 @@ export default async function users(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await getInvitationForUser({
-        userId: request.user!.id,
+        userProfileId: request.user!.id,
         organisationId: request.params.organisationId,
         pg: app.pg,
       }),
@@ -151,7 +160,7 @@ export default async function users(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await updateOrganisationFeedback({
-        userId: request.user!.id,
+        userProfileId: request.user!.id,
         organisationId: request.params.organisationId,
         pg: app.pg,
         feedback: request.body,
@@ -184,10 +193,25 @@ export default async function users(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await updateInvitationStatus({
-        userId: request.user!.id,
+        userProfileId: request.user!.id,
         pg: app.pg,
         feedback: request.body,
       }),
     }),
   );
+
+  const saveRequestFile = async (request: FastifyRequest): Promise<string> => {
+    const file = await request.files();
+    if (!file) {
+      throw createError(
+        IMPORT_USERS_ERROR,
+        "File is missing in the request",
+        400,
+      )();
+    }
+
+    const savedFiles = await request.saveRequestFiles();
+
+    return savedFiles[0].filepath;
+  };
 }
