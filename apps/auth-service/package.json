@@ -42,7 +42,7 @@
     "auth": "*",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
-    "jose": "^5.2.4",
+    "jose": "^5.4.0",
     "pg": "^8.11.3"
   },
   "devDependencies": {
