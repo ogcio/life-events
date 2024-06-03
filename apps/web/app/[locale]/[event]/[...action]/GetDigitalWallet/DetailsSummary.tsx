@@ -51,7 +51,7 @@ export default (props: {
               change={{ key: t("change"), value: changeDetailsHref }}
               item={{
                 key: t("selectDeviceText"),
-                value: data.deviceType?.toString() as string,
+                value: t(data.deviceType?.toString() as string),
               }}
             />
             <ListRow

@@ -104,7 +104,7 @@ export default async ({ showHamburgerButton, locale }: THeaderProps) => {
             <strong>{t("myLifeEvents")}</strong>
           </div>
         </div>
-        <div className={styles.headerRightContainer}>
+        {/* <div className={styles.headerRightContainer}>
           <div className={styles.languagesContainer}>
             <Link
               className={`govie-link govie-link--inverse govie-link--no-underline ${
@@ -144,7 +144,7 @@ export default async ({ showHamburgerButton, locale }: THeaderProps) => {
           >
             <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
           </Link>
-        </div>
+        </div> */}
       </div>
     </header>
   );
