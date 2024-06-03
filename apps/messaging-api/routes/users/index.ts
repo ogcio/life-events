@@ -118,17 +118,13 @@ export default async function users(app: FastifyInstance) {
         Response: { data: UserInvitation };
       }>,
       _reply: FastifyReply,
-    ) => {
-      const response = {
-        data: await getInvitationForUser({
-          userProfileId: request.user!.id,
-          organisationId: request.params.organisationId,
-          pg: app.pg,
-        }),
-      };
-
-      return response;
-    },
+    ) => ({
+      data: await getInvitationForUser({
+        userProfileId: request.user!.id,
+        organisationId: request.params.organisationId,
+        pg: app.pg,
+      }),
+    }),
   );
 
   interface PatchOrgInvitationSchema {
