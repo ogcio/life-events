@@ -182,6 +182,9 @@ const sendInvitations = async (params: {
       }),
     );
     output.invitedToMessaging.push(...userIds);
+    // also push to organisation to then update the
+    // invitation on the db
+    output.invitedToOrganisation.push(...userIds);
   }
 
   for (const language of Object.keys(params.toSend.joinOrganisation)) {
@@ -204,7 +207,10 @@ const sendInvitations = async (params: {
 
   await Promise.all(sending);
 
-  return output;
+  return {
+    invitedToMessaging: [...new Set(output.invitedToMessaging)],
+    invitedToOrganisation: [...new Set(output.invitedToOrganisation)],
+  };
 };
 
 const getLanguagePerUser = (params: {
@@ -273,8 +279,8 @@ const setImportedAsInvited = async (params: {
       await params.client.query(
         `
           UPDATE users
-          SET user_status=$1::text
-          WHERE user_profile_id in = (${idsIndexes.join(", ")});
+          SET user_status=$1
+          WHERE user_profile_id in (${idsIndexes.join(", ")});
         `,
         ["pending", ...invitedToMessaging],
       );
@@ -284,15 +290,15 @@ const setImportedAsInvited = async (params: {
       const idsIndexes = invitedToOrganisation.map(() => `$${userIndex++}`);
       await params.client.query(
         `
-          UPDATE users
-          SET organisation_user_configurations=$1::text, invitation_sent_at = $2
+          UPDATE organisation_user_configurations
+          SET invitation_status=$1, invitation_sent_at = $2
           WHERE organisation_id = $3 and user_id in (
             SELECT id from users where user_profile_id in (${idsIndexes.join(", ")})
           );
         `,
         [
           "pending",
-          new Date().toISOString(),
+          new Date(new Date().toUTCString()).toISOString(),
           params.toImportUsers.organisationId,
           ...invitedToOrganisation,
         ],

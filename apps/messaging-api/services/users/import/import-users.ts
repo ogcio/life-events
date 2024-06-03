@@ -1,4 +1,4 @@
-import { FastifyBaseLogger, FastifyRequest } from "fastify";
+import { FastifyBaseLogger } from "fastify";
 import { createError } from "@fastify/error";
 import {
   CsvRecord,
@@ -21,30 +21,26 @@ export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
 const TAGS_SEPARATOR = ";";
 
 export const importCsvFileFromRequest = async (params: {
-  req: FastifyRequest & { user: RequestUser };
+  user: RequestUser;
+  filepath: string;
   pg: PostgresDb;
+  logger: FastifyBaseLogger;
 }): Promise<void> => {
-  const file = await params.req.files();
-  if (!file) {
+  const usersToImport = await getUsersFromCsv(params.filepath);
+
+  if (usersToImport.length === 0) {
     throw createError(
       IMPORT_USERS_ERROR,
-      "File is missing in the request",
+      "Files must have at least one user",
       400,
     )();
   }
 
-  const savedFiles = await params.req.saveRequestFiles();
-  const usersToImport = await getUsersFromCsv(savedFiles[0].filepath);
-
-  if (usersToImport.length === 0) {
-    throw new Error("Files must have at least one user");
-  }
-
   await importUsers({
     pg: params.pg,
-    logger: params.req.log,
+    logger: params.logger,
     toImportUsers: usersToImport,
-    requestUser: params.req.user,
+    requestUser: params.user,
     channel: "csv",
   });
 };
