@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "20.10.4",
+    "@types/node": "20.14.0",
     "db-migrate": "^0.11.14",
     "db-migrate-pg": "^1.5.2",
     "typescript": "5.3.3"
