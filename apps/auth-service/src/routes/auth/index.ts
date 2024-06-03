@@ -10,8 +10,9 @@ import streamToString from "./utils/streamToString.js";
 import {
   CALLBACK_URL,
   CLIENT_ID,
+  REDIRECT_HOST,
+  REDIRECT_PATH,
   REDIRECT_TIMEOUT,
-  REDIRECT_URL,
   SESSION_ID,
 } from "./utils/replacementConstants.js";
 
@@ -22,7 +23,8 @@ export default async function login(app: FastifyInstance) {
 
   app.get<{
     Querystring: {
-      redirectUrl: string;
+      redirectHost: string;
+      redirectPath: string;
     };
   }>(
     "/",
@@ -34,7 +36,9 @@ export default async function login(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      let redirectUrl = request.query.redirectUrl;
+      let redirectHost = request.query.redirectHost;
+      let redirectPath = request.query.redirectPath;
+
       const sessionId = request.cookies.sessionId;
 
       if (sessionId) {
@@ -50,23 +54,26 @@ export default async function login(app: FastifyInstance) {
           [sessionId],
         );
 
-        if (query.rowCount && redirectUrl) {
+        if (query.rowCount && redirectHost) {
           const stream = fs.createReadStream(
             path.join(__dirname, "..", "static", "redirect.html"),
           );
 
           const result = (await streamToString(stream))
             .replace(SESSION_ID, sessionId)
-            .replace(REDIRECT_URL, redirectUrl)
+            .replace(REDIRECT_HOST, redirectHost)
+            .replace(REDIRECT_PATH, REDIRECT_PATH)
             .replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
 
           return reply.type("text/html").send(result);
         }
       }
 
-      redirectUrl = redirectUrl || "/";
+      redirectHost = redirectHost || "/";
+      redirectPath = redirectPath || "/";
 
-      setCookie(request, reply, "redirectUrl", redirectUrl);
+      setCookie(request, reply, "redirectHost", redirectHost);
+      setCookie(request, reply, "redirectPath", redirectPath);
       const authorizeUrl = app.config.MYGOVID_URL.replace(
         CALLBACK_URL,
         app.config.CALLBACK_URL,

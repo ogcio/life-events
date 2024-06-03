@@ -11,8 +11,9 @@ import streamToString from "./utils/streamToString.js";
 import {
   CLIENT_SECRET,
   CODE,
+  REDIRECT_HOST,
+  REDIRECT_PATH,
   REDIRECT_TIMEOUT,
-  REDIRECT_URL,
   SESSION_ID,
 } from "./utils/replacementConstants.js";
 
@@ -88,8 +89,11 @@ export default async (app: FastifyInstance) => {
 
       const [{ id: ssid }] = query.rows;
 
-      const redirectUrl = request.cookies.redirectUrl || "/auth";
-      deleteCookie(request, reply, "redirectUrl", "");
+      const redirectHost = request.cookies.redirectHost || "/auth";
+      deleteCookie(request, reply, "redirectHost", "");
+
+      const redirectPath = request.cookies.redirectPath || "/";
+      deleteCookie(request, reply, "redirectPath", "");
 
       setCookie(request, reply, "sessionId", ssid);
 
@@ -99,7 +103,8 @@ export default async (app: FastifyInstance) => {
 
       const result = (await streamToString(stream))
         .replace(SESSION_ID, ssid)
-        .replace(REDIRECT_URL, redirectUrl)
+        .replace(REDIRECT_HOST, redirectHost)
+        .replace(REDIRECT_PATH, redirectPath)
         .replaceAll(REDIRECT_TIMEOUT, app.config.REDIRECT_TIMEOUT);
 
       return reply.type("text/html").send(result);
