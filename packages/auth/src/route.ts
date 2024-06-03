@@ -54,8 +54,8 @@ export default async (req: NextRequest) => {
   if (publicServant) {
     return redirect("/admin", RedirectType.replace);
   }
-  const redirectPath_ = req.nextUrl.searchParams.get("redirectPath");
-  const redirectUrl = redirectPath_ ? `${redirectPath_}` : "/";
+  const redirectPath = req.nextUrl.searchParams.get("redirectPath");
+  const redirectUrl = redirectPath ? `${redirectPath}` : "/";
 
   return redirect(redirectUrl, RedirectType.replace);
 };
