@@ -46,7 +46,7 @@ const linkTagsToUser = async (params: {
         INSERT INTO tags_users (user_id, tag_id)
         VALUES ${toInsertIndexes.join(", ")}
         ON CONFLICT (user_id, tag_id)
-        DO NOTHING
+        DO UPDATE SET "user_id" = tags_users.user_id
     `,
     toInsertValues,
   );
