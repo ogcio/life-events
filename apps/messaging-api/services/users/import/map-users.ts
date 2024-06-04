@@ -405,6 +405,9 @@ const userProfileToUser = (params: {
   userProfileId: params.userProfile.id,
   userStatus: params.status ?? "pending",
   correlationQuality: params.correlationQuality ?? "full",
+  phone: null,
+  email: null,
+  importId: null,
 });
 
 const getUserProfile = async (params: {

@@ -1588,11 +1588,108 @@ paths:
                           - type: string
                             enum:
                               - partial
+                      phone:
+                        default:
+                          type: "null"
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      email:
+                        default:
+                          type: "null"
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      details:
+                        type: object
+                        properties:
+                          publicIdentityId:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          firstName:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          lastName:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          birthDate:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          address:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: object
+                                properties:
+                                  city:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  zipCode:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  street:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  country:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  region:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                required:
+                                  - city
+                                  - zipCode
+                                  - street
+                                  - country
+                                  - region
+                              - type: "null"
+                        required:
+                          - publicIdentityId
+                          - firstName
+                          - lastName
+                          - birthDate
+                          - address
+                      importId:
+                        default:
+                          type: "null"
+                        anyOf:
+                          - type: "null"
+                          - type: string
                     required:
                       - userProfileId
                       - importerOrganisationId
                       - userStatus
                       - correlationQuality
+                      - phone
+                      - email
+                      - importId
                 required:
                   - data
         "400":
