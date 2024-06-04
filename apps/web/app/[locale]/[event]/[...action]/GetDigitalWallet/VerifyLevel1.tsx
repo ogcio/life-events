@@ -10,7 +10,10 @@ export default async () => {
         <p className="govie-body">
           {t.rich("whyVerifySecondParagraph", {
             link: (chunks) => (
-              <a className="govie-link" href="https://www.mygovid.ie/">
+              <a
+                className="govie-link"
+                href="https://www.mygovid.ie/en-IE/Account/Elevate"
+              >
                 {chunks}
               </a>
             ),
