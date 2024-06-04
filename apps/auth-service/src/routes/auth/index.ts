@@ -104,12 +104,11 @@ export default async function login(app: FastifyInstance) {
     },
     async (request, reply) => {
       const sessionId = request.cookies.sessionId;
+      const redirectUrl = request.query.redirectUrl || "/";
 
       await app.pg.query("DELETE FROM govid_sessions WHERE id=$1", [sessionId]);
 
-      return reply.redirect(
-        `/auth?${new URLSearchParams(request.query).toString()}`,
-      );
+      return reply.redirect(`/auth?redirectHost=${redirectUrl}&redirectPath=/`);
     },
   );
 }
