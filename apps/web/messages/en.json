@@ -36,6 +36,7 @@
     "rates": "What may I receive?",
     "what-asked-about": "What will  you be asked about?",
     "confirm-details": "Confirm your contact details",
+    "verify-email": "Email verification",
     "submissions": {
       "renewDriversLicence": "Driving licence renewal",
       "orderEHIC": "EHIC application",
@@ -563,14 +564,14 @@
     },
     "getDigitalWallet": {
       "title": {
-        "base": "{hasGovIdVerifiedAccount, select, true {Get your digital wallet} false {Get ready for your digital wallet} other {Get ready for your digital wallet}}",
+        "base": "{hasGovIdVerifiedAccount, select, true {Get your Government Digital Wallet} false {Get ready for your digital wallet} other {Get ready for your digital wallet}}",
         "pre": "Continue with your digital wallet application",
         "mid": "Your digital wallet application is being processed",
         "post": "Your digital wallet application is complete",
         "rejected": "Your application for a digital wallet is rejected"
       },
       "description": {
-        "base": "{hasGovIdVerifiedAccount, select, true {Apply for the digital wallet pilot here} false {You need to secure your MyGov ID for the Digital Wallet pilot. <br></br> Find out more here} other {You need to secure your MyGov ID for the Digital Wallet pilot. <br></br> Find out more here}}",
+        "base": "{hasGovIdVerifiedAccount, select, true {Click here to start your application} false {You need to secure your MyGov ID for the Digital Wallet pilot. <br></br> Find out more here} other {You need to secure your MyGov ID for the Digital Wallet pilot. <br></br> Find out more here}}",
         "pre": "A line of text to support this statement",
         "mid": "A line of text to support this statement",
         "post": "You should now have access to your Digital Wallet",
