@@ -37,7 +37,7 @@
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.31",
     "auth": "*",
-    "aws-sdk": "^2.1630.0",
+    "aws-sdk": "^2.1633.0",
     "dotenv": "^16.4.5",
     "error-handler": "*",
     "fast-csv": "^5.0.1",
