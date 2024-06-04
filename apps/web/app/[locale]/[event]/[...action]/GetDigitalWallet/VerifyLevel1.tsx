@@ -19,10 +19,7 @@ export default async () => {
         <p className="govie-body">
           {t.rich("whyVerifyThirdParagraph", {
             link: (chunks) => (
-              <a
-                className="govie-link"
-                href={`${process.env.HOST_URL}/digital-wallet/get-digital-wallet`}
-              >
+              <a className="govie-link" href={`${process.env.HOST_URL}`}>
                 {chunks}
               </a>
             ),
