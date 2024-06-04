@@ -63,37 +63,11 @@ const NullableStringType = Type.Union([Type.Null(), Type.String()], {
   default: Type.Null(),
 });
 
-export const UserSchema = Type.Object({
-  id: Type.Optional(Type.String()),
-  userProfileId: NullableStringType,
-  importerOrganisationId: Type.String(),
-  userStatus: UserStatusUnionType,
-  correlationQuality: CorrelationQualityUnionType,
-});
-
-export type User = Static<typeof UserSchema>;
-
-export const OrganisationUserConfigSchema = Type.Object({
-  organisationId: Type.String(),
-  userId: Type.String(),
-  invitationStatus: InvitationStatusUnionType,
-  invitationSentAt: NullableStringType,
-  invitationFeedbackAt: NullableStringType,
-  preferredTransports: Type.Array(Type.String()),
-});
-
-export type OrganisationUserConfig = Static<
-  typeof OrganisationUserConfigSchema
->;
-
-export const ToImportUserSchema = Type.Object({
-  importIndex: Type.Integer(),
+export const UserDetailsSchema = Type.Object({
   publicIdentityId: NullableStringType,
   firstName: NullableStringType,
   lastName: NullableStringType,
-  phoneNumber: NullableStringType,
   birthDate: NullableStringType,
-  emailAddress: NullableStringType,
   address: Type.Union(
     [
       Type.Object({
@@ -107,12 +81,46 @@ export const ToImportUserSchema = Type.Object({
     ],
     { default: Type.Null() },
   ),
-  importStatus: ImportStatusUnionType,
-  importError: Type.Optional(NullableStringType),
-  relatedUserProfileId: Type.Optional(NullableStringType),
-  tags: Type.Optional(Type.Array(Type.String())),
 });
+export type UserDetails = Static<typeof UserDetailsSchema>;
 
+export const UserSchema = Type.Object({
+  id: Type.Optional(Type.String()),
+  userProfileId: NullableStringType,
+  importerOrganisationId: Type.String(),
+  userStatus: UserStatusUnionType,
+  correlationQuality: CorrelationQualityUnionType,
+  phone: NullableStringType,
+  email: NullableStringType,
+  details: Type.Optional(UserDetailsSchema),
+  importId: NullableStringType,
+});
+export type User = Static<typeof UserSchema>;
+
+export const OrganisationUserConfigSchema = Type.Object({
+  organisationId: Type.String(),
+  userId: Type.String(),
+  invitationStatus: InvitationStatusUnionType,
+  invitationSentAt: NullableStringType,
+  invitationFeedbackAt: NullableStringType,
+  preferredTransports: Type.Array(Type.String()),
+});
+export type OrganisationUserConfig = Static<
+  typeof OrganisationUserConfigSchema
+>;
+
+export const ToImportUserSchema = Type.Composite([
+  Type.Object({
+    importIndex: Type.Integer(),
+    phoneNumber: NullableStringType,
+    emailAddress: NullableStringType,
+    importStatus: ImportStatusUnionType,
+    importError: Type.Optional(NullableStringType),
+    relatedUserProfileId: Type.Optional(NullableStringType),
+    tags: Type.Optional(Type.Array(Type.String())),
+  }),
+  UserDetailsSchema,
+]);
 export type ToImportUser = Static<typeof ToImportUserSchema>;
 
 export const UsersImportSchema = Type.Object({
@@ -124,7 +132,6 @@ export const UsersImportSchema = Type.Object({
   lastRetryAt: NullableStringType,
   importId: Type.String(),
 });
-
 export type UsersImport = Static<typeof UsersImportSchema>;
 
 const NullableOptionalStringType = Type.Optional(NullableStringType);
@@ -144,7 +151,6 @@ export const CsvRecordSchema = Type.Object({
   addressRegion: NullableOptionalStringType,
   tags: NullableOptionalStringType,
 });
-
 export type CsvRecord = Static<typeof CsvRecordSchema>;
 
 export const TagSchema = Type.Object({
