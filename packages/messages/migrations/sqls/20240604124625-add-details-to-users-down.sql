@@ -1,0 +1,5 @@
+ALTER TABLE users
+    DROP COLUMN IF EXISTS phone,
+    DROP COLUMN IF EXISTS email,
+    DROP COLUMN IF EXISTS details,
+    DROP COLUMN IF EXISTS import_id
