@@ -68,7 +68,8 @@
 
 .logoutLink {
   display: flex;
-  @media ((max-width: $breakpoint-phone)) {
-    display: none;
-  }
+  // commented out for now until we have the sidebar
+  // @media ((max-width: $breakpoint-phone)) {
+  //   display: none;
+  // }
 }
