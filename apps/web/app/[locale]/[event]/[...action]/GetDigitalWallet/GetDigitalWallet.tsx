@@ -11,6 +11,7 @@ import VerifyLevel0 from "./VerifyLevel0";
 import VerifyLevel1 from "./VerifyLevel1";
 import ChangeDetails from "./ChangeDetails";
 import DeviceSelection from "./DeviceSelection";
+import EmailVerification from "./EmailVerification";
 
 const getDigitalWalletRulesVerified: Parameters<
   typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
@@ -215,6 +216,7 @@ const DetailsSummaryStep: React.FC<FormProps> = ({
   data,
   userId,
   eventsPageHref,
+  urlBase,
 }) => {
   return stepSlug === nextSlug ? (
     <FormLayout
@@ -226,6 +228,7 @@ const DetailsSummaryStep: React.FC<FormProps> = ({
         data={data}
         flow={workflow.keys.getDigitalWallet}
         userId={userId}
+        urlBase={urlBase}
       />
     </FormLayout>
   ) : (
@@ -266,6 +269,30 @@ const VerifyLevel1Step: React.FC<FormProps> = ({ actionSlug, stepSlug }) => {
   );
 };
 
+const VerifyEmail: React.FC<FormProps> = ({
+  stepSlug,
+  actionSlug,
+  nextSlug,
+  data,
+  userId,
+  eventsPageHref,
+  searchParams,
+}) => {
+  return (
+    <FormLayout
+      action={{ slug: actionSlug }}
+      step={stepSlug}
+      backHref={eventsPageHref}
+    >
+      <EmailVerification
+        data={data}
+        flow={workflow.keys.getDigitalWallet}
+        userId={userId}
+        searchParams={searchParams}
+      />
+    </FormLayout>
+  );
+};
 const ChangeDetailsStep: React.FC<FormProps> = ({
   data,
   actionSlug,
@@ -330,6 +357,23 @@ export default async (props: web.NextPageProps) => {
 
   if (stepSlug) {
     const StepComponent = FormComponentsMap[stepSlug];
+
+    if (stepSlug === "verify-email") {
+      return (
+        <VerifyEmail
+          stepSlug={stepSlug}
+          actionSlug={actionSlug}
+          nextSlug={nextSlug}
+          data={data}
+          eventsPageHref={`/${props.params.locale}/${routes.events.slug}`}
+          urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
+          userId={userId}
+          baseActionHref={baseActionHref}
+          searchParams={props.searchParams}
+          isStepValid={isStepValid}
+        />
+      );
+    }
 
     if (!StepComponent) {
       throw notFound();
