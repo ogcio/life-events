@@ -1,0 +1,1 @@
+ALTER TABLE user_flow_data ADD COLUMN email_verification_token VARCHAR(255);

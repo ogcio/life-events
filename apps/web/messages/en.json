@@ -411,7 +411,57 @@
       "submitText": "Return to My Life Events",
       "purpose": "Application for",
       "date": "Date of application",
-      "getDigitalWallet": "Digital wallet"
+      "getDigitalWallet": "Digital wallet",
+      "getDigitalWalletBody": "Thank you for submitting your application, your request will be reviewed soon."
+    },
+    "emails": {
+      "needToBeVerified": {
+        "subject": "You’re getting closer: Verify your MyGovID",
+        "title": "Hi",
+        "paragraphs": {
+          "p1": "Thank you for your interest in being part of the Government Digital Wallet pilot.",
+          "p2": "For security reasons, we need you to be a fully verified MyGovID user. This will ensure you can use the Life Events portal to its full potential and enjoy all the benefits of the Government Digital Wallet.",
+          "p3": "Please click <link>here</link> for full MyGovID verification instructions.",
+          "p4": "Once you are fully verified, please log into the Life Events portal to get a start on downloading the Government Digital Wallet.",
+          "p5": "Thank you,",
+          "p6": "The Government Digital Wallet team"
+        }
+      },
+      "verifyGovEmailAddress": {
+        "subject": "Please verify that you are a government employee",
+        "title": "Hi",
+        "paragraphs": {
+          "p1": "Thanks for signing up to be part of the Government Digital Wallet pilot.",
+          "p2": "Since this is a pilot that is only open to government employees, please click <link>here</link> to verify your government email address and express your interest in applying for the wallet.",
+          "p3": "Thank you,",
+          "p4": "The Government Digital Wallet team"
+        }
+      },
+      "AppOnboardingEmail": {
+        "subject": "You’re ready to get your Government Digital Wallet",
+        "title": "Congratulations",
+        "paragraphs": {
+          "p1": "You have been approved as a civil servant and can join the Government Digital Wallet pilot scheme.",
+          "p2": "<important>What’s next?</important>",
+          "ios": {
+            "p1": "This is a pilot programme which runs on a testing platform called Testflight. This is Apple’s way of giving people early access to an app.",
+            "p2": "Please download the TestFlight app to get started.",
+            "p3": "You will then download the Government Digital Wallet App to Testflight.",
+            "p4": "Your Government Digital Wallet journey starts now.",
+            "p5": "Enjoy!",
+            "p6": "The Government Digital Wallet team"
+          },
+          "android": {
+            "p1": "Click the link below to download the Government Digital Wallet from the Play Store.",
+            "p2": "<important>Note:</important> As this is a pilot programme the app is not publicly available right now.",
+            "p3": "<link>App onboarding</link>",
+            "p4": "Once downloaded, open the app and follow the instructions",
+            "p5": "Your Government Digital Wallet journey starts now.",
+            "p6": "Enjoy!",
+            "p7": "The Government Digital Wallet team"
+          }
+        }
+      }
     }
   },
   "PaymentSuccessful": {
@@ -808,6 +858,9 @@
       "androidAppStoreEmail": "Playstore email",
       "ios": "Apple iOS",
       "android": "Android (eg. Samsung, Google, Huawei, Xiaomi, LG)",
+      "verifiedWorkEmail": "Has verified work email",
+      "yes": "yes",
+      "no": "no",
       "reject": "Reject",
       "approve": "Approve"
     },

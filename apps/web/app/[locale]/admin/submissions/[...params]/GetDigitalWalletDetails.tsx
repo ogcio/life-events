@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 import { postgres, routes, web, workflow } from "../../../../utils";
 import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
 import FormLayout from "../../../../components/FormLayout";
-import { getS3ClientConfig } from "../../../../utils/aws";
+import { sendAppOnboardingEmail } from "../../../[event]/[...action]/GetDigitalWallet/ServerActions";
 
 type Props = {
   flowData: workflow.GetDigitalWallet;
@@ -21,6 +21,19 @@ export default async ({ userId, flow, flowData }: Props) => {
     "use server";
     const userId = formData.get("userId");
     const flow = formData.get("flow");
+
+    const { appStoreEmail, deviceType, firstName, lastName } = flowData;
+
+    try {
+      await sendAppOnboardingEmail(
+        appStoreEmail,
+        firstName,
+        lastName,
+        deviceType as "ios" | "android",
+      );
+    } catch (error) {
+      console.error(error);
+    }
 
     await postgres.pgpool.query(
       `
@@ -81,6 +94,12 @@ export default async ({ userId, flow, flowData }: Props) => {
                     : "androidAppStoreEmail",
                 ),
                 value: flowData.appStoreEmail,
+              }}
+            />
+            <ListRow
+              item={{
+                key: t("verifiedWorkEmail"),
+                value: flowData.verifiedGovIEEmail ? t("yes") : t("no"),
               }}
             />
           </dl>
