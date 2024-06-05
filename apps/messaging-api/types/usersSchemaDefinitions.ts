@@ -48,6 +48,7 @@ export const ImportStatusUnionType = Type.Union(
     Type.Literal("imported"),
     Type.Literal("not_found"),
     Type.Literal("error"),
+    Type.Literal("missing_contacts"),
   ],
   { default: Type.Literal("pending") },
 );
@@ -56,6 +57,7 @@ export type ImportStatus = Static<typeof ImportStatusUnionType>;
 export const CorrelationQualityUnionType = Type.Union([
   Type.Literal("full"),
   Type.Literal("partial"),
+  Type.Literal("not_related"),
 ]);
 export type CorrelationQuality = Static<typeof CorrelationQualityUnionType>;
 

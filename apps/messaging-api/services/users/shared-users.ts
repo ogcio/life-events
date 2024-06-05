@@ -8,9 +8,13 @@ const getUser = async (params: {
   whereClauses: string[];
   whereValues: string[];
   errorCode: string;
+  logicalWhereOperator?: string;
 }): Promise<User> => {
   let result: QueryResult<User>;
   try {
+    const operator = params.logicalWhereOperator
+      ? ` ${params.logicalWhereOperator} `
+      : " AND ";
     result = await params.client.query<User>(
       `
         SELECT 
@@ -19,7 +23,7 @@ const getUser = async (params: {
         importer_organisation_id as "importerOrganisationId",
         user_status as "userStatus",
         correlation_quality as "correlationQuality"    
-        FROM users where ${params.whereClauses.join(" AND ")} LIMIT 1
+        FROM users where ${params.whereClauses.join(operator)} LIMIT 1
       `,
       params.whereValues,
     );
@@ -62,3 +66,32 @@ export const getUserByUserProfileId = async (params: {
     whereValues: [params.userProfileId],
     errorCode: params.errorCode,
   });
+
+export const getUserByContacts = async (params: {
+  email: string | null;
+  phone: string | null;
+  client: PoolClient;
+  errorCode: string;
+}): Promise<User> => {
+  const clauses = [];
+  const values = [];
+  let phoneIndex = 1;
+  if (params.email) {
+    clauses.push("email = $1");
+    values.push(params.email);
+    phoneIndex = 2;
+  }
+
+  if (params.phone) {
+    clauses.push(`phone = $${phoneIndex}`);
+    values.push(params.phone);
+  }
+
+  return getUser({
+    client: params.client,
+    whereClauses: clauses,
+    whereValues: values,
+    errorCode: params.errorCode,
+    logicalWhereOperator: "OR",
+  });
+};

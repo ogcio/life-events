@@ -1239,6 +1239,9 @@ paths:
                           - type: string
                             enum:
                               - partial
+                          - type: string
+                            enum:
+                              - not_related
                       userStatus:
                         default:
                           type: string
@@ -1421,6 +1424,9 @@ paths:
                           - type: string
                             enum:
                               - partial
+                          - type: string
+                            enum:
+                              - not_related
                       userStatus:
                         default:
                           type: string
@@ -1588,6 +1594,9 @@ paths:
                           - type: string
                             enum:
                               - partial
+                          - type: string
+                            enum:
+                              - not_related
                       phone:
                         default:
                           type: "null"
@@ -1676,7 +1685,7 @@ paths:
                           - lastName
                           - birthDate
                           - address
-                      importId:
+                      usersImportId:
                         default:
                           type: "null"
                         anyOf:
@@ -1689,7 +1698,7 @@ paths:
                       - correlationQuality
                       - phone
                       - email
-                      - importId
+                      - usersImportId
                 required:
                   - data
         "400":

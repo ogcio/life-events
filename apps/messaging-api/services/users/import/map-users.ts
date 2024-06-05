@@ -6,6 +6,7 @@ import {
   OrganisationUserConfig,
   ToImportUser,
   User,
+  UserDetails,
   UserStatus,
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
@@ -13,7 +14,7 @@ import { isNativeError } from "util/types";
 import { Profile } from "building-blocks-sdk";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
-import { getUserByUserProfileId } from "../shared-users";
+import { getUserByContacts, getUserByUserProfileId } from "../shared-users";
 import { processTagsPerUser } from "../../tags/manage-tags";
 
 interface FoundUser {
@@ -56,12 +57,13 @@ const mapUsersSync = async (params: {
   const profile = new Profile(params.requestUser.id);
 
   const processingUsers = usersImport.usersData.map(
-    (toImportUser: ToImportUser) =>
-      processToImportUser({
+    async (toImportUser: ToImportUser) =>
+      await processToImportUser({
         profile,
         toImportUser,
         organisationId: usersImport.organisationId,
         client: params.client,
+        usersImportId: params.importId,
       }),
   );
 
@@ -145,27 +147,50 @@ const getUsersImport = async (params: {
 };
 
 const processUser = async (params: {
-  userProfile: FoundUser;
+  userProfile: FoundUser | undefined;
   organisationId: string;
   client: PoolClient;
+  toImportUser: ToImportUser;
+  usersImportId: string;
 }): Promise<User> => {
-  const { userProfile, organisationId, client } = params;
+  const { userProfile, organisationId, client, toImportUser, usersImportId } =
+    params;
 
-  const userFromDb = await getUserIfMapped({
-    userProfileId: userProfile.id,
-    client: params.client,
-  });
+  if (userProfile) {
+    const userFromDb = await getUserIfMapped({
+      userProfileId: userProfile.id,
+      client: params.client,
+    });
 
-  if (userFromDb) {
-    return userFromDb;
+    if (userFromDb) {
+      return userFromDb;
+    }
   }
 
-  const user = userProfileToUser({
-    userProfile,
+  if (toImportUser.emailAddress || toImportUser.phoneNumber) {
+    const userFromDb = await getUserByContactsIfMapped({
+      phone: toImportUser.phoneNumber,
+      email: toImportUser.emailAddress,
+      client: params.client,
+    });
+
+    if (userFromDb) {
+      return userFromDb;
+    }
+  }
+  const correlationQuality: CorrelationQuality = userProfile
+    ? userProfile.matchQuality === "exact"
+      ? "full"
+      : "partial"
+    : "not_related";
+
+  const user = fillUser({
+    userProfileId: userProfile?.id ?? null,
     organisationId: organisationId,
     status: "to_be_invited",
-    correlationQuality:
-      userProfile.matchQuality === "exact" ? "full" : "partial",
+    correlationQuality,
+    toImportUser,
+    usersImportId,
   });
 
   return insertNewUser({ toInsert: user, client });
@@ -219,23 +244,30 @@ const processToImportUser = async (params: {
   toImportUser: ToImportUser;
   organisationId: string;
   client: PoolClient;
+  usersImportId: string;
 }): Promise<{
   user?: User;
   organisationUser?: OrganisationUserConfig;
   importedUser: ToImportUser;
 }> => {
+  const { toImportUser, organisationId, client, usersImportId } = params;
   const response = await getUserProfile(params);
   const userProfile = response.data;
   if (!userProfile) {
-    // User profile not found, cannot map
-    params.toImportUser.importStatus = "not_found";
-    return { importedUser: params.toImportUser };
+    if (!toImportUser.emailAddress && !toImportUser.phoneNumber) {
+      toImportUser.importStatus = "missing_contacts";
+      return { importedUser: toImportUser };
+    }
+
+    toImportUser.importStatus = "not_found";
   }
 
   const user = await processUser({
     userProfile,
-    organisationId: params.organisationId,
-    client: params.client,
+    organisationId,
+    client,
+    toImportUser,
+    usersImportId,
   });
 
   if (!user.id) {
@@ -247,19 +279,19 @@ const processToImportUser = async (params: {
   }
 
   const organisationUser = await processOrganizationUserRelation({
-    client: params.client,
+    client,
     userId: user.id,
-    organisationId: params.organisationId,
+    organisationId,
   });
 
   await processTagsPerUser({
     userId: user.id,
-    client: params.client,
+    client,
     tags: params.toImportUser.tags ?? [],
   });
 
-  params.toImportUser.importStatus = "imported";
-  params.toImportUser.relatedUserProfileId = userProfile.id;
+  toImportUser.importStatus = "imported";
+  toImportUser.relatedUserProfileId = userProfile?.id;
 
   return { user, organisationUser, importedUser: params.toImportUser };
 };
@@ -273,14 +305,27 @@ const insertNewUser = async (params: {
     const result = await client.query<{ id: string }>(
       `
             INSERT INTO users
-                (user_profile_id, importer_organisation_id, user_status, correlation_quality)
-            VALUES( $1, $2, $3, $4) RETURNING id as "id";
+                (
+                  user_profile_id,
+                  importer_organisation_id,
+                  user_status,
+                  correlation_quality,
+                  email,
+                  phone,
+                  users_import_id,
+                  details
+                )
+            VALUES( $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id as "id";
         `,
       [
         toInsert.userProfileId,
         toInsert.importerOrganisationId,
         toInsert.userStatus,
         toInsert.correlationQuality,
+        toInsert.email,
+        toInsert.phone,
+        toInsert.usersImportId,
+        toInsert.details ? JSON.stringify(toInsert.details) : "{}",
       ],
     );
     toInsert.id = result.rows[0].id;
@@ -393,21 +438,54 @@ const getUserIfMapped = async (params: {
   }
 };
 
-const userProfileToUser = (params: {
-  userProfile: FoundUser;
+const getUserByContactsIfMapped = async (params: {
+  email: string | null;
+  phone: string | null;
+  client: PoolClient;
+}): Promise<User | undefined> => {
+  const { email, phone, client } = params;
+  try {
+    return await getUserByContacts({
+      email,
+      phone,
+      client,
+      errorCode: IMPORT_USERS_ERROR,
+    });
+  } catch (error) {
+    if (isFastifyError(error) && error.statusCode === 404) {
+      return undefined;
+    }
+
+    throw error;
+  }
+};
+
+const fillUser = (params: {
+  userProfileId: string | null;
   userId?: string;
   organisationId: string;
   status?: UserStatus;
   correlationQuality?: CorrelationQuality;
+  toImportUser: ToImportUser;
+  usersImportId: string;
 }): User => ({
   id: params.userId,
   importerOrganisationId: params.organisationId,
-  userProfileId: params.userProfile.id,
+  userProfileId: params.userProfileId,
   userStatus: params.status ?? "pending",
   correlationQuality: params.correlationQuality ?? "full",
-  phone: null,
-  email: null,
-  importId: null,
+  phone: params.toImportUser.phoneNumber,
+  email: params.toImportUser.emailAddress,
+  details: extractUserDetails(params.toImportUser),
+  usersImportId: params.usersImportId,
+});
+
+const extractUserDetails = (toImportUser: ToImportUser): UserDetails => ({
+  publicIdentityId: toImportUser.publicIdentityId,
+  firstName: toImportUser.firstName,
+  lastName: toImportUser.lastName,
+  birthDate: toImportUser.birthDate,
+  address: toImportUser.address,
 });
 
 const getUserProfile = async (params: {
