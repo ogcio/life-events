@@ -2,6 +2,7 @@ import { cookies } from "next/headers.js";
 import { getPgSession } from "./sessions";
 import { redirect, RedirectType } from "next/navigation.js";
 import { NextRequest } from "next/server";
+import exp from "constants";
 
 enum SAME_SITE_VALUES {
   LAX = "lax",
@@ -15,6 +16,7 @@ function getSessionIdCookieConfig(req: Request, cookieValue: string) {
     httpOnly: true,
     secure: false,
     path: "/",
+    expires: new Date(Date.now() + 30 * 60 * 1000),
   };
   const url = new URL(process.env.HOST_URL ?? req.url);
   if (url.protocol === "https:") {
