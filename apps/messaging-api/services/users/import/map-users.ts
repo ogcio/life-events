@@ -262,13 +262,6 @@ const processToImportUser = async (params: {
     toImportUser.importStatus = "not_found";
   }
 
-  console.log("");
-  console.log("");
-  console.log("");
-  console.log("");
-  console.log("");
-  console.log({ PPSN: toImportUser.publicIdentityId });
-
   const user = await processUser({
     userProfile,
     organisationId,
