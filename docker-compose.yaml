@@ -15,6 +15,14 @@ services:
       timeout: 5s
       retries: 5
 
+  maildev:
+    image: maildev/maildev
+    ports:
+      - 1080:1080
+      - 1025:1025
+    healthcheck:
+      test: 'wget -O - http://127.0.0.1:1080/healthz || exit 1'
+
   localstack:
     image: localstack/localstack:2.3.2
     ports:

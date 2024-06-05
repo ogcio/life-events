@@ -25,7 +25,13 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const { userId, firstName, lastName, publicServant } = await PgSessions.get();
+  const path = headers().get("x-pathname")?.toString();
+  const queryString = headers().get("x-searchParams")?.toString();
+
+  const redirectUrl = `${path}${queryString ? `?${queryString}` : ""}`;
+
+  const { userId, firstName, lastName, publicServant } =
+    await PgSessions.get(redirectUrl);
 
   const userName = [firstName, lastName].join(" ");
 
@@ -36,13 +42,12 @@ export default async function RootLayout({
 
   const isInitialized = Boolean(result.rows.at(0)?.isInitialized);
 
-  const path = headers().get("x-pathname")?.toString();
   if (!isInitialized && !path?.endsWith("welcome")) {
     const url = new URL(`${locale}/welcome`, process.env.HOST_URL);
-    url.searchParams.append("redirect_url", path ?? "/");
+    url.searchParams.append("redirect_url", redirectUrl);
+
     redirect(url.href, RedirectType.replace);
   }
-  const someValue = await isFeatureFlagEnabled("sdfsfdsd");
 
   const showHamburgerMenu =
     (await isFeatureFlagEnabled("eventsMenu")) && !publicServant;
