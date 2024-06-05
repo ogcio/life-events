@@ -12,6 +12,7 @@ export const envSchema = {
     "MYGOVID_URL",
     "CLIENT_SECRET",
     "TOKEN_URL",
+    "ALLOWED_REDIRECT_HOSTS",
   ],
   properties: {
     POSTGRES_USER: {
@@ -45,6 +46,9 @@ export const envSchema = {
       type: "string",
     },
     TOKEN_URL: {
+      type: "string",
+    },
+    ALLOWED_REDIRECT_HOSTS: {
       type: "string",
     },
   },

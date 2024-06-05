@@ -1,4 +1,5 @@
 import * as url from "url";
+import createError from "@fastify/error";
 import path from "path";
 import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
@@ -70,6 +71,17 @@ export default async function login(app: FastifyInstance) {
       }
 
       redirectHost = redirectHost || "/";
+      if (redirectHost !== "/") {
+        const redirectHostUrl = new URL(redirectHost);
+        const allowedRedirectHost = app.config.ALLOWED_REDIRECT_HOSTS.split(
+          ",",
+        ).find((domain) => new RegExp(`${domain}$`).test(redirectHostUrl.host));
+
+        if (!allowedRedirectHost) {
+          throw createError("INVALID_URL_ERROR", "Invalid redirect url", 500)();
+        }
+      }
+
       redirectPath = redirectPath || "/";
 
       setCookie(request, reply, "redirectHost", redirectHost);
