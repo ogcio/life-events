@@ -19,7 +19,7 @@ export const createMessage = async (params: {
   pg: PostgresDb;
 }): Promise<void> => {
   if (params.payload.message) {
-    return createSingleMessage({
+    return createRawMessage({
       pg: params.pg,
       payload: { ...params.payload, message: params.payload.message! },
     });
@@ -39,7 +39,7 @@ export const createMessage = async (params: {
   )();
 };
 
-const createSingleMessage = async (params: {
+const createRawMessage = async (params: {
   pg: PostgresDb;
   payload: Omit<Required<CreateMessage>, "template">;
 }): Promise<void> => {
