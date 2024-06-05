@@ -55,6 +55,8 @@ export default async (props: web.NextPageProps) => {
       <div className="govie-grid-column-two-thirds-from-desktop">
         <h1 className="govie-heading-l">{t("title")}</h1>
         <p className="govie-body">{t("disclaimer")}</p>
+        <p className="govie-body">{t("question")}</p>
+
         <form action={consentAction}>
           <div className="govie-radios govie-radios--large govie-form-group govie-radios--inline">
             <div className="govie-radios__item">
@@ -96,15 +98,6 @@ export default async (props: web.NextPageProps) => {
             {t("submit")}
           </button>
         </form>
-        <details className="govie-details govie-!-font-size-16">
-          <summary className="govie-details__summary">
-            <span className="govie-details__summary-text">
-              {t("detailsSummary")}
-            </span>
-          </summary>
-
-          <div className="govie-details__text">{t("detailsText")}</div>
-        </details>
       </div>
     </main>
   );

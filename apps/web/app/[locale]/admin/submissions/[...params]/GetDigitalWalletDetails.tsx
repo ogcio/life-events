@@ -70,11 +70,18 @@ export default async ({ userId, flow, flowData }: Props) => {
             <ListRow
               item={{
                 key: t("selectDeviceText"),
-                value: flowData.deviceType?.toString() as string,
+                value: t(flowData.deviceType?.toString()),
               }}
             />
             <ListRow
-              item={{ key: t("appStoreEmail"), value: flowData.appStoreEmail }}
+              item={{
+                key: t(
+                  flowData.deviceType === "ios"
+                    ? "iosAppStoreEmail"
+                    : "androidAppStoreEmail",
+                ),
+                value: flowData.appStoreEmail,
+              }}
             />
           </dl>
         </div>
