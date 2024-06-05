@@ -90,8 +90,14 @@ const getMockCsvRecord = (): CsvRecord => ({
   tags: "country.county.city;parent_tag.child_tag",
 });
 
-const normalizeCsvValue = (value: string | undefined | null): string | null =>
-  typeof value === "string" && value.length > 0 ? value : null;
+const normalizeCsvValue = (value: string | undefined | null): string | null => {
+  const outputValue = typeof value === "string" ? value.trim() : null;
+  if (outputValue && outputValue.length > 0) {
+    return outputValue;
+  }
+
+  return null;
+};
 
 const parseTags = (toMap: CsvRecord): string[] => {
   const tagValue = normalizeCsvValue(toMap.tags);
