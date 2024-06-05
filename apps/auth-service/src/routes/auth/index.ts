@@ -71,27 +71,13 @@ export default async function login(app: FastifyInstance) {
       }
 
       redirectHost = redirectHost || "/";
+      if (redirectHost !== "/") {
+        const redirectHostUrl = new URL(redirectHost);
+        const allowedRedirectHost = app.config.ALLOWED_REDIRECT_HOSTS.split(
+          ",",
+        ).find((domain) => new RegExp(`${domain}$`).test(redirectHostUrl.host));
 
-      const redirectHostUrl = new URL(redirectHost);
-      const allowedRedirectHosts = app.config.ALLOWED_REDIRECT_HOSTS.split(",");
-
-      const allowedRedirectHostsRegex = allowedRedirectHosts.map((host) => {
-        if (host.startsWith("^")) {
-          return new RegExp(host);
-        } else {
-          // Escape the string for exact match
-          return new RegExp(
-            `^${host.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}$`,
-          );
-        }
-      });
-
-      if (redirectHostUrl.origin !== app.config.ALLOWED_REDIRECT_HOST) {
-        if (
-          !allowedRedirectHostsRegex.find((host) =>
-            host.test(redirectHostUrl.origin),
-          )
-        ) {
+        if (!allowedRedirectHost) {
           throw createError("INVALID_URL_ERROR", "Invalid redirect url", 500)();
         }
       }
