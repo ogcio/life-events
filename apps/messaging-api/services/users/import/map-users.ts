@@ -56,9 +56,21 @@ const mapUsersSync = async (params: {
   const usersImport = await getUsersImport(params);
   const profile = new Profile(params.requestUser.id);
 
+  // const processingUsers = [];
+  // for (const userD of usersImport.usersData) {
+  //   processingUsers.push(
+  //     await processToImportUser({
+  //       profile,
+  //       toImportUser: userD,
+  //       organisationId: usersImport.organisationId,
+  //       client: params.client,
+  //       usersImportId: params.importId,
+  //     }),
+  //   );
+  // }
   const processingUsers = usersImport.usersData.map(
-    (toImportUser: ToImportUser) =>
-      processToImportUser({
+    async (toImportUser: ToImportUser) =>
+      await processToImportUser({
         profile,
         toImportUser,
         organisationId: usersImport.organisationId,
@@ -261,6 +273,13 @@ const processToImportUser = async (params: {
 
     toImportUser.importStatus = "not_found";
   }
+
+  console.log("");
+  console.log("");
+  console.log("");
+  console.log("");
+  console.log("");
+  console.log({ PPSN: toImportUser.publicIdentityId });
 
   const user = await processUser({
     userProfile,
