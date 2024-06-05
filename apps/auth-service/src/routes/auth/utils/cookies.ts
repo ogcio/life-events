@@ -20,6 +20,7 @@ const setCookie = (
     secure,
     path: "/",
     sameSite: secure ? SAME_SITE_VALUES.STRICT : SAME_SITE_VALUES.LAX,
+    expires: new Date(Date.now() + 30 * 60 * 1000),
   });
 };
 
