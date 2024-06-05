@@ -44,10 +44,22 @@ export default async (props: web.NextPageProps) => {
   }
 
   if (step !== "welcome") {
-    return redirect(
-      props.searchParams?.redirect_url ?? "/",
-      RedirectType.replace,
-    );
+    let redirect_url = props.searchParams?.redirect_url ?? "/";
+    let urlError = false;
+    try {
+      const url = new URL(props.searchParams?.redirect_url || "/");
+      if (url?.origin !== process.env.HOST_URL) {
+        urlError = true;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
+    if (urlError) {
+      throw new Error("Invalid redirect URL");
+    }
+
+    return redirect(redirect_url, RedirectType.replace);
   }
 
   return (
