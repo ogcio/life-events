@@ -305,14 +305,27 @@ const insertNewUser = async (params: {
     const result = await client.query<{ id: string }>(
       `
             INSERT INTO users
-                (user_profile_id, importer_organisation_id, user_status, correlation_quality)
-            VALUES( $1, $2, $3, $4) RETURNING id as "id";
+                (
+                  user_profile_id,
+                  importer_organisation_id,
+                  user_status,
+                  correlation_quality,
+                  email,
+                  phone,
+                  users_import_id,
+                  details
+                )
+            VALUES( $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id as "id";
         `,
       [
         toInsert.userProfileId,
         toInsert.importerOrganisationId,
         toInsert.userStatus,
         toInsert.correlationQuality,
+        toInsert.email,
+        toInsert.phone,
+        toInsert.usersImportId,
+        toInsert.details ? JSON.stringify(toInsert.details) : "{}",
       ],
     );
     toInsert.id = result.rows[0].id;
