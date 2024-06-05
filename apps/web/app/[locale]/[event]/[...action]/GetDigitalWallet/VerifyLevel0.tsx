@@ -12,7 +12,7 @@ export default async () => {
             link: (chunks) => (
               <a
                 className="govie-link"
-                href="https://www.gov.ie/en/service/b6ecfd-sign-up-for-mygovid/"
+                href="https://www.mygovid.ie/en-IE/Account/Elevate"
               >
                 {chunks}
               </a>

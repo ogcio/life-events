@@ -34,6 +34,7 @@ export default (props: {
         <div className="govie-grid-column-two-thirds-from-desktop">
           <div className="govie-heading-l">{t("title")}</div>
           <p className="govie-body">{t("subTitle")}</p>
+
           <dl className="govie-summary-list">
             <ListRow item={{ key: t("firstName"), value: data.firstName }} />
             <ListRow item={{ key: t("lastName"), value: data.lastName }} />
@@ -51,13 +52,17 @@ export default (props: {
               change={{ key: t("change"), value: changeDetailsHref }}
               item={{
                 key: t("selectDeviceText"),
-                value: t(data.deviceType?.toString() as string),
+                value: t(data.deviceType?.toString()),
               }}
             />
             <ListRow
               change={{ key: t("change"), value: changeDetailsHref }}
               item={{
-                key: t("appStoreEmail"),
+                key: t(
+                  data.deviceType === "ios"
+                    ? "iosAppStoreEmail"
+                    : "androidAppStoreEmail",
+                ),
                 value: data.appStoreEmail,
               }}
             />
