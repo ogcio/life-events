@@ -93,7 +93,7 @@ export const UserSchema = Type.Object({
   phone: NullableStringType,
   email: NullableStringType,
   details: Type.Optional(UserDetailsSchema),
-  importId: NullableStringType,
+  usersImportId: NullableStringType,
 });
 export type User = Static<typeof UserSchema>;
 
