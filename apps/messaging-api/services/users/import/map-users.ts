@@ -56,18 +56,6 @@ const mapUsersSync = async (params: {
   const usersImport = await getUsersImport(params);
   const profile = new Profile(params.requestUser.id);
 
-  // const processingUsers = [];
-  // for (const userD of usersImport.usersData) {
-  //   processingUsers.push(
-  //     await processToImportUser({
-  //       profile,
-  //       toImportUser: userD,
-  //       organisationId: usersImport.organisationId,
-  //       client: params.client,
-  //       usersImportId: params.importId,
-  //     }),
-  //   );
-  // }
   const processingUsers = usersImport.usersData.map(
     async (toImportUser: ToImportUser) =>
       await processToImportUser({
