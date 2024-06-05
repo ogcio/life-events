@@ -1,5 +1,10 @@
 import { Static, Type } from "@sinclair/typebox";
 
+const NullableStringType = Type.Union([Type.Null(), Type.String()], {
+  default: Type.Null(),
+});
+const NullableOptionalStringType = Type.Optional(NullableStringType);
+
 export const InvitationStatusUnionType = Type.Union(
   [
     Type.Literal("to_be_invited"),
@@ -61,10 +66,6 @@ export const CorrelationQualityUnionType = Type.Union([
 ]);
 export type CorrelationQuality = Static<typeof CorrelationQualityUnionType>;
 
-const NullableStringType = Type.Union([Type.Null(), Type.String()], {
-  default: Type.Null(),
-});
-
 export const UserDetailsSchema = Type.Object({
   publicIdentityId: NullableStringType,
   firstName: NullableStringType,
@@ -117,8 +118,9 @@ export const ToImportUserSchema = Type.Composite([
     phoneNumber: NullableStringType,
     emailAddress: NullableStringType,
     importStatus: ImportStatusUnionType,
-    importError: Type.Optional(NullableStringType),
-    relatedUserProfileId: Type.Optional(NullableStringType),
+    importError: NullableOptionalStringType,
+    relatedUserProfileId: NullableOptionalStringType,
+    relatedUserId: NullableOptionalStringType,
     tags: Type.Optional(Type.Array(Type.String())),
   }),
   UserDetailsSchema,
@@ -135,8 +137,6 @@ export const UsersImportSchema = Type.Object({
   importId: Type.String(),
 });
 export type UsersImport = Static<typeof UsersImportSchema>;
-
-const NullableOptionalStringType = Type.Optional(NullableStringType);
 
 export const CsvRecordSchema = Type.Object({
   importIndex: Type.Integer(),

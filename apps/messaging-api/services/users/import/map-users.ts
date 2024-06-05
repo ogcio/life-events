@@ -292,6 +292,7 @@ const processToImportUser = async (params: {
 
   toImportUser.importStatus = "imported";
   toImportUser.relatedUserProfileId = userProfile?.id;
+  toImportUser.relatedUserId = user.id;
 
   return { user, organisationUser, importedUser: params.toImportUser };
 };

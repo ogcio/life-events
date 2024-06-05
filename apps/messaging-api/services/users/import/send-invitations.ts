@@ -23,22 +23,46 @@ export const sendInvitationsForUsersImport = async (params: {
   requestUserId: string;
 }): Promise<void> => {
   const { pg, toImportUsers } = params;
-  const importedUserProfileIds = toImportUsers.usersData
-    .filter((ud) => ud.relatedUserProfileId)
-    .map((ud) => ud.relatedUserProfileId) as string[];
+  const importedUserIds: { userProfileId: string; userId: string }[] = [];
+  const userIds: string[] = [];
+  const langForUserId: {
+    [userId: string]: string;
+  } = {};
+  for (const userData of toImportUsers.usersData) {
+    if (!userData.relatedUserId) {
+      throw createError(
+        "SEND_INVITATIONS_ERROR",
+        `Something went wrong importing users, user with index ${userData.importIndex} is missing user id`,
+        500,
+      );
+    }
+    if (userData.relatedUserProfileId) {
+      importedUserIds.push({
+        userProfileId: userData.relatedUserProfileId,
+        userId: userData.relatedUserId,
+      });
+    } else {
+      langForUserId[userData.relatedUserId] = DEFAULT_LANGUAGE;
+    }
+    userIds.push(userData.relatedUserId);
+  }
 
-  if (importedUserProfileIds.length === 0) {
+  if (importedUserIds.length === 0 && Object.keys(langForUserId).length === 0) {
     return;
   }
-  const languagePerUser = getLanguagePerUser({
-    userIdsToSearchFor: importedUserProfileIds,
-    requestUserId: params.requestUserId,
-  });
+
+  const languagePerUser = {
+    ...langForUserId,
+    ...getLanguagePerUser({
+      userIdsToSearchFor: importedUserIds,
+      requestUserId: params.requestUserId,
+    }),
+  };
   const client = await pg.pool.connect();
   try {
     await client.query("BEGIN");
     const userInvitations = await getUserInvitations({
-      userProfileIds: importedUserProfileIds,
+      userIds,
       organisationId: toImportUsers.organisationId,
       client,
     });
@@ -71,13 +95,13 @@ export const sendInvitationsForUsersImport = async (params: {
 };
 
 const getUserInvitations = async (params: {
-  userProfileIds: string[];
+  userIds: string[];
   organisationId: string;
   client: PoolClient;
 }): Promise<UserInvitation[]> => {
   try {
     let userIndex = 2;
-    const idsIndexes = params.userProfileIds.map(() => `$${userIndex++}`);
+    const idsIndexes = params.userIds.map(() => `$${userIndex++}`);
     const result = await params.client.query<UserInvitation>(
       `
             select
@@ -92,9 +116,9 @@ const getUserInvitations = async (params: {
                 u.user_status as "userStatus"
             from users u
             left join organisation_user_configurations ouc on ouc.user_id = u.id and ouc.organisation_id = $1
-                where u.user_profile_id in (${idsIndexes.join(", ")})
+                where u.id in (${idsIndexes.join(", ")})
         `,
-      [params.organisationId, ...params.userProfileIds],
+      [params.organisationId, ...params.userIds],
     );
 
     return result.rows;
@@ -111,7 +135,11 @@ const getUserInvitations = async (params: {
 };
 
 interface InvitationsPerLanguage {
-  [x: string]: { invitations: UserInvitation[]; ids: string[] };
+  [x: string]: {
+    invitations: UserInvitation[];
+    toSendIds: string[];
+    userIds: string[];
+  };
 }
 
 interface ToSendInvitations {
@@ -128,14 +156,22 @@ const prepareInvitations = (params: {
     joinOrganisation: {},
   };
   for (const toInvite of params.userInvitations) {
-    const language = params.perIdLanguage[toInvite.userProfileId];
+    const language = params.perIdLanguage[toInvite.id];
+    // User profile id has higher priority, if exists, because in this
+    // way we know that we have to use contacts from the user profile
+    const toUseId = toInvite.userProfileId ?? toInvite.id;
     if (toInvite.userStatus === "to_be_invited") {
       // send invitation to messaging
       //if we send invitation to platform we don't send another email for organisation
       if (!toSend.joinMessaging[language]) {
-        toSend.joinMessaging[language] = { invitations: [], ids: [] };
+        toSend.joinMessaging[language] = {
+          invitations: [],
+          toSendIds: [],
+          userIds: [],
+        };
       }
-      toSend.joinMessaging[language].ids.push(toInvite.userProfileId);
+      toSend.joinMessaging[language].userIds.push(toInvite.id);
+      toSend.joinMessaging[language].toSendIds.push(toUseId);
       toSend.joinMessaging[language].invitations.push(toInvite);
       continue;
     }
@@ -143,9 +179,14 @@ const prepareInvitations = (params: {
     if (toInvite.organisationInvitationStatus === "to_be_invited") {
       // send invitation to accept comunication from org
       if (!toSend.joinOrganisation[language]) {
-        toSend.joinOrganisation[language] = { invitations: [], ids: [] };
+        toSend.joinOrganisation[language] = {
+          invitations: [],
+          toSendIds: [],
+          userIds: [],
+        };
       }
-      toSend.joinOrganisation[language].ids.push(toInvite.userProfileId);
+      toSend.joinOrganisation[language].userIds.push(toInvite.id);
+      toSend.joinOrganisation[language].toSendIds.push(toUseId);
       toSend.joinOrganisation[language].invitations.push(toInvite);
     }
   }
@@ -168,7 +209,7 @@ const sendInvitations = async (params: {
   } = { invitedToMessaging: [], invitedToOrganisation: [] };
   for (const language of Object.keys(params.toSend.joinMessaging)) {
     const messageInput = getJoinMessagingMessageForLanguage(language);
-    const userIds = params.toSend.joinMessaging[language].ids;
+    const userIds = params.toSend.joinMessaging[language].toSendIds;
     sending.push(
       createMessage({
         payload: {
@@ -181,15 +222,19 @@ const sendInvitations = async (params: {
         pg: params.pg,
       }),
     );
-    output.invitedToMessaging.push(...userIds);
+    output.invitedToMessaging.push(
+      ...params.toSend.joinMessaging[language].userIds,
+    );
     // also push to organisation to then update the
     // invitation on the db
-    output.invitedToOrganisation.push(...userIds);
+    output.invitedToOrganisation.push(
+      ...params.toSend.joinMessaging[language].userIds,
+    );
   }
 
   for (const language of Object.keys(params.toSend.joinOrganisation)) {
     const messageInput = getJoinOrgMessageForLanguage(language);
-    const userIds = params.toSend.joinOrganisation[language].ids;
+    const userIds = params.toSend.joinOrganisation[language].toSendIds;
     sending.push(
       createMessage({
         payload: {
@@ -202,7 +247,9 @@ const sendInvitations = async (params: {
         pg: params.pg,
       }),
     );
-    output.invitedToOrganisation.push(...userIds);
+    output.invitedToOrganisation.push(
+      ...params.toSend.joinOrganisation[language].userIds,
+    );
   }
 
   await Promise.all(sending);
@@ -214,7 +261,7 @@ const sendInvitations = async (params: {
 };
 
 const getLanguagePerUser = (params: {
-  userIdsToSearchFor: string[];
+  userIdsToSearchFor: { userProfileId: string; userId: string }[];
   requestUserId: string;
 }): { [x: string]: string } => {
   if (params.userIdsToSearchFor.length === 0) {
@@ -227,7 +274,7 @@ const getLanguagePerUser = (params: {
   // Temporarily mocked
   const output: { [x: string]: string } = {};
   for (const id of params.userIdsToSearchFor) {
-    output[id] = DEFAULT_LANGUAGE;
+    output[id.userId] = DEFAULT_LANGUAGE;
   }
   return output;
 };
@@ -280,7 +327,7 @@ const setImportedAsInvited = async (params: {
         `
           UPDATE users
           SET user_status=$1
-          WHERE user_profile_id in (${idsIndexes.join(", ")});
+          WHERE id in (${idsIndexes.join(", ")});
         `,
         ["pending", ...invitedToMessaging],
       );
@@ -292,9 +339,7 @@ const setImportedAsInvited = async (params: {
         `
           UPDATE organisation_user_configurations
           SET invitation_status=$1, invitation_sent_at = $2
-          WHERE organisation_id = $3 and user_id in (
-            SELECT id from users where user_profile_id in (${idsIndexes.join(", ")})
-          );
+          WHERE organisation_id = $3 and user_id in (${idsIndexes.join(", ")});
         `,
         [
           "pending",
