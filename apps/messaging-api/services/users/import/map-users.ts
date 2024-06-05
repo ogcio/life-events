@@ -6,6 +6,7 @@ import {
   OrganisationUserConfig,
   ToImportUser,
   User,
+  UserDetails,
   UserStatus,
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
@@ -462,7 +463,16 @@ const fillUser = (params: {
   correlationQuality: params.correlationQuality ?? "full",
   phone: params.toImportUser.phoneNumber,
   email: params.toImportUser.emailAddress,
-  importId: params.usersImportId,
+  details: extractUserDetails(params.toImportUser),
+  usersImportId: params.usersImportId,
+});
+
+const extractUserDetails = (toImportUser: ToImportUser): UserDetails => ({
+  publicIdentityId: toImportUser.publicIdentityId,
+  firstName: toImportUser.firstName,
+  lastName: toImportUser.lastName,
+  birthDate: toImportUser.birthDate,
+  address: toImportUser.address,
 });
 
 const getUserProfile = async (params: {
