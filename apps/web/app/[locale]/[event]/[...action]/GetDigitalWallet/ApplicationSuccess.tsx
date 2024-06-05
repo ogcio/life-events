@@ -21,10 +21,17 @@ export default (props: Props) => {
         <div className="govie-heading-l">{t("title")}</div>
 
         <p className="govie-body">{t("paragraph-1")}</p>
-        <p className="govie-body">{t("paragraph-2")}</p>
-        <p className="govie-body">{t("paragraph-3")}</p>
+        <div className="govie-heading-m">{t("title-2")}</div>
 
-        <p className="govie-body">{t("getDigitalWalletBody")}</p>
+        <ol>
+          <li>
+            <p className="govie-body">{t("paragraph-2")}</p>
+          </li>
+          <li>
+            <p className="govie-body">{t("paragraph-3")}</p>
+          </li>
+        </ol>
+
         <div className="govie-heading-m">{t("summaryTitle")}</div>
         <dl className="govie-summary-list">
           <div className="govie-summary-list__row">
