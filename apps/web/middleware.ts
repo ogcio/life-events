@@ -8,6 +8,10 @@ export default function (request: NextRequest) {
   );
 
   nextResponse.headers.append("x-pathname", request.nextUrl.pathname);
+  nextResponse.headers.append(
+    "x-searchParams",
+    request.nextUrl.searchParams.toString(),
+  );
 
   return nextResponse;
 }

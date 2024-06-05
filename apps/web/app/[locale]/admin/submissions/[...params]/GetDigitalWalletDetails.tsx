@@ -96,6 +96,12 @@ export default async ({ userId, flow, flowData }: Props) => {
                 value: flowData.appStoreEmail,
               }}
             />
+            <ListRow
+              item={{
+                key: t("verifiedWorkEmail"),
+                value: flowData.verifiedGovIEEmail ? t("yes") : t("no"),
+              }}
+            />
           </dl>
         </div>
       </div>

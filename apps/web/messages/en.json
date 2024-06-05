@@ -858,6 +858,9 @@
       "androidAppStoreEmail": "Playstore email",
       "ios": "Apple iOS",
       "android": "Android (eg. Samsung, Google, Huawei, Xiaomi, LG)",
+      "verifiedWorkEmail": "Has verified work email",
+      "yes": "yes",
+      "no": "no",
       "reject": "Reject",
       "approve": "Approve"
     },

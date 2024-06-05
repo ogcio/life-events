@@ -236,6 +236,7 @@ export type GetDigitalWallet = Base & {
   rejectReason: string;
   status: string;
   submittedAt: string;
+  verifiedGovIEEmail: boolean;
 };
 
 export function emptyGetDigitalWallet(): GetDigitalWallet {
@@ -255,6 +256,7 @@ export function emptyGetDigitalWallet(): GetDigitalWallet {
     rejectReason: "",
     status: "",
     submittedAt: "",
+    verifiedGovIEEmail: false,
   };
 }
 

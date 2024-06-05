@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { revalidatePath } from "next/cache";
+import crypto from "crypto";
 
 import { ListRow } from "../shared/SummaryListRow";
 import { workflow, postgres, routes, web } from "../../../../utils";
@@ -12,8 +13,9 @@ export default (props: {
   data: workflow.GetDigitalWallet;
   flow: string;
   userId: string;
+  urlBase: string;
 }) => {
-  const { data, flow, userId } = props;
+  const { data, flow, userId, urlBase } = props;
   const t = useTranslations("GetDigitalWallet.DetailsSummary");
   async function submitAction() {
     "use server";
@@ -21,19 +23,28 @@ export default (props: {
     const { govIEEmail, appStoreEmail, firstName, lastName, myGovIdEmail } =
       data;
 
+    const randomToken = crypto.randomBytes(16).toString("hex");
+
+    const verifyUrl = `${process.env.HOST_URL}${urlBase}/verify-email?token=${randomToken}`;
+
     try {
-      await sendConfirmationEmail(myGovIdEmail, firstName, lastName);
-      await sendGovAddressConfirmationEmail(govIEEmail, firstName, lastName);
+      // await sendConfirmationEmail(myGovIdEmail, firstName, lastName);
+      await sendGovAddressConfirmationEmail(
+        govIEEmail,
+        firstName,
+        lastName,
+        verifyUrl,
+      );
     } catch (error) {
       console.error(error);
     }
 
     await postgres.pgpool.query(
       `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT, 'submittedAt', now()), updated_at = now()
+        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT, 'submittedAt', now()), updated_at = now(), email_verification_token = $3
         WHERE user_id = $1 AND flow = $2
     `,
-      [userId, flow],
+      [userId, flow, randomToken],
     );
 
     revalidatePath("/");

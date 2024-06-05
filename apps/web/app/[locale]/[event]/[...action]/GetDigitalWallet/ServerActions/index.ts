@@ -46,6 +46,7 @@ export const sendGovAddressConfirmationEmail = async (
   email: string,
   firstName: string,
   lastName: string,
+  verifyUrl: string,
 ) => {
   const transport = buildTransport();
   const t = await getTranslations(
@@ -61,9 +62,9 @@ export const sendGovAddressConfirmationEmail = async (
     to: email,
     subject: t("subject"),
     html: `
-        <p>${title},</p>
+        <p>${title}</p>
         <p>${paragraphs("p1")}</p>
-        <p>${paragraphs.rich("p2", { link: (chunks) => `<a href="#">${chunks}</a>` })}</p>
+        <p>${paragraphs.rich("p2", { link: (chunks) => `<a href="${verifyUrl}">${chunks}</a>` })}</p>
         <p>${paragraphs("p3")}</p>
         <p>${paragraphs("p4")}</p>
     `,
