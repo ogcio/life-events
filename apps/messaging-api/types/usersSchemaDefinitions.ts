@@ -129,11 +129,13 @@ export type ToImportUser = Static<typeof ToImportUserSchema>;
 
 export const UsersImportSchema = Type.Object({
   organisationId: Type.String(),
-  importedAt: Type.String(),
+  importedAt: Type.String({ format: "date-time" }),
   usersData: Type.Array(ToImportUserSchema),
   importChannel: ImportChannelUnionType,
   retryCount: Type.Integer({ default: 0 }),
-  lastRetryAt: NullableStringType,
+  lastRetryAt: Type.Union([Type.String({ format: "date-time" }), Type.Null()], {
+    default: null,
+  }),
   importId: Type.String(),
 });
 export type UsersImport = Static<typeof UsersImportSchema>;
