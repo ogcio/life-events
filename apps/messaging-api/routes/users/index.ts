@@ -30,7 +30,7 @@ const tags = ["Users"];
 
 export default async function users(app: FastifyInstance) {
   app.post(
-    "/import/csv",
+    "/imports/csv",
     {
       preValidation: app.verifyUser,
       schema: {
@@ -55,7 +55,7 @@ export default async function users(app: FastifyInstance) {
   );
 
   app.get(
-    "/import/csv/template",
+    "/imports/csv/template",
     {
       preValidation: app.verifyUser,
       schema: {
@@ -73,7 +73,7 @@ export default async function users(app: FastifyInstance) {
   );
 
   app.post<{ Body: CsvRecord[] }>(
-    "/import",
+    "/imports",
     {
       preValidation: app.verifyUser,
       schema: {
