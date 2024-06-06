@@ -1365,6 +1365,94 @@ paths:
                           - type: string
                             enum:
                               - active
+                      phone:
+                        default:
+                          type: "null"
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      email:
+                        default:
+                          type: "null"
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      details:
+                        type: object
+                        properties:
+                          publicIdentityId:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          firstName:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          lastName:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          birthDate:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          address:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: object
+                                properties:
+                                  city:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  zipCode:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  street:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  country:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  region:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                required:
+                                  - city
+                                  - zipCode
+                                  - street
+                                  - country
+                                  - region
+                              - type: "null"
+                        required:
+                          - publicIdentityId
+                          - firstName
+                          - lastName
+                          - birthDate
+                          - address
                     required:
                       - id
                       - userProfileId
@@ -1372,6 +1460,8 @@ paths:
                       - organisationInvitationStatus
                       - correlationQuality
                       - userStatus
+                      - phone
+                      - email
                 required:
                   - data
         "400":
@@ -1550,6 +1640,94 @@ paths:
                           - type: string
                             enum:
                               - active
+                      phone:
+                        default:
+                          type: "null"
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      email:
+                        default:
+                          type: "null"
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      details:
+                        type: object
+                        properties:
+                          publicIdentityId:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          firstName:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          lastName:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          birthDate:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          address:
+                            default:
+                              type: "null"
+                            anyOf:
+                              - type: object
+                                properties:
+                                  city:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  zipCode:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  street:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  country:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  region:
+                                    default:
+                                      type: "null"
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                required:
+                                  - city
+                                  - zipCode
+                                  - street
+                                  - country
+                                  - region
+                              - type: "null"
+                        required:
+                          - publicIdentityId
+                          - firstName
+                          - lastName
+                          - birthDate
+                          - address
                     required:
                       - id
                       - userProfileId
@@ -1557,6 +1735,8 @@ paths:
                       - organisationInvitationStatus
                       - correlationQuality
                       - userStatus
+                      - phone
+                      - email
                 required:
                   - data
         "400":
@@ -2077,6 +2257,241 @@ paths:
                       - retryCount
                       - lastRetryAt
                       - importId
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/imports/{importId}/users:
+    get:
+      tags: *a5
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: query
+          name: organisationId
+          required: false
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: importId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        userProfileId:
+                          type: string
+                        organisationId:
+                          type: string
+                        organisationInvitationStatus:
+                          default:
+                            type: string
+                            enum:
+                              - pending
+                          anyOf:
+                            - type: string
+                              enum:
+                                - to_be_invited
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - accepted
+                            - type: string
+                              enum:
+                                - declined
+                        organisationInvitationSentAt:
+                          type: string
+                        organisationInvitationFeedbackAt:
+                          type: string
+                        organisationPreferredTransports:
+                          type: array
+                          items:
+                            type: string
+                        correlationQuality:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - full
+                            - type: string
+                              enum:
+                                - partial
+                            - type: string
+                              enum:
+                                - not_related
+                        userStatus:
+                          default:
+                            type: string
+                            enum:
+                              - pending
+                          anyOf:
+                            - type: string
+                              enum:
+                                - to_be_invited
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - disabled
+                            - type: string
+                              enum:
+                                - active
+                        phone:
+                          default:
+                            type: "null"
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        email:
+                          default:
+                            type: "null"
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        details:
+                          type: object
+                          properties:
+                            publicIdentityId:
+                              default:
+                                type: "null"
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            firstName:
+                              default:
+                                type: "null"
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            lastName:
+                              default:
+                                type: "null"
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            birthDate:
+                              default:
+                                type: "null"
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            address:
+                              default:
+                                type: "null"
+                              anyOf:
+                                - type: object
+                                  properties:
+                                    city:
+                                      default:
+                                        type: "null"
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    zipCode:
+                                      default:
+                                        type: "null"
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    street:
+                                      default:
+                                        type: "null"
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    country:
+                                      default:
+                                        type: "null"
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    region:
+                                      default:
+                                        type: "null"
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                  required:
+                                    - city
+                                    - zipCode
+                                    - street
+                                    - country
+                                    - region
+                                - type: "null"
+                          required:
+                            - publicIdentityId
+                            - firstName
+                            - lastName
+                            - birthDate
+                            - address
+                      required:
+                        - id
+                        - userProfileId
+                        - organisationId
+                        - organisationInvitationStatus
+                        - correlationQuality
+                        - userStatus
+                        - phone
+                        - email
                 required:
                   - data
         5XX:

@@ -180,6 +180,9 @@ export const UserInvitationSchema = Type.Object({
   organisationPreferredTransports: Type.Optional(Type.Array(Type.String())),
   correlationQuality: CorrelationQualityUnionType,
   userStatus: UserStatusUnionType,
+  phone: NullableStringType,
+  email: NullableStringType,
+  details: Type.Optional(UserDetailsSchema),
 });
 export type UserInvitation = Static<typeof UserInvitationSchema>;
 

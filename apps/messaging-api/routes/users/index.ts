@@ -31,6 +31,7 @@ import {
   READ_USER_IMPORTS_ERROR,
   getUserImportForOrganisation,
   getUserImportsForOrganisation,
+  getUserInvitationsForImport,
 } from "../../services/users/import/read-user-imports";
 
 const tags = ["Users"];
@@ -272,6 +273,45 @@ export default async function users(app: FastifyInstance) {
     },
     async (request: FastifyRequest<GetImportSchema>, _reply: FastifyReply) => ({
       data: await getUserImportForOrganisation({
+        logger: request.log,
+        pool: app.pg.pool,
+        organisationId: getOrganisationIdFromRequest(request),
+        importId: request.params.importId,
+      }),
+    }),
+  );
+
+  interface GetUserInvitationsSchema {
+    Querystring: { organisationId?: string };
+    Response: { data: UserInvitation[] };
+    Params: { importId: string };
+  }
+  app.get<GetUserInvitationsSchema>(
+    "/imports/:importId/users",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags,
+        querystring: Type.Optional(
+          Type.Object({
+            organisationId: Type.Optional(Type.String({ format: "uuid" })),
+          }),
+        ),
+        params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
+        response: {
+          200: Type.Object({
+            data: Type.Array(UserInvitationSchema),
+          }),
+          "5xx": HttpError,
+          "4xx": HttpError,
+        },
+      },
+    },
+    async (
+      request: FastifyRequest<GetUserInvitationsSchema>,
+      _reply: FastifyReply,
+    ) => ({
+      data: await getUserInvitationsForImport({
         logger: request.log,
         pool: app.pg.pool,
         organisationId: getOrganisationIdFromRequest(request),

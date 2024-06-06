@@ -1,8 +1,14 @@
 import { createError } from "@fastify/error";
 import { FastifyBaseLogger } from "fastify";
 import { Pool } from "pg";
-import { getUserImports } from "../shared-users";
-import { UsersImport } from "../../../types/usersSchemaDefinitions";
+import {
+  getUserImports,
+  getUserInvitationsForOrganisation,
+} from "../shared-users";
+import {
+  UserInvitation,
+  UsersImport,
+} from "../../../types/usersSchemaDefinitions";
 
 export const READ_USER_IMPORTS_ERROR = "READ_USER_IMPORTS_ERROR";
 
@@ -51,6 +57,26 @@ export const getUserImportForOrganisation = async (params: {
     }
 
     return results[0];
+  } finally {
+    client.release();
+  }
+};
+
+export const getUserInvitationsForImport = async (params: {
+  logger: FastifyBaseLogger;
+  organisationId: string;
+  importId: string;
+  pool: Pool;
+}): Promise<UserInvitation[]> => {
+  const client = await params.pool.connect();
+  try {
+    return await getUserInvitationsForOrganisation({
+      client,
+      whereClauses: ["users_imports.import_id = $1"],
+      whereValues: [params.importId],
+      errorCode: READ_USER_IMPORTS_ERROR,
+      organisationId: params.organisationId,
+    });
   } finally {
     client.release();
   }
