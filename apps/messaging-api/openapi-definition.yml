@@ -979,313 +979,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/def-0"
-  /api/v1/users/imports/csv:
-    post:
-      tags: &a5
-        - Users
-      responses:
-        "202":
-          description: Default Response
-        5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        4XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-  /api/v1/users/imports/csv/template:
-    get:
-      tags: *a5
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: string
-  /api/v1/users/imports:
-    post:
-      tags: *a5
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  importIndex:
-                    type: integer
-                  publicIdentityId:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  firstName:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  lastName:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  phoneNumber:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  birthDate:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  emailAddress:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressCity:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressZipCode:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressStreet:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressCountry:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressRegion:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  tags:
-                    default:
-                      type: "null"
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                required:
-                  - importIndex
-      responses:
-        "202":
-          description: Default Response
-        5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        4XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-    get:
-      tags: *a5
-      parameters:
-        - schema:
-            format: uuid
-            type: string
-          in: query
-          name: organisationId
-          required: false
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        organisationId:
-                          type: string
-                        importedAt:
-                          format: date-time
-                          type: string
-                        importChannel:
-                          default:
-                            type: string
-                            enum:
-                              - api
-                          anyOf:
-                            - type: string
-                              enum:
-                                - api
-                            - type: string
-                              enum:
-                                - csv
-                        retryCount:
-                          default: 0
-                          type: integer
-                        lastRetryAt:
-                          default: null
-                          anyOf:
-                            - format: date-time
-                              type: string
-                            - type: "null"
-                        importId:
-                          type: string
-                      required:
-                        - organisationId
-                        - importedAt
-                        - importChannel
-                        - retryCount
-                        - lastRetryAt
-                        - importId
-                required:
-                  - data
-        5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        4XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
   /api/v1/users/invitations/{organisationId}:
     get:
-      tags: *a5
+      tags: &a5
+        - Users
       parameters:
         - schema:
             format: uuid
@@ -2055,9 +1752,314 @@ paths:
                   - detail
                   - request_id
                   - name
+  /api/v1/users/imports/csv:
+    post:
+      tags: &a6
+        - Users
+        - UserImports
+      responses:
+        "202":
+          description: Default Response
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/imports/csv/template:
+    get:
+      tags: *a6
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
+  /api/v1/users/imports/:
+    post:
+      tags: *a6
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  importIndex:
+                    type: integer
+                  publicIdentityId:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  firstName:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  lastName:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  phoneNumber:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  birthDate:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  emailAddress:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressCity:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressZipCode:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressStreet:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressCountry:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressRegion:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  tags:
+                    default:
+                      type: "null"
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                required:
+                  - importIndex
+      responses:
+        "202":
+          description: Default Response
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    get:
+      tags: *a6
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: query
+          name: organisationId
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        organisationId:
+                          type: string
+                        importedAt:
+                          format: date-time
+                          type: string
+                        importChannel:
+                          default:
+                            type: string
+                            enum:
+                              - api
+                          anyOf:
+                            - type: string
+                              enum:
+                                - api
+                            - type: string
+                              enum:
+                                - csv
+                        retryCount:
+                          default: 0
+                          type: integer
+                        lastRetryAt:
+                          default: null
+                          anyOf:
+                            - format: date-time
+                              type: string
+                            - type: "null"
+                        importId:
+                          type: string
+                      required:
+                        - organisationId
+                        - importedAt
+                        - importChannel
+                        - retryCount
+                        - lastRetryAt
+                        - importId
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
   /api/v1/users/imports/{importId}:
     get:
-      tags: *a5
+      tags: *a6
       parameters:
         - schema:
             format: uuid
@@ -2307,7 +2309,7 @@ paths:
                   - name
   /api/v1/users/imports/{importId}/users:
     get:
-      tags: *a5
+      tags: *a6
       parameters:
         - schema:
             format: uuid
