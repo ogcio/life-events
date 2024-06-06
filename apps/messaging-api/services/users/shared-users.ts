@@ -1,7 +1,7 @@
 import { createError } from "@fastify/error";
 import { PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
-import { User } from "../../types/usersSchemaDefinitions";
+import { User, UsersImport } from "../../types/usersSchemaDefinitions";
 
 const getUser = async (params: {
   client: PoolClient;
@@ -94,4 +94,47 @@ export const getUserByContacts = async (params: {
     errorCode: params.errorCode,
     logicalWhereOperator: "OR",
   });
+};
+
+export const getUserImports = async (params: {
+  client: PoolClient;
+  whereClauses: string[];
+  whereValues: string[];
+  errorCode: string;
+  logicalWhereOperator?: string;
+  limit?: number;
+  includeUsersData: boolean;
+}): Promise<UsersImport[]> => {
+  try {
+    const usersDataClause = params.includeUsersData
+      ? 'users_data as "usersData",'
+      : "";
+    const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
+    const operator = params.logicalWhereOperator
+      ? ` ${params.logicalWhereOperator} `
+      : " AND ";
+    const result = await params.client.query<UsersImport>(
+      `
+        SELECT 
+            organisation_id as "organisationId",
+            imported_at as "importedAt",
+            ${usersDataClause}
+            import_channel as "importChannel",
+            retry_count as "retryCount",
+            last_retry_at as "lastRetryAt",
+            import_id as "importId"
+        FROM users_imports where ${params.whereClauses.join(operator)} ${limitClause}
+      `,
+      params.whereValues,
+    );
+
+    return result.rows;
+  } catch (error) {
+    const message = isNativeError(error) ? error.message : "unknown error";
+    throw createError(
+      params.errorCode,
+      `Error retrieving user imports: ${message}`,
+      500,
+    )();
+  }
 };

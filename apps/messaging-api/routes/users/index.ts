@@ -18,6 +18,8 @@ import {
   InvitationFeedback,
   InvitationFeedbackSchema,
   UserSchema,
+  UsersImportSchema,
+  UsersImport,
 } from "../../types/usersSchemaDefinitions";
 import {
   getInvitationForUser,
@@ -25,6 +27,10 @@ import {
   updateOrganisationFeedback,
 } from "../../services/users/invitations/accept-invitations";
 import { createError } from "@fastify/error";
+import {
+  READ_USER_IMPORTS_ERROR,
+  getUserImportsForOrganisation,
+} from "../../services/users/import/read-user-imports";
 
 const tags = ["Users"];
 
@@ -198,6 +204,50 @@ export default async function users(app: FastifyInstance) {
         feedback: request.body,
       }),
     }),
+  );
+
+  interface GetImportsSchema {
+    Params: { organisationId?: string };
+    Response: { data: Omit<UsersImport, "usersData">[] };
+  }
+
+  app.get<GetImportsSchema>(
+    "/imports",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags,
+        params: Type.Optional(
+          Type.Object({
+            organisationId: Type.Optional(Type.String({ format: "uuid" })),
+          }),
+        ),
+        response: {
+          200: Type.Object({
+            data: Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
+          }),
+          "5xx": HttpError,
+          "4xx": HttpError,
+        },
+      },
+    },
+    async (request: FastifyRequest<GetImportsSchema>, _reply: FastifyReply) => {
+      const organisationId =
+        request.user!.organisation_id ?? request.params.organisationId;
+      if (!organisationId) {
+        throw createError(
+          READ_USER_IMPORTS_ERROR,
+          "Cannot retrieve an organisation id",
+          400,
+        )();
+      }
+
+      return getUserImportsForOrganisation({
+        logger: request.log,
+        pool: app.pg.pool,
+        organisationId,
+      });
+    },
   );
 
   const saveRequestFile = async (request: FastifyRequest): Promise<string> => {
