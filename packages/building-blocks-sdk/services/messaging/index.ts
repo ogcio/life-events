@@ -232,4 +232,43 @@ export class Messaging {
 
     return { error };
   }
+
+  async downloadUsersCsvTemplate() {
+    const { data } = await this.client.GET(
+      "/api/v1/users/imports/csv/template",
+      {
+        parseAs: "blob",
+      },
+    );
+    return data;
+  }
+
+  async getUsersImports(organisationId?: string) {
+    const { error, data } = await this.client.GET("/api/v1/users/imports", {
+      params: {
+        query: { organisationId },
+      },
+    });
+    return { error, data: data?.data };
+  }
+
+  async getUsersImport(importId: string, organisationId?: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/imports/{importId}",
+      {
+        params: { path: { importId }, query: { organisationId } },
+      },
+    );
+    return { error, data: data?.data };
+  }
+
+  async getUsers(importId: string, organisationId?: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/imports/{importId}/users",
+      {
+        params: { path: { importId }, query: { organisationId } },
+      },
+    );
+    return { error, data: data?.data };
+  }
 }
