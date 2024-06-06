@@ -48,6 +48,7 @@ export default async function users(app: FastifyInstance) {
           "5xx": HttpError,
           "4xx": HttpError,
         },
+        consumes: ["multipart/form-data"],
       },
     },
     async (request: FastifyRequest, _reply: FastifyReply) => {

@@ -99,7 +99,7 @@ const getUserInvitations = async (params: {
   organisationId: string;
   client: PoolClient;
 }): Promise<UserInvitation[]> => {
-  let userIndex = 2;
+  let userIndex = 1;
   const idsIndexes = params.userIds.map(() => `$${userIndex++}`);
 
   return await getUserInvitationsForOrganisation({

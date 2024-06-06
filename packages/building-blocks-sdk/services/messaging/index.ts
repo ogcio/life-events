@@ -184,6 +184,7 @@ export class Messaging {
 
     return { error, data: data?.data };
   }
+
   async updateSmsProvider(
     providerId: paths["/api/v1/providers/sms/{providerId}"]["put"]["parameters"]["path"]["providerId"],
     body: paths["/api/v1/providers/sms/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
@@ -213,6 +214,21 @@ export class Messaging {
       "/api/v1/providers/sms/{providerId}",
       { params: { path: { providerId } } },
     );
+
+    return { error };
+  }
+
+  async importUsersCsv(file: File) {
+    const { error } = await this.client.POST("/api/v1/users/imports/csv", {
+      body: {
+        file,
+      } as any,
+      bodySerializer: (body: any) => {
+        const formData = new FormData();
+        formData.set("file", body.file);
+        return formData;
+      },
+    });
 
     return { error };
   }
