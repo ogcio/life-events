@@ -1,9 +1,7 @@
 import { PgSessions } from "auth/sessions";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import ds from "design-system";
 import { Messaging } from "building-blocks-sdk";
 import React from "react";
 
