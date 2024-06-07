@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { Pool } from "pg";
+import { PoolClient } from "pg";
 import { ServiceError } from "../../utils";
 
 export type EmailProvider = {
@@ -32,7 +32,7 @@ export interface MailService {
   getFirstOrEtherealMailProvider(): Promise<string>;
 }
 
-export function mailService(pool: Pool): MailService {
+export function mailService(client: PoolClient): MailService {
   return {
     async createProvider({
       host,
@@ -43,19 +43,19 @@ export function mailService(pool: Pool): MailService {
       fromAddress,
       throttle,
     }: Omit<EmailProvider, "id">) {
-      return pool
+      return client
         .query<{ id: string }>(
           `
-        INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw, from_address, throttle_ms)
-        VALUES($1,$2,$3,$4,$5,$6,$7)
-        RETURNING id
-      `,
+          INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw, from_address, throttle_ms)
+          VALUES($1,$2,$3,$4,$5,$6,$7)
+          RETURNING id
+          `,
           [name, host, port, username, password, fromAddress, throttle],
         )
         .then((res) => res.rows.at(0)?.id);
     },
     async updateProvider(data: EmailProvider) {
-      pool.query(
+      await client.query(
         `
           UPDATE email_providers set 
             provider_name = $1, 
@@ -80,7 +80,7 @@ export function mailService(pool: Pool): MailService {
       );
     },
     async getProvider(id: string) {
-      return pool
+      return client
         .query<EmailProvider>(
           `
         SELECT 
@@ -99,7 +99,7 @@ export function mailService(pool: Pool): MailService {
         .then((res) => res.rows.at(0));
     },
     async getProviders() {
-      return pool
+      return client
         .query<EmailProvider>(
           `
         SELECT 
@@ -117,7 +117,7 @@ export function mailService(pool: Pool): MailService {
         .then((res) => res.rows);
     },
     async deleteProvider(id: string) {
-      await pool.query(`delete from email_providers where id = $1`, [id]);
+      await client.query(`delete from email_providers where id = $1`, [id]);
     },
     async sendMail(params: SendMailParams): Promise<ServiceError | undefined> {
       try {
@@ -161,7 +161,7 @@ export function mailService(pool: Pool): MailService {
 
     // Temporary demonstrational util functions
     async getFirstOrEtherealMailProvider() {
-      let id = await pool
+      let id = await client
         .query<{ id: string }>(
           `
           select 
@@ -175,26 +175,15 @@ export function mailService(pool: Pool): MailService {
         .then((res) => res.rows.at(0)?.id);
 
       if (!id) {
-        const self = this;
-        id = await new Promise((res, rej) => {
-          nodemailer.createTestAccount(
-            async function handleCreated(err, account) {
-              if (err) {
-                console.log(err);
-                rej(err);
-              }
-
-              id = await self.createProvider({
-                name: "Ethreal Email Dev Provider",
-                host: account.smtp.host,
-                port: 587,
-                username: account.user,
-                password: account.pass,
-                fromAddress: "",
-              });
-              res(id);
-            },
-          );
+        const createProviderMethod = this.createProvider;
+        const testAccount = await nodemailer.createTestAccount();
+        id = await createProviderMethod({
+          name: "Ethreal Email Dev Provider",
+          host: testAccount.smtp.host,
+          port: 587,
+          username: testAccount.user,
+          password: testAccount.pass,
+          fromAddress: "",
         });
       }
 
