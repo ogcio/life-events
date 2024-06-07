@@ -22,6 +22,7 @@ import {
   getUserImportsForOrganisation,
   getUserInvitationsForImport,
 } from "../../services/users/import/read-user-imports";
+import { organisationId } from "../../utils";
 
 const tags = ["Users", "UserImports"];
 
@@ -206,6 +207,26 @@ export default async function usersImports(app: FastifyInstance) {
         organisationId: getOrganisationIdFromRequest(request),
         importId: request.params.importId,
       }),
+    }),
+  );
+
+  app.get(
+    "/mock-organisation-id",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags,
+        response: {
+          200: Type.Object({
+            data: Type.String({ format: "uuid" }),
+          }),
+          "5xx": HttpError,
+          "4xx": HttpError,
+        },
+      },
+    },
+    async (_request: FastifyRequest, _reply: FastifyReply) => ({
+      data: organisationId,
     }),
   );
 
