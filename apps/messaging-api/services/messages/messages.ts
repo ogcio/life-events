@@ -522,72 +522,79 @@ const scheduleMessage = async (
    * Persist logs?
    * Fetch user information. Email and number
    */
-  for (const transport of preferredTransports) {
-    if (transport === "email") {
-      if (!transportationSubject) {
-        continue;
-      }
+  const transportsClient = await pool.connect();
+  try {
+    for (const transport of preferredTransports) {
+      if (transport === "email") {
+        if (!transportationSubject) {
+          continue;
+        }
 
-      let providerId: string | undefined;
-      try {
-        // This is a big placeholder that needs proper logic
-        providerId = await mailService(pool).getFirstOrEtherealMailProvider();
-
-        await mailService(pool).sendMail({
-          providerId,
-          email: "",
-          subject: transportationSubject,
-          body: transportationBody ?? "",
-        });
-      } catch (err) {
-        errors.push({
-          critical: false,
-          error: {
-            userId,
-            providerId,
-            transportationSubject,
-            transportationBody,
-          },
-          msg: "failed to send email",
-        });
-      }
-    } else if (transport === "sms") {
-      if (!transportationExcerpt || !transportationSubject) {
-        continue;
-      }
-
-      // todo proper query
-      const config = await pool
-        .query<{ config: unknown }>(
-          `
-          select config from sms_providers
-          limit 1
-        `,
-        )
-        .then((res) => res.rows.at(0)?.config);
-
-      if (utils.isSmsAwsConfig(config)) {
-        const service = awsSnsSmsService(
-          config.accessKey,
-          config.secretAccessKey,
-        );
-
+        let providerId: string | undefined;
         try {
-          await service.Send(transportationExcerpt, "");
+          // This is a big placeholder that needs proper logic
+          providerId =
+            await mailService(
+              transportsClient,
+            ).getFirstOrEtherealMailProvider();
+          await mailService(transportsClient).sendMail({
+            providerId,
+            email: "",
+            subject: transportationSubject,
+            body: transportationBody ?? "",
+          });
         } catch (err) {
-          const msg = utils.isError(err) ? err.message : "failed to send sms";
           errors.push({
             critical: false,
             error: {
               userId,
-              transportationExcerpt,
+              providerId,
               transportationSubject,
+              transportationBody,
             },
-            msg,
+            msg: "failed to send email",
           });
+        }
+      } else if (transport === "sms") {
+        if (!transportationExcerpt || !transportationSubject) {
+          continue;
+        }
+
+        // todo proper query
+        const config = await transportsClient
+          .query<{ config: unknown }>(
+            `
+          select config from sms_providers
+          limit 1
+        `,
+          )
+          .then((res) => res.rows.at(0)?.config);
+
+        if (utils.isSmsAwsConfig(config)) {
+          const service = awsSnsSmsService(
+            config.accessKey,
+            config.secretAccessKey,
+          );
+
+          try {
+            await service.Send(transportationExcerpt, "");
+          } catch (err) {
+            const msg = utils.isError(err) ? err.message : "failed to send sms";
+            errors.push({
+              critical: false,
+              error: {
+                userId,
+                transportationExcerpt,
+                transportationSubject,
+              },
+              msg,
+            });
+          }
         }
       }
     }
+  } finally {
+    transportsClient.release();
   }
 
   return errors;
@@ -796,72 +803,78 @@ const scheduledTemplate = async (
    * Persist logs?
    * Fetch user information. Email and number
    */
-  for (const transport of templateMeta.preferredTransports) {
-    if (transport === "email") {
-      if (!transportationSubject) {
-        continue;
-      }
+  const transportClient = await pool.connect();
+  try {
+    for (const transport of templateMeta.preferredTransports) {
+      if (transport === "email") {
+        if (!transportationSubject) {
+          continue;
+        }
 
-      let providerId: string | undefined;
-      try {
-        // This is a big placeholder that needs proper logic
-        providerId = await mailService(pool).getFirstOrEtherealMailProvider();
-
-        void mailService(pool).sendMail({
-          providerId,
-          email: "",
-          subject: transportationSubject,
-          body: transportationBody ?? "",
-        });
-      } catch (err) {
-        errors.push({
-          critical: false,
-          error: {
-            userId,
-            providerId,
-            transportationSubject,
-            transportationBody,
-          },
-          msg: "failed to send email",
-        });
-      }
-    } else if (transport === "sms") {
-      if (!transportationExcerpt || !transportationSubject) {
-        continue;
-      }
-
-      // todo proper query
-      const config = await pool
-        .query<{ config: unknown }>(
-          `
-          select config from sms_providers
-          limit 1
-        `,
-        )
-        .then((res) => res.rows.at(0)?.config);
-
-      if (utils.isSmsAwsConfig(config)) {
-        const service = awsSnsSmsService(
-          config.accessKey,
-          config.secretAccessKey,
-        );
-
+        let providerId: string | undefined;
         try {
-          await service.Send(transportationExcerpt, "");
+          // This is a big placeholder that needs proper logic
+          providerId =
+            await mailService(transportClient).getFirstOrEtherealMailProvider();
+
+          void mailService(transportClient).sendMail({
+            providerId,
+            email: "",
+            subject: transportationSubject,
+            body: transportationBody ?? "",
+          });
         } catch (err) {
-          const msg = utils.isError(err) ? err.message : "failed to send sms";
           errors.push({
             critical: false,
             error: {
               userId,
-              transportationExcerpt,
+              providerId,
               transportationSubject,
+              transportationBody,
             },
-            msg,
+            msg: "failed to send email",
           });
+        }
+      } else if (transport === "sms") {
+        if (!transportationExcerpt || !transportationSubject) {
+          continue;
+        }
+
+        // todo proper query
+        const config = await pool
+          .query<{ config: unknown }>(
+            `
+          select config from sms_providers
+          limit 1
+        `,
+          )
+          .then((res) => res.rows.at(0)?.config);
+
+        if (utils.isSmsAwsConfig(config)) {
+          const service = awsSnsSmsService(
+            config.accessKey,
+            config.secretAccessKey,
+          );
+
+          try {
+            await service.Send(transportationExcerpt, "");
+          } catch (err) {
+            const msg = utils.isError(err) ? err.message : "failed to send sms";
+            errors.push({
+              critical: false,
+              error: {
+                userId,
+                transportationExcerpt,
+                transportationSubject,
+              },
+              msg,
+            });
+          }
         }
       }
     }
+  } finally {
+    transportClient.release();
   }
 
   return errors;

@@ -268,5 +268,13 @@
         "cta": "Sign up to learn more"
       }
     }
+  },
+  "UsersImports": {
+    "header": "Users Imports",
+    "table" : {
+      "importedAt": "Imported At",
+      "importChannel": "Import Channel",
+      "importId": "Import Id"
+    } 
   }
 }
