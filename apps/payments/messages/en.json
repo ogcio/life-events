@@ -12,7 +12,7 @@
     "description": "The current list is empty"
   },
   "FeedbackBanner": {
-    "tag": "prototype",
+    "tag": "Alpha",
     "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
   },
   "Header": {
