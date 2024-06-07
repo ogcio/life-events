@@ -127,7 +127,7 @@ export default async function (app, opts) {
     const { password, firstName, lastName, email, redirect_url, state } =
       request.body;
 
-    if (password !== "123") reply.redirect("/static/login/api/authorize");
+    if (password !== "123") reply.redirect("/static/login/api/authorize-mock");
 
     // const createMockSignedJwt = async (firstName, lastName, email) => {
     //   const body = {
