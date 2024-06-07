@@ -109,6 +109,76 @@ export default async function (app, opts) {
     return reply.type("text/html").send(result);
   });
 
+  app.get("/authorize-mock", async (request, reply) => {
+    const redirectUrl = request.query.redirect_uri;
+
+    const stream = fs.createReadStream(
+      path.join(__dirname, "..", "mock-login.html"),
+    );
+
+    const result = (await streamToString(stream))
+      .replace(REDIRECT_URL, redirectUrl)
+      .replace("%STATE%", request.query.state);
+    return reply.type("text/html").send(result);
+  });
+
+  app.post("/auth-mock", async (request, reply) => {
+    const { password, firstName, lastName, email, redirect_url, state } =
+      request.body;
+
+    if (password !== "123") reply.redirect("/static/login/api/authorize");
+
+    const createMockSignedJwt = async (firstName, lastName, email) => {
+      const body = {
+        ver: "1.0",
+        sub: "FUG1jTLAJeuDPqxWYzHAVBQtFhVgNY0FE4tw6P3nnH8=",
+        auth_time: Date.now(),
+        email: email,
+        oid: Math.round(Math.random() * 100000).toString(),
+        AlternateIds: "",
+        BirthDate: "13/06/1941",
+        PublicServiceNumber: "0111019P",
+        LastJourney: "Login",
+        mobile: "+0000000000000",
+        DSPOnlineLevel: "0",
+        DSPOnlineLevelStatic: "0",
+        givenName: firstName,
+        surname: lastName,
+        CustomerId: "532",
+        AcceptedPrivacyTerms: true,
+        AcceptedPrivacyTermsVersionNumber: "7",
+        SMS2FAEnabled: false,
+        AcceptedPrivacyTermsDateTime: 1715582120,
+        firstName: firstName,
+        lastName: lastName,
+        currentCulture: "en",
+        trustFrameworkPolicy: "B2C_1A_MyGovID_signin-v5-PARTIAL2",
+        CorrelationId: "6a047981-c20e-482a-be2d-4715b5be8764",
+        nbf: 1716804749,
+      };
+
+      const alg = "RS256";
+      const privateKey = await jose.importPKCS8(
+        process.env.JWK_PRIVATE_KEY,
+        alg,
+      );
+
+      const jwt = await new jose.SignJWT(body)
+        .setProtectedHeader({ alg })
+        .setAudience(process.env.LOGTO_APP_ID)
+        .setIssuedAt()
+        .setIssuer(process.env.AUTH_SERVICE_URL)
+        .setExpirationTime("2h")
+        .sign(privateKey);
+
+      return jwt;
+    };
+
+    const id_token = await createMockSignedJwt(firstName, lastName, email);
+
+    return reply.redirect(`${redirect_url}?code=${id_token}&state=${state}`);
+  });
+
   app.post("/token", async (request, reply) => {
     const code = request.query.code;
     const id_token = code;
