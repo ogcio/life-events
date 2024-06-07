@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import send from "./events";
+import { sendAnalytics } from "./sendAnalytics";
 
 export default function TestButton() {
   return (
     <>
       <button
         onClick={() => {
-          send("button", "click", "send event");
+          sendAnalytics("button", "click", "send event");
         }}
       >
         Send event
@@ -16,7 +16,7 @@ export default function TestButton() {
 
       <button
         onClick={() => {
-          send("button", "click", "send event with value (55)", 55);
+          sendAnalytics("button", "click", "send event with value (55)", 55);
         }}
       >
         Send event with value
@@ -24,7 +24,7 @@ export default function TestButton() {
 
       <button
         onClick={() => {
-          send("forms", "submit", undefined, undefined, {
+          sendAnalytics("forms", "submit", undefined, undefined, {
             dimension1: "Agency A",
             dimension2: "Subagency B",
             dimension3: "Form C",
@@ -38,7 +38,7 @@ export default function TestButton() {
         onClick={() => {
           const value = Math.floor(Math.random() * 100);
 
-          send("payments", "submit", "Value", value, {
+          sendAnalytics("payments", "submit", "Value", value, {
             dimension1: "Agency A",
             dimension2: "Subagency B",
             dimension4: "Payments provider X",
@@ -52,7 +52,7 @@ export default function TestButton() {
         onClick={() => {
           const value = Math.floor(Math.random() * 100);
 
-          send("payments", "submit", "Value", value, {
+          sendAnalytics("payments", "submit", "Value", value, {
             dimension1: "Agency A",
             dimension2: "Subagency A",
             dimension4: "Payments provider Y",
