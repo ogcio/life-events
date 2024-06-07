@@ -174,7 +174,7 @@ export default async function (app, opts) {
       return jwt;
     };
 
-    const q = await app.pg.query(
+    await app.pg.query(
       `
               WITH get AS (
                   SELECT id, is_public_servant FROM users WHERE govid_email=$1
