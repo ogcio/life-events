@@ -1008,10 +1008,7 @@ paths:
                       organisationId:
                         type: string
                       organisationInvitationStatus:
-                        default:
-                          type: string
-                          enum:
-                            - pending
+                        default: pending
                         anyOf:
                           - type: string
                             enum:
@@ -1045,10 +1042,7 @@ paths:
                             enum:
                               - not_related
                       userStatus:
-                        default:
-                          type: string
-                          enum:
-                            - pending
+                        default: pending
                         anyOf:
                           - type: string
                             enum:
@@ -1063,14 +1057,12 @@ paths:
                             enum:
                               - active
                       phone:
-                        default:
-                          type: "null"
+                        default: null
                         anyOf:
                           - type: "null"
                           - type: string
                       email:
-                        default:
-                          type: "null"
+                        default: null
                         anyOf:
                           - type: "null"
                           - type: string
@@ -1078,62 +1070,52 @@ paths:
                         type: object
                         properties:
                           publicIdentityId:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           firstName:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           lastName:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           birthDate:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           address:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: object
                                 properties:
                                   city:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   zipCode:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   street:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   country:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   region:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
@@ -1239,10 +1221,7 @@ paths:
               type: object
               properties:
                 invitationStatusFeedback:
-                  default:
-                    type: string
-                    enum:
-                      - accepted
+                  default: accepted
                   anyOf:
                     - type: string
                       enum:
@@ -1283,10 +1262,7 @@ paths:
                       organisationId:
                         type: string
                       organisationInvitationStatus:
-                        default:
-                          type: string
-                          enum:
-                            - pending
+                        default: pending
                         anyOf:
                           - type: string
                             enum:
@@ -1320,10 +1296,7 @@ paths:
                             enum:
                               - not_related
                       userStatus:
-                        default:
-                          type: string
-                          enum:
-                            - pending
+                        default: pending
                         anyOf:
                           - type: string
                             enum:
@@ -1338,14 +1311,12 @@ paths:
                             enum:
                               - active
                       phone:
-                        default:
-                          type: "null"
+                        default: null
                         anyOf:
                           - type: "null"
                           - type: string
                       email:
-                        default:
-                          type: "null"
+                        default: null
                         anyOf:
                           - type: "null"
                           - type: string
@@ -1353,62 +1324,52 @@ paths:
                         type: object
                         properties:
                           publicIdentityId:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           firstName:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           lastName:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           birthDate:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           address:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: object
                                 properties:
                                   city:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   zipCode:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   street:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   country:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   region:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
@@ -1515,10 +1476,7 @@ paths:
               type: object
               properties:
                 userStatusFeedback:
-                  default:
-                    type: string
-                    enum:
-                      - active
+                  default: active
                   anyOf:
                     - type: string
                       enum:
@@ -1543,18 +1501,14 @@ paths:
                       id:
                         type: string
                       userProfileId:
-                        default:
-                          type: "null"
+                        default: null
                         anyOf:
                           - type: "null"
                           - type: string
                       importerOrganisationId:
                         type: string
                       userStatus:
-                        default:
-                          type: string
-                          enum:
-                            - pending
+                        default: pending
                         anyOf:
                           - type: string
                             enum:
@@ -1580,14 +1534,12 @@ paths:
                             enum:
                               - not_related
                       phone:
-                        default:
-                          type: "null"
+                        default: null
                         anyOf:
                           - type: "null"
                           - type: string
                       email:
-                        default:
-                          type: "null"
+                        default: null
                         anyOf:
                           - type: "null"
                           - type: string
@@ -1595,62 +1547,52 @@ paths:
                         type: object
                         properties:
                           publicIdentityId:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           firstName:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           lastName:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           birthDate:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: "null"
                               - type: string
                           address:
-                            default:
-                              type: "null"
+                            default: null
                             anyOf:
                               - type: object
                                 properties:
                                   city:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   zipCode:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   street:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   country:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
                                   region:
-                                    default:
-                                      type: "null"
+                                    default: null
                                     anyOf:
                                       - type: "null"
                                       - type: string
@@ -1668,8 +1610,7 @@ paths:
                           - birthDate
                           - address
                       usersImportId:
-                        default:
-                          type: "null"
+                        default: null
                         anyOf:
                           - type: "null"
                           - type: string
@@ -1830,74 +1771,62 @@ paths:
                   importIndex:
                     type: integer
                   publicIdentityId:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
                   firstName:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
                   lastName:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
                   phoneNumber:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
                   birthDate:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
                   emailAddress:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
                   addressCity:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
                   addressZipCode:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
                   addressStreet:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
                   addressCountry:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
                   addressRegion:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
                   tags:
-                    default:
-                      type: "null"
+                    default: null
                     anyOf:
                       - type: "null"
                       - type: string
@@ -1980,10 +1909,7 @@ paths:
                           format: date-time
                           type: string
                         importChannel:
-                          default:
-                            type: string
-                            enum:
-                              - api
+                          default: api
                           anyOf:
                             - type: string
                               enum:
@@ -2097,22 +2023,17 @@ paths:
                             importIndex:
                               type: integer
                             phoneNumber:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             emailAddress:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             importStatus:
-                              default:
-                                type: string
-                                enum:
-                                  - pending
+                              default: pending
                               anyOf:
                                 - type: string
                                   enum:
@@ -2130,20 +2051,17 @@ paths:
                                   enum:
                                     - missing_contacts
                             importError:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             relatedUserProfileId:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             relatedUserId:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
@@ -2152,62 +2070,52 @@ paths:
                               items:
                                 type: string
                             publicIdentityId:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             firstName:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             lastName:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             birthDate:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             address:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: object
                                   properties:
                                     city:
-                                      default:
-                                        type: "null"
+                                      default: null
                                       anyOf:
                                         - type: "null"
                                         - type: string
                                     zipCode:
-                                      default:
-                                        type: "null"
+                                      default: null
                                       anyOf:
                                         - type: "null"
                                         - type: string
                                     street:
-                                      default:
-                                        type: "null"
+                                      default: null
                                       anyOf:
                                         - type: "null"
                                         - type: string
                                     country:
-                                      default:
-                                        type: "null"
+                                      default: null
                                       anyOf:
                                         - type: "null"
                                         - type: string
                                     region:
-                                      default:
-                                        type: "null"
+                                      default: null
                                       anyOf:
                                         - type: "null"
                                         - type: string
@@ -2229,10 +2137,7 @@ paths:
                             - birthDate
                             - address
                       importChannel:
-                        default:
-                          type: string
-                          enum:
-                            - api
+                        default: api
                         anyOf:
                           - type: string
                             enum:
@@ -2343,10 +2248,7 @@ paths:
                         organisationId:
                           type: string
                         organisationInvitationStatus:
-                          default:
-                            type: string
-                            enum:
-                              - pending
+                          default: pending
                           anyOf:
                             - type: string
                               enum:
@@ -2380,10 +2282,7 @@ paths:
                               enum:
                                 - not_related
                         userStatus:
-                          default:
-                            type: string
-                            enum:
-                              - pending
+                          default: pending
                           anyOf:
                             - type: string
                               enum:
@@ -2398,14 +2297,12 @@ paths:
                               enum:
                                 - active
                         phone:
-                          default:
-                            type: "null"
+                          default: null
                           anyOf:
                             - type: "null"
                             - type: string
                         email:
-                          default:
-                            type: "null"
+                          default: null
                           anyOf:
                             - type: "null"
                             - type: string
@@ -2413,62 +2310,52 @@ paths:
                           type: object
                           properties:
                             publicIdentityId:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             firstName:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             lastName:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             birthDate:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: "null"
                                 - type: string
                             address:
-                              default:
-                                type: "null"
+                              default: null
                               anyOf:
                                 - type: object
                                   properties:
                                     city:
-                                      default:
-                                        type: "null"
+                                      default: null
                                       anyOf:
                                         - type: "null"
                                         - type: string
                                     zipCode:
-                                      default:
-                                        type: "null"
+                                      default: null
                                       anyOf:
                                         - type: "null"
                                         - type: string
                                     street:
-                                      default:
-                                        type: "null"
+                                      default: null
                                       anyOf:
                                         - type: "null"
                                         - type: string
                                     country:
-                                      default:
-                                        type: "null"
+                                      default: null
                                       anyOf:
                                         - type: "null"
                                         - type: string
                                     region:
-                                      default:
-                                        type: "null"
+                                      default: null
                                       anyOf:
                                         - type: "null"
                                         - type: string
@@ -2494,6 +2381,68 @@ paths:
                         - userStatus
                         - phone
                         - email
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/imports/mock-organisation-id:
+    get:
+      tags: *a6
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    format: uuid
+                    type: string
                 required:
                   - data
         5XX:

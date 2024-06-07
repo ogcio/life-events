@@ -1,7 +1,7 @@
 import { Static, Type } from "@sinclair/typebox";
 
 const NullableStringType = Type.Union([Type.Null(), Type.String()], {
-  default: Type.Null(),
+  default: null,
 });
 const NullableOptionalStringType = Type.Optional(NullableStringType);
 
@@ -12,13 +12,13 @@ export const InvitationStatusUnionType = Type.Union(
     Type.Literal("accepted"),
     Type.Literal("declined"),
   ],
-  { default: Type.Literal("pending") },
+  { default: "pending" },
 );
 export type InvitationStatus = Static<typeof InvitationStatusUnionType>;
 
 export const OrgInvitationFeedbackStatusUnionType = Type.Union(
   [Type.Literal("accepted"), Type.Literal("declined")],
-  { default: Type.Literal("accepted") },
+  { default: "accepted" },
 );
 export type OrgInvitationFeedbackStatus = Static<
   typeof OrgInvitationFeedbackStatusUnionType
@@ -31,19 +31,19 @@ export const UserStatusUnionType = Type.Union(
     Type.Literal("disabled"),
     Type.Literal("active"),
   ],
-  { default: Type.Literal("pending") },
+  { default: "pending" },
 );
 export type UserStatus = Static<typeof UserStatusUnionType>;
 
 export const UserStatusFeedbackUnionType = Type.Union(
   [Type.Literal("disabled"), Type.Literal("active")],
-  { default: Type.Literal("active") },
+  { default: "active" },
 );
 export type UserStatusFeedback = Static<typeof UserStatusFeedbackUnionType>;
 
 export const ImportChannelUnionType = Type.Union(
   [Type.Literal("api"), Type.Literal("csv")],
-  { default: Type.Literal("api") },
+  { default: "api" },
 );
 export type ImportChannel = Static<typeof ImportChannelUnionType>;
 
@@ -55,7 +55,7 @@ export const ImportStatusUnionType = Type.Union(
     Type.Literal("error"),
     Type.Literal("missing_contacts"),
   ],
-  { default: Type.Literal("pending") },
+  { default: "pending" },
 );
 export type ImportStatus = Static<typeof ImportStatusUnionType>;
 
@@ -82,7 +82,7 @@ export const UserDetailsSchema = Type.Object({
       }),
       Type.Null(),
     ],
-    { default: Type.Null() },
+    { default: null },
   ),
 });
 export type UserDetails = Static<typeof UserDetailsSchema>;
