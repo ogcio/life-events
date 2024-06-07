@@ -45,7 +45,7 @@ export default async (props: { params: { importId: string } }) => {
               {t("table.relatedUserId")}
             </th>
             <th scope="col" className="govie-table__header">
-              {t("table.importStatus")}
+              {t("table.relatedUserProfileId")}
             </th>
           </tr>
         </thead>
@@ -92,7 +92,7 @@ export default async (props: { params: { importId: string } }) => {
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.importStatus}
+                {record.relatedUserProfileId ?? "NOT FOUND"}
               </th>
             </tr>
           ))}
