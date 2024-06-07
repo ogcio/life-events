@@ -210,9 +210,12 @@
   ).json();
 
   const usersSelectElement = document.querySelector("#user_select");
-
+  
   for (const u of apiUsers.users) {
     var option = document.createElement("option");
+    option.text = `${u.user_name} ${
+      u.is_public_servant ? "(public servant)" : ""
+    }`.trim();
     option.value = u.govid_email;
     usersSelectElement.add(option);
   }
