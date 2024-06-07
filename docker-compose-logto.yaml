@@ -1,0 +1,126 @@
+services:
+  postgresql:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - 5432:5432
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/01_init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-U", "postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  maildev:
+    image: maildev/maildev
+    ports:
+      - 1080:1080
+      - 1025:1025
+    healthcheck:
+      test: 'wget -O - http://127.0.0.1:1080/healthz || exit 1'
+
+  localstack:
+    image: localstack/localstack:2.3.2
+    ports:
+      - 4566:4566
+    environment:
+      SERVICES: "s3,secretsmanager"
+      DATA_DIR: "/tmp/localstack/data"
+      FILES_S3_BUCKET: "life-events-files"
+      IMAGES_S3_BUCKET: "life-events-images"
+    volumes:
+      - './.localstack:/tmp/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - './init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh' # ready hook
+  scheduler_migrations:
+    image: scheduler-api-container:latest
+    build:
+      context: .
+      dockerfile: ./apps/scheduler-api/Dockerfile
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=postgresql
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB_NAME=scheduler
+    command: [ "npm", "run", "migrate:scheduler-api" ]
+    depends_on:
+      postgresql:
+        condition: service_healthy
+
+  scheduler:
+    image: scheduler-api-container:latest
+    ports:
+      - 8005:8005
+    env_file:
+      - './apps/scheduler-api/.env'
+    environment:
+      - POSTGRES_HOST=postgresql
+    depends_on:
+      scheduler_migrations:
+        condition: service_completed_successfully
+
+  logto:
+    depends_on:
+      postgres-logto:
+        condition: service_healthy
+    image: local-logto:latest
+    build:
+      context: ../logto
+      dockerfile: Dockerfile  
+    entrypoint:
+      [
+        "sh",
+        "-c",
+        "npm run cli db seed -- --swe && npm run cli db alteration deploy latest && npm run cli db ogcio -- --seeder-filepath=\"/etc/logto/packages/cli/src/commands/database/ogcio/ogcio-seeder.json\" && npm start"
+      ]
+    ports:
+      - 3301:3301
+      - 3302:3302
+    environment:
+      - TRUST_PROXY_HEADER=1
+      - DB_URL=postgres://postgres:postgres@postgres-logto:5433/logto
+      # Mandatory for GitPod to map host env to the container, thus GitPod can dynamically configure the public URL of Logto;
+      # Or, you can leverage it for local testing.
+      - ENDPOINT
+      - ADMIN_ENDPOINT
+      - PORT=3301
+      - ADMIN_PORT=3302
+      - USER_DEFAULT_ORGANIZATION_NAMES=OGCIO Seeded Org
+      - USER_DEFAULT_ORGANIZATION_ROLE_NAMES=OGCIO Employee, OGCIO Manager
+      - USER_DEFAULT_ROLE_NAMES=Payments Employee,User-Profile Employee
+
+  postgres-logto:
+    image: postgres:14-alpine
+    user: postgres
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGPORT: 5433
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5433:5433
+
+  mock-auth-service:
+    build:
+      dockerfile: ./apps/auth-service/Dockerfile
+    ports:
+      - 3005:3005
+    env_file:
+      - ./apps/auth-service/.env
+    environment:
+      - PORT=3005
+
+volumes:
+  db:
+    driver: local

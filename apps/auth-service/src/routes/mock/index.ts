@@ -54,6 +54,7 @@ export default async function login(app: FastifyInstance) {
       expires_in: number;
       expires_on: number;
       id_token_expires_in: number;
+      profile_info: string;
       scope: string;
     };
   }>(
@@ -77,6 +78,7 @@ export default async function login(app: FastifyInstance) {
             expires_in: Type.Number(),
             expires_on: Type.Number(),
             id_token_expires_in: Type.Number(),
+            profile_info: Type.String(),
             scope: Type.String(),
           }),
           500: HttpError,
@@ -93,6 +95,8 @@ export default async function login(app: FastifyInstance) {
         expires_in: 1800,
         expires_on: Date.now() - 5000 + 1800,
         id_token_expires_in: 1800,
+        profile_info:
+          "eyJ2ZXIiOiIxLjAiLCJ0aWQiOiI4OTc5MmE2ZC0xZWE0LTQxMjYtOTRkZi1hNzFkMjkyZGViYzciLCJzdWIiOm51bGwsIm5hbWUiOm51bGwsInByZWZlcnJlZF91c2VybmFtZSI6bnVsbCwiaWRwIjpudWxsfQ",
         scope: "openid",
       };
     },
