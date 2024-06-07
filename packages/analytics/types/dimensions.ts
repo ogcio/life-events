@@ -4,6 +4,6 @@ type R<N extends number, Acc extends number[] = []> = Acc["length"] extends N
 
 type DimensionKeys = `dimension${R<41>}`;
 
-type Dimensions = Partial<{
+export type Dimensions = Partial<{
   [key in DimensionKeys]: any;
 }>;

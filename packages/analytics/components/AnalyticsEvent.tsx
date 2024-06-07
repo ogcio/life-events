@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { sendAnalytics } from "../utils/sendAnalytics";
+import { Dimensions } from "../types/dimensions";
 
 const MATOMO_URL = process.env.NEXT_PUBLIC_MATOMO_URL ?? "";
 const MATOMO_SITE_ID = process.env.NEXT_PUBLIC_MATOMO_SITE_ID ?? "";
