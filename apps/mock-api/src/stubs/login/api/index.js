@@ -174,6 +174,20 @@ export default async function (app, opts) {
       return jwt;
     };
 
+    const q = await app.pg.query(
+      `
+              WITH get AS (
+                  SELECT id, is_public_servant FROM users WHERE govid_email=$1
+                ), insert_new AS (
+                    INSERT INTO users(govid_email, govid, user_name, is_public_servant)
+                    values($1, $2, $3, $4)
+                    ON CONFLICT DO NOTHING
+                    RETURNING id, is_public_servant
+                )
+                SELECT * FROM get UNION SELECT * FROM insert_new`,
+      [email, "not needed atm", [firstName, lastName].join(" "), false],
+    );
+
     const id_token = await createMockSignedJwt(firstName, lastName, email);
 
     return reply.redirect(`${redirect_url}?code=${id_token}&state=${state}`);
