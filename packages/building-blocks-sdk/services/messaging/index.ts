@@ -244,7 +244,7 @@ export class Messaging {
   }
 
   async getUsersImports(organisationId?: string) {
-    const { error, data } = await this.client.GET("/api/v1/users/imports", {
+    const { error, data } = await this.client.GET("/api/v1/users/imports/", {
       params: {
         query: { organisationId },
       },

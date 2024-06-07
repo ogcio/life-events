@@ -667,230 +667,6 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/imports/csv": {
-    post: {
-      responses: {
-        /** @description Default Response */
-        202: {
-          content: never;
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/users/imports/csv/template": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": string;
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/users/imports": {
-    get: {
-      parameters: {
-        query?: {
-          organisationId?: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              data: {
-                organisationId: string;
-                /** Format: date-time */
-                importedAt: string;
-                /**
-                 * @default {
-                 *   "type": "string",
-                 *   "enum": [
-                 *     "api"
-                 *   ]
-                 * }
-                 */
-                importChannel: "api" | "csv";
-                /** @default 0 */
-                retryCount: number;
-                /** @default null */
-                lastRetryAt: string | null;
-                importId: string;
-              }[];
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    post: {
-      requestBody?: {
-        content: {
-          "application/json": {
-            importIndex: number;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            publicIdentityId?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            firstName?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            lastName?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            phoneNumber?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            birthDate?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            emailAddress?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            addressCity?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            addressZipCode?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            addressStreet?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            addressCountry?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            addressRegion?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            tags?: null | string;
-          }[];
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        202: {
-          content: never;
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
   "/api/v1/users/invitations/{organisationId}": {
     get: {
       parameters: {
@@ -1385,6 +1161,230 @@ export interface paths {
         };
         /** @description Default Response */
         500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/imports/csv": {
+    post: {
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: never;
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/imports/csv/template": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": string;
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/imports/": {
+    get: {
+      parameters: {
+        query?: {
+          organisationId?: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                organisationId: string;
+                /** Format: date-time */
+                importedAt: string;
+                /**
+                 * @default {
+                 *   "type": "string",
+                 *   "enum": [
+                 *     "api"
+                 *   ]
+                 * }
+                 */
+                importChannel: "api" | "csv";
+                /** @default 0 */
+                retryCount: number;
+                /** @default null */
+                lastRetryAt: string | null;
+                importId: string;
+              }[];
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": {
+            importIndex: number;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            publicIdentityId?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            firstName?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            lastName?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            phoneNumber?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            birthDate?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            emailAddress?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressCity?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressZipCode?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressStreet?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressCountry?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            addressRegion?: null | string;
+            /**
+             * @default {
+             *   "type": "null"
+             * }
+             */
+            tags?: null | string;
+          }[];
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: never;
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
           content: {
             "application/json": {
               code: string;
