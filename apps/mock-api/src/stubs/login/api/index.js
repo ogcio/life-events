@@ -2,8 +2,9 @@ import fs from "fs";
 import path from "path";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import streamToString from "../../../utils/streamToString.js";
 import * as jose from "jose";
+import streamToString from "../../../utils/streamToString.js";
+import { createMockSignedJwt } from "./utils.js";
 
 export const REDIRECT_URL = "%REDIRECT_URL%";
 
@@ -128,63 +129,63 @@ export default async function (app, opts) {
 
     if (password !== "123") reply.redirect("/static/login/api/authorize");
 
-    const createMockSignedJwt = async (firstName, lastName, email) => {
-      const body = {
-        ver: "1.0",
-        sub: "FUG1jTLAJeuDPqxWYzHAVBQtFhVgNY0FE4tw6P3nnH8=",
-        auth_time: Date.now(),
-        email: email,
-        oid: Math.round(Math.random() * 100000).toString(),
-        AlternateIds: "",
-        BirthDate: "13/06/1941",
-        PublicServiceNumber: "0111019P",
-        LastJourney: "Login",
-        mobile: "+0000000000000",
-        DSPOnlineLevel: "0",
-        DSPOnlineLevelStatic: "0",
-        givenName: firstName,
-        surname: lastName,
-        CustomerId: "532",
-        AcceptedPrivacyTerms: true,
-        AcceptedPrivacyTermsVersionNumber: "7",
-        SMS2FAEnabled: false,
-        AcceptedPrivacyTermsDateTime: 1715582120,
-        firstName: firstName,
-        lastName: lastName,
-        currentCulture: "en",
-        trustFrameworkPolicy: "B2C_1A_MyGovID_signin-v5-PARTIAL2",
-        CorrelationId: "6a047981-c20e-482a-be2d-4715b5be8764",
-        nbf: 1716804749,
-      };
+    // const createMockSignedJwt = async (firstName, lastName, email) => {
+    //   const body = {
+    //     ver: "1.0",
+    //     sub: crypto.randomBytes(20).toString('hex'),
+    //     auth_time: Date.now(),
+    //     email: email,
+    //     oid: crypto.randomBytes(20).toString('hex'),
+    //     AlternateIds: "",
+    //     BirthDate: "13/06/1941",
+    //     PublicServiceNumber: "0111019P",
+    //     LastJourney: "Login",
+    //     mobile: `+353${Math.floor(Math.random() * 9000000000) + 1000000000}`,
+    //     DSPOnlineLevel: "0",
+    //     DSPOnlineLevelStatic: "0",
+    //     givenName: firstName,
+    //     surname: lastName,
+    //     CustomerId: "532",
+    //     AcceptedPrivacyTerms: true,
+    //     AcceptedPrivacyTermsVersionNumber: "7",
+    //     SMS2FAEnabled: false,
+    //     AcceptedPrivacyTermsDateTime: 1715582120,
+    //     firstName: firstName,
+    //     lastName: lastName,
+    //     currentCulture: "en",
+    //     trustFrameworkPolicy: "B2C_1A_MyGovID_signin-v5-PARTIAL2",
+    //     CorrelationId: crypto.randomBytes(20).toString('hex'),
+    //     nbf: 1716804749,
+    //   };
 
-      const alg = "RS256";
-      const privateKey = await jose.importPKCS8(
-        process.env.JWK_PRIVATE_KEY,
-        alg,
-      );
+    //   const alg = "RS256";
+    //   const privateKey = await jose.importPKCS8(
+    //     process.env.JWK_PRIVATE_KEY,
+    //     alg,
+    //   );
 
-      const jwt = await new jose.SignJWT(body)
-        .setProtectedHeader({ alg })
-        .setAudience(process.env.LOGTO_APP_ID)
-        .setIssuedAt()
-        .setIssuer(process.env.AUTH_SERVICE_URL)
-        .setExpirationTime("2h")
-        .sign(privateKey);
+    //   const jwt = await new jose.SignJWT(body)
+    //     .setProtectedHeader({ alg })
+    //     .setAudience(process.env.LOGTO_APP_ID)
+    //     .setIssuedAt()
+    //     .setIssuer(process.env.AUTH_SERVICE_URL)
+    //     .setExpirationTime("2h")
+    //     .sign(privateKey);
 
-      return jwt;
-    };
+    //   return jwt;
+    // };
 
     await app.pg.query(
       `
-              WITH get AS (
-                  SELECT id, is_public_servant FROM users WHERE govid_email=$1
-                ), insert_new AS (
-                    INSERT INTO users(govid_email, govid, user_name, is_public_servant)
-                    values($1, $2, $3, $4)
-                    ON CONFLICT DO NOTHING
-                    RETURNING id, is_public_servant
-                )
-                SELECT * FROM get UNION SELECT * FROM insert_new`,
+      WITH get AS (
+          SELECT id, is_public_servant FROM users WHERE govid_email=$1
+        ), insert_new AS (
+            INSERT INTO users(govid_email, govid, user_name, is_public_servant)
+            values($1, $2, $3, $4)
+            ON CONFLICT DO NOTHING
+            RETURNING id, is_public_servant
+        )
+        SELECT * FROM get UNION SELECT * FROM insert_new`,
       [email, "not needed atm", [firstName, lastName].join(" "), false],
     );
 
