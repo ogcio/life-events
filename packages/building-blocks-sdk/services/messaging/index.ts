@@ -184,6 +184,7 @@ export class Messaging {
 
     return { error, data: data?.data };
   }
+
   async updateSmsProvider(
     providerId: paths["/api/v1/providers/sms/{providerId}"]["put"]["parameters"]["path"]["providerId"],
     body: paths["/api/v1/providers/sms/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
@@ -215,5 +216,59 @@ export class Messaging {
     );
 
     return { error };
+  }
+
+  async importUsersCsv(file: File) {
+    const { error } = await this.client.POST("/api/v1/users/imports/csv", {
+      body: {
+        file,
+      } as any,
+      bodySerializer: (body: any) => {
+        const formData = new FormData();
+        formData.set("file", body.file);
+        return formData;
+      },
+    });
+
+    return { error };
+  }
+
+  async downloadUsersCsvTemplate() {
+    const { data } = await this.client.GET(
+      "/api/v1/users/imports/csv/template",
+      {
+        parseAs: "blob",
+      },
+    );
+    return data;
+  }
+
+  async getUsersImports(organisationId?: string) {
+    const { error, data } = await this.client.GET("/api/v1/users/imports/", {
+      params: {
+        query: { organisationId },
+      },
+    });
+    return { error, data: data?.data };
+  }
+
+  async getUsersImport(importId: string, organisationId?: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/imports/{importId}",
+      {
+        params: { path: { importId }, query: { organisationId } },
+      },
+    );
+    return { error, data: data?.data };
+  }
+
+  async getUsers(importId: string, organisationId?: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/imports/{importId}/users",
+      {
+        params: { path: { importId }, query: { organisationId } },
+      },
+    );
+    return { error, data: data?.data };
   }
 }

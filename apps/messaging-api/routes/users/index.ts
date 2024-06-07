@@ -1,15 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
-import {
-  IMPORT_USERS_ERROR,
-  getCsvExample,
-  importCsvFileFromRequest,
-  importCsvRecords,
-} from "../../services/users/import/import-users";
 import { HttpError } from "../../types/httpErrors";
 import {
-  CsvRecord,
-  CsvRecordSchema,
   OrganisationInvitationFeedbackSchema,
   OrganisationInvitationFeedback,
   UserInvitation,
@@ -24,78 +16,13 @@ import {
   updateInvitationStatus,
   updateOrganisationFeedback,
 } from "../../services/users/invitations/accept-invitations";
-import { createError } from "@fastify/error";
 
 const tags = ["Users"];
 
+/*
+ * The routes in this file are meant to be used on the "citizen" side
+ */
 export default async function users(app: FastifyInstance) {
-  app.post(
-    "/import/csv",
-    {
-      preValidation: app.verifyUser,
-      schema: {
-        tags,
-        response: {
-          202: Type.Null(),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async (request: FastifyRequest, _reply: FastifyReply) => {
-      // exclamation mark used here because we have
-      // verifyUser preValidation
-      await importCsvFileFromRequest({
-        filepath: await saveRequestFile(request),
-        user: request.user!,
-        pg: app.pg,
-        logger: request.log,
-      });
-    },
-  );
-
-  app.get(
-    "/import/csv/template",
-    {
-      preValidation: app.verifyUser,
-      schema: {
-        tags,
-        response: {
-          200: Type.String(),
-        },
-      },
-    },
-    async (_request: FastifyRequest, reply: FastifyReply) => {
-      const buffer = await getCsvExample();
-
-      reply.type("text/csv").send(buffer);
-    },
-  );
-
-  app.post<{ Body: CsvRecord[] }>(
-    "/import",
-    {
-      preValidation: app.verifyUser,
-      schema: {
-        tags,
-        body: Type.Array(CsvRecordSchema),
-        response: {
-          202: Type.Null(),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async (request: FastifyRequest, _reply: FastifyReply) => {
-      await importCsvRecords({
-        pg: app.pg,
-        logger: request.log,
-        csvRecords: request.body as CsvRecord[],
-        requestUser: request.user!,
-      });
-    },
-  );
-
   app.get<{
     Params: { organisationId: string };
     Response: { data: UserInvitation };
@@ -199,19 +126,4 @@ export default async function users(app: FastifyInstance) {
       }),
     }),
   );
-
-  const saveRequestFile = async (request: FastifyRequest): Promise<string> => {
-    const file = await request.files();
-    if (!file) {
-      throw createError(
-        IMPORT_USERS_ERROR,
-        "File is missing in the request",
-        400,
-      )();
-    }
-
-    const savedFiles = await request.saveRequestFiles();
-
-    return savedFiles[0].filepath;
-  };
 }
