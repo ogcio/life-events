@@ -41,9 +41,8 @@ export default async (props: {
         <div className="govie-heading-l">{t("title")}</div>
         <p className="govie-body">{t("paragraph1")}</p>
         <p className="govie-body">{t("paragraph2")}</p>
-        <p className="govie-body">{t("paragraph3")}</p>
 
-        <p className="govie-heading-s">{t("paragraph4")}</p>
+        <p className="govie-heading-s">{t("paragraph3")}</p>
         <form action={submitAction}>
           <ul
             className="govie-list govie-list--bullet"
