@@ -667,7 +667,103 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/invitations/{organisationId}": {
+  "/api/v1/users/settings/organisations": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                id: string;
+                userProfileId: string;
+                organisationId: string;
+                /** @default pending */
+                organisationInvitationStatus:
+                  | "to_be_invited"
+                  | "pending"
+                  | "accepted"
+                  | "declined";
+                organisationInvitationSentAt?: string;
+                organisationInvitationFeedbackAt?: string;
+                organisationPreferredTransports?: string[];
+                correlationQuality: "full" | "partial" | "not_related";
+                /** @default pending */
+                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+                /** @default null */
+                phone: null | string;
+                /** @default null */
+                email: null | string;
+                details?: {
+                  /** @default null */
+                  publicIdentityId: null | string;
+                  /** @default null */
+                  firstName: null | string;
+                  /** @default null */
+                  lastName: null | string;
+                  /** @default null */
+                  birthDate: null | string;
+                  /** @default null */
+                  address: {
+                    /** @default null */
+                    city: null | string;
+                    /** @default null */
+                    zipCode: null | string;
+                    /** @default null */
+                    street: null | string;
+                    /** @default null */
+                    country: null | string;
+                    /** @default null */
+                    region: null | string;
+                  } | null;
+                };
+              }[];
+            };
+          };
+        };
+        /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/settings/organisations/{organisationId}": {
     get: {
       parameters: {
         path: {
@@ -876,7 +972,7 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/invitations": {
+  "/api/v1/users/settings/invitations": {
     patch: {
       requestBody: {
         content: {
