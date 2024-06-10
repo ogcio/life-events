@@ -143,6 +143,7 @@ export default async ({ showHamburgerButton, locale }: THeaderProps) => {
             href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
             prefetch={false}
             className={styles.logoutLink}
+            aria-label="Logout"
           >
             <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
           </Link>
