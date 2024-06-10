@@ -196,12 +196,13 @@ export const getInvitationStatus = async (params: {
 }): Promise<{ userStatus: string }> => {
   const client = await params.pg.connect();
   let statusResponse: QueryResult;
+
   try {
     statusResponse = await client.query<{ userStatus: string }>(
       `
-          SELECT users
-          WHERE user_profile_id = $1 LIMIT 1 RETURNING
-            user_status as "userStatus"
+          SELECT user_status as "userStatus" from users
+          WHERE user_profile_id = $1 
+          LIMIT 1
         `,
       [params.userProfileId],
     );
