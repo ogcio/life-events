@@ -386,7 +386,7 @@
       "main": {
         "title": "Payments",
         "description": "Our payments block is built on a robust infrastructure that enables secure and efficient financial transactions, giving users peace of mind every time they use it.",
-        "cta": "Learn more"
+        "cta": "Sign up to learn more"
       },
       "integration": {
         "title": "Seamless Integration",
@@ -413,7 +413,7 @@
       "getStarted": {
         "title": "Get Started",
         "description": "Ready to transform your payment processes? Contact us to schedule a demo or to learn more about how Payments Building Block can empower your public sector department.",
-        "cta": "Get started now"
+        "cta": "Sign up to learn more"
       }
     }
   },
