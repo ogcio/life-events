@@ -33,6 +33,8 @@ const componentsMap = async () => ({
 });
 
 export default async (props: web.NextPageProps) => {
+  console.log("props", props);
+
   const Component = (await componentsMap())[props.params.event];
   const messages = await getMessages({ locale: props.params.locale });
   const timelineMessages = messages.Timeline as AbstractIntlMessages;
