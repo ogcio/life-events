@@ -63,6 +63,9 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
+      <head>
+        <title>Life Events App</title>
+      </head>
       <body
         style={{
           margin: "unset",
@@ -85,10 +88,10 @@ export default async function RootLayout({
         )}
         <Header showHamburgerButton={showHamburgerMenu} locale={locale} />
         {/* All designs are made for 1440 px  */}
-        <div className={styles.mainContainer}>
+        <main className={styles.mainContainer}>
           <FeedbackBanner />
           <div style={{ margin: "0 auto", paddingTop: "20px" }}>{children}</div>
-        </div>
+        </main>
         <Footer />
       </body>
     </html>
