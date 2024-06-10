@@ -78,7 +78,7 @@
   "sendAMessage": {
     "ComposeMessageMeta": {
       "title": "Send a message",
-      "chooseTransportation": "Choose a preferred transport",
+      "chooseTransportation": "Choose method of communication",
       "email": "Email",
       "sms": "SMS",
       "postalService": "Postal service",
@@ -243,7 +243,7 @@
         "title": "Benefits",
         "section1": {
           "title": "Centralised platform",
-          "description": "Contact the public through their chosen method of communication ¬- whether that's email, text message or through the electronic postbox."
+          "description": "Contact the public through their chosen method of communication - whether that's email, text message or through the electronic postbox."
         },
         "section2": {
           "title": "Secure",
