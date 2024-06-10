@@ -116,6 +116,25 @@ export default async function () {
       <div className="govie-width-container">
         <div className="two-columns-layout align-items-center">
           <div className="column">
+            <Image
+              src={forms}
+              alt={t("sections.forms.title")}
+              layout="responsive"
+            />
+          </div>
+          <div className="column">
+            <h2 className="govie-heading-l">{t("sections.forms.title")}</h2>
+
+            <p className="govie-body">{t("sections.forms.description")}</p>
+            <a className="govie-link" href={links.formsUrl}>
+              {t("sections.forms.cta")}
+            </a>
+          </div>
+        </div>
+        <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
+
+        <div className="two-columns-layout align-items-center">
+          <div className="column">
             <h2 className="govie-heading-l">{t("sections.payments.title")}</h2>
 
             <p className="govie-body">{t("sections.payments.description")}</p>
@@ -185,26 +204,7 @@ export default async function () {
         </div>
 
         <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
-        <div className="two-columns-layout align-items-center">
-          <div className="column">
-            <Image
-              src={forms}
-              alt={t("sections.forms.title")}
-              layout="responsive"
-            />
-          </div>
-          <div className="column">
-            <h2 className="govie-heading-l">{t("sections.forms.title")}</h2>
-
-            <p className="govie-body">{t("sections.forms.description")}</p>
-            <a className="govie-link" href={links.formsUrl}>
-              {t("sections.forms.cta")}
-            </a>
-          </div>
-        </div>
       </div>
-
-      <hr className="govie-section-break govie-section-break--visible govie-section-break--xl" />
 
       <div className="govie-width-container">
         <div>
@@ -272,6 +272,13 @@ export default async function () {
 
         <div>
           <h2 className="govie-heading-l">{t("sections.footer.title")}</h2>
+
+          <p className="govie-body">{t("sections.footer.listDescription")}</p>
+          <ul className="govie-list govie-list--bullet">
+            <li>{t("sections.footer.listItem1")}</li>
+            <li>{t("sections.footer.listItem2")}</li>
+            <li>{t("sections.footer.listItem3")}</li>
+          </ul>
           <p className="govie-body">{t("sections.footer.descriptionP1")}</p>
           <p className="govie-body">{t("sections.footer.descriptionP2")}</p>
           <a href={links.learnMoreForm}>

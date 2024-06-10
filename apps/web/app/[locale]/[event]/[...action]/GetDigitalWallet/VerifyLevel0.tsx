@@ -1,3 +1,4 @@
+import AnalyticsEvent from "analytics/components/AnalyticsEvent";
 import { getTranslations } from "next-intl/server";
 
 export default async () => {
@@ -29,6 +30,11 @@ export default async () => {
           })}
         </p>
       </div>
+      <AnalyticsEvent
+        category="GetDigitalWallet"
+        action="Verification Level"
+        name="Level 0"
+      />
     </div>
   );
 };
