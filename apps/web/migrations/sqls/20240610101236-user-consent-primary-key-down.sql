@@ -1,0 +1,2 @@
+ALTER TABLE user_consents
+DROP CONSTRAINT user_consents_pkey;
