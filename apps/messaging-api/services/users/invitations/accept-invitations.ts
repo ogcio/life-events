@@ -1,7 +1,10 @@
 import { createError } from "@fastify/error";
 import { PostgresDb } from "@fastify/postgres";
 import { getUserByUserProfileId } from "../shared-users";
-import { getUserInvitations } from "./shared-invitations";
+import {
+  getUserInvitations,
+  getUsersInvitationsForOrganisation,
+} from "./shared-invitations";
 import {
   InvitationFeedback,
   OrganisationInvitationFeedback,
@@ -28,6 +31,35 @@ export const getInvitationForUser = async (params: {
   }
 };
 
+export const getInvitationsForUser = async (params: {
+  pg: PostgresDb;
+  userProfileId: string;
+}): Promise<UserInvitation[]> => {
+  const { pg, userProfileId } = params;
+  const client = await pg.connect();
+  try {
+    const user = await getUserByUserProfileId({
+      client,
+      userProfileId,
+      errorCode: ACCEPT_INVITATIONS_ERROR,
+    });
+    if (!user.userProfileId) {
+      throw createError(
+        ACCEPT_INVITATIONS_ERROR,
+        "The current user has no related user profile",
+        400,
+      )();
+    }
+    return await getUserInvitations({
+      userProfileId: user.userProfileId,
+      client,
+      errorCode: ACCEPT_INVITATIONS_ERROR,
+    });
+  } finally {
+    client.release();
+  }
+};
+
 const getInvitation = async (params: {
   client: PoolClient;
   userProfileId: string;
@@ -46,7 +78,7 @@ const getInvitation = async (params: {
       400,
     )();
   }
-  const invitations = await getUserInvitations({
+  const invitations = await getUsersInvitationsForOrganisation({
     userProfileIds: [user.userProfileId],
     organisationId,
     client,
