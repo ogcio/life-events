@@ -11,3 +11,6 @@ variables:
   nextPublicBuildingBlocksLandingPage: https://blocks.gov.ie/
   authServiceUrl: https://auth.sta.blocks.gov.ie/
   nextPublicFormsUrl: https://www.formsg.testing.gov.ie/
+  nextPublicMatomoUrl: //analytics.ogcio.gov.ie
+  nextPublicMatomoSiteId: 11
+  nextPublicMatomoProtocol: https

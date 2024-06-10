@@ -42,6 +42,10 @@
   .two-columns-layout .column {
     flex: 1 1 100%;
   }
+
+  .govie-header > .govie-width-container {
+    margin: unset !important;
+  }
 }
 
 .govie-width-container {

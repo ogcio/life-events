@@ -147,7 +147,10 @@ export default async (props: {
             }`.trim()}
           >
             <h1 className="govie-label-wrapper">
-              <label htmlFor="email" className="govie-label--s govie-label--l">
+              <label
+                htmlFor="govIEEmail"
+                className="govie-label--s govie-label--l"
+              >
                 {t.rich("govIEEmail", {
                   red: (chunks) => <span style={{ color: red }}>{chunks}</span>,
                 })}
