@@ -667,230 +667,6 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/imports/csv": {
-    post: {
-      responses: {
-        /** @description Default Response */
-        202: {
-          content: never;
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/users/imports/csv/template": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": string;
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/users/imports": {
-    get: {
-      parameters: {
-        query?: {
-          organisationId?: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              data: {
-                organisationId: string;
-                /** Format: date-time */
-                importedAt: string;
-                /**
-                 * @default {
-                 *   "type": "string",
-                 *   "enum": [
-                 *     "api"
-                 *   ]
-                 * }
-                 */
-                importChannel: "api" | "csv";
-                /** @default 0 */
-                retryCount: number;
-                /** @default null */
-                lastRetryAt: string | null;
-                importId: string;
-              }[];
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    post: {
-      requestBody?: {
-        content: {
-          "application/json": {
-            importIndex: number;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            publicIdentityId?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            firstName?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            lastName?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            phoneNumber?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            birthDate?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            emailAddress?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            addressCity?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            addressZipCode?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            addressStreet?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            addressCountry?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            addressRegion?: null | string;
-            /**
-             * @default {
-             *   "type": "null"
-             * }
-             */
-            tags?: null | string;
-          }[];
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        202: {
-          content: never;
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
   "/api/v1/users/invitations/{organisationId}": {
     get: {
       parameters: {
@@ -907,14 +683,7 @@ export interface paths {
                 id: string;
                 userProfileId: string;
                 organisationId: string;
-                /**
-                 * @default {
-                 *   "type": "string",
-                 *   "enum": [
-                 *     "pending"
-                 *   ]
-                 * }
-                 */
+                /** @default pending */
                 organisationInvitationStatus:
                   | "to_be_invited"
                   | "pending"
@@ -924,87 +693,32 @@ export interface paths {
                 organisationInvitationFeedbackAt?: string;
                 organisationPreferredTransports?: string[];
                 correlationQuality: "full" | "partial" | "not_related";
-                /**
-                 * @default {
-                 *   "type": "string",
-                 *   "enum": [
-                 *     "pending"
-                 *   ]
-                 * }
-                 */
+                /** @default pending */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
-                /**
-                 * @default {
-                 *   "type": "null"
-                 * }
-                 */
+                /** @default null */
                 phone: null | string;
-                /**
-                 * @default {
-                 *   "type": "null"
-                 * }
-                 */
+                /** @default null */
                 email: null | string;
                 details?: {
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   publicIdentityId: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   firstName: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   lastName: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   birthDate: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   address: {
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     city: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     zipCode: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     street: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     country: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     region: null | string;
                   } | null;
                 };
@@ -1062,14 +776,7 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            /**
-             * @default {
-             *   "type": "string",
-             *   "enum": [
-             *     "accepted"
-             *   ]
-             * }
-             */
+            /** @default accepted */
             invitationStatusFeedback: "accepted" | "declined";
             preferredTransports: string[];
           };
@@ -1084,14 +791,7 @@ export interface paths {
                 id: string;
                 userProfileId: string;
                 organisationId: string;
-                /**
-                 * @default {
-                 *   "type": "string",
-                 *   "enum": [
-                 *     "pending"
-                 *   ]
-                 * }
-                 */
+                /** @default pending */
                 organisationInvitationStatus:
                   | "to_be_invited"
                   | "pending"
@@ -1101,87 +801,32 @@ export interface paths {
                 organisationInvitationFeedbackAt?: string;
                 organisationPreferredTransports?: string[];
                 correlationQuality: "full" | "partial" | "not_related";
-                /**
-                 * @default {
-                 *   "type": "string",
-                 *   "enum": [
-                 *     "pending"
-                 *   ]
-                 * }
-                 */
+                /** @default pending */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
-                /**
-                 * @default {
-                 *   "type": "null"
-                 * }
-                 */
+                /** @default null */
                 phone: null | string;
-                /**
-                 * @default {
-                 *   "type": "null"
-                 * }
-                 */
+                /** @default null */
                 email: null | string;
                 details?: {
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   publicIdentityId: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   firstName: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   lastName: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   birthDate: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   address: {
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     city: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     zipCode: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     street: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     country: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     region: null | string;
                   } | null;
                 };
@@ -1236,14 +881,7 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            /**
-             * @default {
-             *   "type": "string",
-             *   "enum": [
-             *     "active"
-             *   ]
-             * }
-             */
+            /** @default active */
             userStatusFeedback: "disabled" | "active";
           };
         };
@@ -1255,103 +893,40 @@ export interface paths {
             "application/json": {
               data: {
                 id?: string;
-                /**
-                 * @default {
-                 *   "type": "null"
-                 * }
-                 */
+                /** @default null */
                 userProfileId: null | string;
                 importerOrganisationId: string;
-                /**
-                 * @default {
-                 *   "type": "string",
-                 *   "enum": [
-                 *     "pending"
-                 *   ]
-                 * }
-                 */
+                /** @default pending */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 correlationQuality: "full" | "partial" | "not_related";
-                /**
-                 * @default {
-                 *   "type": "null"
-                 * }
-                 */
+                /** @default null */
                 phone: null | string;
-                /**
-                 * @default {
-                 *   "type": "null"
-                 * }
-                 */
+                /** @default null */
                 email: null | string;
                 details?: {
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   publicIdentityId: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   firstName: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   lastName: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   birthDate: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   address: {
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     city: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     zipCode: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     street: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     country: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     region: null | string;
                   } | null;
                 };
-                /**
-                 * @default {
-                 *   "type": "null"
-                 * }
-                 */
+                /** @default null */
                 usersImportId: null | string;
               };
             };
@@ -1399,6 +974,175 @@ export interface paths {
       };
     };
   };
+  "/api/v1/users/imports/csv": {
+    post: {
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: never;
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/imports/csv/template": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": string;
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/imports/": {
+    get: {
+      parameters: {
+        query?: {
+          organisationId?: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                organisationId: string;
+                /** Format: date-time */
+                importedAt: string;
+                /** @default api */
+                importChannel: "api" | "csv";
+                /** @default 0 */
+                retryCount: number;
+                /** @default null */
+                lastRetryAt: string | null;
+                importId: string;
+              }[];
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": {
+            importIndex: number;
+            /** @default null */
+            publicIdentityId?: null | string;
+            /** @default null */
+            firstName?: null | string;
+            /** @default null */
+            lastName?: null | string;
+            /** @default null */
+            phoneNumber?: null | string;
+            /** @default null */
+            birthDate?: null | string;
+            /** @default null */
+            emailAddress?: null | string;
+            /** @default null */
+            addressCity?: null | string;
+            /** @default null */
+            addressZipCode?: null | string;
+            /** @default null */
+            addressStreet?: null | string;
+            /** @default null */
+            addressCountry?: null | string;
+            /** @default null */
+            addressRegion?: null | string;
+            /** @default null */
+            tags?: null | string;
+          }[];
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: never;
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/users/imports/{importId}": {
     get: {
       parameters: {
@@ -1420,121 +1164,47 @@ export interface paths {
                 importedAt: string;
                 usersData: {
                   importIndex: number;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   phoneNumber: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   emailAddress: null | string;
-                  /**
-                   * @default {
-                   *   "type": "string",
-                   *   "enum": [
-                   *     "pending"
-                   *   ]
-                   * }
-                   */
+                  /** @default pending */
                   importStatus:
                     | "pending"
                     | "imported"
                     | "not_found"
                     | "error"
                     | "missing_contacts";
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   importError?: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   relatedUserProfileId?: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   relatedUserId?: null | string;
                   tags?: string[];
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   publicIdentityId: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   firstName: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   lastName: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   birthDate: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   address: {
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     city: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     zipCode: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     street: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     country: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     region: null | string;
                   } | null;
                 }[];
-                /**
-                 * @default {
-                 *   "type": "string",
-                 *   "enum": [
-                 *     "api"
-                 *   ]
-                 * }
-                 */
+                /** @default api */
                 importChannel: "api" | "csv";
                 /** @default 0 */
                 retryCount: number;
@@ -1593,14 +1263,7 @@ export interface paths {
                 id: string;
                 userProfileId: string;
                 organisationId: string;
-                /**
-                 * @default {
-                 *   "type": "string",
-                 *   "enum": [
-                 *     "pending"
-                 *   ]
-                 * }
-                 */
+                /** @default pending */
                 organisationInvitationStatus:
                   | "to_be_invited"
                   | "pending"
@@ -1610,91 +1273,77 @@ export interface paths {
                 organisationInvitationFeedbackAt?: string;
                 organisationPreferredTransports?: string[];
                 correlationQuality: "full" | "partial" | "not_related";
-                /**
-                 * @default {
-                 *   "type": "string",
-                 *   "enum": [
-                 *     "pending"
-                 *   ]
-                 * }
-                 */
+                /** @default pending */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
-                /**
-                 * @default {
-                 *   "type": "null"
-                 * }
-                 */
+                /** @default null */
                 phone: null | string;
-                /**
-                 * @default {
-                 *   "type": "null"
-                 * }
-                 */
+                /** @default null */
                 email: null | string;
                 details?: {
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   publicIdentityId: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   firstName: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   lastName: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   birthDate: null | string;
-                  /**
-                   * @default {
-                   *   "type": "null"
-                   * }
-                   */
+                  /** @default null */
                   address: {
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     city: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     zipCode: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     street: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     country: null | string;
-                    /**
-                     * @default {
-                     *   "type": "null"
-                     * }
-                     */
+                    /** @default null */
                     region: null | string;
                   } | null;
                 };
               }[];
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/imports/mock-organisation-id": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              /** Format: uuid */
+              data: string;
             };
           };
         };
