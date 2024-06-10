@@ -308,11 +308,9 @@
   "GetDigitalWallet": {
     "BeforeYouStartForm": {
       "title": "Before you start",
-
-      "paragraph1": "The Government Digital Wallet is in a testing phase and is open to public servants only.",
-      "paragraph2": "Please note during the pilot phase, you can only install the Government Digital Wallet on one phone. Also be aware that this form is for pilot users and will not be part of the future roll-out.",
-      "paragraph3": "Before you can download the Government Digital Wallet, we need a few details from you for security purposes.",
-      "paragraph4": "Please ensure that you have the following ready:",
+      "paragraph1": "During the pilot phase, you can only install the Government Digital Wallet on one phone.",
+      "paragraph2": "Please note that this form is for pilot users and will not be part of the future roll-out.",
+      "paragraph3": "Please ensure that you have the following ready:",
       "listItem1": "Your work email address",
       "listItem2": "The phone that you will use to download the Government Digital Wallet",
 
@@ -328,7 +326,6 @@
       "paragraph": "We require your work email address to verify you before adding you to the pilot.",
       "govIEEmail": "Your work email address <red>*</red>",
       "jobTitle": "Your job title",
-      "checkbox": "I confirm that I am a public servant and I consent to taking part in the Government Digital Wallet pilot.",
       "submitText": "Confirm and continue"
     },
     "DeviceSelection": {
@@ -365,7 +362,8 @@
     },
     "DetailsSummary": {
       "title": "Check your details",
-      "subTitle": "Please confirm the details below are correct before submitting your application",
+      "mygovidDataHeading": "These details are automatically populated by your MyGovID account. If this is not you or you have any queries relateing to these details please contact support@mygovid.ie",
+      "filledDataHeading": "Please make any necessary changes via the change link provided before submitting your application",
       "firstName": "First name",
       "lastName": "Last name",
       "myGovIdEmail": "MyGovID email",
@@ -405,8 +403,8 @@
       "title": "Thank you!",
       "paragraph-1": "We are processing your information and making sure you can be part of this exciting pilot.",
       "title-2": "What happens next?",
-      "paragraph-2": "You need to click the link in the email we will send to your government email address. This link will confirm that you are a public servant and can be part of the pilot.",
-      "paragraph-3": "After you have been confirmed as a public servant, we will send you an email to the address linked to your MyGovID account. This email will describe what you need to do to download the Government Digital Wallet.",
+      "paragraph-2": "You will receive an email to the work email address you have provided. You will need to click on the link included in the email, as this verifies that you are a public servant.",
+      "paragraph-3": "Once confirmed, we will use the email address provided for your device to on-board you to the correct testing platform. You will then receive an email to your MyGovID email address with instructions on how to download the Government Digital Wallet app.",
       "summaryTitle": "Summary",
       "submitText": "Return to My Life Events",
       "purpose": "Application for",
@@ -428,11 +426,11 @@
         }
       },
       "verifyGovEmailAddress": {
-        "subject": "Please verify that you are a government employee",
+        "subject": "Please verify that you are a public servant",
         "title": "Hi",
         "paragraphs": {
           "p1": "Thanks for signing up to be part of the Government Digital Wallet pilot.",
-          "p2": "Since this is a pilot that is only open to government employees, please click <link>here</link> to verify your government email address and express your interest in applying for the wallet.",
+          "p2": "Since this is a pilot that is only open to public servants, please click <link>here</link> to verify your government email address and express your interest in applying for the wallet.",
           "p3": "Thank you,",
           "p4": "The Government Digital Wallet team"
         }
@@ -972,10 +970,10 @@
   },
   "UserConsentFlow": {
     "title": "Welcome to Life Events",
-    "disclaimer": "Certain data associated with your account will be stored to enhance your experience. We prioritise the security of your data.",
-    "question": "Do you agree to having your data stored?",
-    "agree": "Yes",
-    "disagree": "No",
+    "p1": "The Government Digital Wallet pilot is open to public servants only.",
+    "p3": "T open to public servants only.",
+    "p2": "Before you can download the Government Digital Wallet, we need your work email address to verify that you are a public servant and we will need your device app store email to ensure you are added to the correct testing platform. By participating in the pilot, you consent to the collection and storage of this data. This data will be used solely for the purpose of managing and improving the pilot. All of your data is handled in compliance with GDPR and data protection law. For additional information on how we handle your data, please refer to our <link>Privacy Policy</link>.",
+    "checkbox": "I confirm that I am a public servant and I consent to taking part in the Government Digital Wallet pilot.",
     "submit": "Continue"
   },
   "Languages": {

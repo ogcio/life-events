@@ -78,7 +78,7 @@
   "sendAMessage": {
     "ComposeMessageMeta": {
       "title": "Send a message",
-      "chooseTransportation": "Choose a preferred transport",
+      "chooseTransportation": "Choose method of communication",
       "email": "Email",
       "sms": "SMS",
       "postalService": "Postal service",
@@ -233,52 +233,56 @@
     "sections": {
       "main": {
         "title": "Messaging",
-        "description": "Effortlessly send email and SMS notifications, craft reusable templates, set up reminders, success notifications or seamlessly use the electronic postbox component embedded within your systems for users to access their messages."
+        "description": "Messaging uses the electronic postbox embedded within systems, so people can access their messages in one place.",
+        "listDescription": "Messaging allows you to:",
+        "listItem1": "send email and text messages across various channels",
+        "listItem2": "set up reminders and notifications",
+        "listItem3": "craft reusable templates"
       },
       "benefits": {
         "title": "Benefits",
         "section1": {
-          "title": "Unified Platform with Multi-Channel Reach",
-          "description": "The centralised platform for managing messages across various channels. Reach users through their preferred methods, whether it's email, SMS or electronic postbox, Messaging ensures prompt and effective communication delivery."
+          "title": "Centralised platform",
+          "description": "Contact the public through their chosen method of communication - whether that's email, text message or through the electronic postbox."
         },
         "section2": {
           "title": "Secure",
-          "description": "Messaging offers customisable options to suit your department's unique needs, while also prioritising security to safeguard sensitive information and ensure compliance with data protection regulations."
+          "description": "Messaging prioritises security to safeguard sensitive information and ensure compliance with data protection regulations."
         },
         "section3": {
           "title": "Reusable Templates",
-          "description": "Easily create templates for any type of communication - confirmations, reminders, success notifications - endless possibilities, ensuring consistency and streamlining your processes."
+          "description": "Easily create templates for any type of communication (for example, confirmations, reminders and success notifications). This will ensure consistency and streamline your processes."
         },
         "section4": {
           "title": "Electronic Postbox",
-          "description": "Embedded within other systems, the electronic postbox allows users to easily access their messages and take action, enhancing user experience and increasing responsiveness."
+          "description": "Embedded within other systems, the electronic postbox allows users to easily access their messages and take action."
         },
         "section5": {
           "title": "Accessibility Compliance",
-          "description": "Meet accessibility regulations such as Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users, regardless of their abilities, can access and interact with messages with ease."
+          "description": "Messaging meets with accessibility regulations, Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users, regardless of their abilities, can access and interact with messages."
         },
         "section6": {
           "title": "Dedicated Support",
-          "description": "Our team of experts is here to assist you every step of the way. Whether you have technical questions or need assistance with implementation, Messaging's dedicated support team ensures a smooth experience."
+          "description": "Our team of experts is here to assist you every step of the way. Whether you have technical questions or need assistance with implementation, the dedicated support team ensures a smooth experience."
         }
       },
       "getStarted": {
         "title": "Get started",
-        "description": "Ready to elevate your communication strategies? Contact us to schedule a demo or learn more about how Messaging can  transform your engagement efforts.",
+        "description": "Ready to elevate your communication strategy? Contact us to schedule a demo and see how Messaging can transform how you engage with the public.",
         "cta": "Sign up to learn more"
       }
     }
   },
   "UsersImports": {
     "header": "Users Imports",
-    "table" : {
+    "table": {
       "importedAt": "Imported At",
       "importChannel": "Import Channel",
       "importId": "Import Id"
-    } 
+    }
   },
   "UsersImport": {
-    "table" : {
+    "table": {
       "importIndex": "Index",
       "phoneNumber": "Phone Number",
       "emailAddress": "Email",
