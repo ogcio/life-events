@@ -58,7 +58,7 @@ export default (props: {
       <div className="govie-grid-row">
         <div className="govie-grid-column-two-thirds-from-desktop">
           <div className="govie-heading-l">{t("title")}</div>
-          <p className="govie-body">{t("subTitle")}</p>
+          <p className="govie-heading-s">{t("mygovidDataHeading")}</p>
 
           <dl className="govie-summary-list">
             <ListRow item={{ key: t("firstName"), value: data.firstName }} />
@@ -69,6 +69,11 @@ export default (props: {
                 value: data.myGovIdEmail,
               }}
             />
+          </dl>
+
+          <p className="govie-heading-s">{t("filledDataHeading")}</p>
+
+          <dl className="govie-summary-list">
             <ListRow
               change={{ key: t("change"), value: changeDetailsHref }}
               item={{ key: t("govIEEmail"), value: data.govIEEmail }}
