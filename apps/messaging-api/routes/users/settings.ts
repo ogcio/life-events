@@ -10,9 +10,11 @@ import {
   InvitationFeedback,
   InvitationFeedbackSchema,
   UserSchema,
+  UserStatusUnionType,
 } from "../../types/usersSchemaDefinitions";
 import {
   getInvitationForUser,
+  getInvitationStatus,
   getInvitationsForUser,
   updateInvitationStatus,
   updateOrganisationFeedback,
@@ -124,7 +126,7 @@ export default async function userSettings(app: FastifyInstance) {
   }
 
   app.patch<PatchInvitationSchema>(
-    "/invitations",
+    "/invitations/me",
     {
       preValidation: app.verifyUser,
       schema: {
@@ -146,6 +148,30 @@ export default async function userSettings(app: FastifyInstance) {
         userProfileId: request.user!.id,
         pg: app.pg,
         feedback: request.body,
+      }),
+    }),
+  );
+
+  app.get(
+    "/invitations/me",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags,
+        response: {
+          200: Type.Object({
+            data: Type.Object({ userStatus: UserStatusUnionType }),
+          }),
+          400: HttpError,
+          404: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request: FastifyRequest, _reply: FastifyReply) => ({
+      data: await getInvitationStatus({
+        userProfileId: request.user!.id,
+        pg: app.pg,
       }),
     }),
   );

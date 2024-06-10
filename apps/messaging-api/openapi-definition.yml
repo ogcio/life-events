@@ -1693,7 +1693,7 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/users/settings/invitations:
+  /api/v1/users/settings/invitations/me:
     patch:
       tags: *a5
       requestBody:
@@ -1849,6 +1849,107 @@ paths:
                       - phone
                       - email
                       - usersImportId
+                required:
+                  - data
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    get:
+      tags: *a5
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      userStatus:
+                        default: pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - disabled
+                          - type: string
+                            enum:
+                              - active
+                    required:
+                      - userStatus
                 required:
                   - data
         "400":

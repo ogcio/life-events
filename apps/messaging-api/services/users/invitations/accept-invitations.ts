@@ -190,6 +190,41 @@ export const updateInvitationStatus = async (params: {
   }
 };
 
+export const getInvitationStatus = async (params: {
+  pg: PostgresDb;
+  userProfileId: string;
+}): Promise<{ userStatus: string }> => {
+  const client = await params.pg.connect();
+  let statusResponse: QueryResult;
+  try {
+    statusResponse = await client.query<{ userStatus: string }>(
+      `
+          SELECT users
+          WHERE user_profile_id = $1 LIMIT 1 RETURNING
+            user_status as "userStatus"
+        `,
+      [params.userProfileId],
+    );
+  } catch (error) {
+    const message = isNativeError(error) ? error.message : "unknown error";
+    const toOutput = createError(
+      ACCEPT_INVITATIONS_ERROR,
+      `Error on invitation feedback: ${message}`,
+      500,
+    )();
+
+    throw toOutput;
+  } finally {
+    client.release();
+  }
+
+  if (statusResponse && statusResponse.rowCount) {
+    return statusResponse.rows[0];
+  }
+
+  throw createError(ACCEPT_INVITATIONS_ERROR, "Cannot find the user", 404)();
+};
+
 const executeUpdateUserStatus = async (params: {
   client: PoolClient;
   feedback: InvitationFeedback;
@@ -207,7 +242,7 @@ const executeUpdateUserStatus = async (params: {
           user_profile_id as "userProfileId",
           importer_organisation_id as "importerOrganisationId",
           user_status as "userStatus",
-          correlation_quality as "correlationQuality"  
+          correlation_quality as "correlationQuality"
       `,
       [feedback.userStatusFeedback, params.userProfileId],
     );
