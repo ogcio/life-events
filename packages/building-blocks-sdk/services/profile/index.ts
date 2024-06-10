@@ -99,6 +99,14 @@ export class Profile {
     return formatQueryResult(this.client.GET("/api/v1/user/"));
   }
 
+  async getUserById(id: string) {
+    const { data, error } = await this.client.GET("/api/v1/user/details/{id}", {
+      params: { path: { id } },
+    });
+
+    return { error, data: data?.data };
+  }
+
   async createUser(
     data: paths["/api/v1/user/"]["post"]["requestBody"]["content"]["application/json"],
   ) {

@@ -11,6 +11,11 @@ import { JobType } from "aws-sdk/clients/importexport";
 import { Pool } from "pg";
 import { mailService } from "../../routes/providers/services";
 import { awsSnsSmsService } from "../sms/aws";
+import { Profile } from "building-blocks-sdk";
+import {
+  newMessagingEventLogger,
+  MessagingEventType,
+} from "../../types/messageLogs";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -45,35 +50,63 @@ const createSingleMessage = async (params: {
 }): Promise<void> => {
   const { message, preferredTransports, security, userIds, scheduleAt } =
     params.payload;
-  const values: (string | null)[] = [];
-  const args: string[] = [];
 
-  values.push(
-    message.subject,
-    message.excerpt,
-    message.richText,
-    message.plainText,
-    organisationId,
-    security,
-    preferredTransports.length
-      ? utils.postgresArrayify(preferredTransports)
-      : null,
-    message.messageName,
-    message.threadName || null,
-    message.lang,
-  );
-  const originalValueSize = values.length;
+  const messagingLogger = newMessagingEventLogger(params.pg.pool);
 
-  let i = originalValueSize + 1;
-  for (const userId of userIds) {
-    args.push(
-      `(${[...new Array(originalValueSize)].map((_, i) => `$${i + 1}`)}, $${i})`,
+  const baseLogData: Parameters<typeof messagingLogger.log>[1] = {
+    organisationId: organisationId,
+    organisationName: "skojaren",
+    senderFullName: "Joakim von Anka",
+    senderPPSN: "4321",
+    senderUserId: "4986edbd-bd3e-48a2-960a-495a69481d44", // PGSession ?
+    scheduledAt: scheduleAt,
+  };
+
+  const messageLogData: Parameters<typeof messagingLogger.log>[3] = {
+    excerpt: message.excerpt,
+    lang: message.lang,
+    messageName: message.messageName,
+    plainText: message.plainText,
+    richText: message.richText,
+    subject: message.subject,
+    transports: preferredTransports,
+    threadName: message.threadName,
+  };
+
+  const client = await params.pg.pool.connect();
+  type messagingIdSelect = { id: string; userId: string };
+  const ids: messagingIdSelect[] = [];
+
+  // Create message
+  try {
+    const values: (string | null)[] = [];
+    const args: string[] = [];
+
+    values.push(
+      message.subject,
+      message.excerpt,
+      message.richText,
+      message.plainText,
+      organisationId,
+      security,
+      preferredTransports.length
+        ? utils.postgresArrayify(preferredTransports)
+        : null,
+      message.messageName,
+      message.threadName || null,
+      message.lang,
     );
-    values.push(userId);
-    i += 1;
-  }
+    const originalValueSize = values.length;
 
-  const insertQuery = `
+    let i = originalValueSize + 1;
+    for (const userId of userIds) {
+      args.push(
+        `(${[...new Array(originalValueSize)].map((_, i) => `$${i + 1}`)}, $${i})`,
+      );
+      values.push(userId);
+      i += 1;
+    }
+    const insertQuery = `
               insert into messages(
                   subject,
                   excerpt, 
@@ -90,52 +123,138 @@ const createSingleMessage = async (params: {
               values ${args.join(", ")}
               returning id, user_id as "userId"
           `;
-
-  const ids = await params.pg
-    .query<{ id: string; userId: string }>(insertQuery, values)
-    .then((res) => res.rows);
-
-  // Create jobs
-  const jobType = "message";
-  const jobArgs: string[] = [];
-  const jobValues: string[] = [jobType];
-  let argIndex = jobValues.length;
-  for (const id of ids) {
-    jobArgs.push(`($1, $${++argIndex}, $${++argIndex})`);
-    jobValues.push(id.id, id.userId);
-  }
-
-  const jobs = await params.pg.pool
-    .query<{ id: string; userId: string }>(
-      `
-            insert into jobs(job_type, job_id, user_id)
-            values ${jobArgs.join(", ")}
-            returning id as "id", user_id as "userId"
-          `,
-      jobValues,
-    )
-    .then((res) => res.rows);
-
-  const body = jobs.map((job) => {
-    const callbackUrl = new URL(
-      `/api/v1/messages/jobs/${job.id}`,
-      process.env.WEBHOOK_URL_BASE,
+    ids.push(
+      ...(await client
+        .query<{ id: string; userId: string }>(insertQuery, values)
+        .then((res) => res.rows)),
     );
 
-    return {
-      webhookUrl: callbackUrl.toString(),
-      webhookAuth: job.userId, // Update when we're not using x-user-id as auth
-      executeAt: scheduleAt,
-    };
-  });
+    const receiverUserData: Parameters<typeof messagingLogger.log>[2] = ids.map(
+      (d) => ({
+        fullName: "Random name",
+        ppsn: "1234",
+        userId: d.userId,
+        messageId: d.id,
+      }),
+    );
 
-  const url = new URL("/api/v1/tasks", process.env.SCHEDULER_API_URL);
+    await messagingLogger.log(
+      MessagingEventType.createMessage,
+      baseLogData,
+      receiverUserData,
+      messageLogData,
+    );
+  } catch (err) {
+    messageLogData.recipientUserIds = userIds;
+    await messagingLogger.log(
+      MessagingEventType.createMessageError,
+      baseLogData,
+      [],
+      messageLogData,
+    );
+    throw err;
+  } finally {
+    client.release();
+  }
 
-  await fetch(url.toString(), {
-    method: "POST",
-    body: JSON.stringify(body),
-    headers: { "x-user-id": "tmp", "Content-Type": "application/json" },
-  });
+  // Create jobs
+  const jobs: messagingIdSelect[] = [];
+  try {
+    const jobType = "message";
+    const jobArgs: string[] = [];
+    const jobValues: string[] = [jobType];
+    let argIndex = jobValues.length;
+    for (const id of ids) {
+      jobArgs.push(`($1, $${++argIndex}, $${++argIndex})`);
+      jobValues.push(id.id, id.userId);
+    }
+
+    jobs.push(
+      ...(await params.pg.pool
+        .query<messagingIdSelect>(
+          `
+          insert into jobs(job_type, job_id, user_id)
+          values ${jobArgs.join(", ")}
+          returning id as "id", user_id as "userId"
+          `,
+          jobValues,
+        )
+        .then((res) => res.rows)),
+    );
+
+    const receiverUserData: Parameters<typeof messagingLogger.log>[2] = ids.map(
+      (d) => ({
+        fullName: "Random name",
+        ppsn: "1234",
+        userId: d.userId,
+        messageId: d.id,
+      }),
+    );
+
+    await messagingLogger.log(
+      MessagingEventType.createMessageJob,
+      baseLogData,
+      receiverUserData,
+      messageLogData,
+    );
+  } catch (err) {
+    messageLogData.recipientUserIds = userIds;
+    await messagingLogger.log(
+      MessagingEventType.createMessageJobError,
+      baseLogData,
+      [],
+      messageLogData,
+    );
+    throw err;
+  } finally {
+    client.release();
+  }
+
+  // Schedule jobs
+  try {
+    const body = jobs.map((job) => {
+      const callbackUrl = new URL(
+        `/api/v1/messages/jobs/${job.id}`,
+        process.env.WEBHOOK_URL_BASE,
+      );
+
+      return {
+        webhookUrl: callbackUrl.toString(),
+        webhookAuth: job.userId, // Update when we're not using x-user-id as auth
+        executeAt: scheduleAt,
+      };
+    });
+
+    const url = new URL("/api/v1/tasks", process.env.SCHEDULER_API_URL);
+
+    await fetch(url.toString(), {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: { "x-user-id": "tmp", "Content-Type": "application/json" },
+    });
+
+    const receiverUserData: Parameters<typeof messagingLogger.log>[2] = ids.map(
+      (d) => ({
+        fullName: "Random name",
+        ppsn: "1234",
+        userId: d.userId,
+        messageId: d.id,
+      }),
+    );
+    await messagingLogger.log(
+      MessagingEventType.scheduleMessage,
+      baseLogData,
+      receiverUserData,
+      messageLogData,
+    );
+  } catch (err) {
+    await messagingLogger.log(
+      MessagingEventType.scheduleMessageError,
+      baseLogData,
+      [],
+      messageLogData,
+    );
+  }
 };
 
 const createMessageFromTemplate = async (params: {
@@ -213,7 +332,6 @@ const createMessageFromTemplate = async (params: {
           values.push(key, template.interpolations[key]);
         }
 
-        console.log("yolo i interpolation ", values, args);
         await client.query(
           `
               insert into message_template_interpolations(message_by_template_id, interpolation_key, interpolation_value)
@@ -671,6 +789,7 @@ const scheduledTemplate = async (
     templateContents.find((tmpl) => tmpl?.lang === "en") ??
     templateContents.at(0)!; // We know there's items in the list at this point.
 
+  // IMPORTANT: We might deprecate this behaviour.
   // The interpolations will come from a table once we set to create a message from a scheduler
   const interpolationsResult = await pool
     .query<{
@@ -699,25 +818,45 @@ const scheduledTemplate = async (
   const interpolationKeys = Object.keys(interpolations);
   const interpolationReducer = utils.interpolationReducer(interpolations);
 
-  const subject = interpolationKeys.reduce(
+  let subject = interpolationKeys.reduce(
     interpolationReducer,
     templateContent.subject,
   );
 
-  const plainText = interpolationKeys.reduce(
+  let plainText = interpolationKeys.reduce(
     interpolationReducer,
     templateContent.plainText,
   );
 
-  const richText = interpolationKeys.reduce(
+  let richText = interpolationKeys.reduce(
     interpolationReducer,
     templateContent.richText,
   );
 
-  const excerpt = interpolationKeys.reduce(
+  let excerpt = interpolationKeys.reduce(
     interpolationReducer,
     templateContent.excerpt,
   );
+
+  // Check for the static type interpolations we fill from user profile (this can also be mapped via table but currently only static user data)
+  const userSdkClient = new Profile(userId);
+  const { data } = await userSdkClient.getUserById(userId);
+
+  if (data) {
+    const { firstname, lastname } = data;
+    const fullname = `${firstname} ${lastname}`.trim();
+    subject = subject.replaceAll("%fullname%", fullname);
+    subject = subject.replaceAll("%firstname%", firstname);
+    subject = subject.replaceAll("%lastname%", lastname);
+
+    plainText = plainText.replaceAll("%fullname%", fullname);
+    plainText = plainText.replaceAll("%firstname%", firstname);
+    plainText = plainText.replaceAll("%lastname%", lastname);
+
+    excerpt = excerpt.replaceAll("%fullname%", fullname);
+    excerpt = excerpt.replaceAll("%firstname%", firstname);
+    excerpt = excerpt.replaceAll("%lastname%", lastname);
+  }
 
   const transportationSubject = subject;
   const transportationBody = richText || plainText;

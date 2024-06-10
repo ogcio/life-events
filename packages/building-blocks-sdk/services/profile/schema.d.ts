@@ -563,6 +563,32 @@ export interface paths {
       };
     };
   };
+  "/api/v1/user/details/{id}": {
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                firstname: string;
+                lastname: string;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: never;
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;

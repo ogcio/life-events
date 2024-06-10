@@ -157,3 +157,9 @@ export const FoundUserSchema = Type.Object({
   matchQuality: MatchQualityUnionType,
 });
 export type FoundUser = Static<typeof FoundUserSchema>;
+
+export const GetUserByIdSchema = Type.Object({
+  firstname: Type.String(),
+  lastname: Type.String(),
+});
+export type GetUserById = Static<typeof GetUserByIdSchema>;

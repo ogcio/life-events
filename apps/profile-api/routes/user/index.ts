@@ -7,6 +7,8 @@ import {
   FindUserParamsSchema,
   FoundUser,
   FoundUserSchema,
+  GetUserById,
+  GetUserByIdSchema,
   PatchUser,
   PatchUserSchema,
   UpdateUser,
@@ -288,6 +290,48 @@ export default async function user(app: FastifyInstance) {
       }
 
       reply.code(404);
+    },
+  );
+
+  /**
+   * Gets user general details. Add more fields as needed
+   * todo: change to :id/details ?
+   * todo: add ppsn
+   */
+  app.get<{ Params: { id: string } }>(
+    "/details/:id",
+    {
+      schema: {
+        tags: ["users"],
+        params: {
+          id: Type.String({ format: "uuid" }),
+        },
+        response: {
+          200: Type.Object({
+            data: GetUserByIdSchema,
+          }),
+          404: Type.Null(),
+        },
+      },
+    },
+    async function handler(request, reply) {
+      const id = request.params.id;
+      const user = await app.pg.pool
+        .query<GetUserById>(
+          `
+        select firstname, lastname from user_details
+        where user_id = $1
+      `,
+          [id],
+        )
+        .then((res) => res.rows.at(0));
+
+      if (!user) {
+        reply.code(404);
+        return;
+      }
+
+      reply.send({ data: user, error: null });
     },
   );
 }

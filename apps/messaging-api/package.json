@@ -6,7 +6,7 @@
   "scripts": {
     "test": "TAP_RCFILE=tap.yml tap",
     "start": "node --import tsx index.ts",
-    "dev": "nodemon | pino-pretty",
+    "dev": "nodemon",
     "lint": "eslint . --ext .ts",
     "generate-ts-client": "npx openapi-typescript http://localhost:8002/docs/json -o ../../packages/building-blocks-sdk/services/messaging/schema.d.ts"
   },
@@ -45,7 +45,8 @@
     "fastify-plugin": "^4.5.1",
     "logging-wrapper": "*",
     "nodemailer": "^6.9.13",
-    "pg": "^8.11.5"
+    "pg": "^8.11.5",
+    "building-blocks-sdk": "*"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.4",

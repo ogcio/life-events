@@ -943,6 +943,39 @@ paths:
                   - detail
                   - request_id
                   - name
+  /api/v1/user/details/{id}:
+    get:
+      tags:
+        - users
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      firstname:
+                        type: string
+                      lastname:
+                        type: string
+                    required:
+                      - firstname
+                      - lastname
+                required:
+                  - data
+        "404":
+          description: Default Response
 tags:
   - name: User
   - name: Addresses
