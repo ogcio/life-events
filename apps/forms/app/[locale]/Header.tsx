@@ -24,19 +24,20 @@ export default async () => {
   return (
     <header role="banner" data-module="govie-header" className="govie-header">
       <div
-        className="govie-width-container"
+        className="govie-width-container govie-header__container"
         // all designs are made for 1440px
         style={{
-          maxWidth: "1440px",
+          maxWidth: "1280px",
           display: "flex",
           alignItems: "center",
-          gap: "8px",
+          paddingBottom: "10px",
           height: "80px",
           boxSizing: "border-box",
         }}
       >
         <div
           style={{
+            paddingLeft: "15px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
