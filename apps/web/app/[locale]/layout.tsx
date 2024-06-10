@@ -17,6 +17,7 @@ import HamburgerMenuWrapper from "../components/HamburgerMenu/HamburgerMenuWrapp
 import { getMessages, getTranslations } from "next-intl/server";
 import styles from "./layout.module.scss";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import AnalyticsTracker from "analytics/components/AnalyticsTracker";
 
 export default async function RootLayout({
   children,
@@ -30,7 +31,7 @@ export default async function RootLayout({
 
   const redirectUrl = `${path}${queryString ? `?${queryString}` : ""}`;
 
-  const { userId, firstName, lastName, publicServant } =
+  const { userId, firstName, lastName, publicServant, verificationLevel } =
     await PgSessions.get(redirectUrl);
 
   const userName = [firstName, lastName].join(" ");
@@ -75,6 +76,10 @@ export default async function RootLayout({
           flexDirection: "column",
         }}
       >
+        <AnalyticsTracker
+          customDimensions={{ dimension1: verificationLevel }}
+        />
+
         {showHamburgerMenu && (
           <NextIntlClientProvider messages={hamburgerMenuMessages}>
             <HamburgerMenuWrapper

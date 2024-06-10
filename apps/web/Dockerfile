@@ -9,6 +9,7 @@ COPY ./packages/feature-flags/package*.json /app/packages/feature-flags/
 COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/messages/package*.json /app/packages/messages/
 COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
+COPY ./packages/analytics/package*.json /app/packages/analytics/
 
 RUN npm ci
 
@@ -18,6 +19,7 @@ COPY ./packages/feature-flags/ /app/packages/feature-flags/
 COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/messages/ /app/packages/messages/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
+COPY ./packages/analytics/ /app/packages/analytics/
 
 FROM deps AS builder
 
