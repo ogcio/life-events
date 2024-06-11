@@ -13,7 +13,6 @@
     },
     "createNewButton": "Create new",
     "title": "Saved messages",
-
     "form": {
       "addFormTitle": "Add new template",
       "editFormTitle": "Edit this template",
@@ -301,7 +300,6 @@
   "userSettings": {
     "Page": {
       "organisationsLink": "Organisations",
-      "backLink": "Back",
       "header": "Settings"
     },
     "Organisations": {
@@ -309,7 +307,18 @@
       "organisationTableHeader": "Organisation",
       "statusTableHeader": "Status",
       "transportsTableHeader": "Transports",
+      "editLink": "Edit",
       "actionTableHeader": "Action"
+    },
+    "Organisation": {
+      "title": "Organisation Configuration",
+      "chooseTransportation": "Choose methods of communication",
+      "email": "Email",
+      "sms": "SMS",
+      "selectInvitationStatus": "Invitation Status",
+      "minimumOneTransport": "If you accept the invitation, you must choose at least one transport",
+      "backLink": "Back",
+      "updateButton": "Update"
     }
   }
 }

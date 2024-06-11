@@ -1,6 +1,8 @@
 import { PgSessions } from "auth/sessions";
 import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
+import { userOrganisationsRoutes } from "../../utils/routes";
 
 export default async () => {
   const t = await getTranslations("userSettings.Organisations");
@@ -40,36 +42,18 @@ export default async () => {
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               <div style={{ display: "flex", alignItems: "center" }}>
-                {/* <Link
+                <Link
                   className="govie-link govie-!-margin-right-3"
                   href={(() => {
                     const url = new URL(
-                      `${providerRoutes.url}/email`,
+                      `${userOrganisationsRoutes.url}/${invitation.organisationId}`,
                       process.env.HOST_URL,
                     );
-                    url.searchParams.append("id", provider.id);
                     return url.href;
                   })()}
                 >
                   {t("editLink")}
                 </Link>
-                <Link
-                  className="govie-link govie-!-margin-right-3"
-                  href={(() => {
-                    const url = new URL(
-                      providerRoutes.url,
-                      process.env.HOST_URL,
-                    );
-                    url.searchParams.append(searchKeyDeleteId, provider.id);
-                    url.searchParams.append(
-                      searchKeyProvider,
-                      searchValueEmail,
-                    );
-                    return url.href;
-                  })()}
-                >
-                  {t("deleteButton")}
-                </Link> */}
               </div>
             </td>
           </tr>

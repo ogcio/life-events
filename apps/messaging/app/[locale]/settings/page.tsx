@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usersSettingsRoutes } from "../../utils/routes";
 import { getTranslations } from "next-intl/server";
 import {
-  searcKeySettingType,
+  searchKeySettingType,
   searchValueOrganisation,
 } from "../../utils/messaging";
 import Organisations from "./Organisations";
@@ -56,7 +56,7 @@ export default async (props: {
                 process.env.HOST_URL,
               );
               url.searchParams.append(
-                searcKeySettingType,
+                searchKeySettingType,
                 searchValueOrganisation,
               );
               return url.href;

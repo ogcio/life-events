@@ -56,7 +56,7 @@ export default async ({
           <div style={{ display: "flex", gap: "30px" }}>
             <SideMenu
               options={await messages.sideMenuOptions(publicServant)}
-              selected={routes.messages.slug}
+              selected={routes.usersSettingsRoutes.slug}
               userName={`${firstName} ${lastName}`}
             />
             <div style={{ width: "100%" }}>{children}</div>

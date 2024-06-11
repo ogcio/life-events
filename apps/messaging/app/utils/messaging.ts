@@ -94,4 +94,4 @@ export const searchValueEmail = "email";
 export const searchValueSms = "sms";
 export const searchKeyDeleteId = "deleteId";
 export const searchValueOrganisation = "organisation";
-export const searcKeySettingType = "settingType";
+export const searchKeySettingType = "settingType";
