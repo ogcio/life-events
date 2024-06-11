@@ -1,6 +1,30 @@
 import { useTranslations } from "next-intl";
 
-export default () => {
+const getLinks = (environment: string, locale: string) => {
+  locale = locale || "en";
+  switch (environment) {
+    case "UAT":
+    case "STA":
+    case "DEV":
+      return {
+        feedbackLink: new URL(
+          `${locale}/664c61ba5f7c9800231db294`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+      };
+
+    case "PROD":
+    default:
+      return {
+        feedbackLink: new URL(
+          `${locale}/664ccbdb0700c50024c53899`,
+          "https://www.forms.gov.ie",
+        ),
+      };
+  }
+};
+
+export default ({ locale }: { locale: string }) => {
   const t = useTranslations("FeedbackBanner");
   return (
     <div className="govie-phase-banner">
@@ -16,7 +40,10 @@ export default () => {
             mail: (chunks) => (
               <a
                 className="govie-link"
-                href="mailto:tiago.ramos@nearform.com?subject=Feedback"
+                href={
+                  getLinks(String(process.env.ENVIRONMENT), locale).feedbackLink
+                    .href
+                }
               >
                 {chunks}
               </a>

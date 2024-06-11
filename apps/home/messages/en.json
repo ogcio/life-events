@@ -11,8 +11,8 @@
 
         "description": "Building Blocks are reusable, compatible software parts. They include messaging, digital forms, online payments, case management, and a design system that unites them all with a familiar look and feel.",
         "cta": "Sign up to learn more",
-        "secondaryP1": "Your users can complete a form, send you information, pay for things and receive notifications with Building Blocks. It's low-cost, easy to set up and has accessibility built in from the start.",
-        "secondaryP2": "Government departments can use any number of these Building Blocks to create solutions that meet the various needs of citizens."
+        "secondaryP1": "Your users can complete a form, send you information, make secure payments and receive notifications with Building Blocks. It's low-cost, easy to set up and has accessibility built in from the start.",
+        "secondaryP2": "Government departments can use any number of these Building Blocks to create solutions that meet people's needs."
       },
       "payments": {
         "title": "Payments",
@@ -32,7 +32,7 @@
       },
       "forms": {
         "title": "FormsIE",
-        "description": "Enhance your unit's operations with FormsIE, a new digital solution for online forms that are user-friendly, efficient and accessible.",
+        "description": "Enhance your unit's operations with FormsIE, a digital solution for online forms that is user-friendly, efficient and accessible.",
         "cta": "Learn more about FormsIE"
       },
       "advantages": {
@@ -40,7 +40,7 @@
         "description": "Building Blocks are created by the Digital Services Unit (DSU).",
         "noProcurement": {
           "title": "No procurement",
-          "description": "As a Government-owned product, there is no need for a lengthy wait procuring external suppliers."
+          "description": "As a government-owned product, there is no need for a lengthy wait procuring external suppliers."
         },
         "noCode": {
           "title": "No code",
