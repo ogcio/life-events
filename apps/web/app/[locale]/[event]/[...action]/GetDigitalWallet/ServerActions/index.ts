@@ -31,13 +31,39 @@ export const sendConfirmationEmail = async (
     to: email,
     subject: t("subject"),
     html: `
-        <p>${title},</p>
+        <p>${title}</p>
         <p>${paragraphs("p1")}</p>
         <p>${paragraphs("p2")}</p>
         <p>${paragraphs.rich("p3", { link: (chunks) => `<a href="#">${chunks}</a>` })}</p>
         <p>${paragraphs("p4")}</p>
         <p>${paragraphs("p5")}</p>
         <p>${paragraphs("p6")}</p>
+    `,
+  });
+};
+
+export const sendEmailConfirmationCompleteEmail = async (
+  email: string,
+  firstName: string,
+  lastName: string,
+) => {
+  const transport = buildTransport();
+  const t = await getTranslations(
+    "GetDigitalWallet.emails.verificationComplete",
+  );
+
+  const title = `${t("title")} ${firstName} ${lastName},`;
+  const paragraphs = await getTranslations(
+    "GetDigitalWallet.emails.verificationComplete.paragraphs",
+  );
+
+  await transport.sendMail({
+    to: email,
+    subject: t("subject"),
+    html: `
+        <p>${title}</p>
+        <p>${paragraphs("p1")}</p>
+        <p>${paragraphs("p2")}</p>
     `,
   });
 };
@@ -80,7 +106,7 @@ export const sendAppOnboardingEmail = async (
   const transport = buildTransport();
   const t = await getTranslations("GetDigitalWallet.emails.AppOnboardingEmail");
 
-  const title = `${t("title")} ${firstName} ${lastName}`;
+  const title = `${t("title")} ${firstName} ${lastName},`;
   const paragraphs = await getTranslations(
     "GetDigitalWallet.emails.AppOnboardingEmail.paragraphs",
   );
@@ -93,7 +119,7 @@ export const sendAppOnboardingEmail = async (
       to: email,
       subject: t("subject"),
       html: `
-        <p>${title},</p>
+        <p>${title}</p>
         <p>${paragraphs("p1")}</p>
         <p>${paragraphs.rich("p2", { important: (chunk) => `<strong>${chunk}</strong>` })}</p>
         <p>${deviceParagraphs("p1")}</p>
@@ -110,7 +136,7 @@ export const sendAppOnboardingEmail = async (
       to: email,
       subject: t("subject"),
       html: `
-        <p>${title},</p>
+        <p>${title}</p>
         <p>${paragraphs("p1")}</p>
         <p>${paragraphs.rich("p2", { important: (chunk) => `<strong>${chunk}</strong>` })}</p>
         <p>${deviceParagraphs("p1")}</p>
