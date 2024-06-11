@@ -345,6 +345,7 @@ export default async (props: web.NextPageProps) => {
   );
 
   sendAnalytics({
+    userId: userId,
     category: "GetDigitalWallet",
     action: "Verification Level",
     name: `Level ${verificationLevel}`,

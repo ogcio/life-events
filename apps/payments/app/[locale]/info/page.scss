@@ -46,6 +46,10 @@
   min-width: 0;
 }
 
+.custom-footer {
+  justify-content: end;
+}
+
 @include phone {
   .two-columns-layout .column {
     flex: 1 1 100%;
@@ -53,6 +57,10 @@
 
   .govie-header > .govie-width-container {
     margin: unset !important;
+  }
+
+  .custom-footer {
+    justify-content: center;
   }
 }
 
