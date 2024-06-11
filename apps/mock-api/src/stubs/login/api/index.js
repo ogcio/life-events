@@ -22,9 +22,10 @@ export default async function (app, opts) {
       firstName,
       lastName,
       email,
-      redirect_url,
       verificationLevel,
     } = request.body;
+
+    const redirect_url = app.config.AUTH_SERVICE_CALLBACK_URL;
 
     const publicServantBoolean = public_servant === "on";
     if (password !== "123") {
@@ -96,17 +97,11 @@ export default async function (app, opts) {
   });
 
   app.get("/authorize", async (request, reply) => {
-    const redirectUrl = request.query.redirect_uri;
-
     const stream = fs.createReadStream(
       path.join(__dirname, "..", "index.html"),
     );
 
-    const result = (await streamToString(stream)).replace(
-      REDIRECT_URL,
-      redirectUrl,
-    );
-    return reply.type("text/html").send(result);
+    return reply.type("text/html").send(await streamToString(stream));
   });
 
   app.post("/token", async (request, reply) => {
