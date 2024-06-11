@@ -309,50 +309,7 @@
       "organisationTableHeader": "Organisation",
       "statusTableHeader": "Status",
       "transportsTableHeader": "Transports",
-      "actionTableHeader": "Action",
-      "editLink": "Edit",
-      "backLink": "Back",
-      "addProviderLink": "Add provider",
-      "providersSubtitle": "Providers",
-      "deleteButton": "Delete"
-    },
-    "EmailProvider": {
-      "titleAdd": "Add email provider",
-      "titleUpdate": "Update email provider",
-      "nameLabel": "Name",
-      "hostLabel": "Host",
-      "portLabel": "Port",
-      "usernameLabel": "Username",
-      "passwordLabel": "Password",
-      "fromAddressLabel": "From address",
-      "throttleLabel": "Throttle",
-      "throttleHint": "Optional field to adjust how long time between each mail, in miliseconds.",
-      "backLink": "Back",
-      "updateButton": "Update",
-      "createButton": "Create"
-    },
-    "Sms": {
-      "addProviderLink": "Add provider",
-      "backLink": "Back",
-      "title": "Sms providers",
-      "nameTableHeader": "Name",
-      "typeTableHeader": "Type",
-      "actionTableHeader": "Action",
-      "deleteButton": "Delete",
-      "editLink": "Edit"
-    },
-    "SmsProvider": {
-      "titleAdd": "Add SMS provider",
-      "titleUpdate": "Update SMS provider",
-      "submitProviderTypeSelect": "Select",
-      "nameLabel": "Name",
-      "accessKeyLabel": "Access key",
-      "secretAccessKey": "Secret access key",
-      "region": "Region",
-      "submitUpdate": "Update",
-      "submitCreate": "Create",
-      "selectProviderLabel": "Select provider",
-      "backLink": "Back"
+      "actionTableHeader": "Action"
     }
   }
 }
