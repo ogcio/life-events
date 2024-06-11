@@ -98,7 +98,7 @@
     "AddProvider": {
       "title": "Add Payment Provider",
       "description": "Easily integrate your preferred payment providers into your platform. Select from a range of providers to enable seamless transactions for your business.",
-      "openbankingDescription": "Utilize OpenBanking for secure and direct bank payments, offering your customers a convenient way to pay directly from their bank accounts without needing to enter payment details.",
+      "openbankingDescription": "Use OpenBanking for secure and direct bank payments, offering your customers a convenient way to pay directly from their bank accounts without needing to enter payment details.",
       "stripeDescription": "Incorporate Stripe to accept payments via credit card, Apple Pay, Google Pay, and more. Benefit from Stripe's comprehensive payment infrastructure and fraud prevention tools.",
       "worldpayDescription": "Connect with WorldPay for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
       "realexDescription": "Connect with Realex for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
@@ -390,21 +390,21 @@
       },
       "integration": {
         "title": "Seamless Integration",
-        "description": "The payments building block seamlessly connects with multiple payment methods, including credit cards, digital wallets, and bank transfers, to offer flexibility to your users."
+        "description": "The Payments Building Block seamlessly connects with multiple payment methods, including credit cards, digital wallets, and bank transfers, to offer flexibility to your users."
       },
       "security": {
         "title": "Enhanced Security",
-        "description": "The payments building block employs encryption protocols and payment providers are Payment Card Industry (PCI) compliant, giving you peace of mind."
+        "description": "The Payments Building Block employs encryption protocols and payment providers that are Payment Card Industry (PCI) compliant, giving you peace of mind."
       },
       "interface": {
         "title": "User-Friendly Interface",
-        "description": "The payments building block has an intuitive interface that makes payment processing simple for both administrators and users. Whether you're generating payment requests or tracking transactions, it's quick and simple.",
+        "description": "The Payments Building Block has an intuitive interface that makes payment processing simple for both administrators and users. Whether you're generating payment requests or tracking transactions, it's quick and simple.",
         "citizenPOV": "Citizen Point of View",
         "publicServantPOV": "Public Servant Point of View"
       },
       "accessibility": {
         "title": "Accessibility",
-        "description": "The payments building block is designed with accessibility in mind. It conforms with the Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users can easily access the service."
+        "description": "The Payments Building Block is designed with accessibility in mind. It conforms with the Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users can easily access the service."
       },
       "support": {
         "title": "Dedicated Support",
