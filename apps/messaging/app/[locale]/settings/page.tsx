@@ -8,28 +8,7 @@ import {
   searchValueOrganisation,
 } from "../../utils/messaging";
 import Organisations from "./Organisations";
-
-export const linkStyle = (selected: boolean): CSSProperties => {
-  const props: CSSProperties = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: "4px 4px 0 0",
-    padding: "10px 20px 10px 20px",
-    background: selected ? "transparent" : ds.colours.ogcio.lightGrey,
-  };
-  if (selected) {
-    props.border = `1px solid ${ds.colours.ogcio.midGrey}`;
-    props.borderStyle = "solid solid none solid";
-  }
-
-  return props;
-};
-
-export const linkClassName = (selected: boolean): string =>
-  `govie-link govie-!-font-size-19 govie-link--no-visited-state ${
-    selected ? "govie-link--no-underline" : ""
-  }`.trim();
+import { linkStyle, linkClassName } from "../admin/providers/page";
 
 export default async (props: {
   params: { locale: string };
