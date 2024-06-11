@@ -6,12 +6,12 @@
   "scripts": {
     "migrate": "db-migrate up",
     "migrate:down": "db-migrate down",
-    "migrate:create": "db-migrate create unique_tags_columns --sql-file"
+    "migrate:create": "db-migrate create $npm_config_file --sql-file"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "20.12.13",
+    "@types/node": "20.14.2",
     "@types/nodemailer": "^6.4.15",
     "typescript": "5.4.5"
   },
@@ -21,6 +21,6 @@
     "db-migrate": "^0.11.14",
     "db-migrate-pg": "^1.5.2",
     "nodemailer": "^6.9.13",
-    "pg": "^8.11.5"
+    "pg": "^8.12.0"
   }
 }

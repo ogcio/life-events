@@ -25,7 +25,7 @@ export const getUserInvitations = async (params: {
                   u.correlation_quality as "correlationQuality",
                   u.user_status as "userStatus"
               from users u
-              left join organisation_user_configurations ouc on ouc.user_id = u.id and ouc.organisation_id = $1
+              right join organisation_user_configurations ouc on ouc.user_id = u.id and ouc.organisation_id = $1
                   where u.user_profile_id in (${idsIndexes.join(", ")})
           `,
       [params.organisationId, ...params.userProfileIds],

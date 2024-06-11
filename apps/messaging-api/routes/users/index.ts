@@ -1,14 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
-import {
-  getCsvExample,
-  importCsvFileFromRequest,
-  importCsvRecords,
-} from "../../services/users/import/import-users";
 import { HttpError } from "../../types/httpErrors";
 import {
-  CsvRecord,
-  CsvRecordSchema,
   OrganisationInvitationFeedbackSchema,
   OrganisationInvitationFeedback,
   UserInvitation,
@@ -26,67 +19,10 @@ import {
 
 const tags = ["Users"];
 
+/*
+ * The routes in this file are meant to be used on the "citizen" side
+ */
 export default async function users(app: FastifyInstance) {
-  app.post(
-    "/import/csv",
-    {
-      preValidation: app.verifyUser,
-      schema: {
-        tags,
-        response: {
-          202: Type.Null(),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async (request: FastifyRequest, _reply: FastifyReply) => {
-      await importCsvFileFromRequest({ req: request, pg: app.pg });
-    },
-  );
-
-  app.get(
-    "/import/csv/template",
-    {
-      preValidation: app.verifyUser,
-      schema: {
-        tags,
-        response: {
-          200: Type.String(),
-        },
-      },
-    },
-    async (_request: FastifyRequest, reply: FastifyReply) => {
-      const buffer = await getCsvExample();
-
-      reply.type("text/csv").send(buffer);
-    },
-  );
-
-  app.post<{ Body: CsvRecord[] }>(
-    "/import",
-    {
-      preValidation: app.verifyUser,
-      schema: {
-        tags,
-        body: Type.Array(CsvRecordSchema),
-        response: {
-          202: Type.Null(),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async (request: FastifyRequest, _reply: FastifyReply) => {
-      await importCsvRecords({
-        pg: app.pg,
-        logger: request.log,
-        csvRecords: request.body as CsvRecord[],
-        requestUser: request.user!,
-      });
-    },
-  );
-
   app.get<{
     Params: { organisationId: string };
     Response: { data: UserInvitation };
@@ -115,7 +51,7 @@ export default async function users(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await getInvitationForUser({
-        userId: request.user!.id,
+        userProfileId: request.user!.id,
         organisationId: request.params.organisationId,
         pg: app.pg,
       }),
@@ -151,7 +87,7 @@ export default async function users(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await updateOrganisationFeedback({
-        userId: request.user!.id,
+        userProfileId: request.user!.id,
         organisationId: request.params.organisationId,
         pg: app.pg,
         feedback: request.body,
@@ -184,7 +120,7 @@ export default async function users(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await updateInvitationStatus({
-        userId: request.user!.id,
+        userProfileId: request.user!.id,
         pg: app.pg,
         feedback: request.body,
       }),

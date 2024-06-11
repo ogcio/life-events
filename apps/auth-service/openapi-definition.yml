@@ -35,22 +35,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
   /auth/logout:
     get:
       tags:
@@ -79,22 +79,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
   /auth/callback:
     get:
       tags:
@@ -129,22 +129,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
                     type: string
-                  error:
+                  detail:
                     type: string
-                  message:
+                  request_id:
                     type: string
-                  time:
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - request_id
+                  - name
   /users/:
     get:
       tags:

@@ -5,6 +5,7 @@ import { createError } from "@fastify/error";
 
 export interface RequestUser {
   id: string;
+  organisation_id?: string;
 }
 
 declare module "fastify" {

@@ -11,6 +11,8 @@ import VerifyLevel0 from "./VerifyLevel0";
 import VerifyLevel1 from "./VerifyLevel1";
 import ChangeDetails from "./ChangeDetails";
 import DeviceSelection from "./DeviceSelection";
+import EmailVerification from "./EmailVerification";
+import { sendAnalytics } from "analytics/utils/sendAnalytics";
 
 const getDigitalWalletRulesVerified: Parameters<
   typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
@@ -29,7 +31,7 @@ const getDigitalWalletRulesVerified: Parameters<
   },
   //Rule 2: Check if employment details are populated
   (params) =>
-    Boolean(params.govIEEmail && params.isGovernmentEmployee)
+    Boolean(params.govIEEmail)
       ? { key: null, isStepValid: true }
       : {
           key: routes.digitalWallet.getDigitalWallet.governmentDetails.slug,
@@ -215,6 +217,7 @@ const DetailsSummaryStep: React.FC<FormProps> = ({
   data,
   userId,
   eventsPageHref,
+  urlBase,
 }) => {
   return stepSlug === nextSlug ? (
     <FormLayout
@@ -226,6 +229,7 @@ const DetailsSummaryStep: React.FC<FormProps> = ({
         data={data}
         flow={workflow.keys.getDigitalWallet}
         userId={userId}
+        urlBase={urlBase}
       />
     </FormLayout>
   ) : (
@@ -266,6 +270,30 @@ const VerifyLevel1Step: React.FC<FormProps> = ({ actionSlug, stepSlug }) => {
   );
 };
 
+const VerifyEmail: React.FC<FormProps> = ({
+  stepSlug,
+  actionSlug,
+  nextSlug,
+  data,
+  userId,
+  eventsPageHref,
+  searchParams,
+}) => {
+  return (
+    <FormLayout
+      action={{ slug: actionSlug }}
+      step={stepSlug}
+      backHref={eventsPageHref}
+    >
+      <EmailVerification
+        data={data}
+        flow={workflow.keys.getDigitalWallet}
+        userId={userId}
+        searchParams={searchParams}
+      />
+    </FormLayout>
+  );
+};
 const ChangeDetailsStep: React.FC<FormProps> = ({
   data,
   actionSlug,
@@ -316,6 +344,15 @@ export default async (props: web.NextPageProps) => {
     workflow.emptyGetDigitalWallet(),
   );
 
+  sendAnalytics({
+    category: "GetDigitalWallet",
+    action: "Verification Level",
+    name: `Level ${verificationLevel}`,
+    customDimensions: {
+      dimension1: verificationLevel,
+    },
+  });
+
   const rules = verificationLevelToRulesMap[verificationLevel];
 
   const { key: nextSlug, isStepValid } = workflow.getCurrentStep(rules, data);
@@ -330,6 +367,23 @@ export default async (props: web.NextPageProps) => {
 
   if (stepSlug) {
     const StepComponent = FormComponentsMap[stepSlug];
+
+    if (stepSlug === "verify-email") {
+      return (
+        <VerifyEmail
+          stepSlug={stepSlug}
+          actionSlug={actionSlug}
+          nextSlug={nextSlug}
+          data={data}
+          eventsPageHref={`/${props.params.locale}/${routes.events.slug}`}
+          urlBase={`/${props.params.locale}/${props.params.event}/${actionSlug}`}
+          userId={userId}
+          baseActionHref={baseActionHref}
+          searchParams={props.searchParams}
+          isStepValid={isStepValid}
+        />
+      );
+    }
 
     if (!StepComponent) {
       throw notFound();

@@ -27,7 +27,7 @@ type Session = {
 };
 
 export interface Sessions {
-  get(): Promise<
+  get(redirectUrl?: string): Promise<
     SessionTokenDecoded & {
       userId: string;
       publicServant: boolean;
@@ -126,21 +126,22 @@ export const getSessionData = async (sessionId: string) => {
 };
 
 export const PgSessions: Sessions = {
-  async get() {
+  async get(redirectUrl_) {
     const authServiceUrl = process.env.AUTH_SERVICE_URL;
 
     if (!authServiceUrl) {
       throw Error("Missing env var AUTH_SERVICE_URL");
     }
 
-    const loginUrl = `${authServiceUrl}/auth?redirectUrl=${process.env.HOST_URL}`;
+    const redirectUrl = redirectUrl_ || "/";
+    const loginUrl = `${authServiceUrl}/auth?redirectHost=${process.env.HOST_URL}&redirectPath=${redirectUrl}`;
 
     const sessionId = cookies().get("sessionId")?.value;
     if (!sessionId) {
       return redirect(loginUrl, RedirectType.replace);
     }
 
-    const sessionData = await getSessionData(sessionId); //PgSessions.get(sessionId);
+    const sessionData = await getSessionData(sessionId);
 
     if (!sessionData) {
       return redirect(loginUrl, RedirectType.replace);

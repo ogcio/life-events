@@ -1,6 +1,8 @@
 import { cookies } from "next/headers.js";
 import { getPgSession } from "./sessions";
 import { redirect, RedirectType } from "next/navigation.js";
+import { NextRequest } from "next/server";
+import exp from "constants";
 
 enum SAME_SITE_VALUES {
   LAX = "lax",
@@ -14,6 +16,7 @@ function getSessionIdCookieConfig(req: Request, cookieValue: string) {
     httpOnly: true,
     secure: false,
     path: "/",
+    expires: new Date(Date.now() + 30 * 60 * 1000),
   };
   const url = new URL(process.env.HOST_URL ?? req.url);
   if (url.protocol === "https:") {
@@ -30,7 +33,7 @@ function getSessionIdCookieConfig(req: Request, cookieValue: string) {
   };
 }
 
-export default async (req: Request) => {
+export default async (req: NextRequest) => {
   const formData = await req.formData();
   const sessionId = formData.get("sessionId")?.toString() ?? "";
 
@@ -41,7 +44,7 @@ export default async (req: Request) => {
     return redirect(loginUrl, RedirectType.replace);
   }
 
-  const session = await getPgSession(sessionId); //PgSessions.get(sessionId);
+  const session = await getPgSession(sessionId);
 
   if (!session) {
     return redirect(loginUrl, RedirectType.replace);
@@ -53,6 +56,8 @@ export default async (req: Request) => {
   if (publicServant) {
     return redirect("/admin", RedirectType.replace);
   }
+  const redirectPath = req.nextUrl.searchParams.get("redirectPath");
+  const redirectUrl = redirectPath ? `${redirectPath}` : "/";
 
-  return redirect("/", RedirectType.replace);
+  return redirect(redirectUrl, RedirectType.replace);
 };

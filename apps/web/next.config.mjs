@@ -8,8 +8,9 @@ const withNextIntl = createNextIntlPlugin("./i18n.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["auth", "design-system", "feature-flags", "messages"],
+  transpilePackages: ["auth", "design-system", "feature-flags", "messages", "analytics"],
   output: "standalone",
+  poweredByHeader: false,
   experimental: {
     outputFileTracingRoot: path.join(__dirname, "../../"),
   },

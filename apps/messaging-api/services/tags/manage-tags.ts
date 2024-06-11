@@ -3,7 +3,7 @@ import { Tag } from "../../types/usersSchemaDefinitions";
 import { createError } from "@fastify/error";
 
 const TAGS_PATH_SEPARATOR = ".";
-
+const MANAGE_TAGS_ERROR = "MANAGE_TAGS_ERROR";
 export const processTagsPerUser = async (params: {
   userId: string;
   tags: string[];
@@ -20,7 +20,6 @@ export const processTagsPerUser = async (params: {
   });
   // link only the tags requested in params.tags
   const toLinkTags = tagsFromDb.filter((t) => params.tags.includes(t.tagPath));
-
   await linkTagsToUser({
     toLinkTags,
     userId: params.userId,
@@ -35,24 +34,34 @@ const linkTagsToUser = async (params: {
 }) => {
   const toInsertValues: string[] = [];
   const toInsertIndexes: string[] = [];
-  let indexCount = 1;
-
+  const tagIdsIndexes: string[] = [];
+  let indexCount = 2;
   for (const toCreate of params.toLinkTags) {
-    toInsertValues.push(params.userId, toCreate.id);
-    toInsertIndexes.push(`($${indexCount++}, $${indexCount++})`);
+    toInsertValues.push(toCreate.id);
+    const currentTagIdIndex = indexCount++;
+    toInsertIndexes.push(`($1, $${currentTagIdIndex})`);
+    tagIdsIndexes.push(`$${currentTagIdIndex}`);
   }
+
+  await params.client.query(
+    `
+      INSERT INTO tags_users (user_id, tag_id)
+      VALUES ${toInsertIndexes.join(", ")}
+      ON CONFLICT (user_id, tag_id)
+      DO NOTHING 
+    `,
+    [params.userId, ...toInsertValues],
+  );
   const result = await params.client.query(
     `
-        INSERT INTO tags_users (user_id, tag_id)
-        VALUES ${toInsertIndexes.join(", ")}
-        ON CONFLICT (user_id, tag_id)
-        DO NOTHING
+      SELECT tag_id from tags_users
+        where user_id = $1 AND tag_id in (${tagIdsIndexes.join(", ")})
     `,
-    toInsertValues,
+    [params.userId, ...toInsertValues],
   );
 
   if (result.rowCount !== params.toLinkTags.length) {
-    throw createError("MANAGE_TAGS_ERROR", "Error linking tags", 500)();
+    throw createError(MANAGE_TAGS_ERROR, "Error linking tags", 500)();
   }
 };
 
@@ -107,7 +116,7 @@ const insertTags = async (params: {
   );
 
   if (result.rowCount !== itemsCount) {
-    throw createError("MANAGE_TAGS_ERROR", "Error importing tags", 500)();
+    throw createError(MANAGE_TAGS_ERROR, "Error importing tags", 500)();
   }
 
   return result.rows;

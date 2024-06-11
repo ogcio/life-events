@@ -1,3 +1,4 @@
+import AnalyticsEvent from "analytics/components/AnalyticsEvent";
 import { getTranslations } from "next-intl/server";
 
 export default async () => {
@@ -10,7 +11,10 @@ export default async () => {
         <p className="govie-body">
           {t.rich("whyVerifySecondParagraph", {
             link: (chunks) => (
-              <a className="govie-link" href="https://www.mygovid.ie/">
+              <a
+                className="govie-link"
+                href="https://www.mygovid.ie/en-IE/Account/Elevate"
+              >
                 {chunks}
               </a>
             ),
@@ -19,16 +23,18 @@ export default async () => {
         <p className="govie-body">
           {t.rich("whyVerifyThirdParagraph", {
             link: (chunks) => (
-              <a
-                className="govie-link"
-                href={`${process.env.HOST_URL}/digital-wallet/get-digital-wallet`}
-              >
+              <a className="govie-link" href={`${process.env.HOST_URL}`}>
                 {chunks}
               </a>
             ),
           })}
         </p>
       </div>
+      <AnalyticsEvent
+        category="GetDigitalWallet"
+        action="Verification Level"
+        name="Level 1"
+      />
     </div>
   );
 };

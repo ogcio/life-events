@@ -118,21 +118,21 @@ export default async (props: {
       <div className="govie-grid-column-two-thirds-from-desktop">
         <h1 className="govie-heading-l">{t("title")}</h1>
         <p className="govie-heading-s">{tMainText("text")}</p>
-        <p className="govie-heading-s">{tMainText("subtext")}</p>
+        <p className="govie-body">{tMainText("subtext")}</p>
 
         <ol className="govie-list govie-list--bullet">
           <li>
-            <p style={{ fontWeight: "bold" }}>{tMainText("point-1")}</p>
+            <p className="govie-body">{tMainText("point-1")}</p>
           </li>
           <li>
-            <p style={{ fontWeight: "bold" }}>{tMainText("point-2")}</p>
+            <p className="govie-body">{tMainText("point-2")}</p>
           </li>
           <li>
-            <p style={{ fontWeight: "bold" }}>{tMainText("point-3")}</p>
+            <p className="govie-body">{tMainText("point-3")}</p>
           </li>
           {deviceType === "android" && (
             <li>
-              <p style={{ fontWeight: "bold" }}>{tMainText("point-4")}</p>
+              <p className="govie-body">{tMainText("point-4")}</p>
             </li>
           )}
         </ol>
@@ -144,7 +144,10 @@ export default async (props: {
             }`.trim()}
           >
             <h1 className="govie-label-wrapper">
-              <label htmlFor="email" className="govie-label--s govie-label--l">
+              <label
+                htmlFor="appStoreEmail"
+                className="govie-label--s govie-label--l"
+              >
                 {tMainText.rich("appStoreEmail", {
                   red: (chunks) => <span style={{ color: red }}>{chunks}</span>,
                 })}

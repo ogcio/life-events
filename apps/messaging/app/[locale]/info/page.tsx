@@ -46,7 +46,6 @@ export default async (props: Props) => {
   return (
     <>
       <Header />
-
       <div className="govie-width-container">
         <div className="govie-phase-banner">
           <p className="govie-phase-banner__content">
@@ -70,6 +69,12 @@ export default async (props: Props) => {
         <div className="two-columns-layout">
           <div className="column">
             <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
+            <p className="govie-body">{t("sections.main.listDescription")}</p>
+            <ul className="govie-list govie-list--bullet">
+              <li>{t("sections.main.listItem1")}</li>
+              <li>{t("sections.main.listItem2")}</li>
+              <li>{t("sections.main.listItem3")}</li>
+            </ul>
             <p className="govie-body">{t("sections.main.description")}</p>
           </div>
           <div className="column">
@@ -197,9 +202,7 @@ export default async (props: Props) => {
           </button>
         </a>
       </div>
-
       <hr className="govie-section-break govie-section-break--xl" />
-
       <Footer />
     </>
   );
