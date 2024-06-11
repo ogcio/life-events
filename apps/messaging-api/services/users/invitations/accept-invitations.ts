@@ -38,20 +38,14 @@ export const getInvitationsForUser = async (params: {
   const { pg, userProfileId } = params;
   const client = await pg.connect();
   try {
-    const user = await getUserByUserProfileId({
+    await getUserByUserProfileId({
       client,
       userProfileId,
       errorCode: ACCEPT_INVITATIONS_ERROR,
     });
-    if (!user.userProfileId) {
-      throw createError(
-        ACCEPT_INVITATIONS_ERROR,
-        "The current user has no related user profile",
-        400,
-      )();
-    }
+
     return await getUserInvitations({
-      userProfileId: user.userProfileId,
+      userProfileId,
       client,
       errorCode: ACCEPT_INVITATIONS_ERROR,
     });
@@ -194,7 +188,7 @@ export const getInvitationStatus = async (params: {
   pg: PostgresDb;
   userProfileId: string;
 }): Promise<{ userStatus: string }> => {
-  const client = await params.pg.connect();
+  const client = await params.pg.pool.connect();
   let statusResponse: QueryResult;
 
   try {
@@ -219,11 +213,11 @@ export const getInvitationStatus = async (params: {
     client.release();
   }
 
-  if (statusResponse && statusResponse.rowCount) {
-    return statusResponse.rows[0];
+  if (!statusResponse || statusResponse.rowCount === 0) {
+    throw createError(ACCEPT_INVITATIONS_ERROR, "Cannot find the user", 404)();
   }
 
-  throw createError(ACCEPT_INVITATIONS_ERROR, "Cannot find the user", 404)();
+  return statusResponse.rows[0];
 };
 
 const executeUpdateUserStatus = async (params: {
