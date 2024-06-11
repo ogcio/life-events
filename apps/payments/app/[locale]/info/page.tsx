@@ -16,6 +16,38 @@ export const metadata: Metadata = {
   title: "Payments",
 };
 
+const getLinks = (environment: string, locale: string) => {
+  locale = locale || "en";
+  switch (environment) {
+    case "UAT":
+    case "STA":
+    case "DEV":
+      return {
+        learnMoreForm: new URL(
+          `${locale}/664b6de45f7c9800231daf22`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+        feedbackLink: new URL(
+          `${locale}/664c61ba5f7c9800231db294`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+      };
+
+    case "PROD":
+    default:
+      return {
+        learnMoreForm: new URL(
+          `${locale}/664ccbf2b644d000246cfd78`,
+          "https://www.forms.gov.ie",
+        ),
+        feedbackLink: new URL(
+          `${locale}/664ccbdb0700c50024c53899`,
+          "https://www.forms.gov.ie",
+        ),
+      };
+  }
+};
+
 type Props = {
   params: {
     locale: string;
@@ -24,6 +56,9 @@ type Props = {
 
 export default async (props: Props) => {
   const t = await getTranslations("LandingPage");
+
+  const environment = String(process.env.ENVIRONMENT);
+  const links = getLinks(environment, props.params.locale);
 
   return (
     <>
@@ -37,10 +72,7 @@ export default async (props: Props) => {
             <span className="govie-phase-banner__text">
               {t.rich("AlphaBanner.bannerText", {
                 anchor: (chunks) => (
-                  <a
-                    className="govie-link"
-                    href={`${process.env.NEXT_PUBLIC_FORMS_URL}${props.params.locale}/664c61ba5f7c9800231db294`}
-                  >
+                  <a className="govie-link" href={links.feedbackLink.href}>
                     {chunks}
                   </a>
                 ),
@@ -55,9 +87,7 @@ export default async (props: Props) => {
           <div className="column">
             <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
             <p className="govie-body">{t("sections.main.description")}</p>
-            <a
-              href={`${process.env.NEXT_PUBLIC_FORMS_URL}${props.params.locale}/664b6de45f7c9800231daf22`}
-            >
+            <a href={links.learnMoreForm.href}>
               <button
                 id="button"
                 data-module="govie-button"
@@ -167,9 +197,7 @@ export default async (props: Props) => {
 
         <h2 className="govie-heading-m">{t("sections.getStarted.title")}</h2>
         <p className="govie-body">{t("sections.getStarted.description")}</p>
-        <a
-          href={`${process.env.NEXT_PUBLIC_FORMS_URL}${props.params.locale}/664b6de45f7c9800231daf22`}
-        >
+        <a href={links.learnMoreForm.href}>
           <button
             id="button"
             data-module="govie-button"
