@@ -77,6 +77,7 @@ export default async function RootLayout({
         }}
       >
         <AnalyticsTracker
+          userId={userId}
           customDimensions={{ dimension1: verificationLevel }}
         />
 

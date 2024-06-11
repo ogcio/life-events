@@ -425,6 +425,7 @@
           "p6": "The Government Digital Wallet team"
         }
       },
+
       "verifyGovEmailAddress": {
         "subject": "Please verify that you are a public servant",
         "title": "Hi",
@@ -433,6 +434,14 @@
           "p2": "Since this is a pilot that is only open to public servants, please click <link>here</link> to verify your government email address and express your interest in applying for the wallet.",
           "p3": "Thank you,",
           "p4": "The Government Digital Wallet team"
+        }
+      },
+      "verificationComplete": {
+        "subject": "You are now verified",
+        "title": "Hi",
+        "paragraphs": {
+          "p1": "Thank you for verifying your government email address. You have now been added to the list of pilot users. Look out for an email with instructions on how to download the Government Digital Wallet. Enjoy!",
+          "p2": "The Government Digital Wallet team"
         }
       },
       "AppOnboardingEmail": {
@@ -973,7 +982,7 @@
     "p1": "The Government Digital Wallet pilot is open to public servants only.",
     "p3": "T open to public servants only.",
     "p2": "Before you can download the Government Digital Wallet, we need your work email address to verify that you are a public servant and we will need your device app store email to ensure you are added to the correct testing platform. By participating in the pilot, you consent to the collection and storage of this data. This data will be used solely for the purpose of managing and improving the pilot. All of your data is handled in compliance with GDPR and data protection law. For additional information on how we handle your data, please refer to our <link>Privacy Policy</link>.",
-    "checkbox": "I confirm that I am a public servant and I consent to taking part in the Government Digital Wallet pilot.",
+    "checkbox": "I confirm that I am a public servant and I consent voluntarily to be a participant in the Government Digital Wallet pilot. I understand that I can withdraw from the pilot at any time",
     "submit": "Continue"
   },
   "Languages": {
@@ -984,7 +993,7 @@
     "myLifeEvents": "My Life Events"
   },
   "FeedbackBanner": {
-    "tag": "prototype",
+    "tag": "Alpha",
     "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
   }
 }
