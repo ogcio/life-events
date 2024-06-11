@@ -17,12 +17,19 @@ export default (props: {
   async function submitAction() {
     "use server";
 
-    const { govIEEmail, appStoreEmail, firstName, lastName, myGovIdEmail } =
-      data;
+    const { govIEEmail, firstName, lastName } = data;
 
     const randomToken = crypto.randomBytes(16).toString("hex");
 
     const verifyUrl = `${process.env.HOST_URL}${urlBase}/verify-email?token=${randomToken}`;
+
+    await postgres.pgpool.query(
+      `
+        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT, 'submittedAt', now()), updated_at = now(), email_verification_token = $3
+        WHERE user_id = $1 AND flow = $2
+    `,
+      [userId, flow, randomToken],
+    );
 
     try {
       // await sendConfirmationEmail(myGovIdEmail, firstName, lastName);
@@ -35,14 +42,6 @@ export default (props: {
     } catch (error) {
       console.error(error);
     }
-
-    await postgres.pgpool.query(
-      `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT, 'submittedAt', now()), updated_at = now(), email_verification_token = $3
-        WHERE user_id = $1 AND flow = $2
-    `,
-      [userId, flow, randomToken],
-    );
 
     revalidatePath("/");
   }
