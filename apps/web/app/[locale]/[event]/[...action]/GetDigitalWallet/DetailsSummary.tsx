@@ -4,10 +4,7 @@ import crypto from "crypto";
 
 import { ListRow } from "../shared/SummaryListRow";
 import { workflow, postgres, routes, web } from "../../../../utils";
-import {
-  sendConfirmationEmail,
-  sendGovAddressConfirmationEmail,
-} from "./ServerActions";
+import { sendGovAddressConfirmationEmail } from "./ServerActions";
 
 export default (props: {
   data: workflow.GetDigitalWallet;

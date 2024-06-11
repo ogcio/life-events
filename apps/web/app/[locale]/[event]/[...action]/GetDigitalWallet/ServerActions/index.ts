@@ -14,6 +14,7 @@ const buildTransport = () =>
     },
   });
 
+// currently unused
 export const sendConfirmationEmail = async (
   email: string,
   firstName: string,
@@ -141,7 +142,7 @@ export const sendAppOnboardingEmail = async (
         <p>${paragraphs.rich("p2", { important: (chunk) => `<strong>${chunk}</strong>` })}</p>
         <p>${deviceParagraphs("p1")}</p>
         <p>${deviceParagraphs.rich("p2", { important: (chunk) => `<strong>${chunk}</strong>` })}</p>
-        <p>${deviceParagraphs.rich("p3", { link: (chunk) => `<a href="#">${chunk}</a>` })}</p>
+        <p>${deviceParagraphs.rich("p3", { link: (chunk) => `<a href="https://play.google.com/store/apps/details?id=com.ogcio.digitalwallet">${chunk}</a>` })}</p>
         <p>${deviceParagraphs("p4")}</p>
         <p>${deviceParagraphs("p5")}</p>
         <p>${deviceParagraphs("p6")}</p>
