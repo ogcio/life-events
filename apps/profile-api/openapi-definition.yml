@@ -11,6 +11,11 @@ paths:
       responses:
         "200":
           description: Default Response
+  /user-login-wh:
+    post:
+      responses:
+        "200":
+          description: Default Response
   /api/v1/addresses/:
     get:
       tags: &a1
