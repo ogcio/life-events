@@ -51,7 +51,7 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
       },
       {
         key: routes.usersSettingsRoutes.slug,
-        label: t("settings"),
+        label: t("userSettings"),
         url: routes.usersSettingsRoutes.url,
         icon: "about",
       },
