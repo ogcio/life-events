@@ -63,6 +63,28 @@ const getLinks = (environment: string, locale: string) => {
         ),
       };
 
+    case "UAT":
+      return {
+        learnMoreForm: new URL(
+          `${locale}/664b6de45f7c9800231daf22`,
+          "https://www.formsg.testing.gov.ie/",
+        ),
+        paymentsUrl: new URL(
+          `${locale}/info`,
+          "https://payments.uat.blocks.gov.ie",
+        ),
+        formsUrl: new URL(locale, "https://forms.uat.blocks.gov.ie"),
+        messagingUrl: new URL(
+          `${locale}/info`,
+          "https://messaging.uat.blocks.gov.ie",
+        ),
+        designSystemUrl: new URL("/", "https://ds.uat.blocks.gov.ie"),
+        feedbackLink: new URL(
+          `${locale}/664c61ba5f7c9800231db294`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+      };
+
     case "PROD":
     default:
       return {

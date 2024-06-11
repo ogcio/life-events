@@ -22,6 +22,7 @@ const getLinks = (environment: string, locale: string) => {
   switch (environment) {
     case "DEV":
     case "STA":
+    case "UAT":
       return {
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,

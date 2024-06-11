@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";
   switch (environment) {
+    case "UAT":
     case "STA":
     case "DEV":
       return {
