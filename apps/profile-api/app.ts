@@ -15,6 +15,8 @@ import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
+import webhooks from "./routes/webhooks";
+import fastifyRawBody from "fastify-raw-body";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,6 +27,14 @@ export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
   initializeLoggingHooks(app);
   initializeErrorHandler(app);
+
+  app.register(fastifyRawBody, {
+    field: "rawBody",
+    global: false,
+    encoding: false,
+    runFirst: true,
+    routes: [],
+  });
 
   app.register(authPlugin);
   app.register(fastifyEnv, {
@@ -73,6 +83,7 @@ export async function build(opts?: FastifyServerOptions) {
   });
 
   app.register(healthCheck);
+  app.register(webhooks);
 
   app.register(routes, { prefix: "/api/v1" });
 
