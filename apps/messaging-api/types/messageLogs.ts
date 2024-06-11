@@ -116,7 +116,7 @@ export interface MessagingEventLogger {
    * @param type Status and key object. Use exported namespace MessagingEventType for premade types.
    * @param baseData Generic data such as sending user data, organisation and scheduling eg.
    * @param eventData Specific message data such as content, security eg.
-   * @param receiverUserData Name and other information on receiver for each log row. Contains optional message id associated with the user.
+   * @param receiverUserData Array of name and other information on receiving users. Contains optional message id associated with the user. One log row will be created for each receiving user.
    */
   log(
     type: EventType,
