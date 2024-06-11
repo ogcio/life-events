@@ -66,10 +66,6 @@ export namespace MessagingEventType {
     key: EventKey.TEMPLATE_MESSAGE_CREATE_ERROR,
     status: EventStatus.FAILED,
   };
-  //   const deleteMessage: EventType = {
-  //     status: Status.DELETED,
-  //     key: "message_deleted",
-  //   };
 }
 
 type SupportedTransports = "email" | "sms" | "lifeEvents";
@@ -82,7 +78,6 @@ type MessageUpsertEventData = MessageInput & {
 type MessageLog = {
   messageId?: string;
   senderUserId: string;
-  //   createdAt: string;
   scheduledAt: string;
   senderFullName: string;
   senderPPSN: string;
@@ -91,9 +86,9 @@ type MessageLog = {
   templateName?: string;
   organisationId: string;
   organisationName: string;
-  status: EventStatus; // Primary reason is for quering and easy categorisation.
+  status: EventStatus;
   eventType: string;
-  data: unknown; // lets store jsonb with type union for each event type.
+  data: unknown; // jsonb with type union for each event type?
 };
 
 type LogBaseData = Pick<
