@@ -42,15 +42,6 @@ export const utils = {
   postgresArrayify: function postgresArrayify(arr: unknown[]): string {
     return JSON.stringify(arr).replace("[", "{").replace("]", "}");
   },
-  buildApiError: function buildApiError(
-    message: string,
-    statusCode: number,
-  ): HttpError {
-    return {
-      message,
-      statusCode,
-    };
-  },
   isSmsAwsConfig(config: unknown): config is AwsSmsProviderConfig {
     const check = config as AwsSmsProviderConfig;
     return Boolean(

@@ -1,5 +1,6 @@
 import { RedirectType, redirect } from "next/navigation";
 import { postgres, web, workflow } from "../../../../utils";
+import { sendEmailConfirmationCompleteEmail } from "./ServerActions";
 
 export default async (props: {
   data: workflow.GetDigitalWallet;
@@ -48,6 +49,12 @@ export default async (props: {
           JSON.stringify(updatedData),
           workflow.categories.digitalWallet,
         ],
+      );
+
+      await sendEmailConfirmationCompleteEmail(
+        data.myGovIdEmail,
+        data.firstName,
+        data.lastName,
       );
     } catch (sqlError) {
       error = true;
