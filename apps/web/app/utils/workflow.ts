@@ -343,8 +343,7 @@ export async function getFlowData<T extends Workflow>(
   defaultData: T,
 ) {
   // Session details
-  const { userId, email, firstName, lastName, myGovIdEmail } =
-    await PgSessions.get();
+  const { userId, email, firstName, lastName } = await PgSessions.get();
 
   const flowQuery = postgres.pgpool.query<{ data: Workflow }, [string, string]>(
     `
@@ -377,7 +376,7 @@ export async function getFlowData<T extends Workflow>(
   }
 
   if ("myGovIdEmail" in data) {
-    data.myGovIdEmail = myGovIdEmail;
+    data.myGovIdEmail = email;
   }
 
   if (flowResult.rowCount) {
