@@ -15,6 +15,10 @@ interface AnalyticsEventRequest {
 }
 
 export function sendAnalytics(request: AnalyticsEventRequest): void {
+  if (!MATOMO_URL || !MATOMO_SITE_ID) {
+    return;
+  }
+
   const { category, action, name, value, customDimensions } = request;
 
   if (typeof window !== "undefined") {
@@ -30,9 +34,6 @@ export function sendAnalytics(request: AnalyticsEventRequest): void {
       customDimensions,
     );
 
-    if (!MATOMO_URL || !MATOMO_SITE_ID) {
-      return;
-    }
     const url = buildUrl(request);
     fetch(url);
   }

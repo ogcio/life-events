@@ -89,7 +89,8 @@ export default async (app: FastifyInstance) => {
 
       const [{ id: ssid }] = query.rows;
 
-      const redirectHost = request.cookies.redirectHost || "/auth";
+      const redirectHost =
+        request.cookies.redirectHost || app.config.FALLBACK_REDIRECT_HOST;
       deleteCookie(request, reply, "redirectHost", "");
 
       const redirectPath = request.cookies.redirectPath || "/";
