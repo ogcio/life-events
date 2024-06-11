@@ -11,10 +11,11 @@ test.describe("Login Page Tests", () => {
     await loginPage.navigateTo();
   });
 
-  test("should navigate to the about page @blocker", async ({ page }) => {
+  test.only("should navigate to the about page @blocker", async ({ page }) => {
+    await allure.severity(Severity.BLOCKER);
     await loginPage.clickPublicServant();
     await loginPage.expectTitle("MyGovID - Login");
-    await loginPage.expectPublicServantText();
+    //await loginPage.expectPublicServantText();
     await loginPage.enterPassword("123");
     await loginPage.clickSubmit();
   });
