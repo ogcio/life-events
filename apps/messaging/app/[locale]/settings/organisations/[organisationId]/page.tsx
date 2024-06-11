@@ -10,6 +10,7 @@ import {
   searchKeySettingType,
   searchValueOrganisation,
 } from "../../../../utils/messaging";
+import { FormElement } from "../../../admin/FormElement";
 
 enum AVAILABLE_TRANSPORTS {
   SMS = "sms",
@@ -72,6 +73,11 @@ export default async (props: { params: { organisationId: string } }) => {
       });
     }
 
+    if (formErrors.length) {
+      await temporaryMockUtils.createErrors(formErrors, userId, orgId);
+      return revalidatePath("/");
+    }
+
     if (status === AVAILABLE_STATUSES.DECLINED) {
       preferredTransports = [];
     }
@@ -109,23 +115,25 @@ export default async (props: { params: { organisationId: string } }) => {
         />
 
         <div className="govie-form-group">
-          <h3>
-            <span className="govie-heading-s">
-              {t("selectInvitationStatus")}
-            </span>
-          </h3>
-          <select
-            className="govie-select"
-            name="invitationStatus"
+          <FormElement
             id="invitationStatus"
-            defaultValue={configurations.data?.organisationInvitationStatus}
+            label={t("selectInvitationStatus")}
+            error={statusError && t("minimumOneTransport")}
           >
-            {Object.values(AVAILABLE_STATUSES).map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
+            <br></br>
+            <select
+              className="govie-select"
+              name="invitationStatus"
+              id="invitationStatus"
+              defaultValue={configurations.data?.organisationInvitationStatus}
+            >
+              {Object.values(AVAILABLE_STATUSES).map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+          </FormElement>
         </div>
         <div className="govie-form-group">
           <h3 className="govie-heading-s">{t("chooseTransportation")}</h3>
