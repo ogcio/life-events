@@ -1,29 +1,51 @@
 import { getTranslations } from "next-intl/server";
-import { messages, routes } from "../../utils";
 import Footer from "../Footer";
 import Header from "../Header";
-import SideMenu from "../SideMenu";
-import { PgSessions } from "auth/sessions";
+import {
+  envDevelopment,
+  envStaging,
+  envUAT,
+  envProduction,
+} from "../../utils/messaging";
 
-const availableLinks = {
-  DEV: {
-    feedbackLink:
-      "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
-  },
-  STA: {
-    feedbackLink:
-      "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
-  },
+const getLinks = (environment: string, locale: string) => {
+  locale = locale || "en";
+  switch (environment) {
+    case envUAT:
+    case envStaging:
+    case envDevelopment:
+      return {
+        feedbackLink: new URL(
+          `${locale}/664c61ba5f7c9800231db294`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+      };
+
+    case envProduction:
+    default:
+      return {
+        feedbackLink: new URL(
+          `${locale}/664ccbdb0700c50024c53899`,
+          "https://www.forms.gov.ie",
+        ),
+      };
+  }
 };
 
-export default async ({ children , params}: { children: React.ReactNode, params: { locale: string } }) => {
+export default async ({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { locale: string };
+}) => {
   const t = await getTranslations("AlphaBanner");
-  //Let's hardcode Dev for now, in a separate PR - we will add an env var to handle that
-  const environment = "DEV";
-  const links = availableLinks[environment];
+  const environment = String(process.env.ENVIRONMENT);
+  const links = getLinks(environment, params.locale);
+
   return (
     <>
-      <Header locale={params.locale}/>
+      <Header locale={params.locale} />
       {/* All designs are made for 1440 px  */}
       <div
         className="govie-width-container"
@@ -37,7 +59,7 @@ export default async ({ children , params}: { children: React.ReactNode, params:
             <span className="govie-phase-banner__text">
               {t.rich("bannerText", {
                 anchor: (chunks) => (
-                  <a className="govie-link" href={links.feedbackLink}>
+                  <a className="govie-link" href={links.feedbackLink.href}>
                     {chunks}
                   </a>
                 ),
