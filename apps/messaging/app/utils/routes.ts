@@ -31,6 +31,16 @@ export const usersImports = {
   url: "admin/users/imports",
 };
 
+export const usersSettingsRoutes = {
+  slug: "user settings",
+  url: "settings",
+};
+
+export const userOrganisationsRoutes = {
+  slug: "user organisations",
+  url: "settings/organisations",
+};
+
 export function urlWithSearchParams(
   dir: string,
   ...searchParams: { key: string; value?: string }[]

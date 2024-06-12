@@ -48,12 +48,20 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
       },
     );
   } else {
-    options.push({
-      key: routes.messages.slug,
-      label: t("messages"),
-      url: routes.messages.slug,
-      icon: "events",
-    });
+    options.push(
+      {
+        key: routes.messages.slug,
+        label: t("messages"),
+        url: routes.messages.slug,
+        icon: "events",
+      },
+      {
+        key: routes.usersSettingsRoutes.slug,
+        label: t("userSettings"),
+        url: routes.usersSettingsRoutes.url,
+        icon: "about",
+      },
+    );
   }
   return options;
 };
@@ -91,7 +99,8 @@ export const searchKeyProvider = "provider";
 export const searchValueEmail = "email";
 export const searchValueSms = "sms";
 export const searchKeyDeleteId = "deleteId";
-
+export const searchValueOrganisation = "organisation";
+export const searchKeySettingType = "settingType";
 export const envUAT = "UAT";
 export const envDevelopment = "DEV";
 export const envStaging = "STA";

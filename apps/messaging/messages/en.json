@@ -4,7 +4,8 @@
     "messages": "Messages",
     "providers": "Providers",
     "templates": "Message templates",
-    "usersImports": "Users Imports"
+    "usersImports": "Users Imports",
+    "userSettings": "Settings"
   },
   "MessageTemplates": {
     "menu": {
@@ -13,7 +14,6 @@
     },
     "createNewButton": "Create new",
     "title": "Saved messages",
-
     "form": {
       "addFormTitle": "Add new template",
       "editFormTitle": "Edit this template",
@@ -299,6 +299,30 @@
       "firstName": "First Name",
       "lastName": "Last Name",
       "birthDate": "Date Of Birth"
+    }
+  },
+  "userSettings": {
+    "Page": {
+      "organisationsLink": "Organisations",
+      "header": "Settings"
+    },
+    "Organisations": {
+      "title": "Organisations",
+      "organisationTableHeader": "Organisation",
+      "statusTableHeader": "Status",
+      "transportsTableHeader": "Transports",
+      "editLink": "Edit",
+      "actionTableHeader": "Action"
+    },
+    "Organisation": {
+      "title": "Organisation Configuration",
+      "chooseTransportation": "Choose methods of communication",
+      "email": "Email",
+      "sms": "SMS",
+      "selectInvitationStatus": "Invitation Status",
+      "minimumOneTransport": "If you accept the invitation, you must choose at least one transport",
+      "backLink": "Back",
+      "updateButton": "Update"
     }
   }
 }
