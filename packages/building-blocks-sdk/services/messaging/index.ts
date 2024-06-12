@@ -278,4 +278,56 @@ export class Messaging {
     );
     return { error, data: data?.data };
   }
+
+  async getOrganisationInvitations() {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/settings/organisations",
+    );
+    return { error, data: data?.data };
+  }
+
+  async getOrganisationInvitation(organisationId: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/settings/organisations/{organisationId}",
+      {
+        params: { path: { organisationId } },
+      },
+    );
+    return { error, data: data?.data };
+  }
+
+  async updateOrganisationInvitation(
+    organisationId: string,
+    body: paths["/api/v1/users/settings/organisations/{organisationId}"]["patch"]["requestBody"]["content"]["application/json"],
+  ) {
+    const { error, data } = await this.client.PATCH(
+      "/api/v1/users/settings/organisations/{organisationId}",
+      {
+        body,
+        params: { path: { organisationId } },
+      },
+    );
+
+    return { error, data: data?.data };
+  }
+
+  async getInvitation() {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/settings/invitations/me",
+    );
+    return { error, data: data?.data };
+  }
+
+  async updateInvitation(
+    body: paths["/api/v1/users/settings/invitations/me"]["patch"]["requestBody"]["content"]["application/json"],
+  ) {
+    const { error, data } = await this.client.PATCH(
+      "/api/v1/users/settings/invitations/me",
+      {
+        body,
+      },
+    );
+
+    return { error, data: data?.data };
+  }
 }
