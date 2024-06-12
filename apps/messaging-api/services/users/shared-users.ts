@@ -40,11 +40,11 @@ const getUser = async (params: {
     )();
   }
 
-  if (result && result.rowCount) {
-    return result.rows[0];
+  if (!result || result.rowCount === 0) {
+    throw createError(params.errorCode, "Cannot find the user", 404)();
   }
 
-  throw createError(params.errorCode, "Cannot find the user", 404)();
+  return result.rows[0];
 };
 
 export const getUserById = async (params: {

@@ -1,18 +1,36 @@
+import {
+  envDevelopment,
+  envProduction,
+  envStaging,
+  envUAT,
+} from "../../utils/messaging";
 import "./Header.css";
 
-const availableLinks = {
-  DEV: {
-    homePageUrl: "https://dev.blocks.gov.ie",
-  },
-  STA: {
-    homePageUrl: "https://sta.blocks.gov.ie",
-  },
+const getLinks = (environment: string, locale: string) => {
+  locale = locale || "en";
+  switch (environment) {
+    case envDevelopment:
+      return {
+        homePageUrl: new URL("", "https://dev.blocks.gov.ie"),
+      };
+    case envStaging:
+      return {
+        homePageUrl: new URL("", "https://sta.blocks.gov.ie"),
+      };
+    case envUAT:
+      return {
+        homePageUrl: new URL("", "https://uat.blocks.gov.ie"),
+      };
+    case envProduction:
+    default:
+      return { homePageUrl: new URL("", "https://blocks.gov.ie") };
+  }
 };
 
-export default async () => {
-  //Let's hardcode Dev for now, in a separate PR - we will add an env var to handle that
-  const environment = "DEV";
-  const links = availableLinks[environment];
+export default async (props: { locale: string }) => {
+  const environment = String(process.env.ENVIRONMENT);
+
+  const links = getLinks(environment, props.locale);
 
   return (
     <header role="banner" data-module="govie-header" className="govie-header">
@@ -44,7 +62,7 @@ export default async () => {
             }}
           >
             <a
-              href={links.homePageUrl}
+              href={links.homePageUrl.href}
               className="govie-header__link govie-header__link--homepage"
               style={{ display: "block" }}
             >

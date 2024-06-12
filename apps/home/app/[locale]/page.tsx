@@ -11,43 +11,126 @@ import messaging from "../../public/landingPage/messaging.png";
 import designSystem from "../../public/landingPage/designSystem.png";
 import forms from "../../public/landingPage/forms.png";
 import type { Metadata } from "next";
+import {
+  envDevelopment,
+  envProduction,
+  envStaging,
+  envUAT,
+} from "../../constants";
 
 export const metadata: Metadata = {
   title: "Building Blocks",
 };
 
-const availableLinks = {
-  DEV: {
-    learnMoreForm:
-      "https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22",
-    paymentsUrl: "https://payments.dev.blocks.gov.ie/en/info",
-    formsUrl: "https://forms.dev.blocks.gov.ie/en",
-    messagingUrl: "https://messaging.dev.blocks.gov.ie/en/info",
-    designSystemUrl: "https://ds.dev.blocks.gov.ie/",
-    feedbackLink:
-      "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
-  },
-  STA: {
-    learnMoreForm:
-      "https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22",
-    paymentsUrl: "https://payments.sta.blocks.gov.ie/en/info",
-    formsUrl: "https://forms.sta.blocks.gov.ie/en",
-    messagingUrl: "https://messaging.sta.blocks.gov.ie/en/info",
-    designSystemUrl: "https://ds.sta.blocks.gov.ie/",
-    feedbackLink:
-      "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
-  },
+const getLinks = (environment: string, locale: string) => {
+  locale = locale || "en";
+  switch (environment) {
+    case envDevelopment:
+      return {
+        learnMoreForm: new URL(
+          `${locale}/664b6de45f7c9800231daf22`,
+          "https://www.formsg.testing.gov.ie/",
+        ),
+        paymentsUrl: new URL(
+          `${locale}/info`,
+          "https://payments.dev.blocks.gov.ie/",
+        ),
+        formsUrl: new URL(locale, "https://forms.dev.blocks.gov.ie/"),
+        messagingUrl: new URL(
+          `${locale}/info`,
+          "https://messaging.dev.blocks.gov.ie",
+        ),
+        designSystemUrl: new URL("/", "https://ds.dev.blocks.gov.ie"),
+        feedbackLink: new URL(
+          `${locale}/664c61ba5f7c9800231db294`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+      };
+
+    case envStaging:
+      return {
+        learnMoreForm: new URL(
+          `${locale}/664b6de45f7c9800231daf22`,
+          "https://www.formsg.testing.gov.ie/",
+        ),
+        paymentsUrl: new URL(
+          `${locale}/info`,
+          "https://payments.sta.blocks.gov.ie",
+        ),
+        formsUrl: new URL(locale, "https://forms.sta.blocks.gov.ie"),
+        messagingUrl: new URL(
+          `${locale}/info`,
+          "https://messaging.sta.blocks.gov.ie",
+        ),
+        designSystemUrl: new URL("/", "https://ds.sta.blocks.gov.ie"),
+        feedbackLink: new URL(
+          `${locale}/664c61ba5f7c9800231db294`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+      };
+
+    case envUAT:
+      return {
+        learnMoreForm: new URL(
+          `${locale}/664b6de45f7c9800231daf22`,
+          "https://www.formsg.testing.gov.ie/",
+        ),
+        paymentsUrl: new URL(
+          `${locale}/info`,
+          "https://payments.uat.blocks.gov.ie",
+        ),
+        formsUrl: new URL(locale, "https://forms.uat.blocks.gov.ie"),
+        messagingUrl: new URL(
+          `${locale}/info`,
+          "https://messaging.uat.blocks.gov.ie",
+        ),
+        designSystemUrl: new URL("/", "https://ds.uat.blocks.gov.ie"),
+        feedbackLink: new URL(
+          `${locale}/664c61ba5f7c9800231db294`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+      };
+
+    case envProduction:
+    default:
+      return {
+        learnMoreForm: new URL(
+          `${locale}/664ccbf2b644d000246cfd78`,
+          "https://www.forms.gov.ie",
+        ),
+        paymentsUrl: new URL(
+          `${locale}/info`,
+          "https://payments.blocks.gov.ie",
+        ),
+        formsUrl: new URL(locale, "https://forms.blocks.gov.ie"),
+        messagingUrl: new URL(
+          `${locale}/info`,
+          "https://messaging.blocks.gov.ie",
+        ),
+        designSystemUrl: new URL("/", "https://ds.blocks.gov.ie"),
+        feedbackLink: new URL(
+          `${locale}/664ccbdb0700c50024c53899`,
+          "https://www.forms.gov.ie",
+        ),
+      };
+  }
 };
 
-export default async function () {
+type Props = {
+  params: {
+    locale: string;
+  };
+};
+
+export default async function (props: Props) {
   const t = await getTranslations("LandingPage");
-  //Let's hardcode Dev for now, in a separate PR - we will add an env var to handle that
-  const environment = "DEV";
-  const links = availableLinks[environment];
+
+  const environment = String(process.env.ENVIRONMENT);
+  const links = getLinks(environment, props.params.locale);
 
   return (
     <>
-      <Header />
+      <Header locale={props.params.locale} />
 
       <div className="govie-width-container">
         <div className="govie-phase-banner">
@@ -58,7 +141,7 @@ export default async function () {
             <span className="govie-phase-banner__text">
               {t.rich("AlphaBanner.bannerText", {
                 url: (chunks) => (
-                  <a className="govie-link" href={links.feedbackLink}>
+                  <a className="govie-link" href={links.feedbackLink.href}>
                     {chunks}
                   </a>
                 ),
@@ -79,7 +162,7 @@ export default async function () {
             <p className="govie-body">{t("sections.main.secondaryP1")}</p>
             <p className="govie-body">{t("sections.main.secondaryP2")}</p>
 
-            <a href={links.learnMoreForm}>
+            <a href={links.learnMoreForm.href}>
               <button
                 id="button"
                 data-module="govie-button"
@@ -126,7 +209,7 @@ export default async function () {
             <h2 className="govie-heading-l">{t("sections.forms.title")}</h2>
 
             <p className="govie-body">{t("sections.forms.description")}</p>
-            <a className="govie-link" href={links.formsUrl}>
+            <a className="govie-link" href={links.formsUrl.href}>
               {t("sections.forms.cta")}
             </a>
           </div>
@@ -138,7 +221,7 @@ export default async function () {
             <h2 className="govie-heading-l">{t("sections.payments.title")}</h2>
 
             <p className="govie-body">{t("sections.payments.description")}</p>
-            <a className="govie-link" href={links.paymentsUrl}>
+            <a className="govie-link" href={links.paymentsUrl.href}>
               {t("sections.payments.cta")}
             </a>
           </div>
@@ -165,7 +248,7 @@ export default async function () {
             <h2 className="govie-heading-l">{t("sections.messaging.title")}</h2>
 
             <p className="govie-body">{t("sections.messaging.description")}</p>
-            <a className="govie-link" href={links.messagingUrl}>
+            <a className="govie-link" href={links.messagingUrl.href}>
               {t("sections.messaging.cta")}
             </a>
           </div>
@@ -190,7 +273,7 @@ export default async function () {
             <p className="govie-body">
               {t("sections.designSystem.description")}
             </p>
-            <a className="govie-link" href={links.designSystemUrl}>
+            <a className="govie-link" href={links.designSystemUrl.href}>
               {t("sections.designSystem.cta")}
             </a>
           </div>
@@ -281,7 +364,7 @@ export default async function () {
           </ul>
           <p className="govie-body">{t("sections.footer.descriptionP1")}</p>
           <p className="govie-body">{t("sections.footer.descriptionP2")}</p>
-          <a href={links.learnMoreForm}>
+          <a href={links.learnMoreForm.href}>
             <button
               id="button"
               data-module="govie-button"

@@ -28,7 +28,16 @@ export default function AnalyticsTracker({
     return null;
   }
 
+  const pathname = usePathname();
+  const isInitialLoad = useRef(true);
+  const isInitialized = useRef(false);
+
   const initFunction = () => {
+    // if it's not the initial load, we don't need to set the userId and customDimensions
+    if (!isInitialLoad.current) {
+      return;
+    }
+
     if (userId) {
       push(["setUserId", userId]);
     }
@@ -40,18 +49,22 @@ export default function AnalyticsTracker({
     }
   };
 
-  const pathname = usePathname();
-  const isInitialLoad = useRef(true);
-
   useEffect(() => {
+    if (isInitialized.current) {
+      return;
+    }
+
     init({
       url: MATOMO_URL,
       siteId: MATOMO_SITE_ID,
       disableCookies: true,
       onInitialization: initFunction,
     });
+
+    isInitialized.current = true;
+
     return () => push(["HeatmapSessionRecording::disable"]);
-  }, []);
+  }, [MATOMO_URL, MATOMO_SITE_ID, userId]);
 
   useEffect(() => {
     if (isInitialLoad.current) {

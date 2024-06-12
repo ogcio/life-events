@@ -20,6 +20,7 @@ const envSchema = {
     POSTGRES_DB: { type: "string" },
     POSTGRES_DB_NAME_SHARED: { type: "string" },
     ORIGIN_URL: { type: "string" },
+    AUTH_SERVICE_CALLBACK_URL: { type: "string" },
   },
   required: [
     "POSTGRES_HOST",
@@ -28,6 +29,7 @@ const envSchema = {
     "POSTGRES_PASSWORD",
     "POSTGRES_DB_NAME_SHARED",
     "ORIGIN_URL",
+    "AUTH_SERVICE_CALLBACK_URL",
   ],
 };
 
