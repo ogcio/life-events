@@ -17,8 +17,8 @@ const getLinks = (environment: string, locale: string) => {
     default:
       return {
         feedbackLink: new URL(
-          `${locale}/664ccbdb0700c50024c53899`,
-          "https://www.forms.gov.ie",
+          `en/form/935b1-government-digital-wallet-pilot-support-form/`,
+          "https://www.gov.ie",
         ),
       };
   }
