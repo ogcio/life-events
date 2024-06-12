@@ -29,3 +29,8 @@ export const drivers = {
   licencePaymentAgeThreshold: 70,
   licenceMedicalFormAgeThreshold: 75,
 };
+
+export const envUAT = "UAT";
+export const envDevelopment = "DEV";
+export const envStaging = "STA";
+export const envProduction = "PRD";

@@ -11,6 +11,12 @@ import interfaceCitizen from "../../../public/landingPage/interfaceCitizen.png";
 import interfacePublicServant from "../../../public/landingPage/interfacePublicServant.png";
 import security from "../../../public/landingPage/security.png";
 import type { Metadata } from "next";
+import {
+  envDevelopment,
+  envProduction,
+  envStaging,
+  envUAT,
+} from "../../constants";
 
 export const metadata: Metadata = {
   title: "Payments",
@@ -19,9 +25,9 @@ export const metadata: Metadata = {
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";
   switch (environment) {
-    case "UAT":
-    case "STA":
-    case "DEV":
+    case envUAT:
+    case envStaging:
+    case envDevelopment:
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
@@ -33,7 +39,7 @@ const getLinks = (environment: string, locale: string) => {
         ),
       };
 
-    case "PROD":
+    case envProduction:
     default:
       return {
         learnMoreForm: new URL(
