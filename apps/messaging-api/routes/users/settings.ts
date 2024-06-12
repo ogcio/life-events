@@ -10,24 +10,49 @@ import {
   InvitationFeedback,
   InvitationFeedbackSchema,
   UserSchema,
+  UserStatusUnionType,
 } from "../../types/usersSchemaDefinitions";
 import {
   getInvitationForUser,
+  getInvitationStatus,
+  getInvitationsForUser,
   updateInvitationStatus,
   updateOrganisationFeedback,
 } from "../../services/users/invitations/accept-invitations";
 
-const tags = ["Users"];
+const tags = ["UserSettings"];
 
 /*
  * The routes in this file are meant to be used on the "citizen" side
  */
-export default async function users(app: FastifyInstance) {
+export default async function userSettings(app: FastifyInstance) {
+  app.get(
+    "/organisations",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags,
+        response: {
+          200: Type.Object({ data: Type.Array(UserInvitationSchema) }),
+          400: HttpError,
+          404: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request: FastifyRequest, _reply: FastifyReply) => ({
+      data: await getInvitationsForUser({
+        userProfileId: request.user!.id,
+        pg: app.pg,
+      }),
+    }),
+  );
+
   app.get<{
     Params: { organisationId: string };
     Response: { data: UserInvitation };
   }>(
-    "/invitations/:organisationId",
+    "/organisations/:organisationId",
     {
       preValidation: app.verifyUser,
       schema: {
@@ -65,7 +90,7 @@ export default async function users(app: FastifyInstance) {
   }
 
   app.patch<PatchOrgInvitationSchema>(
-    "/invitations/:organisationId",
+    "/organisations/:organisationId",
     {
       preValidation: app.verifyUser,
       schema: {
@@ -101,7 +126,7 @@ export default async function users(app: FastifyInstance) {
   }
 
   app.patch<PatchInvitationSchema>(
-    "/invitations",
+    "/invitations/me",
     {
       preValidation: app.verifyUser,
       schema: {
@@ -123,6 +148,30 @@ export default async function users(app: FastifyInstance) {
         userProfileId: request.user!.id,
         pg: app.pg,
         feedback: request.body,
+      }),
+    }),
+  );
+
+  app.get(
+    "/invitations/me",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags,
+        response: {
+          200: Type.Object({
+            data: Type.Object({ userStatus: UserStatusUnionType }),
+          }),
+          400: HttpError,
+          404: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request: FastifyRequest, _reply: FastifyReply) => ({
+      data: await getInvitationStatus({
+        userProfileId: request.user!.id,
+        pg: app.pg,
       }),
     }),
   );
