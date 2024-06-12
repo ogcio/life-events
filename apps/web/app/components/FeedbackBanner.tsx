@@ -1,11 +1,17 @@
 import { useTranslations } from "next-intl";
+import {
+  envDevelopment,
+  envProduction,
+  envStaging,
+  envUAT,
+} from "../utils/web";
 
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";
   switch (environment) {
-    case "UAT":
-    case "STA":
-    case "DEV":
+    case envUAT:
+    case envStaging:
+    case envDevelopment:
       return {
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
@@ -13,7 +19,7 @@ const getLinks = (environment: string, locale: string) => {
         ),
       };
 
-    case "PROD":
+    case envProduction:
     default:
       return {
         feedbackLink: new URL(
