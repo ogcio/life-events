@@ -62,7 +62,7 @@ export default async (props: Props) => {
 
   return (
     <>
-      <Header />
+      <Header locale={props.params.locale} />
       <div className="govie-width-container">
         <div className="govie-phase-banner">
           <p className="govie-phase-banner__content">
