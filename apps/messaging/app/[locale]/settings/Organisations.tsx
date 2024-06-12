@@ -7,7 +7,6 @@ import { userOrganisationsRoutes } from "../../utils/routes";
 export default async () => {
   const t = await getTranslations("userSettings.Organisations");
   const { userId } = await PgSessions.get();
-  console.log({ userId });
   const { data } = await new Messaging(userId).getOrganisationInvitations();
 
   return (
