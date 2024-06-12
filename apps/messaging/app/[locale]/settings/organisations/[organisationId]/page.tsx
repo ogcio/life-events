@@ -129,7 +129,7 @@ export default async (props: { params: { organisationId: string } }) => {
             >
               {Object.values(AVAILABLE_STATUSES).map((status) => (
                 <option key={status} value={status}>
-                  {status}
+                  {t(`statuses.${status}`)}
                 </option>
               ))}
             </select>
