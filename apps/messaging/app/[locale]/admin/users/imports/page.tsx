@@ -6,6 +6,7 @@ import { Messaging } from "building-blocks-sdk";
 import React from "react";
 import { revalidatePath } from "next/cache";
 import { usersImports } from "../../../../utils/routes";
+import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 
 export default async () => {
   const t = await getTranslations("UsersImports");
@@ -30,7 +31,7 @@ export default async () => {
   }
 
   return (
-    <>
+    <FlexMenuWrapper>
       <h1 className="govie-heading-l">{t("header")}</h1>
       <Link href="/api/users-csv" target="_blank">
         {t("downloadFileBtn")}
@@ -103,6 +104,6 @@ export default async () => {
           ))}
         </tbody>
       </table>
-    </>
+    </FlexMenuWrapper>
   );
 };

@@ -3,7 +3,8 @@
     "sendMessage": "Send a message",
     "messages": "Messages",
     "providers": "Providers",
-    "templates": "Message templates"
+    "templates": "Message templates",
+    "usersImports": "Users Imports"
   },
   "MessageTemplates": {
     "menu": {

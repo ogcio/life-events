@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { ComponentProps } from "react";
 import ds from "design-system";
 import { api } from "messages";
-import { providerRoutes } from "./routes";
+import { providerRoutes, usersImports } from "./routes";
 
 export const languages = {
   EN: "EN",
@@ -39,6 +39,12 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
         label: t("providers"),
         url: providerRoutes.url,
         icon: "settings",
+      },
+      {
+        key: usersImports.slug,
+        label: t("usersImports"),
+        url: usersImports.url,
+        icon: "employment",
       },
     );
   } else {
