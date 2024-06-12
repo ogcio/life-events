@@ -7,13 +7,15 @@ const buildTransport = () =>
   nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT),
-    secure: false, // Use `true` for port 465, `false` for all other ports
+    secure: true,
+    version: "TLSv1_2_method",
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASSWORD,
     },
   });
 
+// currently unused
 export const sendConfirmationEmail = async (
   email: string,
   firstName: string,
@@ -29,6 +31,7 @@ export const sendConfirmationEmail = async (
 
   await transport.sendMail({
     to: email,
+    from: "noreply@life.gov.ie",
     subject: t("subject"),
     html: `
         <p>${title}</p>
@@ -59,6 +62,7 @@ export const sendEmailConfirmationCompleteEmail = async (
 
   await transport.sendMail({
     to: email,
+    from: "noreply@life.gov.ie",
     subject: t("subject"),
     html: `
         <p>${title}</p>
@@ -86,6 +90,7 @@ export const sendGovAddressConfirmationEmail = async (
 
   await transport.sendMail({
     to: email,
+    from: "noreply@life.gov.ie",
     subject: t("subject"),
     html: `
         <p>${title}</p>
@@ -117,6 +122,7 @@ export const sendAppOnboardingEmail = async (
   if (deviceType === "ios") {
     await transport.sendMail({
       to: email,
+      from: "noreply@life.gov.ie",
       subject: t("subject"),
       html: `
         <p>${title}</p>
@@ -134,6 +140,7 @@ export const sendAppOnboardingEmail = async (
     // <p>${paragraphs.rich("p2", { strong: (chunk) => `<strong>${chunk}</strong>` })}</p>
     await transport.sendMail({
       to: email,
+      from: "noreply@life.gov.ie",
       subject: t("subject"),
       html: `
         <p>${title}</p>
@@ -141,7 +148,7 @@ export const sendAppOnboardingEmail = async (
         <p>${paragraphs.rich("p2", { important: (chunk) => `<strong>${chunk}</strong>` })}</p>
         <p>${deviceParagraphs("p1")}</p>
         <p>${deviceParagraphs.rich("p2", { important: (chunk) => `<strong>${chunk}</strong>` })}</p>
-        <p>${deviceParagraphs.rich("p3", { link: (chunk) => `<a href="#">${chunk}</a>` })}</p>
+        <p>${deviceParagraphs.rich("p3", { link: (chunk) => `<a href="https://play.google.com/store/apps/details?id=com.ogcio.digitalwallet">${chunk}</a>` })}</p>
         <p>${deviceParagraphs("p4")}</p>
         <p>${deviceParagraphs("p5")}</p>
         <p>${deviceParagraphs("p6")}</p>

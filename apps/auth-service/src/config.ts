@@ -13,6 +13,7 @@ export const envSchema = {
     "CLIENT_SECRET",
     "TOKEN_URL",
     "ALLOWED_REDIRECT_HOSTS",
+    "FALLBACK_REDIRECT_HOST",
   ],
   properties: {
     POSTGRES_USER: {
@@ -49,6 +50,9 @@ export const envSchema = {
       type: "string",
     },
     ALLOWED_REDIRECT_HOSTS: {
+      type: "string",
+    },
+    FALLBACK_REDIRECT_HOST: {
       type: "string",
     },
   },

@@ -31,8 +31,6 @@ export interface Sessions {
     SessionTokenDecoded & {
       userId: string;
       publicServant: boolean;
-      //The values below will likely be extracted from session token  once we integrate with GOV ID
-      myGovIdEmail: string;
       verificationLevel: number;
       sessionId: string;
     }
@@ -118,8 +116,6 @@ export const getSessionData = async (sessionId: string) => {
     ...decodedJWT,
     userId: session.userId,
     publicServant: session.publicServant,
-    //The values below will likely be extracted from session token once we integrate with GOV ID
-    myGovIdEmail: "testMyGovIdEmail@test.com",
     verificationLevel,
     sessionId,
   };

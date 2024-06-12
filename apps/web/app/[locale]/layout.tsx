@@ -77,6 +77,7 @@ export default async function RootLayout({
         }}
       >
         <AnalyticsTracker
+          userId={userId}
           customDimensions={{ dimension1: verificationLevel }}
         />
 
@@ -94,7 +95,7 @@ export default async function RootLayout({
         <Header showHamburgerButton={showHamburgerMenu} locale={locale} />
         {/* All designs are made for 1440 px  */}
         <main className={styles.mainContainer}>
-          <FeedbackBanner />
+          <FeedbackBanner locale={locale} />
           <div style={{ margin: "0 auto", paddingTop: "20px" }}>{children}</div>
         </main>
         <Footer />

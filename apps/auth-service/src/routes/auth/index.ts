@@ -70,16 +70,14 @@ export default async function login(app: FastifyInstance) {
         }
       }
 
-      redirectHost = redirectHost || "/";
-      if (redirectHost !== "/") {
-        const redirectHostUrl = new URL(redirectHost);
-        const allowedRedirectHost = app.config.ALLOWED_REDIRECT_HOSTS.split(
-          ",",
-        ).find((domain) => new RegExp(`${domain}$`).test(redirectHostUrl.host));
+      redirectHost = redirectHost || app.config.FALLBACK_REDIRECT_HOST;
+      const redirectHostUrl = new URL(redirectHost);
+      const allowedRedirectHost = app.config.ALLOWED_REDIRECT_HOSTS.split(
+        ",",
+      ).find((domain) => new RegExp(`${domain}$`).test(redirectHostUrl.host));
 
-        if (!allowedRedirectHost) {
-          throw createError("INVALID_URL_ERROR", "Invalid redirect url", 500)();
-        }
+      if (!allowedRedirectHost) {
+        throw createError("INVALID_URL_ERROR", "Invalid redirect url", 500)();
       }
 
       redirectPath = redirectPath || "/";

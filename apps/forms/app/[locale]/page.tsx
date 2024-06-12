@@ -17,17 +17,37 @@ export const metadata: Metadata = {
   title: "FormsIE",
 };
 
-const availableLinks = {
-  DEV: {
-    feedbackLink:
-      "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
-    formsLink: "https://www.formsg.testing.gov.ie/",
-  },
-  STA: {
-    feedbackLink:
-      "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
-    formsLink: "https://www.formsg.testing.gov.ie/",
-  },
+const getLinks = (environment: string, locale: string) => {
+  locale = locale || "en";
+  switch (environment) {
+    case "DEV":
+    case "STA":
+    case "UAT":
+      return {
+        feedbackLink: new URL(
+          `${locale}/664c61ba5f7c9800231db294`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+        formsLink: new URL(
+          `${locale}/664b6de45f7c9800231daf22`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+      };
+
+    case "PROD":
+    default:
+      return {
+        feedbackLink: new URL(
+          `${locale}/664ccbdb0700c50024c53899`,
+          "https://www.forms.gov.ie",
+        ),
+
+        formsLink: new URL(
+          `${locale}/664ccbf2b644d000246cfd78`,
+          "https://www.forms.gov.ie",
+        ),
+      };
+  }
 };
 
 type Props = {
@@ -39,9 +59,9 @@ type Props = {
 export default async function (props: Props) {
   const t = await getTranslations("LandingPage");
 
-  //Let's hardcode Dev for now, in a separate PR - we will add an env var to handle that
-  const environment = "DEV";
-  const links = availableLinks[environment];
+  const environment = String(process.env.ENVIRONMENT);
+
+  const links = getLinks(environment, props.params.locale);
 
   return (
     <>
@@ -56,11 +76,21 @@ export default async function (props: Props) {
             <span className="govie-phase-banner__text">
               {t.rich("AlphaBanner.bannerText", {
                 url: (chunks) => (
-                  <a className="govie-link" href={links.feedbackLink}>
+                  <a className="govie-link" href={links.feedbackLink.href}>
                     {chunks}
                   </a>
                 ),
               })}
+            </span>
+          </p>
+        </div>
+        <div className="govie-phase-banner">
+          <p className="govie-phase-banner__content">
+            <strong className="govie-tag govie-phase-banner__content__tag">
+              {t("sections.main.bannerTitle")}
+            </strong>
+            <span className="govie-phase-banner__text">
+              {t("sections.main.note")}
             </span>
           </p>
         </div>
@@ -184,9 +214,7 @@ export default async function (props: Props) {
       <div className="govie-width-container">
         <h2 className="govie-heading-m">{t("sections.getStarted.title")}</h2>
         <p className="govie-body">{t("sections.getStarted.description")}</p>
-        <a
-          href={`${links.formsLink}${props.params.locale}/664b6de45f7c9800231daf22`}
-        >
+        <a href={links.formsLink.href}>
           <button
             id="button"
             data-module="govie-button"
