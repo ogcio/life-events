@@ -362,7 +362,7 @@
     },
     "DetailsSummary": {
       "title": "Check your details",
-      "mygovidDataHeading": "These details are automatically populated by your MyGovID account. If this is not you or you have any queries relateing to these details please contact support@mygovid.ie",
+      "mygovidDataHeading": "These details are automatically populated by your MyGovID account. If this is not you or you have any queries relating to these details please contact support@mygovid.ie",
       "filledDataHeading": "Please make any necessary changes via the change link provided before submitting your application",
       "firstName": "First name",
       "lastName": "Last name",
@@ -406,10 +406,10 @@
       "paragraph-2": "You will receive an email to the work email address you have provided. You will need to click on the link included in the email, as this verifies that you are a public servant.",
       "paragraph-3": "Once confirmed, we will use the email address provided for your device to on-board you to the correct testing platform. You will then receive an email to your MyGovID email address with instructions on how to download the Government Digital Wallet app.",
       "summaryTitle": "Summary",
-      "submitText": "Return to My Life Events",
+      "submitText": "Return to Life Events",
       "purpose": "Application for",
       "date": "Date of application",
-      "getDigitalWallet": "Digital wallet",
+      "getDigitalWallet": "Government Digital Wallet",
       "getDigitalWalletBody": "Thank you for submitting your application, your request will be reviewed soon."
     },
     "emails": {
@@ -538,7 +538,7 @@
     "logout": "Logout"
   },
   "MyLifeEvents": {
-    "lifeEvents": "My Life Events",
+    "lifeEvents": "Life Events",
     "openEvents": "Open Events",
     "renewDriversLicence": {
       "title": {
@@ -982,7 +982,7 @@
     "p1": "The Government Digital Wallet pilot is open to public servants only.",
     "p3": "T open to public servants only.",
     "p2": "Before you can download the Government Digital Wallet, we need your work email address to verify that you are a public servant and we will need your device app store email to ensure you are added to the correct testing platform. By participating in the pilot, you consent to the collection and storage of this data. This data will be used solely for the purpose of managing and improving the pilot. All of your data is handled in compliance with GDPR and data protection law. For additional information on how we handle your data, please refer to our <link>Privacy Policy</link>.",
-    "checkbox": "I confirm that I am a public servant and I consent voluntarily to be a participant in the Government Digital Wallet pilot. I understand that I can withdraw from the pilot at any time",
+    "checkbox": "I confirm that I am a public servant and I consent to be a participant in the Government Digital Wallet pilot. I understand that I can withdraw from the pilot at any time",
     "submit": "Continue"
   },
   "Languages": {
@@ -990,10 +990,10 @@
     "irish": "Gaelic"
   },
   "Header": {
-    "myLifeEvents": "My Life Events"
+    "myLifeEvents": "Life Events"
   },
   "FeedbackBanner": {
     "tag": "Alpha",
-    "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
+    "bannerText": "This is a new service - your <mail>feedback</mail> (or email to govdigitalwallet@per.gov.ie) will help us to improve it."
   }
 }

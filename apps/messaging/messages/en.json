@@ -233,8 +233,8 @@
     "sections": {
       "main": {
         "title": "Messaging",
-        "description": "Messaging uses the electronic postbox embedded within systems, so people can access their messages in one place.",
-        "listDescription": "Messaging allows you to:",
+        "description": "Messaging Building Block uses the electronic postbox embedded within systems, so people can access their messages in one place.",
+        "listDescription": "Messaging Building Block allows you to:",
         "listItem1": "send email and text messages across various channels",
         "listItem2": "set up reminders and notifications",
         "listItem3": "craft reusable templates"
@@ -247,7 +247,7 @@
         },
         "section2": {
           "title": "Secure",
-          "description": "Messaging prioritises security to safeguard sensitive information and ensure compliance with data protection regulations."
+          "description": "Messaging Building Block prioritises security to safeguard sensitive information and ensure compliance with data protection regulations."
         },
         "section3": {
           "title": "Reusable Templates",
@@ -259,7 +259,7 @@
         },
         "section5": {
           "title": "Accessibility Compliance",
-          "description": "Messaging meets with accessibility regulations, Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users, regardless of their abilities, can access and interact with messages."
+          "description": "Messaging Building Block meets with accessibility regulations, Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users can access and interact with messages."
         },
         "section6": {
           "title": "Dedicated Support",
@@ -268,7 +268,7 @@
       },
       "getStarted": {
         "title": "Get started",
-        "description": "Ready to elevate your communication strategy? Contact us to schedule a demo and see how Messaging can transform how you engage with the public.",
+        "description": "Ready to elevate your communication strategy? Contact us to schedule a demo and see how Messaging Building Block can transform how you engage with the public.",
         "cta": "Sign up to learn more"
       }
     }

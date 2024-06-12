@@ -12,6 +12,12 @@ import paymentService1 from "../../public/landingPage/payment_service1.png";
 import paymentService2 from "../../public/landingPage/payment_service2.png";
 import paymentService3 from "../../public/landingPage/payment_service3.png";
 import Image from "next/image";
+import {
+  envDevelopment,
+  envProduction,
+  envStaging,
+  envUAT,
+} from "../../constants";
 
 export const metadata: Metadata = {
   title: "FormsIE",
@@ -20,9 +26,9 @@ export const metadata: Metadata = {
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";
   switch (environment) {
-    case "DEV":
-    case "STA":
-    case "UAT":
+    case envDevelopment:
+    case envStaging:
+    case envUAT:
       return {
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
@@ -34,7 +40,7 @@ const getLinks = (environment: string, locale: string) => {
         ),
       };
 
-    case "PROD":
+    case envProduction:
     default:
       return {
         feedbackLink: new URL(
@@ -65,7 +71,7 @@ export default async function (props: Props) {
 
   return (
     <>
-      <Header />
+      <Header locale={props.params.locale} />
 
       <div className="govie-width-container">
         <div className="govie-phase-banner">
@@ -81,6 +87,16 @@ export default async function (props: Props) {
                   </a>
                 ),
               })}
+            </span>
+          </p>
+        </div>
+        <div className="govie-phase-banner">
+          <p className="govie-phase-banner__content">
+            <strong className="govie-tag govie-phase-banner__content__tag">
+              {t("sections.main.bannerTitle")}
+            </strong>
+            <span className="govie-phase-banner__text">
+              {t("sections.main.note")}
             </span>
           </p>
         </div>
