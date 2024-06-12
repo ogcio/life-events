@@ -19,6 +19,7 @@ export default async () => {
   async function upload(formData: FormData) {
     "use server";
     const file = formData.get("csv-file");
+    console.log({ file });
     if (!file) {
       return;
     }
@@ -32,6 +33,9 @@ export default async () => {
   return (
     <>
       <h1 className="govie-heading-l">{t("header")}</h1>
+      <Link href="/api/users-csv" target="_blank">
+        {t("downloadFileBtn")}
+      </Link>
       <form action={upload}>
         <div className="govie-form-group">
           <label className="govie-body " htmlFor="file-upload">
@@ -52,9 +56,6 @@ export default async () => {
           {t("confirmUploadBtn")}
         </button>
       </form>
-      <Link href="/api/users-csv" target="_blank">
-        {t("downloadFileBtn")}
-      </Link>
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
