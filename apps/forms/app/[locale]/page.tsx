@@ -84,6 +84,16 @@ export default async function (props: Props) {
             </span>
           </p>
         </div>
+        <div className="govie-phase-banner">
+          <p className="govie-phase-banner__content">
+            <strong className="govie-tag govie-phase-banner__content__tag">
+              {t("sections.main.bannerTitle")}
+            </strong>
+            <span className="govie-phase-banner__text">
+              {t("sections.main.note")}
+            </span>
+          </p>
+        </div>
         <hr className="govie-section-break  govie-section-break--m" />
 
         <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
