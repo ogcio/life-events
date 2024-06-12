@@ -12,7 +12,7 @@
     "description": "The current list is empty"
   },
   "FeedbackBanner": {
-    "tag": "prototype",
+    "tag": "Alpha",
     "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
   },
   "Header": {
@@ -98,7 +98,7 @@
     "AddProvider": {
       "title": "Add Payment Provider",
       "description": "Easily integrate your preferred payment providers into your platform. Select from a range of providers to enable seamless transactions for your business.",
-      "openbankingDescription": "Utilize OpenBanking for secure and direct bank payments, offering your customers a convenient way to pay directly from their bank accounts without needing to enter payment details.",
+      "openbankingDescription": "Use OpenBanking for secure and direct bank payments, offering your customers a convenient way to pay directly from their bank accounts without needing to enter payment details.",
       "stripeDescription": "Incorporate Stripe to accept payments via credit card, Apple Pay, Google Pay, and more. Benefit from Stripe's comprehensive payment infrastructure and fraud prevention tools.",
       "worldpayDescription": "Connect with WorldPay for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
       "realexDescription": "Connect with Realex for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
@@ -385,35 +385,35 @@
     "sections": {
       "main": {
         "title": "Payments",
-        "description": "Our solution provides seamless integration for secure payments, built with a robust infrastructure to meet government standards. From tax payments to licensing fees, our system enables efficient financial transactions, instilling trust and peace of mind in every interaction.",
-        "cta": "Learn more"
+        "description": "Our Payments Building Block is built on a robust infrastructure that enables secure and efficient financial transactions, giving users peace of mind every time they use it.",
+        "cta": "Sign up to learn more"
       },
       "integration": {
         "title": "Seamless Integration",
-        "description": "Connect with multiple payment providers effortlessly. Whether it's credit cards, digital wallets, or bank transfers, Payments Building Block seamlessly integrates with diverse payment methods to offer flexibility to your constituents."
+        "description": "The Payments Building Block seamlessly connects with multiple payment methods, including credit cards, digital wallets, and bank transfers, to offer flexibility to your users."
       },
       "security": {
         "title": "Enhanced Security",
-        "description": "Your data security is our top priority. Payments Building Block employs encryption protocols and payment providers are Payment Card Industry (PCI) compliant, giving you peace of mind."
+        "description": "The Payments Building Block employs encryption protocols and payment providers that are Payment Card Industry (PCI) compliant, giving you peace of mind."
       },
       "interface": {
         "title": "User-Friendly Interface",
-        "description": "From generating payment requests to tracking transactions, Payments Building Block's intuitive interface makes payment processing simple for both administrators and users.",
+        "description": "The Payments Building Block has an intuitive interface that makes payment processing simple for both administrators and users. Whether you're generating payment requests or tracking transactions, it's quick and simple.",
         "citizenPOV": "Citizen Point of View",
         "publicServantPOV": "Public Servant Point of View"
       },
       "accessibility": {
         "title": "Accessibility",
-        "description": "Designed to meet accessibility regulations such as Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users can access and interact with online payments with ease."
+        "description": "The Payments Building Block is designed with accessibility in mind. It conforms with the Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users can easily access the service."
       },
       "support": {
         "title": "Dedicated Support",
-        "description": "Our team of experts is here to assist you every step of the way. Whether you have technical questions or need assistance with implementation, Payments Building Block's dedicated support team ensures a smooth experience. "
+        "description": "Our team of experts is here to assist you every step of the way. Whether you have technical questions or need assistance with implementation, you can rely on the Payments Building Block's dedicated support team."
       },
       "getStarted": {
         "title": "Get Started",
-        "description": "Ready to transform your payment processes? Contact us to schedule a demo or learn more about how Payments Building Block can empower your public sector department.",
-        "cta": "Get started now"
+        "description": "Ready to transform your payment processes? Contact us to schedule a demo or to learn more about how Payments Building Block can empower your public sector department.",
+        "cta": "Sign up to learn more"
       }
     }
   },

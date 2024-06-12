@@ -1,7 +1,10 @@
+import AnalyticsEvent from "analytics/components/AnalyticsEvent";
+import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 
 export default async () => {
   const t = await getTranslations("GetDigitalWallet.VerifyAccountLevel0");
+  const { userId } = await PgSessions.get();
   return (
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds-from-desktop">
@@ -29,6 +32,12 @@ export default async () => {
           })}
         </p>
       </div>
+      <AnalyticsEvent
+        userId={userId}
+        category="GetDigitalWallet"
+        action="Verification Level"
+        name="Level 0"
+      />
     </div>
   );
 };

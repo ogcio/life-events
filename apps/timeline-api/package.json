@@ -5,6 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "TAP_RCFILE=tap.yml tap",
+    "test:e2e" : "cd ./e2e && bru run --env local",
+    "test:dev" : "cd ./e2e && bru run --env dev",
     "start": "node dist/index.js",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",

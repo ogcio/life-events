@@ -12,22 +12,48 @@ import paymentService1 from "../../public/landingPage/payment_service1.png";
 import paymentService2 from "../../public/landingPage/payment_service2.png";
 import paymentService3 from "../../public/landingPage/payment_service3.png";
 import Image from "next/image";
+import {
+  envDevelopment,
+  envProduction,
+  envStaging,
+  envUAT,
+} from "../../constants";
 
 export const metadata: Metadata = {
   title: "FormsIE",
 };
 
-const availableLinks = {
-  DEV: {
-    feedbackLink:
-      "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
-    formsLink: "https://www.formsg.testing.gov.ie/",
-  },
-  STA: {
-    feedbackLink:
-      "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
-    formsLink: "https://www.formsg.testing.gov.ie/",
-  },
+const getLinks = (environment: string, locale: string) => {
+  locale = locale || "en";
+  switch (environment) {
+    case envDevelopment:
+    case envStaging:
+    case envUAT:
+      return {
+        feedbackLink: new URL(
+          `${locale}/664c61ba5f7c9800231db294`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+        formsLink: new URL(
+          `${locale}/664b6de45f7c9800231daf22`,
+          "https://www.formsg.testing.gov.ie",
+        ),
+      };
+
+    case envProduction:
+    default:
+      return {
+        feedbackLink: new URL(
+          `${locale}/664ccbdb0700c50024c53899`,
+          "https://www.forms.gov.ie",
+        ),
+
+        formsLink: new URL(
+          `${locale}/664ccbf2b644d000246cfd78`,
+          "https://www.forms.gov.ie",
+        ),
+      };
+  }
 };
 
 type Props = {
@@ -39,13 +65,13 @@ type Props = {
 export default async function (props: Props) {
   const t = await getTranslations("LandingPage");
 
-  //Let's hardcode Dev for now, in a separate PR - we will add an env var to handle that
-  const environment = "DEV";
-  const links = availableLinks[environment];
+  const environment = String(process.env.ENVIRONMENT);
+
+  const links = getLinks(environment, props.params.locale);
 
   return (
     <>
-      <Header />
+      <Header locale={props.params.locale} />
 
       <div className="govie-width-container">
         <div className="govie-phase-banner">
@@ -56,7 +82,7 @@ export default async function (props: Props) {
             <span className="govie-phase-banner__text">
               {t.rich("AlphaBanner.bannerText", {
                 url: (chunks) => (
-                  <a className="govie-link" href={links.feedbackLink}>
+                  <a className="govie-link" href={links.feedbackLink.href}>
                     {chunks}
                   </a>
                 ),
@@ -64,30 +90,19 @@ export default async function (props: Props) {
             </span>
           </p>
         </div>
+        <div className="govie-phase-banner">
+          <p className="govie-phase-banner__content">
+            <strong className="govie-tag govie-phase-banner__content__tag">
+              {t("sections.main.bannerTitle")}
+            </strong>
+            <span className="govie-phase-banner__text">
+              {t("sections.main.note")}
+            </span>
+          </p>
+        </div>
         <hr className="govie-section-break  govie-section-break--m" />
 
         <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
-
-        <div
-          className="govie-notification-banner"
-          role="region"
-          aria-labelledby="govie-notification-banner-title"
-          data-module="govie-notification-banner"
-        >
-          <div className="govie-notification-banner__header">
-            <h2
-              className="govie-notification-banner__title"
-              id="govie-notification-banner-title"
-            >
-              {t("sections.main.bannerTitle")}
-            </h2>
-          </div>
-          <div className="govie-notification-banner__content">
-            <p className="govie-notification-banner__heading">
-              {t("sections.main.note")}
-            </p>
-          </div>
-        </div>
 
         <div className="two-columns-layout">
           <div className="column">
@@ -205,9 +220,7 @@ export default async function (props: Props) {
       <div className="govie-width-container">
         <h2 className="govie-heading-m">{t("sections.getStarted.title")}</h2>
         <p className="govie-body">{t("sections.getStarted.description")}</p>
-        <a
-          href={`${links.formsLink}${props.params.locale}/664b6de45f7c9800231daf22`}
-        >
+        <a href={links.formsLink.href}>
           <button
             id="button"
             data-module="govie-button"

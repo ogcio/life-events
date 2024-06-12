@@ -9,6 +9,7 @@ COPY ./packages/feature-flags/package*.json /app/packages/feature-flags/
 COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/messages/package*.json /app/packages/messages/
 COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
+COPY ./packages/analytics/package*.json /app/packages/analytics/
 
 RUN npm ci
 
@@ -18,13 +19,20 @@ COPY ./packages/feature-flags/ /app/packages/feature-flags/
 COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/messages/ /app/packages/messages/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
+COPY ./packages/analytics/ /app/packages/analytics/
 
 FROM deps AS builder
 
 WORKDIR /app
 
 ARG NEXT_PUBLIC_API_ENDPOINT
+ARG NEXT_PUBLIC_MATOMO_URL
+ARG NEXT_PUBLIC_MATOMO_SITE_ID
+ARG NEXT_PUBLIC_MATOMO_PROTOCOL
 ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
+ENV NEXT_PUBLIC_MATOMO_URL=$NEXT_PUBLIC_MATOMO_URL
+ENV NEXT_PUBLIC_MATOMO_SITE_ID=$NEXT_PUBLIC_MATOMO_SITE_ID
+ENV NEXT_PUBLIC_MATOMO_PROTOCOL=$NEXT_PUBLIC_MATOMO_PROTOCOL
 RUN npm run build --workspace=apps/web
 
 FROM base-deps as runner

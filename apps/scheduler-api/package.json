@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node --import=tsx --test ./test/**/*.ts",
+    "test:e2e" : "cd ./e2e && bru run --env local",
+    "test:dev" : "cd ./e2e && bru run --env dev",
     "start": "node --import tsx index.ts & node --import tsx worker.ts",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",

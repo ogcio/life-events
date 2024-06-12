@@ -22,3 +22,6 @@ variables:
   logtoPaymentsAppSectret: z7RKXvyV9X6Ymjqfbg1A3pBLJy8m2At1
   logtoMessagingAppSectret: oTSELx7KrykDs8X57f4HOUni9eK91DNi
 
+  nextPublicMatomoUrl: //analytics.ogcio.gov.ie
+  nextPublicMatomoSiteId: 11
+  nextPublicMatomoProtocol: https

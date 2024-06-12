@@ -1,29 +1,61 @@
-import ds from "design-system/";
-import { headers } from "next/headers";
+import {
+  envDevelopment,
+  envProduction,
+  envStaging,
+  envUAT,
+} from "../../constants";
 import "./Header.css";
-import { getTranslations } from "next-intl/server";
 
-export default async () => {
-  const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
-  const path = pathSlice.slice(2)?.join("/") || "";
-  const t = await getTranslations("LandingPage");
+const availableLinks = {
+  DEV: {
+    homePageUrl: "https://dev.blocks.gov.ie",
+  },
+  STA: {
+    homePageUrl: "https://sta.blocks.gov.ie",
+  },
+};
+
+const getLinks = (environment: string, locale: string) => {
+  locale = locale || "en";
+  switch (environment) {
+    case envDevelopment:
+      return {
+        homePageUrl: new URL("", "https://dev.blocks.gov.ie"),
+      };
+    case envStaging:
+      return {
+        homePageUrl: new URL("", "https://sta.blocks.gov.ie"),
+      };
+    case envUAT:
+      return {
+        homePageUrl: new URL("", "https://uat.blocks.gov.ie"),
+      };
+    case envProduction:
+    default:
+      return { homePageUrl: new URL("", "https://blocks.gov.ie") };
+  }
+};
+
+export default async (props: { locale: string }) => {
+  const environment = String(process.env.ENVIRONMENT);
+  const links = getLinks(environment, props.locale);
 
   return (
     <header role="banner" data-module="govie-header" className="govie-header">
       <div
-        className="govie-width-container"
-        // all designs are made for 1440px
+        className="govie-width-container govie-header__container"
         style={{
-          maxWidth: "1440px",
+          maxWidth: "1280px",
           display: "flex",
           alignItems: "center",
-          gap: "8px",
+          paddingBottom: "10px",
           height: "80px",
           boxSizing: "border-box",
         }}
       >
         <div
           style={{
+            paddingLeft: "15px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -38,7 +70,7 @@ export default async () => {
             }}
           >
             <a
-              href="/"
+              href={links.homePageUrl.href}
               className="govie-header__link govie-header__link--homepage"
               style={{ display: "block" }}
             >
