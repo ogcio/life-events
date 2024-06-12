@@ -3,8 +3,10 @@ import { writeFile } from "fs/promises";
 import { build } from "./app";
 
 import { getLoggingConfiguration } from "logging-wrapper";
+import { newMessagingEventLogger } from "./types/messageLogs";
 
 const app = await build(getLoggingConfiguration());
+export const messagingLogger = newMessagingEventLogger(app.pg.pool);
 
 app.listen({ host: "0.0.0.0", port: 8002 }, (err, address) => {
   if (err) {

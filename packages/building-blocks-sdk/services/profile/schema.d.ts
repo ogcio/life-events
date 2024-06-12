@@ -563,11 +563,13 @@ export interface paths {
       };
     };
   };
-  "/api/v1/user/details/{id}": {
-    get: {
-      parameters: {
-        path: {
-          id: string;
+  "/api/v1/user/select": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": {
+            ids?: string[];
+          };
         };
       };
       responses: {
@@ -576,9 +578,11 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                firstname: string;
-                lastname: string;
-              };
+                id: string;
+                firstName: string;
+                lastName: string;
+                ppsn: string;
+              }[];
             };
           };
         };

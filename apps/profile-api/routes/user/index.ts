@@ -298,40 +298,63 @@ export default async function user(app: FastifyInstance) {
    * todo: change to :id/details ?
    * todo: add ppsn
    */
-  app.get<{ Params: { id: string } }>(
-    "/details/:id",
+  app.post<{ Body: { ids: string[] } }>(
+    "/select",
     {
       schema: {
         tags: ["users"],
-        params: {
-          id: Type.String({ format: "uuid" }),
+        // params: {
+        //   id: Type.String({ format: "uuid" }),
+        // },
+        body: {
+          ids: Type.Array(Type.String({ format: "uuid" })),
         },
         response: {
           200: Type.Object({
-            data: GetUserByIdSchema,
+            data: Type.Array(
+              Type.Object({
+                id: Type.String(),
+                firstName: Type.String(),
+                lastName: Type.String(),
+                ppsn: Type.String(),
+              }),
+            ),
           }),
           404: Type.Null(),
         },
       },
     },
     async function handler(request, reply) {
-      const id = request.params.id;
-      const user = await app.pg.pool
-        .query<GetUserById>(
-          `
-        select firstname, lastname from user_details
-        where user_id = $1
+      try {
+        const ids = request.body.ids;
+        console.log(ids, JSON.stringify(ids));
+        const user = await app.pg.pool
+          .query<{
+            id: string;
+            firstName: string;
+            lastName: string;
+            ppsn: string;
+          }>(
+            `
+        select user_id as "id", firstname as "firstName", lastname as "lastName", ppsn from user_details
+        where user_id::text = any ($1)
       `,
-          [id],
-        )
-        .then((res) => res.rows.at(0));
+            [ids],
+          )
+          .then((res) => res.rows);
 
-      if (!user) {
-        reply.code(404);
-        return;
+        console.log({ user });
+        if (!user.length) {
+          reply.code(404);
+          return;
+        }
+
+        reply.send({ data: user, error: null });
+      } catch (err) {
+        console.log("FEL FEL FEL");
+        console.log(err);
+        reply.send({ data: null, error: err });
       }
-
-      reply.send({ data: user, error: null });
     },
   );
 }

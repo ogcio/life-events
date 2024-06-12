@@ -1,6 +1,7 @@
 import { Pool } from "pg";
 import { MessageInput } from "./schemaDefinitions";
 import { FastifyPluginCallback } from "fastify";
+import { Profile } from "building-blocks-sdk";
 
 enum EventStatus {
   PENDING = "pending",
@@ -191,11 +192,41 @@ export function newMessagingEventLogger(pool: Pool) {
   });
 }
 
-export const messagingLoggerPlugin: FastifyPluginCallback<any> = (
-  fastify,
-  _opts,
-  done,
-) => {
+export const messagingLoggerPlugin: FastifyPluginCallback<{
+  koko: MessagingEventLogger;
+}> = (fastify, _opts, done) => {
   fastify.decorate("messagingLogger", newMessagingEventLogger(fastify.pg.pool));
   done();
 };
+
+// Just stuffing everything in here and we can move it around later.
+
+export function ProfileSdkFacade(
+  sdkProfile: Profile,
+  messagingProfile: any,
+): Omit<Profile, "client"> {
+  return {
+    createAddress: sdkProfile.createAddress,
+    createUser: sdkProfile.createUser,
+    deleteAddress: sdkProfile.deleteAddress,
+    findUser: sdkProfile.findUser,
+    getAddress: sdkProfile.getAddress,
+    getAddresses: sdkProfile.getAddresses,
+    getEntitlements: sdkProfile.getEntitlements,
+    getUser: sdkProfile.getUser,
+    async selectUsers(ids: string[]) {
+      const fromProfile = await sdkProfile.selectUsers(ids);
+
+      if (!fromProfile?.data) {
+        const fromMessage = await messagingProfile?.selectUsers(ids);
+        return fromMessage;
+      }
+
+      return fromProfile;
+    },
+    patchAddress: sdkProfile.patchAddress,
+    patchUser: sdkProfile.patchUser,
+    updateAddress: sdkProfile.updateAddress,
+    updateUser: sdkProfile.updateUser,
+  };
+}

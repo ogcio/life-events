@@ -943,17 +943,21 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/user/details/{id}:
-    get:
+  /api/v1/user/select:
+    post:
       tags:
         - users
-      parameters:
-        - schema:
-            format: uuid
-            type: string
-          in: path
-          name: id
-          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    format: uuid
+                    type: string
       responses:
         "200":
           description: Default Response
@@ -963,15 +967,23 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: object
-                    properties:
-                      firstname:
-                        type: string
-                      lastname:
-                        type: string
-                    required:
-                      - firstname
-                      - lastname
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        firstName:
+                          type: string
+                        lastName:
+                          type: string
+                        ppsn:
+                          type: string
+                      required:
+                        - id
+                        - firstName
+                        - lastName
+                        - ppsn
                 required:
                   - data
         "404":

@@ -12,10 +12,8 @@ import { Pool } from "pg";
 import { mailService } from "../../routes/providers/services";
 import { awsSnsSmsService } from "../sms/aws";
 import { Profile } from "building-blocks-sdk";
-import {
-  newMessagingEventLogger,
-  MessagingEventType,
-} from "../../types/messageLogs";
+import { MessagingEventType, ProfileSdkFacade } from "../../types/messageLogs";
+import { messagingLogger } from "../..";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -51,7 +49,7 @@ const createRawMessage = async (params: {
   const { message, preferredTransports, security, userIds, scheduleAt } =
     params.payload;
 
-  const messagingLogger = newMessagingEventLogger(params.pg.pool);
+  // const messagingLogger = newMessagingEventLogger(params.pg.pool);
 
   const baseLogData: Parameters<typeof messagingLogger.log>[1] = {
     organisationId: organisationId,
@@ -72,6 +70,8 @@ const createRawMessage = async (params: {
     transports: preferredTransports,
     threadName: message.threadName,
   };
+
+  console.log({ messagingLogger });
 
   const client = await params.pg.pool.connect();
   type messagingIdSelect = { id: string; userId: string };
@@ -129,21 +129,21 @@ const createRawMessage = async (params: {
         .then((res) => res.rows)),
     );
 
-    const receiverUserData: Parameters<typeof messagingLogger.log>[2] = ids.map(
-      (d) => ({
-        fullName: "Random name",
-        ppsn: "1234",
-        userId: d.userId,
-        messageId: d.id,
-      }),
-    );
+    // const receiverUserData: Parameters<typeof messagingLogger.log>[2] = ids.map(
+    //   (d) => ({
+    //     fullName: "Random name",
+    //     ppsn: "1234",
+    //     userId: d.userId,
+    //     messageId: d.id,
+    //   }),
+    // );
 
-    await messagingLogger.log(
-      MessagingEventType.createMessage,
-      baseLogData,
-      receiverUserData,
-      messageLogData,
-    );
+    // await messagingLogger.log(
+    //   MessagingEventType.createMessage,
+    //   baseLogData,
+    //   receiverUserData,
+    //   messageLogData,
+    // );
   } catch (err) {
     messageLogData.recipientUserIds = userIds;
     await messagingLogger.log(
@@ -182,21 +182,21 @@ const createRawMessage = async (params: {
         .then((res) => res.rows)),
     );
 
-    const receiverUserData: Parameters<typeof messagingLogger.log>[2] = ids.map(
-      (d) => ({
-        fullName: "Random name",
-        ppsn: "1234",
-        userId: d.userId,
-        messageId: d.id,
-      }),
-    );
+    // const receiverUserData: Parameters<typeof messagingLogger.log>[2] = ids.map(
+    //   (d) => ({
+    //     fullName: "Random name",
+    //     ppsn: "1234",
+    //     userId: d.userId,
+    //     messageId: d.id,
+    //   }),
+    // );
 
-    await messagingLogger.log(
-      MessagingEventType.createMessageJob,
-      baseLogData,
-      receiverUserData,
-      messageLogData,
-    );
+    // await messagingLogger.log(
+    //   MessagingEventType.createMessageJob,
+    //   baseLogData,
+    //   receiverUserData,
+    //   messageLogData,
+    // );
   } catch (err) {
     messageLogData.recipientUserIds = userIds;
     await messagingLogger.log(
@@ -206,8 +206,6 @@ const createRawMessage = async (params: {
       messageLogData,
     );
     throw err;
-  } finally {
-    client.release();
   }
 
   // Schedule jobs
@@ -227,19 +225,38 @@ const createRawMessage = async (params: {
 
     const url = new URL("/api/v1/tasks", process.env.SCHEDULER_API_URL);
 
+    console.log("vi skickar");
     await fetch(url.toString(), {
       method: "POST",
       body: JSON.stringify(body),
       headers: { "x-user-id": "tmp", "Content-Type": "application/json" },
     });
+    console.log("vi skickade");
+
+    const profileClient = ProfileSdkFacade(
+      new Profile("23dcb0d4-d5a4-435d-af5a-a81839b3d79f"),
+      null,
+    );
+
+    const selectUsers = await profileClient.selectUsers(
+      ids.map((i) => i.userId),
+    );
+
+    console.log({ selectUsers });
+    if (!selectUsers?.data) {
+      throw new Error("failed to get user profiles");
+    }
 
     const receiverUserData: Parameters<typeof messagingLogger.log>[2] = ids.map(
-      (d) => ({
-        fullName: "Random name",
-        ppsn: "1234",
-        userId: d.userId,
-        messageId: d.id,
-      }),
+      (d) => {
+        const user = selectUsers?.data?.find((u) => u.id === d.userId);
+        return {
+          fullName: user ? `${user.firstName} ${user.lastName}` : "unknown",
+          ppsn: user ? user.ppsn : "unknown",
+          userId: d.userId,
+          messageId: d.id,
+        };
+      },
     );
     await messagingLogger.log(
       MessagingEventType.scheduleMessage,
@@ -248,6 +265,7 @@ const createRawMessage = async (params: {
       messageLogData,
     );
   } catch (err) {
+    console.log(err);
     await messagingLogger.log(
       MessagingEventType.scheduleMessageError,
       baseLogData,
@@ -847,22 +865,23 @@ const scheduledTemplate = async (
 
   // Check for the static type interpolations we fill from user profile (this can also be mapped via table but currently only static user data)
   const userSdkClient = new Profile(userId);
-  const { data } = await userSdkClient.getUserById(userId);
+  const { data } = await userSdkClient.selectUsers([userId]);
 
-  if (data) {
-    const { firstname, lastname } = data;
-    const fullname = `${firstname} ${lastname}`.trim();
+  const user = data?.at(0);
+  if (user) {
+    const { firstName, lastName } = user;
+    const fullname = `${firstName} ${lastName}`.trim();
     subject = subject.replaceAll("%fullname%", fullname);
-    subject = subject.replaceAll("%firstname%", firstname);
-    subject = subject.replaceAll("%lastname%", lastname);
+    subject = subject.replaceAll("%firstname%", firstName);
+    subject = subject.replaceAll("%lastname%", lastName);
 
     plainText = plainText.replaceAll("%fullname%", fullname);
-    plainText = plainText.replaceAll("%firstname%", firstname);
-    plainText = plainText.replaceAll("%lastname%", lastname);
+    plainText = plainText.replaceAll("%firstname%", firstName);
+    plainText = plainText.replaceAll("%lastname%", lastName);
 
     excerpt = excerpt.replaceAll("%fullname%", fullname);
-    excerpt = excerpt.replaceAll("%firstname%", firstname);
-    excerpt = excerpt.replaceAll("%lastname%", lastname);
+    excerpt = excerpt.replaceAll("%firstname%", firstName);
+    excerpt = excerpt.replaceAll("%lastname%", lastName);
   }
 
   const transportationSubject = subject;

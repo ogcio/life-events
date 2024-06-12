@@ -99,9 +99,9 @@ export class Profile {
     return formatQueryResult(this.client.GET("/api/v1/user/"));
   }
 
-  async getUserById(id: string) {
-    const { data, error } = await this.client.GET("/api/v1/user/details/{id}", {
-      params: { path: { id } },
+  async selectUsers(ids: string[]) {
+    const { data, error } = await this.client.POST("/api/v1/user/select", {
+      body: { ids },
     });
 
     return { error, data: data?.data };
