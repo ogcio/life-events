@@ -89,4 +89,4 @@ export const searchKeyDeleteId = "deleteId";
 export const envUAT = "UAT";
 export const envDevelopment = "DEV";
 export const envStaging = "STA";
-export const envProduction = "PROD";
+export const envProduction = "PRD";
