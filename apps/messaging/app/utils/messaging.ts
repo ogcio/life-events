@@ -95,3 +95,7 @@ export const searchValueSms = "sms";
 export const searchKeyDeleteId = "deleteId";
 export const searchValueOrganisation = "organisation";
 export const searchKeySettingType = "settingType";
+export const envUAT = "UAT";
+export const envDevelopment = "DEV";
+export const envStaging = "STA";
+export const envProduction = "PRD";
