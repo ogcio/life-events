@@ -19,7 +19,6 @@ export default async () => {
   async function upload(formData: FormData) {
     "use server";
     const file = formData.get("csv-file");
-    console.log({ file });
     if (!file) {
       return;
     }
