@@ -4,8 +4,10 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import React from "react";
+import { revalidatePath } from "next/cache";
+import { usersImports } from "../../../../utils/routes";
 
-export default async (props: { searchParams: any }) => {
+export default async () => {
   const t = await getTranslations("UsersImports");
   const { userId } = await PgSessions.get();
   const messagingClient = new Messaging(userId);
@@ -14,9 +16,45 @@ export default async (props: { searchParams: any }) => {
   const { data: imports } =
     await messagingClient.getUsersImports(organisationId);
 
+  async function upload(formData: FormData) {
+    "use server";
+    const file = formData.get("csv-file");
+    if (!file) {
+      return;
+    }
+
+    const uploadClient = new Messaging(userId);
+    await uploadClient.importUsersCsv(file as File);
+
+    revalidatePath(usersImports.url);
+  }
+
   return (
     <>
       <h1 className="govie-heading-l">{t("header")}</h1>
+      <form action={upload}>
+        <div className="govie-form-group">
+          <label className="govie-body " htmlFor="file-upload">
+            {t("uploadFileBtn")}
+          </label>
+          <div id="csv-file-hint" className="govie-hint"></div>
+          <input
+            className="govie-file-upload"
+            id="csv-file"
+            name="csv-file"
+            type="file"
+            aria-describedby="csv-file-hint"
+            content="Choose file"
+            accept="text/csv"
+          />
+        </div>
+        <button type="submit" className="govie-button">
+          {t("confirmUploadBtn")}
+        </button>
+      </form>
+      <Link href="/api/users-csv" target="_blank">
+        {t("downloadFileBtn")}
+      </Link>
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">

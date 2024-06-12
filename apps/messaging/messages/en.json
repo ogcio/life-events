@@ -275,6 +275,9 @@
   },
   "UsersImports": {
     "header": "Users Imports",
+    "uploadFileBtn": "Upload CSV File",
+    "confirmUploadBtn": "Send",
+    "downloadFileBtn": "Download CSV Template",
     "table": {
       "importedAt": "Imported At",
       "importChannel": "Import Channel",
