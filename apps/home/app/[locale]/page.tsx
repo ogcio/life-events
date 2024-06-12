@@ -11,6 +11,12 @@ import messaging from "../../public/landingPage/messaging.png";
 import designSystem from "../../public/landingPage/designSystem.png";
 import forms from "../../public/landingPage/forms.png";
 import type { Metadata } from "next";
+import {
+  envDevelopment,
+  envProduction,
+  envStaging,
+  envUAT,
+} from "../../constants";
 
 export const metadata: Metadata = {
   title: "Building Blocks",
@@ -19,7 +25,7 @@ export const metadata: Metadata = {
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";
   switch (environment) {
-    case "DEV":
+    case envDevelopment:
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
@@ -41,7 +47,7 @@ const getLinks = (environment: string, locale: string) => {
         ),
       };
 
-    case "STA":
+    case envStaging:
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
@@ -63,7 +69,7 @@ const getLinks = (environment: string, locale: string) => {
         ),
       };
 
-    case "UAT":
+    case envUAT:
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
@@ -85,7 +91,7 @@ const getLinks = (environment: string, locale: string) => {
         ),
       };
 
-    case "PROD":
+    case envProduction:
     default:
       return {
         learnMoreForm: new URL(
@@ -124,7 +130,7 @@ export default async function (props: Props) {
 
   return (
     <>
-      <Header />
+      <Header locale={props.params.locale} />
 
       <div className="govie-width-container">
         <div className="govie-phase-banner">

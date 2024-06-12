@@ -10,6 +10,12 @@ import multiChannel from "../../../public/landingPage/multi_channel.png";
 import template from "../../../public/landingPage/template.png";
 import postbox from "../../../public/landingPage/postbox.png";
 import type { Metadata } from "next";
+import {
+  envDevelopment,
+  envProduction,
+  envStaging,
+  envUAT,
+} from "../../utils/messaging";
 
 export const metadata: Metadata = {
   title: "Messaging",
@@ -24,9 +30,9 @@ type Props = {
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";
   switch (environment) {
-    case "UAT":
-    case "STA":
-    case "DEV":
+    case envUAT:
+    case envStaging:
+    case envDevelopment:
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
@@ -39,7 +45,7 @@ const getLinks = (environment: string, locale: string) => {
       };
 
     default:
-    case "PROD":
+    case envProduction:
       return {
         learnMoreForm: new URL(
           `${locale}/664ccbf2b644d000246cfd78`,
@@ -57,12 +63,12 @@ export default async (props: Props) => {
   const t = await getTranslations("LandingPage");
   const tBanner = await getTranslations("AlphaBanner");
 
-  const environment = process.env.ENVIRONMENT ?? "STA";
+  const environment = String(process.env.ENVIRONMENT);
   const links = getLinks(environment, props.params.locale);
 
   return (
     <>
-      <Header />
+      <Header locale={props.params.locale} />
       <div className="govie-width-container">
         <div className="govie-phase-banner">
           <p className="govie-phase-banner__content">

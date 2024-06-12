@@ -91,3 +91,8 @@ export const searchKeyProvider = "provider";
 export const searchValueEmail = "email";
 export const searchValueSms = "sms";
 export const searchKeyDeleteId = "deleteId";
+
+export const envUAT = "UAT";
+export const envDevelopment = "DEV";
+export const envStaging = "STA";
+export const envProduction = "PRD";
