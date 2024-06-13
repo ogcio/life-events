@@ -893,11 +893,17 @@
       "applyJobseekersAllowance": "Application for Jobseeker's Allowance",
       "getDigitalWallet": "Application for a Digital Wallet"
     },
+    "DigitalWalletPendingTable": {
+      "nameColumn": "name",
+      "myGovIdEmailColumn": "MyGovID email",
+      "workEmailColumn": "Work email",
+      "applicationStatusColumn": "ApplicationStatus"
+    },
     "StatusMenu": {
-      "all": "All",
       "pending": "Pending",
+      "submitted": "Submitted",
       "approved": "Approved",
-      "closed": "Closed"
+      "rejected": "Rejected"
     }
   },
   "Timeline": {
