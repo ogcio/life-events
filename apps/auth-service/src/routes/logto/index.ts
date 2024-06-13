@@ -43,7 +43,7 @@ export default async function login(app: FastifyInstance) {
       const { redirect_uri, state } = request.query;
 
       const stream = fs.createReadStream(
-        path.join(__dirname, "mock-login.html"),
+        path.join(__dirname, "..", "static", "mock-login.html"),
       );
 
       const result = (await streamToString(stream))
@@ -194,9 +194,4 @@ export default async function login(app: FastifyInstance) {
       };
     },
   );
-
-  app.get("/users", async (request, reply) => {
-    const res = await app.pg.query("select * from users");
-    return { users: res.rows };
-  });
 }
