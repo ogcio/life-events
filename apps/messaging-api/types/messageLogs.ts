@@ -192,18 +192,28 @@ export function newMessagingEventLogger(pool: Pool) {
   });
 }
 
-export const messagingLoggerPlugin: FastifyPluginCallback<{
-  koko: MessagingEventLogger;
-}> = (fastify, _opts, done) => {
+export const messagingLoggerPlugin: FastifyPluginCallback<any> = (
+  fastify,
+  _opts,
+  done,
+) => {
   fastify.decorate("messagingLogger", newMessagingEventLogger(fastify.pg.pool));
   done();
 };
 
-// Just stuffing everything in here and we can move it around later.
+// Just gathering everything in here and we can move it around later.
 
+type Tmp = {
+  userProfiles: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    ppsn: string;
+  }[];
+};
 export function ProfileSdkFacade(
   sdkProfile: Profile,
-  messagingProfile: any,
+  messagingProfile: Tmp,
 ): Omit<Profile, "client"> {
   return {
     createAddress: sdkProfile.createAddress,
@@ -218,8 +228,9 @@ export function ProfileSdkFacade(
       const fromProfile = await sdkProfile.selectUsers(ids);
 
       if (!fromProfile?.data) {
-        const fromMessage = await messagingProfile?.selectUsers(ids);
-        return fromMessage;
+        // const fromMessage = await messagingProfile?.selectUsers(ids);
+        // return fromMessage;
+        return { data: messagingProfile.userProfiles, error: undefined };
       }
 
       return fromProfile;

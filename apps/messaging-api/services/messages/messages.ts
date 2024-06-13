@@ -14,6 +14,8 @@ import { awsSnsSmsService } from "../sms/aws";
 import { Profile } from "building-blocks-sdk";
 import { MessagingEventType, ProfileSdkFacade } from "../../types/messageLogs";
 import { messagingLogger } from "../..";
+import { PgSessions } from "auth/sessions";
+import { getUserProfiles } from "../users/shared-users";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -49,14 +51,26 @@ const createRawMessage = async (params: {
   const { message, preferredTransports, security, userIds, scheduleAt } =
     params.payload;
 
-  // const messagingLogger = newMessagingEventLogger(params.pg.pool);
+  const { userId: senderUserId } = await PgSessions.get();
 
+  const tmp = await getUserProfiles([...userIds, senderUserId], params.pg.pool);
+  const profileClient = ProfileSdkFacade(new Profile(senderUserId), {
+    userProfiles: tmp,
+  });
+
+  const selectUsers = await profileClient.selectUsers(userIds);
+
+  if (!selectUsers.data?.length) {
+    throw new Error("no user profiles found");
+  }
+
+  const asd = selectUsers.data.find((u) => u.id === senderUserId);
   const baseLogData: Parameters<typeof messagingLogger.log>[1] = {
     organisationId: organisationId,
-    organisationName: "skojaren",
-    senderFullName: "Joakim von Anka",
-    senderPPSN: "4321",
-    senderUserId: "4986edbd-bd3e-48a2-960a-495a69481d44", // PGSession ?
+    organisationName: "organisation todo",
+    senderFullName: asd ? `${asd.firstName} ${asd.lastName}` : "unknown",
+    senderPPSN: asd?.ppsn || "unknown", //"4321",
+    senderUserId, //"4986edbd-bd3e-48a2-960a-495a69481d44", // PGSession ?
     scheduledAt: scheduleAt,
   };
 
@@ -70,8 +84,6 @@ const createRawMessage = async (params: {
     transports: preferredTransports,
     threadName: message.threadName,
   };
-
-  console.log({ messagingLogger });
 
   const client = await params.pg.pool.connect();
   type messagingIdSelect = { id: string; userId: string };
@@ -128,22 +140,6 @@ const createRawMessage = async (params: {
         .query<{ id: string; userId: string }>(insertQuery, values)
         .then((res) => res.rows)),
     );
-
-    // const receiverUserData: Parameters<typeof messagingLogger.log>[2] = ids.map(
-    //   (d) => ({
-    //     fullName: "Random name",
-    //     ppsn: "1234",
-    //     userId: d.userId,
-    //     messageId: d.id,
-    //   }),
-    // );
-
-    // await messagingLogger.log(
-    //   MessagingEventType.createMessage,
-    //   baseLogData,
-    //   receiverUserData,
-    //   messageLogData,
-    // );
   } catch (err) {
     messageLogData.recipientUserIds = userIds;
     await messagingLogger.log(
@@ -181,22 +177,6 @@ const createRawMessage = async (params: {
         )
         .then((res) => res.rows)),
     );
-
-    // const receiverUserData: Parameters<typeof messagingLogger.log>[2] = ids.map(
-    //   (d) => ({
-    //     fullName: "Random name",
-    //     ppsn: "1234",
-    //     userId: d.userId,
-    //     messageId: d.id,
-    //   }),
-    // );
-
-    // await messagingLogger.log(
-    //   MessagingEventType.createMessageJob,
-    //   baseLogData,
-    //   receiverUserData,
-    //   messageLogData,
-    // );
   } catch (err) {
     messageLogData.recipientUserIds = userIds;
     await messagingLogger.log(
@@ -233,18 +213,14 @@ const createRawMessage = async (params: {
     });
     console.log("vi skickade");
 
-    const profileClient = ProfileSdkFacade(
-      new Profile("23dcb0d4-d5a4-435d-af5a-a81839b3d79f"),
-      null,
-    );
-
-    const selectUsers = await profileClient.selectUsers(
-      ids.map((i) => i.userId),
-    );
-
-    console.log({ selectUsers });
     if (!selectUsers?.data) {
-      throw new Error("failed to get user profiles");
+      await messagingLogger.log(
+        MessagingEventType.scheduleMessageError,
+        baseLogData,
+        userIds.map((uid) => ({ fullName: "", ppsn: "", userId: uid })),
+        messageLogData,
+      );
+      return;
     }
 
     const receiverUserData: Parameters<typeof messagingLogger.log>[2] = ids.map(
@@ -265,7 +241,6 @@ const createRawMessage = async (params: {
       messageLogData,
     );
   } catch (err) {
-    console.log(err);
     await messagingLogger.log(
       MessagingEventType.scheduleMessageError,
       baseLogData,

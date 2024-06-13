@@ -1,5 +1,5 @@
 import { createError } from "@fastify/error";
-import { PoolClient, QueryResult } from "pg";
+import { Pool, PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
 import {
   User,
@@ -27,7 +27,7 @@ const getUser = async (params: {
         importer_organisation_id as "importerOrganisationId",
         user_status as "userStatus",
         correlation_quality as "correlationQuality"    
-        FROM users where ${params.whereClauses.join(operator)} LIMIT 1
+        FROM users where ${params.whereClauses.join(operator)}  LIMIT 1
       `,
       params.whereValues,
     );
@@ -192,4 +192,26 @@ export const getUserInvitationsForOrganisation = async (params: {
       500,
     )();
   }
+};
+
+export const getUserProfiles = async (ids: string[], pool: Pool) => {
+  return await pool
+    .query<{
+      firstName: string;
+      lastName: string;
+      ppsn: string;
+      id: string;
+    }>(
+      `
+    select 
+      (details ->> 'firstName') as "firstName",
+      (details ->> 'lastName') as "firstName",
+      (details ->> 'publicIdentityId') as "ppsn",
+      user_profile_id as "id"
+    from users
+    where user_profile_id = any ($1)
+    `,
+      [ids],
+    )
+    .then((res) => res.rows);
 };
