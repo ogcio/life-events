@@ -84,6 +84,7 @@
       "chooseTransportation": "Choose method of communication",
       "email": "Email",
       "sms": "SMS",
+      "lifeEvent": "Life events",
       "postalService": "Postal service",
       "message": "Message",
       "event": "Event",
