@@ -111,14 +111,14 @@ export default ({ locale }: { locale: string }) => {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <Link
+              <a
                 className={`govie-link govie-link--inverse govie-link--no-underline ${
                   pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/en/" + path, process.env.HOST_URL).href}
               >
                 English
-              </Link>
+              </a>
               <div
                 style={{
                   height: "14px",
@@ -127,14 +127,14 @@ export default ({ locale }: { locale: string }) => {
                 }}
               />
 
-              <Link
+              <a
                 className={`govie-link govie-link--inverse govie-link--no-underline  ${
                   pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/ga/" + path, process.env.HOST_URL).href}
               >
                 Gaeilge
-              </Link>
+              </a>
             </div>
             <UserIcon />
 
