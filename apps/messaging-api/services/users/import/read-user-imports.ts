@@ -96,6 +96,7 @@ export const getAllUserInvitationsForOrganisation = async (params: {
       whereValues: [],
       errorCode: READ_USER_IMPORTS_ERROR,
       organisationId: params.organisationId,
+      joinUsersImports: false,
     });
   } finally {
     client.release();

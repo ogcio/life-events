@@ -151,8 +151,13 @@ export const getUserInvitationsForOrganisation = async (params: {
   errorCode: string;
   logicalWhereOperator?: string;
   limit?: number;
+  joinUsersImports?: boolean;
 }): Promise<UserInvitation[]> => {
   try {
+    const usersImportJoin =
+      params.joinUsersImports ?? true
+        ? " left join users_imports on users_imports.organisation_id = ouc.organisation_id "
+        : "";
     const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
     const organisationIndex = `$${params.whereValues.length + 1}`;
     const operator = params.logicalWhereOperator
@@ -177,11 +182,11 @@ export const getUserInvitationsForOrganisation = async (params: {
                 ouc.preferred_transports as "organisationPreferredTransports",
                 users.correlation_quality as "correlationQuality",
                 users.user_status as "userStatus"
-            from users
-            left join organisation_user_configurations ouc on ouc.user_id = users.id 
-            	and ouc.organisation_id = ${organisationIndex}
-            left join users_imports on users_imports.organisation_id = ouc.organisation_id 
-            ${whereClauses} ${limitClause}
+          from users
+          left join organisation_user_configurations ouc on ouc.user_id = users.id 
+            and ouc.organisation_id = ${organisationIndex}
+          ${usersImportJoin}
+          ${whereClauses} ${limitClause}
       `,
       [...params.whereValues, params.organisationId],
     );
