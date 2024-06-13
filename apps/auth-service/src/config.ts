@@ -13,8 +13,6 @@ export const envSchema = {
     "CLIENT_SECRET",
     "TOKEN_URL",
     "ALLOWED_REDIRECT_HOSTS",
-    "MYGOVID_MOCK_URL",
-    "JWK_PUBLIC_KEY",
   ],
   properties: {
     POSTGRES_USER: {
