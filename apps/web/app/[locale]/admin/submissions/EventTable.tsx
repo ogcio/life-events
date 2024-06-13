@@ -1,8 +1,13 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { postgres, web, workflow } from "../../../utils";
+import { EventTableSearchParams, Pages } from "./page";
 
-export default async (props: web.NextPageProps) => {
+type EventTableProps = web.NextPageProps & {
+  searchParams: EventTableSearchParams;
+};
+
+export default async (props: EventTableProps) => {
   const t = await getTranslations("Admin.EventsTable");
 
   let query = `SELECT 
@@ -12,21 +17,21 @@ export default async (props: web.NextPageProps) => {
   fd.updated_at::DATE::TEXT as "updatedAt"
   FROM user_flow_data fd`;
 
-  const statusSelection = props.searchParams?.status;
+  //allow only submitted approved rejected from Pages type excluding pending
+  const statusSelection =
+    (props.searchParams?.status as Exclude<Pages, "pending">) || "submitted";
 
   switch (statusSelection) {
-    case "closed":
+    case "rejected":
       query += ` WHERE (flow_data ->> 'rejectReason') != ''`;
       break;
     case "approved":
       query += ` WHERE (flow_data ->> 'successfulAt') != ''`;
       break;
+    case "submitted":
+      query += ` WHERE (flow_data ->> 'confirmedApplication') != '' AND (flow_data ->> 'successfulAt') = '' AND (flow_data ->> 'rejectReason') = ''`;
+      break;
     case undefined:
-    case "pending":
-      query += ` WHERE (flow_data ->> 'successfulAt') = '' AND (flow_data ->> 'rejectReason') = ''`;
-      break;
-    case "all":
-      break;
     default:
       // No funny queries
       query += " WHERE FALSE";
@@ -38,11 +43,11 @@ export default async (props: web.NextPageProps) => {
   const userFlows = await postgres.pgpool.query<{
     userId: string;
     flow: string;
-    flowData: workflow.RenewDriversLicence;
+    flowData: workflow.GetDigitalWallet;
     updatedAt: string;
   }>(query);
 
-  const status = (flowData: workflow.RenewDriversLicence) => {
+  const status = (flowData: workflow.GetDigitalWallet) => {
     if (flowData.successfulAt) {
       return "Approved";
     }
@@ -51,7 +56,7 @@ export default async (props: web.NextPageProps) => {
       return "Rejected";
     }
 
-    return "Pending";
+    return "Submitted";
   };
 
   return (
@@ -62,11 +67,19 @@ export default async (props: web.NextPageProps) => {
             {t("dateColumn")}
           </th>
           <th scope="col" className="govie-table__header">
+            {t("nameColumn")}
+          </th>
+          <th scope="col" className="govie-table__header">
             {t("typeColumn")}
           </th>
           <th scope="col" className="govie-table__header">
-            {t("statusColumn")}
+            {t("deviceColumn")}
           </th>
+
+          <th scope="col" className="govie-table__header">
+            {t("verifiedWorkEmail")}
+          </th>
+
           <th scope="col" className="govie-table__header">
             {t("actionColumn")}
           </th>
@@ -81,17 +94,24 @@ export default async (props: web.NextPageProps) => {
               </td>
 
               <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                {row.flowData.firstName} {row.flowData.lastName}
+              </td>
+              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                 {t(row.flow)}
               </td>
 
               <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {status(row.flowData)}
+                {row.flowData.deviceType}
+              </td>
+
+              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                {row.flowData.verifiedGovIEEmail ? "Yes" : "No"}
               </td>
 
               <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                 <div>
                   <div>
-                    {status(row.flowData) === "Pending" ? (
+                    {status(row.flowData) === "Submitted" ? (
                       <Link
                         className="govie-link govie-!-margin-right-3"
                         href={
