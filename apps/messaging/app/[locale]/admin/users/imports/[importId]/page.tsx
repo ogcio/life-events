@@ -34,13 +34,15 @@ export default async (props: { params: { importId: string } }) => {
 
   const foundUserProfile = t("table.userProfileStatuses.found");
   const notFoundUserProfile = t("table.userProfileStatuses.notFound");
+  const statuses = {
+    pending: t("table.invitationStatuses.pending"),
+    accepted: t("table.invitationStatuses.accepted"),
+    declined: t("table.invitationStatuses.declined"),
+  };
 
   return (
     <FlexMenuWrapper>
-      <h1 className="govie-heading-l">{userImport.importId}</h1>
-      <p className="govie-body">
-        {dayjs(userImport.importedAt).format("DD/MM/YYYY HH:mm:ss")}
-      </p>
+      <h1 className="govie-heading-l">{`${t("title")} - ${dayjs(userImport.importedAt).format("DD/MM/YYYY HH:mm:ss")}`}</h1>
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
@@ -58,6 +60,9 @@ export default async (props: { params: { importId: string } }) => {
             </th>
             <th scope="col" className="govie-table__header">
               {t("table.relatedUserProfileId")}
+            </th>
+            <th scope="col" className="govie-table__header">
+              {t("table.invitationStatus")}
             </th>
           </tr>
         </thead>
@@ -95,6 +100,12 @@ export default async (props: { params: { importId: string } }) => {
                 {record.userProfileId && record.userProfileId.length > 0
                   ? foundUserProfile
                   : notFoundUserProfile}
+              </th>
+              <th
+                className="govie-table__cell govie-!-font-weight-regular"
+                scope="row"
+              >
+                {statuses[record.organisationInvitationStatus]}
               </th>
             </tr>
           ))}

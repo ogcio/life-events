@@ -280,13 +280,14 @@
     }
   },
   "UsersImport": {
+    "title": "Users Import",
     "table": {
       "importIndex": "Index",
       "phoneNumber": "Phone Number",
       "emailAddress": "Email",
       "importStatus": "Import Status",
       "importError": "Import Error",
-      "relatedUserProfileId": "User Profile Id",
+      "relatedUserProfileId": "User Profile",
       "relatedUserId": "User Id",
       "tags": "Tags",
       "publicIdentityId": "PPSN",
@@ -294,8 +295,14 @@
       "lastName": "Last Name",
       "birthDate": "Date Of Birth",
       "userProfileStatuses": {
-        "found" : "Found",
-        "notFound" : "Not Found"
+        "found": "Found",
+        "notFound": "Not Found"
+      },
+      "invitationStatus": "Status",
+      "invitationStatuses": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "declined": "Declined"
       }
     }
   },
