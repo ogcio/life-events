@@ -232,7 +232,7 @@ export default async (props: {
           <a
             href={
               urlWithSearchParams(
-                templateRoutes.url,
+                `${props.params.locale}/${templateRoutes.url}`,
                 { key: searchLangKey, value: LANG_EN },
                 { key: "id", value: props.searchParams?.id },
               ).href
@@ -246,7 +246,7 @@ export default async (props: {
           <a
             href={
               urlWithSearchParams(
-                templateRoutes.url,
+                `${props.params.locale}/${templateRoutes.url}`,
                 { key: searchLangKey, value: LANG_GA },
                 { key: "id", value: props.searchParams?.id },
               ).href

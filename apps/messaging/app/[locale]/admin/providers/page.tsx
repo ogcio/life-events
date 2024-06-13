@@ -137,7 +137,10 @@ export default async (props: {
       return;
     }
 
-    const url = new URL(providerRoutes.url, process.env.HOST_URL);
+    const url = new URL(
+      `${props.params.locale}/${providerRoutes.url}`,
+      process.env.HOST_URL,
+    );
     url.searchParams.append("provider", providerSearchValue);
     redirect(url.href);
   }
@@ -170,7 +173,10 @@ export default async (props: {
         <div style={linkStyle(isEmail)}>
           <Link
             href={(() => {
-              const url = new URL(providerRoutes.url, process.env.HOST_URL);
+              const url = new URL(
+                `${props.params.locale}/${providerRoutes.url}`,
+                process.env.HOST_URL,
+              );
               url.searchParams.append(searchKeyProvider, searchValueEmail);
               return url.href;
             })()}
@@ -182,7 +188,10 @@ export default async (props: {
         <div style={linkStyle(isSms)}>
           <Link
             href={(() => {
-              const url = new URL(providerRoutes.url, process.env.HOST_URL);
+              const url = new URL(
+                `${props.params.locale}/${providerRoutes.url}`,
+                process.env.HOST_URL,
+              );
               url.searchParams.append(searchKeyProvider, searchValueSms);
               return url.href;
             })()}
