@@ -164,7 +164,8 @@
       "secretAccessKey": "secret access key",
       "excerpt": "excerpt",
       "templateName": "template name",
-      "plainText": "plain text"
+      "plainText": "plain text",
+      "file": "file"
     }
   },
   "settings": {
