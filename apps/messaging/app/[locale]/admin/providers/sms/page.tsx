@@ -49,9 +49,10 @@ async function getState(
 }
 
 export default async (props: { searchParams?: { id: string } }) => {
-  const [t, terror] = await Promise.all([
+  const [t, terror, tCommons] = await Promise.all([
     getTranslations("settings.SmsProvider"),
     getTranslations("formErrors"),
+    getTranslations("Commons"),
   ]);
 
   async function submitAction(formData: FormData) {
@@ -307,7 +308,7 @@ export default async (props: { searchParams?: { id: string } }) => {
         }
         className="govie-back-link"
       >
-        {t("backLink")}
+        {tCommons("backLink")}
       </Link>
     </FlexMenuWrapper>
   );

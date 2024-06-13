@@ -125,7 +125,7 @@ export default async () => {
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {dayjs(record.importedAt).format("DD/MM/YYYY")}
+                {dayjs(record.importedAt).format("DD/MM/YYYY HH:mm:ss")}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"

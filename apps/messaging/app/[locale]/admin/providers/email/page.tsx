@@ -11,9 +11,10 @@ import Link from "next/link";
 const defaultErrorStateId = "email_provider_form";
 
 export default async (props: { searchParams?: { id: string } }) => {
-  const [t, tError] = await Promise.all([
+  const [t, tError, tCommons] = await Promise.all([
     getTranslations("settings.EmailProvider"),
     getTranslations("formErrors"),
+    getTranslations("Commons"),
   ]);
   async function submitAction(formData: FormData) {
     "use server";
@@ -273,7 +274,7 @@ export default async (props: { searchParams?: { id: string } }) => {
         </button>
       </form>
       <Link className="govie-back-link" href={"./"}>
-        {t("backLink")}
+        {tCommons("backLink")}
       </Link>
     </FlexMenuWrapper>
   );

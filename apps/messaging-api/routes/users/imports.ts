@@ -136,7 +136,7 @@ export default async function usersImports(app: FastifyInstance) {
   );
 
   interface GetImportSchema {
-    Querystring: { organisationId?: string };
+    Querystring: { organisationId?: string; includeUsersData?: boolean };
     Response: { data: UsersImport };
     Params: { importId: string };
   }
@@ -149,6 +149,7 @@ export default async function usersImports(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Object({
             organisationId: Type.Optional(Type.String({ format: "uuid" })),
+            includeUsersData: Type.Boolean({ default: true }),
           }),
         ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
@@ -167,6 +168,7 @@ export default async function usersImports(app: FastifyInstance) {
         pool: app.pg.pool,
         organisationId: getOrganisationIdFromRequest(request),
         importId: request.params.importId,
+        includeUsersData: request.query.includeUsersData ?? true,
       }),
     }),
   );

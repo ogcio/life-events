@@ -82,7 +82,10 @@ export default async (props: { params: { organisationId: string } }) => {
     redirect(url.href);
   }
 
-  const t = await getTranslations("userSettings.Organisation");
+  const [t, tCommons] = await Promise.all([
+    getTranslations("userSettings.Organisation"),
+    getTranslations("Commons"),
+  ]);
 
   const { userId } = await PgSessions.get();
   const messagingClient = await new Messaging(userId);
@@ -189,7 +192,7 @@ export default async (props: { params: { organisationId: string } }) => {
       </form>
 
       <Link className="govie-back-link" href={`/${usersSettingsRoutes.url}`}>
-        {t("backLink")}
+        {tCommons("backLink")}
       </Link>
     </>
   );

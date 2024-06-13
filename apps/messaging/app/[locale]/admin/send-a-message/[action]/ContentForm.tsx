@@ -114,9 +114,10 @@ const loadErrors = async (params: {
 };
 
 export default async (props: MessageCreateProps) => {
-  const [t, tError] = await Promise.all([
+  const [t, tError, tCommons] = await Promise.all([
     getTranslations("sendAMessage.EmailForm"),
     getTranslations("formErrors"),
+    getTranslations("Commons"),
   ]);
 
   const errors = await loadErrors({ props });
@@ -272,7 +273,7 @@ export default async (props: MessageCreateProps) => {
         </button>
       </form>
       <form action={goBack}>
-        <BackButton>{t("backLink")}</BackButton>
+        <BackButton>{tCommons("backLink")}</BackButton>
       </form>
     </>
   );

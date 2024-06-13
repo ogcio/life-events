@@ -36,6 +36,7 @@ export const getUserImportForOrganisation = async (params: {
   organisationId: string;
   importId: string;
   pool: Pool;
+  includeUsersData: boolean;
 }): Promise<UsersImport> => {
   const client = await params.pool.connect();
   try {
@@ -45,7 +46,7 @@ export const getUserImportForOrganisation = async (params: {
       whereValues: [params.importId, params.organisationId],
       limit: 1,
       errorCode: READ_USER_IMPORTS_ERROR,
-      includeUsersData: true,
+      includeUsersData: params.includeUsersData,
     });
 
     if (results.length === 0) {

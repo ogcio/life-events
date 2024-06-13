@@ -4,9 +4,14 @@ import { Messaging } from "building-blocks-sdk";
 import React from "react";
 import { notFound } from "next/navigation";
 import FlexMenuWrapper from "../../../PageWithMenuFlexWrapper";
+import dayjs from "dayjs";
+import Link from "next/link";
 
 export default async (props: { params: { importId: string } }) => {
-  const t = await getTranslations("UsersImport");
+  const [t, tCommons] = await Promise.all([
+    getTranslations("UsersImport"),
+    getTranslations("Commons"),
+  ]);
   const { userId } = await PgSessions.get();
   const messagingClient = new Messaging(userId);
   const { data: organisationId } =
@@ -14,6 +19,7 @@ export default async (props: { params: { importId: string } }) => {
   const { data: userImport, error } = await messagingClient.getUsersImport(
     props.params.importId,
     organisationId,
+    true,
   );
 
   if (error || !userImport) {
@@ -23,7 +29,9 @@ export default async (props: { params: { importId: string } }) => {
   return (
     <FlexMenuWrapper>
       <h1 className="govie-heading-l">{userImport.importId}</h1>
-      <p className="govie-body">{userImport.importedAt}</p>
+      <p className="govie-body">
+        {dayjs(userImport.importedAt).format("DD/MM/YYYY HH:mm:ss")}
+      </p>
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
@@ -99,6 +107,9 @@ export default async (props: { params: { importId: string } }) => {
           ))}
         </tbody>
       </table>
+      <Link className="govie-back-link" href="./">
+        {tCommons("backLink")}
+      </Link>
     </FlexMenuWrapper>
   );
 };
