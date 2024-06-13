@@ -276,7 +276,11 @@
     "table": {
       "importedAt": "Imported At",
       "importChannel": "Import Channel",
-      "importId": "Import Id"
+      "importId": "Import Id",
+      "actions": {
+        "label": "Actions",
+        "view": "View"
+      }
     }
   },
   "UsersImport": {
