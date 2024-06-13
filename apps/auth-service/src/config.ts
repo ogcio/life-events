@@ -14,6 +14,7 @@ export const envSchema = {
     "TOKEN_URL",
     "ALLOWED_REDIRECT_HOSTS",
     "AUTH_SERVICE_URL",
+    "LOGTO_APP_ID",
   ],
   properties: {
     POSTGRES_USER: {
@@ -53,6 +54,9 @@ export const envSchema = {
       type: "string",
     },
     AUTH_SERVICE_URL: {
+      type: "string",
+    },
+    LOGTO_APP_ID: {
       type: "string",
     },
   },
