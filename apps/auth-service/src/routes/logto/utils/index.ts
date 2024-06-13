@@ -29,15 +29,18 @@ const getRandomPhoneNumber = () =>
 const getRandomString = () => crypto.randomBytes(20).toString("hex");
 
 export const createMockSignedJwt = async (
-  firstName: string,
-  lastName: string,
-  email: string,
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  },
+  origin: string,
 ) => {
   const body = {
     ver: "1.0",
     sub: getRandomString(),
     auth_time: Date.now(),
-    email: email,
+    email: user.email,
     oid: getRandomString(),
     AlternateIds: "",
     BirthDate: "13/06/1941",
@@ -46,15 +49,15 @@ export const createMockSignedJwt = async (
     mobile: getRandomPhoneNumber(),
     DSPOnlineLevel: "0",
     DSPOnlineLevelStatic: "0",
-    givenName: firstName,
-    surname: lastName,
+    givenName: user.firstName,
+    surname: user.lastName,
     CustomerId: "532",
     AcceptedPrivacyTerms: true,
     AcceptedPrivacyTermsVersionNumber: "7",
     SMS2FAEnabled: false,
     AcceptedPrivacyTermsDateTime: 1715582120,
-    firstName: firstName,
-    lastName: lastName,
+    firstName: user.firstName,
+    lastName: user.lastName,
     currentCulture: "en",
     trustFrameworkPolicy: "B2C_1A_MyGovID_signin-v5-PARTIAL2",
     CorrelationId: getRandomString(),
@@ -66,9 +69,9 @@ export const createMockSignedJwt = async (
 
   const jwt = await new SignJWT(body)
     .setProtectedHeader({ alg })
-    .setAudience(process.env.LOGTO_APP_ID!)
+    .setAudience("mock_client_id")
     .setIssuedAt()
-    .setIssuer(process.env.AUTH_SERVICE_URL!)
+    .setIssuer(origin)
     .setExpirationTime("2h")
     .sign(key);
 

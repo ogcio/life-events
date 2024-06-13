@@ -85,7 +85,10 @@ export default async function login(app: FastifyInstance) {
       [email, "not needed atm", [firstName, lastName].join(" "), false],
     );
 
-    const id_token = await createMockSignedJwt(firstName, lastName, email);
+    const id_token = await createMockSignedJwt(
+      { firstName, lastName, email },
+      request.headers.origin as unknown as string,
+    );
 
     return reply.redirect(`${redirect_url}?code=${id_token}&state=${state}`);
   });
