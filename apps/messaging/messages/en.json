@@ -272,25 +272,7 @@
   "Users": {
     "header": "Citizens",
     "usersLink": "Citizens",
-    "importsLink": "Imports"
-  },
-  "UsersImports": {
-    "header": "Citizens Imports",
-    "uploadFileBtn": "Upload CSV File",
-    "confirmUploadBtn": "Send",
-    "downloadFileBtn": "Download CSV Template",
-    "table": {
-      "importedAt": "Imported At",
-      "importChannel": "Import Channel",
-      "importId": "Import Id",
-      "actions": {
-        "label": "Actions",
-        "view": "View"
-      }
-    }
-  },
-  "UsersImport": {
-    "title": "Citizens Import",
+    "importsLink": "Imports",
     "table": {
       "importIndex": "Index",
       "phoneNumber": "Phone Number",
@@ -315,6 +297,24 @@
         "declined": "Declined"
       }
     }
+  },
+  "UsersImports": {
+    "header": "Citizens Imports",
+    "uploadFileBtn": "Upload CSV File",
+    "confirmUploadBtn": "Send",
+    "downloadFileBtn": "Download CSV Template",
+    "table": {
+      "importedAt": "Imported At",
+      "importChannel": "Import Channel",
+      "importId": "Import Id",
+      "actions": {
+        "label": "Actions",
+        "view": "View"
+      }
+    }
+  },
+  "UsersImport": {
+    "title": "Citizens Import"
   },
   "userSettings": {
     "Page": {
