@@ -10,7 +10,10 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 const defaultErrorStateId = "email_provider_form";
 
-export default async (props: { searchParams?: { id: string } }) => {
+export default async (props: {
+  params: { locale: string };
+  searchParams?: { id: string };
+}) => {
   const [t, tError, tCommons] = await Promise.all([
     getTranslations("settings.EmailProvider"),
     getTranslations("formErrors"),
@@ -83,7 +86,10 @@ export default async (props: { searchParams?: { id: string } }) => {
       });
     }
 
-    const url = new URL(providerRoutes.url, process.env.HOST_URL);
+    const url = new URL(
+      `${props.params.locale}/${providerRoutes.url}`,
+      process.env.HOST_URL,
+    );
     url.searchParams.append("provider", "email");
     redirect(url.href);
   }
@@ -273,9 +279,17 @@ export default async (props: { searchParams?: { id: string } }) => {
           {props.searchParams?.id ? t("updateButton") : t("createButton")}
         </button>
       </form>
-      <Link className="govie-back-link" href={"./"}>
+      <a
+        className="govie-back-link"
+        href={
+          new URL(
+            `${props.params.locale}/${providerRoutes.url}?provider=email`,
+            process.env.HOST_URL,
+          ).href
+        }
+      >
         {tCommons("backLink")}
-      </Link>
+      </a>
     </FlexMenuWrapper>
   );
 };
