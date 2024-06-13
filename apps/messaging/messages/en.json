@@ -7,7 +7,7 @@
     "messages": "Messages",
     "providers": "Providers",
     "templates": "Message templates",
-    "usersImports": "Users Imports",
+    "usersImports": "Citizens Imports",
     "userSettings": "Settings"
   },
   "MessageTemplates": {
@@ -269,7 +269,7 @@
     }
   },
   "UsersImports": {
-    "header": "Users Imports",
+    "header": "Citizens Imports",
     "uploadFileBtn": "Upload CSV File",
     "confirmUploadBtn": "Send",
     "downloadFileBtn": "Download CSV Template",
@@ -280,7 +280,7 @@
     }
   },
   "UsersImport": {
-    "title": "Users Import",
+    "title": "Citizens Import",
     "table": {
       "importIndex": "Index",
       "phoneNumber": "Phone Number",
