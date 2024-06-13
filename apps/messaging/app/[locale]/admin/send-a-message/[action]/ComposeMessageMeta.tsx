@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { api } from "messages";
+import { api, temporaryMockUtils } from "messages";
 import { revalidatePath } from "next/cache";
 import { MessageCreateProps } from "../../../../utils/messaging";
 import { getTranslations } from "next-intl/server";
@@ -8,7 +8,10 @@ import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 
 export default async (props: MessageCreateProps) => {
-  const t = await getTranslations("sendAMessage.ComposeMessageMeta");
+  const [t, tError] = await Promise.all([
+    getTranslations("sendAMessage.ComposeMessageMeta"),
+    getTranslations("formErrors"),
+  ]);
   async function submit(formData: FormData) {
     "use server";
 
@@ -28,6 +31,24 @@ export default async (props: MessageCreateProps) => {
       preferredTransportations.push("lifeEvent");
     }
 
+    const errors: Parameters<typeof temporaryMockUtils.createErrors>[0] = [];
+
+    if (!Boolean(formData.get("templateMetaId"))) {
+      errors.push({
+        errorValue: "",
+        field: "templateMetaId",
+        messageKey: "noTemplate",
+      });
+    }
+
+    if (errors.length) {
+      temporaryMockUtils.createErrors(
+        errors,
+        props.userId,
+        "compose_message_meta",
+      );
+      return revalidatePath("/");
+    }
     await api.upsertMessageState(
       Object.assign({}, props.state, {
         submittedMetaAt: dayjs().toISOString(),
@@ -42,8 +63,16 @@ export default async (props: MessageCreateProps) => {
   }
 
   const { userId } = await PgSessions.get();
+  const errors = await temporaryMockUtils.getErrors(
+    props.userId,
+    "compose_message_meta",
+  );
   const { data: templates } = await new Messaging(userId).getTemplates(
     headers().get("x-next-intl-locale") ?? "en",
+  );
+
+  const templateSelectError = errors.find(
+    (err) => err.field === "templateMetaId",
   );
 
   return (
@@ -131,12 +160,24 @@ export default async (props: MessageCreateProps) => {
 
         <hr className="govie-section-break govie-section-break--visible" />
 
-        <div className="govie-form-group">
+        <div
+          className={
+            templateSelectError
+              ? "govie-form-group govie-form-group--error"
+              : "govie-form-group"
+          }
+        >
           <h3>
             <span className="govie-heading-s">
               {t("chooseTemplateHeading")}
             </span>
           </h3>
+          {templateSelectError && (
+            <p id="input-field-error" className="govie-error-message">
+              <span className="govie-visually-hidden">Error:</span>
+              {tError(templateSelectError.messageKey)}
+            </p>
+          )}
           <select className="govie-select" name="templateMetaId">
             <option value="">{t("emptyTemplateOption")}</option>
             {templates?.map((template) => (
@@ -149,6 +190,7 @@ export default async (props: MessageCreateProps) => {
             ))}
           </select>
         </div>
+
         <button className="govie-button" type="submit">
           {t("submitText")}
         </button>
