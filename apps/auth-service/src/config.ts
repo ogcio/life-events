@@ -53,11 +53,5 @@ export const envSchema = {
     ALLOWED_REDIRECT_HOSTS: {
       type: "string",
     },
-    MYGOVID_MOCK_URL: {
-      type: "string",
-    },
-    JWK_PUBLIC_KEY: {
-      type: "string",
-    },
   },
 };
