@@ -6,7 +6,11 @@ import StatusMenu from "./StatusMenu";
 import { getTranslations } from "next-intl/server";
 import UsersWithPartialApplicationsTable from "./UsersWithPartialApplicationsTable";
 
-export type pages = "pending" | "submitted" | "approved" | "rejected";
+export type Pages = "pending" | "submitted" | "approved" | "rejected";
+export type EventTableSearchParams = {
+  [key: string]: string;
+  status: Pages;
+};
 
 type TableProps = {
   params: {
@@ -14,15 +18,11 @@ type TableProps = {
     action: string[];
     locale: string;
   };
-  searchParams:
-    | {
-        [key: string]: string;
-      }
-    | undefined;
+  searchParams?: EventTableSearchParams;
 };
 
 const componentsMap: {
-  [key in pages]: (props: TableProps) => Promise<JSX.Element>;
+  [key in Pages]: (props: TableProps) => Promise<JSX.Element>;
 } = {
   pending: UsersWithPartialApplicationsTable,
   submitted: EventTable,
@@ -39,6 +39,8 @@ export default async (props: web.NextPageProps) => {
   }
 
   const Component = componentsMap[props.searchParams?.status ?? "submitted"];
+
+  const status = props.searchParams?.status as Pages;
 
   return (
     <>
