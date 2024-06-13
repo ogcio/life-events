@@ -44,6 +44,7 @@ export default async ({
         <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
           <div style={{ display: "flex", gap: "30px" }}>
             <SideMenu
+              locale={params.locale}
               options={await messages.sideMenuOptions(publicServant)}
               selected={routes.usersSettingsRoutes.slug}
               userName={`${firstName} ${lastName}`}
