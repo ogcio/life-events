@@ -22,10 +22,13 @@ export default async (props: {
   async function createNewAction() {
     "use server";
 
-    const url = urlWithSearchParams(templateRoutes.url, {
-      key: "lang",
-      value: LANG_EN,
-    });
+    const url = urlWithSearchParams(
+      `${props.params.locale}/${templateRoutes.url}`,
+      {
+        key: "lang",
+        value: LANG_EN,
+      },
+    );
     redirect(url.href);
   }
 
@@ -93,7 +96,7 @@ export default async (props: {
         />
       )}
 
-      <TemplatesList />
+      <TemplatesList locale={props.params.locale} />
     </FlexMenuWrapper>
   );
 };

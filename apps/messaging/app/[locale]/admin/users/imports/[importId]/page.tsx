@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import React from "react";
 import { notFound } from "next/navigation";
+import FlexMenuWrapper from "../../../PageWithMenuFlexWrapper";
 
 export default async (props: { params: { importId: string } }) => {
   const t = await getTranslations("UsersImport");
@@ -20,7 +21,7 @@ export default async (props: { params: { importId: string } }) => {
   }
 
   return (
-    <>
+    <FlexMenuWrapper>
       <h1 className="govie-heading-l">{userImport.importId}</h1>
       <p className="govie-body">{userImport.importedAt}</p>
       <table className="govie-table">
@@ -98,6 +99,6 @@ export default async (props: { params: { importId: string } }) => {
           ))}
         </tbody>
       </table>
-    </>
+    </FlexMenuWrapper>
   );
 };

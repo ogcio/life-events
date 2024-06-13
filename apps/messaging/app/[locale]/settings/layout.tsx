@@ -46,7 +46,7 @@ export default async ({
             <SideMenu
               locale={params.locale}
               options={await messages.sideMenuOptions(publicServant)}
-              selected={routes.messages.slug}
+              selected={routes.usersSettingsRoutes.slug}
               userName={`${firstName} ${lastName}`}
             />
             <div style={{ width: "100%" }}>{children}</div>
