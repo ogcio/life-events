@@ -23,6 +23,11 @@ enum AVAILABLE_STATUSES {
   DECLINED = "declined",
 }
 
+enum ACTIVE_STATUSES {
+  ACCEPTED = "accepted",
+  DECLINED = "declined",
+}
+
 export default async (props: { params: { organisationId: string } }) => {
   async function submitAction(formData: FormData) {
     "use server";
@@ -105,6 +110,11 @@ export default async (props: { params: { organisationId: string } }) => {
     (error) => error.field === "invitationStatus",
   );
 
+  const toUseStatusEnum =
+    configurations.data?.organisationInvitationStatus != "pending"
+      ? ACTIVE_STATUSES
+      : AVAILABLE_STATUSES;
+
   return (
     <>
       <h1>
@@ -134,7 +144,7 @@ export default async (props: { params: { organisationId: string } }) => {
               id="invitationStatus"
               defaultValue={configurations.data?.organisationInvitationStatus}
             >
-              {Object.values(AVAILABLE_STATUSES).map((status) => (
+              {Object.values(toUseStatusEnum).map((status) => (
                 <option key={status} value={status}>
                   {t(`statuses.${status}`)}
                 </option>
