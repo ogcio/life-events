@@ -1,13 +1,20 @@
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
+import { users as usersRoute } from "../../../../../utils/routes";
 import { Messaging } from "building-blocks-sdk";
 import React from "react";
 import { notFound } from "next/navigation";
 import FlexMenuWrapper from "../../../PageWithMenuFlexWrapper";
 import dayjs from "dayjs";
 import Link from "next/link";
+import {
+  searchKeyListType,
+  searchValueImports,
+} from "../../../../../utils/messaging";
 
-export default async (props: { params: { importId: string } }) => {
+export default async (props: {
+  params: { importId: string; locale: string };
+}) => {
   const [t, tCommons] = await Promise.all([
     getTranslations("UsersImport"),
     getTranslations("Commons"),
@@ -111,7 +118,15 @@ export default async (props: { params: { importId: string } }) => {
           ))}
         </tbody>
       </table>
-      <Link className="govie-back-link" href="./">
+      <Link
+        className="govie-back-link"
+        href={
+          new URL(
+            `${props.params.locale}/${usersRoute.url}?${searchKeyListType}=${searchValueImports}`,
+            process.env.HOST_URL,
+          ).href
+        }
+      >
         {tCommons("backLink")}
       </Link>
     </FlexMenuWrapper>

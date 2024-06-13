@@ -5,9 +5,8 @@ import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import React from "react";
 import { revalidatePath } from "next/cache";
-import { usersImports } from "../../../../utils/routes";
+import { usersImports } from "../../../utils/routes";
 import { temporaryMockUtils } from "messages";
-import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 
 type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
 
@@ -64,8 +63,7 @@ export default async () => {
   const csvError = csvErrors.length === 0 ? null : csvErrors[0];
 
   return (
-    <FlexMenuWrapper>
-      <h1 className="govie-heading-l">{t("header")}</h1>
+    <>
       <Link href="/api/users-csv" target="_blank">
         {t("downloadFileBtn")}
       </Link>
@@ -151,6 +149,6 @@ export default async () => {
           ))}
         </tbody>
       </table>
-    </FlexMenuWrapper>
+    </>
   );
 };
