@@ -4,6 +4,7 @@
     "messages": "Messages",
     "providers": "Providers",
     "templates": "Message templates",
+    "usersImports": "Users Imports",
     "userSettings": "Settings"
   },
   "MessageTemplates": {
@@ -163,7 +164,8 @@
       "secretAccessKey": "secret access key",
       "excerpt": "excerpt",
       "templateName": "template name",
-      "plainText": "plain text"
+      "plainText": "plain text",
+      "file": "file"
     }
   },
   "settings": {
@@ -275,6 +277,9 @@
   },
   "UsersImports": {
     "header": "Users Imports",
+    "uploadFileBtn": "Upload CSV File",
+    "confirmUploadBtn": "Send",
+    "downloadFileBtn": "Download CSV Template",
     "table": {
       "importedAt": "Imported At",
       "importChannel": "Import Channel",
