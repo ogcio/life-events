@@ -24,17 +24,6 @@ enum AVAILABLE_STATUSES {
 }
 
 export default async (props: { params: { organisationId: string } }) => {
-  const t = await getTranslations("userSettings.Organisation");
-
-  const { userId } = await PgSessions.get();
-  const messagingClient = await new Messaging(userId);
-  const configurations = await messagingClient.getOrganisationInvitation(
-    props.params.organisationId,
-  );
-  if (configurations.error) {
-    return notFound();
-  }
-
   async function submitAction(formData: FormData) {
     "use server";
 
@@ -43,7 +32,7 @@ export default async (props: { params: { organisationId: string } }) => {
     url.searchParams.append(searchKeySettingType, searchValueOrganisation);
     const orgId = formData.get("organisationId")?.toString();
     if (!orgId) {
-      throw new Error("Organisation id is missing!");
+      return notFound();
     }
 
     const status =
@@ -91,6 +80,17 @@ export default async (props: { params: { organisationId: string } }) => {
     });
 
     redirect(url.href);
+  }
+
+  const t = await getTranslations("userSettings.Organisation");
+
+  const { userId } = await PgSessions.get();
+  const messagingClient = await new Messaging(userId);
+  const configurations = await messagingClient.getOrganisationInvitation(
+    props.params.organisationId,
+  );
+  if (configurations.error) {
+    return notFound();
   }
 
   const errors = await temporaryMockUtils.getErrors(
