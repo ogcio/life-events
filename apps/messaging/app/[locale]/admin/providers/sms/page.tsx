@@ -306,7 +306,7 @@ export default async (props: {
         </button>
       </form>
 
-      <Link
+      <a
         href={
           new URL(
             `${props.params.locale}/${providerRoutes.url}?provider=sms`,
@@ -316,7 +316,7 @@ export default async (props: {
         className="govie-back-link"
       >
         {tCommons("backLink")}
-      </Link>
+      </a>
     </FlexMenuWrapper>
   );
 };
