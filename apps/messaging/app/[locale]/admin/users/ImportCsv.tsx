@@ -25,7 +25,6 @@ export default async () => {
 
     const toStoreErrors: FormErrors = [];
     const castedFile = file ? (file as File) : null;
-    console.log({ file, castedFile, check: (castedFile?.size ?? 0) > 0 });
     if (file && (castedFile?.size ?? 0) > 0) {
       const uploadClient = new Messaging(userId);
       await uploadClient.importUsersCsv(file as File);
