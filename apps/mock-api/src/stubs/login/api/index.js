@@ -4,7 +4,6 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import * as jose from "jose";
 import streamToString from "../../../utils/streamToString.js";
-import { createMockSignedJwt } from "./utils.js";
 
 export const REDIRECT_URL = "%REDIRECT_URL%";
 
