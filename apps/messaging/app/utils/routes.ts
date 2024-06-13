@@ -26,6 +26,21 @@ export const templateRoutes = {
   url: `${messageTemplates.url}/template`,
 };
 
+export const usersImports = {
+  slug: "users-imports",
+  url: "admin/users/imports",
+};
+
+export const usersSettingsRoutes = {
+  slug: "user settings",
+  url: "settings",
+};
+
+export const userOrganisationsRoutes = {
+  slug: "user organisations",
+  url: "settings/organisations",
+};
+
 export function urlWithSearchParams(
   dir: string,
   ...searchParams: { key: string; value?: string }[]
