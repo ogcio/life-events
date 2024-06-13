@@ -273,6 +273,7 @@
     "header": "Citizens",
     "usersLink": "Citizens",
     "importsLink": "Imports",
+    "importCsvLink": "Import CSV",
     "table": {
       "importIndex": "Index",
       "phoneNumber": "Phone Number",

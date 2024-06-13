@@ -102,6 +102,7 @@ export const searchKeyDeleteId = "deleteId";
 export const searchValueOrganisation = "organisation";
 export const searchKeySettingType = "settingType";
 export const searchValueImports = "imports";
+export const searchValueImportCsv = "importCsv";
 export const searchValueUsers = "users";
 export const searchKeyListType = "listType";
 export const envUAT = "UAT";
