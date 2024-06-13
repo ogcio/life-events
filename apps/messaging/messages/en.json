@@ -151,7 +151,6 @@
   },
   "formErrors": {
     "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
-    "noTemplate": "Select a template",
     "fields": {
       "subject": "subject",
       "message": "message",
