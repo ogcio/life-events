@@ -8,7 +8,7 @@ import {
   urlWithSearchParams,
 } from "../../../utils/routes";
 
-export default async () => {
+export default async (props: { locale: string }) => {
   const t = await getTranslations("MessageTemplates");
   const { userId } = await PgSessions.get();
 
@@ -39,7 +39,7 @@ export default async () => {
                 className="govie-link govie-!-margin-right-3"
                 href={
                   urlWithSearchParams(
-                    templateRoutes.url,
+                    `${props.locale}/${templateRoutes.url}`,
                     { key: "id", value: template.templateMetaId },
                     { key: "lang", value: "en" },
                   ).href
@@ -50,10 +50,13 @@ export default async () => {
               <Link
                 className="govie-link govie-!-margin-right-3"
                 href={
-                  urlWithSearchParams(messageTemplates.url, {
-                    key: "delete_id",
-                    value: template.templateMetaId,
-                  }).href
+                  urlWithSearchParams(
+                    `${props.locale}/${messageTemplates.url}`,
+                    {
+                      key: "delete_id",
+                      value: template.templateMetaId,
+                    },
+                  ).href
                 }
               >
                 {t("list.actions.delete")}
