@@ -158,7 +158,10 @@ export const getUserInvitationsForOrganisation = async (params: {
     const operator = params.logicalWhereOperator
       ? ` ${params.logicalWhereOperator} `
       : " AND ";
-
+    const whereClauses =
+      params.whereClauses.length > 0
+        ? `WHERE ${params.whereClauses.join(operator)} `
+        : "";
     const result = await params.client.query<UserInvitation>(
       `
         SELECT 
@@ -178,7 +181,7 @@ export const getUserInvitationsForOrganisation = async (params: {
             left join organisation_user_configurations ouc on ouc.user_id = users.id 
             	and ouc.organisation_id = ${organisationIndex}
             left join users_imports on users_imports.organisation_id = ouc.organisation_id 
-            where ${params.whereClauses.join(operator)} ${limitClause}
+            ${whereClauses} ${limitClause}
       `,
       [...params.whereValues, params.organisationId],
     );

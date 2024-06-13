@@ -82,3 +82,22 @@ export const getUserInvitationsForImport = async (params: {
     client.release();
   }
 };
+
+export const getAllUserInvitationsForOrganisation = async (params: {
+  logger: FastifyBaseLogger;
+  organisationId: string;
+  pool: Pool;
+}): Promise<UserInvitation[]> => {
+  const client = await params.pool.connect();
+  try {
+    return await getUserInvitationsForOrganisation({
+      client,
+      whereClauses: [],
+      whereValues: [],
+      errorCode: READ_USER_IMPORTS_ERROR,
+      organisationId: params.organisationId,
+    });
+  } finally {
+    client.release();
+  }
+};
