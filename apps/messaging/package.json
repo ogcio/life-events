@@ -17,8 +17,8 @@
     "exec": "next dev -p 3002"
   },
   "dependencies": {
+    "@logto/next": "^3.3.0",
     "auth": "*",
-    "shared-components": "*",
     "building-blocks-sdk": "*",
     "dayjs": "^1.11.11",
     "db-migrate": "^0.11.14",
@@ -30,7 +30,8 @@
     "next-intl": "^3.14.1",
     "pg": "^8.12.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "shared-components": "*"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",

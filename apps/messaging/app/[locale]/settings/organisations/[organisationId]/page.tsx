@@ -1,7 +1,7 @@
 import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 import { temporaryMockUtils } from "messages";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { usersSettingsRoutes } from "../../../../utils/routes";
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
@@ -32,7 +32,7 @@ export default async (props: { params: { organisationId: string } }) => {
     props.params.organisationId,
   );
   if (configurations.error) {
-    throw new Error("Relation with organisation not found");
+    return notFound();
   }
 
   async function submitAction(formData: FormData) {
@@ -129,7 +129,7 @@ export default async (props: { params: { organisationId: string } }) => {
             >
               {Object.values(AVAILABLE_STATUSES).map((status) => (
                 <option key={status} value={status}>
-                  {status}
+                  {t(`statuses.${status}`)}
                 </option>
               ))}
             </select>

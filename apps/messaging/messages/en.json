@@ -313,7 +313,12 @@
       "statusTableHeader": "Status",
       "transportsTableHeader": "Transports",
       "editLink": "Edit",
-      "actionTableHeader": "Action"
+      "actionTableHeader": "Action",
+      "statuses": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "declined": "Declined"
+      }
     },
     "Organisation": {
       "title": "Organisation Configuration",
