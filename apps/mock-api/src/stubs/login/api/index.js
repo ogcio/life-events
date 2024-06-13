@@ -129,52 +129,6 @@ export default async function (app, opts) {
 
     if (password !== "123") reply.redirect("/static/login/api/authorize-mock");
 
-    // const createMockSignedJwt = async (firstName, lastName, email) => {
-    //   const body = {
-    //     ver: "1.0",
-    //     sub: crypto.randomBytes(20).toString('hex'),
-    //     auth_time: Date.now(),
-    //     email: email,
-    //     oid: crypto.randomBytes(20).toString('hex'),
-    //     AlternateIds: "",
-    //     BirthDate: "13/06/1941",
-    //     PublicServiceNumber: "0111019P",
-    //     LastJourney: "Login",
-    //     mobile: `+353${Math.floor(Math.random() * 9000000000) + 1000000000}`,
-    //     DSPOnlineLevel: "0",
-    //     DSPOnlineLevelStatic: "0",
-    //     givenName: firstName,
-    //     surname: lastName,
-    //     CustomerId: "532",
-    //     AcceptedPrivacyTerms: true,
-    //     AcceptedPrivacyTermsVersionNumber: "7",
-    //     SMS2FAEnabled: false,
-    //     AcceptedPrivacyTermsDateTime: 1715582120,
-    //     firstName: firstName,
-    //     lastName: lastName,
-    //     currentCulture: "en",
-    //     trustFrameworkPolicy: "B2C_1A_MyGovID_signin-v5-PARTIAL2",
-    //     CorrelationId: crypto.randomBytes(20).toString('hex'),
-    //     nbf: 1716804749,
-    //   };
-
-    //   const alg = "RS256";
-    //   const privateKey = await jose.importPKCS8(
-    //     process.env.JWK_PRIVATE_KEY,
-    //     alg,
-    //   );
-
-    //   const jwt = await new jose.SignJWT(body)
-    //     .setProtectedHeader({ alg })
-    //     .setAudience(process.env.LOGTO_APP_ID)
-    //     .setIssuedAt()
-    //     .setIssuer(process.env.AUTH_SERVICE_URL)
-    //     .setExpirationTime("2h")
-    //     .sign(privateKey);
-
-    //   return jwt;
-    // };
-
     await app.pg.query(
       `
       WITH get AS (
