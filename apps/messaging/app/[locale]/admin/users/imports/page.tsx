@@ -21,8 +21,8 @@ export default async () => {
     const organisationId = formData.get("organisationId");
 
     const toStoreErrors: FormErrors = [];
-
-    if (file) {
+    const castedFile = file ? (file as File) : null;
+    if (file && castedFile && (castedFile.size ?? 0) > 0) {
       const uploadClient = new Messaging(userId);
       await uploadClient.importUsersCsv(file as File);
 
@@ -34,6 +34,7 @@ export default async () => {
       field: CSV_FILE_FIELD,
       messageKey: "empty",
     });
+
     await temporaryMockUtils.createErrors(
       toStoreErrors,
       userId,
