@@ -2,8 +2,8 @@ import fs from "fs";
 import path from "path";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import * as jose from "jose";
 import streamToString from "../../../utils/streamToString.js";
+import * as jose from "jose";
 
 export const REDIRECT_URL = "%REDIRECT_URL%";
 
