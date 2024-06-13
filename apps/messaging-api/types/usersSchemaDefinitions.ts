@@ -172,7 +172,7 @@ export type TagForUser = Static<typeof TagForUserSchema>;
 
 export const UserInvitationSchema = Type.Object({
   id: Type.String(),
-  userProfileId: Type.String(),
+  userProfileId: Type.Union([Type.String(), Type.Null()], { default: null }),
   organisationId: Type.String(),
   organisationInvitationStatus: InvitationStatusUnionType,
   organisationInvitationSentAt: Type.Optional(Type.String()),

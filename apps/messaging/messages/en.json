@@ -292,7 +292,11 @@
       "publicIdentityId": "PPSN",
       "firstName": "First Name",
       "lastName": "Last Name",
-      "birthDate": "Date Of Birth"
+      "birthDate": "Date Of Birth",
+      "userProfileStatuses": {
+        "found" : "Found",
+        "notFound" : "Not Found"
+      }
     }
   },
   "userSettings": {
