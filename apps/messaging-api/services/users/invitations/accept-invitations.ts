@@ -1,7 +1,10 @@
 import { createError } from "@fastify/error";
 import { PostgresDb } from "@fastify/postgres";
 import { getUserByUserProfileId } from "../shared-users";
-import { getUserInvitations } from "./shared-invitations";
+import {
+  getUserInvitations,
+  getUsersInvitationsForOrganisation,
+} from "./shared-invitations";
 import {
   InvitationFeedback,
   OrganisationInvitationFeedback,
@@ -28,6 +31,29 @@ export const getInvitationForUser = async (params: {
   }
 };
 
+export const getInvitationsForUser = async (params: {
+  pg: PostgresDb;
+  userProfileId: string;
+}): Promise<UserInvitation[]> => {
+  const { pg, userProfileId } = params;
+  const client = await pg.connect();
+  try {
+    await getUserByUserProfileId({
+      client,
+      userProfileId,
+      errorCode: ACCEPT_INVITATIONS_ERROR,
+    });
+
+    return await getUserInvitations({
+      userProfileId,
+      client,
+      errorCode: ACCEPT_INVITATIONS_ERROR,
+    });
+  } finally {
+    client.release();
+  }
+};
+
 const getInvitation = async (params: {
   client: PoolClient;
   userProfileId: string;
@@ -46,7 +72,7 @@ const getInvitation = async (params: {
       400,
     )();
   }
-  const invitations = await getUserInvitations({
+  const invitations = await getUsersInvitationsForOrganisation({
     userProfileIds: [user.userProfileId],
     organisationId,
     client,
@@ -85,7 +111,10 @@ export const updateOrganisationFeedback = async (params: {
     const userInvitation = await getInvitation({ client, ...params });
     ensureUserIsActive(userInvitation);
 
-    if (params.feedback.preferredTransports.length === 0) {
+    if (
+      params.feedback.preferredTransports.length === 0 &&
+      params.feedback.invitationStatusFeedback === "accepted"
+    ) {
       throw createError(
         ACCEPT_INVITATIONS_ERROR,
         "At least one preferred transport must be selected",
@@ -158,6 +187,42 @@ export const updateInvitationStatus = async (params: {
   }
 };
 
+export const getInvitationStatus = async (params: {
+  pg: PostgresDb;
+  userProfileId: string;
+}): Promise<{ userStatus: string }> => {
+  const client = await params.pg.pool.connect();
+  let statusResponse: QueryResult;
+
+  try {
+    statusResponse = await client.query<{ userStatus: string }>(
+      `
+          SELECT user_status as "userStatus" from users
+          WHERE user_profile_id = $1 
+          LIMIT 1
+        `,
+      [params.userProfileId],
+    );
+  } catch (error) {
+    const message = isNativeError(error) ? error.message : "unknown error";
+    const toOutput = createError(
+      ACCEPT_INVITATIONS_ERROR,
+      `Error on invitation feedback: ${message}`,
+      500,
+    )();
+
+    throw toOutput;
+  } finally {
+    client.release();
+  }
+
+  if (!statusResponse || statusResponse.rowCount === 0) {
+    throw createError(ACCEPT_INVITATIONS_ERROR, "Cannot find the user", 404)();
+  }
+
+  return statusResponse.rows[0];
+};
+
 const executeUpdateUserStatus = async (params: {
   client: PoolClient;
   feedback: InvitationFeedback;
@@ -175,7 +240,7 @@ const executeUpdateUserStatus = async (params: {
           user_profile_id as "userProfileId",
           importer_organisation_id as "importerOrganisationId",
           user_status as "userStatus",
-          correlation_quality as "correlationQuality"  
+          correlation_quality as "correlationQuality"
       `,
       [feedback.userStatusFeedback, params.userProfileId],
     );

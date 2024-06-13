@@ -230,7 +230,6 @@ export type GetDigitalWallet = Base & {
   deviceType: "ios" | "android" | undefined;
   appStoreEmail: string;
   myGovIdEmail: string;
-  isGovernmentEmployee: boolean;
   govIEEmail: string;
   confirmedApplication: string;
   rejectReason: string;
@@ -247,7 +246,6 @@ export function emptyGetDigitalWallet(): GetDigitalWallet {
     hasConfirmedPersonalDetails: false,
     deviceType: undefined,
     appStoreEmail: "",
-    isGovernmentEmployee: false,
     myGovIdEmail: "",
     govIEEmail: "",
     confirmedApplication: "",
@@ -345,8 +343,7 @@ export async function getFlowData<T extends Workflow>(
   defaultData: T,
 ) {
   // Session details
-  const { userId, email, firstName, lastName, myGovIdEmail } =
-    await PgSessions.get();
+  const { userId, email, firstName, lastName } = await PgSessions.get();
 
   const flowQuery = postgres.pgpool.query<{ data: Workflow }, [string, string]>(
     `
@@ -379,7 +376,7 @@ export async function getFlowData<T extends Workflow>(
   }
 
   if ("myGovIdEmail" in data) {
-    data.myGovIdEmail = myGovIdEmail;
+    data.myGovIdEmail = email;
   }
 
   if (flowResult.rowCount) {

@@ -10,7 +10,7 @@ import {
 } from "../../../types/schemaDefinitions";
 import { createMessage } from "../../messages/messages";
 import { PostgresDb } from "@fastify/postgres";
-import { getUserInvitations } from "./shared-invitations";
+import { getUsersInvitationsForOrganisation } from "./shared-invitations";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
 const AVAILABLE_TRANSPORTS = ["sms", "email"];
@@ -35,7 +35,7 @@ export const sendInvitationsForUsersImport = async (params: {
   });
   const client = await pg.pool.connect();
   try {
-    const userInvitations = await getUserInvitations({
+    const userInvitations = await getUsersInvitationsForOrganisation({
       userProfileIds: importedUserProfileIds,
       organisationId: toImportUsers.organisationId,
       client,

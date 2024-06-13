@@ -10,6 +10,7 @@ import multiChannel from "../../../public/landingPage/multi_channel.png";
 import template from "../../../public/landingPage/template.png";
 import postbox from "../../../public/landingPage/postbox.png";
 import type { Metadata } from "next";
+import { getLinks } from "../../utils/messaging";
 
 export const metadata: Metadata = {
   title: "Messaging",
@@ -21,32 +22,16 @@ type Props = {
   };
 };
 
-const availableLinks = {
-  DEV: {
-    learnMoreForm:
-      "https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22",
-    feedbackLink:
-      "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
-  },
-  STA: {
-    learnMoreForm:
-      "https://www.formsg.testing.gov.ie/en/664b6de45f7c9800231daf22",
-    feedbackLink:
-      "https://www.formsg.testing.gov.ie/en/664c61ba5f7c9800231db294",
-  },
-};
-
 export default async (props: Props) => {
   const t = await getTranslations("LandingPage");
   const tBanner = await getTranslations("AlphaBanner");
-  //Let's hardcode Dev for now, in a separate PR - we will add an env var to handle that
-  const environment = "DEV";
-  const links = availableLinks[environment];
+
+  const environment = String(process.env.ENVIRONMENT);
+  const links = getLinks(environment, props.params.locale);
 
   return (
     <>
-      <Header />
-
+      <Header locale={props.params.locale} />
       <div className="govie-width-container">
         <div className="govie-phase-banner">
           <p className="govie-phase-banner__content">
@@ -56,7 +41,7 @@ export default async (props: Props) => {
             <span className="govie-phase-banner__text">
               {tBanner.rich("bannerText", {
                 anchor: (chunks) => (
-                  <a className="govie-link" href={links.feedbackLink}>
+                  <a className="govie-link" href={links.feedbackLink.href}>
                     {chunks}
                   </a>
                 ),
@@ -70,6 +55,12 @@ export default async (props: Props) => {
         <div className="two-columns-layout">
           <div className="column">
             <h1 className="govie-heading-l">{t("sections.main.title")}</h1>
+            <p className="govie-body">{t("sections.main.listDescription")}</p>
+            <ul className="govie-list govie-list--bullet">
+              <li>{t("sections.main.listItem1")}</li>
+              <li>{t("sections.main.listItem2")}</li>
+              <li>{t("sections.main.listItem3")}</li>
+            </ul>
             <p className="govie-body">{t("sections.main.description")}</p>
           </div>
           <div className="column">
@@ -174,7 +165,7 @@ export default async (props: Props) => {
 
         <h2 className="govie-heading-m">{t("sections.getStarted.title")}</h2>
         <p className="govie-body">{t("sections.getStarted.description")}</p>
-        <a href={links.learnMoreForm}>
+        <a href={links.learnMoreForm.href}>
           <button
             id="button"
             data-module="govie-button"
@@ -197,9 +188,7 @@ export default async (props: Props) => {
           </button>
         </a>
       </div>
-
       <hr className="govie-section-break govie-section-break--xl" />
-
       <Footer />
     </>
   );

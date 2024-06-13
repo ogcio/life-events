@@ -27,14 +27,6 @@ export default async (props: {
 
     const formErrors: form.Error[] = [];
 
-    const isGovernmentEmployee = Boolean(formData.get("isGovernmentEmployee"));
-    formErrors.push(
-      ...form.validation.checkboxRequired(
-        form.fieldTranslationKeys.isGovernmentEmployee,
-        isGovernmentEmployee,
-      ),
-    );
-
     const govIEEmail = formData.get("govIEEmail")?.toString();
     formErrors.push(
       ...form.validation.emailErrors(
@@ -54,12 +46,8 @@ export default async (props: {
       return revalidatePath("/");
     }
 
-    const data: Pick<
-      workflow.GetDigitalWallet,
-      "govIEEmail" | "isGovernmentEmployee"
-    > = {
+    const data: Pick<workflow.GetDigitalWallet, "govIEEmail"> = {
       govIEEmail: "",
-      isGovernmentEmployee: false,
     };
 
     const formIterator = formData.entries();
@@ -68,7 +56,7 @@ export default async (props: {
     while (!iterResult.done) {
       const [key, value] = iterResult.value;
 
-      if (["govIEEmail", "jobTitle", "isGovernmentEmployee"].includes(key)) {
+      if (["govIEEmail", "jobTitle"].includes(key)) {
         data[key] = value;
       }
 
@@ -119,51 +107,12 @@ export default async (props: {
     (row) => row.field === form.fieldTranslationKeys.govIEEmail,
   );
 
-  const isGovernmentEmployeeError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.isGovernmentEmployee,
-  );
-
   return (
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds-from-desktop">
         <h1 className="govie-heading-l">{t("title")}</h1>
         <p className="govie-heading-s">{t("subTitle")}</p>
         <form action={submitAction} style={{ maxWidth: "590px" }}>
-          <div
-            className={`govie-form-group ${
-              isGovernmentEmployeeError ? "govie-form-group--error" : ""
-            }`.trim()}
-          >
-            <fieldset className="govie-fieldset" aria-describedby="">
-              {isGovernmentEmployeeError && (
-                <p id="nationality-error" className="govie-error-message">
-                  <span className="govie-visually-hidden">Error:</span>{" "}
-                  {errorT(isGovernmentEmployeeError.messageKey)}
-                </p>
-              )}
-              <div
-                className="govie-checkboxes govie-checkboxes--small"
-                data-module="govie-checkboxes"
-              >
-                <div className="govie-checkboxes__item">
-                  <input
-                    className="govie-checkboxes__input"
-                    id="isGovernmentEmployee"
-                    name="isGovernmentEmployee"
-                    type="checkbox"
-                    value="employment-tribunal"
-                  />
-                  <label
-                    className="govie-checkboxes__label"
-                    htmlFor="isGovernmentEmployee"
-                  >
-                    {t("checkbox")}
-                  </label>
-                </div>
-              </div>
-            </fieldset>
-          </div>
-
           <p className="govie-heading-s">{t("paragraph")}</p>
           <div
             className={`govie-form-group ${

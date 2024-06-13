@@ -12,6 +12,7 @@ import VerifyLevel1 from "./VerifyLevel1";
 import ChangeDetails from "./ChangeDetails";
 import DeviceSelection from "./DeviceSelection";
 import EmailVerification from "./EmailVerification";
+import { sendAnalytics } from "analytics/utils/sendAnalytics";
 
 const getDigitalWalletRulesVerified: Parameters<
   typeof workflow.getCurrentStep<workflow.GetDigitalWallet>
@@ -30,7 +31,7 @@ const getDigitalWalletRulesVerified: Parameters<
   },
   //Rule 2: Check if employment details are populated
   (params) =>
-    Boolean(params.govIEEmail && params.isGovernmentEmployee)
+    Boolean(params.govIEEmail)
       ? { key: null, isStepValid: true }
       : {
           key: routes.digitalWallet.getDigitalWallet.governmentDetails.slug,
@@ -342,6 +343,16 @@ export default async (props: web.NextPageProps) => {
     workflow.keys.getDigitalWallet,
     workflow.emptyGetDigitalWallet(),
   );
+
+  sendAnalytics({
+    userId: userId,
+    category: "GetDigitalWallet",
+    action: "Verification Level",
+    name: `Level ${verificationLevel}`,
+    customDimensions: {
+      dimension1: verificationLevel,
+    },
+  });
 
   const rules = verificationLevelToRulesMap[verificationLevel];
 
