@@ -8,10 +8,7 @@ import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 
 export default async (props: MessageCreateProps) => {
-  const [t, tError] = await Promise.all([
-    getTranslations("sendAMessage.ComposeMessageMeta"),
-    getTranslations("formErrors"),
-  ]);
+  const t = await getTranslations("sendAMessage.ComposeMessageMeta");
   async function submit(formData: FormData) {
     "use server";
 
