@@ -22,15 +22,8 @@ export default async (props: MessageCreateProps) => {
 
     const update: Pick<
       Parameters<typeof api.upsertMessageState>[0],
-      "templateInterpolations" | "submittedContentAt"
+      "submittedContentAt"
     > = {
-      templateInterpolations: values.reduce<Record<string, string>>(
-        (acc, pair) => {
-          acc[pair.key] = pair.value;
-          return acc;
-        },
-        {},
-      ),
       submittedContentAt: new Date().toISOString(),
     };
     const next = Object.assign({}, props.state, update);
@@ -71,39 +64,10 @@ export default async (props: MessageCreateProps) => {
       <label className="govie-label--s">{t("excerptLabel")}</label>
       <p className="govie-body">{template?.excerpt}</p>
 
-      <label className="govie-label--s">{t("richTextLabel")}</label>
-      <p className="govie-body">{template?.richText}</p>
-
       <label className="govie-label--s">{t("plainTextLabel")}</label>
       <p className="govie-body">{template?.plainText}</p>
 
-      <hr className="govie-section-break govie-section-break--visible" />
-
-      <h3>
-        <span style={{ margin: "unset" }} className="govie-heading-l">
-          {t("variablesLabel")}
-        </span>
-      </h3>
       <form action={action}>
-        {templateResult?.fields?.map((field) => (
-          <div
-            key={field.fieldName}
-            className={
-              !Boolean(false)
-                ? "govie-form-group"
-                : "govie-form-group govie-form-group--error"
-            }
-          >
-            <label htmlFor="host" className="govie-body">
-              {field.fieldName}
-            </label>
-            <div className="govie-hint" id="input-field-hint">
-              {field.fieldType}
-            </div>
-            <input type="text" name={field.fieldName} className="govie-input" />
-          </div>
-        ))}
-
         <button className="govie-button" type="submit">
           {t("continueButtonText")}
         </button>

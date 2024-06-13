@@ -24,35 +24,15 @@ const next = { key: null, isStepValid: true };
 const rules: Parameters<typeof getCurrentStep<ApiMessageState>>[0] = [
   // First meta selection step
   (state) =>
-    Boolean(state.submittedMetaAt)
+    Boolean(state.submittedMetaAt && state.templateMetaId)
       ? next
       : { key: metaSlug, isStepValid: true },
 
   // Template
   (state) =>
-    Boolean(state.templateMetaId && !state.submittedContentAt)
+    Boolean(state.templateMetaId) && !Boolean(state.submittedContentAt)
       ? { key: templateSlug, isStepValid: true }
       : next,
-
-  // Content
-  (state) => {
-    if (state.submittedContentAt) {
-      return next;
-    }
-
-    return {
-      key: contentSlug,
-      isStepValid: Boolean(state.subject && state.plainText && state.excerpt),
-    };
-  },
-
-  // Preview
-  (state) => {
-    if (state.confirmedContentAt) {
-      return next;
-    }
-    return { key: previewSlug, isStepValid: true };
-  },
 
   // Receients
   (state) => {
