@@ -374,10 +374,5 @@ paths:
                   - detail
                   - request_id
                   - name
-  /logto/mock/users:
-    get:
-      responses:
-        "200":
-          description: Default Response
 tags:
   - name: AuthService
