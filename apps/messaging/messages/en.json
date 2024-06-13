@@ -295,8 +295,8 @@
       "lastName": "Last Name",
       "birthDate": "Date Of Birth",
       "userProfileStatuses": {
-        "found": "Found",
-        "notFound": "Not Found"
+        "found": "Connected",
+        "notFound": "Pending"
       },
       "invitationStatus": "Status",
       "invitationStatuses": {
