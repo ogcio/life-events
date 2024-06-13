@@ -881,6 +881,9 @@
       "title": "Life events",
       "renewDriversLicence": "Driving licence renewal",
       "dateColumn": "Date",
+      "nameColumn": "Name",
+      "deviceColumn": "Device type",
+      "verifiedWorkEmail": "Verified work email",
       "typeColumn": "Submission",
       "statusColumn": "Status",
       "actionColumn": "Action",
@@ -897,7 +900,7 @@
       "nameColumn": "name",
       "myGovIdEmailColumn": "MyGovID email",
       "workEmailColumn": "Work email",
-      "applicationStatusColumn": "ApplicationStatus"
+      "applicationStatusColumn": "Application status"
     },
     "StatusMenu": {
       "pending": "Pending",
