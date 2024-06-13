@@ -24,6 +24,10 @@ export default async (props: MessageCreateProps) => {
       preferredTransportations.push("sms");
     }
 
+    if (Boolean(formData.get("life-event"))) {
+      preferredTransportations.push("lifeEvent");
+    }
+
     await api.upsertMessageState(
       Object.assign({}, props.state, {
         submittedMetaAt: dayjs().toISOString(),
@@ -67,7 +71,6 @@ export default async (props: MessageCreateProps) => {
                   name="email"
                   type="checkbox"
                   value="email"
-                  defaultChecked={true}
                 />
                 <label
                   className="govie-label--s govie-checkboxes__label"
@@ -89,6 +92,21 @@ export default async (props: MessageCreateProps) => {
                   htmlFor="sms"
                 >
                   {t("sms")}
+                </label>
+              </div>
+              <div className="govie-checkboxes__item">
+                <input
+                  className="govie-checkboxes__input"
+                  id="life-event"
+                  name="life-event"
+                  type="checkbox"
+                  value="life-event"
+                />
+                <label
+                  className="govie-label--s govie-checkboxes__label"
+                  htmlFor="life-event"
+                >
+                  {t("lifeEvent")}
                 </label>
               </div>
               <div className="govie-checkboxes__item">

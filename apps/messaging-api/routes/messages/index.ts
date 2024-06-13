@@ -58,7 +58,11 @@ export default async function messages(app: FastifyInstance) {
       preValidation: app.verifyUser,
       schema: {
         tags: MESSAGES_TAGS,
-        querystring: Type.Optional(Type.Object({})),
+        querystring: Type.Optional(
+          Type.Object({
+            type: Type.String(),
+          }),
+        ),
         response: {
           200: Type.Object({
             data: ReadMessagesSchema,
@@ -69,7 +73,11 @@ export default async function messages(app: FastifyInstance) {
     },
     async function getMessagesHandler(request, _reply) {
       return {
-        data: await getMessages({ pg: app.pg, userId: request.user!.id }),
+        data: await getMessages({
+          pg: app.pg,
+          userId: request.user!.id,
+          transportType: request.query?.type,
+        }),
       };
     },
   );
