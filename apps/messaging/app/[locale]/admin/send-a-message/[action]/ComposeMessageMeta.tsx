@@ -137,8 +137,8 @@ export default async (props: MessageCreateProps) => {
               {t("chooseTemplateHeading")}
             </span>
           </h3>
+
           <select className="govie-select" name="templateMetaId">
-            <option value="">{t("emptyTemplateOption")}</option>
             {templates?.map((template) => (
               <option
                 key={template.templateMetaId}
@@ -149,7 +149,12 @@ export default async (props: MessageCreateProps) => {
             ))}
           </select>
         </div>
-        <button className="govie-button" type="submit">
+
+        <button
+          className="govie-button"
+          type="submit"
+          disabled={!Boolean(templates?.length)}
+        >
           {t("submitText")}
         </button>
       </form>
