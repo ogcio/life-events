@@ -84,6 +84,7 @@ export const UserDetailsSchema = Type.Object({
     ],
     { default: null },
   ),
+  collectedConsent: Type.Boolean({ default: false }),
 });
 export type UserDetails = Static<typeof UserDetailsSchema>;
 
@@ -154,6 +155,7 @@ export const CsvRecordSchema = Type.Object({
   addressCountry: NullableOptionalStringType,
   addressRegion: NullableOptionalStringType,
   tags: NullableOptionalStringType,
+  collectedConsent: NullableOptionalStringType,
 });
 export type CsvRecord = Static<typeof CsvRecordSchema>;
 

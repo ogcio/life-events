@@ -478,6 +478,7 @@ const extractUserDetails = (toImportUser: ToImportUser): UserDetails => ({
   lastName: toImportUser.lastName,
   birthDate: toImportUser.birthDate,
   address: toImportUser.address,
+  collectedConsent: toImportUser.collectedConsent,
 });
 
 const getUserProfile = async (params: {
