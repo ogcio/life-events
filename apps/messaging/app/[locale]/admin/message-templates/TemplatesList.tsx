@@ -7,6 +7,7 @@ import {
   templateRoutes,
   urlWithSearchParams,
 } from "../../../utils/routes";
+import { LANG_EN } from "../../../../types/shared";
 
 export default async (props: { locale: string }) => {
   const t = await getTranslations("MessageTemplates");
@@ -41,7 +42,7 @@ export default async (props: { locale: string }) => {
                   urlWithSearchParams(
                     `${props.locale}/${templateRoutes.url}`,
                     { key: "id", value: template.templateMetaId },
-                    { key: "lang", value: "en" },
+                    { key: "lang", value: LANG_EN },
                   ).href
                 }
               >
