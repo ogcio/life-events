@@ -111,7 +111,10 @@ export const updateOrganisationFeedback = async (params: {
     const userInvitation = await getInvitation({ client, ...params });
     ensureUserIsActive(userInvitation);
 
-    if (params.feedback.preferredTransports.length === 0) {
+    if (
+      params.feedback.preferredTransports.length === 0 &&
+      params.feedback.invitationStatusFeedback === "accepted"
+    ) {
       throw createError(
         ACCEPT_INVITATIONS_ERROR,
         "At least one preferred transport must be selected",
