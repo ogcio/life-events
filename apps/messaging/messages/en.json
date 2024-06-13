@@ -308,12 +308,7 @@
       "statusTableHeader": "Status",
       "transportsTableHeader": "Transports",
       "editLink": "Edit",
-      "actionTableHeader": "Action",
-      "statuses": {
-        "pending": "Pending",
-        "accepted": "Accepted",
-        "declined": "Declined"
-      }
+      "actionTableHeader": "Action"
     },
     "Organisation": {
       "title": "Organisation Configuration",
@@ -323,7 +318,12 @@
       "selectInvitationStatus": "Invitation Status",
       "minimumOneTransport": "If you accept the invitation, you must choose at least one transport",
       "backLink": "Back",
-      "updateButton": "Update"
+      "updateButton": "Update",
+      "statuses": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "declined": "Declined"
+      }
     }
   }
 }
