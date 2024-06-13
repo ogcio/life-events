@@ -27,6 +27,7 @@ export default async () => {
       await uploadClient.importUsersCsv(file as File);
 
       revalidatePath(usersImports.url);
+      return;
     }
     toStoreErrors.push({
       errorValue: "",
