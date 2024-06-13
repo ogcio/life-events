@@ -163,7 +163,7 @@ paths:
       responses:
         "200":
           description: Default Response
-  /mock/auth:
+  /logto/mock/auth:
     get:
       tags:
         - Mock
@@ -228,7 +228,12 @@ paths:
                   - detail
                   - request_id
                   - name
-  /mock/token:
+  /logto/mock/login:
+    post:
+      responses:
+        "200":
+          description: Default Response
+  /logto/mock/token:
     post:
       tags:
         - Mock
@@ -314,7 +319,7 @@ paths:
                   - detail
                   - request_id
                   - name
-  /mock/keys:
+  /logto/mock/keys:
     get:
       tags:
         - Mock
@@ -369,5 +374,10 @@ paths:
                   - detail
                   - request_id
                   - name
+  /logto/mock/users:
+    get:
+      responses:
+        "200":
+          description: Default Response
 tags:
   - name: AuthService

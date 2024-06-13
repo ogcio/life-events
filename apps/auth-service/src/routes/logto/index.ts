@@ -1,7 +1,17 @@
 import { FastifyInstance } from "fastify";
+import fs from "fs";
+import path, { dirname } from "path";
+import { exportJWK } from "jose";
+import { fileURLToPath } from "url";
 import { Type } from "@sinclair/typebox";
+import {
+  createMockSignedJwt,
+  getPublicKey,
+  streamToString,
+} from "./utils/index.js";
 import { HttpError } from "../../types/httpErrors.js";
-import { exportJWK, importSPKI } from "jose";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default async function login(app: FastifyInstance) {
   app.get<{
@@ -32,11 +42,53 @@ export default async function login(app: FastifyInstance) {
     async (request, reply) => {
       const { redirect_uri, state } = request.query;
 
-      const authorizeUrl = `${app.config.MYGOVID_MOCK_URL}?redirect_uri=${redirect_uri}&state=${state}`;
+      const stream = fs.createReadStream(
+        path.join(__dirname, "mock-login.html"),
+      );
 
-      return reply.redirect(authorizeUrl);
+      const result = (await streamToString(stream))
+        .replace("%REDIRECT_URL%", redirect_uri)
+        .replace("%STATE%", state);
+      return reply.type("text/html").send(result);
     },
   );
+
+  app.post<{
+    Body: {
+      password: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      redirect_url: string;
+      state: string;
+    };
+  }>("/login", async (request, reply) => {
+    const { password, firstName, lastName, email, redirect_url, state } =
+      request.body;
+
+    if (password !== "123")
+      reply.redirect(
+        `/logto/mock/auth?redirect_uri=${redirect_url}&state=${state}`,
+      );
+
+    await app.pg.query(
+      `
+      WITH get AS (
+          SELECT id, is_public_servant FROM users WHERE govid_email=$1
+        ), insert_new AS (
+            INSERT INTO users(govid_email, govid, user_name, is_public_servant)
+            values($1, $2, $3, $4)
+            ON CONFLICT DO NOTHING
+            RETURNING id, is_public_servant
+        )
+        SELECT * FROM get UNION SELECT * FROM insert_new`,
+      [email, "not needed atm", [firstName, lastName].join(" "), false],
+    );
+
+    const id_token = await createMockSignedJwt(firstName, lastName, email);
+
+    return reply.redirect(`${redirect_url}?code=${id_token}&state=${state}`);
+  });
 
   app.post<{
     Body: {
@@ -134,9 +186,7 @@ export default async function login(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const key = process.env.JWK_PUBLIC_KEY!;
-
-      const publicKey = await importSPKI(key, "RS256");
+      const publicKey = await getPublicKey();
       const { kty, n, e } = await exportJWK(publicKey);
 
       return {
@@ -144,4 +194,9 @@ export default async function login(app: FastifyInstance) {
       };
     },
   );
+
+  app.get("/users", async (request, reply) => {
+    const res = await app.pg.query("select * from users");
+    return { users: res.rows };
+  });
 }

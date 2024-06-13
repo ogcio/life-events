@@ -110,44 +110,6 @@ export default async function (app, opts) {
     return reply.type("text/html").send(result);
   });
 
-  app.get("/authorize-mock", async (request, reply) => {
-    const redirectUrl = request.query.redirect_uri;
-
-    const stream = fs.createReadStream(
-      path.join(__dirname, "..", "mock-login.html"),
-    );
-
-    const result = (await streamToString(stream))
-      .replace(REDIRECT_URL, redirectUrl)
-      .replace("%STATE%", request.query.state);
-    return reply.type("text/html").send(result);
-  });
-
-  app.post("/auth-mock", async (request, reply) => {
-    const { password, firstName, lastName, email, redirect_url, state } =
-      request.body;
-
-    if (password !== "123") reply.redirect("/static/login/api/authorize-mock");
-
-    await app.pg.query(
-      `
-      WITH get AS (
-          SELECT id, is_public_servant FROM users WHERE govid_email=$1
-        ), insert_new AS (
-            INSERT INTO users(govid_email, govid, user_name, is_public_servant)
-            values($1, $2, $3, $4)
-            ON CONFLICT DO NOTHING
-            RETURNING id, is_public_servant
-        )
-        SELECT * FROM get UNION SELECT * FROM insert_new`,
-      [email, "not needed atm", [firstName, lastName].join(" "), false],
-    );
-
-    const id_token = await createMockSignedJwt(firstName, lastName, email);
-
-    return reply.redirect(`${redirect_url}?code=${id_token}&state=${state}`);
-  });
-
   app.post("/token", async (request, reply) => {
     const code = request.query.code;
     const id_token = code;
