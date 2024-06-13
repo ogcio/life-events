@@ -10,12 +10,7 @@ import multiChannel from "../../../public/landingPage/multi_channel.png";
 import template from "../../../public/landingPage/template.png";
 import postbox from "../../../public/landingPage/postbox.png";
 import type { Metadata } from "next";
-import {
-  envDevelopment,
-  envProduction,
-  envStaging,
-  envUAT,
-} from "../../utils/messaging";
+import { getLinks } from "../../utils/messaging";
 
 export const metadata: Metadata = {
   title: "Messaging",
@@ -25,38 +20,6 @@ type Props = {
   params: {
     locale: string;
   };
-};
-
-const getLinks = (environment: string, locale: string) => {
-  locale = locale || "en";
-  switch (environment) {
-    case envUAT:
-    case envStaging:
-    case envDevelopment:
-      return {
-        learnMoreForm: new URL(
-          `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.formsg.testing.gov.ie",
-        ),
-        feedbackLink: new URL(
-          `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
-        ),
-      };
-
-    default:
-    case envProduction:
-      return {
-        learnMoreForm: new URL(
-          `${locale}/664ccbf2b644d000246cfd78`,
-          "https://www.forms.gov.ie",
-        ),
-        feedbackLink: new URL(
-          `${locale}/664ccbdb0700c50024c53899`,
-          "https://www.forms.gov.ie",
-        ),
-      };
-  }
 };
 
 export default async (props: Props) => {

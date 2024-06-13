@@ -105,3 +105,52 @@ export const envUAT = "UAT";
 export const envDevelopment = "DEV";
 export const envStaging = "STA";
 export const envProduction = "PRD";
+
+export const getLinks = (
+  environment: string,
+  locale: string,
+): { feedbackLink: URL; homePageUrl: URL; learnMoreForm: URL } => {
+  locale = locale || "en";
+  const nonProdFeedbackLink = new URL(
+    `${locale}/664c61ba5f7c9800231db294`,
+    "https://www.formsg.testing.gov.ie",
+  );
+  const nonProdLearnMoreForm = new URL(
+    `${locale}/664b6de45f7c9800231daf22`,
+    "https://www.formsg.testing.gov.ie",
+  );
+
+  switch (environment) {
+    case envUAT:
+      return {
+        homePageUrl: new URL("", "https://uat.blocks.gov.ie"),
+        feedbackLink: nonProdFeedbackLink,
+        learnMoreForm: nonProdLearnMoreForm,
+      };
+    case envStaging:
+      return {
+        homePageUrl: new URL("", "https://sta.blocks.gov.ie"),
+        feedbackLink: nonProdFeedbackLink,
+        learnMoreForm: nonProdLearnMoreForm,
+      };
+    case envDevelopment:
+      return {
+        homePageUrl: new URL("", "https://dev.blocks.gov.ie"),
+        feedbackLink: nonProdFeedbackLink,
+        learnMoreForm: nonProdLearnMoreForm,
+      };
+    case envProduction:
+    default:
+      return {
+        feedbackLink: new URL(
+          `${locale}/664ccbdb0700c50024c53899`,
+          "https://www.forms.gov.ie",
+        ),
+        homePageUrl: new URL("", "https://blocks.gov.ie"),
+        learnMoreForm: new URL(
+          `${locale}/664ccbf2b644d000246cfd78`,
+          "https://www.forms.gov.ie",
+        ),
+      };
+  }
+};

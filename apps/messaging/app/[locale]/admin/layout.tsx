@@ -1,36 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import Footer from "../Footer";
 import Header from "../Header";
-import {
-  envDevelopment,
-  envStaging,
-  envUAT,
-  envProduction,
-} from "../../utils/messaging";
-
-const getLinks = (environment: string, locale: string) => {
-  locale = locale || "en";
-  switch (environment) {
-    case envUAT:
-    case envStaging:
-    case envDevelopment:
-      return {
-        feedbackLink: new URL(
-          `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
-        ),
-      };
-
-    case envProduction:
-    default:
-      return {
-        feedbackLink: new URL(
-          `${locale}/664ccbdb0700c50024c53899`,
-          "https://www.forms.gov.ie",
-        ),
-      };
-  }
-};
+import { getLinks } from "../../utils/messaging";
 
 export default async ({
   children,
