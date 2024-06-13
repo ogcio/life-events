@@ -29,7 +29,7 @@ export default async (props: EventTableProps) => {
       query += ` WHERE (flow_data ->> 'successfulAt') != ''`;
       break;
     case "submitted":
-      query += ` WHERE (flow_data ->> 'confirmedApplication') != ''`;
+      query += ` WHERE (flow_data ->> 'confirmedApplication') != '' AND (flow_data ->> 'successfulAt') = '' AND (flow_data ->> 'rejectReason') = ''`;
       break;
     case undefined:
     default:
