@@ -282,6 +282,16 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
+  async getUsers(organisationId?: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/imports/users",
+      {
+        params: { query: { organisationId } },
+      },
+    );
+    return { error, data: data?.data };
+  }
+
   async getMockOrganisationId() {
     const { error, data } = await this.client.GET(
       "/api/v1/users/imports/mock-organisation-id",

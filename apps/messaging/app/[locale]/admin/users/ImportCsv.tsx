@@ -1,13 +1,16 @@
 import { PgSessions } from "auth/sessions";
-import dayjs from "dayjs";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import React from "react";
 import { revalidatePath } from "next/cache";
-import { usersImports } from "../../../../utils/routes";
+import { users as usersRoute } from "../../../utils/routes";
 import { temporaryMockUtils } from "messages";
-import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
+import {
+  searchKeyListType,
+  searchValueImports,
+} from "../../../utils/messaging";
+import { RedirectType, redirect } from "next/navigation";
 
 type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
 
@@ -22,12 +25,14 @@ export default async () => {
 
     const toStoreErrors: FormErrors = [];
     const castedFile = file ? (file as File) : null;
-    if (file && castedFile && (castedFile.size ?? 0) > 0) {
+    if (file && (castedFile?.size ?? 0) > 0) {
       const uploadClient = new Messaging(userId);
       await uploadClient.importUsersCsv(file as File);
 
-      revalidatePath(usersImports.url);
-      return;
+      const url = new URL(usersRoute.url, process.env.HOST_URL);
+      url.searchParams.append(searchKeyListType, searchValueImports);
+
+      return redirect(url.href, RedirectType.replace);
     }
     toStoreErrors.push({
       errorValue: "",
@@ -38,7 +43,7 @@ export default async () => {
     await temporaryMockUtils.createErrors(
       toStoreErrors,
       userId,
-      `${organisationId}_imports`,
+      `${organisationId}_import_csv`,
     );
     return revalidatePath("/");
   }
@@ -51,12 +56,10 @@ export default async () => {
   const messagingClient = new Messaging(userId);
   const { data: organisationId } =
     await messagingClient.getMockOrganisationId();
-  const { data: imports } =
-    await messagingClient.getUsersImports(organisationId);
 
   const formErrors = await temporaryMockUtils.getErrors(
     userId,
-    `${organisationId}_imports`,
+    `${organisationId}_import_csv`,
   );
   const csvErrors = formErrors.filter(
     (value) => value.field === CSV_FILE_FIELD,
@@ -64,8 +67,7 @@ export default async () => {
   const csvError = csvErrors.length === 0 ? null : csvErrors[0];
 
   return (
-    <FlexMenuWrapper>
-      <h1 className="govie-heading-l">{t("header")}</h1>
+    <>
       <Link href="/api/users-csv" target="_blank">
         {t("downloadFileBtn")}
       </Link>
@@ -105,52 +107,6 @@ export default async () => {
           {t("confirmUploadBtn")}
         </button>
       </form>
-      <table className="govie-table">
-        <thead className="govie-table__head">
-          <tr className="govie-table__row">
-            <th scope="col" className="govie-table__header">
-              {t("table.importedAt")}
-            </th>
-            <th scope="col" className="govie-table__header">
-              {t("table.importChannel")}
-            </th>
-            <th scope="col" className="govie-table__header">
-              {t("table.actions.label")}
-            </th>
-          </tr>
-        </thead>
-        <tbody className="govie-table__body">
-          {imports?.map((record) => (
-            <tr key={record.importId} className="govie-table__row">
-              <th
-                className="govie-table__cell govie-!-font-weight-regular"
-                scope="row"
-              >
-                {dayjs(record.importedAt).format("DD/MM/YYYY HH:mm:ss")}
-              </th>
-              <th
-                className="govie-table__cell govie-!-font-weight-regular"
-                scope="row"
-              >
-                {record.importChannel}
-              </th>
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                <Link
-                  className="govie-link govie-!-margin-right-3"
-                  href={
-                    new URL(
-                      `/admin/users/imports/${record.importId}`,
-                      process.env.HOST_URL,
-                    ).href
-                  }
-                >
-                  {t("table.actions.view")}
-                </Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </FlexMenuWrapper>
+    </>
   );
 };
