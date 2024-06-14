@@ -112,10 +112,10 @@ export default async () => {
               {t("table.importedAt")}
             </th>
             <th scope="col" className="govie-table__header">
-              {t("table.importId")}
+              {t("table.importChannel")}
             </th>
             <th scope="col" className="govie-table__header">
-              {t("table.importChannel")}
+              {t("table.actions.label")}
             </th>
           </tr>
         </thead>
@@ -132,7 +132,11 @@ export default async () => {
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
+                {record.importChannel}
+              </th>
+              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                 <Link
+                  className="govie-link govie-!-margin-right-3"
                   href={
                     new URL(
                       `/admin/users/imports/${record.importId}`,
@@ -140,15 +144,9 @@ export default async () => {
                     ).href
                   }
                 >
-                  {record.importId}
+                  {t("table.actions.view")}
                 </Link>
-              </th>
-              <th
-                className="govie-table__cell govie-!-font-weight-regular"
-                scope="row"
-              >
-                {record.importChannel}
-              </th>
+              </td>
             </tr>
           ))}
         </tbody>

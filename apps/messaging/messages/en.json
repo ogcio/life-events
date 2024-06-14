@@ -7,7 +7,7 @@
     "messages": "Messages",
     "providers": "Providers",
     "templates": "Message templates",
-    "usersImports": "Users Imports",
+    "usersImports": "Citizens Imports",
     "userSettings": "Settings"
   },
   "MessageTemplates": {
@@ -270,30 +270,45 @@
     }
   },
   "UsersImports": {
-    "header": "Users Imports",
+    "header": "Citizens Imports",
     "uploadFileBtn": "Upload CSV File",
     "confirmUploadBtn": "Send",
     "downloadFileBtn": "Download CSV Template",
     "table": {
       "importedAt": "Imported At",
       "importChannel": "Import Channel",
-      "importId": "Import Id"
+      "importId": "Import Id",
+      "actions": {
+        "label": "Actions",
+        "view": "View"
+      }
     }
   },
   "UsersImport": {
+    "title": "Citizens Import",
     "table": {
       "importIndex": "Index",
       "phoneNumber": "Phone Number",
       "emailAddress": "Email",
       "importStatus": "Import Status",
       "importError": "Import Error",
-      "relatedUserProfileId": "User Profile Id",
+      "relatedUserProfileId": "User Profile",
       "relatedUserId": "User Id",
       "tags": "Tags",
       "publicIdentityId": "PPSN",
       "firstName": "First Name",
       "lastName": "Last Name",
-      "birthDate": "Date Of Birth"
+      "birthDate": "Date Of Birth",
+      "userProfileStatuses": {
+        "found": "Connected",
+        "notFound": "Pending"
+      },
+      "invitationStatus": "Status",
+      "invitationStatuses": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "declined": "Declined"
+      }
     }
   },
   "userSettings": {

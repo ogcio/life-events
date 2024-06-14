@@ -22,21 +22,32 @@ export default async (props: { params: { importId: string } }) => {
     true,
   );
 
-  if (error || !userImport) {
+  const { data: users, error: usersError } =
+    await messagingClient.getUsersForImport(
+      props.params.importId,
+      organisationId,
+    );
+
+  if (error || !userImport || usersError || !users) {
     throw notFound();
   }
 
+  const foundUserProfile = t("table.userProfileStatuses.found");
+  const notFoundUserProfile = t("table.userProfileStatuses.notFound");
+  const statuses = {
+    pending: t("table.invitationStatuses.pending"),
+    accepted: t("table.invitationStatuses.accepted"),
+    declined: t("table.invitationStatuses.declined"),
+  };
+
   return (
     <FlexMenuWrapper>
-      <h1 className="govie-heading-l">{userImport.importId}</h1>
-      <p className="govie-body">
-        {dayjs(userImport.importedAt).format("DD/MM/YYYY HH:mm:ss")}
-      </p>
+      <h1 className="govie-heading-l">{`${t("title")} - ${dayjs(userImport.importedAt).format("DD/MM/YYYY HH:mm:ss")}`}</h1>
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
             <th scope="col" className="govie-table__header">
-              {t("table.importIndex")}
+              {t("table.emailAddress")}
             </th>
             <th scope="col" className="govie-table__header">
               {t("table.publicIdentityId")}
@@ -48,60 +59,53 @@ export default async (props: { params: { importId: string } }) => {
               {t("table.lastName")}
             </th>
             <th scope="col" className="govie-table__header">
-              {t("table.birthDate")}
-            </th>
-            <th scope="col" className="govie-table__header">
-              {t("table.relatedUserId")}
-            </th>
-            <th scope="col" className="govie-table__header">
               {t("table.relatedUserProfileId")}
+            </th>
+            <th scope="col" className="govie-table__header">
+              {t("table.invitationStatus")}
             </th>
           </tr>
         </thead>
         <tbody className="govie-table__body">
-          {userImport.usersData.map((record) => (
-            <tr key={record.relatedUserId} className="govie-table__row">
+          {users.map((record) => (
+            <tr key={record.id} className="govie-table__row">
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.importIndex}
+                {record.email}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.publicIdentityId}
+                {record.details?.publicIdentityId}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.firstName}
+                {record.details?.firstName}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.lastName}
+                {record.details?.lastName}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.birthDate}
+                {record.userProfileId && record.userProfileId.length > 0
+                  ? foundUserProfile
+                  : notFoundUserProfile}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.relatedUserId}
-              </th>
-              <th
-                className="govie-table__cell govie-!-font-weight-regular"
-                scope="row"
-              >
-                {record.relatedUserProfileId ?? "NOT FOUND"}
+                {statuses[record.organisationInvitationStatus]}
               </th>
             </tr>
           ))}
