@@ -897,7 +897,7 @@
       "getDigitalWallet": "Application for a Digital Wallet"
     },
     "DigitalWalletPendingTable": {
-      "nameColumn": "name",
+      "nameColumn": "Name",
       "myGovIdEmailColumn": "MyGovID email",
       "workEmailColumn": "Work email",
       "applicationStatusColumn": "Application status"
