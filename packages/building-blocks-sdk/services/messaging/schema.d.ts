@@ -43,6 +43,11 @@ export interface paths {
   };
   "/api/v1/messages/": {
     get: {
+      parameters: {
+        query: {
+          type: string;
+        };
+      };
       responses: {
         /** @description Default Response */
         200: {
