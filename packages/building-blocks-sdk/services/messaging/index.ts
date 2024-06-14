@@ -22,10 +22,13 @@ export class Messaging {
   }
 
   async getMessages(type?: string) {
+    const params: Record<string, object> = {};
+
+    if (type) {
+      params.query = { type };
+    }
     const { error, data } = await this.client.GET("/api/v1/messages/", {
-      params: {
-        query: { type },
-      },
+      params,
     });
 
     return { error, data: data?.data };

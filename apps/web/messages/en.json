@@ -883,6 +883,7 @@
       "dateColumn": "Date",
       "nameColumn": "Name",
       "deviceColumn": "Device type",
+      "myGovIdEmailColumn": "MyGovID email",
       "verifiedWorkEmail": "Verified work email",
       "typeColumn": "Submission",
       "statusColumn": "Status",
@@ -897,7 +898,7 @@
       "getDigitalWallet": "Application for a Digital Wallet"
     },
     "DigitalWalletPendingTable": {
-      "nameColumn": "name",
+      "nameColumn": "Name",
       "myGovIdEmailColumn": "MyGovID email",
       "workEmailColumn": "Work email",
       "applicationStatusColumn": "Application status"

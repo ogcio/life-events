@@ -47,12 +47,6 @@ export default async (props: MessageCreateProps) => {
 
   const interpolationKeys = Object.keys(interpolations);
 
-  const richText = template
-    ? interpolationKeys.reduce(
-        utils.interpolationReducer(interpolations),
-        template.richText,
-      )
-    : props.state.richText;
   const plainText = template
     ? interpolationKeys.reduce(
         utils.interpolationReducer(interpolations),
