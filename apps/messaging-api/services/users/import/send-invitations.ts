@@ -11,10 +11,12 @@ import {
 } from "../../../types/schemaDefinitions";
 import { createMessage } from "../../messages/messages";
 import { PostgresDb } from "@fastify/postgres";
-import { getUserInvitationsForOrganisation } from "../shared-users";
+import {
+  AVAILABLE_TRANSPORTS,
+  getUserInvitationsForOrganisation,
+} from "../shared-users";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
-const AVAILABLE_TRANSPORTS = ["sms", "email"];
 
 export const sendInvitationsForUsersImport = async (params: {
   pg: PostgresDb;
