@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { RedirectType, redirect } from "next/navigation";
 import SideMenu from "../SideMenu";
 import { messages } from "../../utils";
+import { LANG_EN } from "../../../types/shared";
 
 export default async ({ children }: { children: React.ReactNode }) => {
   const { publicServant, firstName, lastName } = await PgSessions.get();
@@ -17,6 +18,7 @@ export default async ({ children }: { children: React.ReactNode }) => {
   return (
     <div style={{ display: "flex", gap: "30px", width: "100%" }}>
       <SideMenu
+        locale={headers().get("x-next-intl-locale")?.toString() || LANG_EN}
         options={await messages.sideMenuOptions(publicServant)}
         selected={selected}
         userName={`${firstName} ${lastName}`}

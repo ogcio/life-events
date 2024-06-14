@@ -4,6 +4,7 @@ import Link from "next/link";
 import ds from "design-system";
 import { messages } from "../utils";
 import styles from "./HamburgerMenu.module.scss";
+import { LANG_EN } from "../../types/shared";
 
 // TODO: Rebrand, genericify, move to shared components lib
 
@@ -11,6 +12,7 @@ type Props = {
   options: Awaited<ReturnType<typeof messages.sideMenuOptions>>;
   selected: string;
   userName: string;
+  locale: string;
 };
 
 function background(option: Props["options"][0], selected: string) {
@@ -51,7 +53,7 @@ export default (props: Props) => {
             style={{
               background: props.selected.includes(option.key) ? tintGold : "",
             }}
-            href={`/${option.url}`}
+            href={`/${props.locale ? props.locale : LANG_EN}/${option.url}`}
           >
             {option.icon ? (
               <ds.Icon
