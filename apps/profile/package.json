@@ -7,7 +7,6 @@
     "start": "next start -p 3003",
     "test:e2e": "playwright test",
     "migrate": "db-migrate up && db-migrate --config database-shared.json up:shared",
-    "migrate:down": "db-migrate down",
     "migrate:create": "db-migrate create $npm_config_name --sql-file"
   },
   "nodemonConfig": {
