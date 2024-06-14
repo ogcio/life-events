@@ -247,7 +247,9 @@ const processOrganizationUserRelation = async (params: {
 
   return insertNewOrganizationUserRelation({
     toInsert: {
-      invitationFeedbackAt: null,
+      invitationFeedbackAt: params.consentGranted
+        ? new Date().toISOString()
+        : null,
       invitationSentAt: null,
       invitationStatus: toSetStatus,
       organisationId: params.organisationId,
