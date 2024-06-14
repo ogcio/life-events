@@ -883,6 +883,7 @@
       "dateColumn": "Date",
       "nameColumn": "Name",
       "deviceColumn": "Device type",
+      "myGovIdEmailColumn": "MyGovID email",
       "verifiedWorkEmail": "Verified work email",
       "typeColumn": "Submission",
       "statusColumn": "Status",
