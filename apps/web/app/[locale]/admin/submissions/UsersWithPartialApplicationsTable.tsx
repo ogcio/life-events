@@ -1,0 +1,111 @@
+import { getTranslations } from "next-intl/server";
+import Link from "next/link";
+import { postgres, web, workflow } from "../../../utils";
+import { pgpool as sharedPgPgool } from "auth/sessions";
+import { pgpool } from "../../../utils/postgres";
+
+type User = {
+  id: string;
+  govid_email: string;
+  govid: string;
+  user_name: string;
+  is_public_servant: boolean;
+};
+
+type DigitalWalletFlow = {
+  user_id: string;
+  category: "digital-wallet";
+  flow: "getDigitalWallet";
+  created_at: Date;
+  updated_at: Date;
+  flow_data: workflow.GetDigitalWallet;
+};
+
+export default async (props: web.NextPageProps) => {
+  const t = await getTranslations("Admin.DigitalWalletPendingTable");
+
+  // Step 1: Fetch users from the shared DB
+  const allUsersQuery = "SELECT * FROM users WHERE is_public_servant = false";
+  const usersQueryResult = await sharedPgPgool.query<User>(allUsersQuery);
+  // console.log(usersQueryResult.rows);
+
+  // Extract user IDs
+  const ids = usersQueryResult.rows.map((row) => row.id);
+
+  const usersWithPartial: (User & {
+    [K in keyof DigitalWalletFlow]?: DigitalWalletFlow[K];
+  })[] = [];
+  // Step 2: Fetch geDigitalWallet flow data for users registered
+  if (ids.length > 0) {
+    const partialFlowsQuery = `SELECT user_id, flow, flow_data FROM user_flow_data WHERE flow = 'getDigitalWallet' AND user_id = ANY($1)`;
+    const flowQueryResult = await pgpool.query<DigitalWalletFlow>(
+      partialFlowsQuery,
+      [ids],
+    );
+
+    // Step 3: Process and combine the results using efficient data structures
+    const userMap = new Map<string, User>(
+      usersQueryResult.rows.map((user) => [user.id, user]),
+    );
+
+    flowQueryResult.rows.forEach((row) => {
+      if (row.flow_data.confirmedApplication === "") {
+        const user = userMap.get(row.user_id);
+        if (user) {
+          usersWithPartial.push({ ...user, ...row });
+        }
+      }
+      // Mark users who have flow data
+      userMap.delete(row.user_id);
+    });
+
+    // Add remaining users without the specified flow
+    userMap.forEach((user) => {
+      usersWithPartial.push(user);
+    });
+  }
+
+  return (
+    <table className="govie-table">
+      <thead className="govie-table__head">
+        <tr className="govie-table__row">
+          <th scope="col" className="govie-table__header">
+            {t("nameColumn")}
+          </th>
+          <th scope="col" className="govie-table__header">
+            {t("myGovIdEmailColumn")}
+          </th>
+          <th scope="col" className="govie-table__header">
+            {t("workEmailColumn")}
+          </th>
+          <th scope="col" className="govie-table__header">
+            {t("applicationStatusColumn")}
+          </th>
+        </tr>
+      </thead>
+      <tbody className="govie-table__body">
+        {usersWithPartial.map((row) => {
+          return (
+            <tr key={row.id} className="govie-table__row">
+              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                {row.user_name}
+              </td>
+
+              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                {row.govid_email}
+              </td>
+
+              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                {row.flow_data?.govIEEmail}
+              </td>
+
+              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                {row.flow_data ? "Started" : "Not started"}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+};

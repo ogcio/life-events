@@ -881,6 +881,9 @@
       "title": "Life events",
       "renewDriversLicence": "Driving licence renewal",
       "dateColumn": "Date",
+      "nameColumn": "Name",
+      "deviceColumn": "Device type",
+      "verifiedWorkEmail": "Verified work email",
       "typeColumn": "Submission",
       "statusColumn": "Status",
       "actionColumn": "Action",
@@ -893,11 +896,17 @@
       "applyJobseekersAllowance": "Application for Jobseeker's Allowance",
       "getDigitalWallet": "Application for a Digital Wallet"
     },
+    "DigitalWalletPendingTable": {
+      "nameColumn": "name",
+      "myGovIdEmailColumn": "MyGovID email",
+      "workEmailColumn": "Work email",
+      "applicationStatusColumn": "Application status"
+    },
     "StatusMenu": {
-      "all": "All",
       "pending": "Pending",
+      "submitted": "Submitted",
       "approved": "Approved",
-      "closed": "Closed"
+      "rejected": "Rejected"
     }
   },
   "Timeline": {
