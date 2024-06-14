@@ -50,6 +50,12 @@ paths:
     get:
       tags: &a1
         - Messages
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: type
+          required: false
       responses:
         "200":
           description: Default Response

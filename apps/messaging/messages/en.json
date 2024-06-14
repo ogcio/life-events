@@ -3,7 +3,9 @@
     "sendMessage": "Send a message",
     "messages": "Messages",
     "providers": "Providers",
-    "templates": "Message templates"
+    "templates": "Message templates",
+    "usersImports": "Users Imports",
+    "userSettings": "Settings"
   },
   "MessageTemplates": {
     "menu": {
@@ -12,7 +14,6 @@
     },
     "createNewButton": "Create new",
     "title": "Saved messages",
-
     "form": {
       "addFormTitle": "Add new template",
       "editFormTitle": "Edit this template",
@@ -81,6 +82,7 @@
       "chooseTransportation": "Choose method of communication",
       "email": "Email",
       "sms": "SMS",
+      "lifeEvent": "Life events",
       "postalService": "Postal service",
       "message": "Message",
       "event": "Event",
@@ -124,7 +126,7 @@
       "richTextLabel": "Rich text",
       "plainTextLabel": "Plain text",
       "variablesLabel": "Variables",
-      "continueButtonText": "Continue to preview",
+      "continueButtonText": "Continue to recipients",
       "back": "Back"
     },
     "ScheduleForm": {
@@ -163,7 +165,8 @@
       "secretAccessKey": "secret access key",
       "excerpt": "excerpt",
       "templateName": "template name",
-      "plainText": "plain text"
+      "plainText": "plain text",
+      "file": "file"
     }
   },
   "settings": {
@@ -275,6 +278,9 @@
   },
   "UsersImports": {
     "header": "Users Imports",
+    "uploadFileBtn": "Upload CSV File",
+    "confirmUploadBtn": "Send",
+    "downloadFileBtn": "Download CSV Template",
     "table": {
       "importedAt": "Imported At",
       "importChannel": "Import Channel",
@@ -295,6 +301,35 @@
       "firstName": "First Name",
       "lastName": "Last Name",
       "birthDate": "Date Of Birth"
+    }
+  },
+  "userSettings": {
+    "Page": {
+      "organisationsLink": "Organisations",
+      "header": "Settings"
+    },
+    "Organisations": {
+      "title": "Organisations",
+      "organisationTableHeader": "Organisation",
+      "statusTableHeader": "Status",
+      "transportsTableHeader": "Transports",
+      "editLink": "Edit",
+      "actionTableHeader": "Action"
+    },
+    "Organisation": {
+      "title": "Organisation Configuration",
+      "chooseTransportation": "Choose methods of communication",
+      "email": "Email",
+      "sms": "SMS",
+      "selectInvitationStatus": "Invitation Status",
+      "minimumOneTransport": "If you accept the invitation, you must choose at least one transport",
+      "backLink": "Back",
+      "updateButton": "Update",
+      "statuses": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "declined": "Declined"
+      }
     }
   }
 }

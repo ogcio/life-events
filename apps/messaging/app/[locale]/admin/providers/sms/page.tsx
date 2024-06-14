@@ -48,7 +48,10 @@ async function getState(
     .then((res) => res.rows.at(0)?.state);
 }
 
-export default async (props: { searchParams?: { id: string } }) => {
+export default async (props: {
+  params: { locale: string };
+  searchParams?: { id: string };
+}) => {
   const [t, terror] = await Promise.all([
     getTranslations("settings.SmsProvider"),
     getTranslations("formErrors"),
@@ -117,8 +120,10 @@ export default async (props: { searchParams?: { id: string } }) => {
       }
       if (!error) {
         redirect(
-          new URL(`${providerRoutes.url}?provider=sms`, process.env.HOST_URL)
-            .href,
+          new URL(
+            `${props.params.locale}/${providerRoutes.url}?provider=sms`,
+            process.env.HOST_URL,
+          ).href,
         );
       }
     }
@@ -300,15 +305,17 @@ export default async (props: { searchParams?: { id: string } }) => {
         </button>
       </form>
 
-      <Link
+      <a
         href={
-          new URL(`${providerRoutes.url}?provider=sms`, process.env.HOST_URL)
-            .href
+          new URL(
+            `${props.params.locale}/${providerRoutes.url}?provider=sms`,
+            process.env.HOST_URL,
+          ).href
         }
         className="govie-back-link"
       >
         {t("backLink")}
-      </Link>
+      </a>
     </FlexMenuWrapper>
   );
 };
