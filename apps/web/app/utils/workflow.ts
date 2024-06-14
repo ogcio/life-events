@@ -221,6 +221,7 @@ export function emptyApplyJobseekersAllowance(): ApplyJobseekersAllowance {
     submittedAt: "",
   };
 }
+type DigitalWalletStatus = "submitted" | "approved" | "rejected" | "pending";
 
 export type GetDigitalWallet = Base & {
   firstName: string;
@@ -233,7 +234,7 @@ export type GetDigitalWallet = Base & {
   govIEEmail: string;
   confirmedApplication: string;
   rejectReason: string;
-  status: string;
+  status: DigitalWalletStatus;
   submittedAt: string;
   verifiedGovIEEmail: boolean;
 };
@@ -252,7 +253,7 @@ export function emptyGetDigitalWallet(): GetDigitalWallet {
     successfulAt: "",
     rejectedAt: "",
     rejectReason: "",
-    status: "",
+    status: "pending",
     submittedAt: "",
     verifiedGovIEEmail: false,
   };

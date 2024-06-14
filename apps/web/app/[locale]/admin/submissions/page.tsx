@@ -40,8 +40,6 @@ export default async (props: web.NextPageProps) => {
 
   const Component = componentsMap[props.searchParams?.status ?? "submitted"];
 
-  const status = props.searchParams?.status as Pages;
-
   return (
     <>
       <h1 className="govie-heading-l">{t("title")}</h1>
