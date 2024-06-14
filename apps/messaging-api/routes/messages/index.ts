@@ -60,7 +60,7 @@ export default async function messages(app: FastifyInstance) {
         tags: MESSAGES_TAGS,
         querystring: Type.Optional(
           Type.Object({
-            type: Type.String(),
+            type: Type.Optional(Type.String()),
           }),
         ),
         response: {

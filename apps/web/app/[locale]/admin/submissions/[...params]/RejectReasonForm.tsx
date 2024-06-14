@@ -15,18 +15,18 @@ export default (props: Props) => {
   async function rejectAction(formData: FormData) {
     "use server";
 
-    const reason = formData.get("rejectReason");
+    const reason =
+      formData.get("rejectReason") || "Your application was rejected.";
     const userId = formData.get("userId");
     const flow = formData.get("flow");
 
-    reason &&
-      (await postgres.pgpool.query(
-        `
-            UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('rejectReason', $1::TEXT, 'rejectedAt', NOW()::TEXT), updated_at = now()
+    await postgres.pgpool.query(
+      `
+            UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('rejectReason', $1::TEXT, 'rejectedAt', now()::TEXT, 'status', 'rejected'), updated_at = now()
             WHERE user_id=$2 AND flow = $3
         `,
-        [reason, userId, flow],
-      ));
+      [reason, userId, flow],
+    );
     redirect("/admin");
   }
   const basePath =
