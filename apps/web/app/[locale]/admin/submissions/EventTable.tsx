@@ -23,13 +23,13 @@ export default async (props: EventTableProps) => {
 
   switch (statusSelection) {
     case "rejected":
-      query += ` WHERE (flow_data ->> 'rejectReason') != ''`;
+      query += ` WHERE (flow_data ->> 'rejectedAt') != ''`;
       break;
     case "approved":
       query += ` WHERE (flow_data ->> 'successfulAt') != ''`;
       break;
     case "submitted":
-      query += ` WHERE (flow_data ->> 'confirmedApplication') != '' AND (flow_data ->> 'successfulAt') = '' AND (flow_data ->> 'rejectReason') = ''`;
+      query += ` WHERE (flow_data ->> 'confirmedApplication') != '' AND (flow_data ->> 'successfulAt') = '' AND (flow_data ->> 'rejectedAt') = ''`;
       break;
     case undefined:
     default:
@@ -52,7 +52,7 @@ export default async (props: EventTableProps) => {
       return "Approved";
     }
 
-    if (flowData.rejectReason) {
+    if (flowData.rejectedAt) {
       return "Rejected";
     }
 
