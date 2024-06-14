@@ -44,8 +44,8 @@ export interface paths {
   "/api/v1/messages/": {
     get: {
       parameters: {
-        query: {
-          type: string;
+        query?: {
+          type?: string;
         };
       };
       responses: {
