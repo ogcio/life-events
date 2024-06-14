@@ -15,11 +15,13 @@ import { Profile } from "building-blocks-sdk";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
 import {
+  AVAILABLE_TRANSPORTS,
   getUserByContacts,
   getUserByUserProfileId,
   getUserImports,
 } from "../shared-users";
 import { processTagsPerUser } from "../../tags/manage-tags";
+import { executeUpdateOrganisationFeedback } from "../invitations/shared-invitations";
 
 interface FoundUser {
   id: string;
@@ -178,7 +180,7 @@ const processUser = async (params: {
   const user = fillUser({
     userProfileId: userProfile?.id ?? null,
     organisationId: organisationId,
-    status: "to_be_invited",
+    status: params.toImportUser.collectedConsent ? "active" : "to_be_invited",
     correlationQuality,
     toImportUser,
     usersImportId,
@@ -200,6 +202,7 @@ const processOrganizationUserRelation = async (params: {
   userId: string;
   client: PoolClient;
   organisationId: string;
+  consentGranted: boolean;
 }): Promise<OrganisationUserConfig> => {
   let orgUserRelation = undefined;
   try {
@@ -214,17 +217,42 @@ const processOrganizationUserRelation = async (params: {
     }
   }
 
+  let toSetStatus: "accepted" | "to_be_invited" = "to_be_invited";
+  let toSetTransports: string[] = [];
+  if (params.consentGranted) {
+    toSetStatus = "accepted";
+    toSetTransports = AVAILABLE_TRANSPORTS;
+  }
+
   if (orgUserRelation) {
+    // means that this user was already imported
+    if (
+      orgUserRelation.invitationStatus === "to_be_invited" &&
+      toSetStatus === "accepted"
+    ) {
+      await executeUpdateOrganisationFeedback({
+        client: params.client,
+        feedback: {
+          preferredTransports: toSetTransports,
+          invitationStatusFeedback: toSetStatus,
+        },
+        organisationId: params.organisationId,
+        userId: params.userId,
+        errorCode: IMPORT_USERS_ERROR,
+      });
+      return await getUserOrganisationRelation(params);
+    }
     return orgUserRelation;
   }
+
   return insertNewOrganizationUserRelation({
     toInsert: {
       invitationFeedbackAt: null,
       invitationSentAt: null,
-      invitationStatus: "to_be_invited",
+      invitationStatus: toSetStatus,
       organisationId: params.organisationId,
       userId: params.userId,
-      preferredTransports: [],
+      preferredTransports: toSetTransports,
     },
     client: params.client,
   });
@@ -273,6 +301,7 @@ const processToImportUser = async (params: {
     client,
     userId: user.id,
     organisationId,
+    consentGranted: toImportUser.collectedConsent,
   });
 
   await processTagsPerUser({
