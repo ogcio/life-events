@@ -1,8 +1,18 @@
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
-import { postgres, web, workflow } from "../../../utils";
+import { workflow } from "../../../utils";
 import { pgpool as sharedPgPgool } from "auth/sessions";
 import { pgpool } from "../../../utils/postgres";
+import { EventTableSearchParams, SubmissionsTableProps } from "./page";
+import Pagination from "./components/Pagination";
+import {
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_PAGE_DEFAULT,
+  PaginationLinks,
+  getPaginationDataFromParams,
+  getPaginationLinks,
+  pageToOffset,
+} from "./components/paginationUtils";
+import { link } from "fs";
 
 type User = {
   id: string;
@@ -21,13 +31,23 @@ type DigitalWalletFlow = {
   flow_data: workflow.GetDigitalWallet;
 };
 
-export default async (props: web.NextPageProps) => {
-  const t = await getTranslations("Admin.DigitalWalletPendingTable");
+type EventTableProps = {
+  searchParams?: EventTableSearchParams;
+};
 
+const getPartialApplications = async (pageSize: number, offset: number) => {
+  const allUsersQueryString = "FROM users WHERE is_public_servant = false";
+
+  const totalCountQuery = `
+  SELECT COUNT(*)
+  ${allUsersQueryString}
+  `;
+  const totalCountResult = await sharedPgPgool.query<{ count: number }>(
+    totalCountQuery,
+  );
   // Step 1: Fetch users from the shared DB
-  const allUsersQuery = "SELECT * FROM users WHERE is_public_servant = false";
+  const allUsersQuery = `SELECT * ${allUsersQueryString}`;
   const usersQueryResult = await sharedPgPgool.query<User>(allUsersQuery);
-  // console.log(usersQueryResult.rows);
 
   // Extract user IDs
   const ids = usersQueryResult.rows.map((row) => row.id);
@@ -65,47 +85,77 @@ export default async (props: web.NextPageProps) => {
     });
   }
 
+  const totalCount = usersWithPartial.length;
+  return {
+    data: usersWithPartial.slice(offset, offset + pageSize),
+    totalCount: totalCount,
+    totalPages: Math.ceil(totalCount / pageSize),
+  };
+};
+
+export default async ({ searchParams, params }: SubmissionsTableProps) => {
+  const t = await getTranslations("Admin.DigitalWalletPendingTable");
+
+  const urlParms = new URLSearchParams(searchParams);
+  const url = `${process.env.HOST_URL}${params.locale}/admin/submissions?status=pending`;
+
+  const pagination = getPaginationDataFromParams(urlParms);
+  const usersWithPartial = await getPartialApplications(
+    pagination.limit,
+    pagination.offset,
+  );
+
+  const links: PaginationLinks = getPaginationLinks({
+    url,
+    limit: pagination.limit,
+    offset: pagination.offset,
+    totalCount: usersWithPartial.totalCount,
+  });
+
   return (
-    <table className="govie-table">
-      <thead className="govie-table__head">
-        <tr className="govie-table__row">
-          <th scope="col" className="govie-table__header">
-            {t("nameColumn")}
-          </th>
-          <th scope="col" className="govie-table__header">
-            {t("myGovIdEmailColumn")}
-          </th>
-          <th scope="col" className="govie-table__header">
-            {t("workEmailColumn")}
-          </th>
-          <th scope="col" className="govie-table__header">
-            {t("applicationStatusColumn")}
-          </th>
-        </tr>
-      </thead>
-      <tbody className="govie-table__body">
-        {usersWithPartial.map((row) => {
-          return (
-            <tr key={row.id} className="govie-table__row">
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {row.user_name}
-              </td>
+    <>
+      <table className="govie-table">
+        <thead className="govie-table__head">
+          <tr className="govie-table__row">
+            <th scope="col" className="govie-table__header">
+              {t("nameColumn")}
+            </th>
+            <th scope="col" className="govie-table__header">
+              {t("myGovIdEmailColumn")}
+            </th>
+            <th scope="col" className="govie-table__header">
+              {t("workEmailColumn")}
+            </th>
+            <th scope="col" className="govie-table__header">
+              {t("applicationStatusColumn")}
+            </th>
+          </tr>
+        </thead>
+        <tbody className="govie-table__body">
+          {usersWithPartial.data.map((row) => {
+            return (
+              <tr key={row.id} className="govie-table__row">
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {row.user_name}
+                </td>
 
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {row.govid_email}
-              </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {row.govid_email}
+                </td>
 
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {row.flow_data?.govIEEmail}
-              </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {row.flow_data?.govIEEmail}
+                </td>
 
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {row.flow_data ? "Started" : "Not started"}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {row.flow_data ? "Started" : "Not started"}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <Pagination currentPage={pagination.page} links={links} />
+    </>
   );
 };
