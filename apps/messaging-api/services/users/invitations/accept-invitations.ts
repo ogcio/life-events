@@ -2,6 +2,7 @@ import { createError } from "@fastify/error";
 import { PostgresDb } from "@fastify/postgres";
 import { getUserByUserProfileId } from "../shared-users";
 import {
+  executeUpdateOrganisationFeedback,
   getUserInvitations,
   getUsersInvitationsForOrganisation,
 } from "./shared-invitations";
@@ -13,7 +14,6 @@ import {
 } from "../../../types/usersSchemaDefinitions";
 import { PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
-import { utils } from "../../../utils";
 
 const ACCEPT_INVITATIONS_ERROR = "ACCEPT_INVITATIONS_ERROR";
 
@@ -125,45 +125,12 @@ export const updateOrganisationFeedback = async (params: {
       client,
       ...params,
       userId: userInvitation.id,
+      errorCode: ACCEPT_INVITATIONS_ERROR,
     });
 
     return await getInvitation({ client, ...params });
   } finally {
     client.release();
-  }
-};
-
-const executeUpdateOrganisationFeedback = async (params: {
-  client: PoolClient;
-  feedback: OrganisationInvitationFeedback;
-  organisationId: string;
-  userId: string;
-}): Promise<void> => {
-  try {
-    const { feedback } = params;
-    await params.client.query<UserInvitation>(
-      `
-        UPDATE organisation_user_configurations
-        SET invitation_status=$1::text, invitation_feedback_at = $2, preferred_transports = $3
-        WHERE organisation_id = $4 and user_id = $5
-      `,
-      [
-        feedback.invitationStatusFeedback,
-        new Date().toISOString(),
-        utils.postgresArrayify(feedback.preferredTransports),
-        params.organisationId,
-        params.userId,
-      ],
-    );
-  } catch (error) {
-    const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
-      ACCEPT_INVITATIONS_ERROR,
-      `Error on invitation feedback: ${message}`,
-      500,
-    )();
-
-    throw toOutput;
   }
 };
 

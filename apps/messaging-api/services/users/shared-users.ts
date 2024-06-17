@@ -201,3 +201,5 @@ export const getUserInvitationsForOrganisation = async (params: {
     )();
   }
 };
+
+export const AVAILABLE_TRANSPORTS = ["sms", "email"];

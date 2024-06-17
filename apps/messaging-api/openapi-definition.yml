@@ -1130,12 +1130,16 @@ paths:
                                     - country
                                     - region
                                 - type: "null"
+                            collectedConsent:
+                              default: false
+                              type: boolean
                           required:
                             - publicIdentityId
                             - firstName
                             - lastName
                             - birthDate
                             - address
+                            - collectedConsent
                       required:
                         - id
                         - userProfileId
@@ -1365,12 +1369,16 @@ paths:
                                   - country
                                   - region
                               - type: "null"
+                          collectedConsent:
+                            default: false
+                            type: boolean
                         required:
                           - publicIdentityId
                           - firstName
                           - lastName
                           - birthDate
                           - address
+                          - collectedConsent
                     required:
                       - id
                       - userProfileId
@@ -1622,12 +1630,16 @@ paths:
                                   - country
                                   - region
                               - type: "null"
+                          collectedConsent:
+                            default: false
+                            type: boolean
                         required:
                           - publicIdentityId
                           - firstName
                           - lastName
                           - birthDate
                           - address
+                          - collectedConsent
                     required:
                       - id
                       - userProfileId
@@ -1845,12 +1857,16 @@ paths:
                                   - country
                                   - region
                               - type: "null"
+                          collectedConsent:
+                            default: false
+                            type: boolean
                         required:
                           - publicIdentityId
                           - firstName
                           - lastName
                           - birthDate
                           - address
+                          - collectedConsent
                       usersImportId:
                         default: null
                         anyOf:
@@ -2173,6 +2189,11 @@ paths:
                     anyOf:
                       - type: "null"
                       - type: string
+                  collectedConsent:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
                 required:
                   - importIndex
       responses:
@@ -2477,12 +2498,16 @@ paths:
                                     - country
                                     - region
                                 - type: "null"
+                            collectedConsent:
+                              default: false
+                              type: boolean
                           required:
                             - publicIdentityId
                             - firstName
                             - lastName
                             - birthDate
                             - address
+                            - collectedConsent
                       required:
                         - id
                         - userProfileId
@@ -2689,6 +2714,9 @@ paths:
                                     - country
                                     - region
                                 - type: "null"
+                            collectedConsent:
+                              default: false
+                              type: boolean
                           required:
                             - importIndex
                             - phoneNumber
@@ -2699,6 +2727,7 @@ paths:
                             - lastName
                             - birthDate
                             - address
+                            - collectedConsent
                       importChannel:
                         default: api
                         anyOf:
@@ -2932,12 +2961,16 @@ paths:
                                     - country
                                     - region
                                 - type: "null"
+                            collectedConsent:
+                              default: false
+                              type: boolean
                           required:
                             - publicIdentityId
                             - firstName
                             - lastName
                             - birthDate
                             - address
+                            - collectedConsent
                       required:
                         - id
                         - userProfileId

@@ -722,6 +722,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               }[];
             };
@@ -824,6 +826,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               };
             };
@@ -933,6 +937,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               };
             };
@@ -1083,6 +1089,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
                 /** @default null */
                 usersImportId: null | string;
@@ -1264,6 +1272,8 @@ export interface paths {
             addressRegion?: null | string;
             /** @default null */
             tags?: null | string;
+            /** @default null */
+            collectedConsent?: null | string;
           }[];
         };
       };
@@ -1356,6 +1366,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               }[];
             };
@@ -1451,6 +1463,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 }[];
                 /** @default api */
                 importChannel: "api" | "csv";
@@ -1550,6 +1564,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               }[];
             };

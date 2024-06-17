@@ -265,7 +265,10 @@ export class Messaging {
       {
         params: {
           path: { importId },
-          query: { organisationId, includeUsersData },
+          query: {
+            organisationId,
+            includeUsersData: Boolean(includeUsersData),
+          },
         },
       },
     );
