@@ -908,6 +908,10 @@
       "submitted": "Submitted",
       "approved": "Approved",
       "rejected": "Rejected"
+    },
+    "Pagination": {
+      "next": "Next",
+      "previous": "Previous"
     }
   },
   "Timeline": {
@@ -973,7 +977,9 @@
     },
     "pagination": {
       "itemsPerPage": "Items per page:",
-      "pageInfo": "Page {currentPage} of {pagesCount}"
+      "pageInfo": "Page {currentPage} of {pagesCount}",
+      "next": "Next",
+      "previous": "Previous"
     },
     "types": {
       "action": "Action",
