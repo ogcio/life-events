@@ -2,41 +2,7 @@ import { Pool } from "pg";
 import * as jose from "jose";
 import { cookies, headers } from "next/headers.js";
 import { redirect, RedirectType } from "next/navigation.js";
-
-type GovIdJwtPayload = {
-  surname: string;
-  givenName: string;
-  email: string;
-  BirthDate: string;
-  PublicServiceNumber: string;
-  DSPOnlineLevel: string;
-  mobile: string;
-};
-
-type SessionTokenDecoded = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  birthDate: string;
-  publicServiceNumber: string;
-};
-
-type Session = {
-  token: string;
-  userId: string;
-};
-
-export interface Sessions {
-  get(redirectUrl?: string): Promise<
-    SessionTokenDecoded & {
-      userId: string;
-      publicServant: boolean;
-      verificationLevel: number;
-      sessionId: string;
-    }
-  >;
-  isAuthenticated(): Promise<boolean>;
-}
+import { GovIdJwtPayload, Sessions } from "./types";
 
 export const pgpool = new Pool({
   host: process.env.POSTGRES_HOST,
