@@ -290,4 +290,64 @@ export default async function user(app: FastifyInstance) {
       reply.code(404);
     },
   );
+
+  /**
+   * Gets user general details. Add more fields as needed
+   * todo: change to :id/details ?
+   * todo: add ppsn
+   */
+  app.post<{ Body: { ids: string[] } }>(
+    "/select",
+    {
+      schema: {
+        tags: ["users"],
+        body: Type.Object({
+          ids: Type.Array(Type.String({ format: "uuid" })),
+        }),
+        response: {
+          200: Type.Object({
+            data: Type.Array(
+              Type.Object({
+                id: Type.String(),
+                firstName: Type.String(),
+                lastName: Type.String(),
+                ppsn: Type.String(),
+                lang: Type.String(),
+              }),
+            ),
+          }),
+          404: Type.Null(),
+        },
+      },
+    },
+    async function handler(request, reply) {
+      try {
+        const ids = request.body.ids;
+        const users = await app.pg.pool
+          .query<{
+            id: string;
+            firstName: string;
+            lastName: string;
+            ppsn: string;
+            lang: string;
+          }>(
+            `
+        select user_id as "id", firstname as "firstName", lastname as "lastName", ppsn from user_details
+        where user_id::text = any ($1)
+      `,
+            [ids],
+          )
+          .then((res) => res.rows.map((row) => ({ ...row, lang: "en" })));
+
+        if (!users.length) {
+          reply.code(404);
+          return;
+        }
+
+        reply.send({ data: users, error: null });
+      } catch (err) {
+        reply.send({ data: null, error: err });
+      }
+    },
+  );
 }

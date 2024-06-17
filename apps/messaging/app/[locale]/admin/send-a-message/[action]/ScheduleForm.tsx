@@ -56,15 +56,15 @@ export default (props: MessageCreateProps) => {
       };
     }
 
-    // TODO deconstruct error and handle
-    await messagesClient.createMessage({
-      message,
-      template,
-      preferredTransports: props.state.transportations,
-      userIds: props.state.userIds,
-      security: "high",
-      scheduleAt,
-    });
+    if (template) {
+      await messagesClient.createTemplateMessages({
+        security: "low",
+        templateMetaId: template?.id,
+        transportations: props.state.transportations,
+        userIds: props.state.userIds,
+        scheduleAt,
+      });
+    }
 
     await api.upsertMessageState(
       Object.assign({}, props.state, {

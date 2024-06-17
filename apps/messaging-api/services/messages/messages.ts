@@ -6,7 +6,7 @@ import {
 } from "../../types/schemaDefinitions";
 import { HttpError, ServiceError, organisationId, utils } from "../../utils";
 import { createError } from "@fastify/error";
-import { FastifyBaseLogger } from "fastify";
+import { FastifyBaseLogger, FastifyInstance } from "fastify";
 import { JobType } from "aws-sdk/clients/importexport";
 import { Pool } from "pg";
 import { mailService } from "../../routes/providers/services";
@@ -545,7 +545,7 @@ const scheduleMessage = async (
             ).getFirstOrEtherealMailProvider();
           await mailService(transportsClient).sendMail({
             providerId,
-            email: "",
+            email: "ludwig.thurfjell@nearform.com",
             subject: transportationSubject,
             body: transportationBody ?? "",
           });

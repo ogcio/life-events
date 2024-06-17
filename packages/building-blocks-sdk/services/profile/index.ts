@@ -146,4 +146,14 @@ export class Profile {
       }),
     );
   }
+
+  async selectUsers(
+    ids: paths["/api/v1/user/select"]["post"]["requestBody"]["content"]["application/json"]["ids"],
+  ) {
+    const res = await this.client.POST("/api/v1/user/select", {
+      body: { ids },
+    });
+
+    return { data: res.data?.data, error: res.error };
+  }
 }

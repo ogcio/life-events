@@ -222,6 +222,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/def-0"
+  /api/v1/messages/template:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                templateMetaId:
+                  format: uuid
+                  type: string
+                userIds:
+                  type: array
+                  items:
+                    format: uuid
+                    type: string
+                transportations:
+                  type: array
+                  items:
+                    type: string
+                security:
+                  type: string
+                scheduleAt:
+                  format: date-time
+                  type: string
+              required:
+                - templateMetaId
+                - userIds
+                - transportations
+                - security
+                - scheduleAt
+        required: true
+      responses:
+        "200":
+          description: Default Response
   /api/v1/providers/emails/:
     get:
       tags: &a2

@@ -333,4 +333,15 @@ export class Messaging {
 
     return { error, data: data?.data };
   }
+
+  async createTemplateMessages(
+    body: paths["/api/v1/messages/template"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    const { data, error } = await this.client.POST(
+      "/api/v1/messages/template",
+      { body },
+    );
+
+    return { data, error };
+  }
 }
