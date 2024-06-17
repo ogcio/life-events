@@ -5,14 +5,12 @@ import { pgpool } from "../../../utils/postgres";
 import { EventTableSearchParams, SubmissionsTableProps } from "./page";
 import Pagination from "./components/Pagination";
 import {
-  PAGINATION_LIMIT_DEFAULT,
-  PAGINATION_PAGE_DEFAULT,
   PaginationLinks,
   getPaginationDataFromParams,
   getPaginationLinks,
-  pageToOffset,
 } from "./components/paginationUtils";
 import { link } from "fs";
+import TableControls from "./components/TableControls/TableControls";
 
 type User = {
   id: string;
@@ -29,10 +27,6 @@ type DigitalWalletFlow = {
   created_at: Date;
   updated_at: Date;
   flow_data: workflow.GetDigitalWallet;
-};
-
-type EventTableProps = {
-  searchParams?: EventTableSearchParams;
 };
 
 const getPartialApplications = async (pageSize: number, offset: number) => {
@@ -114,6 +108,11 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
 
   return (
     <>
+      <TableControls
+        itemsCount={usersWithPartial.totalCount}
+        itemsPerPage={pagination.limit}
+        baseUrl={url}
+      />
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
