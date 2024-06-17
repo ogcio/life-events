@@ -18,6 +18,7 @@ import {
 import { createError } from "@fastify/error";
 import {
   READ_USER_IMPORTS_ERROR,
+  getAllUserInvitationsForOrganisation,
   getUserImportForOrganisation,
   getUserImportsForOrganisation,
   getUserInvitationsForImport,
@@ -135,8 +136,40 @@ export default async function usersImports(app: FastifyInstance) {
     }),
   );
 
+  app.get<Omit<GetUserInvitationsSchema, "Params">>(
+    "/users",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags,
+        querystring: Type.Optional(
+          Type.Object({
+            organisationId: Type.Optional(Type.String({ format: "uuid" })),
+          }),
+        ),
+        response: {
+          200: Type.Object({
+            data: Type.Array(UserInvitationSchema),
+          }),
+          "5xx": HttpError,
+          "4xx": HttpError,
+        },
+      },
+    },
+    async (
+      request: FastifyRequest<Omit<GetUserInvitationsSchema, "Params">>,
+      _reply: FastifyReply,
+    ) => ({
+      data: await getAllUserInvitationsForOrganisation({
+        logger: request.log,
+        pool: app.pg.pool,
+        organisationId: getOrganisationIdFromRequest(request),
+      }),
+    }),
+  );
+
   interface GetImportSchema {
-    Querystring: { organisationId?: string };
+    Querystring: { organisationId?: string; includeUsersData?: boolean };
     Response: { data: UsersImport };
     Params: { importId: string };
   }
@@ -149,6 +182,7 @@ export default async function usersImports(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Object({
             organisationId: Type.Optional(Type.String({ format: "uuid" })),
+            includeUsersData: Type.Boolean({ default: true }),
           }),
         ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
@@ -167,6 +201,7 @@ export default async function usersImports(app: FastifyInstance) {
         pool: app.pg.pool,
         organisationId: getOrganisationIdFromRequest(request),
         importId: request.params.importId,
+        includeUsersData: request.query.includeUsersData ?? true,
       }),
     }),
   );
@@ -176,6 +211,7 @@ export default async function usersImports(app: FastifyInstance) {
     Response: { data: UserInvitation[] };
     Params: { importId: string };
   }
+
   app.get<GetUserInvitationsSchema>(
     "/:importId/users",
     {

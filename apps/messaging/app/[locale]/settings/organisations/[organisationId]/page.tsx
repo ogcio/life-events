@@ -23,6 +23,11 @@ enum AVAILABLE_STATUSES {
   DECLINED = "declined",
 }
 
+enum ACTIVE_STATUSES {
+  ACCEPTED = "accepted",
+  DECLINED = "declined",
+}
+
 export default async (props: { params: { organisationId: string } }) => {
   async function submitAction(formData: FormData) {
     "use server";
@@ -82,7 +87,10 @@ export default async (props: { params: { organisationId: string } }) => {
     redirect(url.href);
   }
 
-  const t = await getTranslations("userSettings.Organisation");
+  const [t, tCommons] = await Promise.all([
+    getTranslations("userSettings.Organisation"),
+    getTranslations("Commons"),
+  ]);
 
   const { userId } = await PgSessions.get();
   const messagingClient = await new Messaging(userId);
@@ -102,11 +110,20 @@ export default async (props: { params: { organisationId: string } }) => {
     (error) => error.field === "invitationStatus",
   );
 
+  const toUseStatusEnum =
+    configurations.data?.organisationInvitationStatus != "pending"
+      ? ACTIVE_STATUSES
+      : AVAILABLE_STATUSES;
+
   return (
     <>
       <h1>
         <span className="govie-heading-l">{t("title")}</span>
       </h1>
+      <p className="govie-body">
+        {/* {organisationId} At the moment we want "Life Events" as fixed value */}
+        Life Events
+      </p>
       <form action={submitAction}>
         <input
           name="organisationId"
@@ -127,7 +144,7 @@ export default async (props: { params: { organisationId: string } }) => {
               id="invitationStatus"
               defaultValue={configurations.data?.organisationInvitationStatus}
             >
-              {Object.values(AVAILABLE_STATUSES).map((status) => (
+              {Object.values(toUseStatusEnum).map((status) => (
                 <option key={status} value={status}>
                   {t(`statuses.${status}`)}
                 </option>
@@ -189,7 +206,7 @@ export default async (props: { params: { organisationId: string } }) => {
       </form>
 
       <Link className="govie-back-link" href={`/${usersSettingsRoutes.url}`}>
-        {t("backLink")}
+        {tCommons("backLink")}
       </Link>
     </>
   );

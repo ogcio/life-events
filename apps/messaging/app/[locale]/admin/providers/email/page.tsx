@@ -14,9 +14,10 @@ export default async (props: {
   params: { locale: string };
   searchParams?: { id: string };
 }) => {
-  const [t, tError] = await Promise.all([
+  const [t, tError, tCommons] = await Promise.all([
     getTranslations("settings.EmailProvider"),
     getTranslations("formErrors"),
+    getTranslations("Commons"),
   ]);
   async function submitAction(formData: FormData) {
     "use server";
@@ -287,7 +288,7 @@ export default async (props: {
           ).href
         }
       >
-        {t("backLink")}
+        {tCommons("backLink")}
       </a>
     </FlexMenuWrapper>
   );

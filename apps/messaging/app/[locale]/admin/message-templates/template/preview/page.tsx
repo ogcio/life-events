@@ -10,6 +10,7 @@ import {
 } from "../../../../../utils/routes";
 
 import { LANG_EN, LANG_GA } from "../../../../../../types/shared";
+import { getTranslations } from "next-intl/server";
 
 /**
  * Returns unique occurences of values inside double curly brackets {{}}
@@ -45,7 +46,7 @@ export default async (props: {
   searchParams?: { id: string; lang: string };
   params: { locale: string };
 }) => {
-  //   const t = await getTranslations("MessageTemplatePreview");
+  const tCommons = await getTranslations("Commons");
   const { userId } = await PgSessions.get();
   const states = await getStates(userId);
 
@@ -114,7 +115,7 @@ export default async (props: {
           </span>
         </h1>
         <Link className="govie-back-link" href="../">
-          Back
+          {tCommons("backLink")}
         </Link>
       </FlexMenuWrapper>
     );
