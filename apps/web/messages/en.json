@@ -912,6 +912,11 @@
     "Pagination": {
       "next": "Next",
       "previous": "Previous"
+    },
+    "TableControls": {
+      "itemsPerPage": "Items per page",
+      "itemsCount": "Items count",
+      "change": "Change"
     }
   },
   "Timeline": {
