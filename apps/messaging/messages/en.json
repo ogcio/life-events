@@ -1,10 +1,13 @@
 {
+  "Commons": {
+    "backLink": "Back"
+  },
   "SideMenu": {
     "sendMessage": "Send a message",
     "messages": "Messages",
     "providers": "Providers",
     "templates": "Message templates",
-    "usersImports": "Users Imports",
+    "users": "Citizens",
     "userSettings": "Settings"
   },
   "MessageTemplates": {
@@ -48,7 +51,6 @@
     "saveButton": "Save",
     "updateTemplateButton": "Update template",
     "createTemplateButton": "Create template",
-    "backLink": "Back",
     "menuEnglish": "English",
     "menuGaelic": "Gaeilge",
     "previewButton": "Preview"
@@ -95,7 +97,6 @@
       "subject": "Subject",
       "message": "Message",
       "submitText": "Continue to preview",
-      "backLink": "Back",
       "excerptLabel": "Excerpt",
       "richTextLabel": "Rich text",
       "plainTextLabel": "Plain text"
@@ -103,7 +104,6 @@
     "EmailPreview": {
       "title": "Preview",
       "submitText": "Continue to recipients",
-      "backLink": "Back",
       "subject": "Subject",
       "excerpt": "Excerpt",
       "richText": "Rich text",
@@ -115,7 +115,6 @@
       "addRecipientHint": "Added recipients will be added below",
       "add": "Add",
       "submitText": "Continue to schedule",
-      "backLink": "Back",
       "tableRecipientsHeader": "Recipients",
       "tableRemoveButtonText": "Remove"
     },
@@ -140,8 +139,7 @@
       "year": "Year",
       "hour": "HH",
       "minute": "MM",
-      "submitText": "Send message",
-      "backLink": "Back"
+      "submitText": "Send message"
     },
     "SuccessForm": {
       "title": "Your message has been sent",
@@ -173,7 +171,6 @@
     "Page": {
       "emailsLink": "Email",
       "smsLink": "SMS",
-      "backLink": "Back",
       "addProvider": "Add provider",
       "header": "Providers"
     },
@@ -184,7 +181,6 @@
       "portTableHeader": "Port",
       "actionTableHeader": "Action",
       "editLink": "Edit",
-      "backLink": "Back",
       "addProviderLink": "Add provider",
       "providersSubtitle": "Providers",
       "deleteButton": "Delete"
@@ -200,13 +196,11 @@
       "fromAddressLabel": "From address",
       "throttleLabel": "Throttle",
       "throttleHint": "Optional field to adjust how long time between each mail, in miliseconds.",
-      "backLink": "Back",
       "updateButton": "Update",
       "createButton": "Create"
     },
     "Sms": {
       "addProviderLink": "Add provider",
-      "backLink": "Back",
       "title": "Sms providers",
       "nameTableHeader": "Name",
       "typeTableHeader": "Type",
@@ -224,8 +218,7 @@
       "region": "Region",
       "submitUpdate": "Update",
       "submitCreate": "Create",
-      "selectProviderLabel": "Select provider",
-      "backLink": "Back"
+      "selectProviderLabel": "Select provider"
     }
   },
   "AlphaBanner": {
@@ -276,32 +269,53 @@
       }
     }
   },
-  "UsersImports": {
-    "header": "Users Imports",
-    "uploadFileBtn": "Upload CSV File",
-    "confirmUploadBtn": "Send",
-    "downloadFileBtn": "Download CSV Template",
-    "table": {
-      "importedAt": "Imported At",
-      "importChannel": "Import Channel",
-      "importId": "Import Id"
-    }
-  },
-  "UsersImport": {
+  "Users": {
+    "header": "Citizens",
+    "usersLink": "Citizens",
+    "importsLink": "Imports",
+    "importCsvLink": "Import CSV",
     "table": {
       "importIndex": "Index",
       "phoneNumber": "Phone Number",
       "emailAddress": "Email",
       "importStatus": "Import Status",
       "importError": "Import Error",
-      "relatedUserProfileId": "User Profile Id",
+      "relatedUserProfileId": "User Profile",
       "relatedUserId": "User Id",
       "tags": "Tags",
       "publicIdentityId": "PPSN",
       "firstName": "First Name",
       "lastName": "Last Name",
-      "birthDate": "Date Of Birth"
+      "birthDate": "Date Of Birth",
+      "userProfileStatuses": {
+        "found": "Connected",
+        "notFound": "Pending"
+      },
+      "invitationStatus": "Status",
+      "invitationStatuses": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "declined": "Declined"
+      }
     }
+  },
+  "UsersImports": {
+    "header": "Citizens Imports",
+    "uploadFileBtn": "Upload CSV File",
+    "confirmUploadBtn": "Send",
+    "downloadFileBtn": "Download CSV Template",
+    "table": {
+      "importedAt": "Imported At",
+      "importChannel": "Import Channel",
+      "importId": "Import Id",
+      "actions": {
+        "label": "Actions",
+        "view": "View"
+      }
+    }
+  },
+  "UsersImport": {
+    "title": "Citizens Import"
   },
   "userSettings": {
     "Page": {
@@ -323,7 +337,6 @@
       "sms": "SMS",
       "selectInvitationStatus": "Invitation Status",
       "minimumOneTransport": "If you accept the invitation, you must choose at least one transport",
-      "backLink": "Back",
       "updateButton": "Update",
       "statuses": {
         "pending": "Pending",
