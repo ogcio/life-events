@@ -37,21 +37,21 @@ export default ({ searchParams }: Pick<web.NextPageProps, "searchParams">) => {
 
   return (
     <nav style={{ display: "flex", width: "fit-content", gap: "15px" }}>
-      <div style={linkStyle(isSubmitted)}>
-        <Link
-          href={"?" + new URLSearchParams({ status: "submitted" }).toString()}
-          className={linkClassName(isSubmitted)}
-        >
-          {t("submitted")}
-        </Link>
-      </div>
-
       <div style={linkStyle(isPending)}>
         <Link
           href={"?" + new URLSearchParams({ status: "pending" }).toString()}
           className={linkClassName(isPending)}
         >
           {t("pending")}
+        </Link>
+      </div>
+
+      <div style={linkStyle(isSubmitted)}>
+        <Link
+          href={"?" + new URLSearchParams({ status: "submitted" }).toString()}
+          className={linkClassName(isSubmitted)}
+        >
+          {t("submitted")}
         </Link>
       </div>
 

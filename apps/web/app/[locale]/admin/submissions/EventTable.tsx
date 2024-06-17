@@ -23,13 +23,13 @@ export default async (props: EventTableProps) => {
 
   switch (statusSelection) {
     case "rejected":
-      query += ` WHERE (flow_data ->> 'rejectReason') != ''`;
+      query += ` WHERE (flow_data ->> 'rejectedAt') != ''`;
       break;
     case "approved":
       query += ` WHERE (flow_data ->> 'successfulAt') != ''`;
       break;
     case "submitted":
-      query += ` WHERE (flow_data ->> 'confirmedApplication') != '' AND (flow_data ->> 'successfulAt') = '' AND (flow_data ->> 'rejectReason') = ''`;
+      query += ` WHERE (flow_data ->> 'confirmedApplication') != '' AND (flow_data ->> 'successfulAt') = '' AND (flow_data ->> 'rejectedAt') = ''`;
       break;
     case undefined:
     default:
@@ -52,7 +52,7 @@ export default async (props: EventTableProps) => {
       return "Approved";
     }
 
-    if (flowData.rejectReason) {
+    if (flowData.rejectedAt) {
       return "Rejected";
     }
 
@@ -70,7 +70,7 @@ export default async (props: EventTableProps) => {
             {t("nameColumn")}
           </th>
           <th scope="col" className="govie-table__header">
-            {t("typeColumn")}
+            {t("myGovIdEmailColumn")}
           </th>
           <th scope="col" className="govie-table__header">
             {t("deviceColumn")}
@@ -97,7 +97,7 @@ export default async (props: EventTableProps) => {
                 {row.flowData.firstName} {row.flowData.lastName}
               </td>
               <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {t(row.flow)}
+                {row.flowData.govIEEmail}
               </td>
 
               <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">

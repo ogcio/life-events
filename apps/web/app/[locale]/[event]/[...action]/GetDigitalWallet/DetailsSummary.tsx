@@ -25,7 +25,7 @@ export default (props: {
 
     await postgres.pgpool.query(
       `
-        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT, 'submittedAt', now()), updated_at = now(), email_verification_token = $3
+        UPDATE user_flow_data SET flow_data = flow_data || jsonb_build_object('confirmedApplication',now()::TEXT, 'submittedAt', now(), 'status', 'submitted'), updated_at = now(), email_verification_token = $3
         WHERE user_id = $1 AND flow = $2
     `,
       [userId, flow, randomToken],
