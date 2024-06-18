@@ -84,6 +84,7 @@ export const UserDetailsSchema = Type.Object({
     ],
     { default: null },
   ),
+  collectedConsent: Type.Boolean({ default: false }),
 });
 export type UserDetails = Static<typeof UserDetailsSchema>;
 
@@ -154,6 +155,7 @@ export const CsvRecordSchema = Type.Object({
   addressCountry: NullableOptionalStringType,
   addressRegion: NullableOptionalStringType,
   tags: NullableOptionalStringType,
+  collectedConsent: NullableOptionalStringType,
 });
 export type CsvRecord = Static<typeof CsvRecordSchema>;
 
@@ -172,7 +174,7 @@ export type TagForUser = Static<typeof TagForUserSchema>;
 
 export const UserInvitationSchema = Type.Object({
   id: Type.String(),
-  userProfileId: Type.String(),
+  userProfileId: Type.Union([Type.String(), Type.Null()], { default: null }),
   organisationId: Type.String(),
   organisationInvitationStatus: InvitationStatusUnionType,
   organisationInvitationSentAt: Type.Optional(Type.String()),

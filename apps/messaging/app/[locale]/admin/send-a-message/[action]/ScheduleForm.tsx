@@ -8,12 +8,15 @@ dayjs.extend(tz);
 
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
-import { useTranslations } from "next-intl";
 import { Messaging } from "building-blocks-sdk";
 import { DUBLIN_TIMEZONE } from "../../../../../types/shared";
+import { getTranslations } from "next-intl/server";
 
-export default (props: MessageCreateProps) => {
-  const t = useTranslations("sendAMessage.ScheduleForm");
+export default async (props: MessageCreateProps) => {
+  const [t, tCommons] = await Promise.all([
+    getTranslations("sendAMessage.ScheduleForm"),
+    getTranslations("Commons"),
+  ]);
   async function submit(formData: FormData) {
     "use server";
 
@@ -257,7 +260,7 @@ export default (props: MessageCreateProps) => {
         </button>
       </form>
       <form action={goBack}>
-        <BackButton>{t("backLink")}</BackButton>
+        <BackButton>{tCommons("backLink")}</BackButton>
       </form>
     </div>
   );
