@@ -33,77 +33,99 @@ const getPartialApplications = async (
   pageSize: number,
   offset: number,
   search?: string,
+  filters?: Record<string, string>,
 ) => {
   // Step 1: Fetch users from the shared DB - CHANGE THIS AFTER LOGTO INTEGRATION
-  const allUsersQueryBase = `SELECT * FROM users WHERE is_public_servant = false`;
-  let usersQueryResult: QueryResult<User>;
-  let usersFullQuery = `${allUsersQueryBase}`;
+  const baseUserQuery = `SELECT * FROM users WHERE is_public_servant = false`;
+  let usersQuery = baseUserQuery;
   const searchQuery = search?.trim();
+  const queryParams: (string | string[])[] = [];
+
   if (searchQuery) {
-    usersQueryResult = await sharedPgPgool.query<User>({
-      text: `${usersFullQuery} AND ( 
-      govid_email ILIKE '%' || $1 || '%'
-      OR user_name ILIKE '%' || $1 || '%')`,
-      values: [searchQuery],
-    });
-  } else {
-    usersQueryResult = await sharedPgPgool.query<User>({
-      text: usersFullQuery,
-    });
+    usersQuery += ` AND (govid_email ILIKE $1 OR user_name ILIKE $1)`;
+    queryParams.push(`%${searchQuery}%`);
   }
 
+  const usersQueryResult: QueryResult<User> = await sharedPgPgool.query<User>(
+    usersQuery,
+    queryParams,
+  );
+
   // Extract user IDs
-  const ids = usersQueryResult.rows.map((row) => row.id);
+  const userIds = usersQueryResult.rows.map((row) => row.id);
+
+  if (userIds.length === 0) {
+    return {
+      data: [],
+      totalCount: 0,
+      totalPages: 0,
+    };
+  }
+
+  // Step 2: Fetch geDigitalWallet flow data for users registered
+  const baseFlowQuery = `
+    SELECT user_id, flow, flow_data 
+    FROM user_flow_data 
+    WHERE flow = 'getDigitalWallet' AND user_id = ANY($1)
+  `;
+  let flowQuery = baseFlowQuery;
+  queryParams.length = 0; // Reset queryParams for reuse
+  let paramIndex = 2;
+  queryParams.push(userIds);
+
+  if (searchQuery) {
+    flowQuery += ` AND (
+      (flow_data ->> 'govIEEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'myGovIdEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'firstName') ILIKE $${paramIndex}
+      OR (flow_data ->> 'lastName') ILIKE $${paramIndex}
+    )`;
+    queryParams.push(`%${searchQuery}%`);
+    paramIndex++;
+  }
+
+  if (filters) {
+    for (const [key, value] of Object.entries(filters)) {
+      flowQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
+      queryParams.push(key);
+      queryParams.push(value);
+      paramIndex += 2;
+    }
+  }
+
+  const flowQueryResult: QueryResult<DigitalWalletFlow> = await pgpool.query(
+    flowQuery,
+    queryParams,
+  );
+
+  // Step 3: Process and combine the results using efficient data structures
+  const userMap = new Map<string, User>(
+    usersQueryResult.rows.map((user) => [user.id, user]),
+  );
 
   const usersWithPartial: (User & {
     [K in keyof DigitalWalletFlow]?: DigitalWalletFlow[K];
   })[] = [];
-  // Step 2: Fetch geDigitalWallet flow data for users registered
-  if (ids.length > 0) {
-    let flowQueryResult: QueryResult<DigitalWalletFlow>;
-    const partialFlowsBaseQuery = `SELECT user_id, flow, flow_data FROM user_flow_data WHERE flow = 'getDigitalWallet' AND user_id = ANY($1)`;
-    if (searchQuery) {
-      flowQueryResult = await pgpool.query({
-        name: "getDigitalWalletFlowDataWithSearch",
-        text: `${partialFlowsBaseQuery} AND (
-        (flow_data ->> 'govIEEmail') ILIKE $2
-        OR (flow_data ->> 'myGovIdEmail') ILIKE $2
-        OR (flow_data ->> 'firstName') ILIKE $2
-        OR (flow_data ->> 'lastName') ILIKE $2
-      )`,
-        values: [ids, `%${searchQuery}%`],
-      });
-    } else {
-      flowQueryResult = await pgpool.query({
-        name: "getDigitalWalletFlowData",
-        text: partialFlowsBaseQuery,
-        values: [ids],
-      });
-    }
 
-    // Step 3: Process and combine the results using efficient data structures
-    const userMap = new Map<string, User>(
-      usersQueryResult.rows.map((user) => [user.id, user]),
-    );
-
-    flowQueryResult.rows.forEach((row) => {
-      if (row.flow_data.confirmedApplication === "") {
-        const user = userMap.get(row.user_id);
-        if (user) {
-          usersWithPartial.push({ ...user, ...row });
-        }
+  flowQueryResult.rows.forEach((row) => {
+    if (row.flow_data.confirmedApplication === "") {
+      const user = userMap.get(row.user_id);
+      if (user) {
+        usersWithPartial.push({ ...user, ...row });
+        userMap.delete(row.user_id); // Only add the user once
       }
-      // Mark users who have flow data
-      userMap.delete(row.user_id);
-    });
+    }
+  });
 
-    // Add remaining users without the specified flow
+  // if filters are applied don't display users with no flow
+  if (!filters || Object.keys(filters).length === 0) {
     userMap.forEach((user) => {
       usersWithPartial.push(user);
     });
   }
 
   const totalCount = usersWithPartial.length;
+
   return {
     data: usersWithPartial.slice(offset, offset + pageSize),
     totalCount: totalCount,
@@ -118,10 +140,12 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
   const url = `${process.env.HOST_URL}/${params.locale}/admin/submissions?status=pending`;
 
   const queryParams = getQueryParams(urlParms);
+
   const usersWithPartial = await getPartialApplications(
     queryParams.limit,
     queryParams.offset,
     queryParams.search,
+    queryParams.filters,
   );
 
   const links: PaginationLinks = getPaginationLinks({

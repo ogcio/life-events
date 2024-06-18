@@ -895,7 +895,9 @@
       "orderBirthCertificate": "Application for a copy of the birth certificate",
       "notifyDeath": "Death notification",
       "applyJobseekersAllowance": "Application for Jobseeker's Allowance",
-      "getDigitalWallet": "Application for a Digital Wallet"
+      "getDigitalWallet": "Application for a Digital Wallet",
+      "ios": "Apple iOS",
+      "android": "Android"
     },
     "DigitalWalletPendingTable": {
       "nameColumn": "Name",
@@ -917,7 +919,14 @@
       "itemsPerPage": "Items per page",
       "itemsCount": "Items count",
       "submit": "Submit",
-      "searchUser": "Search user"
+      "searchUser": "Search user",
+      "deviceType": "Device type",
+      "all": "All",
+      "ios": "Apple iOS",
+      "android": "Android",
+      "verifiedEmail": "Verified email",
+      "yes": "Yes",
+      "no": "No"
     }
   },
   "Timeline": {

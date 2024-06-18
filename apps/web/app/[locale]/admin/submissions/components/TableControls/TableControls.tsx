@@ -11,6 +11,7 @@ export default async ({
   baseUrl,
   search,
   limit,
+  filters,
 }: TableControlsProps) => {
   const t = await getTranslations("Admin.TableControls");
 
@@ -28,8 +29,21 @@ export default async ({
     searchParams.set("limit", formData.get("items-per-page") as string);
     searchParams.set("page", "1");
 
+    const deviceType = formData.get("device-type") as string;
+    if (deviceType.length > 0) {
+      searchParams.set("deviceType", deviceType);
+    }
+
+    const verifiedEmail = formData.get("verified-email") as string;
+    if (verifiedEmail.length > 0) {
+      searchParams.set("verifiedEmail", verifiedEmail);
+    }
+
     redirect(url.toString(), RedirectType.replace);
   };
+
+  const deviceType = filters.deviceType || "";
+  const verifiedEmail = filters.verifiedEmail || "";
 
   return (
     <div>
@@ -71,6 +85,40 @@ export default async ({
               defaultValue={search}
             />
           </div>
+
+          <div className={`govie-form-group ${styles.selectGroup}`}>
+            <label className="govie-label--s" htmlFor="device-type">
+              {t("deviceType")}
+            </label>
+            <select
+              className="govie-select"
+              id="device-type"
+              name="device-type"
+              defaultValue={deviceType}
+            >
+              <option value="">{t("all")}</option>
+              <option value="ios">{t("ios")}</option>
+              <option value="android">{t("android")}</option>
+            </select>
+          </div>
+
+          <div className={`govie-form-group ${styles.selectGroup}`}>
+            <label className="govie-label--s" htmlFor="verified-email">
+              {t("verifiedEmail")}
+            </label>
+            <select
+              className="govie-select"
+              id="verified-email"
+              name="verified-email"
+              defaultValue={verifiedEmail}
+            >
+              <option value="">{t("all")}</option>
+              <option value="yes">{t("yes")}</option>
+              <option value="no">{t("no")}</option>
+            </select>
+          </div>
+        </div>
+        <div className={`${styles.selectGroup} ${styles.reverse}`}>
           <input
             type="submit"
             id="button"

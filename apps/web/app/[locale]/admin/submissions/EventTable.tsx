@@ -55,41 +55,38 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     flowData: workflow.GetDigitalWallet;
     updatedAt: string;
   }>;
-  let countQueryResult: QueryResult<{ count: number }>;
 
+  let countQueryResult: QueryResult<{ count: number }>;
+  const sqlQueryParams: string[] = [];
+  let paramIndex = 1;
   if (queryParams.search) {
     dataQuery += ` AND (
-      (flow_data ->> 'govIEEmail') ILIKE $1
-      OR (flow_data ->> 'myGovIdEmail') ILIKE $1
-      OR (flow_data ->> 'firstName') ILIKE $1
-      OR (flow_data ->> 'lastName') ILIKE $1
+      (flow_data ->> 'govIEEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'myGovIdEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'firstName') ILIKE $${paramIndex}
+      OR (flow_data ->> 'lastName') ILIKE $${paramIndex}
       )`;
-    userFlows = await postgres.pgpool.query({
-      name: "getDigitalWalletFlowDataWithSearch",
-      text: `${dataSelect} ${dataQuery} ORDER BY updated_at DESC  LIMIT $2 OFFSET $3`,
-      values: [
-        `%${queryParams.search}%`,
-        queryParams.limit,
-        queryParams.offset,
-      ],
-    });
-
-    countQueryResult = await postgres.pgpool.query({
-      name: "getDigitalWalletFlowDataCountWithSearch",
-      text: `SELECT COUNT(*) ${dataQuery}`,
-      values: [`%${queryParams.search}%`],
-    });
-  } else {
-    countQueryResult = await postgres.pgpool.query({
-      name: "getDigitalWalletFlowDataCount",
-      text: `SELECT COUNT(*) ${dataQuery}`,
-    });
-    userFlows = await postgres.pgpool.query({
-      name: "getDigitalWalletFlowData",
-      text: `${dataSelect} ${dataQuery} ORDER BY updated_at DESC  LIMIT $1 OFFSET $2`,
-      values: [queryParams.limit, queryParams.offset],
-    });
+    paramIndex++;
+    sqlQueryParams.push(`%${queryParams.search}%`);
   }
+
+  const filters = queryParams.filters;
+  for (const [key, value] of Object.entries(filters)) {
+    dataQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
+    sqlQueryParams.push(key);
+    sqlQueryParams.push(value);
+    paramIndex += 2;
+  }
+
+  userFlows = await postgres.pgpool.query(
+    `${dataSelect} ${dataQuery} ORDER BY updated_at DESC  LIMIT $${paramIndex++} OFFSET $${paramIndex}`,
+    [...sqlQueryParams, queryParams.limit, queryParams.offset],
+  );
+
+  countQueryResult = await postgres.pgpool.query(
+    `SELECT COUNT(*) ${dataQuery}`,
+    sqlQueryParams,
+  );
 
   const count = countQueryResult.rows[0].count;
 
@@ -156,7 +153,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
                 </td>
 
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {row.flowData.deviceType}
+                  {t(row.flowData.deviceType)}
                 </td>
 
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
