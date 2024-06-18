@@ -115,7 +115,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
           templateContent.lang,
           security,
           utils.postgresArrayify(transports),
-          "tmp",
+          userKeys.reduce(interpolationReducer, templateContent.subject),
           undefined,
           organisationId,
         ];
