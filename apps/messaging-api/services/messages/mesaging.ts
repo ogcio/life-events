@@ -22,6 +22,8 @@ type User = {
   lastName: string;
   ppsn: string;
   lang: string;
+  email: string;
+  phone: string;
 };
 
 export interface MessagingService {
@@ -84,7 +86,10 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
 
         const interpolationReducer = utils.interpolationReducer(user);
         // We use user keys as allowed interpolations
-        const userKeys = Object.keys(user);
+        const userKeys: string[] = Object.keys(user).filter(
+          // Omit any other values we don't like to expose
+          (key) => key !== "userId",
+        );
 
         /**
          * isDelivered
