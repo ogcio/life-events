@@ -7,7 +7,10 @@ import { getUsers } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 
 export default async (props: MessageCreateProps) => {
-  const t = await getTranslations("sendAMessage.EmailRecipients");
+  const [t, tCommons] = await Promise.all([
+    getTranslations("sendAMessage.EmailRecipients"),
+    getTranslations("Commons"),
+  ]);
 
   async function submit(formData: FormData) {
     "use server";
@@ -74,13 +77,18 @@ export default async (props: MessageCreateProps) => {
 
   const users = await getUsers();
   return (
-    <>
+    <div className="govie-grid-column-two-thirds-from-desktop">
       <form action={recipientAction}>
-        <h1 className="govie-heading-l">{t("title")}</h1>
+        <h1>
+          <span style={{ margin: "unset" }} className="govie-heading-xl">
+            {t("title")}
+          </span>
+        </h1>
 
         <div className="govie-form-group">
-          <h3 className="govie-label--s">{t("addRecipient")}</h3>
-          <div className="govie-hint">{t("addRecipientHint")}</div>
+          <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
+            {t("addRecipientHint")}
+          </div>
           <div className="govie-input__wrapper">
             <select className="govie-select" name="recipient">
               {users.map((user) => (
@@ -97,7 +105,10 @@ export default async (props: MessageCreateProps) => {
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
-            <th scope="col" className="govie-table__header">
+            <th
+              scope="col"
+              className="govie-table__header govie-!-font-size-27"
+            >
               {t("tableRecipientsHeader")}
             </th>
             <th scope="col" className="govie-table__header"></th>
@@ -135,8 +146,8 @@ export default async (props: MessageCreateProps) => {
         </button>
       </form>
       <form action={goBack}>
-        <BackButton>{t("backLink")}</BackButton>
+        <BackButton>{tCommons("backLink")}</BackButton>
       </form>
-    </>
+    </div>
   );
 };

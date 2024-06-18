@@ -1,0 +1,378 @@
+openapi: 3.0.3
+info:
+  title: OGCIO AuthService
+  description: API for OGCIO AuthService
+  version: 0.1.0
+components:
+  schemas: {}
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /auth/:
+    get:
+      tags:
+        - Auth
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: redirectUrl
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /auth/logout:
+    get:
+      tags:
+        - Auth
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: redirectUrl
+          required: false
+      responses:
+        "302":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  headers:
+                    location:
+                      type: string
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /auth/callback:
+    get:
+      tags:
+        - Auth
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: code
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
+        "302":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  headers:
+                    location:
+                      type: string
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /users/:
+    get:
+      tags:
+        - Users
+      responses:
+        "200":
+          description: Default Response
+  /session/validate:
+    get:
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: sessionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /logto/mock/auth:
+    get:
+      tags:
+        - Mock
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: response_type
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: client_id
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: redirect_uri
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: state
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: nonce
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: scope
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /logto/mock/login:
+    post:
+      responses:
+        "200":
+          description: Default Response
+  /logto/mock/token:
+    post:
+      tags:
+        - Mock
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                grant_type:
+                  type: string
+                redirect_uri:
+                  type: string
+                client_id:
+                  type: string
+                client_secret:
+                  type: string
+              required:
+                - code
+                - grant_type
+                - redirect_uri
+                - client_id
+                - client_secret
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id_token:
+                    type: string
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                  not_before:
+                    type: number
+                  expires_in:
+                    type: number
+                  expires_on:
+                    type: number
+                  id_token_expires_in:
+                    type: number
+                  profile_info:
+                    type: string
+                  scope:
+                    type: string
+                required:
+                  - id_token
+                  - access_token
+                  - token_type
+                  - not_before
+                  - expires_in
+                  - expires_on
+                  - id_token_expires_in
+                  - profile_info
+                  - scope
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /logto/mock/keys:
+    get:
+      tags:
+        - Mock
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keys:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        kid:
+                          type: string
+                        use:
+                          type: string
+                        kty:
+                          type: string
+                        n:
+                          type: string
+                        e:
+                          type: string
+                      required:
+                        - kid
+                        - use
+                required:
+                  - keys
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+tags:
+  - name: AuthService

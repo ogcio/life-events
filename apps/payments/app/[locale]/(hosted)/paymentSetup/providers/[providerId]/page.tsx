@@ -4,8 +4,16 @@ import EditOpenBankingForm from "./EditOpenBankingForm";
 import EditBankTransferForm from "./EditBankTransferForm";
 import EditStripeForm from "./EditStripeForm";
 import EditWorldpayForm from "./EditWorldpayForm";
-import buildApiClient from "../../../../../../client/index";
 import EditRealexForm from "./EditRealexForm";
+import { Payments } from "building-blocks-sdk";
+import {
+  BankTransferProvider,
+  OpenBankingProvider,
+  RealexProvider,
+  StripeProvider,
+  WorldpayProvider,
+} from "../types";
+import { errorHandler } from "../../../../../utils";
 
 type Props = {
   params: {
@@ -16,15 +24,12 @@ type Props = {
 
 export default async ({ params: { providerId, locale } }: Props) => {
   const { userId } = await PgSessions.get();
-  let provider;
-  try {
-    provider = (
-      await buildApiClient(userId).providers.apiV1ProvidersProviderIdGet(
-        providerId,
-      )
-    ).data;
-  } catch (err) {
-    console.error(err);
+  const { data: provider, error } = await new Payments(userId).getProviderById(
+    providerId,
+  );
+
+  if (error) {
+    errorHandler(error);
   }
 
   if (!provider) {
@@ -32,23 +37,53 @@ export default async ({ params: { providerId, locale } }: Props) => {
   }
 
   if (provider.type === "openbanking") {
-    return <EditOpenBankingForm provider={provider} />;
+    return (
+      <EditOpenBankingForm
+        provider={provider as OpenBankingProvider}
+        userId={userId}
+        locale={locale}
+      />
+    );
   }
 
   if (provider.type === "banktransfer") {
-    return <EditBankTransferForm provider={provider} />;
+    return (
+      <EditBankTransferForm
+        provider={provider as BankTransferProvider}
+        userId={userId}
+        locale={locale}
+      />
+    );
   }
 
   if (provider.type === "stripe") {
-    return <EditStripeForm provider={provider} />;
+    return (
+      <EditStripeForm
+        provider={provider as StripeProvider}
+        userId={userId}
+        locale={locale}
+      />
+    );
   }
 
   if (provider.type === "worldpay") {
-    return <EditWorldpayForm provider={provider} />;
+    return (
+      <EditWorldpayForm
+        provider={provider as WorldpayProvider}
+        userId={userId}
+        locale={locale}
+      />
+    );
   }
 
   if (provider.type === "realex") {
-    return <EditRealexForm provider={provider} />;
+    return (
+      <EditRealexForm
+        provider={provider as RealexProvider}
+        userId={userId}
+        locale={locale}
+      />
+    );
   }
 
   redirect("/paymentsetup/providers");

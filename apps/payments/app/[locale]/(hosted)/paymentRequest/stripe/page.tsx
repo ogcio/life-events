@@ -2,26 +2,25 @@ import StripeHost from "./StripeHost";
 import { getMessages, getTranslations } from "next-intl/server";
 import { createPaymentIntent } from "../../../../integration/stripe";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
-import buildApiClient from "../../../../../client/index";
 import { PgSessions } from "auth/sessions";
-import { notFound } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
+import { errorHandler } from "../../../../utils";
 
 async function getPaymentDetails(
   userId: string,
   paymentId: string,
   amount?: string,
 ) {
-  let details;
-  try {
-    details = (
-      await new Payments(userId).getPaymentRequestPublicInfo(paymentId)
-    ).data;
-  } catch (err) {
-    console.log(err);
+  const { data: details, error } = await new Payments(
+    userId,
+  ).getPaymentRequestPublicInfo(paymentId);
+
+  if (error) {
+    errorHandler(error);
   }
 
-  if (!details) return undefined;
+  if (!details || details?.status === "inactive") return undefined;
 
   const provider = details.providers.find(
     (provider) => provider.type === "stripe",
@@ -51,14 +50,20 @@ export default async function Card(props: {
       }
     | undefined;
 }) {
-  const { userId, email, firstName, lastName } = await PgSessions.get();
+  const { userId, email, firstName, lastName, publicServant } =
+    await PgSessions.get();
+
+  if (publicServant) {
+    return redirect("/not-found", RedirectType.replace);
+  }
+
   const messages = await getMessages({ locale: props.params.locale });
   const stripeMessages =
     (await messages.PayStripe) as unknown as AbstractIntlMessages;
 
   const t = await getTranslations("Common");
   if (!props.searchParams?.paymentId) {
-    return <h1>{t("notFound")}</h1>;
+    return redirect("/not-found", RedirectType.replace);
   }
 
   const paymentDetails = await getPaymentDetails(
@@ -68,13 +73,13 @@ export default async function Card(props: {
   );
 
   if (!paymentDetails) {
-    notFound();
+    return redirect("/not-found", RedirectType.replace);
   }
 
   const { paymentIntent, providerKeysValid } =
     await createPaymentIntent(paymentDetails);
 
-  await buildApiClient(userId).transactions.apiV1TransactionsPost({
+  const { error } = await new Payments(userId).createTransaction({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentIntent.id,
     integrationReference: props.searchParams.integrationRef,
@@ -82,6 +87,10 @@ export default async function Card(props: {
     paymentProviderId: paymentDetails.providerId,
     userData: { email, name: `${firstName} ${lastName}` },
   });
+
+  if (error) {
+    errorHandler(error);
+  }
 
   const returnUri = new URL(
     `/${props.params.locale}/paymentRequest/complete`,

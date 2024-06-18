@@ -7,6 +7,7 @@ export const envSchema = {
     "POSTGRES_PORT",
     "POSTGRES_DB_NAME",
     "POSTGRES_DB_NAME_SHARED",
+    "PROFILE_BACKEND_URL",
   ],
   properties: {
     POSTGRES_USER: {
@@ -26,6 +27,14 @@ export const envSchema = {
     },
     POSTGRES_DB_NAME_SHARED: {
       type: "string",
+    },
+    SYNCHRONOUS_USER_IMPORT: {
+      type: "boolean",
+      default: true,
+    },
+    PROFILE_BACKEND_URL: {
+      type: "string",
+      default: "http://localhost:8003",
     },
   },
 };

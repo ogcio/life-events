@@ -1,9 +1,11 @@
 import { Static, Type } from "@sinclair/typebox";
 
+const OptionalString = Type.Optional(Type.String());
+
 /**
  * Addresses types
  */
-export const Address = Type.Object({
+export const AddressSchema = Type.Object({
   addressId: Type.String(),
   addressLine1: Type.String(),
   addressLine2: Type.String(),
@@ -11,112 +13,104 @@ export const Address = Type.Object({
   county: Type.String(),
   eirecode: Type.String(),
   updatedAt: Type.String(),
-  moveInDate: Type.Optional(Type.String()),
-  moveOutDate: Type.Optional(Type.String()),
+  moveInDate: OptionalString,
+  moveOutDate: OptionalString,
   isPrimary: Type.Optional(Type.Boolean()),
-  ownershipStatus: Type.Optional(Type.String()),
+  ownershipStatus: OptionalString,
 });
+export type Address = Static<typeof AddressSchema>;
 
-export type Address = Static<typeof Address>;
+export const AddressesListSchema = Type.Array(AddressSchema);
+export type AddressesList = Static<typeof AddressesListSchema>;
 
-export const AddressesList = Type.Array(Address);
-export type AddressesList = Static<typeof AddressesList>;
-
-export const CreateAddress = Type.Object({
+export const CreateAddressSchema = Type.Object({
   addressLine1: Type.String(),
-  addressLine2: Type.Optional(Type.String()),
+  addressLine2: OptionalString,
   town: Type.String(),
   county: Type.String(),
   eirecode: Type.String(),
-  moveInDate: Type.Optional(Type.String()),
-  moveOutDate: Type.Optional(Type.String()),
+  moveInDate: OptionalString,
+  moveOutDate: OptionalString,
 });
+export type CreateAddress = Static<typeof CreateAddressSchema>;
 
-export type CreateAddress = Static<typeof CreateAddress>;
-
-export const ParamsWithAddressId = Type.Object({
+export const ParamsWithAddressIdSchema = Type.Object({
   addressId: Type.String(),
 });
-export type ParamsWithAddressId = Static<typeof ParamsWithAddressId>;
+export type ParamsWithAddressId = Static<typeof ParamsWithAddressIdSchema>;
 
-export const UpdateAddress = Type.Object({
+export const UpdateAddressSchema = Type.Object({
   addressLine1: Type.String(),
-  addressLine2: Type.Optional(Type.String()),
+  addressLine2: OptionalString,
   town: Type.String(),
   county: Type.String(),
   eirecode: Type.String(),
-  moveInDate: Type.Optional(Type.String()),
-  moveOutDate: Type.Optional(Type.String()),
+  moveInDate: OptionalString,
+  moveOutDate: OptionalString,
   isPrimary: Type.Boolean(),
   ownershipStatus: Type.String(),
 });
+export type UpdateAddress = Static<typeof UpdateAddressSchema>;
 
-export type UpdateAddress = Static<typeof UpdateAddress>;
-
-export const PatchAddress = Type.Object({
+export const PatchAddressSchema = Type.Object({
   isPrimary: Type.Optional(Type.Boolean()),
-  ownershipStatus: Type.Optional(Type.String()),
+  ownershipStatus: OptionalString,
 });
-
-export type PatchAddress = Static<typeof PatchAddress>;
+export type PatchAddress = Static<typeof PatchAddressSchema>;
 
 /**
  * Entitlements types
  */
-
-export const Entitlement = Type.Object({
+export const EntitlementSchema = Type.Object({
   firstname: Type.String(),
   lastname: Type.String(),
   type: Type.String(),
   issueDate: Type.String(),
-  expiryDate: Type.Optional(Type.String()),
+  expiryDate: OptionalString,
   documentNumber: Type.String(),
 });
+export type Entitlement = Static<typeof EntitlementSchema>;
 
-export type Entitlement = Static<typeof Entitlement>;
-
-export const EntitlementsList = Type.Array(Entitlement);
-export type EntitlementsList = Static<typeof EntitlementsList>;
+export const EntitlementsListSchema = Type.Array(EntitlementSchema);
+export type EntitlementsList = Static<typeof EntitlementsListSchema>;
 
 /**
  * User details types
  */
 
-export const UserDetails = Type.Object({
+export const UserDetailsSchema = Type.Object({
   firstname: Type.String(),
   lastname: Type.String(),
   email: Type.String(),
   title: Type.String(),
-  dateOfBirth: Type.Optional(Type.String()),
+  dateOfBirth: OptionalString,
   ppsn: Type.String(),
   ppsnVisible: Type.Boolean(),
   gender: Type.String(),
   phone: Type.String(),
   consentToPrefillData: Type.Boolean(),
 });
-
-export type UserDetails = Static<typeof UserDetails>;
+export type UserDetails = Static<typeof UserDetailsSchema>;
 
 /* Only firstname, lastname and email are required to create a user right now because 
  those are the only fields we always have access to via the current auth session -
  to be revised when we integrate with GOV ID
  */
-export const CreateUser = Type.Object({
+export const CreateUserSchema = Type.Object({
   firstname: Type.String(),
   lastname: Type.String(),
   email: Type.String(),
-  title: Type.Optional(Type.String()),
-  dateOfBirth: Type.Optional(Type.String()),
-  ppsn: Type.Optional(Type.String()),
+  title: OptionalString,
+  dateOfBirth: OptionalString,
+  ppsn: OptionalString,
   ppsnVisible: Type.Optional(Type.Boolean()),
-  gender: Type.Optional(Type.String()),
-  phone: Type.Optional(Type.String()),
+  gender: OptionalString,
+  phone: OptionalString,
   consentToPrefillData: Type.Optional(Type.Boolean()),
 });
+export type CreateUser = Static<typeof CreateUserSchema>;
 
-export type CreateUser = Static<typeof CreateUser>;
-
-export const UpdateUser = Type.Object({
+export const UpdateUserSchema = Type.Object({
   firstname: Type.String(),
   lastname: Type.String(),
   email: Type.String(),
@@ -128,12 +122,38 @@ export const UpdateUser = Type.Object({
   phone: Type.String(),
   consentToPrefillData: Type.Optional(Type.Boolean()),
 });
+export type UpdateUser = Static<typeof UpdateUserSchema>;
 
-export type UpdateUser = Static<typeof UpdateUser>;
-
-export const PatchUser = Type.Object({
+export const PatchUserSchema = Type.Object({
   ppsnVisible: Type.Optional(Type.Boolean()),
   consentToPrefillData: Type.Optional(Type.Boolean()),
 });
+export type PatchUser = Static<typeof PatchUserSchema>;
 
-export type PatchUser = Static<typeof PatchUser>;
+/**
+ * Find user types
+ */
+export const FindUserParamsSchema = Type.Object({
+  firstname: OptionalString,
+  lastname: OptionalString,
+  email: OptionalString,
+  dateOfBirth: OptionalString,
+  ppsn: OptionalString,
+  gender: OptionalString,
+  phone: OptionalString,
+});
+export type FindUserParams = Static<typeof FindUserParamsSchema>;
+
+export const MatchQualityUnionType = Type.Union([
+  Type.Literal("exact"),
+  Type.Literal("approximate"),
+]);
+export type MatchQuality = Static<typeof MatchQualityUnionType>;
+
+export const FoundUserSchema = Type.Object({
+  id: Type.String(),
+  firstname: Type.String(),
+  lastname: Type.String(),
+  matchQuality: MatchQualityUnionType,
+});
+export type FoundUser = Static<typeof FoundUserSchema>;

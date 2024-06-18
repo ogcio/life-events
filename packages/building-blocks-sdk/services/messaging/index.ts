@@ -22,10 +22,13 @@ export class Messaging {
   }
 
   async getMessages(type?: string) {
+    const params: Record<string, object> = {};
+
+    if (type) {
+      params.query = { type };
+    }
     const { error, data } = await this.client.GET("/api/v1/messages/", {
-      params: {
-        query: { type },
-      },
+      params,
     });
 
     return { error, data: data?.data };
@@ -184,6 +187,7 @@ export class Messaging {
 
     return { error, data: data?.data };
   }
+
   async updateSmsProvider(
     providerId: paths["/api/v1/providers/sms/{providerId}"]["put"]["parameters"]["path"]["providerId"],
     body: paths["/api/v1/providers/sms/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
@@ -215,5 +219,138 @@ export class Messaging {
     );
 
     return { error };
+  }
+
+  async importUsersCsv(file: File) {
+    const { error } = await this.client.POST("/api/v1/users/imports/csv", {
+      body: {
+        file,
+      } as any,
+      bodySerializer: (body: any) => {
+        const formData = new FormData();
+        formData.set("file", body.file);
+        return formData;
+      },
+    });
+
+    return { error };
+  }
+
+  async downloadUsersCsvTemplate() {
+    const { data } = await this.client.GET(
+      "/api/v1/users/imports/csv/template",
+      {
+        parseAs: "blob",
+      },
+    );
+    return data;
+  }
+
+  async getUsersImports(organisationId?: string) {
+    const { error, data } = await this.client.GET("/api/v1/users/imports/", {
+      params: {
+        query: { organisationId },
+      },
+    });
+    return { error, data: data?.data };
+  }
+
+  async getUsersImport(
+    importId: string,
+    organisationId?: string,
+    includeUsersData?: boolean,
+  ) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/imports/{importId}",
+      {
+        params: {
+          path: { importId },
+          query: {
+            organisationId,
+            includeUsersData: Boolean(includeUsersData),
+          },
+        },
+      },
+    );
+    return { error, data: data?.data };
+  }
+
+  async getUsersForImport(importId: string, organisationId?: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/imports/{importId}/users",
+      {
+        params: { path: { importId }, query: { organisationId } },
+      },
+    );
+    return { error, data: data?.data };
+  }
+
+  async getUsers(organisationId?: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/imports/users",
+      {
+        params: { query: { organisationId } },
+      },
+    );
+    return { error, data: data?.data };
+  }
+
+  async getMockOrganisationId() {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/imports/mock-organisation-id",
+    );
+    return { error, data: data?.data };
+  }
+
+  async getOrganisationInvitations() {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/settings/organisations",
+    );
+    return { error, data: data?.data };
+  }
+
+  async getOrganisationInvitation(organisationId: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/settings/organisations/{organisationId}",
+      {
+        params: { path: { organisationId } },
+      },
+    );
+    return { error, data: data?.data };
+  }
+
+  async updateOrganisationInvitation(
+    organisationId: string,
+    body: paths["/api/v1/users/settings/organisations/{organisationId}"]["patch"]["requestBody"]["content"]["application/json"],
+  ) {
+    const { error, data } = await this.client.PATCH(
+      "/api/v1/users/settings/organisations/{organisationId}",
+      {
+        body,
+        params: { path: { organisationId } },
+      },
+    );
+
+    return { error, data: data?.data };
+  }
+
+  async getInvitation() {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/settings/invitations/me",
+    );
+    return { error, data: data?.data };
+  }
+
+  async updateInvitation(
+    body: paths["/api/v1/users/settings/invitations/me"]["patch"]["requestBody"]["content"]["application/json"],
+  ) {
+    const { error, data } = await this.client.PATCH(
+      "/api/v1/users/settings/invitations/me",
+      {
+        body,
+      },
+    );
+
+    return { error, data: data?.data };
   }
 }

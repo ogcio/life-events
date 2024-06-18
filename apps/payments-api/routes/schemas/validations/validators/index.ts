@@ -1,19 +1,30 @@
-import ibanValidator from "./iban";
+import paymentRequestStatusValidator from "./paymentRequestStatus";
+import providersValidator from "./providers";
+import requiredValidator from "./required";
 
 export type ValidatorFn = (
   value: any,
   field: string,
+  rootData: any,
   errors: Array<any>,
 ) => boolean;
 
+export enum ErrorTypes {
+  REQUIRED = "required",
+  INVALID = "invalid",
+}
+
 const validators: Record<string, ValidatorFn> = {
-  IBANValidator: ibanValidator,
+  ProvidersValidator: providersValidator,
+  RequiredValidator: requiredValidator,
+  PaymentRequestStatusValidator: paymentRequestStatusValidator,
 };
 
 export default function validator(
   value: any,
   validatorFn: string,
   field: string,
+  rootData: any,
   errors: Array<any>,
 ): boolean {
   if (!validators[validatorFn]) {
@@ -21,5 +32,5 @@ export default function validator(
     throw err;
   }
 
-  return validators[validatorFn](value, field, errors);
+  return validators[validatorFn](value, field, rootData, errors);
 }

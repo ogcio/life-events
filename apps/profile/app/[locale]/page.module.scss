@@ -1,0 +1,10 @@
+@import "/app/styles/globals.scss";
+
+.pageWrapper {
+  display: flex;
+  gap: 2.5rem;
+
+  @media ((max-width: $breakpoint-phone)) {
+    display: block;
+  }
+}

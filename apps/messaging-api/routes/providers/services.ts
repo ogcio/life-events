@@ -1,5 +1,6 @@
-import { FastifyInstance } from "fastify";
 import nodemailer from "nodemailer";
+import { PoolClient } from "pg";
+import { ServiceError } from "../../utils";
 
 export type EmailProvider = {
   id: string;
@@ -12,7 +13,26 @@ export type EmailProvider = {
   fromAddress: string;
 };
 
-export function mailService(app: FastifyInstance) {
+export interface SendMailParams {
+  providerId: string;
+  email: string;
+  subject: string;
+  body: string;
+}
+
+export interface MailService {
+  createProvider(
+    params: Omit<EmailProvider, "id">,
+  ): Promise<string | undefined>;
+  updateProvider(params: EmailProvider): Promise<void>;
+  getProvider(id: string): Promise<EmailProvider | undefined>;
+  getProviders(): Promise<EmailProvider[]>;
+  deleteProvider(id: string): Promise<void>;
+  sendMail(params: SendMailParams): Promise<ServiceError | undefined>;
+  getFirstOrEtherealMailProvider(): Promise<string>;
+}
+
+export function mailService(client: PoolClient): MailService {
   return {
     async createProvider({
       host,
@@ -23,19 +43,19 @@ export function mailService(app: FastifyInstance) {
       fromAddress,
       throttle,
     }: Omit<EmailProvider, "id">) {
-      return app.pg.pool
+      return client
         .query<{ id: string }>(
           `
-        INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw, from_address, throttle_ms)
-        VALUES($1,$2,$3,$4,$5,$6,$7)
-        RETURNING id
-      `,
+          INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw, from_address, throttle_ms)
+          VALUES($1,$2,$3,$4,$5,$6,$7)
+          RETURNING id
+          `,
           [name, host, port, username, password, fromAddress, throttle],
         )
         .then((res) => res.rows.at(0)?.id);
     },
-    async updateProvier(data: EmailProvider) {
-      app.pg.pool.query(
+    async updateProvider(data: EmailProvider) {
+      await client.query(
         `
           UPDATE email_providers set 
             provider_name = $1, 
@@ -60,7 +80,7 @@ export function mailService(app: FastifyInstance) {
       );
     },
     async getProvider(id: string) {
-      return app.pg.pool
+      return client
         .query<EmailProvider>(
           `
         SELECT 
@@ -79,7 +99,7 @@ export function mailService(app: FastifyInstance) {
         .then((res) => res.rows.at(0));
     },
     async getProviders() {
-      return app.pg.pool
+      return client
         .query<EmailProvider>(
           `
         SELECT 
@@ -97,22 +117,20 @@ export function mailService(app: FastifyInstance) {
         .then((res) => res.rows);
     },
     async deleteProvider(id: string) {
-      await app.pg.pool.query(`delete from email_providers where id = $1`, [
-        id,
-      ]);
+      await client.query(`delete from email_providers where id = $1`, [id]);
     },
-    async sendMails(
-      providerId: string,
-      recipients: string[],
-      subject: string,
-      body: string,
-    ) {
+    async sendMail(params: SendMailParams): Promise<ServiceError | undefined> {
       try {
-        const provider = await this.getProvider(providerId);
+        const provider = await this.getProvider(params.providerId);
 
         if (!provider) {
-          app.log.warn(null, "no provider");
-          return;
+          return {
+            critical: false,
+            error: {
+              ...params,
+            },
+            msg: `failed to get mail provider for ${params.providerId}`,
+          };
         }
 
         const { host, password, username, port, fromAddress } = provider;
@@ -126,24 +144,24 @@ export function mailService(app: FastifyInstance) {
             pass: password,
           },
         });
-
-        return Promise.allSettled(
-          recipients.map((email) =>
-            transporter.sendMail({
-              from: fromAddress, // "noreply@dev.blocks.gov.ie", //username,
-              to: email,
-              subject: subject,
-              html: body,
-            }),
-          ),
-        );
+        await transporter.sendMail({
+          from: fromAddress, // "noreply@dev.blocks.gov.ie", //username,
+          to: params.email,
+          subject: params.subject,
+          html: params.body,
+        });
       } catch (err) {
-        app.log.error(err, "failed to send emails");
+        return {
+          critical: false,
+          error: { err, ...params },
+          msg: "failed to send email",
+        };
       }
     },
+
     // Temporary demonstrational util functions
     async getFirstOrEtherealMailProvider() {
-      let id = await app.pg.pool
+      let id = await client
         .query<{ id: string }>(
           `
           select 
@@ -157,26 +175,15 @@ export function mailService(app: FastifyInstance) {
         .then((res) => res.rows.at(0)?.id);
 
       if (!id) {
-        const self = this;
-        id = await new Promise((res, rej) => {
-          nodemailer.createTestAccount(
-            async function handleCreated(err, account) {
-              if (err) {
-                console.log(err);
-                rej(err);
-              }
-
-              id = await self.createProvider({
-                name: "Ethreal Email Dev Provider",
-                host: account.smtp.host,
-                port: 587,
-                username: account.user,
-                password: account.pass,
-                fromAddress: "",
-              });
-              res(id);
-            },
-          );
+        const createProviderMethod = this.createProvider;
+        const testAccount = await nodemailer.createTestAccount();
+        id = await createProviderMethod({
+          name: "Ethreal Email Dev Provider",
+          host: testAccount.smtp.host,
+          port: 587,
+          username: testAccount.user,
+          password: testAccount.pass,
+          fromAddress: "",
         });
       }
 

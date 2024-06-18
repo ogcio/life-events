@@ -1,7 +1,10 @@
 import { Type } from "@sinclair/typebox";
+import { createError } from "@fastify/error";
 import { FastifyInstance } from "fastify";
-import { organisationId, utils } from "../../utils";
+import { organisationId } from "../../utils";
 const tags = ["Providers - SMS"];
+
+const SMS_PROVIDER_ERROR = "SMS_PROVIDER_ERROR";
 
 type ConfigBase = {
   type: string;
@@ -50,24 +53,25 @@ export default async function sms(app: FastifyInstance) {
         },
       },
     },
-    async function getProviders(request, reply) {
+    async function getProviders(_request, _reply) {
       try {
-        const providers = await app.pg.pool
-          .query<{ id: string; name: string; type: string }>(
-            `
+        const providers = await app.pg.pool.query<{
+          id: string;
+          name: string;
+          type: string;
+        }>(
+          `
         select id, provider_name as "name", (config ->> 'type') as "type" from
         sms_providers
         -- where organisation_id = $1
         order by provider_name
         `,
-            // [organisationId],
-          )
-          .then((res) => res.rows);
-        return { data: providers };
+          // [organisationId],
+        );
+
+        return { data: providers.rows };
       } catch (err) {
-        const error = utils.buildApiError("failed to get providers", 500);
-        reply.statusCode = error.statusCode;
-        return error;
+        throw createError(SMS_PROVIDER_ERROR, "failed to get providers", 500)();
       }
     },
   );
@@ -93,12 +97,11 @@ export default async function sms(app: FastifyInstance) {
         },
       },
     },
-    async function getProvder(request, reply) {
+    async function getProvder(request, _reply) {
       const providerId = request.params.providerId;
       try {
-        const provider = await app.pg.pool
-          .query<SmsProvider>(
-            `
+        const provider = await app.pg.pool.query<SmsProvider>(
+          `
         select 
             id,
             provider_name as "name", 
@@ -107,22 +110,17 @@ export default async function sms(app: FastifyInstance) {
         where id = $1 
         -- and organisation_id = $2
       `,
-            // [providerId, organisationId],
-            [providerId],
-          )
-          .then((res) => res.rows.at(0));
+          // [providerId, organisationId],
+          [providerId],
+        );
 
-        if (!provider) {
-          const error = utils.buildApiError("provider not found", 404);
-          reply.statusCode = error.statusCode;
-          return error;
+        if (provider.rowCount === 0) {
+          throw createError(SMS_PROVIDER_ERROR, "provider not found", 404)();
         }
 
-        return { data: provider };
+        return { data: provider.rows[0] };
       } catch (err) {
-        const error = utils.buildApiError("failed to get provider", 500);
-        reply.statusCode = error.statusCode;
-        return error;
+        throw createError(SMS_PROVIDER_ERROR, "failed to get provider", 500)();
       }
     },
   );
@@ -145,7 +143,7 @@ export default async function sms(app: FastifyInstance) {
         },
       },
     },
-    async function createHandler(request, reply) {
+    async function createHandler(request, _reply) {
       const body = request.body;
       try {
         await app.pg.pool.query(
@@ -161,9 +159,11 @@ export default async function sms(app: FastifyInstance) {
           [body.name, organisationId, JSON.stringify(body.config)],
         );
       } catch (err) {
-        const error = utils.buildApiError("failed to create provider", 500);
-        reply.statusCode = error.statusCode;
-        return error;
+        throw createError(
+          SMS_PROVIDER_ERROR,
+          "failed to create provider",
+          500,
+        )();
       }
     },
   );
@@ -188,14 +188,13 @@ export default async function sms(app: FastifyInstance) {
         },
       },
     },
-    async function updateHandler(request, reply) {
+    async function updateHandler(request, _reply) {
       if (request.body.id !== request.params.providerId) {
-        const error = utils.buildApiError(
+        throw createError(
+          SMS_PROVIDER_ERROR,
           "body and url param ids are not the same",
           400,
-        );
-        reply.statusCode = error.statusCode;
-        return error;
+        )();
       }
       try {
         await app.pg.pool.query(
@@ -212,9 +211,11 @@ export default async function sms(app: FastifyInstance) {
           ],
         );
       } catch (err) {
-        const error = utils.buildApiError("failed to update provider", 500);
-        reply.statusCode = error.statusCode;
-        return error;
+        throw createError(
+          SMS_PROVIDER_ERROR,
+          "failed to update provider",
+          500,
+        )();
       }
     },
   );
@@ -231,7 +232,7 @@ export default async function sms(app: FastifyInstance) {
         },
       },
     },
-    async function deleteHandler(request, reply) {
+    async function deleteHandler(request, _reply) {
       const providerId = request.params.providerId;
       try {
         await app.pg.pool.query(
@@ -242,9 +243,11 @@ export default async function sms(app: FastifyInstance) {
           [providerId],
         );
       } catch (err) {
-        const error = utils.buildApiError("failed to delete provider", 500);
-        reply.statusCode = error.statusCode;
-        return error;
+        throw createError(
+          SMS_PROVIDER_ERROR,
+          "failed to delete provider",
+          500,
+        )();
       }
     },
   );

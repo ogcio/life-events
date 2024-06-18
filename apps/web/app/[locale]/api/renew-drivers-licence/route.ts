@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
           reason: "Drivers licence renewal",
         },
       },
-      messageType: "message",
+      scheduleAt: new Date().toISOString(),
     });
   }
 
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
           date: new Date().toDateString(),
         },
       },
-      messageType: "message",
+      scheduleAt: new Date().toISOString(),
     });
   }
 

@@ -9,6 +9,9 @@ import {
   RawServerBase,
   RawServerDefault,
 } from "fastify";
+import { ProvidersPlugin } from "../plugins/entities/providers";
+import { CitizenPlugin } from "../plugins/entities/citizen";
+import { TransactionsPlugin } from "../plugins/entities/transactions";
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -20,5 +23,18 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     verifyUser: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    verifyUserWithSessionId: (
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ) => Promise<void>;
+
+    validateIsPublicServant: (
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ) => Promise<void>;
+
+    providers: ProvidersPlugin;
+    citizen: CitizenPlugin;
+    transactions: TransactionsPlugin;
   }
 }

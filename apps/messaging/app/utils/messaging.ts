@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { ComponentProps } from "react";
 import ds from "design-system";
 import { api } from "messages";
+import { providerRoutes, users, usersImports } from "./routes";
 
 export const languages = {
   EN: "EN",
@@ -25,28 +26,42 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
         key: routes.sendAMessage.slug,
         label: t("sendMessage"),
         url: routes.sendAMessage.url,
-        type: "button",
+        icon: "send-a-message",
       },
       {
-        key: routes.emailTemplates.slug,
+        key: routes.messageTemplates.slug,
         label: t("templates"),
-        url: routes.emailTemplates.url,
-        icon: "employment",
+        url: routes.messageTemplates.url,
+        icon: "template",
       },
       {
-        key: routes.settings.slug,
-        label: t("settings"),
-        url: `admin/${routes.settings.slug}`,
-        icon: "about",
+        key: providerRoutes.slug,
+        label: t("providers"),
+        url: providerRoutes.url,
+        icon: "settings",
+      },
+      {
+        key: users.slug,
+        label: t("users"),
+        url: users.url,
+        icon: "employment",
       },
     );
   } else {
-    options.push({
-      key: routes.messages.slug,
-      label: t("messages"),
-      url: routes.messages.slug,
-      icon: "events",
-    });
+    options.push(
+      {
+        key: routes.messages.slug,
+        label: t("messages"),
+        url: routes.messages.slug,
+        icon: "events",
+      },
+      {
+        key: routes.usersSettingsRoutes.slug,
+        label: t("userSettings"),
+        url: routes.usersSettingsRoutes.url,
+        icon: "about",
+      },
+    );
   }
   return options;
 };
@@ -80,4 +95,66 @@ export type MessageCreateProps = {
   disabledSubmit?: boolean;
 };
 
-export const MessageType = { Message: "message", Event: "event" };
+export const searchKeyProvider = "provider";
+export const searchValueEmail = "email";
+export const searchValueSms = "sms";
+export const searchKeyDeleteId = "deleteId";
+export const searchValueOrganisation = "organisation";
+export const searchKeySettingType = "settingType";
+export const searchValueImports = "imports";
+export const searchValueImportCsv = "importCsv";
+export const searchValueUsers = "users";
+export const searchKeyListType = "listType";
+export const envUAT = "UAT";
+export const envDevelopment = "DEV";
+export const envStaging = "STA";
+export const envProduction = "PRD";
+
+export const getLinks = (
+  environment: string,
+  locale: string,
+): { feedbackLink: URL; homePageUrl: URL; learnMoreForm: URL } => {
+  locale = locale || "en";
+  const nonProdFeedbackLink = new URL(
+    `${locale}/664c61ba5f7c9800231db294`,
+    "https://www.formsg.testing.gov.ie",
+  );
+  const nonProdLearnMoreForm = new URL(
+    `${locale}/664b6de45f7c9800231daf22`,
+    "https://www.formsg.testing.gov.ie",
+  );
+
+  switch (environment) {
+    case envUAT:
+      return {
+        homePageUrl: new URL("", "https://uat.blocks.gov.ie"),
+        feedbackLink: nonProdFeedbackLink,
+        learnMoreForm: nonProdLearnMoreForm,
+      };
+    case envStaging:
+      return {
+        homePageUrl: new URL("", "https://sta.blocks.gov.ie"),
+        feedbackLink: nonProdFeedbackLink,
+        learnMoreForm: nonProdLearnMoreForm,
+      };
+    case envDevelopment:
+      return {
+        homePageUrl: new URL("", "https://dev.blocks.gov.ie"),
+        feedbackLink: nonProdFeedbackLink,
+        learnMoreForm: nonProdLearnMoreForm,
+      };
+    case envProduction:
+    default:
+      return {
+        feedbackLink: new URL(
+          `${locale}/664ccbdb0700c50024c53899`,
+          "https://www.forms.gov.ie",
+        ),
+        homePageUrl: new URL("", "https://blocks.gov.ie"),
+        learnMoreForm: new URL(
+          `${locale}/664ccbf2b644d000246cfd78`,
+          "https://www.forms.gov.ie",
+        ),
+      };
+  }
+};

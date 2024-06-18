@@ -12,18 +12,14 @@ export function awsSnsSmsService(
   });
 
   return {
-    async Send(message: string, _: string, E164numbers: string[]) {
-      void Promise.allSettled(
-        E164numbers.map((number) =>
-          aws
-            .publish({
-              Message: message,
-              PhoneNumber: number,
-            })
-            .promise()
-            .then(console.log)
-            .catch(console.error),
-        ),
+    async Send(message: string, E164number: string) {
+      return new Promise<void>((resolve, reject) =>
+        aws.publish({ Message: message, PhoneNumber: E164number }, (err) => {
+          if (err) {
+            reject(err);
+          }
+          resolve();
+        }),
       );
     },
   };

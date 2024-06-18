@@ -22,6 +22,18 @@ export const routeDefinitions = {
         return `/${routeDefinitions.paymentSetup.slug}/${routeDefinitions.paymentSetup.createComplete.slug}/${requestId}`;
       },
     },
+    requests: {
+      slug: "requests",
+      path() {
+        return `/${routeDefinitions.paymentSetup.slug}/${routeDefinitions.paymentSetup.requests.slug}`;
+      },
+    },
+    requestDetails: {
+      slug: "requests",
+      path(requestId: string) {
+        return `/${routeDefinitions.paymentSetup.slug}/${routeDefinitions.paymentSetup.requestDetails.slug}/${requestId}`;
+      },
+    },
   },
   paymentRequest: {
     slug: "paymentRequest",
@@ -66,6 +78,18 @@ export const routeDefinitions = {
       path(transactionId: string) {
         return `${routeDefinitions.citizen.slug}/${routeDefinitions.citizen.transactions.slug}/${transactionId}`;
       },
+    },
+  },
+  info: {
+    slug: "info",
+    path() {
+      return `/${routeDefinitions.info.slug}`;
+    },
+  },
+  error: {
+    slug: "error",
+    path() {
+      return `/${routeDefinitions.error.slug}`;
     },
   },
 };

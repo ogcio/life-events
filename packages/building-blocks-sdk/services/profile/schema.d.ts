@@ -39,11 +39,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -76,11 +77,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -117,11 +119,12 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -129,11 +132,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -173,11 +177,12 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -185,11 +190,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -214,11 +220,12 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -226,11 +233,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -263,11 +271,12 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -275,11 +284,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -306,11 +316,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -341,11 +352,12 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -353,11 +365,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -393,11 +406,12 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -405,11 +419,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -445,11 +460,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -477,11 +493,12 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -489,11 +506,57 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/user/find": {
+    get: {
+      parameters: {
+        query?: {
+          firstname?: string;
+          lastname?: string;
+          email?: string;
+          dateOfBirth?: string;
+          ppsn?: string;
+          gender?: string;
+          phone?: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+              firstname: string;
+              lastname: string;
+              matchQuality: "exact" | "approximate";
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: never;
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };

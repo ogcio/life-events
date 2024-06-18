@@ -1,136 +1,97 @@
-import { Static, Type } from "@sinclair/typebox";
+import { Static, TSchema, Type } from "@sinclair/typebox";
+import {
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_OFFSET_DEFAULT,
+} from "../../utils/pagination";
+
+export const Id = Type.Object({
+  id: Type.String(),
+});
+export type Id = Static<typeof Id>;
+
+export const OkResponse = Type.Object({
+  ok: Type.Boolean(),
+});
+export type OkResponse = Static<typeof OkResponse>;
 
 /**
  * Provider Data types
  */
 
 export const OpenBankingData = Type.Object({
-  iban: Type.String({ validator: "IBANValidator" }),
+  iban: Type.String(),
   accountHolderName: Type.String(),
 });
-export type OpenBankingData = Static<typeof OpenBankingData>;
 
 export const BankTransferData = Type.Object({
-  iban: Type.String({ validator: "IBANValidator" }),
+  iban: Type.String(),
   accountHolderName: Type.String(),
 });
-export type BankTransferData = Static<typeof BankTransferData>;
 
 export const StripeData = Type.Object({
   livePublishableKey: Type.String(),
   liveSecretKey: Type.String(),
 });
-export type StripeData = Static<typeof StripeData>;
 
 export const WorldpayData = Type.Object({
   merchantCode: Type.String(),
   installationId: Type.String(),
 });
-export type WorldpayData = Static<typeof WorldpayData>;
 
 export const RealexData = Type.Object({
   merchantId: Type.String(),
   sharedSecret: Type.String(),
 });
-export type RealexData = Static<typeof RealexData>;
+
+export const ProviderData = Type.Union([
+  OpenBankingData,
+  BankTransferData,
+  StripeData,
+  WorldpayData,
+  RealexData,
+]);
 
 /**
  * Providers types
  */
 
-export const BankTransferProvider = Type.Object({
-  id: Type.String(),
-  name: Type.String(),
-  type: Type.Literal("banktransfer"),
-  data: BankTransferData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
-});
-
-export const OpenBankingProvider = Type.Object({
-  id: Type.String(),
-  name: Type.String(),
-  type: Type.Literal("openbanking"),
-  data: OpenBankingData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
-});
-
-export const StripeProvider = Type.Object({
-  id: Type.String(),
-  name: Type.String(),
-  type: Type.Literal("stripe"),
-  data: StripeData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
-});
-
-export const WorldpayProvider = Type.Object({
-  id: Type.String(),
-  name: Type.String(),
-  type: Type.Literal("worldpay"),
-  data: WorldpayData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
-});
-
-export const RealexProvider = Type.Object({
-  id: Type.String(),
-  name: Type.String(),
-  type: Type.Literal("realex"),
-  data: RealexData,
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
-});
-
-export const Provider = Type.Union([
-  BankTransferProvider,
-  OpenBankingProvider,
-  StripeProvider,
-  WorldpayProvider,
-  RealexProvider,
+export const ProviderTypes = Type.Union([
+  Type.Literal("banktransfer"),
+  Type.Literal("openbanking"),
+  Type.Literal("stripe"),
+  Type.Literal("realex"),
+  Type.Literal("worldpay"),
 ]);
-export type Provider = Static<typeof Provider>;
 
-export const CreateBankTransferProvider = Type.Omit(BankTransferProvider, [
-  "id",
-  "status",
+export const ProviderStatus = Type.Union([
+  Type.Literal("connected"),
+  Type.Literal("disconnected"),
 ]);
-export type CreateBankTransferProvider = Static<
-  typeof CreateBankTransferProvider
->;
 
-export const CreateOpenBankingProvider = Type.Omit(OpenBankingProvider, [
-  "id",
-  "status",
-]);
-export type CreateOpenBankingProvider = Static<
-  typeof CreateOpenBankingProvider
->;
-
-export const CreateStripeProvider = Type.Omit(StripeProvider, ["id", "status"]);
-export type CreateStripeProvider = Static<typeof CreateStripeProvider>;
-
-export const CreateWorldpayProvider = Type.Omit(WorldpayProvider, [
-  "id",
-  "status",
-]);
-export type CreateWorldpayProvider = Static<typeof CreateWorldpayProvider>;
-
-export const CreateRealexProvider = Type.Omit(RealexProvider, ["id", "status"]);
-export type CreateRealexProvider = Static<typeof CreateRealexProvider>;
-
-export const ProvidersList = Type.Union([Type.Array(Provider)]);
-export type ProvidersList = Static<typeof ProvidersList>;
-
-// TEMPORARILY CREATE NEW TYPE WITHOUT VALIDATIONS.
-export const UpdateProvider = Type.Object({
-  name: Type.String(),
-  data: Type.Object({}),
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
+export const Provider = Type.Object({
+  id: Type.String(),
+  name: Type.String({ validator: "RequiredValidator" }),
+  type: ProviderTypes,
+  data: Type.Record(Type.String(), Type.String(), {
+    validator: "ProvidersValidator",
+  }),
+  status: ProviderStatus,
 });
-// export const UpdateProvider = Type.Omit(Provider, ["id", "type"]);
-export type UpdateProvider = Static<typeof UpdateProvider>;
 
+export const ProviderReply = Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  type: ProviderTypes,
+  data: ProviderData,
+  status: ProviderStatus,
+});
+
+export const CreateProvider = Type.Omit(Provider, ["id", "status"]);
+export const ProvidersList = Type.Array(ProviderReply);
+export const UpdateProvider = Type.Omit(Provider, ["id"]);
 export const ParamsWithProviderId = Type.Object({
   providerId: Type.String(),
 });
-export type ParamsWithProviderId = Static<typeof ParamsWithProviderId>;
 
 /**
  * Payment requests types
@@ -140,15 +101,16 @@ export const ProviderDetails = Type.Object({
   userId: Type.String(),
   id: Type.String(),
   name: Type.String(),
-  type: Type.Union([
-    Type.Literal("banktransfer"),
-    Type.Literal("openbanking"),
-    Type.Literal("stripe"),
-  ]),
-  status: Type.Union([Type.Literal("connected"), Type.Literal("disconnected")]),
-  data: Type.Any(),
+  type: ProviderTypes,
+  status: ProviderStatus,
+  data: ProviderData,
   createdAt: Type.String(),
 });
+
+export const PaymentRequestStatus = Type.Union([
+  Type.Literal("active"),
+  Type.Literal("inactive"),
+]);
 
 export const PaymentRequest = Type.Object({
   paymentRequestId: Type.String(),
@@ -157,6 +119,7 @@ export const PaymentRequest = Type.Object({
   amount: Type.Number(),
   reference: Type.String(),
   providers: Type.Array(ProviderDetails),
+  status: PaymentRequestStatus,
 });
 export type PaymentRequest = Static<typeof PaymentRequest>;
 
@@ -171,19 +134,22 @@ export const PaymentRequestDetails = Type.Composite([
 export type PaymentRequestDetails = Static<typeof PaymentRequestDetails>;
 
 export const CreatePaymentRequest = Type.Object({
-  title: Type.String(),
+  title: Type.String({ validator: "RequiredValidator" }),
   description: Type.String(),
-  reference: Type.String(),
-  amount: Type.Number(),
-  redirectUrl: Type.String(),
+  reference: Type.String({ validator: "RequiredValidator" }),
+  amount: Type.Number({ minimum: 1 }),
+  redirectUrl: Type.String({ validator: "RequiredValidator" }),
   allowAmountOverride: Type.Boolean(),
   allowCustomAmount: Type.Boolean(),
   providers: Type.Array(Type.String()),
+  status: Type.Union([PaymentRequestStatus], {
+    validator: "PaymentRequestStatusValidator",
+  }),
 });
 export type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
 
 export const EditPaymentRequest = Type.Composite([
-  Type.Omit(CreatePaymentRequest, ["providers"]),
+  CreatePaymentRequest,
   Type.Object({
     paymentRequestId: Type.String(),
     providersUpdate: Type.Object({
@@ -204,14 +170,6 @@ export type ParamsWithPaymentRequestId = Static<
 /**
  * Transaction status
  */
-export enum TransactionStatusesEnum {
-  Initiated = "initiated",
-  Pending = "pending",
-  Succeeded = "succeeded",
-  Cancelled = "cancelled",
-  Failed = "failed",
-}
-
 export const TransactionStatuses = Type.Union([
   Type.Literal("initiated"),
   Type.Literal("pending"),
@@ -219,7 +177,6 @@ export const TransactionStatuses = Type.Union([
   Type.Literal("cancelled"),
   Type.Literal("failed"),
 ]);
-export type TransactionStatuses = Static<typeof TransactionStatuses>;
 
 /**
  * Transactions types
@@ -241,7 +198,6 @@ export const FullTransaction = Type.Object({
     email: Type.String(),
   }),
 });
-export type FullTransaction = Static<typeof FullTransaction>;
 
 export const Transaction = Type.Composite([
   Type.Pick(FullTransaction, [
@@ -254,7 +210,6 @@ export const Transaction = Type.Composite([
     title: Type.String(),
   }),
 ]);
-export type Transaction = Static<typeof Transaction>;
 
 export const TransactionDetails = Type.Composite([
   Transaction,
@@ -265,13 +220,11 @@ export const TransactionDetails = Type.Composite([
     paymentRequestId: Type.String(),
   }),
 ]);
-export type TransactionDetails = Static<typeof TransactionDetails>;
 
 export const Transactions = Type.Array(TransactionDetails);
 export type Transactions = Static<typeof Transactions>;
 
 export const UpdateTransactionBody = Type.Pick(Transaction, ["status"]);
-export type UpdateTransactionBody = Static<typeof UpdateTransactionBody>;
 
 export const CreateTransactionBody = Type.Omit(FullTransaction, [
   "transactionId",
@@ -280,7 +233,6 @@ export const CreateTransactionBody = Type.Omit(FullTransaction, [
   "updatedAt",
   "userId",
 ]);
-export type CreateTransactionBody = Static<typeof CreateTransactionBody>;
 
 export const ParamsWithTransactionId = Type.Object({
   transactionId: Type.String(),
@@ -293,16 +245,129 @@ export const PaymentIntentId = Type.Object({
 export type PaymentIntentId = Static<typeof PaymentIntentId>;
 
 /**
+ * Realex integration types
+ */
+
+export const RealexPaymentObject = Type.Object({
+  ACCOUNT: Type.String(),
+  AMOUNT: Type.String(),
+  CURRENCY: Type.String(),
+  MERCHANT_ID: Type.String(),
+  ORDER_ID: Type.String(),
+  TIMESTAMP: Type.String(),
+  URL: Type.String(),
+  SHA256HASH: Type.String(),
+});
+export type RealexPaymentObject = Static<typeof RealexPaymentObject>;
+
+export const RealexPaymentObjectQueryParams = Type.Object({
+  amount: Type.String(),
+  intentId: Type.String(),
+  providerId: Type.String(),
+});
+export type RealexPaymentObjectQueryParams = Static<
+  typeof RealexPaymentObjectQueryParams
+>;
+
+export const RealexHppResponse = Type.Object({
+  RESULT: Type.String(),
+  AUTHCODE: Type.String(),
+  MESSAGE: Type.String(),
+  PASREF: Type.String(),
+  AVSPOSTCODERESULT: Type.String(),
+  AVSADDRESSRESULT: Type.String(),
+  CVNRESULT: Type.String(),
+  ACCOUNT: Type.String(),
+  MERCHANT_ID: Type.String(),
+  ORDER_ID: Type.String(),
+  TIMESTAMP: Type.String(),
+  AMOUNT: Type.String(),
+  MERCHANT_RESPONSE_URL: Type.String(),
+  HPP_LANG: Type.String(),
+  pas_uuid: Type.String(),
+  HPP_CUSTOMER_COUNTRY: Type.String(),
+  HPP_CUSTOMER_PHONENUMBER_MOBILE: Type.String(),
+  BILLING_CODE: Type.String(),
+  BILLING_CO: Type.String(),
+  ECI: Type.String(),
+  CAVV: Type.String(),
+  XID: Type.String(),
+  DS_TRANS_ID: Type.String(),
+  AUTHENTICATION_VALUE: Type.String(),
+  MESSAGE_VERSION: Type.String(),
+  SRD: Type.String(),
+  SHA256HASH: Type.String(),
+  HPP_BILLING_STREET1: Type.String(),
+  HPP_BILLING_STREET2: Type.String(),
+  HPP_BILLING_STREET3: Type.String(),
+  HPP_BILLING_CITY: Type.String(),
+  HPP_BILLING_COUNTRY: Type.String(),
+  HPP_BILLING_POSTALCODE: Type.String(),
+  HPP_CUSTOMER_FIRSTNAME: Type.String(),
+  HPP_CUSTOMER_LASTNAME: Type.String(),
+  HPP_CUSTOMER_EMAIL: Type.String(),
+  HPP_ADDRESS_MATCH_INDICATOR: Type.String(),
+  BATCHID: Type.String(),
+});
+export type RealexHppResponse = Static<typeof RealexHppResponse>;
+
+/**
  * Citizen
  */
 
-export const CitizenTransactions = Type.Array(
-  Type.Pick(Transaction, [
-    "transactionId",
-    "status",
-    "title",
-    "updatedAt",
-    "amount",
-  ]),
-);
-export type CitizenTransactions = Static<typeof CitizenTransactions>;
+export const CitizenTransaction = Type.Pick(Transaction, [
+  "transactionId",
+  "status",
+  "title",
+  "updatedAt",
+  "amount",
+]);
+export const CitizenTransactions = Type.Array(CitizenTransaction);
+
+/**
+ * Pagination
+ */
+export const PaginationParams = Type.Object({
+  offset: Type.Optional(
+    Type.Number({
+      default: PAGINATION_OFFSET_DEFAULT,
+      minimum: 0,
+    }),
+  ),
+  limit: Type.Optional(
+    Type.Number({
+      default: PAGINATION_LIMIT_DEFAULT,
+      minimum: 5,
+      maximum: 50,
+      multipleOf: 5,
+    }),
+  ),
+});
+
+export const PaginationLink = Type.Object({
+  href: Type.Optional(Type.String()),
+});
+
+export const PaginationLinks = Type.Object({
+  self: PaginationLink,
+  next: Type.Optional(PaginationLink),
+  prev: Type.Optional(PaginationLink),
+  first: PaginationLink,
+  last: PaginationLink,
+  pages: Type.Record(Type.String(), PaginationLink),
+});
+
+/**
+ * Generics
+ */
+
+export const GenericResponse = <T extends TSchema>(T: T) =>
+  Type.Object({
+    data: T,
+    metadata: Type.Optional(
+      Type.Object({
+        links: Type.Optional(PaginationLinks),
+        totalCount: Type.Optional(Type.Number()),
+      }),
+    ),
+  });

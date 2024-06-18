@@ -1,10 +1,9 @@
-import { randomUUID } from "crypto";
-
-export const organisationId = randomUUID().toString();
-
 import { HttpErrors } from "@fastify/sensible";
 
+export const organisationId = "45ed3f88-d091-4f3d-87bc-93777c297ab6";
+
 export type HttpError = Pick<HttpErrors["HttpError"], "statusCode" | "message">;
+export type ServiceError = { error: object; msg: string; critical: boolean };
 
 type AwsSmsProviderConfig = {
   secretAccessKey: string;
@@ -43,15 +42,6 @@ export const utils = {
   postgresArrayify: function postgresArrayify(arr: unknown[]): string {
     return JSON.stringify(arr).replace("[", "{").replace("]", "}");
   },
-  buildApiError: function buildApiError(
-    message: string,
-    statusCode: number,
-  ): HttpError {
-    return {
-      message,
-      statusCode,
-    };
-  },
   isSmsAwsConfig(config: unknown): config is AwsSmsProviderConfig {
     const check = config as AwsSmsProviderConfig;
     return Boolean(
@@ -59,5 +49,8 @@ export const utils = {
         "accessKey" in check &&
         "secretAccessKey" in check,
     );
+  },
+  isError(error: unknown): error is Error {
+    return error instanceof Error;
   },
 };

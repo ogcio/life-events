@@ -12,9 +12,12 @@ import { getAllEnabledFlags, isFeatureFlagEnabled } from "feature-flags/utils";
 import {
   getEnabledOptions,
   menuOptions,
-} from "./[event]/components/Menu/options";
-import SidebarWrapper from "./[event]/components/SidebarWrapper";
-import { getTranslations } from "next-intl/server";
+} from "../components/HamburgerMenu/options";
+import HamburgerMenuWrapper from "../components/HamburgerMenu/HamburgerMenuWrapper";
+import { getMessages, getTranslations } from "next-intl/server";
+import styles from "./layout.module.scss";
+import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import AnalyticsTracker from "analytics/components/AnalyticsTracker";
 
 export default async function RootLayout({
   children,
@@ -23,47 +26,47 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const { userId, firstName, lastName } = await PgSessions.get();
+  const path = headers().get("x-pathname")?.toString();
+  const queryString = headers().get("x-searchParams")?.toString();
 
-  const result = await pgpool.query<{ isInitialized: boolean }>(
-    `SELECT EXISTS (SELECT 1 FROM user_consents WHERE user_id = $1 AND agreement = 'storeUserData' LIMIT 1) AS "isInitialized"`,
+  const redirectUrl = `${path}${queryString ? `?${queryString}` : ""}`;
+
+  const { userId, firstName, lastName, publicServant, verificationLevel } =
+    await PgSessions.get(redirectUrl);
+
+  const userName = [firstName, lastName].join(" ");
+
+  const result = await pgpool.query<{ is_consenting: boolean }>(
+    `SELECT is_consenting FROM user_consents WHERE user_id = $1 AND agreement = 'storeUserData' LIMIT 1`,
     [userId],
   );
 
-  const isInitialized = Boolean(result.rows.at(0)?.isInitialized);
+  const isConsenting = Boolean(result.rows.at(0)?.is_consenting);
 
-  const path = headers().get("x-pathname")?.toString();
-  if (!isInitialized && !path?.endsWith("welcome")) {
+  if (!isConsenting && !path?.endsWith("welcome")) {
     const url = new URL(`${locale}/welcome`, process.env.HOST_URL);
-    url.searchParams.append("redirect_url", path ?? "/");
+    url.searchParams.append("redirect_url", redirectUrl);
+
     redirect(url.href, RedirectType.replace);
   }
 
-  const showEventsMenu = await isFeatureFlagEnabled("eventsMenu");
+  const showHamburgerMenu =
+    (await isFeatureFlagEnabled("eventsMenu")) && !publicServant;
 
-  let SidebarComponent;
-  if (showEventsMenu) {
-    const userName = [firstName, lastName].join(" ");
+  const enabledEntries = await getAllEnabledFlags(
+    menuOptions.map((o) => o.key),
+  );
 
-    const enabledEntries = await getAllEnabledFlags(
-      menuOptions.map((o) => o.key),
-    );
-    const t = await getTranslations("EventsMenu");
-
-    const options = getEnabledOptions(locale, enabledEntries, t);
-    SidebarComponent = (
-      <SidebarWrapper
-        userName={userName}
-        ppsn="TUV1234123"
-        selected={path || ""}
-        options={options}
-        locale={locale}
-      />
-    );
-  }
+  const messages = await getMessages({ locale });
+  const hamburgerMenuMessages = messages.HamburgerMenu as AbstractIntlMessages;
+  const hamburgerMenuT = await getTranslations("HamburgerMenu");
+  const options = getEnabledOptions(locale, enabledEntries, hamburgerMenuT);
 
   return (
     <html lang={locale}>
+      <head>
+        <title>Life Events App</title>
+      </head>
       <body
         style={{
           margin: "unset",
@@ -73,16 +76,28 @@ export default async function RootLayout({
           flexDirection: "column",
         }}
       >
-        {SidebarComponent}
-        <Header showSidebarToggle={showEventsMenu} locale={locale} />
+        <AnalyticsTracker
+          userId={userId}
+          customDimensions={{ dimension1: verificationLevel }}
+        />
+
+        {showHamburgerMenu && (
+          <NextIntlClientProvider messages={hamburgerMenuMessages}>
+            <HamburgerMenuWrapper
+              userName={userName}
+              selected={path || ""}
+              options={options}
+              locale={locale}
+              path={path}
+            />
+          </NextIntlClientProvider>
+        )}
+        <Header showHamburgerButton={showHamburgerMenu} locale={locale} />
         {/* All designs are made for 1440 px  */}
-        <div
-          className="govie-width-container"
-          style={{ maxWidth: "1440px", width: "100%" }}
-        >
-          <FeedbackBanner />
+        <main className={styles.mainContainer}>
+          <FeedbackBanner locale={locale} />
           <div style={{ margin: "0 auto", paddingTop: "20px" }}>{children}</div>
-        </div>
+        </main>
         <Footer />
       </body>
     </html>

@@ -1,11 +1,13 @@
 import fastify, { FastifyServerOptions } from "fastify";
 import routes from "./routes";
 import fastifyEnv from "@fastify/env";
+import fastifyFormBody from "@fastify/formbody";
 import postgres from "@fastify/postgres";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import dotenv from "dotenv";
 import { envSchema } from "./config";
 import authPlugin from "./plugins/auth";
+import sessionAuthPlugin from "./plugins/sessionAuth";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import fs from "fs";
@@ -17,6 +19,9 @@ import schemaValidators from "./routes/schemas/validations";
 import apiAuthPlugin from "api-auth";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
+import providers from "./plugins/entities/providers";
+import citizen from "./plugins/entities/citizen";
+import transactions from "./plugins/entities/transactions";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -33,21 +38,21 @@ export async function build(opts?: FastifyServerOptions) {
   });
 
   app.register(authPlugin);
+  app.register(sessionAuthPlugin);
+
   app.register(fastifyEnv, {
     schema: envSchema,
     dotenv: true,
   });
 
-  // Warning, this is still experimental
-  // and may not work as expected depending on your current local configuration
-  if (process.env.USE_LOGTO_AUTH) {
-    app.register(apiAuthPlugin, {
-      jwkEndpoint: process.env.LOGTO_JWK_ENDPOINT as string,
-      oidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT as string,
-      currentApiResourceIndicator: process.env
-        .LOGTO_API_RESOURCE_INDICATOR as string,
-    });
-  }
+  app.register(apiAuthPlugin, {
+    jwkEndpoint: process.env.LOGTO_JWK_ENDPOINT as string,
+    oidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT as string,
+    currentApiResourceIndicator: process.env
+      .LOGTO_API_RESOURCE_INDICATOR as string,
+  });
+
+  app.register(fastifyFormBody);
 
   app.register(fastifySwagger, {
     openapi: {
@@ -88,6 +93,10 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(routes, { prefix: "/api/v1" });
 
   app.register(sensible);
+
+  app.register(providers);
+  app.register(citizen);
+  app.register(transactions);
 
   return app;
 }

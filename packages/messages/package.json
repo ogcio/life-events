@@ -5,21 +5,22 @@
   "main": "index.js",
   "scripts": {
     "migrate": "db-migrate up",
-    "migrate:create": "db-migrate create $npm_config_name --sql-file"
+    "migrate:down": "db-migrate down",
+    "migrate:create": "db-migrate create $npm_config_file --sql-file"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "20.10.4",
-    "@types/nodemailer": "^6.4.14",
-    "db-migrate": "^0.11.14",
-    "db-migrate-pg": "^1.5.2",
-    "typescript": "5.3.3"
+    "@types/node": "20.14.2",
+    "@types/nodemailer": "^6.4.15",
+    "typescript": "5.4.5"
   },
   "dependencies": {
     "@nearform/sql": "^1.10.5",
-    "@sendgrid/mail": "^8.1.1",
+    "@sendgrid/mail": "^8.1.3",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
     "nodemailer": "^6.9.13",
-    "pg": "^8.11.3"
+    "pg": "^8.12.0"
   }
 }

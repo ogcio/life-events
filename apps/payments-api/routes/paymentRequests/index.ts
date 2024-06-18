@@ -4,73 +4,102 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreatePaymentRequest,
   EditPaymentRequest,
+  GenericResponse,
+  Id,
+  PaginationParams,
   ParamsWithPaymentRequestId,
   PaymentRequest,
   PaymentRequestDetails,
   Transaction,
 } from "../schemas";
+import {
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_OFFSET_DEFAULT,
+  PaginationDetails,
+} from "../../utils/pagination";
+import { formatAPIResponse } from "../../utils/responseFormatter";
+import { PaginationParams as PaginationParamsType } from "../../types/pagination";
+import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
+import { TransactionDO } from "../../plugins/entities/transactions/types";
 
 export default async function paymentRequests(app: FastifyInstance) {
-  app.get<{ Reply: PaymentRequest[] }>(
+  app.get<{
+    Reply: GenericResponseType<PaymentRequest[]>;
+    Querystring: PaginationParamsType;
+  }>(
     "/",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["PaymentRequests"],
-        response: {
-          200: Type.Array(
-            Type.Object({
-              paymentRequestId: Type.String(),
-              title: Type.String(),
-              description: Type.String(),
-              amount: Type.Number(),
-              reference: Type.String(),
-              providers: Type.Array(
-                Type.Object({
-                  userId: Type.String(),
-                  id: Type.String(),
-                  name: Type.String(),
-                  type: Type.String(),
-                  status: Type.String(),
-                  data: Type.Any(),
-                  createdAt: Type.String(),
-                }),
-              ),
-            }),
-          ),
-        },
+        querystring: PaginationParams,
+        response: { 200: GenericResponse(Type.Array(PaymentRequest)) },
       },
     },
     async (request, reply) => {
       const userId = request.user?.id;
+      const {
+        offset = PAGINATION_OFFSET_DEFAULT,
+        limit = PAGINATION_LIMIT_DEFAULT,
+      } = request.query;
 
-      const result = await app.pg.query(
-        `select pr.title,
-          pr.payment_request_id as "paymentRequestId",
-          pr.description,
-          pr.amount,
-          pr.reference,
-          CASE 
-              WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
-                  'userId', pp.user_id,
-                  'id', pp.provider_id,
-                  'name', pp.provider_name,
-                  'type', pp.provider_type,
-                  'status', pp.status,
-                  'data', pp.provider_data,
-                  'createdAt', pp.created_at
-              ))
-            ELSE '[]'::json
-            END as providers
-        from payment_requests pr
-        left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-        left join payment_providers pp on ppr.provider_id = pp.provider_id
-        where pr.user_id = $1
-        group by pr.payment_request_id`,
-        [userId],
-      );
+      let result;
+      let totalCountResult;
+      try {
+        const from = `from payment_requests pr`;
+        const conditions = `where pr.user_id = $1`;
+        result = await app.pg.query(
+          `select pr.title,
+            pr.payment_request_id as "paymentRequestId",
+            pr.description,
+            pr.amount,
+            pr.reference,
+            pr.status,
+            CASE 
+                WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
+                    'userId', pp.user_id,
+                    'id', pp.provider_id,
+                    'name', pp.provider_name,
+                    'type', pp.provider_type,
+                    'status', pp.status,
+                    'data', pp.provider_data,
+                    'createdAt', pp.created_at
+                ))
+              ELSE '[]'::json
+              END as providers
+          ${from}
+          left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id 
+          left join payment_providers pp on ppr.provider_id = pp.provider_id
+          ${conditions}
+          group by pr.payment_request_id
+          ORDER BY pr.created_at DESC
+          LIMIT $2 OFFSET $3`,
+          [userId, limit, offset],
+        );
 
-      reply.send(result.rows);
+        totalCountResult = await app.pg.query(
+          `select 
+            count(*) as "totalCount"
+          ${from}
+          ${conditions}`,
+          [userId],
+        );
+      } catch (err) {
+        app.log.error((err as Error).message);
+      }
+
+      const totalCount = totalCountResult?.rows[0].totalCount;
+      const data = result?.rows ?? [];
+      const url = request.url.split("?")[0];
+
+      const paginationDetails: PaginationDetails = {
+        offset,
+        limit,
+        totalCount,
+        url: url,
+      };
+
+      reply.send(formatAPIResponse(data, paginationDetails));
     },
   );
 
@@ -85,27 +114,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: ["PaymentRequests"],
         params: ParamsWithPaymentRequestId,
         response: {
-          200: Type.Object({
-            paymentRequestId: Type.String(),
-            title: Type.String(),
-            description: Type.String(),
-            amount: Type.Number(),
-            reference: Type.String(),
-            providers: Type.Array(
-              Type.Object({
-                userId: Type.String(),
-                id: Type.String(),
-                name: Type.String(),
-                type: Type.String(),
-                status: Type.String(),
-                data: Type.Any(),
-                createdAt: Type.String(),
-              }),
-            ),
-            redirectUrl: Type.String(),
-            allowAmountOverride: Type.Boolean(),
-            allowCustomAmount: Type.Boolean(),
-          }),
+          200: PaymentRequestDetails,
           404: HttpError,
         },
       },
@@ -121,6 +130,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               pr.payment_request_id as "paymentRequestId",
               pr.description,
               pr.amount,
+              pr.status,
               CASE 
                 WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
                     'userId', pp.user_id,
@@ -169,27 +179,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: ["PaymentRequests"],
         params: ParamsWithPaymentRequestId,
         response: {
-          200: Type.Object({
-            paymentRequestId: Type.String(),
-            title: Type.String(),
-            description: Type.String(),
-            amount: Type.Number(),
-            reference: Type.String(),
-            providers: Type.Array(
-              Type.Object({
-                userId: Type.String(),
-                id: Type.String(),
-                name: Type.String(),
-                type: Type.String(),
-                status: Type.String(),
-                data: Type.Any(),
-                createdAt: Type.String(),
-              }),
-            ),
-            redirectUrl: Type.String(),
-            allowAmountOverride: Type.Boolean(),
-            allowCustomAmount: Type.Boolean(),
-          }),
+          200: PaymentRequestDetails,
           404: HttpError,
         },
       },
@@ -204,6 +194,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               pr.payment_request_id as "paymentRequestId",
               pr.description,
               pr.amount,
+              pr.status,
               CASE 
                 WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
                     'userId', pp.user_id,
@@ -241,18 +232,14 @@ export default async function paymentRequests(app: FastifyInstance) {
     },
   );
 
-  app.post<{ Body: CreatePaymentRequest; Reply: { id: string } | Error }>(
+  app.post<{ Body: CreatePaymentRequest; Reply: Id | Error }>(
     "/",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["PaymentRequests"],
         body: CreatePaymentRequest,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
@@ -266,6 +253,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         allowAmountOverride,
         allowCustomAmount,
         providers,
+        status,
       } = request.body;
 
       try {
@@ -281,7 +269,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               reference,
               amount,
               redirectUrl,
-              "pending",
+              status,
               allowAmountOverride,
               allowCustomAmount,
             ],
@@ -328,18 +316,14 @@ export default async function paymentRequests(app: FastifyInstance) {
     },
   );
 
-  app.put<{ Body: EditPaymentRequest; Reply: { id: string } | Error }>(
+  app.put<{ Body: EditPaymentRequest; Reply: Id | Error }>(
     "/",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["PaymentRequests"],
         body: EditPaymentRequest,
-        response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
-        },
+        response: { 200: Id },
       },
     },
     async (request, reply) => {
@@ -354,13 +338,14 @@ export default async function paymentRequests(app: FastifyInstance) {
         allowCustomAmount,
         paymentRequestId,
         providersUpdate,
+        status,
       } = request.body;
 
       try {
         await app.pg.transact(async (client) => {
           await client.query(
             `update payment_requests 
-              set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 
+              set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 , status = $10
               where payment_request_id = $8 and user_id = $9`,
             [
               title,
@@ -372,16 +357,15 @@ export default async function paymentRequests(app: FastifyInstance) {
               allowCustomAmount,
               paymentRequestId,
               userId,
+              status,
             ],
           );
 
           if (providersUpdate.toDisable.length) {
-            const idsToDisable = providersUpdate.toDisable.join(", ");
-
             await app.pg.query(
               `update payment_requests_providers set enabled = false
-                where payment_request_id = $1 and provider_id in ($2)`,
-              [paymentRequestId, idsToDisable],
+                where payment_request_id = $1 and provider_id = any($2::uuid[])`,
+              [paymentRequestId, providersUpdate.toDisable],
             );
           }
 
@@ -478,22 +462,36 @@ export default async function paymentRequests(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Reply: Transaction[]; Params: ParamsWithPaymentRequestId }>(
+  app.get<{
+    Reply: GenericResponseType<TransactionDO[]>;
+    Params: ParamsWithPaymentRequestId;
+    Querystring: PaginationParamsType;
+  }>(
     "/:requestId/transactions",
     {
       preValidation: app.verifyUser,
       schema: {
         tags: ["Transactions"],
+        querystring: PaginationParams,
         response: {
-          200: Type.Array(Transaction),
+          200: GenericResponse(Type.Array(Transaction)),
         },
       },
     },
     async (request, reply) => {
       const { requestId } = request.params;
+      const {
+        offset = PAGINATION_OFFSET_DEFAULT,
+        limit = PAGINATION_LIMIT_DEFAULT,
+      } = request.query;
 
       let result;
+      let totalCountResult;
       try {
+        const from = `FROM payment_transactions t`;
+        const joins = `INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+        INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id`;
+        const condition = `WHERE pr.payment_request_id = $1`;
         result = await app.pg.query(
           `SELECT
             t.transaction_id as "transactionId",
@@ -501,11 +499,20 @@ export default async function paymentRequests(app: FastifyInstance) {
             pr.title,
             pt.amount,
             t.updated_at as "updatedAt"
-          FROM payment_transactions t
-          INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
-          INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
-          WHERE pr.payment_request_id = $1
-          ORDER BY t.updated_at DESC`,
+          ${from}
+          ${joins}
+          ${condition}
+          ORDER BY t.updated_at DESC
+          LIMIT $2 OFFSET $3`,
+          [requestId, limit, offset],
+        );
+
+        totalCountResult = await app.pg.query(
+          `SELECT
+              count(*) as "totalCount"
+            ${from}
+            ${joins}
+            ${condition}`,
           [requestId],
         );
       } catch (err) {
@@ -515,7 +522,18 @@ export default async function paymentRequests(app: FastifyInstance) {
         );
       }
 
-      reply.send(result.rows);
+      const totalCount = totalCountResult?.rows[0].totalCount;
+      const data = result?.rows ?? [];
+      const url = request.url.split("?")[0];
+
+      const paginationDetails: PaginationDetails = {
+        offset,
+        limit,
+        totalCount,
+        url: url,
+      };
+
+      reply.send(formatAPIResponse(data, paginationDetails));
     },
   );
 }

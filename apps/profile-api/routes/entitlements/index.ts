@@ -1,6 +1,11 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
-import { EntitlementsList } from "../../types/schemaDefinitions";
+import {
+  EntitlementsList,
+  EntitlementsListSchema,
+} from "../../types/schemaDefinitions";
+
+const ENTITLEMENTS_TAGS = ["Entitlements"];
 
 export default async function entitlements(app: FastifyInstance) {
   app.get<{ Reply: EntitlementsList }>(
@@ -8,9 +13,9 @@ export default async function entitlements(app: FastifyInstance) {
     {
       preValidation: app.verifyUser,
       schema: {
-        tags: ["Entitlements"],
+        tags: ENTITLEMENTS_TAGS,
         response: {
-          200: EntitlementsList,
+          200: EntitlementsListSchema,
           500: HttpError,
         },
       },

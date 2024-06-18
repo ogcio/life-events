@@ -9,7 +9,10 @@ import { PgSessions } from "auth/sessions";
 import { headers } from "next/headers";
 
 export default async (props: MessageCreateProps) => {
-  const t = await getTranslations("sendAMessage.EmailPreview");
+  const [t, tCommons] = await Promise.all([
+    getTranslations("sendAMessage.EmailPreview"),
+    getTranslations("Commons"),
+  ]);
   async function submit() {
     "use server";
 
@@ -44,12 +47,6 @@ export default async (props: MessageCreateProps) => {
 
   const interpolationKeys = Object.keys(interpolations);
 
-  const richText = template
-    ? interpolationKeys.reduce(
-        utils.interpolationReducer(interpolations),
-        template.richText,
-      )
-    : props.state.richText;
   const plainText = template
     ? interpolationKeys.reduce(
         utils.interpolationReducer(interpolations),
@@ -71,23 +68,51 @@ export default async (props: MessageCreateProps) => {
     : props.state.excerpt;
 
   return (
-    <>
+    <div className="govie-grid-column-two-thirds-from-desktop">
       <form action={submit}>
         <div style={{ marginBottom: "30px" }}>
-          <h1 className="govie-heading-l">{subject}</h1>
-          <p className="govie-body">{excerpt}</p>
-          <p className="govie-body">{richText}</p>
-          <p className="govie-body">{plainText}</p>
+          <h1>
+            <span style={{ margin: "unset" }} className="govie-heading-xl">
+              {t("title")}
+            </span>
+          </h1>
+          <div
+            style={{ margin: "unset" }}
+            className="govie-body govie-!-font-weight-bold"
+          >
+            {t("subject")}
+          </div>
+          <p className="govie-body">{subject}</p>
 
-          <a href={""} className="govie-link">
-            {props.state.links.at(0) ?? ""}
-          </a>
+          <div
+            style={{ margin: "unset" }}
+            className="govie-body govie-!-font-weight-bold"
+          >
+            {t("excerpt")}
+          </div>
+          <p className="govie-body">{excerpt}</p>
+
+          {/* <div
+            style={{ margin: "unset" }}
+            className="govie-body govie-!-font-weight-bold"
+          >
+            {t("richText")}
+          </div>
+          <p className="govie-body">{richText}</p> */}
+
+          <div
+            style={{ margin: "unset" }}
+            className="govie-body govie-!-font-weight-bold"
+          >
+            {t("plainText")}
+          </div>
+          <p className="govie-body">{plainText}</p>
         </div>
         <button className="govie-button">{t("submitText")}</button>
       </form>
       <form action={goBack}>
-        <BackButton>{t("backLink")}</BackButton>
+        <BackButton>{tCommons("backLink")}</BackButton>
       </form>
-    </>
+    </div>
   );
 };

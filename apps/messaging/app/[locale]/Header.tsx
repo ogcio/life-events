@@ -2,9 +2,11 @@ import Link from "next/link";
 import ds from "design-system/";
 import UserIcon from "./UserIcon";
 import { useTranslations } from "next-intl";
+import { BuildingBlockSelector } from "shared-components";
 import { headers } from "next/headers";
 import "./Header.css";
-export default () => {
+
+export default ({ locale }: { locale: string }) => {
   const t = useTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
@@ -109,14 +111,14 @@ export default () => {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <Link
+              <a
                 className={`govie-link govie-link--inverse govie-link--no-underline ${
                   pathSlice.at(1) === "en" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/en/" + path, process.env.HOST_URL).href}
               >
                 English
-              </Link>
+              </a>
               <div
                 style={{
                   height: "14px",
@@ -125,20 +127,26 @@ export default () => {
                 }}
               />
 
-              <Link
+              <a
                 className={`govie-link govie-link--inverse govie-link--no-underline  ${
                   pathSlice.at(1) === "ga" ? "govie-!-font-weight-bold" : ""
                 }`.trim()}
                 href={new URL("/ga/" + path, process.env.HOST_URL).href}
               >
-                Gaelic
-              </Link>
+                Gaeilge
+              </a>
             </div>
             <UserIcon />
 
-            <Link href="/logout" prefetch={false} style={{ display: "flex" }}>
+            <Link
+              href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
+              prefetch={false}
+              style={{ display: "flex" }}
+            >
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
             </Link>
+
+            <BuildingBlockSelector locale={locale} />
           </div>
         </div>
       </div>

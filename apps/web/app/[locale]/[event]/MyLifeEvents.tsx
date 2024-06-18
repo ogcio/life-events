@@ -9,13 +9,40 @@ import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
 import { Messaging } from "building-blocks-sdk";
+import { isFeatureFlagEnabled } from "feature-flags/utils";
+import { verificationLevelToRulesMap } from "./[...action]/GetDigitalWallet/GetDigitalWallet";
+import styles from "./event.module.scss";
 
-const eventRules = {
-  [workflow.keys.orderEHIC]: orderEHICRules,
-  [workflow.keys.renewDriversLicence]: renewDriverLicenceRules,
-  [workflow.keys.orderBirthCertificate]: orderBirthCertificateRules,
-  [workflow.keys.notifyDeath]: notifyDeathRules,
-  [workflow.keys.applyJobseekersAllowance]: applyJobseekersAllowanceRules,
+const ChevronIcon = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="13" fill="none">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m0 0 5.753 6.5L0 13h4.247l4.78-5.4L10 6.5l-.974-1.1L4.247 0H0Z"
+        fill="#2C55A2"
+      />
+    </svg>
+  );
+};
+
+const eventRules = (flow: string, verificationLevel: number) => {
+  switch (flow) {
+    case workflow.keys.orderEHIC:
+      return orderEHICRules;
+    case workflow.keys.renewDriversLicence:
+      return renewDriverLicenceRules;
+    case workflow.keys.orderBirthCertificate:
+      return orderBirthCertificateRules;
+    case workflow.keys.notifyDeath:
+      return notifyDeathRules;
+    case workflow.keys.applyJobseekersAllowance:
+      return applyJobseekersAllowanceRules;
+    case workflow.keys.getDigitalWallet:
+      return verificationLevelToRulesMap[verificationLevel];
+    default:
+      throw new Error(`Unsupported workflow: ${flow}`);
+  }
 };
 
 async function getEvents() {
@@ -23,38 +50,28 @@ async function getEvents() {
 
   return Promise.resolve([
     {
-      flowKey: workflow.keys.renewDriversLicence,
-      category: workflow.categories.driving,
-    },
-    {
-      flowKey: workflow.keys.orderEHIC,
-      category: workflow.categories.health,
-    },
-    {
-      flowKey: workflow.keys.orderBirthCertificate,
-      category: workflow.categories.birth,
-    },
-    {
-      flowKey: workflow.keys.notifyDeath,
-      category: workflow.categories.death,
-    },
-    {
-      flowKey: workflow.keys.applyJobseekersAllowance,
-      category: workflow.categories.employment,
+      flowKey: workflow.keys.getDigitalWallet,
+      category: workflow.categories.digitalWallet,
     },
   ]);
 }
 
-function eventFlowMapper(row: {
-  flow: string;
-  category: string;
-  data: workflow.Workflow;
-}) {
+function eventFlowMapper(
+  row: {
+    flow: string;
+    category: string;
+    data: workflow.Workflow;
+  },
+  verificationLevel: number,
+) {
   const flowKey = row.flow;
   let descriptionKey = row.flow;
   let titleKey = row.flow;
 
-  const { key: step } = workflow.getCurrentStep(eventRules[row.flow], row.data);
+  const { key: step } = workflow.getCurrentStep(
+    eventRules(row.flow, verificationLevel),
+    row.data,
+  );
 
   let successful = false;
   if (row.data.successfulAt) {
@@ -90,12 +107,11 @@ function eventFlowMapper(row: {
   };
 }
 
-async function getFlows() {
+async function getFlows(verificationLevel: number) {
   "use server";
 
   const { userId } = await PgSessions.get();
 
-  // union the other flow types when we have them and add some type guard to figure out the pre/mid/post states
   const flowsQueryResult = await postgres.pgpool.query<
     { flow: string; category: string; data: workflow.Workflow },
     string[]
@@ -115,55 +131,166 @@ async function getFlows() {
     return [];
   }
 
-  return flowsQueryResult.rows.map(eventFlowMapper);
+  return flowsQueryResult.rows.map((row) =>
+    eventFlowMapper(row, verificationLevel),
+  );
 }
 
 export default async ({ locale }) => {
   const t = await getTranslations("MyLifeEvents");
-  const [flow] = await Promise.all([getFlows(), getEvents()]);
+  const { userId, verificationLevel } = await PgSessions.get();
 
-  const { userId } = await PgSessions.get();
+  const hasGovIdVerifiedAccount = verificationLevel > 1;
+
+  const [flow, events] = await Promise.all([
+    getFlows(verificationLevel),
+    getEvents(),
+  ]);
 
   const { data: messageEvents } = await new Messaging(userId).getMessages(
     "event",
   );
 
+  const showDigitalWalletOnboarding =
+    await isFeatureFlagEnabled("digitalWallet");
+
+  const eventsToRender = events
+    .filter((event) => !flow.some((f) => f.flowKey === event.flowKey))
+    .map((event) => {
+      const flowTitle = event.flowKey + ".title.base";
+      const descriptionKey = event.flowKey + ".description.base";
+      return {
+        flowTitle,
+        flowKey: event.flowKey,
+        descriptionKey,
+        slug: routes.category[event.category][event.flowKey].path(),
+      };
+    });
+
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", flex: 1, gap: "2.5rem" }}>
-      <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
+    <div className={styles.sectionsWrapper}>
+      <section className={styles.section}>
         <div className="govie-heading-l">{t("lifeEvents")}</div>
         <ul className="govie-list">
-          {messageEvents?.map((msg) => (
-            <li
-              key={msg.subject}
-              style={{
-                margin: "1rem",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-around",
-                gap: "1rem",
-              }}
-            >
-              <Link
-                className="govie-link"
-                href={
-                  new URL(
-                    `/${locale}/messages/${msg.id}`,
-                    process.env.MESSAGES_HOST_URL,
-                  ).href
-                }
+          {showDigitalWalletOnboarding &&
+            eventsToRender.map((evt) => (
+              <li
+                key={`le_${evt.flowKey}`}
+                style={{
+                  margin: "1rem 0",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-around",
+                  gap: "1rem",
+                }}
               >
-                {msg.subject}
-              </Link>
-              <p className="govie-body" style={{ margin: "unset" }}>
-                {msg.excerpt}
-              </p>
-              <hr className="govie-section-break govie-section-break--visible" />
-            </li>
-          ))}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div>
+                    <Link className="govie-link" href={evt.slug}>
+                      {evt.flowKey === workflow.keys.getDigitalWallet
+                        ? t(evt.flowTitle, {
+                            hasGovIdVerifiedAccount:
+                              hasGovIdVerifiedAccount.toString(),
+                          })
+                        : t(evt.flowTitle)}
+                    </Link>
+                    <p
+                      className="govie-body"
+                      style={{ margin: "unset", marginTop: "16px" }}
+                    >
+                      {evt.flowKey === workflow.keys.getDigitalWallet
+                        ? t.rich(evt.descriptionKey, {
+                            hasGovIdVerifiedAccount:
+                              hasGovIdVerifiedAccount.toString(),
+                            br: () => <br />,
+                          })
+                        : t(evt.descriptionKey, { date: "19th March" })}
+                    </p>
+                  </div>
+                  <div>
+                    <Link
+                      className="govie-link"
+                      href={evt.slug}
+                      aria-label={
+                        evt.flowKey === workflow.keys.getDigitalWallet
+                          ? t(evt.flowTitle, {
+                              hasGovIdVerifiedAccount:
+                                hasGovIdVerifiedAccount.toString(),
+                            })
+                          : t(evt.flowTitle)
+                      }
+                    >
+                      <ChevronIcon />
+                    </Link>
+                  </div>
+                </div>
+                <hr className="govie-section-break govie-section-break--visible" />
+              </li>
+            ))}
+          {!showDigitalWalletOnboarding &&
+            messageEvents?.map((msg) => (
+              <li
+                key={msg.subject}
+                style={{
+                  margin: "1rem 0",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-around",
+                  gap: "1rem",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div>
+                    <Link
+                      className="govie-link"
+                      href={
+                        new URL(
+                          `/${locale}/messages/${msg.id}`,
+                          process.env.MESSAGES_HOST_URL,
+                        ).href
+                      }
+                    >
+                      {msg.subject}
+                    </Link>
+                    <p
+                      className="govie-body"
+                      style={{ margin: "unset", marginTop: "16px" }}
+                    >
+                      {msg.excerpt}
+                    </p>
+                  </div>
+                  <div>
+                    <Link
+                      className="govie-link"
+                      href={
+                        new URL(
+                          `/${locale}/messages/${msg.id}`,
+                          process.env.MESSAGES_HOST_URL,
+                        ).href
+                      }
+                    >
+                      <ChevronIcon />
+                    </Link>
+                  </div>
+                </div>
+                <hr className="govie-section-break govie-section-break--visible" />
+              </li>
+            ))}
         </ul>
       </section>
-      <section style={{ margin: "1rem 0", flex: 1, minWidth: "400px" }}>
+      <section className={styles.section}>
         <div className="govie-heading-l">{t("openEvents")}</div>
         <ul className="govie-list">
           {flow.map((evt) => (

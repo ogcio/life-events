@@ -1,8 +1,10 @@
 import s from "stripe";
 import { TransactionStatuses } from "../../types/TransactionStatuses";
 import { PaymentRequest } from "../../types/common";
-import buildApiClient from "../../client/index";
 import { PgSessions } from "auth/sessions";
+import { Payments } from "building-blocks-sdk";
+import { StripeData } from "../[locale]/(hosted)/paymentSetup/providers/types";
+import { errorHandler } from "../utils";
 
 const getStripeProviderId = (paymentRequest: PaymentRequest) =>
   paymentRequest.providers.find((p) => p.type === "stripe")!.id;
@@ -11,12 +13,16 @@ const getSecretKey = async (
   providerId: string,
   userId: string,
 ): Promise<string> => {
-  const provider = (
-    await buildApiClient(userId).providers.apiV1ProvidersProviderIdGet(
-      providerId,
-    )
-  ).data;
-  return provider.data.liveSecretKey;
+  const { data: provider, error } = await new Payments(userId).getProviderById(
+    providerId,
+  );
+
+  if (error) {
+    errorHandler(error);
+  }
+
+  const providerData = provider?.data as StripeData;
+  return providerData?.liveSecretKey;
 };
 
 const getStripeInstance = async (sk: string) => new s(sk);

@@ -12,20 +12,24 @@ pr:
 parameters:
   - name: services
     type: object
-    default: ["web", "mock-api", "payments", "messaging", "messaging-api", "payments-api", "profile", "profile-api"]
+    default: ["web", "mock-api", "payments", "messaging", "messaging-api", "payments-api", "profile", "profile-api", "timeline-api", "auth-service", "scheduler-api", "home", "forms"]
 
-  - name: envBranches
+  - name: buildBranches
     type: object
     default: ["dev", "sta", "uat"]
 
+  - name: validEnvironments
+    type: object
+    displayName: List of valid environments to deploy (do not change)
+    default: ['dev','sta', 'uat', 'prd']
+
 variables:
   - name: pushArtefacts
-    value: ${{ containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}
-  - name: varFile
-    ${{ if containsValue(parameters.envBranches, variables['Build.SourceBranchName']) }}:
-      value: ${{ coalesce(variables.Build.SourceBranchName, 'dev') }}
-    ${{ else }}:
-      value: 'dev'
+    value: ${{ containsValue(parameters.buildBranches, variables['Build.SourceBranchName']) }}
+  - ${{ if containsValue(parameters.validEnvironments ,variables['Build.SourceBranchName']) }}:
+    - template: pipeline-variables/${{ coalesce(variables['Build.SourceBranchName'], 'fallback') }}.yml
+  - ${{ else }}:
+    - template: pipeline-variables/dev.yml
 
 stages:
   - stage: securityScan
@@ -53,8 +57,6 @@ stages:
   - ${{ each serviceName in parameters.services }}:
     - stage: Build_${{ replace(serviceName, '-', '_') }}
       displayName: Build ${{ serviceName }}
-      variables:
-      - template: pipeline-variables/${{ variables.varFile }}.yml
       dependsOn: 
         - securityScan
         - BuildDeps
@@ -67,8 +69,6 @@ stages:
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: Build_${{ replace(serviceName, '-', '_') }}
       condition: ${{ variables.pushArtefacts }}
-      variables:
-      - template: pipeline-variables/${{ variables.varFile }}.yml
       jobs:
       - template: pipeline-templates/push_image.yml
         parameters:
@@ -78,8 +78,6 @@ stages:
     - stage: Deploy_${{ replace(serviceName, '-', '_') }}
       displayName: Deploy to ECS - ${{ serviceName }}
       dependsOn: Push_${{ replace(serviceName, '-', '_') }}
-      variables:
-      - template: pipeline-variables/${{ variables.varFile }}.yml
       jobs:
       - template: pipeline-templates/deploy_ecs.yml
         parameters:

@@ -14,141 +14,6 @@ export interface paths {
       };
     };
   };
-  "/api/v1/providers/banktransfer": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            /** @enum {string} */
-            type: "banktransfer";
-            data: {
-              iban: string;
-              accountHolderName: string;
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/providers/openbanking": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            /** @enum {string} */
-            type: "openbanking";
-            data: {
-              iban: string;
-              accountHolderName: string;
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/providers/stripe": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            /** @enum {string} */
-            type: "stripe";
-            data: {
-              livePublishableKey: string;
-              liveSecretKey: string;
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/providers/worldpay": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            /** @enum {string} */
-            type: "worldpay";
-            data: {
-              merchantCode: string;
-              installationId: string;
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/providers/realex": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            /** @enum {string} */
-            type: "realex";
-            data: {
-              merchantId: string;
-              sharedSecret: string;
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-      };
-    };
-  };
   "/api/v1/providers/": {
     get: {
       responses: {
@@ -158,10 +23,111 @@ export interface paths {
             "application/json": {
               id: string;
               name: string;
-              type: string;
-              data: unknown;
-              status: string;
+              type:
+                | "banktransfer"
+                | "openbanking"
+                | "stripe"
+                | "realex"
+                | "worldpay";
+              data:
+                | {
+                    iban: string;
+                    accountHolderName: string;
+                  }
+                | {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  }
+                | {
+                    merchantCode: string;
+                    installationId: string;
+                  }
+                | {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
+              status: "connected" | "disconnected";
             }[];
+          };
+        };
+        /** @description Default Response */
+        401: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            type:
+              | "banktransfer"
+              | "openbanking"
+              | "stripe"
+              | "realex"
+              | "worldpay";
+            data: {
+              [key: string]: string;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        401: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        422: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
           };
         };
       };
@@ -181,21 +147,56 @@ export interface paths {
             "application/json": {
               id: string;
               name: string;
-              type: string;
-              data: unknown;
-              status: string;
+              type:
+                | "banktransfer"
+                | "openbanking"
+                | "stripe"
+                | "realex"
+                | "worldpay";
+              data:
+                | {
+                    iban: string;
+                    accountHolderName: string;
+                  }
+                | {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  }
+                | {
+                    merchantCode: string;
+                    installationId: string;
+                  }
+                | {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
+              status: "connected" | "disconnected";
             };
           };
         };
         /** @description Default Response */
-        400: {
+        401: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -211,7 +212,15 @@ export interface paths {
         content: {
           "application/json": {
             name: string;
-            data: Record<string, never>;
+            type:
+              | "banktransfer"
+              | "openbanking"
+              | "stripe"
+              | "realex"
+              | "worldpay";
+            data: {
+              [key: string]: string;
+            };
             status: "connected" | "disconnected";
           };
         };
@@ -225,31 +234,125 @@ export interface paths {
             };
           };
         };
+        /** @description Default Response */
+        401: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        422: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
       };
     };
   };
   "/api/v1/requests/": {
     get: {
+      parameters: {
+        query?: {
+          offset?: number;
+          limit?: number;
+        };
+      };
       responses: {
         /** @description Default Response */
         200: {
           content: {
             "application/json": {
-              paymentRequestId: string;
-              title: string;
-              description: string;
-              amount: number;
-              reference: string;
-              providers: {
-                userId: string;
-                id: string;
-                name: string;
-                type: string;
-                status: string;
-                data: unknown;
-                createdAt: string;
+              data: {
+                paymentRequestId: string;
+                title: string;
+                description: string;
+                amount: number;
+                reference: string;
+                providers: {
+                  userId: string;
+                  id: string;
+                  name: string;
+                  type:
+                    | "banktransfer"
+                    | "openbanking"
+                    | "stripe"
+                    | "realex"
+                    | "worldpay";
+                  status: "connected" | "disconnected";
+                  data:
+                    | {
+                        iban: string;
+                        accountHolderName: string;
+                      }
+                    | {
+                        livePublishableKey: string;
+                        liveSecretKey: string;
+                      }
+                    | {
+                        merchantCode: string;
+                        installationId: string;
+                      }
+                    | {
+                        merchantId: string;
+                        sharedSecret: string;
+                      };
+                  createdAt: string;
+                }[];
+                status: "active" | "inactive";
               }[];
-            }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
           };
         };
       };
@@ -265,6 +368,8 @@ export interface paths {
             redirectUrl: string;
             allowAmountOverride: boolean;
             allowCustomAmount: boolean;
+            providers: string[];
+            status: "active" | "inactive";
             paymentRequestId: string;
             providersUpdate: {
               toDisable: string[];
@@ -296,6 +401,7 @@ export interface paths {
             allowAmountOverride: boolean;
             allowCustomAmount: boolean;
             providers: string[];
+            status: "active" | "inactive";
           };
         };
       };
@@ -332,11 +438,33 @@ export interface paths {
                 userId: string;
                 id: string;
                 name: string;
-                type: string;
-                status: string;
-                data: unknown;
+                type:
+                  | "banktransfer"
+                  | "openbanking"
+                  | "stripe"
+                  | "realex"
+                  | "worldpay";
+                status: "connected" | "disconnected";
+                data:
+                  | {
+                      iban: string;
+                      accountHolderName: string;
+                    }
+                  | {
+                      livePublishableKey: string;
+                      liveSecretKey: string;
+                    }
+                  | {
+                      merchantCode: string;
+                      installationId: string;
+                    }
+                  | {
+                      merchantId: string;
+                      sharedSecret: string;
+                    };
                 createdAt: string;
               }[];
+              status: "active" | "inactive";
               redirectUrl: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;
@@ -347,11 +475,12 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -374,11 +503,12 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -386,11 +516,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -418,11 +549,33 @@ export interface paths {
                 userId: string;
                 id: string;
                 name: string;
-                type: string;
-                status: string;
-                data: unknown;
+                type:
+                  | "banktransfer"
+                  | "openbanking"
+                  | "stripe"
+                  | "realex"
+                  | "worldpay";
+                status: "connected" | "disconnected";
+                data:
+                  | {
+                      iban: string;
+                      accountHolderName: string;
+                    }
+                  | {
+                      livePublishableKey: string;
+                      liveSecretKey: string;
+                    }
+                  | {
+                      merchantCode: string;
+                      installationId: string;
+                    }
+                  | {
+                      merchantId: string;
+                      sharedSecret: string;
+                    };
                 createdAt: string;
               }[];
+              status: "active" | "inactive";
               redirectUrl: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;
@@ -433,11 +586,12 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -447,6 +601,10 @@ export interface paths {
   "/api/v1/requests/{requestId}/transactions": {
     get: {
       parameters: {
+        query?: {
+          offset?: number;
+          limit?: number;
+        };
         path: {
           requestId: string;
         };
@@ -456,17 +614,44 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              transactionId: string;
-              status:
-                | "initiated"
-                | "pending"
-                | "succeeded"
-                | "cancelled"
-                | "failed";
-              amount: number;
-              updatedAt: string;
-              title: string;
-            }[];
+              data: {
+                transactionId: string;
+                status:
+                  | "initiated"
+                  | "pending"
+                  | "succeeded"
+                  | "cancelled"
+                  | "failed";
+                amount: number;
+                updatedAt: string;
+                title: string;
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
           };
         };
       };
@@ -484,25 +669,52 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              transactionId: string;
-              status:
-                | "initiated"
-                | "pending"
-                | "succeeded"
-                | "cancelled"
-                | "failed";
-              amount: number;
-              updatedAt: string;
-              title: string;
-              extPaymentId: string;
-              userId: string;
-              userData: {
-                name: string;
-                email: string;
+              data: {
+                transactionId: string;
+                status:
+                  | "initiated"
+                  | "pending"
+                  | "succeeded"
+                  | "cancelled"
+                  | "failed";
+                amount: number;
+                updatedAt: string;
+                title: string;
+                extPaymentId: string;
+                userId: string;
+                userData: {
+                  name: string;
+                  email: string;
+                };
+                providerName: string;
+                providerType: string;
+                paymentRequestId: string;
               };
-              providerName: string;
-              providerType: string;
-              paymentRequestId: string;
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -510,11 +722,12 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -545,47 +758,120 @@ export interface paths {
             "application/json": Record<string, never>;
           };
         };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
       };
     };
   };
   "/api/v1/transactions/": {
     get: {
+      parameters: {
+        query?: {
+          offset?: number;
+          limit?: number;
+        };
+      };
       responses: {
         /** @description Default Response */
         200: {
           content: {
             "application/json": {
-              transactionId: string;
-              status:
-                | "initiated"
-                | "pending"
-                | "succeeded"
-                | "cancelled"
-                | "failed";
-              amount: number;
-              updatedAt: string;
-              title: string;
-              extPaymentId: string;
-              userId: string;
-              userData: {
-                name: string;
-                email: string;
+              data: {
+                transactionId: string;
+                status:
+                  | "initiated"
+                  | "pending"
+                  | "succeeded"
+                  | "cancelled"
+                  | "failed";
+                amount: number;
+                updatedAt: string;
+                title: string;
+                extPaymentId: string;
+                userId: string;
+                userData: {
+                  name: string;
+                  email: string;
+                };
+                providerName: string;
+                providerType: string;
+                paymentRequestId: string;
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
               };
-              providerName: string;
-              providerType: string;
-              paymentRequestId: string;
-            }[];
+            };
+          };
+        };
+        /** @description Default Response */
+        401: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -612,7 +898,47 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              transactionId: string;
+              data: {
+                id: string;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        401: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -620,11 +946,12 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -638,19 +965,47 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              intentId: string;
+              data: {
+                intentId: string;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
         /** @description Default Response */
-        400: {
+        404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -659,33 +1014,93 @@ export interface paths {
   };
   "/api/v1/citizen/transactions": {
     get: {
+      parameters: {
+        query?: {
+          offset?: number;
+          limit?: number;
+        };
+      };
       responses: {
         /** @description Default Response */
         200: {
           content: {
             "application/json": {
-              transactionId: string;
-              status:
-                | "initiated"
-                | "pending"
-                | "succeeded"
-                | "cancelled"
-                | "failed";
-              title: string;
-              updatedAt: string;
-              amount: number;
-            }[];
+              data: {
+                transactionId: string;
+                status:
+                  | "initiated"
+                  | "pending"
+                  | "succeeded"
+                  | "cancelled"
+                  | "failed";
+                title: string;
+                updatedAt: string;
+                amount: number;
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        401: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };
@@ -704,25 +1119,52 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              transactionId: string;
-              status:
-                | "initiated"
-                | "pending"
-                | "succeeded"
-                | "cancelled"
-                | "failed";
-              amount: number;
-              updatedAt: string;
-              title: string;
-              extPaymentId: string;
-              userId: string;
-              userData: {
-                name: string;
-                email: string;
+              data: {
+                transactionId: string;
+                status:
+                  | "initiated"
+                  | "pending"
+                  | "succeeded"
+                  | "cancelled"
+                  | "failed";
+                amount: number;
+                updatedAt: string;
+                title: string;
+                extPaymentId: string;
+                userId: string;
+                userData: {
+                  name: string;
+                  email: string;
+                };
+                providerName: string;
+                providerType: string;
+                paymentRequestId: string;
               };
-              providerName: string;
-              providerType: string;
-              paymentRequestId: string;
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -730,11 +1172,109 @@ export interface paths {
         404: {
           content: {
             "application/json": {
-              statusCode: number;
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/realex/paymentObject": {
+    get: {
+      parameters: {
+        query: {
+          amount: string;
+          intentId: string;
+          providerId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              ACCOUNT: string;
+              AMOUNT: string;
+              CURRENCY: string;
+              MERCHANT_ID: string;
+              ORDER_ID: string;
+              TIMESTAMP: string;
+              URL: string;
+              SHA256HASH: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        422: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/realex/verifyPaymentResponse": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": Record<string, never>;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": string;
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        422: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
             };
           };
         };

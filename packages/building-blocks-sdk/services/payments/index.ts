@@ -2,10 +2,11 @@ import createClient, { FetchResponse, type Middleware } from "openapi-fetch";
 import type { paths } from "./schema";
 
 const formatQueryResult = async <T, O>(
-  promise: Promise<FetchResponse<T, O>>,
+  promise: Promise<FetchResponse<T, O, "application/json">>,
 ) => {
   try {
     const result = await promise;
+
     return { data: result.data, error: result.error };
   } catch (error) {
     return { data: undefined, error };
@@ -20,8 +21,10 @@ export class Payments {
         // Send temporarly the user id as auth token
         req.headers.set("x-user-id", authToken);
 
+        req.headers.set("x-session-id", authToken);
+
         // Once the logto integration is complete, we will send the real auth token
-        //req.headers.set("Authorization", `Bearer ${authToken}`);
+        req.headers.set("Authorization", `Bearer ${authToken}`);
         return req;
       },
     };
@@ -39,51 +42,25 @@ export class Payments {
     return formatQueryResult(this.client.GET("/api/v1/providers/"));
   }
 
-  async createBankTransferProvider(
-    data: paths["/api/v1/providers/banktransfer"]["post"]["requestBody"]["content"]["application/json"],
+  async getProviderById(
+    providerId: paths["/api/v1/providers/{providerId}"]["get"]["parameters"]["path"]["providerId"],
   ) {
     return formatQueryResult(
-      this.client.POST("/api/v1/providers/banktransfer", {
-        body: data,
+      this.client.GET("/api/v1/providers/{providerId}", {
+        params: {
+          path: {
+            providerId,
+          },
+        },
       }),
     );
   }
 
-  async createOpenBankingProvider(
-    data: paths["/api/v1/providers/openbanking"]["post"]["requestBody"]["content"]["application/json"],
+  async createProvider(
+    data: paths["/api/v1/providers/"]["post"]["requestBody"]["content"]["application/json"],
   ) {
     return formatQueryResult(
-      this.client.POST("/api/v1/providers/openbanking", {
-        body: data,
-      }),
-    );
-  }
-
-  async createStripeProvider(
-    data: paths["/api/v1/providers/stripe"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    return formatQueryResult(
-      this.client.POST("/api/v1/providers/stripe", {
-        body: data,
-      }),
-    );
-  }
-
-  async createWorldpayProvider(
-    data: paths["/api/v1/providers/worldpay"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    return formatQueryResult(
-      this.client.POST("/api/v1/providers/worldpay", {
-        body: data,
-      }),
-    );
-  }
-
-  async createRealexProvider(
-    data: paths["/api/v1/providers/realex"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    return formatQueryResult(
-      this.client.POST("/api/v1/providers/realex", {
+      this.client.POST("/api/v1/providers/", {
         body: data,
       }),
     );
@@ -109,6 +86,18 @@ export class Payments {
    * PAYMENT REQUESTS
    */
 
+  async getPaymentRequests(
+    query: paths["/api/v1/requests/"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/requests/", {
+        params: {
+          query,
+        },
+      }),
+    );
+  }
+
   async getPaymentRequest(
     requestId: paths["/api/v1/requests/{requestId}"]["get"]["parameters"]["path"]["requestId"],
   ) {
@@ -119,6 +108,32 @@ export class Payments {
             requestId,
           },
         },
+      }),
+    );
+  }
+
+  async getPaymentRequestTransactions(
+    requestId: paths["/api/v1/requests/{requestId}/transactions"]["get"]["parameters"]["path"]["requestId"],
+    query: paths["/api/v1/requests/{requestId}/transactions"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/requests/{requestId}/transactions", {
+        params: {
+          path: {
+            requestId,
+          },
+          query,
+        },
+      }),
+    );
+  }
+
+  async createPaymentRequest(
+    data: paths["/api/v1/requests/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/requests/", {
+        body: data,
       }),
     );
   }
@@ -137,12 +152,44 @@ export class Payments {
     );
   }
 
+  async updatePaymentRequest(
+    data: paths["/api/v1/requests/"]["put"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.PUT("/api/v1/requests/", {
+        body: data,
+      }),
+    );
+  }
+
+  async deletePaymentRequest(
+    requestId: paths["/api/v1/requests/{requestId}"]["delete"]["parameters"]["path"]["requestId"],
+  ) {
+    return formatQueryResult(
+      this.client.DELETE("/api/v1/requests/{requestId}", {
+        params: {
+          path: {
+            requestId,
+          },
+        },
+      }),
+    );
+  }
+
   /**
    * TRANSACTIONS
    */
 
-  async getTransactions() {
-    return formatQueryResult(this.client.GET("/api/v1/transactions/"));
+  async getTransactions(
+    query: paths["/api/v1/transactions/"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/transactions/", {
+        params: {
+          query,
+        },
+      }),
+    );
   }
 
   async getTransactionDetails(transactionId: string) {
@@ -189,12 +236,31 @@ export class Payments {
     );
   }
 
+  async getRealexPaymentObject(
+    query: paths["/api/v1/realex/paymentObject"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/realex/paymentObject", {
+        params: {
+          query,
+        },
+      }),
+    );
+  }
   /**
    * Citizen
    */
 
-  async getCitizenTransactions() {
-    return formatQueryResult(this.client.GET("/api/v1/citizen/transactions"));
+  async getCitizenTransactions(
+    query: paths["/api/v1/citizen/transactions"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/citizen/transactions", {
+        params: {
+          query,
+        },
+      }),
+    );
   }
 
   async getCitizenTransactionDetails(transactionId: string) {

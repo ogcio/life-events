@@ -4,12 +4,24 @@ import { redirect } from "next/navigation";
 import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
 import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
-import { getValidationErrors } from "../../../../../utils";
+import { errorHandler } from "../../../../../utils";
 import OpenBankingForm from "./OpenBankingForm";
+import { openBankingValidationMap } from "../../../../../validationMaps";
 
 type Props = {
   params: {
     locale: string;
+  };
+};
+
+export type OpenBankingFormState = {
+  errors: {
+    [key: string]: string;
+  };
+  defaultState?: {
+    providerName: string;
+    accountHolderName: string;
+    iban: string;
   };
 };
 
@@ -19,37 +31,44 @@ export default async (props: Props) => {
 
   const { userId } = await PgSessions.get();
 
+  const errorFieldMapping = openBankingValidationMap(t);
+
   async function handleSubmit(
     prevState: FormData,
     formData: FormData,
-  ): Promise<{
-    errors: {
-      [key: string]: string;
-    };
-  }> {
+  ): Promise<OpenBankingFormState> {
     "use server";
-    const validation = {
+    const nameField = formData.get("provider_name") as string;
+    const accountHolderNameField = formData.get(
+      "account_holder_name",
+    ) as string;
+    const ibanField = (formData.get("iban") as string).replaceAll(" ", "");
+
+    const formResult = {
       errors: {},
+      defaultState: {
+        providerName: nameField,
+        accountHolderName: accountHolderNameField,
+        iban: ibanField,
+      },
     };
 
-    const result = await new Payments(userId).createOpenBankingProvider({
-      name: formData.get("provider_name") as string,
+    const { data: result, error } = await new Payments(userId).createProvider({
+      name: nameField,
       type: "openbanking",
       data: {
-        iban: (formData.get("iban") as string).replaceAll(" ", ""),
-        accountHolderName: formData.get("account_holder_name") as string,
+        iban: ibanField,
+        accountHolderName: accountHolderNameField,
       },
     });
 
-    if (result.data && !result.error) {
+    formResult.errors = errorHandler(error, errorFieldMapping) ?? {};
+
+    if (result) {
       redirect("./");
     }
 
-    if (result.error.validation) {
-      validation.errors = getValidationErrors(result.error.validation);
-    }
-
-    return validation;
+    return formResult;
   }
 
   return (

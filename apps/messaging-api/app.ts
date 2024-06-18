@@ -13,6 +13,9 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
+import { initializeErrorHandler } from "error-handler";
+import { initializeLoggingHooks } from "logging-wrapper";
+import fastifyMultipart from "@fastify/multipart";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,8 +24,11 @@ dotenv.config();
 
 export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
+  initializeLoggingHooks(app);
+  initializeErrorHandler(app);
 
   app.register(authPlugin);
+
   app.register(fastifyEnv, {
     schema: envSchema,
     dotenv: true,
@@ -57,21 +63,14 @@ export async function build(opts?: FastifyServerOptions) {
     database: process.env.POSTGRES_DB_NAME,
   });
 
+  app.register(fastifyMultipart);
+
   app.register(healthCheck);
 
   app.register(routes, { prefix: "/api/v1" });
 
   app.register(sensible, {
     sharedSchemaId: "HttpError",
-  });
-
-  app.setErrorHandler((error, request, reply) => {
-    app.log.error(error);
-    if (error instanceof Error && error.name !== "error") {
-      reply.type("application/json").send({ error });
-      return;
-    }
-    reply.code(500).type("application/json").send({ error });
   });
 
   return app;

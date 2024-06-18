@@ -23,9 +23,32 @@ paths:
       responses:
         "200":
           description: Default Response
+  /api/v1/messages/jobs/{id}:
+    post:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+      responses:
+        "202":
+          description: Default Response
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/def-0"
   /api/v1/messages/:
     get:
-      tags:
+      tags: &a1
         - Messages
       parameters:
         - schema:
@@ -56,15 +79,7 @@ paths:
                           type: string
                         richText:
                           type: string
-                        links:
-                          type: array
-                          items:
-                            type: string
                         createdAt:
-                          type: string
-                        messageType:
-                          type: string
-                        paymentRequestId:
                           type: string
                       required:
                         - id
@@ -72,9 +87,7 @@ paths:
                         - excerpt
                         - plainText
                         - richText
-                        - links
                         - createdAt
-                        - messageType
                 required:
                   - data
         "400":
@@ -84,14 +97,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     post:
-      tags:
-        - Messages
+      tags: *a1
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
+                preferredTransports:
+                  type: array
+                  items:
+                    type: string
+                userIds:
+                  type: array
+                  items:
+                    format: uuid
+                    type: string
+                security:
+                  type: string
+                scheduleAt:
+                  format: date-time
+                  type: string
                 message:
                   type: object
                   properties:
@@ -107,14 +133,7 @@ paths:
                       type: string
                     plainText:
                       type: string
-                    links:
-                      type: array
-                      items:
-                        type: string
                     lang:
-                      type: string
-                    paymentRequestId:
-                      format: uuid
                       type: string
                   required:
                     - messageName
@@ -122,7 +141,6 @@ paths:
                     - excerpt
                     - richText
                     - plainText
-                    - links
                     - lang
                 template:
                   type: object
@@ -137,24 +155,11 @@ paths:
                   required:
                     - id
                     - interpolations
-                preferredTransports:
-                  type: array
-                  items:
-                    type: string
-                userIds:
-                  type: array
-                  items:
-                    format: uuid
-                    type: string
-                security:
-                  type: string
-                messageType:
-                  type: string
               required:
                 - preferredTransports
                 - userIds
                 - security
-                - messageType
+                - scheduleAt
         required: true
       responses:
         4XX:
@@ -171,8 +176,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/messages/{messageId}:
     get:
-      tags:
-        - Messages
+      tags: *a1
       parameters:
         - schema:
             format: uuid
@@ -199,18 +203,11 @@ paths:
                         type: string
                       richText:
                         type: string
-                      links:
-                        type: array
-                        items:
-                          type: string
-                      paymentRequestId:
-                        type: string
                     required:
                       - subject
                       - excerpt
                       - plainText
                       - richText
-                      - links
                 required:
                   - data
         4XX:
@@ -227,7 +224,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/providers/emails/:
     get:
-      tags: &a1
+      tags: &a2
         - Providers - Emails
       responses:
         "200":
@@ -282,7 +279,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     post:
-      tags: *a1
+      tags: *a2
       requestBody:
         content:
           application/json:
@@ -343,7 +340,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/providers/emails/{providerId}:
     get:
-      tags: *a1
+      tags: *a2
       parameters:
         - schema:
             type: string
@@ -401,7 +398,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     put:
-      tags: *a1
+      tags: *a2
       requestBody:
         content:
           application/json:
@@ -454,7 +451,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     delete:
-      tags: *a1
+      tags: *a2
       parameters:
         - schema:
             type: string
@@ -476,7 +473,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/providers/sms/:
     get:
-      tags: &a2
+      tags: &a3
         - Providers - SMS
       responses:
         "200":
@@ -517,7 +514,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     post:
-      tags: *a2
+      tags: *a3
       requestBody:
         content:
           application/json:
@@ -561,7 +558,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/providers/sms/{providerId}:
     get:
-      tags: *a2
+      tags: *a3
       parameters:
         - schema:
             format: uuid
@@ -618,7 +615,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     put:
-      tags: *a2
+      tags: *a3
       requestBody:
         content:
           application/json:
@@ -672,7 +669,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     delete:
-      tags: *a2
+      tags: *a3
       parameters:
         - schema:
             type: string
@@ -694,7 +691,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/templates/:
     get:
-      tags: &a3
+      tags: &a4
         - Templates
       parameters:
         - schema:
@@ -741,7 +738,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     post:
-      tags: *a3
+      tags: *a4
       requestBody:
         content:
           application/json:
@@ -781,9 +778,14 @@ paths:
                         type: string
                       type:
                         type: string
+                      languages:
+                        type: array
+                        items:
+                          type: string
                     required:
                       - name
                       - type
+                      - languages
               required:
                 - contents
                 - variables
@@ -820,7 +822,7 @@ paths:
                 $ref: "#/components/schemas/def-0"
   /api/v1/templates/{templateId}:
     get:
-      tags: *a3
+      tags: *a4
       parameters:
         - schema:
             type: string
@@ -892,7 +894,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     put:
-      tags: *a3
+      tags: *a4
       requestBody:
         content:
           application/json:
@@ -963,7 +965,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/def-0"
     delete:
-      tags: *a3
+      tags: *a4
       parameters:
         - schema:
             type: string
@@ -983,3 +985,2108 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/def-0"
+  /api/v1/users/settings/organisations:
+    get:
+      tags: &a5
+        - UserSettings
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        userProfileId:
+                          default: null
+                          anyOf:
+                            - type: string
+                            - type: "null"
+                        organisationId:
+                          type: string
+                        organisationInvitationStatus:
+                          default: pending
+                          anyOf:
+                            - type: string
+                              enum:
+                                - to_be_invited
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - accepted
+                            - type: string
+                              enum:
+                                - declined
+                        organisationInvitationSentAt:
+                          type: string
+                        organisationInvitationFeedbackAt:
+                          type: string
+                        organisationPreferredTransports:
+                          type: array
+                          items:
+                            type: string
+                        correlationQuality:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - full
+                            - type: string
+                              enum:
+                                - partial
+                            - type: string
+                              enum:
+                                - not_related
+                        userStatus:
+                          default: pending
+                          anyOf:
+                            - type: string
+                              enum:
+                                - to_be_invited
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - disabled
+                            - type: string
+                              enum:
+                                - active
+                        phone:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        email:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        details:
+                          type: object
+                          properties:
+                            publicIdentityId:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            firstName:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            lastName:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            birthDate:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            address:
+                              default: null
+                              anyOf:
+                                - type: object
+                                  properties:
+                                    city:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    zipCode:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    street:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    country:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    region:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                  required:
+                                    - city
+                                    - zipCode
+                                    - street
+                                    - country
+                                    - region
+                                - type: "null"
+                            collectedConsent:
+                              default: false
+                              type: boolean
+                          required:
+                            - publicIdentityId
+                            - firstName
+                            - lastName
+                            - birthDate
+                            - address
+                            - collectedConsent
+                      required:
+                        - id
+                        - userProfileId
+                        - organisationId
+                        - organisationInvitationStatus
+                        - correlationQuality
+                        - userStatus
+                        - phone
+                        - email
+                required:
+                  - data
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/settings/organisations/{organisationId}:
+    get:
+      tags: *a5
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: organisationId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      userProfileId:
+                        default: null
+                        anyOf:
+                          - type: string
+                          - type: "null"
+                      organisationId:
+                        type: string
+                      organisationInvitationStatus:
+                        default: pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - accepted
+                          - type: string
+                            enum:
+                              - declined
+                      organisationInvitationSentAt:
+                        type: string
+                      organisationInvitationFeedbackAt:
+                        type: string
+                      organisationPreferredTransports:
+                        type: array
+                        items:
+                          type: string
+                      correlationQuality:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - full
+                          - type: string
+                            enum:
+                              - partial
+                          - type: string
+                            enum:
+                              - not_related
+                      userStatus:
+                        default: pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - disabled
+                          - type: string
+                            enum:
+                              - active
+                      phone:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      email:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      details:
+                        type: object
+                        properties:
+                          publicIdentityId:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          firstName:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          lastName:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          birthDate:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          address:
+                            default: null
+                            anyOf:
+                              - type: object
+                                properties:
+                                  city:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  zipCode:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  street:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  country:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  region:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                required:
+                                  - city
+                                  - zipCode
+                                  - street
+                                  - country
+                                  - region
+                              - type: "null"
+                          collectedConsent:
+                            default: false
+                            type: boolean
+                        required:
+                          - publicIdentityId
+                          - firstName
+                          - lastName
+                          - birthDate
+                          - address
+                          - collectedConsent
+                    required:
+                      - id
+                      - userProfileId
+                      - organisationId
+                      - organisationInvitationStatus
+                      - correlationQuality
+                      - userStatus
+                      - phone
+                      - email
+                required:
+                  - data
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    patch:
+      tags: *a5
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                invitationStatusFeedback:
+                  default: accepted
+                  anyOf:
+                    - type: string
+                      enum:
+                        - accepted
+                    - type: string
+                      enum:
+                        - declined
+                preferredTransports:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - invitationStatusFeedback
+                - preferredTransports
+        required: true
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: organisationId
+          required: true
+      responses:
+        "202":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      userProfileId:
+                        default: null
+                        anyOf:
+                          - type: string
+                          - type: "null"
+                      organisationId:
+                        type: string
+                      organisationInvitationStatus:
+                        default: pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - accepted
+                          - type: string
+                            enum:
+                              - declined
+                      organisationInvitationSentAt:
+                        type: string
+                      organisationInvitationFeedbackAt:
+                        type: string
+                      organisationPreferredTransports:
+                        type: array
+                        items:
+                          type: string
+                      correlationQuality:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - full
+                          - type: string
+                            enum:
+                              - partial
+                          - type: string
+                            enum:
+                              - not_related
+                      userStatus:
+                        default: pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - disabled
+                          - type: string
+                            enum:
+                              - active
+                      phone:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      email:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      details:
+                        type: object
+                        properties:
+                          publicIdentityId:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          firstName:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          lastName:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          birthDate:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          address:
+                            default: null
+                            anyOf:
+                              - type: object
+                                properties:
+                                  city:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  zipCode:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  street:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  country:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  region:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                required:
+                                  - city
+                                  - zipCode
+                                  - street
+                                  - country
+                                  - region
+                              - type: "null"
+                          collectedConsent:
+                            default: false
+                            type: boolean
+                        required:
+                          - publicIdentityId
+                          - firstName
+                          - lastName
+                          - birthDate
+                          - address
+                          - collectedConsent
+                    required:
+                      - id
+                      - userProfileId
+                      - organisationId
+                      - organisationInvitationStatus
+                      - correlationQuality
+                      - userStatus
+                      - phone
+                      - email
+                required:
+                  - data
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/settings/invitations/me:
+    patch:
+      tags: *a5
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userStatusFeedback:
+                  default: active
+                  anyOf:
+                    - type: string
+                      enum:
+                        - disabled
+                    - type: string
+                      enum:
+                        - active
+              required:
+                - userStatusFeedback
+        required: true
+      responses:
+        "202":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      userProfileId:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      importerOrganisationId:
+                        type: string
+                      userStatus:
+                        default: pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - disabled
+                          - type: string
+                            enum:
+                              - active
+                      correlationQuality:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - full
+                          - type: string
+                            enum:
+                              - partial
+                          - type: string
+                            enum:
+                              - not_related
+                      phone:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      email:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      details:
+                        type: object
+                        properties:
+                          publicIdentityId:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          firstName:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          lastName:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          birthDate:
+                            default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          address:
+                            default: null
+                            anyOf:
+                              - type: object
+                                properties:
+                                  city:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  zipCode:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  street:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  country:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                  region:
+                                    default: null
+                                    anyOf:
+                                      - type: "null"
+                                      - type: string
+                                required:
+                                  - city
+                                  - zipCode
+                                  - street
+                                  - country
+                                  - region
+                              - type: "null"
+                          collectedConsent:
+                            default: false
+                            type: boolean
+                        required:
+                          - publicIdentityId
+                          - firstName
+                          - lastName
+                          - birthDate
+                          - address
+                          - collectedConsent
+                      usersImportId:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                    required:
+                      - userProfileId
+                      - importerOrganisationId
+                      - userStatus
+                      - correlationQuality
+                      - phone
+                      - email
+                      - usersImportId
+                required:
+                  - data
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    get:
+      tags: *a5
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      userStatus:
+                        default: pending
+                        anyOf:
+                          - type: string
+                            enum:
+                              - to_be_invited
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - disabled
+                          - type: string
+                            enum:
+                              - active
+                    required:
+                      - userStatus
+                required:
+                  - data
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/imports/csv:
+    post:
+      tags: &a6
+        - Users
+        - UserImports
+      responses:
+        "202":
+          description: Default Response
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/imports/csv/template:
+    get:
+      tags: *a6
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
+  /api/v1/users/imports/:
+    post:
+      tags: *a6
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  importIndex:
+                    type: integer
+                  publicIdentityId:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  firstName:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  lastName:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  phoneNumber:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  birthDate:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  emailAddress:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressCity:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressZipCode:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressStreet:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressCountry:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  addressRegion:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  tags:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  collectedConsent:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                required:
+                  - importIndex
+      responses:
+        "202":
+          description: Default Response
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    get:
+      tags: *a6
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: query
+          name: organisationId
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        organisationId:
+                          type: string
+                        importedAt:
+                          format: date-time
+                          type: string
+                        importChannel:
+                          default: api
+                          anyOf:
+                            - type: string
+                              enum:
+                                - api
+                            - type: string
+                              enum:
+                                - csv
+                        retryCount:
+                          default: 0
+                          type: integer
+                        lastRetryAt:
+                          default: null
+                          anyOf:
+                            - format: date-time
+                              type: string
+                            - type: "null"
+                        importId:
+                          type: string
+                      required:
+                        - organisationId
+                        - importedAt
+                        - importChannel
+                        - retryCount
+                        - lastRetryAt
+                        - importId
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/imports/users:
+    get:
+      tags: *a6
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: query
+          name: organisationId
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        userProfileId:
+                          default: null
+                          anyOf:
+                            - type: string
+                            - type: "null"
+                        organisationId:
+                          type: string
+                        organisationInvitationStatus:
+                          default: pending
+                          anyOf:
+                            - type: string
+                              enum:
+                                - to_be_invited
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - accepted
+                            - type: string
+                              enum:
+                                - declined
+                        organisationInvitationSentAt:
+                          type: string
+                        organisationInvitationFeedbackAt:
+                          type: string
+                        organisationPreferredTransports:
+                          type: array
+                          items:
+                            type: string
+                        correlationQuality:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - full
+                            - type: string
+                              enum:
+                                - partial
+                            - type: string
+                              enum:
+                                - not_related
+                        userStatus:
+                          default: pending
+                          anyOf:
+                            - type: string
+                              enum:
+                                - to_be_invited
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - disabled
+                            - type: string
+                              enum:
+                                - active
+                        phone:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        email:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        details:
+                          type: object
+                          properties:
+                            publicIdentityId:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            firstName:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            lastName:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            birthDate:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            address:
+                              default: null
+                              anyOf:
+                                - type: object
+                                  properties:
+                                    city:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    zipCode:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    street:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    country:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    region:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                  required:
+                                    - city
+                                    - zipCode
+                                    - street
+                                    - country
+                                    - region
+                                - type: "null"
+                            collectedConsent:
+                              default: false
+                              type: boolean
+                          required:
+                            - publicIdentityId
+                            - firstName
+                            - lastName
+                            - birthDate
+                            - address
+                            - collectedConsent
+                      required:
+                        - id
+                        - userProfileId
+                        - organisationId
+                        - organisationInvitationStatus
+                        - correlationQuality
+                        - userStatus
+                        - phone
+                        - email
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/imports/{importId}:
+    get:
+      tags: *a6
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: query
+          name: organisationId
+          required: false
+        - schema:
+            default: true
+            type: boolean
+          in: query
+          name: includeUsersData
+          required: true
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: importId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      organisationId:
+                        type: string
+                      importedAt:
+                        format: date-time
+                        type: string
+                      usersData:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            importIndex:
+                              type: integer
+                            phoneNumber:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            emailAddress:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            importStatus:
+                              default: pending
+                              anyOf:
+                                - type: string
+                                  enum:
+                                    - pending
+                                - type: string
+                                  enum:
+                                    - imported
+                                - type: string
+                                  enum:
+                                    - not_found
+                                - type: string
+                                  enum:
+                                    - error
+                                - type: string
+                                  enum:
+                                    - missing_contacts
+                            importError:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            relatedUserProfileId:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            relatedUserId:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            tags:
+                              type: array
+                              items:
+                                type: string
+                            publicIdentityId:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            firstName:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            lastName:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            birthDate:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            address:
+                              default: null
+                              anyOf:
+                                - type: object
+                                  properties:
+                                    city:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    zipCode:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    street:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    country:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    region:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                  required:
+                                    - city
+                                    - zipCode
+                                    - street
+                                    - country
+                                    - region
+                                - type: "null"
+                            collectedConsent:
+                              default: false
+                              type: boolean
+                          required:
+                            - importIndex
+                            - phoneNumber
+                            - emailAddress
+                            - importStatus
+                            - publicIdentityId
+                            - firstName
+                            - lastName
+                            - birthDate
+                            - address
+                            - collectedConsent
+                      importChannel:
+                        default: api
+                        anyOf:
+                          - type: string
+                            enum:
+                              - api
+                          - type: string
+                            enum:
+                              - csv
+                      retryCount:
+                        default: 0
+                        type: integer
+                      lastRetryAt:
+                        default: null
+                        anyOf:
+                          - format: date-time
+                            type: string
+                          - type: "null"
+                      importId:
+                        type: string
+                    required:
+                      - organisationId
+                      - importedAt
+                      - usersData
+                      - importChannel
+                      - retryCount
+                      - lastRetryAt
+                      - importId
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/imports/{importId}/users:
+    get:
+      tags: *a6
+      parameters:
+        - schema:
+            format: uuid
+            type: string
+          in: query
+          name: organisationId
+          required: false
+        - schema:
+            format: uuid
+            type: string
+          in: path
+          name: importId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        userProfileId:
+                          default: null
+                          anyOf:
+                            - type: string
+                            - type: "null"
+                        organisationId:
+                          type: string
+                        organisationInvitationStatus:
+                          default: pending
+                          anyOf:
+                            - type: string
+                              enum:
+                                - to_be_invited
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - accepted
+                            - type: string
+                              enum:
+                                - declined
+                        organisationInvitationSentAt:
+                          type: string
+                        organisationInvitationFeedbackAt:
+                          type: string
+                        organisationPreferredTransports:
+                          type: array
+                          items:
+                            type: string
+                        correlationQuality:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - full
+                            - type: string
+                              enum:
+                                - partial
+                            - type: string
+                              enum:
+                                - not_related
+                        userStatus:
+                          default: pending
+                          anyOf:
+                            - type: string
+                              enum:
+                                - to_be_invited
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - disabled
+                            - type: string
+                              enum:
+                                - active
+                        phone:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        email:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        details:
+                          type: object
+                          properties:
+                            publicIdentityId:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            firstName:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            lastName:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            birthDate:
+                              default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            address:
+                              default: null
+                              anyOf:
+                                - type: object
+                                  properties:
+                                    city:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    zipCode:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    street:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    country:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                    region:
+                                      default: null
+                                      anyOf:
+                                        - type: "null"
+                                        - type: string
+                                  required:
+                                    - city
+                                    - zipCode
+                                    - street
+                                    - country
+                                    - region
+                                - type: "null"
+                            collectedConsent:
+                              default: false
+                              type: boolean
+                          required:
+                            - publicIdentityId
+                            - firstName
+                            - lastName
+                            - birthDate
+                            - address
+                            - collectedConsent
+                      required:
+                        - id
+                        - userProfileId
+                        - organisationId
+                        - organisationInvitationStatus
+                        - correlationQuality
+                        - userStatus
+                        - phone
+                        - email
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/imports/mock-organisation-id:
+    get:
+      tags: *a6
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    format: uuid
+                    type: string
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name

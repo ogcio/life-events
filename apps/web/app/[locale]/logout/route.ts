@@ -1,12 +1,12 @@
 import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
-import { PgSessions } from "auth/sessions";
+// import { PgSessions } from "auth/sessions";
 
-export async function GET(request: Request) {
+export async function GET() {
   const sessionCookie = cookies().get("sessionId");
   if (sessionCookie) {
-    PgSessions.delete(sessionCookie.value);
-    cookies().delete(sessionCookie.name);
+    // PgSessions.delete(sessionCookie.value);
+    // cookies().delete(sessionCookie.name);
   }
 
   const loginUrl = process.env.LOGIN_URL;

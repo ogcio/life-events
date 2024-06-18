@@ -4,6 +4,8 @@ CREATE DATABASE messaging;
 CREATE DATABASE payments;
 CREATE DATABASE shared;
 CREATE DATABASE profile;
+CREATE DATABASE scheduler;
+
 
 -- Setup Extensions
 CREATE EXTENSION "uuid-ossp";

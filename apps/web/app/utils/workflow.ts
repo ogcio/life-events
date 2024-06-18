@@ -221,13 +221,51 @@ export function emptyApplyJobseekersAllowance(): ApplyJobseekersAllowance {
     submittedAt: "",
   };
 }
+type DigitalWalletStatus = "submitted" | "approved" | "rejected" | "pending";
+
+export type GetDigitalWallet = Base & {
+  firstName: string;
+  lastName: string;
+  hasReadIntro: boolean;
+  hasConfirmedPersonalDetails: boolean;
+  deviceType: "ios" | "android" | undefined;
+  appStoreEmail: string;
+  myGovIdEmail: string;
+  govIEEmail: string;
+  confirmedApplication: string;
+  rejectReason: string;
+  status: DigitalWalletStatus;
+  submittedAt: string;
+  verifiedGovIEEmail: boolean;
+};
+
+export function emptyGetDigitalWallet(): GetDigitalWallet {
+  return {
+    firstName: "",
+    lastName: "",
+    hasReadIntro: false,
+    hasConfirmedPersonalDetails: false,
+    deviceType: undefined,
+    appStoreEmail: "",
+    myGovIdEmail: "",
+    govIEEmail: "",
+    confirmedApplication: "",
+    successfulAt: "",
+    rejectedAt: "",
+    rejectReason: "",
+    status: "pending",
+    submittedAt: "",
+    verifiedGovIEEmail: false,
+  };
+}
 
 export type Workflow =
   | RenewDriversLicence
   | OrderEHIC
   | OrderBirthCertificate
   | NotifyDeath
-  | ApplyJobseekersAllowance;
+  | ApplyJobseekersAllowance
+  | GetDigitalWallet;
 
 // ===== workflow keys =====
 
@@ -255,6 +293,7 @@ export const keys = {
   housingBenefit: "housingBenefit",
   housingAssociationHomes: "housingAssociationHomes",
   housingOmbudsman: "housingOmbudsman",
+  getDigitalWallet: "getDigitalWallet",
 };
 
 // ===== categories =====
@@ -266,6 +305,7 @@ export const categories = {
   birth: "birth",
   employment: "employment",
   housing: "housing",
+  digitalWallet: "digital-wallet",
 };
 
 // ===== utils =====
@@ -326,6 +366,18 @@ export async function getFlowData<T extends Workflow>(
 
   if ("email" in data) {
     data.email = email;
+  }
+
+  if ("firstName" in data) {
+    data.firstName = firstName;
+  }
+
+  if ("lastName" in data) {
+    data.lastName = lastName;
+  }
+
+  if ("myGovIdEmail" in data) {
+    data.myGovIdEmail = email;
   }
 
   if (flowResult.rowCount) {

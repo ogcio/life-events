@@ -2,18 +2,34 @@ import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreateTransactionBody,
+  GenericResponse,
+  Id,
+  PaginationParams,
   ParamsWithTransactionId,
   PaymentIntentId,
   TransactionDetails,
   Transactions,
-  TransactionStatusesEnum,
   UpdateTransactionBody,
 } from "../schemas";
 import { Type } from "@sinclair/typebox";
+import {
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_OFFSET_DEFAULT,
+  PaginationDetails,
+} from "../../utils/pagination";
+import { formatAPIResponse } from "../../utils/responseFormatter";
+import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
+import { PaginationParams as PaginationParamsType } from "../../types/pagination";
+import {
+  CreateTransactionBodyDO,
+  TransactionDetailsDO,
+  UpdateTransactionBodyDO,
+} from "../../plugins/entities/transactions/types";
+import { TransactionStatusesEnum } from "../../plugins/entities/transactions";
 
 export default async function transactions(app: FastifyInstance) {
   app.get<{
-    Reply: TransactionDetails | Error;
+    Reply: GenericResponseType<TransactionDetailsDO> | Error;
     Params: ParamsWithTransactionId;
   }>(
     "/:transactionId",
@@ -22,7 +38,7 @@ export default async function transactions(app: FastifyInstance) {
       schema: {
         tags: ["Transactions"],
         response: {
-          200: TransactionDetails,
+          200: GenericResponse(TransactionDetails),
           404: HttpError,
         },
       },
@@ -30,88 +46,63 @@ export default async function transactions(app: FastifyInstance) {
     async (request, reply) => {
       const { transactionId } = request.params;
 
-      let result;
-      try {
-        result = await app.pg.query(
-          `SELECT
-            t.transaction_id as "transactionId",
-            t.status,
-            t.user_id as "userId",
-            t.user_data as "userData",
-            pr.title,
-            pr.payment_request_id as "paymentRequestId",
-            t.ext_payment_id as "extPaymentId",
-            t.amount,
-            t.updated_at as "updatedAt",
-            pp.provider_name as "providerName",
-            pp.provider_type as "providerType"
-          FROM payment_transactions t
-          LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
-          JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
-          WHERE t.transaction_id = $1`,
-          [transactionId],
-        );
-      } catch (err) {
-        app.log.error((err as Error).message);
-      }
+      const transactionDetails =
+        await app.transactions.getTransactionById(transactionId);
 
-      if (!result?.rowCount) {
-        throw app.httpErrors.notFound(
-          "The requested transaction was not found",
-        );
-      }
-
-      reply.send(result.rows[0]);
+      reply.send(formatAPIResponse(transactionDetails));
     },
   );
 
   app.get<{
-    Reply: Transactions | Error;
+    Reply: GenericResponseType<Transactions> | Error;
+    Querystring: PaginationParamsType;
   }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: app.validateIsPublicServant,
       schema: {
         tags: ["Transactions"],
+        querystring: PaginationParams,
         response: {
-          200: Transactions,
+          200: GenericResponse(Transactions),
+          401: HttpError,
           404: HttpError,
+          500: HttpError,
         },
       },
     },
     async (request, reply) => {
+      const {
+        offset = PAGINATION_OFFSET_DEFAULT,
+        limit = PAGINATION_LIMIT_DEFAULT,
+      } = request.query;
       const userId = request.user?.id;
 
-      let result;
-      try {
-        result = await app.pg.query(
-          `SELECT
-            t.transaction_id as "transactionId",
-            t.status,
-            t.user_id as "userId",
-            t.user_data as "userData",
-            pr.title,
-            pr.payment_request_id as "paymentRequestId",
-            t.ext_payment_id as "extPaymentId",
-            t.amount,
-            t.updated_at as "updatedAt",
-            pp.provider_name as "providerName",
-            pp.provider_type as "providerType"
-          FROM payment_transactions t
-          INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.user_id = $1
-          INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
-          JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id`,
-          [userId],
-        );
-      } catch (err) {
-        app.log.error((err as Error).message);
+      if (!userId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
       }
-      reply.send(result?.rows);
+
+      const transactions = await app.transactions.getTransactions(userId, {
+        offset,
+        limit,
+      });
+      const totalCount =
+        await app.transactions.getTransactionsTotalCount(userId);
+      const url = request.url.split("?")[0];
+
+      const paginationDetails: PaginationDetails = {
+        offset,
+        limit,
+        totalCount,
+        url: url,
+      };
+
+      reply.send(formatAPIResponse(transactions, paginationDetails));
     },
   );
 
   app.patch<{
-    Body: UpdateTransactionBody;
+    Body: UpdateTransactionBodyDO;
     Reply: {};
     Params: ParamsWithTransactionId;
   }>(
@@ -123,6 +114,7 @@ export default async function transactions(app: FastifyInstance) {
         body: UpdateTransactionBody,
         response: {
           200: Type.Object({}),
+          500: HttpError,
         },
       },
     },
@@ -130,13 +122,9 @@ export default async function transactions(app: FastifyInstance) {
       const { transactionId } = request.params;
       const { status } = request.body;
 
-      await app.pg.query(
-        `
-        UPDATE payment_transactions
-        SET status = $2, updated_at = now()
-        WHERE transaction_id = $1
-        `,
-        [transactionId, status],
+      await app.transactions.updateTransactionStatus(
+        transactionId,
+        status as TransactionStatusesEnum,
       );
 
       reply.send();
@@ -144,8 +132,8 @@ export default async function transactions(app: FastifyInstance) {
   );
 
   app.post<{
-    Body: CreateTransactionBody;
-    Reply: { transactionId: string } | Error;
+    Body: CreateTransactionBodyDO;
+    Reply: GenericResponseType<Id> | Error;
   }>(
     "/",
     {
@@ -154,55 +142,33 @@ export default async function transactions(app: FastifyInstance) {
         tags: ["Transactions"],
         body: CreateTransactionBody,
         response: {
-          200: Type.Object({
-            transactionId: Type.String(),
-          }),
+          200: GenericResponse(Id),
+          401: HttpError,
           500: HttpError,
         },
       },
     },
     async (request, reply) => {
       const userId = request.user?.id;
-      const {
-        paymentRequestId,
-        extPaymentId,
-        integrationReference,
-        amount,
-        paymentProviderId,
-        userData,
-      } = request.body;
 
-      const result = await app.pg.query(
-        `
-        INSERT INTO payment_transactions
-          (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_id, user_data)
-          VALUES ($1, $2, $3, $4, $5, now(), now(), $6, $7, $8)
-          RETURNING transaction_id as "transactionId";
-        `,
-        [
-          paymentRequestId,
-          extPaymentId,
-          integrationReference,
-          amount,
-          TransactionStatusesEnum.Initiated,
-          paymentProviderId,
-          userId,
-          userData,
-        ],
-      );
-
-      if (result.rowCount !== 1) {
-        throw app.httpErrors.internalServerError(
-          "Cannot create payment transactions",
-        );
+      if (!userId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      reply.send({ transactionId: result.rows[0].transactionId });
+      const result = await app.transactions.createTransaction(
+        userId,
+        request.body,
+      );
+      reply.send(
+        formatAPIResponse({
+          id: result.transactionId,
+        }),
+      );
     },
   );
 
   app.get<{
-    Reply: PaymentIntentId | Error;
+    Reply: GenericResponseType<PaymentIntentId> | Error;
   }>(
     "/generatePaymentIntentId",
     {
@@ -210,39 +176,14 @@ export default async function transactions(app: FastifyInstance) {
       schema: {
         tags: ["Transactions"],
         response: {
-          200: PaymentIntentId,
-          400: HttpError,
+          200: GenericResponse(PaymentIntentId),
+          404: HttpError,
         },
       },
     },
     async (request, reply) => {
-      let result;
-      let execNr = 0;
-      const maxTry = process.env.PAYMENT_INTENTID_MAX_TRY_GENERATION
-        ? parseInt(process.env.PAYMENT_INTENTID_MAX_TRY_GENERATION)
-        : 20;
-      const len = process.env.PAYMENT_INTENTID_LENGTH
-        ? parseInt(process.env.PAYMENT_INTENTID_LENGTH)
-        : 6;
-
-      do {
-        if (execNr > maxTry) {
-          throw app.httpErrors.notFound("Unique intentId generation failed");
-        }
-
-        result = await app.pg.query(
-          `SELECT "intentId" FROM UPPER(LEFT(md5(random()::text), $1)) AS "intentId"
-              WHERE "intentId" NOT IN (
-                SELECT ext_payment_id 
-                FROM payment_transactions
-              )`,
-          [len],
-        );
-
-        execNr++;
-      } while (result.rowCount === 0);
-
-      reply.send(result.rows[0]);
+      const result = await app.transactions.generatePaymentIntentId();
+      reply.send(formatAPIResponse(result));
     },
   );
 }

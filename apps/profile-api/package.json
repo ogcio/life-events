@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node --import=tsx --test ./test/*.ts",
+    "test": "TAP_RCFILE=tap.yml tap",
+    "test:e2e" : "cd ./e2e && bru run --env local",
+    "test:dev" : "cd ./e2e && bru run --env dev",
     "start": "node --import tsx index.ts",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
@@ -15,6 +17,8 @@
       "../../packages/auth/src/**/*",
       "../../packages/feature-flags/src/**/*",
       "../../packages/messages/src/**/*",
+      "../../packages/logging-wrapper/src/**/*",
+      "../../packages/error-handler/src/**/*",
       "./**/*"
     ],
     "ext": "ts,json",
@@ -38,7 +42,9 @@
     "dotenv": "^16.4.5",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "error-handler": "*",
+    "logging-wrapper": "*"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.1",
@@ -50,6 +56,7 @@
     "eslint-plugin-prettier": "^5.1.3",
     "pino-pretty": "^11.0.0",
     "prettier": "^3.2.5",
+    "tap": "^18.8.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.7.1",
     "typescript": "^5.4.2",

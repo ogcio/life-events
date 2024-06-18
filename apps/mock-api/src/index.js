@@ -20,6 +20,7 @@ const envSchema = {
     POSTGRES_DB: { type: "string" },
     POSTGRES_DB_NAME_SHARED: { type: "string" },
     ORIGIN_URL: { type: "string" },
+    AUTH_SERVICE_CALLBACK_URL: { type: "string" },
   },
   required: [
     "POSTGRES_HOST",
@@ -28,6 +29,7 @@ const envSchema = {
     "POSTGRES_PASSWORD",
     "POSTGRES_DB_NAME_SHARED",
     "ORIGIN_URL",
+    "AUTH_SERVICE_CALLBACK_URL",
   ],
 };
 
@@ -49,6 +51,8 @@ await fastify.register(fastifyPostgres, {
   database: fastify.config.POSTGRES_DB_NAME_SHARED,
 });
 
+await fastify.register(import("@fastify/formbody"));
+
 fastify.get("/health", async function handler() {
   return { ping: "pong" };
 });
@@ -65,13 +69,6 @@ fastify.register(autoload, {
   dir: path.join(__dirname, "stubs"),
   options: {
     prefix: "/static",
-  },
-});
-
-fastify.register(autoload, {
-  dir: path.join(__dirname, "routes"),
-  options: {
-    prefix: "/api",
   },
 });
 

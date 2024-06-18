@@ -3,24 +3,28 @@ import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
 import { getUser } from "../../../../../../libraries/auth";
 import { notFound } from "next/navigation";
-import { formatCurrency } from "../../../../../utils";
+import { errorHandler, formatCurrency } from "../../../../../utils";
 import dayjs from "dayjs";
 
 export default async function ({ params: { transactionId } }) {
   const t = await getTranslations("MyPayments.details");
 
   let userId;
-  if (process.env.USE_LOGTO_AUTH) {
+  if (process.env.USE_LOGTO_AUTH === "true") {
     userId = (await getUser()).id;
   } else {
     userId = (await PgSessions.get()).userId;
   }
 
-  const details = (
-    await new Payments(userId).getCitizenTransactionDetails(transactionId)
-  ).data;
+  const { data: details, error } = await new Payments(
+    userId,
+  ).getCitizenTransactionDetails(transactionId);
 
-  if (!details) {
+  if (error) {
+    errorHandler(error);
+  }
+
+  if (!details?.data) {
     return notFound();
   }
 
@@ -31,42 +35,46 @@ export default async function ({ params: { transactionId } }) {
       <dl className="govie-summary-list">
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("requestTitle")}</dt>
-          <dt className="govie-summary-list__value">{details.title}</dt>
+          <dt className="govie-summary-list__value">{details.data.title}</dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("amount")}</dt>
           <dt className="govie-summary-list__value">
-            {formatCurrency(details.amount)}
+            {formatCurrency(details.data.amount)}
           </dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("lastUpdate")}</dt>
           <dt className="govie-summary-list__value">
-            {dayjs(details.updatedAt).format("DD/MM/YYYY")}
+            {dayjs(details.data.updatedAt).format("DD/MM/YYYY - HH:mm:ss")}
           </dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("status")}</dt>
-          <dt className="govie-summary-list__value">{details.status}</dt>
+          <dt className="govie-summary-list__value">{details.data.status}</dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("providerType")}</dt>
           <dt className="govie-summary-list__value">
-            {t(`providers.${details.providerType}`)}
+            {t(`providers.${details.data.providerType}`)}
           </dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("referenceCode")}</dt>
-          <dt className="govie-summary-list__value">{details.extPaymentId}</dt>
+          <dt className="govie-summary-list__value">
+            {details.data.extPaymentId}
+          </dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("payerName")}</dt>
-          <dt className="govie-summary-list__value">{details.userData.name}</dt>
+          <dt className="govie-summary-list__value">
+            {details.data.userData.name}
+          </dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("payerEmail")}</dt>
           <dt className="govie-summary-list__value">
-            {details.userData.email}
+            {details.data.userData.email}
           </dt>
         </div>
       </dl>

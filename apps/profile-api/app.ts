@@ -13,6 +13,8 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
+import { initializeErrorHandler } from "error-handler";
+import { initializeLoggingHooks } from "logging-wrapper";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,6 +23,8 @@ dotenv.config();
 
 export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
+  initializeLoggingHooks(app);
+  initializeErrorHandler(app);
 
   app.register(authPlugin);
   app.register(fastifyEnv, {
@@ -66,31 +70,6 @@ export async function build(opts?: FastifyServerOptions) {
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB_NAME,
-  });
-
-  app.setErrorHandler((error, _request, reply) => {
-    app.log.error(error);
-    if (error instanceof Error && error.name !== "error") {
-      reply
-        .code(error.statusCode || 500)
-        .type("application/json")
-        .send({
-          message: error.message,
-          error,
-          code: error.code || "INTERNAL_SERVER_ERROR",
-          statusCode: error.statusCode || 500,
-          time: new Date().toISOString(),
-        });
-      return;
-    }
-
-    reply.code(500).type("application/json").send({
-      message: error.message,
-      error: "Internal Server Error",
-      code: "INTERNAL_SERVER_ERROR",
-      statusCode: 500,
-      time: new Date().toISOString(),
-    });
   });
 
   app.register(healthCheck);

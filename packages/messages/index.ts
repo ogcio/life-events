@@ -1,15 +1,11 @@
 import { pgpool } from "./dbConnection";
 import { send as twilioSend } from "./strategies/twilio/index";
 import nodemailer from "nodemailer";
-import { TableMessage } from "./types/mesages";
-import { randomUUID } from "crypto";
-import { PgSessions, getUsersForIds } from "auth/sessions";
+
 // In case we need to do it, we can replace this with another provider
 // We just need to keep the same SendEmail interface
 export const send = twilioSend;
 
-export * from "./templates";
-export * from "./notifications";
 export * from "./types";
 
 export const etherealEmailProviderName = "Ethereal email provider";
@@ -27,14 +23,10 @@ type MessageState = {
   submittedContentAt: string;
   confirmedContentAt: string;
   transportations: string[];
-  links: string[];
   schedule: string;
   userIds: string[];
   confirmedRecipientsAt: string;
   confirmedScheduleAt: string;
-  messageType: string;
-  paymentRequestId: string;
-  paymentUserId: string;
   templateMetaId: string;
   templateInterpolations: Record<string, string>;
 };
@@ -214,6 +206,7 @@ export const api = {
 
     pgpool.query(query, args);
   },
+
   /**
    * Let's assume that a user can only have one active message state at the time for simplicity
    */
@@ -240,11 +233,7 @@ export const api = {
                 confirmedScheduleAt: "",
                 excerpt: "",
                 lang: "",
-                links: [],
-                messageType: "",
                 organisationId: "",
-                paymentRequestId: "",
-                paymentUserId: "",
                 plainText: "",
                 richText: "",
                 schedule: "",
@@ -410,7 +399,6 @@ export const temporaryMockUtils = {
       .then((res) => res.rows);
   },
   async createErrors(errors: FormError[], userId: string, stateId: string) {
-    console.log({ errors, userId, stateId });
     let i = 3;
     const values: string[] = [];
     for (const _ of errors) {

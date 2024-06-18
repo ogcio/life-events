@@ -1,13 +1,14 @@
 import React from "react";
-import { getTranslations } from "next-intl/server";
-import { formatCurrency } from "../../../../../utils";
-import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import Tooltip from "../../../../../components/Tooltip";
-import CopyLink from "./CopyBtn";
-import buildApiClient from "../../../../../../client/index";
+import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
+import { Payments } from "building-blocks-sdk";
+import CopyLink from "./CopyBtn";
+import { errorHandler, formatCurrency } from "../../../../../utils";
+import Tooltip from "../../../../../components/Tooltip";
 import Modal from "../../../../../components/Modal";
+import styles from "../PaymentRequests.module.scss";
 
 async function showDeleteModal() {
   "use server";
@@ -24,42 +25,45 @@ async function closeDeleteModal() {
 async function deletePaymentRequest(requestId: string, userId: string) {
   "use server";
 
-  await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdDelete(
-    requestId,
-  );
+  const { error } = await new Payments(userId).deletePaymentRequest(requestId);
+
+  if (error) {
+    errorHandler(error);
+  }
 
   redirect("/paymentSetup/requests");
 }
 
 async function hasTransactions(requestId: string, userId: string) {
-  const transactions = (
-    await buildApiClient(
-      userId,
-    ).transactions.apiV1RequestsRequestIdTransactionsGet(requestId)
-  ).data;
+  const { data: transactions, error } = await new Payments(
+    userId,
+  ).getPaymentRequestTransactions(requestId, { limit: 5, offset: 0 });
 
-  return transactions.length > 0;
+  if (error) {
+    errorHandler(error);
+  }
+
+  return transactions?.data && transactions.data.length > 0;
 }
 
 export const RequestDetails = async ({
   requestId,
   action,
+  locale,
 }: {
   requestId: string;
   action: string | undefined;
+  locale: string;
 }) => {
   const { userId } = await PgSessions.get();
-  let details;
+  const { data: details, error } = await new Payments(userId).getPaymentRequest(
+    requestId,
+  );
 
-  try {
-    details = (
-      await buildApiClient(userId).paymentRequests.apiV1RequestsRequestIdGet(
-        requestId,
-      )
-    ).data;
-  } catch (err) {
-    console.log(err);
+  if (error) {
+    errorHandler(error);
   }
+
   const t = await getTranslations("PaymentSetup.CreatePayment");
   const tSetup = await getTranslations("PaymentSetup");
   const tCommon = await getTranslations("Common");
@@ -79,7 +83,7 @@ export const RequestDetails = async ({
 
   const integrationReference = requestId;
   const completePaymentLink = new URL(
-    `/paymentRequest/pay?paymentId=${requestId}&id=${integrationReference}`,
+    `${locale}/paymentRequest/pay?paymentId=${requestId}&id=${integrationReference}`,
     process.env.HOST_URL ?? "",
   ).toString();
 
@@ -95,14 +99,7 @@ export const RequestDetails = async ({
         ></Modal>
       )}
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem",
-        }}
-      >
+      <div className={styles.headingButtonWrapper}>
         <h2 className="govie-heading-m">{tSetup("details")}</h2>
         <div
           style={{
@@ -142,6 +139,11 @@ export const RequestDetails = async ({
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.description")}</dt>
           <dt className="govie-summary-list__value">{details.description}</dt>
+        </div>
+
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("form.status.title")}</dt>
+          <dt className="govie-summary-list__value">{details.status}</dt>
         </div>
 
         {details.providers.map(({ name, type, id }) => (

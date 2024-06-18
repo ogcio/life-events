@@ -1,60 +1,39 @@
-import { getTranslations } from "next-intl/server";
+"use client";
+import { useTranslations } from "next-intl";
+import InputField from "../../../../../components/InputField";
+import { StripeFormState } from "./page";
 
 type Props = {
-  providerName?: string;
-  livePublishableKey?: string;
-  liveSecretKey?: string;
+  state: StripeFormState;
 };
 
-export default async ({
-  providerName = "",
-  livePublishableKey = "",
-  liveSecretKey = "",
-}: Props) => {
-  const t = await getTranslations("PaymentSetup.AddStripe");
+export default ({ state }: Props) => {
+  const t = useTranslations("AddStripe");
 
   return (
     <div className="govie-form-group ">
-      <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="provider_name">
-          {t("name")}{" "}
-        </label>
-        <div className="govie-hint">{t("nameHint")}</div>
-        <input
-          type="text"
-          id="provider_name"
-          name="provider_name"
-          className="govie-input"
-          defaultValue={providerName}
-        />
-      </div>
-      <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="live_publishable_key">
-          {t("livePublishableKey")}{" "}
-        </label>
-        <div className="govie-hint">{t("livePublishableKeyHint")}</div>
-        <input
-          type="text"
-          id="live_publishable_key"
-          name="live_publishable_key"
-          className="govie-input"
-          defaultValue={livePublishableKey}
-        />
-      </div>
-      <div className="govie-form-group">
-        <label className="govie-label--s" htmlFor="live_secret_key">
-          {t("liveSecretKey")}{" "}
-        </label>
-        <div className="govie-hint">{t("liveSecretKeyHint")}</div>
-        <input
-          type="password"
-          id="live_secret_key"
-          name="live_secret_key"
-          className="govie-input"
-          defaultValue={liveSecretKey}
-          autoComplete="off"
-        />
-      </div>
+      <InputField
+        name="provider_name"
+        label={t("name")}
+        hint={t("nameHint")}
+        error={state.errors.providerName}
+        defaultValue={state.defaultState?.providerName}
+      />
+      <InputField
+        name="live_publishable_key"
+        label={t("livePublishableKey")}
+        hint={t("livePublishableKeyHint")}
+        error={state.errors.livePublishableKey}
+        defaultValue={state.defaultState?.livePublishableKey}
+      />
+      <InputField
+        name="live_secret_key"
+        label={t("liveSecretKey")}
+        hint={t("liveSecretKeyHint")}
+        error={state.errors.liveSecretKey}
+        defaultValue={state.defaultState?.liveSecretKey}
+        autoComplete="off"
+      />
     </div>
   );
 };

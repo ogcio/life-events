@@ -1,4 +1,8 @@
 import createNextIntlPlugin from "next-intl/plugin";
+import path from "path";
+import * as url from "url";
+
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const withNextIntl = createNextIntlPlugin("./i18n.ts");
 
@@ -9,6 +13,11 @@ const nextConfig = {
     fetches: {
       fullUrl: true,
     },
+  },
+  output: "standalone",
+  poweredByHeader: false,
+  experimental: {
+    outputFileTracingRoot: path.join(__dirname, "../../"),
   },
 };
 

@@ -3,6 +3,7 @@ import { web } from "../../../utils";
 import ds from "design-system";
 import { CSSProperties } from "react";
 import { useTranslations } from "next-intl";
+import { EventTableSearchParams } from "./page";
 
 const linkStyle = (selected: boolean): CSSProperties => {
   const props: CSSProperties = {
@@ -26,32 +27,36 @@ const linkClassName = (selected: boolean): string =>
     selected ? "govie-link--no-underline" : ""
   }`.trim();
 
-export default ({ searchParams }: Pick<web.NextPageProps, "searchParams">) => {
+export default ({
+  searchParams,
+}: {
+  searchParams: EventTableSearchParams | undefined;
+}) => {
   const t = useTranslations("Admin.StatusMenu");
-  const isAll = searchParams?.status === "all";
-  const isPending =
-    searchParams?.status === "pending" ||
+  const isSubmitted =
+    searchParams?.status === "submitted" ||
     Boolean(!Object.keys(searchParams ?? {}).length);
+  const isPending = searchParams?.status === "pending";
   const isApproved = searchParams?.status === "approved";
-  const isClosed = searchParams?.status === "closed";
+  const isRejected = searchParams?.status === "rejected";
 
   return (
     <nav style={{ display: "flex", width: "fit-content", gap: "15px" }}>
-      <div style={linkStyle(isAll)}>
-        <Link
-          href={"?" + new URLSearchParams({ status: "all" }).toString()}
-          className={linkClassName(isAll)}
-        >
-          {t("all")}
-        </Link>
-      </div>
-
       <div style={linkStyle(isPending)}>
         <Link
           href={"?" + new URLSearchParams({ status: "pending" }).toString()}
           className={linkClassName(isPending)}
         >
           {t("pending")}
+        </Link>
+      </div>
+
+      <div style={linkStyle(isSubmitted)}>
+        <Link
+          href={"?" + new URLSearchParams({ status: "submitted" }).toString()}
+          className={linkClassName(isSubmitted)}
+        >
+          {t("submitted")}
         </Link>
       </div>
 
@@ -64,12 +69,12 @@ export default ({ searchParams }: Pick<web.NextPageProps, "searchParams">) => {
         </Link>
       </div>
 
-      <div style={linkStyle(isClosed)}>
+      <div style={linkStyle(isRejected)}>
         <Link
-          href={"?" + new URLSearchParams({ status: "closed" }).toString()}
-          className={linkClassName(isClosed)}
+          href={"?" + new URLSearchParams({ status: "rejected" }).toString()}
+          className={linkClassName(isRejected)}
         >
-          {t("closed")}
+          {t("rejected")}
         </Link>
       </div>
     </nav>

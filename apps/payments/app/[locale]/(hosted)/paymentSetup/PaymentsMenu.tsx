@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import ds from "design-system";
+import styles from "./PaymentsMenu.module.scss";
 
 const Icon = ds.Icon;
 
-export default () => {
-  const t = useTranslations("PaymentSetup.menu");
+export default ({ locale }: { locale: string }) => {
+  const t = useTranslations("Menu");
 
   return (
-    <ol className="govie-list govie-list--spaced" style={{ minWidth: "200px" }}>
+    <ol className={`govie-list govie-list--spaced ${styles.container}`}>
       <li tabIndex={0}>
         <Link
           className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
-          href={"/paymentSetup"}
+          href={`/${locale}/paymentSetup`}
           style={{
             margin: "unset",
             paddingLeft: "12px",
@@ -32,7 +33,7 @@ export default () => {
       <li tabIndex={0}>
         <Link
           className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
-          href={"/paymentSetup/requests"}
+          href={`/${locale}/paymentSetup/requests`}
           style={{
             margin: "unset",
             paddingLeft: "12px",
@@ -52,7 +53,7 @@ export default () => {
       <li tabIndex={1}>
         <Link
           className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
-          href={"/paymentSetup/providers"}
+          href={`/${locale}/paymentSetup/providers`}
           style={{
             margin: "unset",
             paddingLeft: "12px",

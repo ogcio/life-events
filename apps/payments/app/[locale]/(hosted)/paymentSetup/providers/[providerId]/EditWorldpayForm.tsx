@@ -4,48 +4,111 @@ import type { WorldpayData, WorldpayProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import WorldpayFields from "../add-worldpay/WorldpayFields";
 import { PgSessions } from "auth/sessions";
-import buildApiClient from "../../../../../../client/index";
+import { Payments } from "building-blocks-sdk";
+import getRequestConfig from "../../../../../../i18n";
+import {
+  errorHandler,
+  getValidationErrors,
+  ValidationErrorTypes,
+} from "../../../../../utils";
+import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 
 type Props = {
   provider: WorldpayProvider;
+  userId: string;
+  locale: string;
 };
 
-export default async ({ provider }: Props) => {
+export default async ({ provider, userId, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddWorldpay");
+  const { messages } = await getRequestConfig({ locale });
 
-  async function updateProvider(formData: FormData) {
+  const errorFieldMapping = {};
+
+  async function handleSubmit(
+    prevState: FormData,
+    formData: FormData,
+  ): Promise<{
+    errors: {
+      [key: string]: string;
+    };
+  }> {
     "use server";
-
-    const { userId } = await PgSessions.get();
-
-    const providerName = formData.get("provider_name") as string;
-    const merchantCode = formData.get("merchant_code");
-    const installationId = formData.get("installation_id");
-    const providerData = {
-      merchantCode,
-      installationId,
+    const validation = {
+      errors: {},
     };
 
-    await buildApiClient(userId).providers.apiV1ProvidersProviderIdPut(
+    const action = formData.get("action");
+    let providerData;
+    switch (action) {
+      case "enable":
+        providerData = {
+          name: provider.name,
+          data: provider.data,
+          type: provider.type,
+          status: "connected",
+        };
+        break;
+      case "disable":
+        providerData = {
+          name: provider.name,
+          data: provider.data,
+          type: provider.type,
+          status: "disconnected",
+        };
+        break;
+      default:
+        providerData = {
+          name: formData.get("provider_name") as string,
+          data: {
+            merchantCode: formData.get("merchant_code") as string,
+            installationId: formData.get("installation_id") as string,
+          },
+          type: provider.type,
+          status: provider.status,
+        };
+    }
+
+    const { data: result, error } = await new Payments(userId).updateProvider(
       provider.id,
-      {
-        name: providerName,
-        data: providerData,
-        status: provider.status,
-      },
+      providerData,
     );
 
-    redirect("./");
+    if (error) {
+      errorHandler(error);
+    }
+
+    if (result) {
+      redirect("./");
+    }
+
+    if (error?.validation) {
+      validation.errors = getValidationErrors(
+        error.validation,
+        errorFieldMapping,
+      );
+    }
+
+    return validation;
   }
 
-  return (
-    <EditProviderForm provider={provider} updateProviderAction={updateProvider}>
-      <h1 className="govie-heading-l">{t("editTitle")}</h1>
-      <WorldpayFields
-        providerName={provider.name}
-        merchantCode={(provider.data as WorldpayData).merchantCode}
-        installationId={(provider.data as WorldpayData).installationId}
-      />
-    </EditProviderForm>
-  );
+  return null;
+  // (
+  // <NextIntlClientProvider
+  //   messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
+  // >
+  //   <EditProviderForm
+  //     provider={provider}
+  //     action={handleSubmit}
+  //     formComponent={WorldpayFields}
+  //     defaultState={{
+  //       providerName: provider.name,
+  //       merchantCode: provider.data.merchantCode,
+  //       installationId: provider.data.installationId
+  //     }}
+  //   >
+  //     <h1 className="govie-heading-l">{t("editTitle")}</h1>
+  //   </EditProviderForm>
+  // </NextIntlClientProvider>
+  // );
 };

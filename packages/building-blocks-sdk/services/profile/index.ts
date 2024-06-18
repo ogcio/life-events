@@ -2,7 +2,7 @@ import createClient, { FetchResponse, type Middleware } from "openapi-fetch";
 import type { paths } from "./schema";
 
 const formatQueryResult = async <T, O>(
-  promise: Promise<FetchResponse<T, O>>,
+  promise: Promise<FetchResponse<T, O, "application/json">>,
 ) => {
   try {
     const result = await promise;
@@ -131,6 +131,18 @@ export class Profile {
     return formatQueryResult(
       this.client.PATCH("/api/v1/user/", {
         body: data,
+      }),
+    );
+  }
+
+  async findUser(
+    query: paths["/api/v1/user/find"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/user/find", {
+        params: {
+          query,
+        },
       }),
     );
   }

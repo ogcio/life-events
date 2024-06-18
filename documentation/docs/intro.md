@@ -12,7 +12,7 @@ The OGCIO design system requires a wrapper for usage within NextJS. This is done
 
 Most building blocks and 3rd party services are mocked in this mono-repo.
 
-Testing around RSC and RSA is still poorly supported. We use Playwright for e2e testing and Tap for unit testing. At the moment there isn't a solid integration testing library for async React components
+Testing around RSC and RSA is still poorly supported. We use Playwright for UI e2e testing, Bruno for API e2e testing and Tap for unit testing. At the moment there isn't a solid integration testing library for async React components
 
 ## Setup
 
@@ -34,11 +34,22 @@ Service URLs
 | ------------------------ | ----------------------- |
 | web (Life events portal) | `http://localhost:3000` |
 | payments                 | `http://localhost:3001` |
-| messages                 | `http://localhost:3002` |
+| messages                 | `http://localhost:3002` | 
 | profile                  | `http://localhost:3003` |
-| mock-api                 | `http://localhost:8000` |
+| auth-service             | `http://localhost:3005` |
 | logto admin console      | `http://localhost:3302` |
 | logto apis               | `http://localhost:3301` |
+
+APIs
+
+| API Name      | URL                     |
+| ------------- | ----------------------- |
+| mock-api      | `http://localhost:8000` |
+| payments-api  | `http://localhost:8001` |
+| messages-api  | `http://localhost:8002` |
+| profile-api   | `http://localhost:8003` |
+| timeline-api  | `http://localhost:8004` |
+| scheduler-api | `http://localhost:8005` |
 
 ## Localisation
 

@@ -1,16 +1,19 @@
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
-import Header from "./Header";
 import Footer from "./Footer";
-import FeedbackBanner from "./FeedbackBanner";
+import Header from "../../components/Header/Header";
+import Banner from "../../components/Banner";
+import { getTranslations } from "next-intl/server";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params: { locale },
 }: {
   children: React.ReactNode;
   params: { locale: string };
 }) {
+  const t = await getTranslations("FeedbackBanner");
+
   return (
     <html lang={locale}>
       <body
@@ -22,16 +25,22 @@ export default function RootLayout({
           flexDirection: "column",
         }}
       >
-        <Header />
-        {/* All designs are made for 1440 px  */}
-        <div
-          className="govie-width-container"
-          style={{ maxWidth: "1440px", width: "100%" }}
-        >
-          <FeedbackBanner />
-          <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>
-            {children}
-          </div>
+        <Header locale={locale} />
+        <div className="width-container">
+          <Banner
+            tag={t("tag")}
+            text={t.rich("bannerText", {
+              mail: (chunks) => (
+                <a
+                  className="govie-link"
+                  href="mailto:tiago.ramos@nearform.com?subject=Feedback"
+                >
+                  {chunks}
+                </a>
+              ),
+            })}
+          />
+          <div className="page-container">{children}</div>
         </div>
         <Footer />
       </body>

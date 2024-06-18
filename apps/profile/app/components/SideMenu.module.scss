@@ -1,0 +1,12 @@
+@import "/app/styles/globals.scss";
+
+.sideMenu {
+  width: 200px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  @media ((max-width: $breakpoint-phone)) {
+    display: none;
+  }
+}

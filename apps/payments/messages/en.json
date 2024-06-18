@@ -4,18 +4,22 @@
     "edit": "Edit",
     "save": "Save",
     "currencySymbol": "€",
-    "delete": "Delete"
+    "delete": "Delete",
+    "disabled": "Disabled"
   },
   "EmptyStatus": {
     "title": "Nothing to show...",
     "description": "The current list is empty"
   },
   "FeedbackBanner": {
-    "tag": "prototype",
+    "tag": "Alpha",
     "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
   },
   "Header": {
     "title": "Payments"
+  },
+  "Footer": {
+    "license": "All content is available under the <link>Open Government Licence v3.0</link>, except where otherwise stated"
   },
   "MyPayments": {
     "title": "My Payments",
@@ -56,12 +60,13 @@
     "cancel": "Cancel",
     "close": "Close"
   },
+  "Menu": {
+    "payments": "Payments",
+    "paymentRequests": "Payment requests",
+    "providers": "Providers",
+    "logout": "Logout"
+  },
   "PaymentSetup": {
-    "menu": {
-      "payments": "Payments",
-      "paymentRequests": "Payment requests",
-      "providers": "Providers"
-    },
     "details": "Payment request details",
     "Providers": {
       "title": "Your payment providers",
@@ -93,7 +98,7 @@
     "AddProvider": {
       "title": "Add Payment Provider",
       "description": "Easily integrate your preferred payment providers into your platform. Select from a range of providers to enable seamless transactions for your business.",
-      "openbankingDescription": "Utilize OpenBanking for secure and direct bank payments, offering your customers a convenient way to pay directly from their bank accounts without needing to enter payment details.",
+      "openbankingDescription": "Use OpenBanking for secure and direct bank payments, offering your customers a convenient way to pay directly from their bank accounts without needing to enter payment details.",
       "stripeDescription": "Incorporate Stripe to accept payments via credit card, Apple Pay, Google Pay, and more. Benefit from Stripe's comprehensive payment infrastructure and fraud prevention tools.",
       "worldpayDescription": "Connect with WorldPay for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
       "realexDescription": "Connect with Realex for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
@@ -113,10 +118,14 @@
       "editTitle": "Edit OpenBanking Payment Provider",
       "name": "Name",
       "nameHint": "Give a name to this payment provider to help you recognize it",
+      "nameRequired": "Name is required.",
       "accountHolderName": "Bank Account Holder Name",
       "accountHolderNameHint": "Enter the name of the account holder as it appears on the bank account. This ensures payments are correctly attributed.",
+      "accountHolderNameRequired": "Bank Account Holder Name is required.",
       "iban": "IBAN",
       "ibanHint": "Enter your International Bank Account Number (IBAN) for secure transactions.",
+      "ibanRequired": "IBAN is required.",
+      "ibanInvalid": "IBAN is not valid.",
       "confirm": "Confirm"
     },
     "AddBankTransfer": {
@@ -124,10 +133,14 @@
       "editTitle": "Edit Manual Bank Transfer Payment Provider",
       "name": "Name",
       "nameHint": "Give a name to this payment provider to help you recognize it",
+      "nameRequired": "Name is required.",
       "accountHolderName": "Bank Account Holder Name",
       "accountHolderNameHint": "Enter the name of the bank account holder exactly as it appears on the account. This is required to match payments to their source accurately.",
+      "accountHolderNameRequired": "Bank Account Holder Name is required.",
       "iban": "IBAN",
       "ibanHint": "Enter your International Bank Account Number (IBAN) for secure transactions.",
+      "ibanRequired": "IBAN is required.",
+      "ibanInvalid": "IBAN is not valid.",
       "confirm": "Confirm"
     },
     "AddStripe": {
@@ -135,10 +148,13 @@
       "editTitle": "Edit Stripe Payment Provider",
       "name": "Name",
       "nameHint": "Assign a name to this Stripe configuration to easily identify it later",
+      "nameRequired": "Name is required.",
       "livePublishableKey": "Live Publishable Key",
       "livePublishableKeyHint": "This is the public key from your Stripe account used in the live environment. It allows your site to communicate with Stripe for payment processing.",
+      "livePublishableKeyRequired": "Live Publishable Key is required.",
       "liveSecretKey": "Live Secret Key",
       "liveSecretKeyHint": "Your secret key for the live environment from Stripe.",
+      "liveSecretKeyRequired": "Live Secret Key is required.",
       "confirm": "Confirm"
     },
     "AddWorldpay": {
@@ -157,10 +173,13 @@
       "editTitle": "Edit Realex Payment Provider",
       "name": "Name",
       "nameHint": "Create a name for this Realex configuration to easily identify it among your payment options, such as 'Main Site Payments' or 'Event Registrations'.",
+      "nameRequired": "Name is required.",
       "merchantId": "Merchant Id",
       "merchantIdHint": "This is the unique identifier assigned to your Realex account. It's used to ensure that payments are sent to the correct merchant account.",
+      "merchantIdRequired": "Merchant Id is required.",
       "sharedSecret": "Shared secret",
       "sharedSecretHint": "This is the Shared Secret from Realex, required for integrating your payment gateway with the web application. This ties the payments to your account.",
+      "sharedSecretRequired": "Shared Secret is required.",
       "confirm": "Confirm"
     },
     "Payments": {
@@ -235,20 +254,34 @@
     "CreatePayment": {
       "title": "Payment Request Setup Form",
       "form": {
+        "status": {
+          "title": "Status",
+          "header": "Payment Request Status",
+          "active": "Active",
+          "inactive": "Inactive",
+          "activeDescription": "This payment request is active and can be used to receive payments.",
+          "inactiveDescription": "This payment request is inactive and cannot be used to receive payments.",
+          "invalid": "Payment Request Status cannot be active if no providers are selected."
+        },
         "title": "Title",
+        "titleRequired": "Title is required.",
         "description": "Description",
         "beneficiaryAccount": "Beneficiary Account",
         "paymentProvider": {
           "openbanking": "OpenBanking Account",
           "banktransfer": "Manual Bank Transfer Account",
-          "stripe": "Stripe Account",
-          "worldpay": "Worldpay Account",
-          "realex": "Realex Account"
+          "card": "Card Payment Account",
+          "worldpay": "WorldPay Account",
+          "realex": "Realex Account",
+          "stripe": "Stripe Account"
         },
         "reference": "Reference",
+        "referenceRequired": "Reference is required.",
         "amount": "Amount",
+        "amountRequired": "Amount is required.",
         "currencySymbol": "€",
         "redirectUrl": "Redirect URL",
+        "redirectUrlRequired": "Redirect URL is required.",
         "allowAmountOverride": "Allow amount override from url",
         "allowCustomAmount": "Allow the user to pay a custom amount",
         "submit": "Continue"
@@ -269,11 +302,20 @@
     "title": "Pay your fee",
     "errorNotReady": "This payment form is not enabled yet to recieve any payments.",
     "toPay": "Total to pay",
-    "payByBank": "Pay by bank app",
-    "payByBankDescription": "Make a direct payment securely from your bank app - no card needed",
-    "payByCard": "Credit/Debit card",
-    "payByCardDescription": "Pay securely with your credit or debit card",
-    "payByRealexCardDescription": "Pay securely with your credit or debit card - powered by Realex",
+    "payBy": {
+      "openbanking": {
+        "title": "Pay by bank app",
+        "description": "Make a direct payment securely from your bank app - no card needed"
+      },
+      "card": {
+        "title": "Credit/Debit card",
+        "description": "Pay securely with your credit or debit card"
+      },
+      "banktransfer": {
+        "title": "Manual Bank Transfer",
+        "description": "Make a manual bank transfer"
+      }
+    },
     "payNow": "Pay now",
     "manualBankTransfer": "Manual Bank Transfer",
     "manualBankTransferDescription": "Make a manual bank transfer",
@@ -281,7 +323,11 @@
     "changeAmount": "Change amount",
     "name": "Full Name",
     "email": "Email",
-    "addInfo": "Add your information"
+    "addInfo": "Add your information",
+    "paymentInactive": {
+      "title": "The payment request is inactive",
+      "description": "This payment request is currently inactive and cannot be used to receive payments."
+    }
   },
   "PayManualBankTransfer": {
     "title": "Pay with a Manual Bank Transfer",
@@ -305,6 +351,9 @@
     "paymentRequiresPaymentMmethod": "Your payment was not successful, please try again.",
     "somethingWrong": "Something went wrong."
   },
+  "PayRealex": {
+    "loading": "Loading checkout..."
+  },
   "PaymentRequestComplete": {
     "title": "Your payment was successful",
     "yourRef": "Your reference number",
@@ -319,5 +368,67 @@
     "back": "Back to My Portal",
     "sorry": "Sorry, there was a problem",
     "tryAgain": "Please return to My Portal and attempt the payment again"
+  },
+  "PreviewBanner": {
+    "tag": "Preview",
+    "bannerText": "This is a preview. Public servants are not allowed to make payments. If you want to proceed with payments, you must be logged in as a citizen."
+  },
+  "LandingPage": {
+    "AlphaBanner": {
+      "tag": "Alpha",
+      "bannerText": "This is a new service - your <anchor>feedback</anchor> will help us to improve it."
+    },
+    "actions": {
+      "login": "Login"
+    },
+    "benefits": "Benefits",
+    "sections": {
+      "main": {
+        "title": "Payments",
+        "description": "Our Payments Building Block is built on a robust infrastructure that enables secure and efficient financial transactions, giving users peace of mind every time they use it.",
+        "cta": "Sign up to learn more"
+      },
+      "integration": {
+        "title": "Seamless Integration",
+        "description": "The Payments Building Block seamlessly connects with multiple payment methods, including credit cards, digital wallets, and bank transfers, to offer flexibility to your users."
+      },
+      "security": {
+        "title": "Enhanced Security",
+        "description": "The Payments Building Block employs encryption protocols and payment providers that are Payment Card Industry (PCI) compliant, giving you peace of mind."
+      },
+      "interface": {
+        "title": "User-Friendly Interface",
+        "description": "The Payments Building Block has an intuitive interface that makes payment processing simple for both administrators and users. Whether you're generating payment requests or tracking transactions, it's quick and simple.",
+        "citizenPOV": "Citizen Point of View",
+        "publicServantPOV": "Public Servant Point of View"
+      },
+      "accessibility": {
+        "title": "Accessibility",
+        "description": "The Payments Building Block is designed with accessibility in mind. It conforms with the Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users can easily access the service."
+      },
+      "support": {
+        "title": "Dedicated Support",
+        "description": "Our team of experts is here to assist you every step of the way. Whether you have technical questions or need assistance with implementation, you can rely on the Payments Building Block's dedicated support team."
+      },
+      "getStarted": {
+        "title": "Get Started",
+        "description": "Ready to transform your payment processes? Contact us to schedule a demo or to learn more about how Payments Building Block can empower your public sector department.",
+        "cta": "Sign up to learn more"
+      }
+    }
+  },
+  "ServicesTiles": {
+    "payments": "Payments",
+    "messaging": "Messaging",
+    "lifeEvents": "Life Events"
+  },
+  "ErrorPage": {
+    "title": "Ops, something went wrong",
+    "description": "We're sorry, but something unexpected happened and we couldn't process your request. Please try refreshing the page or come back later. If the problem persists, contact our support team for assistance. Thank you for your patience!",
+    "action": "Return Home"
+  },
+  "Pagination": {
+    "previous": "Previous",
+    "next": "Next"
   }
 }

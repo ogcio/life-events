@@ -2,7 +2,7 @@ import Fastify from "fastify";
 import {
   getLoggingConfiguration,
   initializeLoggingHooks,
-} from "../../src/fastify-logging-wrapper";
+} from "../../src/fastify-logging-wrapper.js";
 import { DestinationStream } from "pino";
 import { createError } from "@fastify/error";
 

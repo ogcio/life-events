@@ -2,7 +2,7 @@ import { PgSessions } from "auth/sessions";
 import PaymentsMenu from "./PaymentsMenu";
 import { notFound } from "next/navigation";
 
-export default async ({ children }) => {
+export default async ({ children, params: { locale } }) => {
   const { publicServant } = await PgSessions.get();
   if (!publicServant) return notFound();
 
@@ -14,7 +14,7 @@ export default async ({ children }) => {
         gap: "2rem",
       }}
     >
-      <PaymentsMenu />
+      <PaymentsMenu locale={locale} />
       {children}
     </div>
   );

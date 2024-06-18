@@ -278,6 +278,70 @@ export const timeline = {
   slug: "timeline",
 };
 
+export const digitalWallet = {
+  slug: "digital-wallet",
+  getDigitalWallet: {
+    slug: "get-digital-wallet",
+    path() {
+      return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}`;
+    },
+    beforeYouStart: {
+      slug: "before-you-start",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.beforeYouStart.slug}`;
+      },
+    },
+    governmentDetails: {
+      slug: "government-details",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.governmentDetails.slug}`;
+      },
+    },
+    deviceSelection: {
+      slug: "device-selection",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.deviceSelection.slug}`;
+      },
+    },
+    yourDevice: {
+      slug: "your-device",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.yourDevice.slug}`;
+      },
+    },
+    checkDetails: {
+      slug: "check-details",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.checkDetails.slug}`;
+      },
+    },
+    changeDetails: {
+      slug: "change-details",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.changeDetails.slug}`;
+      },
+    },
+    applicationSuccess: {
+      slug: "application-success",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.applicationSuccess.slug}`;
+      },
+    },
+    verifyLevel0: {
+      slug: "verify-mygovid-account-level-0",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.verifyLevel0.slug}`;
+      },
+    },
+    verifyLevel1: {
+      slug: "verify-mygovid-account-level-1",
+      path() {
+        return `${digitalWallet.slug}/${digitalWallet.getDigitalWallet.slug}/${digitalWallet.getDigitalWallet.verifyLevel1.slug}`;
+      },
+    },
+  },
+};
+
 export const category = {
   health,
   driving,
@@ -286,4 +350,5 @@ export const category = {
   employment,
   business,
   housing,
+  "digital-wallet": digitalWallet,
 };

@@ -72,3 +72,33 @@
   mask-image: url("../assets/icons/hamburgerMenu.svg");
   -webkit-mask-image: url("../assets/icons/hamburgerMenu.svg");
 }
+
+.ds-icon-tiles {
+  mask-image: url("../assets/icons/tiles.svg");
+  -webkit-mask-image: url("../assets/icons/tiles.svg");
+}
+
+.ds-icon-messaging-service {
+  mask-image: url("../assets/icons/messaging-service.svg");
+  -webkit-mask-image: url("../assets/icons/messaging-service.svg");
+}
+
+.ds-icon-payments-service {
+  mask-image: url("../assets/icons/payments-service.svg");
+  -webkit-mask-image: url("../assets/icons/payments-service.svg");
+}
+
+.ds-icon-send-a-message {
+  mask-image: url("../assets/icons/sendAMessage.svg");
+  -webkit-mask-image: url("../assets/icons/sendAMessage.svg");
+}
+
+.ds-icon-template {
+  mask-image: url("../assets/icons/template.svg");
+  -webkit-mask-image: url("../assets/icons/template.svg");
+}
+
+.ds-icon-settings {
+  mask-image: url("../assets/icons/settings.svg");
+  -webkit-mask-image: url("../assets/icons/settings.svg");
+}
