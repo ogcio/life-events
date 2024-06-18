@@ -1015,6 +1015,6 @@
   },
   "FeedbackBanner": {
     "tag": "Alpha",
-    "bannerText": "This is a new service - your <mail>feedback</mail> (or email to govdigitalwallet@per.gov.ie) will help us to improve it."
+    "bannerText": "This is a new service - your <mail>feedback</mail> will help us improve it."
   }
 }
