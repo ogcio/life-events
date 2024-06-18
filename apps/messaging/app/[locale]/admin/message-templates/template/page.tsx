@@ -57,9 +57,10 @@ export default async (props: {
   searchParams?: { id: string; lang: string };
   params: { locale: string };
 }) => {
-  const [t, tError] = await Promise.all([
+  const [t, tError, tCommons] = await Promise.all([
     getTranslations("MessageTemplate"),
     getTranslations("formErrors"),
+    getTranslations("Commons"),
   ]);
 
   async function saveAction(formData: FormData) {
@@ -399,7 +400,7 @@ export default async (props: {
         </button>
       </form>
       <Link className="govie-back-link" href="./">
-        Back
+        {tCommons("backLink")}
       </Link>
     </FlexMenuWrapper>
   );

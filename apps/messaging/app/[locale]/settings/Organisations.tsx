@@ -31,7 +31,8 @@ export default async () => {
         {data?.map((invitation) => (
           <tr className="govie-table__row" key={invitation.organisationId}>
             <th className="govie-table__header govie-table__header--vertical-centralized govie-body-s">
-              {invitation.organisationId}
+              {/* {invitation.organisationId} At the moment we want to show "Life Events" as fixed value*/}
+              Life Events
             </th>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               {invitation.organisationInvitationStatus}
