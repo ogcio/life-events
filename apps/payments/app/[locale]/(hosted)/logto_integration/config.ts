@@ -24,8 +24,14 @@ const citizenScopes = ["payments:create:payment"];
 export default {
   ...baseConfig,
   // All the availabie resources to the app
-  resources: [paymentsApiResource],
-  scopes: [...citizenScopes],
+  resources: [paymentsApiResource, "urn:logto:resource:organizations"],
+  scopes: [
+    ...citizenScopes,
+    ...orgScopes,
+    "payments:create:providers",
+    "urn:logto:scope:organization_token",
+    "urn:logto:scope:organizations",
+  ],
 };
 
 export const getPaymentsCitizenContext = () =>
@@ -38,6 +44,25 @@ export const getPaymentsCitizenContext = () =>
     {
       getAccessToken: true,
       resource: paymentsApiResource,
+    },
+  );
+
+export const getPaymentsOrganizationContext = () =>
+  AuthSession.get(
+    {
+      ...baseConfig,
+      resources: [paymentsApiResource, "urn:logto:resource:organizations"],
+      scopes: [
+        ...orgScopes,
+        "payments:create:providers",
+        "urn:logto:scope:organization_token",
+        "urn:logto:scope:organizations",
+      ],
+    },
+    {
+      getOrganizationToken: true,
+      organizationId: "ogcio",
+      resource: "urn:logto:resource:organizations",
     },
   );
 

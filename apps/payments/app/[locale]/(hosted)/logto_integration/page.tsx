@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Payments } from "building-blocks-sdk";
-import { getPaymentsCitizenContext } from "./config";
-import { revalidatePath } from "next/cache";
+import {
+  getPaymentsCitizenContext,
+  getPaymentsOrganizationContext,
+} from "./config";
 
 const actionCitizen = async () => {
   "use server";
@@ -13,8 +15,16 @@ const actionCitizen = async () => {
   new Payments(token).testCitizenAuth();
 };
 
+const actionOrganization = async () => {
+  "use server";
+  const organizations = await getPaymentsOrganizationContext();
+  const orgToken = organizations!.organizationTokens!.ogcio;
+  new Payments(orgToken).testPublicServantAuth();
+};
+
 export default async function () {
   const context = await getPaymentsCitizenContext();
+  const organizations = await getPaymentsOrganizationContext();
 
   return (
     <>
@@ -22,6 +32,12 @@ export default async function () {
       <pre>{JSON.stringify(context, null, 2)}</pre>
       <form action={actionCitizen}>
         <button>API CALL - Citizen</button>
+      </form>
+
+      <h1>ORGANIZATION PAYLOAD</h1>
+      <pre>{JSON.stringify(organizations, null, 2)}</pre>
+      <form action={actionOrganization}>
+        <button>API CALL - Organization</button>
       </form>
 
       {context && context.isAuthenticated && (

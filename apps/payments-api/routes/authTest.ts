@@ -6,6 +6,10 @@ const permissions = {
     test: "payments:create:payment",
     testError: "fake_permission",
   },
+  publicServant: {
+    test: "payments:create:providers",
+    testError: "fake_permission",
+  },
 };
 
 export default async function transactions(app: FastifyInstance) {
@@ -25,7 +29,8 @@ export default async function transactions(app: FastifyInstance) {
   app.get(
     "/pub-ser",
     {
-      preValidation: (req, res) => app.checkPermissions(req, res, []),
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [permissions.publicServant.test]),
     },
     async (request, reply) => {
       reply.send(formatAPIResponse({ ok: true }));
