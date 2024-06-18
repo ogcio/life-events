@@ -197,9 +197,8 @@ export default async ({ locale }) => {
                     className="govie-body"
                     style={{ margin: "unset", marginTop: "16px" }}
                   >
-                    Our team are dealing with all requests to join the pilot and
-                    we hope to issue further instructions on accessing the
-                    Wallet by the end of next week.
+                    Our team are dealing with requests to join the pilot and
+                    will be in touch soon. We appreciate your patience.
                   </p>
                 </div>
               </div>
