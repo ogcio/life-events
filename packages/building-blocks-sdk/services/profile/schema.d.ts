@@ -583,6 +583,9 @@ export interface paths {
                 lastName: string;
                 ppsn: string;
                 lang: string;
+                /** Format: email */
+                email: string;
+                phone: string;
               }[];
             };
           };

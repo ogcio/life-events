@@ -211,6 +211,8 @@ export const getUserProfiles = async (ids: string[], pool: Pool) => {
       ppsn: string;
       id: string;
       lang: string;
+      phone: string;
+      email: string;
     }>(
       `
     select 
@@ -218,7 +220,9 @@ export const getUserProfiles = async (ids: string[], pool: Pool) => {
       (details ->> 'lastName') as "firstName",
       (details ->> 'publicIdentityId') as "ppsn",
       user_profile_id as "id",
-      'en' as "lang"
+      'en' as "lang",
+      phone,
+      email
     from users
     where user_profile_id = any ($1)
     `,
@@ -230,15 +234,7 @@ export const getUserProfiles = async (ids: string[], pool: Pool) => {
 export function ProfileSdkFacade(
   sdkProfile: Profile,
   messagingProfile: {
-    selectUsers(ids: string[]): Promise<
-      {
-        firstName: string;
-        lastName: string;
-        ppsn: string;
-        id: string;
-        lang: string;
-      }[]
-    >;
+    selectUsers(ids: string[]): ReturnType<typeof getUserProfiles>;
   },
 ): Omit<Profile, "client"> {
   return {
@@ -279,4 +275,3 @@ export function ProfileSdkFacade(
 }
 
 export const AVAILABLE_TRANSPORTS = ["sms", "email"];
-

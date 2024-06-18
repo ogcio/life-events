@@ -165,6 +165,9 @@ export default async function messages(app: FastifyInstance) {
       },
     },
     async (req, res) => {
+      const errorKey = "FAILED_TO_CREATE_MESSAGE_FROM_TEMPLATE";
+
+      // Get users
       const profileSdk = new Profile(req.user!.id);
       const messageSdk = {
         selectUsers(ids: string[]) {
@@ -176,39 +179,44 @@ export default async function messages(app: FastifyInstance) {
       const allUsers = await profileService.selectUsers(req.body.userIds);
 
       if (allUsers.error) {
-        return res.internalServerError("couldn't fetch user profiles");
+        throw createError(errorKey, "couldn't fetch user profiles", 500)();
       }
 
       if (!allUsers.data?.length) {
-        return res.badRequest("no receiver profiles found");
+        throw createError(errorKey, "no receiver profiles found", 500)();
       }
 
+      // Get template contents
       const messageService = newMessagingService(app.pg.pool);
 
       const contents = await messageService.getTemplateContents(
         req.body.templateMetaId,
       );
 
-      const messageAndUserIds: Awaited<
+      if (!contents.length) {
+        throw createError(errorKey, "no template contents found", 500)();
+      }
+
+      // Create messages
+      let messageAndUserIds: Awaited<
         ReturnType<typeof messageService.createTemplateMessages>
       > = [];
       try {
-        messageAndUserIds.push(
-          ...(await messageService.createTemplateMessages(
-            contents,
-            allUsers.data.map((u) => ({ ...u, userId: u.id })),
-            req.body.transportations,
-            req.body.security,
-          )),
+        messageAndUserIds = await messageService.createTemplateMessages(
+          contents,
+          allUsers.data.map((u) => ({ ...u, userId: u.id })),
+          req.body.transportations,
+          req.body.security,
         );
       } catch (err) {
         throw createError(
-          "FAILED_TO_CREATE_MESSAGES",
+          errorKey,
           "failed to create messages from template",
           500,
-        );
+        )();
       }
 
+      // Schedule messages
       try {
         await messageService.scheduleMessages(
           messageAndUserIds,
@@ -216,10 +224,10 @@ export default async function messages(app: FastifyInstance) {
         );
       } catch (err) {
         throw createError(
-          "FAILED_TO_SCHEDULE_MESSAGES",
+          errorKey,
           "failed to send messages to scheduler",
           500,
-        );
+        )();
       }
     },
   );

@@ -15,19 +15,7 @@ type TemplateContent = {
   plainText: string;
   lang: string;
 };
-// type Message = {
-//   subject: string;
-//   excerpt: string;
-//   richText: string;
-//   plainText: string;
-//   lang: string;
-//   organisationId: string;
-//   security: string;
-//   transports: string[];
-//   messageName?: string;
-//   threadName?: string;
-// };
-// type MessageId = string;
+
 type User = {
   userId: string;
   firstName: string;
@@ -38,14 +26,13 @@ type User = {
 
 export interface MessagingService {
   /**
-   * Inserts one composed message from a template for each recipient, using their preferred language
+   * Composes and insert one message from a template for each recipient, using their preferred language
    * or chosing first avaliable.
    *
-   *
-   * @param templateContents
-   * @param recipients
-   * @param transports
-   * @param security
+   * @param templateContents - Contains the message content for different languages with interpolations
+   * @param recipients - Receiving users
+   * @param transports - Where to send except messaging system (email, sms, life events)
+   * @param security - TODO
    */
   createTemplateMessages(
     templateContents: TemplateContent[],
@@ -55,7 +42,7 @@ export interface MessagingService {
   ): Promise<{ userId: string; messageId: string }[]>;
 
   /**
-   * Get the implemented template contents for the root neta id
+   * Get the template contents for the root meta id
    *
    * @param templateMetaId
    */
@@ -63,7 +50,7 @@ export interface MessagingService {
 
   /**
    *
-   * Create a job for each message to a user
+   * Create a callback job entry for each message to a user
    * Sends the job to the scheduler
    *
    * @param userMessageIds user and message id object array
@@ -130,7 +117,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
 
         const args = [...Array(values.length)]
           .reduce<string>((queryArgs, _, i) => {
-            console.log({ queryArgs });
             let next = queryArgs.concat(`$${++valueArgsIndex}`);
             if (i < values.length - 1) {
               next = next.concat(",");
@@ -139,7 +125,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
           }, "(")
           .concat(")");
 
-        console.log({ args });
         valueArray.push(...values);
         valueArgsArray.push(args);
       }

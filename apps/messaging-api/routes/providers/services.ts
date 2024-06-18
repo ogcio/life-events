@@ -138,14 +138,15 @@ export function mailService(client: PoolClient): MailService {
         const transporter: nodemailer.Transporter = nodemailer.createTransport({
           host,
           port,
-          secure: false,
+          secure: true,
+          version: "TLSv1_2_method",
           auth: {
             user: username,
             pass: password,
           },
         });
         await transporter.sendMail({
-          from: fromAddress, // "noreply@dev.blocks.gov.ie", //username,
+          from: fromAddress,
           to: params.email,
           subject: params.subject,
           html: params.body,

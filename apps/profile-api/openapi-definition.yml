@@ -984,12 +984,19 @@ paths:
                           type: string
                         lang:
                           type: string
+                        email:
+                          format: email
+                          type: string
+                        phone:
+                          type: string
                       required:
                         - id
                         - firstName
                         - lastName
                         - ppsn
                         - lang
+                        - email
+                        - phone
                 required:
                   - data
         "404":

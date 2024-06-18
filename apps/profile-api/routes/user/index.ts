@@ -313,6 +313,8 @@ export default async function user(app: FastifyInstance) {
                 lastName: Type.String(),
                 ppsn: Type.String(),
                 lang: Type.String(),
+                email: Type.String({ format: "email" }),
+                phone: Type.String(),
               }),
             ),
           }),
@@ -330,14 +332,24 @@ export default async function user(app: FastifyInstance) {
             lastName: string;
             ppsn: string;
             lang: string;
+            email: string;
+            phone: string;
           }>(
             `
-        select user_id as "id", firstname as "firstName", lastname as "lastName", ppsn from user_details
+        select 
+          user_id as "id", 
+          firstname as "firstName", 
+          lastname as "lastName", 
+          ppsn,
+          'en' as "lang",
+          phone,
+          email
+        from user_details
         where user_id::text = any ($1)
       `,
             [ids],
           )
-          .then((res) => res.rows.map((row) => ({ ...row, lang: "en" })));
+          .then((res) => res.rows);
 
         if (!users.length) {
           reply.code(404);
