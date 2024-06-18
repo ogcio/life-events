@@ -18,7 +18,6 @@ const decodeLogtoToken = async (
     currentApiResourceIndicator: string;
   },
 ) => {
-  console.log("decodeLogtoToken", token, config);
   // Reference: https://docs.logto.io/docs/recipes/protect-your-api/node/
   const jwks = createRemoteJWKSet(new URL(config.jwkEndpoint));
   const { payload } = await jwtVerify(token, jwks, {
@@ -39,8 +38,7 @@ export const checkPermissions = async (
   const token = extractBearerToken(authHeader);
   const payload = await decodeLogtoToken(token, config);
   const { scope, sub } = payload as { scope: string; sub: string };
-  console.log("PAYLOAD", payload);
-  console.log("USER PERMISSIONS:", scope);
+
   for (const permission of requiredPermissions) {
     if (!scope.includes(permission)) {
       throw new Error("Forbidden");
