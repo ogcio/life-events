@@ -704,7 +704,8 @@ export interface paths {
             "application/json": {
               data: {
                 id: string;
-                userProfileId: string;
+                /** @default null */
+                userProfileId: string | null;
                 organisationId: string;
                 /** @default pending */
                 organisationInvitationStatus:
@@ -744,6 +745,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               }[];
             };
@@ -805,7 +808,8 @@ export interface paths {
             "application/json": {
               data: {
                 id: string;
-                userProfileId: string;
+                /** @default null */
+                userProfileId: string | null;
                 organisationId: string;
                 /** @default pending */
                 organisationInvitationStatus:
@@ -845,6 +849,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               };
             };
@@ -913,7 +919,8 @@ export interface paths {
             "application/json": {
               data: {
                 id: string;
-                userProfileId: string;
+                /** @default null */
+                userProfileId: string | null;
                 organisationId: string;
                 /** @default pending */
                 organisationInvitationStatus:
@@ -953,6 +960,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               };
             };
@@ -1103,6 +1112,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
                 /** @default null */
                 usersImportId: null | string;
@@ -1284,6 +1295,8 @@ export interface paths {
             addressRegion?: null | string;
             /** @default null */
             tags?: null | string;
+            /** @default null */
+            collectedConsent?: null | string;
           }[];
         };
       };
@@ -1321,11 +1334,103 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/imports/{importId}": {
+  "/api/v1/users/imports/users": {
     get: {
       parameters: {
         query?: {
           organisationId?: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                id: string;
+                /** @default null */
+                userProfileId: string | null;
+                organisationId: string;
+                /** @default pending */
+                organisationInvitationStatus:
+                  | "to_be_invited"
+                  | "pending"
+                  | "accepted"
+                  | "declined";
+                organisationInvitationSentAt?: string;
+                organisationInvitationFeedbackAt?: string;
+                organisationPreferredTransports?: string[];
+                correlationQuality: "full" | "partial" | "not_related";
+                /** @default pending */
+                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+                /** @default null */
+                phone: null | string;
+                /** @default null */
+                email: null | string;
+                details?: {
+                  /** @default null */
+                  publicIdentityId: null | string;
+                  /** @default null */
+                  firstName: null | string;
+                  /** @default null */
+                  lastName: null | string;
+                  /** @default null */
+                  birthDate: null | string;
+                  /** @default null */
+                  address: {
+                    /** @default null */
+                    city: null | string;
+                    /** @default null */
+                    zipCode: null | string;
+                    /** @default null */
+                    street: null | string;
+                    /** @default null */
+                    country: null | string;
+                    /** @default null */
+                    region: null | string;
+                  } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
+                };
+              }[];
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/imports/{importId}": {
+    get: {
+      parameters: {
+        query: {
+          organisationId?: string;
+          includeUsersData: boolean;
         };
         path: {
           importId: string;
@@ -1381,6 +1486,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 }[];
                 /** @default api */
                 importChannel: "api" | "csv";
@@ -1439,7 +1546,8 @@ export interface paths {
             "application/json": {
               data: {
                 id: string;
-                userProfileId: string;
+                /** @default null */
+                userProfileId: string | null;
                 organisationId: string;
                 /** @default pending */
                 organisationInvitationStatus:
@@ -1479,6 +1587,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               }[];
             };

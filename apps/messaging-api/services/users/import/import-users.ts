@@ -88,6 +88,7 @@ const getMockCsvRecord = (): CsvRecord => ({
   addressCountry: "Country",
   addressRegion: "Region",
   tags: "country.county.city;parent_tag.child_tag",
+  collectedConsent: "false",
 });
 
 const normalizeCsvValue = (value: string | undefined | null): string | null => {
@@ -97,6 +98,18 @@ const normalizeCsvValue = (value: string | undefined | null): string | null => {
   }
 
   return null;
+};
+
+const normalizeBooleanCsvValue = (
+  value: string | undefined | null,
+): boolean => {
+  const normalizedString = normalizeCsvValue(value);
+
+  if (!normalizedString) {
+    return false;
+  }
+
+  return normalizedString === "1" || normalizedString.toLowerCase() === "true";
 };
 
 const parseTags = (toMap: CsvRecord): string[] => {
@@ -153,6 +166,7 @@ const csvRecordToToImportUser = (
   },
   importStatus: importStatus,
   tags: parseTags(toMap),
+  collectedConsent: normalizeBooleanCsvValue(toMap.collectedConsent),
 });
 
 const insertToImportUsers = async (params: {
@@ -212,6 +226,7 @@ const processUserImport = async (params: {
       logger: params.logger,
       requestUser: params.requestUser,
     });
+
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");

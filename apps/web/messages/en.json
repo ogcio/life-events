@@ -908,6 +908,15 @@
       "submitted": "Submitted",
       "approved": "Approved",
       "rejected": "Rejected"
+    },
+    "Pagination": {
+      "next": "Next",
+      "previous": "Previous"
+    },
+    "TableControls": {
+      "itemsPerPage": "Items per page",
+      "itemsCount": "Items count",
+      "change": "Change"
     }
   },
   "Timeline": {
@@ -973,7 +982,9 @@
     },
     "pagination": {
       "itemsPerPage": "Items per page:",
-      "pageInfo": "Page {currentPage} of {pagesCount}"
+      "pageInfo": "Page {currentPage} of {pagesCount}",
+      "next": "Next",
+      "previous": "Previous"
     },
     "types": {
       "action": "Action",

@@ -255,9 +255,29 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getUsersImport(importId: string, organisationId?: string) {
+  async getUsersImport(
+    importId: string,
+    organisationId?: string,
+    includeUsersData?: boolean,
+  ) {
     const { error, data } = await this.client.GET(
       "/api/v1/users/imports/{importId}",
+      {
+        params: {
+          path: { importId },
+          query: {
+            organisationId,
+            includeUsersData: Boolean(includeUsersData),
+          },
+        },
+      },
+    );
+    return { error, data: data?.data };
+  }
+
+  async getUsersForImport(importId: string, organisationId?: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/imports/{importId}/users",
       {
         params: { path: { importId }, query: { organisationId } },
       },
@@ -265,11 +285,11 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getUsers(importId: string, organisationId?: string) {
+  async getUsers(organisationId?: string) {
     const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/{importId}/users",
+      "/api/v1/users/imports/users",
       {
-        params: { path: { importId }, query: { organisationId } },
+        params: { query: { organisationId } },
       },
     );
     return { error, data: data?.data };
