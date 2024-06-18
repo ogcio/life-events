@@ -3,6 +3,7 @@ import { web } from "../../../utils";
 import ds from "design-system";
 import { CSSProperties } from "react";
 import { useTranslations } from "next-intl";
+import { EventTableSearchParams } from "./page";
 
 const linkStyle = (selected: boolean): CSSProperties => {
   const props: CSSProperties = {
@@ -26,7 +27,11 @@ const linkClassName = (selected: boolean): string =>
     selected ? "govie-link--no-underline" : ""
   }`.trim();
 
-export default ({ searchParams }: Pick<web.NextPageProps, "searchParams">) => {
+export default ({
+  searchParams,
+}: {
+  searchParams: EventTableSearchParams | undefined;
+}) => {
   const t = useTranslations("Admin.StatusMenu");
   const isSubmitted =
     searchParams?.status === "submitted" ||

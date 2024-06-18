@@ -7,7 +7,10 @@ import { getUsers } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 
 export default async (props: MessageCreateProps) => {
-  const t = await getTranslations("sendAMessage.EmailRecipients");
+  const [t, tCommons] = await Promise.all([
+    getTranslations("sendAMessage.EmailRecipients"),
+    getTranslations("Commons"),
+  ]);
 
   async function submit(formData: FormData) {
     "use server";
@@ -143,7 +146,7 @@ export default async (props: MessageCreateProps) => {
         </button>
       </form>
       <form action={goBack}>
-        <BackButton>{t("backLink")}</BackButton>
+        <BackButton>{tCommons("backLink")}</BackButton>
       </form>
     </div>
   );
