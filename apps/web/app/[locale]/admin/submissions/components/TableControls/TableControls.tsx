@@ -2,17 +2,15 @@ import { FormEvent } from "react";
 import styles from "./TableControls.module.scss";
 import { RedirectType, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { QueryParams } from "../paginationUtils";
 
-type TableControlsProps = {
-  itemsCount: number;
-  itemsPerPage: number;
-  baseUrl: string;
-};
+type TableControlsProps = QueryParams & { itemsCount: number; baseUrl: string };
 
 export default async ({
   itemsCount,
-  itemsPerPage,
   baseUrl,
+  search,
+  limit,
 }: TableControlsProps) => {
   const t = await getTranslations("Admin.TableControls");
 
@@ -21,6 +19,11 @@ export default async ({
 
     const url = new URL(baseUrl);
     const searchParams = url.searchParams;
+
+    const searchQuery = (formData.get("search-query") as string).trim();
+    if (searchQuery.length > 0) {
+      searchParams.set("search", searchQuery);
+    }
 
     searchParams.set("limit", formData.get("items-per-page") as string);
     searchParams.set("page", "1");
@@ -45,41 +48,38 @@ export default async ({
               className="govie-select"
               id="items-per-page"
               name="items-per-page"
-              defaultValue={itemsPerPage}
+              defaultValue={limit}
             >
               <option value="10">10</option>
               <option value="25">25</option>
               <option value="50">50</option>
               <option value="100">100</option>
             </select>
-            <input
-              type="submit"
-              id="button"
-              data-module="govie-button"
-              className="govie-button govie-button--medium"
-              value={t("change")}
-            />
           </div>
         </div>
+
+        <div className={styles.controlsBar}>
+          <div className={`govie-form-group ${styles.selectGroup}`}>
+            <label htmlFor="search-query" className="govie-label--s">
+              {t("searchUser")}
+            </label>
+            <input
+              type="text"
+              id="search-query"
+              name="search-query"
+              className="govie-input govie-!-width-one-half"
+              defaultValue={search}
+            />
+          </div>
+          <input
+            type="submit"
+            id="button"
+            data-module="govie-button"
+            className="govie-button"
+            value={t("submit")}
+          />
+        </div>
       </form>
-      {/* <div className={`govie-form-group ${styles.selectGroup}`}>
-        <label htmlFor="input-field" className="govie-label--s">
-          Search for user:
-        </label>
-        <input
-          type="text"
-          id="input-field"
-          name="input-field"
-          className="govie-input govie-!-width-one-half"
-        />
-        <input
-          type="submit"
-          id="button"
-          data-module="govie-button"
-          className="govie-button govie-button--medium"
-          value="Change"
-        />
-      </div> */}
     </div>
   );
 };

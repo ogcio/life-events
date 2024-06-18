@@ -189,9 +189,17 @@ export const getPaginationLinks = (details: PaginationDetails) => {
   };
 };
 
-export const getPaginationDataFromParams = (params: URLSearchParams) => {
+export type QueryParams = {
+  offset: number;
+  limit: number;
+  page: number;
+  search?: string;
+};
+
+export const getQueryParams = (params: URLSearchParams): QueryParams => {
   const page = params.get("page");
   const limit = params.get("limit");
+  const searchQeury = params.get("search") || undefined;
 
   const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
   const pageLimit = limit ? parseInt(limit) : PAGINATION_LIMIT_DEFAULT;
@@ -200,6 +208,7 @@ export const getPaginationDataFromParams = (params: URLSearchParams) => {
     offset: pageToOffset(currentPage, pageLimit),
     limit: pageLimit,
     page: currentPage,
+    search: searchQeury,
   };
 
   return pagination;

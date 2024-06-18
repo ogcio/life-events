@@ -916,7 +916,8 @@
     "TableControls": {
       "itemsPerPage": "Items per page",
       "itemsCount": "Items count",
-      "change": "Change"
+      "submit": "Submit",
+      "searchUser": "Search user"
     }
   },
   "Timeline": {

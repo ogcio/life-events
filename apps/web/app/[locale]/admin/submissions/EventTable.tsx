@@ -4,10 +4,12 @@ import { postgres, web, workflow } from "../../../utils";
 import { Pages, SubmissionsTableProps } from "./page";
 import {
   PaginationLinks,
-  getPaginationDataFromParams,
   getPaginationLinks,
+  getQueryParams,
 } from "./components/paginationUtils";
 import Pagination from "./components/Pagination";
+import TableControls from "./components/TableControls/TableControls";
+import { QueryResult } from "pg";
 
 export default async ({ searchParams, params }: SubmissionsTableProps) => {
   const t = await getTranslations("Admin.EventsTable");
@@ -17,9 +19,9 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     (searchParams?.status as Exclude<Pages, "pending">) || "submitted";
 
   const urlParms = new URLSearchParams(searchParams);
-  const url = `${process.env.HOST_URL}${params.locale}/admin/submissions?status=${statusSelection}`;
+  const url = `${process.env.HOST_URL}/${params.locale}/admin/submissions?status=${statusSelection}`;
 
-  const pagination = getPaginationDataFromParams(urlParms);
+  const queryParams = getQueryParams(urlParms);
 
   const dataSelect = `SELECT 
   fd.user_id as "userId", 
@@ -47,26 +49,54 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
       break;
   }
 
-  const userFlows = await postgres.pgpool.query<{
+  let userFlows: QueryResult<{
     userId: string;
     flow: string;
     flowData: workflow.GetDigitalWallet;
     updatedAt: string;
-  }>(
-    `${dataSelect} ${dataQuery} ORDER BY updated_at DESC  LIMIT $1 OFFSET $2`,
-    [pagination.limit, pagination.offset],
-  );
+  }>;
+  let countQueryResult: QueryResult<{ count: number }>;
 
-  const countQueryResult = await postgres.pgpool.query<{
-    count: number;
-  }>(`SELECT COUNT(*) ${dataQuery}`);
+  if (queryParams.search) {
+    dataQuery += ` AND (
+      (flow_data ->> 'govIEEmail') ILIKE $1
+      OR (flow_data ->> 'myGovIdEmail') ILIKE $1
+      OR (flow_data ->> 'firstName') ILIKE $1
+      OR (flow_data ->> 'lastName') ILIKE $1
+      )`;
+    userFlows = await postgres.pgpool.query({
+      name: "getDigitalWalletFlowDataWithSearch",
+      text: `${dataSelect} ${dataQuery} ORDER BY updated_at DESC  LIMIT $2 OFFSET $3`,
+      values: [
+        `%${queryParams.search}%`,
+        queryParams.limit,
+        queryParams.offset,
+      ],
+    });
+
+    countQueryResult = await postgres.pgpool.query({
+      name: "getDigitalWalletFlowDataCountWithSearch",
+      text: `SELECT COUNT(*) ${dataQuery}`,
+      values: [`%${queryParams.search}%`],
+    });
+  } else {
+    countQueryResult = await postgres.pgpool.query({
+      name: "getDigitalWalletFlowDataCount",
+      text: `SELECT COUNT(*) ${dataQuery}`,
+    });
+    userFlows = await postgres.pgpool.query({
+      name: "getDigitalWalletFlowData",
+      text: `${dataSelect} ${dataQuery} ORDER BY updated_at DESC  LIMIT $1 OFFSET $2`,
+      values: [queryParams.limit, queryParams.offset],
+    });
+  }
 
   const count = countQueryResult.rows[0].count;
 
   const links: PaginationLinks = getPaginationLinks({
     url,
-    limit: pagination.limit,
-    offset: pagination.offset,
+    limit: queryParams.limit,
+    offset: queryParams.offset,
     totalCount: count,
   });
 
@@ -84,6 +114,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
 
   return (
     <>
+      <TableControls itemsCount={count} baseUrl={url} {...queryParams} />
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
@@ -156,7 +187,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
           })}
         </tbody>
       </table>
-      <Pagination currentPage={pagination.page} links={links} />
+      <Pagination currentPage={queryParams.page} links={links} />
     </>
   );
 };
