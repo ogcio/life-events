@@ -12,6 +12,12 @@ RUN npm ci
 WORKDIR /app/packages/logging-wrapper/
 RUN npm run build
 
+WORKDIR /app/packages/error-handler/
+RUN npm run build
+
+WORKDIR /app/packages/api-auth/
+RUN npm run build
+
 FROM deps AS builder
 WORKDIR /app
 
