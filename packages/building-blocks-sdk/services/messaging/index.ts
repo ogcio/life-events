@@ -263,10 +263,7 @@ export class Messaging {
     const { error, data } = await this.client.GET(
       "/api/v1/users/imports/{importId}",
       {
-        params: {
-          path: { importId },
-          query: { organisationId, includeUsersData },
-        },
+        params: { path: { importId }, query: { organisationId } },
       },
     );
     return { error, data: data?.data };

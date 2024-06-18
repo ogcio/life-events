@@ -1,4 +1,4 @@
-import { UserScope } from "@logto/next";
+import { AuthUserScope } from "auth/index";
 
 export default {
   cookieSecure: process.env.NODE_ENV === "production",
@@ -9,7 +9,7 @@ export default {
   appId: process.env.LOGTO_PAYMENTS_APP_ID as string,
   appSecret: process.env.LOGTO_PAYMENTS_APP_SECRET as string,
 
-  scopes: [UserScope.Organizations, UserScope.OrganizationRoles],
+  scopes: [AuthUserScope.Organizations, AuthUserScope.OrganizationRoles],
 };
 
 export const postSignoutRedirect =

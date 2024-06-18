@@ -1,18 +1,13 @@
-import { getLogtoContext } from "@logto/next/server-actions";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import logtoConfig from "./config";
+import { AuthSession } from "auth/auth-session";
 
 export default async function () {
-  const context = await getLogtoContext(logtoConfig, {
+  const context = await AuthSession.get(logtoConfig, {
     fetchUserInfo: true,
     getAccessToken: true,
     getOrganizationToken: true,
   });
-
-  if (!context.isAuthenticated) {
-    redirect("./logto_integration/login");
-  }
 
   return (
     <>

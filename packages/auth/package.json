@@ -6,6 +6,7 @@
     "./*": "./src/*.ts"
   },
   "dependencies": {
+    "@logto/next": "^3.2.7",
     "jose": "^5.3.0",
     "next": "latest",
     "pg": "^8.11.5",
