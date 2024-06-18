@@ -8,21 +8,19 @@ import UsersWithPartialApplicationsTable from "./UsersWithPartialApplicationsTab
 
 export type Pages = "pending" | "submitted" | "approved" | "rejected";
 export type EventTableSearchParams = {
-  [key: string]: string;
   status: Pages;
+  page: string;
+  offset: string;
+  baseUrl: string;
+  limit: string;
 };
 
-type TableProps = {
-  params: {
-    event: string;
-    action: string[];
-    locale: string;
-  };
+export type SubmissionsTableProps = Pick<web.NextPageProps, "params"> & {
   searchParams?: EventTableSearchParams;
 };
 
 const componentsMap: {
-  [key in Pages]: (props: TableProps) => Promise<JSX.Element>;
+  [key in Pages]: (props: SubmissionsTableProps) => Promise<JSX.Element>;
 } = {
   pending: UsersWithPartialApplicationsTable,
   submitted: EventTable,
@@ -30,7 +28,7 @@ const componentsMap: {
   rejected: EventTable,
 };
 
-export default async (props: web.NextPageProps) => {
+export default async (props: SubmissionsTableProps) => {
   const t = await getTranslations("Admin.Submissions");
   const { publicServant } = await PgSessions.get();
 
@@ -44,7 +42,7 @@ export default async (props: web.NextPageProps) => {
     <>
       <h1 className="govie-heading-l">{t("title")}</h1>
       <StatusMenu searchParams={props.searchParams} />
-      <Component params={props.params} searchParams={props.searchParams} />
+      <Component {...props} />
     </>
   );
 };

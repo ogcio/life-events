@@ -1,6 +1,6 @@
-import { signOut } from "@logto/next/server-actions";
+import { AuthSession } from "auth/auth-session";
 import logtoConfig, { postSignoutRedirect } from "../config";
 
 export async function GET() {
-  await signOut(logtoConfig, postSignoutRedirect);
+  await AuthSession.logout(logtoConfig, postSignoutRedirect);
 }
