@@ -7,7 +7,7 @@ export class ValidationError extends LifeEventsError {
   constructor(
     errorProcess: string,
     message: string,
-    validationErrors: { [fieldName: string]: string },
+    validationErrors: { [fieldName: string]: string } = {},
   ) {
     super(errorProcess, message);
     this.name = "VALIDATION_ERROR";
