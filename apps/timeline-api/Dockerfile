@@ -12,13 +12,22 @@ RUN npm ci
 FROM deps AS builder
 
 WORKDIR /app/packages/logging-wrapper/
+RUN npm ci
 RUN npm run build
 
 WORKDIR /app/packages/error-handler/
+RUN npm ci
 RUN npm run build
 
 WORKDIR /app/apps/timeline-api/
+RUN npm -v
+RUN echo "install start"
+RUN npm ci
+#|| cat /root/.npm/_logs/*-debug-0.log
+RUN echo "install done"
+RUN echo "build start"
 RUN npm run build
+RUN echo "build done"
 
 FROM base-deps AS runner
 WORKDIR /app
