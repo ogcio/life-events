@@ -21,6 +21,7 @@ export default async function transactions(app: FastifyInstance) {
         app.checkPermissions(req, res, [permissions.citizen.test]),
     },
     async (request, reply) => {
+      console.log("USER DATA:", request.userData);
       reply.send(formatAPIResponse({ ok: true }));
     },
   );
@@ -33,6 +34,7 @@ export default async function transactions(app: FastifyInstance) {
         app.checkPermissions(req, res, [permissions.publicServant.test]),
     },
     async (request, reply) => {
+      console.log("USER DATA:", request.userData);
       reply.send(formatAPIResponse({ ok: true }));
     },
   );

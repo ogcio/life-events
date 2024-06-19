@@ -2,6 +2,17 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import fp from "fastify-plugin";
 
+type ExtractedUserData = {
+  userId: string;
+  organizationId?: string;
+};
+
+declare module "fastify" {
+  interface FastifyRequest {
+    userData?: ExtractedUserData;
+  }
+}
+
 const extractBearerToken = (authHeader: string) => {
   const [type, token] = authHeader.split(" ");
   if (type !== "Bearer") {
@@ -34,10 +45,14 @@ export const checkPermissions = async (
     currentApiResourceIndicator: string;
   },
   requiredPermissions: string[],
-) => {
+): Promise<ExtractedUserData> => {
   const token = extractBearerToken(authHeader);
   const payload = await decodeLogtoToken(token, config);
-  const { scope, sub } = payload as { scope: string; sub: string };
+  const { scope, sub, aud } = payload as {
+    scope: string;
+    sub: string;
+    aud: string;
+  };
 
   for (const permission of requiredPermissions) {
     if (!scope.includes(permission)) {
@@ -45,7 +60,13 @@ export const checkPermissions = async (
     }
   }
 
-  return { id: sub };
+  const organizationId = aud.includes("urn:logto:organization:")
+    ? aud.split("urn:logto:organization:")[1]
+    : undefined;
+  return {
+    userId: sub,
+    organizationId: organizationId,
+  };
 };
 
 export type CheckPermissionsPluginOpts = {
@@ -67,7 +88,8 @@ export const checkPermissionsPlugin = async (
         return;
       }
       try {
-        await checkPermissions(authHeader, opts, permissions);
+        const userData = await checkPermissions(authHeader, opts, permissions);
+        req.userData = userData;
       } catch (e) {
         rep.status(403).send({ message: (e as Error).message });
       }
