@@ -750,14 +750,21 @@ paths:
                         templateMetaId:
                           format: uuid
                           type: string
-                        lang:
-                          type: string
-                        templateName:
-                          type: string
+                        contents:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              lang:
+                                type: string
+                              templateName:
+                                type: string
+                            required:
+                              - lang
+                              - templateName
                       required:
                         - templateMetaId
-                        - lang
-                        - templateName
+                        - contents
                 required:
                   - data
         4XX:

@@ -522,8 +522,10 @@ export interface paths {
               data: {
                 /** Format: uuid */
                 templateMetaId: string;
-                lang: string;
-                templateName: string;
+                contents: {
+                  lang: string;
+                  templateName: string;
+                }[];
               }[];
             };
           };

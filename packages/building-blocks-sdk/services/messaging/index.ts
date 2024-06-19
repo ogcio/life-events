@@ -59,7 +59,7 @@ export class Messaging {
 
   async getTemplates(lang?: string) {
     const { error, data } = await this.client.GET("/api/v1/templates/", {
-      params: { query: { lang: lang ?? "en" } },
+      params: { query: { lang } },
     });
 
     return { error, data: data?.data };
