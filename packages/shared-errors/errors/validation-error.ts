@@ -1,9 +1,8 @@
-import { LifeEventsError } from "./life-events-error";
+import { LifeEventsError } from "./errors/life-events-error";
 
 export class ValidationError extends LifeEventsError {
   readonly errorCode: number = 422;
   validationErrors: { [fieldName: string]: string };
-  errorProcess: string;
 
   constructor(
     errorProcess: string,

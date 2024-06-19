@@ -3,7 +3,6 @@ import { LifeEventsError } from "./life-events-error";
 // To use when already implemented errors are not enough
 export class CustomError extends LifeEventsError {
   errorCode: number;
-  errorProcess: string;
 
   constructor(
     errorProcess: string,
