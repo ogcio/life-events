@@ -58,8 +58,6 @@ export default async (props: { params: { params: string[] } }) => {
       SELECT flow_data as "data" FROM user_flow_data
       WHERE user_id = $1 
       AND flow = $2 
-      AND ("flow_data" ->> 'rejectReason') = ''
-      AND ("flow_data" ->> 'successfulAt') = ''
       AND ("flow_data" ->> 'paymentId') IS NULL
       `,
       [userId, flow],
