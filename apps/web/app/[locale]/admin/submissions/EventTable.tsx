@@ -4,10 +4,12 @@ import { postgres, web, workflow } from "../../../utils";
 import { Pages, SubmissionsTableProps } from "./page";
 import {
   PaginationLinks,
-  getPaginationDataFromParams,
   getPaginationLinks,
+  getQueryParams,
 } from "./components/paginationUtils";
 import Pagination from "./components/Pagination";
+import TableControls from "./components/TableControls/TableControls";
+import { QueryResult } from "pg";
 
 export default async ({ searchParams, params }: SubmissionsTableProps) => {
   const t = await getTranslations("Admin.EventsTable");
@@ -17,9 +19,9 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     (searchParams?.status as Exclude<Pages, "pending">) || "submitted";
 
   const urlParms = new URLSearchParams(searchParams);
-  const url = `${process.env.HOST_URL}${params.locale}/admin/submissions?status=${statusSelection}`;
+  const url = `${process.env.HOST_URL}/${params.locale}/admin/submissions?status=${statusSelection}`;
 
-  const pagination = getPaginationDataFromParams(urlParms);
+  const queryParams = getQueryParams(urlParms);
 
   const dataSelect = `SELECT 
   fd.user_id as "userId", 
@@ -47,43 +49,61 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
       break;
   }
 
-  const userFlows = await postgres.pgpool.query<{
+  let userFlows: QueryResult<{
     userId: string;
     flow: string;
     flowData: workflow.GetDigitalWallet;
     updatedAt: string;
-  }>(
-    `${dataSelect} ${dataQuery} ORDER BY updated_at DESC  LIMIT $1 OFFSET $2`,
-    [pagination.limit, pagination.offset],
+  }>;
+
+  const sqlQueryParams: (string | boolean)[] = [];
+  let paramIndex = 1;
+  if (queryParams.search) {
+    dataQuery += ` AND (
+      (flow_data ->> 'govIEEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'myGovIdEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'firstName') ILIKE $${paramIndex}
+      OR (flow_data ->> 'lastName') ILIKE $${paramIndex}
+      )`;
+    paramIndex++;
+    sqlQueryParams.push(`%${queryParams.search}%`);
+  }
+
+  const filters = queryParams.filters;
+  for (const [key, value] of Object.entries(filters)) {
+    dataQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
+    sqlQueryParams.push(key);
+    sqlQueryParams.push(value);
+    paramIndex += 2;
+  }
+
+  userFlows = await postgres.pgpool.query(
+    `${dataSelect} ${dataQuery} ORDER BY updated_at DESC  LIMIT $${paramIndex++} OFFSET $${paramIndex}`,
+    [...sqlQueryParams, queryParams.limit, queryParams.offset],
   );
 
-  const countQueryResult = await postgres.pgpool.query<{
-    count: number;
-  }>(`SELECT COUNT(*) ${dataQuery}`);
+  const countQueryResult = await postgres.pgpool.query<{ count: number }>(
+    `SELECT COUNT(*) ${dataQuery}`,
+    sqlQueryParams,
+  );
 
   const count = countQueryResult.rows[0].count;
 
   const links: PaginationLinks = getPaginationLinks({
     url,
-    limit: pagination.limit,
-    offset: pagination.offset,
+    limit: queryParams.limit,
+    offset: queryParams.offset,
     totalCount: count,
   });
 
-  const status = (flowData: workflow.GetDigitalWallet) => {
-    if (flowData.successfulAt) {
-      return "Approved";
-    }
-
-    if (flowData.rejectedAt) {
-      return "Rejected";
-    }
-
-    return "Submitted";
-  };
-
   return (
     <>
+      <TableControls
+        itemsCount={count}
+        baseUrl={url}
+        {...queryParams}
+        status={statusSelection}
+      />
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
@@ -125,7 +145,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
                 </td>
 
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {row.flowData.deviceType}
+                  {t(row.flowData.deviceType)}
                 </td>
 
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
@@ -133,30 +153,24 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
                 </td>
 
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  <div>
-                    <div>
-                      {status(row.flowData) === "Submitted" ? (
-                        <Link
-                          className="govie-link govie-!-margin-right-3"
-                          href={
-                            new URL(
-                              `/admin/submissions/${row.flow}/${row.userId}`,
-                              process.env.HOST_URL,
-                            ).href
-                          }
-                        >
-                          {t("view")}
-                        </Link>
-                      ) : null}
-                    </div>
-                  </div>
+                  <Link
+                    className="govie-link govie-!-margin-right-3"
+                    href={
+                      new URL(
+                        `/admin/submissions/${row.flow}/${row.userId}`,
+                        process.env.HOST_URL,
+                      ).href
+                    }
+                  >
+                    {t("view")}
+                  </Link>
                 </td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <Pagination currentPage={pagination.page} links={links} />
+      <Pagination currentPage={queryParams.page} links={links} />
     </>
   );
 };
