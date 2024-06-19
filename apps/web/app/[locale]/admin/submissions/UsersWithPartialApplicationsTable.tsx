@@ -2,15 +2,15 @@ import { getTranslations } from "next-intl/server";
 import { workflow } from "../../../utils";
 import { pgpool as sharedPgPgool } from "auth/sessions";
 import { pgpool } from "../../../utils/postgres";
-import { EventTableSearchParams, SubmissionsTableProps } from "./page";
+import { SubmissionsTableProps } from "./page";
 import Pagination from "./components/Pagination";
 import {
   PaginationLinks,
-  getPaginationDataFromParams,
   getPaginationLinks,
+  getQueryParams,
 } from "./components/paginationUtils";
-import { link } from "fs";
 import TableControls from "./components/TableControls/TableControls";
+import { QueryResult } from "pg";
 
 type User = {
   id: string;
@@ -29,57 +29,103 @@ type DigitalWalletFlow = {
   flow_data: workflow.GetDigitalWallet;
 };
 
-const getPartialApplications = async (pageSize: number, offset: number) => {
-  const allUsersQueryString = "FROM users WHERE is_public_servant = false";
+const getPartialApplications = async (
+  pageSize: number,
+  offset: number,
+  search?: string,
+  filters?: Record<string, string>,
+) => {
+  // Step 1: Fetch users from the shared DB - CHANGE THIS AFTER LOGTO INTEGRATION
+  const baseUserQuery = `SELECT * FROM users WHERE is_public_servant = false`;
+  let usersQuery = baseUserQuery;
+  const searchQuery = search?.trim();
+  const queryParams: (string | string[])[] = [];
 
-  const totalCountQuery = `
-  SELECT COUNT(*)
-  ${allUsersQueryString}
-  `;
-  const totalCountResult = await sharedPgPgool.query<{ count: number }>(
-    totalCountQuery,
+  if (searchQuery) {
+    usersQuery += ` AND (govid_email ILIKE $1 OR user_name ILIKE $1)`;
+    queryParams.push(`%${searchQuery}%`);
+  }
+
+  const usersQueryResult: QueryResult<User> = await sharedPgPgool.query<User>(
+    usersQuery,
+    queryParams,
   );
-  // Step 1: Fetch users from the shared DB
-  const allUsersQuery = `SELECT * ${allUsersQueryString}`;
-  const usersQueryResult = await sharedPgPgool.query<User>(allUsersQuery);
 
   // Extract user IDs
-  const ids = usersQueryResult.rows.map((row) => row.id);
+  const userIds = usersQueryResult.rows.map((row) => row.id);
+
+  if (userIds.length === 0) {
+    return {
+      data: [],
+      totalCount: 0,
+      totalPages: 0,
+    };
+  }
+
+  // Step 2: Fetch geDigitalWallet flow data for users registered
+  const baseFlowQuery = `
+    SELECT user_id, flow, flow_data 
+    FROM user_flow_data 
+    WHERE flow = 'getDigitalWallet' AND user_id = ANY($1)
+  `;
+  let flowQuery = baseFlowQuery;
+  queryParams.length = 0; // Reset queryParams for reuse
+  let paramIndex = 2;
+  queryParams.push(userIds);
+
+  if (searchQuery) {
+    flowQuery += ` AND (
+      (flow_data ->> 'govIEEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'myGovIdEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'firstName') ILIKE $${paramIndex}
+      OR (flow_data ->> 'lastName') ILIKE $${paramIndex}
+    )`;
+    queryParams.push(`%${searchQuery}%`);
+    paramIndex++;
+  }
+
+  if (filters) {
+    for (const [key, value] of Object.entries(filters)) {
+      flowQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
+      queryParams.push(key);
+      queryParams.push(value);
+      paramIndex += 2;
+    }
+  }
+
+  const flowQueryResult: QueryResult<DigitalWalletFlow> = await pgpool.query(
+    flowQuery,
+    queryParams,
+  );
+
+  // Step 3: Process and combine the results using efficient data structures
+  const userMap = new Map<string, User>(
+    usersQueryResult.rows.map((user) => [user.id, user]),
+  );
 
   const usersWithPartial: (User & {
     [K in keyof DigitalWalletFlow]?: DigitalWalletFlow[K];
   })[] = [];
-  // Step 2: Fetch geDigitalWallet flow data for users registered
-  if (ids.length > 0) {
-    const partialFlowsQuery = `SELECT user_id, flow, flow_data FROM user_flow_data WHERE flow = 'getDigitalWallet' AND user_id = ANY($1)`;
-    const flowQueryResult = await pgpool.query<DigitalWalletFlow>(
-      partialFlowsQuery,
-      [ids],
-    );
 
-    // Step 3: Process and combine the results using efficient data structures
-    const userMap = new Map<string, User>(
-      usersQueryResult.rows.map((user) => [user.id, user]),
-    );
-
-    flowQueryResult.rows.forEach((row) => {
-      if (row.flow_data.confirmedApplication === "") {
-        const user = userMap.get(row.user_id);
-        if (user) {
-          usersWithPartial.push({ ...user, ...row });
-        }
+  flowQueryResult.rows.forEach((row) => {
+    if (row.flow_data.confirmedApplication === "") {
+      const user = userMap.get(row.user_id);
+      if (user) {
+        usersWithPartial.push({ ...user, ...row });
+        userMap.delete(row.user_id); // Only add the user once
       }
-      // Mark users who have flow data
-      userMap.delete(row.user_id);
-    });
+    }
+  });
 
-    // Add remaining users without the specified flow
+  // if filters are applied don't display users with no flow
+  if (!filters || Object.keys(filters).length === 0) {
     userMap.forEach((user) => {
       usersWithPartial.push(user);
     });
   }
 
   const totalCount = usersWithPartial.length;
+
   return {
     data: usersWithPartial.slice(offset, offset + pageSize),
     totalCount: totalCount,
@@ -91,18 +137,21 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
   const t = await getTranslations("Admin.DigitalWalletPendingTable");
 
   const urlParms = new URLSearchParams(searchParams);
-  const url = `${process.env.HOST_URL}${params.locale}/admin/submissions?status=pending`;
+  const url = `${process.env.HOST_URL}/${params.locale}/admin/submissions?status=pending`;
 
-  const pagination = getPaginationDataFromParams(urlParms);
+  const queryParams = getQueryParams(urlParms);
+
   const usersWithPartial = await getPartialApplications(
-    pagination.limit,
-    pagination.offset,
+    queryParams.limit,
+    queryParams.offset,
+    queryParams.search,
+    queryParams.filters,
   );
 
   const links: PaginationLinks = getPaginationLinks({
     url,
-    limit: pagination.limit,
-    offset: pagination.offset,
+    limit: queryParams.limit,
+    offset: queryParams.offset,
     totalCount: usersWithPartial.totalCount,
   });
 
@@ -110,8 +159,9 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     <>
       <TableControls
         itemsCount={usersWithPartial.totalCount}
-        itemsPerPage={pagination.limit}
         baseUrl={url}
+        status="pending"
+        {...queryParams}
       />
       <table className="govie-table">
         <thead className="govie-table__head">
@@ -154,7 +204,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
           })}
         </tbody>
       </table>
-      <Pagination currentPage={pagination.page} links={links} />
+      <Pagination currentPage={queryParams.page} links={links} />
     </>
   );
 };

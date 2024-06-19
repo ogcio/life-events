@@ -189,17 +189,40 @@ export const getPaginationLinks = (details: PaginationDetails) => {
   };
 };
 
-export const getPaginationDataFromParams = (params: URLSearchParams) => {
+export type QueryParams = {
+  offset: number;
+  limit: number;
+  page: number;
+  search?: string;
+  filters: Record<string, string>;
+};
+
+export const getQueryParams = (params: URLSearchParams): QueryParams => {
   const page = params.get("page");
   const limit = params.get("limit");
+  const searchQuery = params.get("search") || undefined;
 
   const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
   const pageLimit = limit ? parseInt(limit) : PAGINATION_LIMIT_DEFAULT;
+
+  const deviceType = (params.get("deviceType") as "ios" | "android") || "";
+  const verifiedEmail = (params.get("verifiedEmail") as "yes" | "no") || "";
+
+  const filters = {} as Record<string, string>;
+
+  if (verifiedEmail.length > 0) {
+    filters.verifiedGovIEEmail = verifiedEmail === "yes" ? "true" : "false";
+  }
+  if (deviceType.length > 0) {
+    filters.deviceType = deviceType;
+  }
 
   const pagination = {
     offset: pageToOffset(currentPage, pageLimit),
     limit: pageLimit,
     page: currentPage,
+    search: searchQuery,
+    filters,
   };
 
   return pagination;
