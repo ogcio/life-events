@@ -56,7 +56,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     updatedAt: string;
   }>;
 
-  const sqlQueryParams: string[] = [];
+  const sqlQueryParams: (string | boolean)[] = [];
   let paramIndex = 1;
   if (queryParams.search) {
     dataQuery += ` AND (
@@ -98,7 +98,12 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
 
   return (
     <>
-      <TableControls itemsCount={count} baseUrl={url} {...queryParams} />
+      <TableControls
+        itemsCount={count}
+        baseUrl={url}
+        {...queryParams}
+        status={statusSelection}
+      />
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">

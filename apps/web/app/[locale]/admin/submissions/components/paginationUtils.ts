@@ -211,7 +211,7 @@ export const getQueryParams = (params: URLSearchParams): QueryParams => {
   const filters = {} as Record<string, string>;
 
   if (verifiedEmail.length > 0) {
-    filters.verifiedEmail = verifiedEmail;
+    filters.verifiedGovIEEmail = verifiedEmail === "yes" ? "true" : "false";
   }
   if (deviceType.length > 0) {
     filters.deviceType = deviceType;
