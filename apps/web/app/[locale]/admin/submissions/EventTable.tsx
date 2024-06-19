@@ -74,7 +74,6 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     dataQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1}::TEXT)`;
     sqlQueryParams.push(key);
     sqlQueryParams.push(value);
-    console.log(key, value);
 
     paramIndex += 2;
   }
