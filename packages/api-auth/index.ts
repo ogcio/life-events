@@ -69,7 +69,6 @@ export const checkPermissionsPlugin = async (
       try {
         await checkPermissions(authHeader, opts, permissions);
       } catch (e) {
-        console.log(e);
         rep.status(403).send({ message: (e as Error).message });
       }
     },

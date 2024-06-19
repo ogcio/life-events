@@ -24,7 +24,7 @@ const paymentsPublicServantScopes = ["payments:create:providers"];
 
 export default {
   ...baseConfig,
-  // All the availabie resources to the app
+  // All the available resources to the app
   resources: [paymentsApiResource],
   scopes: [...orgScopes, ...citizenScopes, ...paymentsPublicServantScopes],
 };
