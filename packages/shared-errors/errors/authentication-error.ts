@@ -1,4 +1,4 @@
-import { LifeEventsError } from "./life-events-error";
+import { LifeEventsError } from "./life-events-error.js";
 
 export class AuthenticationError extends LifeEventsError {
   readonly errorCode: number = 401;

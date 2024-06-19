@@ -1,4 +1,4 @@
-import { LifeEventsError } from "./life-events-error";
+import { LifeEventsError } from "./life-events-error.js";
 
 // To use when already implemented errors are not enough
 export class CustomError extends LifeEventsError {

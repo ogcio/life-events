@@ -1,4 +1,4 @@
-import { LifeEventsError } from "./life-events-error";
+import { LifeEventsError } from "./life-events-error.js";
 
 export class NotImplementedError extends LifeEventsError {
   readonly errorCode: number = 500;

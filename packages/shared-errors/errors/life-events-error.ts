@@ -15,3 +15,10 @@ export class LifeEventsError extends Error {
     this.name = "LIFE_EVENTS_ERROR";
   }
 }
+
+export const isLifeEventsError = (error: unknown): error is LifeEventsError => {
+  return (
+    typeof error === "object" &&
+    (error as LifeEventsError).errorProcess !== undefined
+  );
+};

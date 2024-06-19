@@ -1,4 +1,4 @@
-import { LifeEventsError } from "./errors/life-events-error";
+import { LifeEventsError } from "./life-events-error.js";
 
 export class ValidationError extends LifeEventsError {
   readonly errorCode: number = 422;
@@ -14,3 +14,13 @@ export class ValidationError extends LifeEventsError {
     this.validationErrors = validationErrors;
   }
 }
+
+export const isValidationLifeEventsError = (
+  error: unknown,
+): error is ValidationError => {
+  return (
+    typeof error === "object" &&
+    (error as LifeEventsError).errorProcess !== undefined &&
+    (error as ValidationError).validationErrors !== undefined
+  );
+};
