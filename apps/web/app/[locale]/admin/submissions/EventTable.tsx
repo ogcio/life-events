@@ -56,7 +56,6 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     updatedAt: string;
   }>;
 
-  let countQueryResult: QueryResult<{ count: number }>;
   const sqlQueryParams: string[] = [];
   let paramIndex = 1;
   if (queryParams.search) {
@@ -83,7 +82,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     [...sqlQueryParams, queryParams.limit, queryParams.offset],
   );
 
-  countQueryResult = await postgres.pgpool.query(
+  const countQueryResult = await postgres.pgpool.query<{ count: number }>(
     `SELECT COUNT(*) ${dataQuery}`,
     sqlQueryParams,
   );
