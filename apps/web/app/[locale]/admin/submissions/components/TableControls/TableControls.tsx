@@ -3,8 +3,13 @@ import styles from "./TableControls.module.scss";
 import { RedirectType, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { QueryParams } from "../paginationUtils";
+import { Pages } from "../../page";
 
-type TableControlsProps = QueryParams & { itemsCount: number; baseUrl: string };
+type TableControlsProps = QueryParams & {
+  itemsCount: number;
+  baseUrl: string;
+  status: Pages;
+};
 
 export default async ({
   itemsCount,
@@ -12,6 +17,7 @@ export default async ({
   search,
   limit,
   filters,
+  status,
 }: TableControlsProps) => {
   const t = await getTranslations("Admin.TableControls");
 
@@ -43,7 +49,12 @@ export default async ({
   };
 
   const deviceType = filters.deviceType || "";
-  const verifiedEmail = filters.verifiedEmail || "";
+  let verifiedEmail = "";
+  if (filters.verifiedGovIEEmail === "true") {
+    verifiedEmail = "yes";
+  } else if (filters.verifiedGovIEEmail === "false") {
+    verifiedEmail = "no";
+  }
 
   return (
     <div>
@@ -102,7 +113,9 @@ export default async ({
             </select>
           </div>
 
-          <div className={`govie-form-group ${styles.selectGroup}`}>
+          <div
+            className={`govie-form-group ${styles.selectGroup} ${status === "pending" && styles.hidden}`}
+          >
             <label className="govie-label--s" htmlFor="verified-email">
               {t("verifiedEmail")}
             </label>

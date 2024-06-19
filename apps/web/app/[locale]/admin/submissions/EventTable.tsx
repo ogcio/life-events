@@ -56,7 +56,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     updatedAt: string;
   }>;
 
-  const sqlQueryParams: string[] = [];
+  const sqlQueryParams: (string | boolean)[] = [];
   let paramIndex = 1;
   if (queryParams.search) {
     dataQuery += ` AND (
@@ -96,21 +96,14 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     totalCount: count,
   });
 
-  const status = (flowData: workflow.GetDigitalWallet) => {
-    if (flowData.successfulAt) {
-      return "Approved";
-    }
-
-    if (flowData.rejectedAt) {
-      return "Rejected";
-    }
-
-    return "Submitted";
-  };
-
   return (
     <>
-      <TableControls itemsCount={count} baseUrl={url} {...queryParams} />
+      <TableControls
+        itemsCount={count}
+        baseUrl={url}
+        {...queryParams}
+        status={statusSelection}
+      />
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
@@ -160,23 +153,17 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
                 </td>
 
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  <div>
-                    <div>
-                      {status(row.flowData) === "Submitted" ? (
-                        <Link
-                          className="govie-link govie-!-margin-right-3"
-                          href={
-                            new URL(
-                              `/admin/submissions/${row.flow}/${row.userId}`,
-                              process.env.HOST_URL,
-                            ).href
-                          }
-                        >
-                          {t("view")}
-                        </Link>
-                      ) : null}
-                    </div>
-                  </div>
+                  <Link
+                    className="govie-link govie-!-margin-right-3"
+                    href={
+                      new URL(
+                        `/admin/submissions/${row.flow}/${row.userId}`,
+                        process.env.HOST_URL,
+                      ).href
+                    }
+                  >
+                    {t("view")}
+                  </Link>
                 </td>
               </tr>
             );
