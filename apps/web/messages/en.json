@@ -895,7 +895,9 @@
       "orderBirthCertificate": "Application for a copy of the birth certificate",
       "notifyDeath": "Death notification",
       "applyJobseekersAllowance": "Application for Jobseeker's Allowance",
-      "getDigitalWallet": "Application for a Digital Wallet"
+      "getDigitalWallet": "Application for a Digital Wallet",
+      "ios": "Apple iOS",
+      "android": "Android"
     },
     "DigitalWalletPendingTable": {
       "nameColumn": "Name",
@@ -916,7 +918,15 @@
     "TableControls": {
       "itemsPerPage": "Items per page",
       "itemsCount": "Items count",
-      "change": "Change"
+      "submit": "Submit",
+      "searchUser": "Search user",
+      "deviceType": "Device type",
+      "all": "All",
+      "ios": "Apple iOS",
+      "android": "Android",
+      "verifiedEmail": "Verified email",
+      "yes": "Yes",
+      "no": "No"
     }
   },
   "Timeline": {
@@ -1015,6 +1025,6 @@
   },
   "FeedbackBanner": {
     "tag": "Alpha",
-    "bannerText": "This is a new service - your <mail>feedback</mail> (or email to govdigitalwallet@per.gov.ie) will help us to improve it."
+    "bannerText": "This is a new service - your <mail>feedback</mail> will help us improve it."
   }
 }
