@@ -7,7 +7,7 @@ const buildTransport = () =>
   nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT),
-    secure: true,
+    secure: Number(process.env.SMTP_PORT) === 465,
     version: "TLSv1_2_method",
     auth: {
       user: process.env.SMTP_USER,
