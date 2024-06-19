@@ -5,7 +5,7 @@ COPY ./package*.json /app/
 COPY ./apps/payments-api/ /app/apps/payments-api/
 COPY ./packages/logging-wrapper/ /app/packages/logging-wrapper/
 COPY ./packages/error-handler/ /app/packages/error-handler/
-COPY ./packages/api-auth/package*.json /app/packages/api-auth/
+COPY ./packages/api-auth/ /app/packages/api-auth/
 
 RUN npm ci
 
