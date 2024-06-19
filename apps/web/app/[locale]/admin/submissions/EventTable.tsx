@@ -71,7 +71,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
 
   const filters = queryParams.filters;
   for (const [key, value] of Object.entries(filters)) {
-    dataQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1}::TEXT)`;
+    dataQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
     sqlQueryParams.push(key);
     sqlQueryParams.push(value);
 
