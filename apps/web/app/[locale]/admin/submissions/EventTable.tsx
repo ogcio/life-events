@@ -56,7 +56,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     updatedAt: string;
   }>;
 
-  const sqlQueryParams: string[] = [];
+  const sqlQueryParams: (string | boolean)[] = [];
   let paramIndex = 1;
   if (queryParams.search) {
     dataQuery += ` AND (
@@ -71,9 +71,11 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
 
   const filters = queryParams.filters;
   for (const [key, value] of Object.entries(filters)) {
-    dataQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
+    dataQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1}::TEXT)`;
     sqlQueryParams.push(key);
     sqlQueryParams.push(value);
+    console.log(key, value);
+
     paramIndex += 2;
   }
 
@@ -98,7 +100,12 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
 
   return (
     <>
-      <TableControls itemsCount={count} baseUrl={url} {...queryParams} />
+      <TableControls
+        itemsCount={count}
+        baseUrl={url}
+        {...queryParams}
+        status={statusSelection}
+      />
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">

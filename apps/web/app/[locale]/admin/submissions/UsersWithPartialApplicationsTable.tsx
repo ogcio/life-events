@@ -160,6 +160,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
       <TableControls
         itemsCount={usersWithPartial.totalCount}
         baseUrl={url}
+        status="pending"
         {...queryParams}
       />
       <table className="govie-table">
