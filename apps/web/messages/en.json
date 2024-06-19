@@ -869,7 +869,8 @@
       "yes": "yes",
       "no": "no",
       "reject": "Reject",
-      "approve": "Approve"
+      "approve": "Approve",
+      "reopen": "Reopen"
     },
     "RejectReasonForm": {
       "title": "Reason for rejection",
