@@ -1,5 +1,8 @@
 import { api } from "messages";
-import { MessageCreateProps } from "../../../../utils/messaging";
+import {
+  isAvailableTransport,
+  MessageCreateProps,
+} from "../../../../utils/messaging";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import tz from "dayjs/plugin/timezone";
@@ -60,10 +63,20 @@ export default async (props: MessageCreateProps) => {
     }
 
     if (template) {
+      const transportations: Parameters<
+        typeof messagesClient.createTemplateMessages
+      >[0]["transportations"] = [];
+
+      for (const transportation of props.state.transportations) {
+        if (isAvailableTransport(transportation)) {
+          transportations.push(transportation);
+        }
+      }
+
       await messagesClient.createTemplateMessages({
         security: "low",
         templateMetaId: template?.id,
-        transportations: props.state.transportations,
+        transportations,
         userIds: props.state.userIds,
         scheduleAt,
       });
