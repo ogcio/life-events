@@ -27,7 +27,8 @@ type Props = {
     | "payments-service"
     | "send-a-message"
     | "template"
-    | "settings";
+    | "settings"
+    | "check-mark";
 };
 
 export default ({ className, color, icon, size, heigth, width }: Props) => {
