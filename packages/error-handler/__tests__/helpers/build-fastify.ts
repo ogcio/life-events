@@ -66,6 +66,12 @@ export const buildFastify = (
     );
   });
 
+  server.get("/life-events/validation", async (_request, _reply) => {
+    throw new sharedErrors.ValidationError("VALIDATION_PROCESS", "message", [
+      { fieldName: "field", message: "error" },
+    ]);
+  });
+
   server.get("/life-events/:errorName", async (request, _reply) => {
     const errorName = (request.params! as { errorName: string })
       .errorName as string;

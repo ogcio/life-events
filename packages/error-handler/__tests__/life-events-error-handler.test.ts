@@ -72,3 +72,26 @@ t.test(`Custom error is managed based on parameters`, async (t) => {
 
   t.end();
 });
+
+t.test(`Validation error is managed as expected`, async (t) => {
+  const { server } = initializeServer();
+  t.teardown(() => server.close());
+
+  const response = await server.inject({
+    method: DEFAULT_METHOD,
+    url: `/life-events/validation`,
+  });
+
+  t.ok(typeof response !== "undefined");
+  t.equal(response?.statusCode, 422);
+  t.same(response.json(), {
+    code: sharedErrors.parseHttpErrorClass(422),
+    detail: "message",
+    request_id: "req-1",
+    name: new sharedErrors.ValidationError("MOCK", "mock").name,
+    process: "VALIDATION_PROCESS",
+    validation: [{ fieldName: "field", message: "error" }],
+  });
+
+  t.end();
+});
