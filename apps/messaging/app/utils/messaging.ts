@@ -175,3 +175,11 @@ export const avaliableMessagingTemplateStaticVariables = new Set([
   "email",
   "ppsn",
 ]);
+
+export const AVAILABLE_TRANSPORTS = ["sms", "email", "lifeEvent"] as const;
+
+export function isAvailableTransport(
+  t: string,
+): t is (typeof AVAILABLE_TRANSPORTS)[number] {
+  return AVAILABLE_TRANSPORTS.some((at) => at === t);
+}

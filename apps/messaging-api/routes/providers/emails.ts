@@ -33,6 +33,7 @@ const EmailProviderType = Type.Object({
   password: Type.String(),
   throttle: Type.Optional(Type.Number()),
   fromAddress: Type.String(),
+  ssl: Type.Boolean(),
 });
 
 const EmailProviderWithoutIdType = Type.Object({
@@ -43,6 +44,7 @@ const EmailProviderWithoutIdType = Type.Object({
   password: Type.String(),
   throttle: Type.Optional(Type.Number()),
   fromAddress: Type.String(),
+  ssl: Type.Boolean(),
 });
 
 export default async function emails(app: FastifyInstance) {
@@ -63,7 +65,7 @@ export default async function emails(app: FastifyInstance) {
     },
     async function handler() {
       const client = await app.pg.connect();
-      const service = await mailService(client);
+      const service = mailService(client);
       try {
         return { data: await service.getProviders() };
       } finally {
@@ -132,7 +134,7 @@ export default async function emails(app: FastifyInstance) {
     },
     async function handler(request, reply) {
       const client = await app.pg.connect();
-      const service = await mailService(client);
+      const service = mailService(client);
       try {
         const id = await service.createProvider(request.body);
         if (!id) {
@@ -167,7 +169,7 @@ export default async function emails(app: FastifyInstance) {
     },
     async function handler(request, _reply) {
       const client = await app.pg.connect();
-      const service = await mailService(client);
+      const service = mailService(client);
       try {
         await service.updateProvider(request.body);
       } catch (err) {

@@ -160,7 +160,7 @@ export interface paths {
             /** Format: uuid */
             templateMetaId: string;
             userIds: string[];
-            transportations: string[];
+            transportations: ("email" | "sms" | "lifeEvent")[];
             security: string;
             /** Format: date-time */
             scheduleAt: string;
@@ -192,6 +192,7 @@ export interface paths {
                 password: string;
                 throttle?: number;
                 fromAddress: string;
+                ssl: boolean;
               }[];
             };
           };
@@ -221,6 +222,7 @@ export interface paths {
             password: string;
             throttle?: number;
             fromAddress: string;
+            ssl: boolean;
           };
         };
       };
@@ -273,6 +275,7 @@ export interface paths {
                 password: string;
                 throttle?: number;
                 fromAddress: string;
+                ssl: boolean;
               };
             };
           };
@@ -309,6 +312,7 @@ export interface paths {
             password: string;
             throttle?: number;
             fromAddress: string;
+            ssl: boolean;
           };
         };
       };
