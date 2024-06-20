@@ -204,7 +204,7 @@
     "EmailProvider": {
       "titleAdd": "Add email provider",
       "titleUpdate": "Update email provider",
-      "nameLabel": "Name",
+      "nameLabel": "Template name",
       "hostLabel": "Host",
       "portLabel": "Port",
       "usernameLabel": "Username",
@@ -213,7 +213,8 @@
       "throttleLabel": "Throttle",
       "throttleHint": "Optional field to adjust how long time between each mail, in miliseconds.",
       "updateButton": "Update",
-      "createButton": "Create"
+      "createButton": "Create",
+      "ssl": "SSL"
     },
     "Sms": {
       "addProviderLink": "Add provider",
