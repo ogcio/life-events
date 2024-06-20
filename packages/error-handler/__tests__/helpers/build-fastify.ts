@@ -2,6 +2,7 @@ import { FastifyError, createError } from "@fastify/error";
 import { pino, DestinationStream } from "pino";
 import fastify, { FastifyInstance } from "fastify";
 import { initializeErrorHandler } from "../../src/index.js";
+import * as sharedErrors from "shared-errors";
 
 export const buildFastify = (
   loggerDestination?: DestinationStream,
@@ -52,6 +53,20 @@ export const buildFastify = (
     error.status = 423;
 
     throw error;
+  });
+
+  server.get("/life-events/:errorName", async (request, _reply) => {
+    const errorName = (request.params! as { errorName: string })
+      .errorName as string;
+    if (!(errorName in sharedErrors)) {
+      throw new Error("Wrong parameter");
+    }
+
+    const errorObj = eval(
+      `sharedErrors.${errorName}`,
+    ) as typeof sharedErrors.LifeEventsError;
+
+    throw new errorObj("TESTING", "Failed Correctly!");
   });
 
   return server as unknown as FastifyInstance;
