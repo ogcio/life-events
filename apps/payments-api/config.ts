@@ -14,6 +14,9 @@ export const envSchema = {
     "REALEX_PAYMENT_URL",
     "PAYMENTS_HOST_URL",
     "AUTH_SERVICE_URL",
+    "LOGTO_JWK_ENDPOINT",
+    "LOGTO_OIDC_ENDPOINT",
+    "LOGTO_API_RESOURCE_INDICATOR",
   ],
   properties: {
     POSTGRES_USER: {
@@ -53,6 +56,15 @@ export const envSchema = {
       type: "string",
     },
     AUTH_SERVICE_URL: {
+      type: "string",
+    },
+    LOGTO_JWK_ENDPOINT: {
+      type: "string",
+    },
+    LOGTO_OIDC_ENDPOINT: {
+      type: "string",
+    },
+    LOGTO_API_RESOURCE_INDICATOR: {
       type: "string",
     },
   },
