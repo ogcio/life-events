@@ -459,6 +459,8 @@ type scheduledMessageByTemplateStatus =
   | "failed"
   | "delivered";
 
+const ERROR_PROCESS = "SCHEDULE_MESSAGE";
+
 const scheduleMessage = async (
   pool: Pool,
   messageId: string,
@@ -498,7 +500,10 @@ const scheduleMessage = async (
       .then((res) => res.rows.at(0));
 
     if (!messageUser) {
-      throw new Error(`failed to find message for id ${messageId}`);
+      throw new NotFoundError(
+        ERROR_PROCESS,
+        `failed to find message for id ${messageId}`,
+      );
     }
 
     preferredTransports.push(...(messageUser?.transports ?? []));
@@ -540,7 +545,7 @@ const scheduleMessage = async (
     const { data } = await profileService.selectUsers([userId]);
     const user = data?.at(0);
     if (!user) {
-      throw new Error("no user profile found");
+      throw new NotFoundError(ERROR_PROCESS, "no user profile found");
     }
 
     for (const transport of preferredTransports) {
