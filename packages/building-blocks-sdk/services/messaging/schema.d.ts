@@ -192,6 +192,7 @@ export interface paths {
                 password: string;
                 throttle?: number;
                 fromAddress: string;
+                ssl: boolean;
               }[];
             };
           };
@@ -221,6 +222,7 @@ export interface paths {
             password: string;
             throttle?: number;
             fromAddress: string;
+            ssl: boolean;
           };
         };
       };
@@ -273,6 +275,7 @@ export interface paths {
                 password: string;
                 throttle?: number;
                 fromAddress: string;
+                ssl: boolean;
               };
             };
           };
@@ -309,6 +312,7 @@ export interface paths {
             password: string;
             throttle?: number;
             fromAddress: string;
+            ssl: boolean;
           };
         };
       };
