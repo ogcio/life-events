@@ -4,7 +4,7 @@ import {
   DEFAULT_PATH,
   initializeServer,
 } from "./helpers/fastify-test-helpers.js";
-import { HttpErrorClasses } from "shared-errors";
+import { HttpErrorClasses, NotFoundError } from "shared-errors";
 
 t.test("Common error is managed as expected", async () => {
   const { server } = initializeServer();
@@ -95,9 +95,10 @@ t.test("404 error is managed as expected", async () => {
   t.equal(response?.statusCode, 404);
   t.same(response.json(), {
     code: HttpErrorClasses.NotFoundError,
-    detail: "Not Found",
+    detail: "Route not found",
     request_id: "req-1",
-    name: "FastifyError",
+    process: "/this-path-does-not-exist",
+    name: new NotFoundError("TEMP", "TEMP").name,
   });
 
   t.end();
