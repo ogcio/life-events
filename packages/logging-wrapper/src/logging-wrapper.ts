@@ -5,17 +5,16 @@ import {
   LoggingRequest,
   FullLoggingRequest,
   LoggingResponse,
-  LogErrorClasses,
   LoggingError,
   REDACTED_VALUE,
   REDACTED_PATHS,
   MESSAGE_KEY,
+  toLoggingError,
 } from "./logging-wrapper-entities.js";
 import { LogLevel, PinoLoggerOptions } from "fastify/types/logger.js";
-import { LifeEventsError, isLifeEventsError } from "shared-errors";
+import { LifeEventsError } from "shared-errors";
 
 const loggingContext: LoggingContext = {};
-const UNHANDLED_EXCEPTION_CODE = "UNHANDLED_EXCEPTION";
 
 type INPUT_ERROR_TYPES = FastifyError | LifeEventsError;
 
@@ -38,7 +37,7 @@ export const setLoggingContext = (params: {
     loggingContext.response = parseLoggingResponse(params.response);
   }
   if (params.error !== undefined) {
-    loggingContext.error = parseLoggingError(params.error);
+    loggingContext.error = toLoggingError(params.error);
   }
 };
 
@@ -82,52 +81,6 @@ const parseLoggingResponse = (res: FastifyReply): LoggingResponse => ({
   status_code: res.statusCode,
   headers: res.getHeaders(),
 });
-
-const parseErrorClass = (error: INPUT_ERROR_TYPES): LogErrorClasses => {
-  let statusCode = isLifeEventsError(error)
-    ? error.errorCode
-    : error.statusCode;
-  if (!statusCode) {
-    return LogErrorClasses.UnknownError;
-  }
-
-  statusCode = Number(statusCode);
-
-  if (statusCode === 502) {
-    return LogErrorClasses.GatewayError;
-  }
-
-  if (statusCode >= 500) {
-    return LogErrorClasses.ServerError;
-  }
-
-  if (statusCode === 422) {
-    return LogErrorClasses.ValidationError;
-  }
-
-  if (statusCode >= 400) {
-    return LogErrorClasses.RequestError;
-  }
-
-  return LogErrorClasses.UnknownError;
-};
-
-const parseLoggingError = (error: INPUT_ERROR_TYPES): LoggingError => {
-  const output = {
-    class: parseErrorClass(error),
-    message: error.message,
-    trace: error.stack,
-  };
-
-  if (isLifeEventsError(error)) {
-    return { ...output, code: error.name, process: error.errorProcess };
-  }
-
-  return {
-    ...output,
-    code: error.code ?? UNHANDLED_EXCEPTION_CODE,
-  };
-};
 
 export const getLoggerConfiguration = (
   minimumLevel: LogLevel = "debug",
