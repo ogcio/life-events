@@ -1,5 +1,4 @@
 import createError from "@fastify/error";
-import { error } from "console";
 import {
   FastifyError,
   FastifyRequest,
@@ -8,57 +7,26 @@ import {
 } from "fastify";
 import { FastifySchemaValidationError } from "fastify/types/schema.js";
 import {
-  parseErrorClass,
   setLoggingContext,
   getLoggingContextError,
 } from "logging-wrapper/logging-wrapper";
+import { LogMessages } from "logging-wrapper/logging-wrapper-entities";
 import {
-  LogErrorClasses,
-  LogMessages,
-} from "logging-wrapper/logging-wrapper-entities";
-import { LifeEventsError, isLifeEventsError } from "shared-errors";
+  HttpErrorClasses,
+  LifeEventsError,
+  isLifeEventsError,
+  isValidationLifeEventsError,
+  parseHttpErrorClass,
+} from "shared-errors";
 
 interface HttpError {
-  code: LogErrorClasses;
+  code: HttpErrorClasses;
   detail: string;
   request_id: string;
   name: string;
   validation?: { [fieldName: string]: string };
   process?: string;
 }
-
-const getValidationFromFastifyError = (
-  validationInput: FastifySchemaValidationError[],
-): { [fieldName: string]: string } => {
-  const output: { [fieldName: string]: string } = {};
-  for (const input of validationInput) {
-    const key =
-      typeof input.params?.missingProperty === "string"
-        ? input.params?.missingProperty
-        : input.schemaPath;
-    output[key] = input.message ?? input.keyword;
-  }
-
-  return output;
-};
-
-const getResponseFromFastifyError = (
-  error: FastifyError,
-  request: FastifyRequest,
-): HttpError => {
-  const output: HttpError = {
-    code: parseErrorClass(error),
-    detail: error.message,
-    request_id: request.id,
-    name: error.name,
-  };
-
-  if (error.validation && error.validation.length > 0) {
-    output.validation = getValidationFromFastifyError(error.validation);
-  }
-
-  return output;
-};
 
 // The error handler below is the same as the original one in Fastify,
 // just without unwanted log entries
@@ -104,16 +72,45 @@ export const setupErrorHandler = (server: FastifyInstance): void => {
   });
 };
 
-const manageLifeEventsError = (
-  error: LifeEventsError,
-  request: FastifyRequest,
-  reply: FastifyReply,
-): void => {
-  reply.raw.statusCode = error.errorCode;
-  reply.statusCode = error.errorCode;
+// The error handler below is the same as the original one in Fastify,
+// just without unwanted log entries
+export const initializeNotFoundHandler = (server: FastifyInstance): void => {
+  server.setNotFoundHandler((request: FastifyRequest, reply: FastifyReply) => {
+    const error = createError(
+      HttpErrorClasses.NotFoundError,
+      "Not Found",
+      404,
+    )();
+    setLoggingContext({
+      error,
+    });
 
-  const errorResponse: HttpError = {
-    code: error.errorProcess,
+    request.log.error({ error: getLoggingContextError() }, LogMessages.Error);
+    reply.code(404).send(getResponseFromFastifyError(error, request));
+  });
+};
+
+const getValidationFromFastifyError = (
+  validationInput: FastifySchemaValidationError[],
+): { [fieldName: string]: string } => {
+  const output: { [fieldName: string]: string } = {};
+  for (const input of validationInput) {
+    const key =
+      typeof input.params?.missingProperty === "string"
+        ? input.params?.missingProperty
+        : input.schemaPath;
+    output[key] = input.message ?? input.keyword;
+  }
+
+  return output;
+};
+
+const getResponseFromFastifyError = (
+  error: FastifyError,
+  request: FastifyRequest,
+): HttpError => {
+  const output: HttpError = {
+    code: parseHttpErrorClass(error.statusCode),
     detail: error.message,
     request_id: request.id,
     name: error.name,
@@ -126,16 +123,29 @@ const manageLifeEventsError = (
   return output;
 };
 
-// The error handler below is the same as the original one in Fastify,
-// just without unwanted log entries
-export const initializeNotFoundHandler = (server: FastifyInstance): void => {
-  server.setNotFoundHandler((request: FastifyRequest, reply: FastifyReply) => {
-    const error = createError("FST_ERR_NOT_FOUND", "Not Found", 404)();
-    setLoggingContext({
-      error,
-    });
+const manageLifeEventsError = (
+  error: LifeEventsError,
+  request: FastifyRequest,
+  reply: FastifyReply,
+): void => {
+  reply.raw.statusCode = error.errorCode;
+  reply.statusCode = error.errorCode;
 
-    request.log.error({ error: getLoggingContextError() }, LogMessages.Error);
-    reply.code(404).send(buildErrorResponse(error, request));
-  });
+  const errorResponse: HttpError = {
+    code: parseHttpErrorClass(error.errorCode),
+    detail: error.message,
+    request_id: request.id,
+    name: error.name,
+    process: error.errorProcess,
+  };
+
+  if (
+    isValidationLifeEventsError(error) &&
+    error.validationErrors &&
+    Object.keys(error.validationErrors).length > 0
+  ) {
+    errorResponse.validation = error.validationErrors;
+  }
+
+  reply.send(errorResponse);
 };
