@@ -59,7 +59,7 @@ export class Messaging {
 
   async getTemplates(lang?: string) {
     const { error, data } = await this.client.GET("/api/v1/templates/", {
-      params: { query: { lang: lang ?? "en" } },
+      params: { query: { lang } },
     });
 
     return { error, data: data?.data };
@@ -352,5 +352,16 @@ export class Messaging {
     );
 
     return { error, data: data?.data };
+  }
+
+  async createTemplateMessages(
+    body: paths["/api/v1/messages/template"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    const { data, error } = await this.client.POST(
+      "/api/v1/messages/template",
+      { body },
+    );
+
+    return { data, error };
   }
 }

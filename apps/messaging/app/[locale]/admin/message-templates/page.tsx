@@ -24,10 +24,6 @@ export default async (props: {
 
     const url = urlWithSearchParams(
       `${props.params.locale}/${templateRoutes.url}`,
-      {
-        key: "lang",
-        value: LANG_EN,
-      },
     );
     redirect(url.href);
   }
@@ -54,8 +50,13 @@ export default async (props: {
     }
     const { userId: authToken } = await PgSessions.get();
     await new Messaging(authToken).deleteTemplate(id);
-    redirect("/");
+
+    const url = urlWithSearchParams(
+      `${props.params.locale || LANG_EN}/${messageTemplates.url}`,
+    );
+    redirect(url.href);
   }
+
   async function handleCancelDelete() {
     "use server";
     const url = urlWithSearchParams(

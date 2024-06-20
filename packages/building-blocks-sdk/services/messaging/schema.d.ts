@@ -152,6 +152,29 @@ export interface paths {
       };
     };
   };
+  "/api/v1/messages/template": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            /** Format: uuid */
+            templateMetaId: string;
+            userIds: string[];
+            transportations: string[];
+            security: string;
+            /** Format: date-time */
+            scheduleAt: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
   "/api/v1/providers/emails/": {
     get: {
       responses: {
@@ -499,8 +522,10 @@ export interface paths {
               data: {
                 /** Format: uuid */
                 templateMetaId: string;
-                lang: string;
-                templateName: string;
+                contents: {
+                  lang: string;
+                  templateName: string;
+                }[];
               }[];
             };
           };
