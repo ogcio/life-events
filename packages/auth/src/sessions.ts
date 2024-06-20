@@ -27,6 +27,7 @@ export async function getPgSession(key: string) {
       token: string;
       userId: string;
       publicServant: boolean;
+      verificationLevel: number;
     },
     [string]
   >(
@@ -34,7 +35,8 @@ export async function getPgSession(key: string) {
       SELECT
         s.token,
         s.user_id AS "userId",
-        u.is_public_servant as "publicServant"
+        u.is_public_servant as "publicServant",
+        u.verification_level as "verificationLevel"
       FROM govid_sessions s
       JOIN users u on u.id = s.user_id
       WHERE s.id=$1`,
@@ -45,8 +47,8 @@ export async function getPgSession(key: string) {
     return undefined;
   }
 
-  const [{ token, userId, publicServant }] = query.rows;
-  return { token, userId, publicServant };
+  const [{ token, userId, publicServant, verificationLevel }] = query.rows;
+  return { token, userId, publicServant, verificationLevel };
 }
 
 export function decodeJwt(token: string) {
@@ -69,20 +71,11 @@ export const getSessionData = async (sessionId: string) => {
   const decodedJWT = decodeJwt(session.token);
   const { dspOnlineLevel, mobile } = decodedJWT;
 
-  let verificationLevel = 0;
-  if (dspOnlineLevel !== "0") {
-    if (mobile === "+0000000000000") {
-      verificationLevel = 1;
-    } else {
-      verificationLevel = 2;
-    }
-  }
-
   return {
     ...decodedJWT,
     userId: session.userId,
     publicServant: session.publicServant,
-    verificationLevel,
+    verificationLevel: session.verificationLevel,
     sessionId,
   };
 };
@@ -130,6 +123,7 @@ export async function getUserInfoById(userId: string) {
     govid: string;
     user_name: string;
     is_public_servant: boolean;
+    verification_level: number;
   }>(`SELECT * FROM users WHERE id = $1`, [userId]);
 
   if (res.rows.length === 0) return null;
