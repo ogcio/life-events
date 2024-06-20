@@ -11,6 +11,9 @@ import { JobType } from "aws-sdk/clients/importexport";
 import { Pool } from "pg";
 import { mailService } from "../../routes/providers/services";
 import { awsSnsSmsService } from "../sms/aws";
+import { Profile } from "building-blocks-sdk";
+import { getUserProfiles, ProfileSdkFacade } from "../users/shared-users";
+import { isNativeError } from "util/types";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -25,6 +28,7 @@ export const createMessage = async (params: {
     });
   }
 
+  // Deprecated
   if (params.payload.template) {
     return createMessageFromTemplate({
       pg: params.pg,
@@ -138,6 +142,7 @@ const createRawMessage = async (params: {
   });
 };
 
+// Deprecated
 const createMessageFromTemplate = async (params: {
   pg: PostgresDb;
   payload: Omit<Required<CreateMessage>, "message">;
@@ -519,20 +524,31 @@ const scheduleMessage = async (
     client.release();
   }
 
-  /**
-   * There's a lot of logic to determine which transports, if any, to use
-   * for each user.
-   * eg.
-   * Does user accept the preferred transport?
-   * Which transport can we defer to?
-   * Persist logs?
-   * Fetch user information. Email and number
-   */
+  const profileSdk = new Profile(userId);
+  const messageSdk = {
+    selectUsers(ids: string[]) {
+      return getUserProfiles(ids, pool);
+    },
+  };
+
+  const profileService = ProfileSdkFacade(profileSdk, messageSdk);
+
   const transportsClient = await pool.connect();
   try {
+    const { data } = await profileService.selectUsers([userId]);
+    const user = data?.at(0);
+    if (!user) {
+      throw new Error("no user profile found");
+    }
+
     for (const transport of preferredTransports) {
       if (transport === "email") {
+        if (!user.email) {
+          // LOG
+          continue;
+        }
         if (!transportationSubject) {
+          // LOG
           continue;
         }
 
@@ -545,7 +561,7 @@ const scheduleMessage = async (
             ).getFirstOrEtherealMailProvider();
           await mailService(transportsClient).sendMail({
             providerId,
-            email: "",
+            email: user.email,
             subject: transportationSubject,
             body: transportationBody ?? "",
           });
@@ -562,7 +578,12 @@ const scheduleMessage = async (
           });
         }
       } else if (transport === "sms") {
+        if (!user.phone) {
+          // LOG
+          continue;
+        }
         if (!transportationExcerpt || !transportationSubject) {
+          // LOG
           continue;
         }
 
@@ -599,6 +620,14 @@ const scheduleMessage = async (
         }
       }
     }
+  } catch (err) {
+    errors.push({
+      critical: false,
+      error: { err },
+      msg: isNativeError(err)
+        ? err.message
+        : "failed to externally transport message",
+    });
   } finally {
     transportsClient.release();
   }
@@ -606,6 +635,9 @@ const scheduleMessage = async (
   return errors;
 };
 
+/**
+ * Deprecated
+ */
 const scheduledTemplate = async (
   pool: Pool,
   scheduledId: string,

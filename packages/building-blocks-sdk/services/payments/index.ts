@@ -274,4 +274,16 @@ export class Payments {
       }),
     );
   }
+
+  /**
+   * TESTS - To remove once Logto has been fully integrated
+   */
+
+  async testCitizenAuth() {
+    return formatQueryResult(this.client.GET("/api/v1/test/citizen", {}));
+  }
+
+  async testPublicServantAuth() {
+    return formatQueryResult(this.client.GET("/api/v1/test/pub-ser", {}));
+  }
 }

@@ -2539,5 +2539,15 @@ paths:
                   - detail
                   - request_id
                   - name
+  /api/v1/test/citizen:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/test/pub-ser:
+    get:
+      responses:
+        "200":
+          description: Default Response
 tags:
   - name: Providers
