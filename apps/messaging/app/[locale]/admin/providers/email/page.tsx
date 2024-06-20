@@ -7,7 +7,6 @@ import { providerRoutes } from "../../../../utils/routes";
 import { revalidatePath } from "next/cache";
 import { FormElement } from "../../FormElement";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 const defaultErrorStateId = "email_provider_form";
 
 export default async (props: {
@@ -29,6 +28,7 @@ export default async (props: {
     const password = formData.get("password")?.toString();
     const fromAddress = formData.get("fromAddress")?.toString();
     const throttle = Number(formData.get("throttle")?.toString()) || undefined;
+    const ssl = Boolean(formData.get("ssl"));
 
     const id = formData.get("id")?.toString();
 
@@ -72,6 +72,7 @@ export default async (props: {
         port,
         fromAddress,
         throttle,
+        ssl,
       });
     } else {
       await messagesClient.updateEmailProvider(id, {
@@ -83,6 +84,7 @@ export default async (props: {
         username,
         fromAddress,
         throttle,
+        ssl,
       });
     }
 
@@ -155,6 +157,26 @@ export default async (props: {
         </FormElement>
 
         <FormElement
+          id="fromAddress"
+          label={t("fromAddressLabel")}
+          error={
+            fromAddressError &&
+            tError(fromAddressError.messageKey, {
+              field: tError(`fields.${fromAddressError.field}`),
+              indArticleCheck: "",
+            })
+          }
+        >
+          <input
+            id="fromAddress"
+            type="text"
+            name="fromAddress"
+            className="govie-input"
+            defaultValue={data?.fromAddress}
+          />
+        </FormElement>
+
+        <FormElement
           id="host"
           label={t("hostLabel")}
           error={
@@ -194,6 +216,29 @@ export default async (props: {
           />
         </FormElement>
 
+        <FormElement id="ssl">
+          <fieldset className="govie-fieldset">
+            <div className="govie-checkboxes govie-checkboxes--medium">
+              <div className="govie-checkboxes__item">
+                <input
+                  className="govie-checkboxes__input"
+                  id="ssl"
+                  name="ssl"
+                  type="checkbox"
+                  value="ssl"
+                  defaultChecked={data?.ssl}
+                />
+                <label
+                  className="govie-label--s govie-checkboxes__label"
+                  htmlFor="ssl"
+                >
+                  {t("ssl")}
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </FormElement>
+
         <FormElement
           id="username"
           label={t("usernameLabel")}
@@ -231,26 +276,6 @@ export default async (props: {
             name="password"
             className="govie-input"
             defaultValue={data?.password}
-          />
-        </FormElement>
-
-        <FormElement
-          id="fromAddress"
-          label={t("fromAddressLabel")}
-          error={
-            fromAddressError &&
-            tError(fromAddressError.messageKey, {
-              field: tError(`fields.${fromAddressError.field}`),
-              indArticleCheck: "",
-            })
-          }
-        >
-          <input
-            id="fromAddress"
-            type="text"
-            name="fromAddress"
-            className="govie-input"
-            defaultValue={data?.fromAddress}
           />
         </FormElement>
 
