@@ -28,6 +28,7 @@
     "list": {
       "name": "Template name",
       "subject": "Subject",
+      "languages": "Languages",
       "actions": {
         "label": "Actions",
         "edit": "Edit",
@@ -51,16 +52,22 @@
     "saveButton": "Save",
     "updateTemplateButton": "Update template",
     "createTemplateButton": "Create template",
-    "menuEnglish": "English",
-    "menuGaelic": "Gaeilge",
-    "previewButton": "Preview"
+    "en": "English",
+    "ga": "Gaeilge",
+    "previewButton": "Preview",
+    "selectLanguagesHeading": "Please select languages",
+    "updateLangButton": "Update languages",
+    "setLangButton": "Set languages",
+    "interpolateHint": "Interpolate the template with personalised user data",
+    "allowedVariablesHeading": "Allowed variables",
+    "backLink": "Back"
   },
   "FeedbackBanner": {
     "tag": "prototype",
     "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
   },
   "Header": {
-    "myLifeEvents": "Digital postbox"
+    "myLifeEvents": "Messaging"
   },
   "SendAnEmail": {
     "title": "Send an email"
@@ -149,6 +156,7 @@
   },
   "formErrors": {
     "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
+    "illegalVariable": "We have found an unknown variable. Please refer to the above list of Allowed variables for recipient specific content",
     "fields": {
       "subject": "subject",
       "message": "message",
@@ -164,7 +172,15 @@
       "excerpt": "excerpt",
       "templateName": "template name",
       "plainText": "plain text",
-      "file": "file"
+      "file": "file",
+      "en_templateName": "template name",
+      "en_subject": "subject",
+      "en_plainText": "plain text",
+      "en_excerpt": "excerpt",
+      "ga_templateName": "template name",
+      "ga_subject": "subject",
+      "ga_plainText": "plain text",
+      "ga_excerpt": "excerpt"
     }
   },
   "settings": {

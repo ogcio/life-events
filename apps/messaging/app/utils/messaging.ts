@@ -158,3 +158,20 @@ export const getLinks = (
       };
   }
 };
+
+/**
+ * Checks for all values inside double curly brackets
+ *
+ * eg. {{value}} => ["value"]
+ */
+export function getInterpolationValues(text: string): string[] {
+  return text.match(/[^{{]+(?=}})/g) || [];
+}
+
+export const avaliableMessagingTemplateStaticVariables = new Set([
+  "firstName",
+  "lastName",
+  "phone",
+  "email",
+  "ppsn",
+]);
