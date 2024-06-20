@@ -24,7 +24,7 @@ interface HttpError {
   detail: string;
   request_id: string;
   name: string;
-  validation?: { [fieldName: string]: string };
+  validation?: { fieldName: string; message: string }[];
   process?: string;
 }
 
@@ -92,14 +92,24 @@ export const initializeNotFoundHandler = (server: FastifyInstance): void => {
 
 const getValidationFromFastifyError = (
   validationInput: FastifySchemaValidationError[],
-): { [fieldName: string]: string } => {
-  const output: { [fieldName: string]: string } = {};
+): { fieldName: string; message: string }[] => {
+  const output: { fieldName: string; message: string }[] = [];
   for (const input of validationInput) {
-    const key =
-      typeof input.params?.missingProperty === "string"
-        ? input.params?.missingProperty
-        : input.schemaPath;
-    output[key] = input.message ?? input.keyword;
+    const key = input.params?.missingProperty;
+    const message = input.message ?? input.keyword;
+    if (key && typeof key === "string") {
+      output.push({ fieldName: key, message });
+      continue;
+    }
+    const paramsKeys = Object.keys(input.params);
+    if (paramsKeys.length) {
+      for (const param of paramsKeys) {
+        output.push({ fieldName: param, message });
+      }
+      continue;
+    }
+
+    output.push({ fieldName: input.schemaPath, message });
   }
 
   return output;

@@ -4,6 +4,7 @@ import {
   DEFAULT_PATH,
   initializeServer,
 } from "./helpers/fastify-test-helpers.js";
+import { HttpErrorClasses } from "shared-errors";
 
 t.test("Common error is managed as expected", async () => {
   const { server } = initializeServer();
@@ -17,7 +18,7 @@ t.test("Common error is managed as expected", async () => {
   t.ok(typeof response !== "undefined");
   t.equal(response?.statusCode, 500);
   t.same(response.json(), {
-    code: "SERVER_ERROR",
+    code: HttpErrorClasses.ServerError,
     detail: "error message",
     request_id: "req-1",
     name: "FastifyError",
@@ -39,23 +40,20 @@ t.test("Validation error is managed as expected", async () => {
   t.equal(response?.statusCode, 423);
   t.same(response.headers.error_header, "value");
   t.same(response.json(), {
-    code: "VALIDATION_ERROR",
+    code: HttpErrorClasses.ValidationError,
     detail: "error message",
     request_id: "req-1",
     name: "FastifyError",
     validation: [
       {
-        keyword: "field",
-        instancePath: "the.instance.path",
-        schemaPath: "the.schema.path",
-        params: {
-          field: "one",
-          property: "two",
-        },
+        fieldName: "field",
+        message: "error message",
+      },
+      {
+        fieldName: "property",
         message: "error message",
       },
     ],
-    validationContext: "body",
   });
 
   t.end();
@@ -75,7 +73,7 @@ t.test(
     t.ok(typeof response !== "undefined");
     t.equal(response?.statusCode, 500);
     t.same(response.json(), {
-      code: "UNKNOWN_ERROR",
+      code: HttpErrorClasses.UnknownError,
       detail: "error message",
       request_id: "req-1",
       name: "FastifyError",
@@ -96,7 +94,7 @@ t.test("404 error is managed as expected", async () => {
   t.ok(typeof response !== "undefined");
   t.equal(response?.statusCode, 404);
   t.same(response.json(), {
-    code: "REQUEST_ERROR",
+    code: HttpErrorClasses.NotFoundError,
     detail: "Not Found",
     request_id: "req-1",
     name: "FastifyError",
