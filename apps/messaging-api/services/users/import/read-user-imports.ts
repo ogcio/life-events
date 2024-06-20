@@ -1,4 +1,3 @@
-import { createError } from "@fastify/error";
 import { FastifyBaseLogger } from "fastify";
 import { Pool } from "pg";
 import {
@@ -9,6 +8,7 @@ import {
   UserInvitation,
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
+import { NotFoundError } from "shared-errors";
 
 export const READ_USER_IMPORTS_ERROR = "READ_USER_IMPORTS_ERROR";
 
@@ -50,11 +50,10 @@ export const getUserImportForOrganisation = async (params: {
     });
 
     if (results.length === 0) {
-      throw createError(
+      throw new NotFoundError(
         READ_USER_IMPORTS_ERROR,
         `Users import with id ${params.importId} and organisation ${params.organisationId} not found`,
-        404,
-      )();
+      );
     }
 
     return results[0];
