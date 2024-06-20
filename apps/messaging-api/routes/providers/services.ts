@@ -11,6 +11,7 @@ export type EmailProvider = {
   password: string;
   throttle?: number;
   fromAddress: string;
+  ssl: boolean;
 };
 
 export interface SendMailParams {
@@ -42,15 +43,16 @@ export function mailService(client: PoolClient): MailService {
       username,
       fromAddress,
       throttle,
+      ssl,
     }: Omit<EmailProvider, "id">) {
       return client
         .query<{ id: string }>(
           `
-          INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw, from_address, throttle_ms)
-          VALUES($1,$2,$3,$4,$5,$6,$7)
+          INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw, from_address, throttle_ms, is_ssl)
+          VALUES($1,$2,$3,$4,$5,$6,$7,$8)
           RETURNING id
           `,
-          [name, host, port, username, password, fromAddress, throttle],
+          [name, host, port, username, password, fromAddress, throttle, ssl],
         )
         .then((res) => res.rows.at(0)?.id);
     },
@@ -64,8 +66,9 @@ export function mailService(client: PoolClient): MailService {
             username = $4,
             pw = $5,
             from_address = $6,
-            throttle_ms = $7
-          WHERE id = $8
+            throttle_ms = $7,
+            is_ssl = $8
+          WHERE id = $9
         `,
         [
           data.name,
@@ -75,6 +78,7 @@ export function mailService(client: PoolClient): MailService {
           data.password,
           data.fromAddress,
           data.throttle,
+          data.ssl,
           data.id,
         ],
       );
@@ -90,7 +94,8 @@ export function mailService(client: PoolClient): MailService {
           smtp_port as "port", 
           username, pw as "password",
           throttle_ms as "throttle",
-          from_address as "fromAddress"
+          from_address as "fromAddress",
+          is_ssl as "ssl"
         FROM email_providers
         WHERE id =$1
       `,
@@ -109,7 +114,8 @@ export function mailService(client: PoolClient): MailService {
           smtp_port as "port", 
           username, pw as "password",
           throttle_ms as "throttle",
-          from_address as "fromAddress"
+          from_address as "fromAddress",
+          is_ssl as "ssl"
         FROM email_providers
         ORDER BY created_at DESC
       `,
@@ -133,18 +139,19 @@ export function mailService(client: PoolClient): MailService {
           };
         }
 
-        const { host, password, username, port, fromAddress } = provider;
+        const { host, password, username, port, fromAddress, ssl } = provider;
 
         const transporter: nodemailer.Transporter = nodemailer.createTransport({
           host,
           port,
-          secure: true,
+          secure: ssl,
           version: "TLSv1_2_method",
           auth: {
             user: username,
             pass: password,
           },
         });
+
         await transporter.sendMail({
           from: fromAddress,
           to: params.email,
@@ -185,6 +192,7 @@ export function mailService(client: PoolClient): MailService {
           username: testAccount.user,
           password: testAccount.pass,
           fromAddress: "",
+          ssl: false,
         });
       }
 

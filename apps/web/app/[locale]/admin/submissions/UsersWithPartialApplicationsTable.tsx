@@ -98,7 +98,6 @@ const getPartialApplications = async (
     queryParams,
   );
 
-  // Step 3: Process and combine the results using efficient data structures
   const userMap = new Map<string, User>(
     usersQueryResult.rows.map((user) => [user.id, user]),
   );
@@ -109,9 +108,16 @@ const getPartialApplications = async (
 
   flowQueryResult.rows.forEach((row) => {
     if (row.flow_data.confirmedApplication === "") {
+      // If the user has a flow but it's not confirmed, add it to the list
       const user = userMap.get(row.user_id);
       if (user) {
         usersWithPartial.push({ ...user, ...row });
+        userMap.delete(row.user_id); // Only add the user once
+      }
+    } else if (row.flow_data.confirmedApplication.length > 0) {
+      // If the user has a confirmed application, remove them from the list
+      const user = userMap.get(row.user_id);
+      if (user) {
         userMap.delete(row.user_id); // Only add the user once
       }
     }
