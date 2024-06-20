@@ -55,7 +55,7 @@ export const importCsvRecords = async (params: {
   );
 
   if (toImportUsers.length === 0) {
-    throw new Error("At least one user needed");
+    throw new BadRequestError(IMPORT_USERS_ERROR, "At least one user needed");
   }
 
   await importUsers({
@@ -190,7 +190,10 @@ const insertToImportUsers = async (params: {
     );
 
     if (result.rowCount === 0) {
-      throw new Error("Cannot store the users_import data");
+      throw new ServerError(
+        IMPORT_USERS_ERROR,
+        "Cannot store the users_import data",
+      );
     }
 
     return result.rows[0].import_id;
