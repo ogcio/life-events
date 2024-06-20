@@ -1,4 +1,3 @@
-import createError from "@fastify/error";
 import {
   FastifyError,
   FastifyRequest,
@@ -14,6 +13,7 @@ import { LogMessages } from "logging-wrapper/logging-wrapper-entities";
 import {
   HttpErrorClasses,
   LifeEventsError,
+  NotFoundError,
   isLifeEventsError,
   isValidationLifeEventsError,
   parseHttpErrorClass,
@@ -76,17 +76,13 @@ export const setupErrorHandler = (server: FastifyInstance): void => {
 // just without unwanted log entries
 export const initializeNotFoundHandler = (server: FastifyInstance): void => {
   server.setNotFoundHandler((request: FastifyRequest, reply: FastifyReply) => {
-    const error = createError(
-      HttpErrorClasses.NotFoundError,
-      "Not Found",
-      404,
-    )();
+    const error = new NotFoundError(request.url, "Route not found");
     setLoggingContext({
       error,
     });
 
     request.log.error({ error: getLoggingContextError() }, LogMessages.Error);
-    reply.code(404).send(getResponseFromFastifyError(error, request));
+    manageLifeEventsError(error, request, reply);
   });
 };
 
