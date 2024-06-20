@@ -19,7 +19,7 @@ import {
   parseHttpErrorClass,
 } from "shared-errors";
 
-interface HttpError {
+export interface HttpError {
   code: HttpErrorClasses;
   detail: string;
   request_id: string;
