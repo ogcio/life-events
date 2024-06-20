@@ -55,6 +55,17 @@ export const buildFastify = (
     throw error;
   });
 
+  server.get("/life-events/custom", async (request, _reply) => {
+    const parsed = request.query as { [x: string]: unknown };
+    const requestedStatusCode = Number(parsed["status_code"] ?? "500");
+
+    throw new sharedErrors.CustomError(
+      "CUSTOM_PROCESS",
+      "message",
+      requestedStatusCode as number,
+    );
+  });
+
   server.get("/life-events/:errorName", async (request, _reply) => {
     const errorName = (request.params! as { errorName: string })
       .errorName as string;
