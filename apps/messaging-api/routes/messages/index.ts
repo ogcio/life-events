@@ -12,7 +12,7 @@ import {
   getMessage,
   getMessages,
 } from "../../services/messages/messages";
-import { newMessagingService } from "../../services/messages/mesaging";
+import { newMessagingService } from "../../services/messages/messaging";
 import {
   getUserProfiles,
   ProfileSdkFacade,
