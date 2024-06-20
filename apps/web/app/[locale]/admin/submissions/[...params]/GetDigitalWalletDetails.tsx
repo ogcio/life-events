@@ -479,18 +479,16 @@ export default async ({ userId, flow, flowData }: Props) => {
           </button>
         </form>
       )}
-      {status(flowData) === "rejected" && (
-        <form
-          action={reOpenAction}
-          style={{ display: "flex", alignItems: "baseline", gap: "20px" }}
-        >
-          <input type="hidden" name="userId" defaultValue={userId} />
-          <input type="hidden" name="flow" defaultValue={flow} />
-          <button type="submit" className="govie-button govie-button--medium">
-            {t("reopen")}
-          </button>
-        </form>
-      )}
+      <form
+        action={reOpenAction}
+        style={{ display: "flex", alignItems: "baseline", gap: "20px" }}
+      >
+        <input type="hidden" name="userId" defaultValue={userId} />
+        <input type="hidden" name="flow" defaultValue={flow} />
+        <button type="submit" className="govie-button govie-button--medium">
+          {t("reopen")}
+        </button>
+      </form>
     </FormLayout>
   );
 };
