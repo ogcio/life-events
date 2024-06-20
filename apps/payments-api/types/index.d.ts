@@ -33,6 +33,12 @@ declare module "fastify" {
       reply: FastifyReply,
     ) => Promise<void>;
 
+    checkPermissions: (
+      request: FastifyRequest,
+      reply: FastifyReply,
+      permissions: string[],
+    ) => Promise<void>;
+
     providers: ProvidersPlugin;
     citizen: CitizenPlugin;
     transactions: TransactionsPlugin;
