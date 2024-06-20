@@ -16,6 +16,7 @@ import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
+import apiAuthPlugin from "api-auth";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 import providers from "./plugins/entities/providers";
@@ -42,6 +43,13 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(fastifyEnv, {
     schema: envSchema,
     dotenv: true,
+  });
+
+  app.register(apiAuthPlugin, {
+    jwkEndpoint: process.env.LOGTO_JWK_ENDPOINT as string,
+    oidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT as string,
+    currentApiResourceIndicator: process.env
+      .LOGTO_API_RESOURCE_INDICATOR as string,
   });
 
   app.register(fastifyFormBody);
