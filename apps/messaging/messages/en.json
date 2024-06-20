@@ -156,6 +156,7 @@
   },
   "formErrors": {
     "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
+    "illegalVariable": "We have found an unknown variable. Please refer to the above list of Allowed variables for recipient specific content",
     "fields": {
       "subject": "subject",
       "message": "message",

@@ -249,7 +249,15 @@ export function ProfileSdkFacade(
     async selectUsers(ids: string[]) {
       const profileResult = await sdkProfile.selectUsers(ids);
 
+      if (profileResult.error) {
+        return { data: undefined, error: profileResult.error };
+      }
+
       const fromProfile = profileResult.data || [];
+
+      if (fromProfile.length === ids.length) {
+        return { data: fromProfile, error: undefined };
+      }
 
       const idsNotFound: string[] = [];
       if (fromProfile.length) {
@@ -274,4 +282,4 @@ export function ProfileSdkFacade(
   };
 }
 
-export const AVAILABLE_TRANSPORTS = ["sms", "email"];
+export const AVAILABLE_TRANSPORTS = ["sms", "email", "lifeEvent"];

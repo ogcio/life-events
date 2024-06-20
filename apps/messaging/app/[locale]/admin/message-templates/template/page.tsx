@@ -10,6 +10,10 @@ import { redirect } from "next/navigation";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import {
+  avaliableMessagingTemplateStaticVariables,
+  getInterpolationValues,
+} from "../../../../utils/messaging";
 
 type FormContent = {
   templateName: string;
@@ -131,6 +135,23 @@ const ContentForm = async (props: {
             field: `${lang}_${key}`,
             errorValue: "",
             messageKey: "empty",
+          });
+        }
+
+        const variables = getInterpolationValues(required[key]);
+        let hasIllegalVariables = false;
+        for (const variable of variables) {
+          if (!avaliableMessagingTemplateStaticVariables.has(variable)) {
+            hasIllegalVariables = true;
+            break;
+          }
+        }
+
+        if (hasIllegalVariables) {
+          errors.push({
+            field: `${lang}_${key}`,
+            errorValue: "",
+            messageKey: "illegalVariable",
           });
         }
       }

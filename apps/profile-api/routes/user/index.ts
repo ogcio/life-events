@@ -356,7 +356,7 @@ export default async function user(app: FastifyInstance) {
           return;
         }
 
-        reply.send({ data: users, error: null });
+        reply.send({ data: users });
       } catch (err) {
         reply.send({ data: null, error: err });
       }

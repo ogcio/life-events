@@ -28,6 +28,7 @@ export const createMessage = async (params: {
     });
   }
 
+  // Deprecated
   if (params.payload.template) {
     return createMessageFromTemplate({
       pg: params.pg,
@@ -141,6 +142,7 @@ const createRawMessage = async (params: {
   });
 };
 
+// Deprecated
 const createMessageFromTemplate = async (params: {
   pg: PostgresDb;
   payload: Omit<Required<CreateMessage>, "message">;
@@ -633,6 +635,9 @@ const scheduleMessage = async (
   return errors;
 };
 
+/**
+ * Deprecated
+ */
 const scheduledTemplate = async (
   pool: Pool,
   scheduledId: string,

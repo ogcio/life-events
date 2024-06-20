@@ -158,7 +158,13 @@ export default async function messages(app: FastifyInstance) {
         body: Type.Object({
           templateMetaId: Type.String({ format: "uuid" }),
           userIds: Type.Array(Type.String({ format: "uuid" })),
-          transportations: Type.Array(Type.String()),
+          transportations: Type.Array(
+            Type.Union([
+              Type.Literal("email"),
+              Type.Literal("sms"),
+              Type.Literal("lifeEvent"),
+            ]),
+          ),
           security: Type.String(),
           scheduleAt: Type.String({ format: "date-time" }),
         }),
@@ -183,7 +189,7 @@ export default async function messages(app: FastifyInstance) {
       }
 
       if (!allUsers.data?.length) {
-        throw createError(errorKey, "no receiver profiles found", 500)();
+        throw createError(errorKey, "no receiver profiles found", 404)();
       }
 
       // Get template contents

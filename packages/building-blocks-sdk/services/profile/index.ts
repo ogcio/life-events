@@ -154,6 +154,10 @@ export class Profile {
       body: { ids },
     });
 
-    return { data: res.data?.data, error: res.error };
+    return {
+      data: res.data?.data,
+      error:
+        res.response.status !== 200 ? await res.response.json() : undefined,
+    };
   }
 }

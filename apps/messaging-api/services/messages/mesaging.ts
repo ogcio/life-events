@@ -92,6 +92,22 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
         );
 
         /**
+         * We need to pluck the users that doesn't have any profile value for the interpolation replacements
+         *
+         * eg.
+         * user A = {firstName:"A"}
+         * variables = ["firstName", "ppsn"]
+         *
+         * A doesnt have ppsn available.
+         *
+         * What do we do?
+         *
+         * - Store the user in an array of invalid users, maybe with "reason" property
+         * - silent ignore
+         * - throw error for entire batch
+         */
+
+        /**
          * isDelivered
          * userId
          * subject
@@ -190,16 +206,19 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
         values.push(pt.messageId, pt.userId);
       }
 
-      const jobs = await pool
-        .query<{ jobId: string; userId: string }>(
-          `
+      const jobInsertResult = await pool.query<{
+        jobId: string;
+        userId: string;
+      }>(
+        `
         insert into jobs(job_type, job_id, user_id)
         values ${valueArgs.join(", ")}
         returning id as "jobId", user_id as "userId"
       `,
-          values,
-        )
-        .then((res) => res.rows);
+        values,
+      );
+
+      const jobs = jobInsertResult.rows;
 
       const scheduleBody = jobs.map((job) => {
         const callbackUrl = new URL(
@@ -226,6 +245,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
           headers: { "x-user-id": "tmp", "Content-Type": "application/json" },
         });
       } catch (err) {
+        // TODO Error handling
         throw new Error("failed to post messages", {
           cause: isNativeError(err) ? err.cause : err,
         });
