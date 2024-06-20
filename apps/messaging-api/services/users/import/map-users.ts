@@ -21,7 +21,7 @@ import {
 } from "../shared-users";
 import { processTagsPerUser } from "../../tags/manage-tags";
 import { executeUpdateOrganisationFeedback } from "../invitations/shared-invitations";
-import { NotFoundError, ServerError } from "shared-errors";
+import { NotFoundError, NotImplementedError, ServerError } from "shared-errors";
 
 interface FoundUser {
   id: string;
@@ -50,7 +50,10 @@ const mapUsersAsync = async (_params: {
   requestUser: RequestUser;
 }): Promise<UsersImport> => {
   // Here we will invoke the scheduler
-  throw new Error("Not implemented yet");
+  throw new NotImplementedError(
+    IMPORT_USERS_ERROR,
+    "async users mapping not yet implemented, change the SYNCHRONOUS_USER_IMPORT key to true",
+  );
 };
 
 const mapUsersSync = async (params: {
@@ -383,7 +386,10 @@ const getUserOrganisationRelation = async (params: {
     );
 
     if (result.rowCount === 0) {
-      throw new Error(USER_ORGANIZATION_RELATION_MISSING_ERROR);
+      throw new NotFoundError(
+        IMPORT_USERS_ERROR,
+        USER_ORGANIZATION_RELATION_MISSING_ERROR,
+      );
     }
 
     return result.rows[0];
