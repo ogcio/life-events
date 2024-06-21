@@ -152,7 +152,7 @@ const manageLifeEventsError = (
     errorResponse.validation = error.validationErrors;
   }
 
-  reply.send(errorResponse);
+  reply.status(error.errorCode).send(errorResponse);
 };
 
 const toLifeEventsValidationError = (
