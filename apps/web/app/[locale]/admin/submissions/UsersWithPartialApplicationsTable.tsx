@@ -29,13 +29,14 @@ type DigitalWalletFlow = {
   flow_data: workflow.GetDigitalWallet;
 };
 
-const getPartialApplications = async (
-  pageSize: number,
-  offset: number,
-  search?: string,
-  filters?: Record<string, string>,
-) => {
+export const getPartialApplications = async (params: {
+  pageSize?: number;
+  offset?: number;
+  search?: string;
+  filters?: Record<string, string>;
+}) => {
   // Step 1: Fetch users from the shared DB - CHANGE THIS AFTER LOGTO INTEGRATION
+  const { pageSize, offset, search, filters } = params;
   const baseUserQuery = `SELECT * FROM users WHERE is_public_servant = false`;
   let usersQuery = baseUserQuery;
   const searchQuery = search?.trim();
@@ -132,6 +133,14 @@ const getPartialApplications = async (
 
   const totalCount = usersWithPartial.length;
 
+  if (pageSize === undefined || offset === undefined) {
+    return {
+      data: usersWithPartial,
+      totalCount: totalCount,
+      totalPages: 1,
+    };
+  }
+
   return {
     data: usersWithPartial.slice(offset, offset + pageSize),
     totalCount: totalCount,
@@ -147,12 +156,12 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
 
   const queryParams = getQueryParams(urlParms);
 
-  const usersWithPartial = await getPartialApplications(
-    queryParams.limit,
-    queryParams.offset,
-    queryParams.search,
-    queryParams.filters,
-  );
+  const usersWithPartial = await getPartialApplications({
+    pageSize: queryParams.limit,
+    offset: queryParams.offset,
+    search: queryParams.search,
+    filters: queryParams.filters,
+  });
 
   const links: PaginationLinks = getPaginationLinks({
     url,

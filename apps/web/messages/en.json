@@ -766,7 +766,8 @@
   },
   "Admin": {
     "Submissions": {
-      "title": "Submissions"
+      "title": "Submissions",
+      "exportCsvFile": "export CSV file"
     },
     "RenewLicenceUserDetails": {
       "title": "Review {flow} application",
