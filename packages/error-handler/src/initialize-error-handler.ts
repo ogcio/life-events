@@ -14,6 +14,7 @@ import {
   HttpErrorClasses,
   LifeEventsError,
   NotFoundError,
+  ValidationError,
   isLifeEventsError,
   isValidationLifeEventsError,
   parseHttpErrorClass,
@@ -66,8 +67,13 @@ export const setupErrorHandler = (server: FastifyInstance): void => {
       return;
     }
 
-    setErrorHeaders(error, reply);
+    if (error.validation) {
+      const lifeEventsError = toLifeEventsValidationError(error, request);
+      manageLifeEventsError(lifeEventsError, request, reply);
+      return;
+    }
 
+    setErrorHeaders(error, reply);
     reply.send(getResponseFromFastifyError(error, request));
   });
 };
@@ -91,17 +97,10 @@ const getValidationFromFastifyError = (
 ): { fieldName: string; message: string }[] => {
   const output: { fieldName: string; message: string }[] = [];
   for (const input of validationInput) {
-    const key = input.params?.missingProperty;
+    const key = input.params?.missingProperty ?? input.instancePath;
     const message = input.message ?? input.keyword;
     if (key && typeof key === "string") {
       output.push({ fieldName: key, message });
-      continue;
-    }
-    const paramsKeys = Object.keys(input.params);
-    if (paramsKeys.length) {
-      for (const param of paramsKeys) {
-        output.push({ fieldName: param, message });
-      }
       continue;
     }
 
@@ -154,4 +153,22 @@ const manageLifeEventsError = (
   }
 
   reply.send(errorResponse);
+};
+
+const toLifeEventsValidationError = (
+  error: FastifyError,
+  request: FastifyRequest,
+): ValidationError => {
+  if (!error.validation) {
+    throw new LifeEventsError(
+      "ERROR_HANDLER_SETUP",
+      "This is not a validation error",
+    );
+  }
+
+  return new ValidationError(
+    request.url,
+    error.message,
+    getValidationFromFastifyError(error.validation),
+  );
 };
