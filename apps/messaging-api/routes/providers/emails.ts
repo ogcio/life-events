@@ -76,13 +76,6 @@ export default async function emails(app: FastifyInstance) {
       const service = mailService(client);
       try {
         return { data: await service.getProviders(organisationId) };
-      } catch (err) {
-        throw new ValidationError(EMAIL_PROVIDER_ERROR, "", [
-          {
-            fieldName: "provider",
-            message: "in_user",
-          },
-        ]);
       } finally {
         client.release();
       }
