@@ -1,4 +1,3 @@
-import { createError } from "@fastify/error";
 import { PostgresDb } from "@fastify/postgres";
 import { getUserByUserProfileId } from "../shared-users";
 import {
@@ -14,6 +13,7 @@ import {
 } from "../../../types/usersSchemaDefinitions";
 import { PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
+import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 
 const ACCEPT_INVITATIONS_ERROR = "ACCEPT_INVITATIONS_ERROR";
 
@@ -66,11 +66,10 @@ const getInvitation = async (params: {
     errorCode: ACCEPT_INVITATIONS_ERROR,
   });
   if (!user.userProfileId) {
-    throw createError(
+    throw new BadRequestError(
       ACCEPT_INVITATIONS_ERROR,
       "The current user has no related user profile",
-      400,
-    )();
+    );
   }
   const invitations = await getUsersInvitationsForOrganisation({
     userProfileIds: [user.userProfileId],
@@ -80,11 +79,10 @@ const getInvitation = async (params: {
   });
 
   if (invitations.length === 0) {
-    throw createError(
+    throw new BadRequestError(
       ACCEPT_INVITATIONS_ERROR,
       "This user has no related invitations",
-      400,
-    )();
+    );
   }
 
   return invitations[0];
@@ -92,11 +90,10 @@ const getInvitation = async (params: {
 
 const ensureUserIsActive = (userInvitation: UserInvitation): void => {
   if (userInvitation.userStatus !== "active") {
-    throw createError(
+    throw new BadRequestError(
       ACCEPT_INVITATIONS_ERROR,
       "A user must be active before accepting invitation from an organisation",
-      400,
-    )();
+    );
   }
 };
 
@@ -115,10 +112,10 @@ export const updateOrganisationFeedback = async (params: {
       params.feedback.preferredTransports.length === 0 &&
       params.feedback.invitationStatusFeedback === "accepted"
     ) {
-      throw createError(
+      throw new BadRequestError(
         ACCEPT_INVITATIONS_ERROR,
         "At least one preferred transport must be selected",
-      )();
+      );
     }
 
     await executeUpdateOrganisationFeedback({
@@ -172,19 +169,16 @@ export const getInvitationStatus = async (params: {
     );
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
+    throw new ServerError(
       ACCEPT_INVITATIONS_ERROR,
       `Error on invitation feedback: ${message}`,
-      500,
-    )();
-
-    throw toOutput;
+    );
   } finally {
     client.release();
   }
 
   if (!statusResponse || statusResponse.rowCount === 0) {
-    throw createError(ACCEPT_INVITATIONS_ERROR, "Cannot find the user", 404)();
+    throw new NotFoundError(ACCEPT_INVITATIONS_ERROR, "Cannot find the user");
   }
 
   return statusResponse.rows[0];
@@ -213,21 +207,14 @@ const executeUpdateUserStatus = async (params: {
     );
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
+    throw new ServerError(
       ACCEPT_INVITATIONS_ERROR,
       `Error on invitation feedback: ${message}`,
-      500,
-    )();
-
-    throw toOutput;
+    );
   }
 
   if (users.rowCount === 0) {
-    throw createError(
-      ACCEPT_INVITATIONS_ERROR,
-      "Cannot update this user",
-      500,
-    )();
+    throw new ServerError(ACCEPT_INVITATIONS_ERROR, "Cannot update this user");
   }
 
   return users.rows[0];

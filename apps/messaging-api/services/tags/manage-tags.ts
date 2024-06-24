@@ -1,6 +1,6 @@
 import { PoolClient } from "pg";
 import { Tag } from "../../types/usersSchemaDefinitions";
-import { createError } from "@fastify/error";
+import { ServerError } from "shared-errors";
 
 const TAGS_PATH_SEPARATOR = ".";
 const MANAGE_TAGS_ERROR = "MANAGE_TAGS_ERROR";
@@ -61,7 +61,7 @@ const linkTagsToUser = async (params: {
   );
 
   if (result.rowCount !== params.toLinkTags.length) {
-    throw createError(MANAGE_TAGS_ERROR, "Error linking tags", 500)();
+    throw new ServerError(MANAGE_TAGS_ERROR, "Error linking tags");
   }
 };
 
@@ -116,7 +116,7 @@ const insertTags = async (params: {
   );
 
   if (result.rowCount !== itemsCount) {
-    throw createError(MANAGE_TAGS_ERROR, "Error importing tags", 500)();
+    throw new ServerError(MANAGE_TAGS_ERROR, "Error importing tags");
   }
 
   return result.rows;

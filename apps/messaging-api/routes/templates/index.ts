@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
-import { createError } from "@fastify/error";
 import { FastifyInstance } from "fastify";
 import { organisationId } from "../../utils";
+import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 const tags = ["Templates"];
 
 const TEMPLATES_ERROR = "TEMPLATES_ERROR";
@@ -53,12 +53,6 @@ interface GetTemplate {
     templateId: string;
   };
 }
-
-const TemplateListType = Type.Object({
-  templateMetaId: Type.String({ format: "uuid" }),
-  lang: Type.String(),
-  templateName: Type.String(),
-});
 
 const TemplateTypeWithoutId = Type.Object({
   templateName: Type.String(),
@@ -274,7 +268,7 @@ export default async function templates(app: FastifyInstance) {
       }
 
       if (!template.contents.length) {
-        throw createError(TEMPLATES_ERROR, "no template found", 404)();
+        throw new NotFoundError(TEMPLATES_ERROR, "no template found");
       }
 
       return { data: template };
@@ -337,11 +331,10 @@ export default async function templates(app: FastifyInstance) {
         );
 
         if (templateNameExists.rows[0]?.exists) {
-          throw createError(
+          throw new BadRequestError(
             TEMPLATES_ERROR,
             "template name already exists",
-            400,
-          )();
+          );
         }
 
         const templateMetaResponse = await client.query<{ id: string }>(
@@ -355,11 +348,10 @@ export default async function templates(app: FastifyInstance) {
         templateMetaId = templateMetaResponse.rows.at(0)?.id;
 
         if (!templateMetaId) {
-          throw createError(
+          throw new ServerError(
             TEMPLATES_ERROR,
             "failed to create a template meta",
-            500,
-          )();
+          );
         }
 
         for (const content of contents) {
@@ -407,7 +399,7 @@ export default async function templates(app: FastifyInstance) {
         if (err instanceof Error) {
           this.log.error(err.message);
         }
-        throw createError(TEMPLATES_ERROR, "failed to create template", 500)();
+        throw new ServerError(TEMPLATES_ERROR, "failed to create template");
       } finally {
         client.release();
       }
@@ -511,8 +503,7 @@ export default async function templates(app: FastifyInstance) {
         await client.query("COMMIT");
       } catch (err) {
         client.query("ROLLBACK");
-        this.log.error(err);
-        throw createError(TEMPLATES_ERROR, "failed to update", 500);
+        throw new ServerError(TEMPLATES_ERROR, "failed to update");
       } finally {
         client.release();
       }

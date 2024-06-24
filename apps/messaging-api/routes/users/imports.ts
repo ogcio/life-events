@@ -15,7 +15,6 @@ import {
   UsersImportSchema,
   UsersImport,
 } from "../../types/usersSchemaDefinitions";
-import { createError } from "@fastify/error";
 import {
   READ_USER_IMPORTS_ERROR,
   getAllUserInvitationsForOrganisation,
@@ -24,6 +23,7 @@ import {
   getUserInvitationsForImport,
 } from "../../services/users/import/read-user-imports";
 import { organisationId } from "../../utils";
+import { BadRequestError } from "shared-errors";
 
 const tags = ["Users", "UserImports"];
 
@@ -269,11 +269,10 @@ export default async function usersImports(app: FastifyInstance) {
   const saveRequestFile = async (request: FastifyRequest): Promise<string> => {
     const file = await request.files();
     if (!file) {
-      throw createError(
+      throw new BadRequestError(
         IMPORT_USERS_ERROR,
         "File is missing in the request",
-        400,
-      )();
+      );
     }
 
     const savedFiles = await request.saveRequestFiles();
@@ -289,11 +288,10 @@ export default async function usersImports(app: FastifyInstance) {
     const organisationId =
       request.user!.organisation_id ?? query.organisationId;
     if (!organisationId) {
-      throw createError(
+      throw new BadRequestError(
         READ_USER_IMPORTS_ERROR,
         "Cannot retrieve an organisation id",
-        400,
-      )();
+      );
     }
 
     return organisationId;

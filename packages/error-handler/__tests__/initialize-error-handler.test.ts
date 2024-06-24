@@ -4,7 +4,7 @@ import {
   DEFAULT_PATH,
   initializeServer,
 } from "./helpers/fastify-test-helpers.js";
-import { HttpErrorClasses } from "shared-errors";
+import { HttpErrorClasses, NotFoundError } from "shared-errors";
 
 t.test("Common error is managed as expected", async () => {
   const { server } = initializeServer();
@@ -27,7 +27,7 @@ t.test("Common error is managed as expected", async () => {
   t.end();
 });
 
-t.test("Validation error is managed as expected", async () => {
+t.test("Validation error is managed as a Life Events One", async () => {
   const { server } = initializeServer();
   t.teardown(() => server.close());
   const response = await server.inject({
@@ -37,23 +37,19 @@ t.test("Validation error is managed as expected", async () => {
   });
 
   t.ok(typeof response !== "undefined");
-  t.equal(response?.statusCode, 423);
-  t.same(response.headers.error_header, "value");
+  t.equal(response?.statusCode, 422);
   t.same(response.json(), {
     code: HttpErrorClasses.ValidationError,
     detail: "error message",
     request_id: "req-1",
-    name: "FastifyError",
+    name: "VALIDATION_ERROR",
     validation: [
       {
-        fieldName: "field",
-        message: "error message",
-      },
-      {
-        fieldName: "property",
+        fieldName: "the.instance.path",
         message: "error message",
       },
     ],
+    process: "/validation?error_message=error+message",
   });
 
   t.end();
@@ -95,9 +91,10 @@ t.test("404 error is managed as expected", async () => {
   t.equal(response?.statusCode, 404);
   t.same(response.json(), {
     code: HttpErrorClasses.NotFoundError,
-    detail: "Not Found",
+    detail: "Route not found",
     request_id: "req-1",
-    name: "FastifyError",
+    process: "/this-path-does-not-exist",
+    name: new NotFoundError("TEMP", "TEMP").name,
   });
 
   t.end();

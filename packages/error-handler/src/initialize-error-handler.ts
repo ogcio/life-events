@@ -1,4 +1,3 @@
-import createError from "@fastify/error";
 import {
   FastifyError,
   FastifyRequest,
@@ -14,12 +13,14 @@ import { LogMessages } from "logging-wrapper/logging-wrapper-entities";
 import {
   HttpErrorClasses,
   LifeEventsError,
+  NotFoundError,
+  ValidationError,
   isLifeEventsError,
   isValidationLifeEventsError,
   parseHttpErrorClass,
 } from "shared-errors";
 
-interface HttpError {
+export interface HttpError {
   code: HttpErrorClasses;
   detail: string;
   request_id: string;
@@ -66,8 +67,13 @@ export const setupErrorHandler = (server: FastifyInstance): void => {
       return;
     }
 
-    setErrorHeaders(error, reply);
+    if (error.validation) {
+      const lifeEventsError = toLifeEventsValidationError(error, request);
+      manageLifeEventsError(lifeEventsError, request, reply);
+      return;
+    }
 
+    setErrorHeaders(error, reply);
     reply.send(getResponseFromFastifyError(error, request));
   });
 };
@@ -76,17 +82,13 @@ export const setupErrorHandler = (server: FastifyInstance): void => {
 // just without unwanted log entries
 export const initializeNotFoundHandler = (server: FastifyInstance): void => {
   server.setNotFoundHandler((request: FastifyRequest, reply: FastifyReply) => {
-    const error = createError(
-      HttpErrorClasses.NotFoundError,
-      "Not Found",
-      404,
-    )();
+    const error = new NotFoundError(request.url, "Route not found");
     setLoggingContext({
       error,
     });
 
     request.log.error({ error: getLoggingContextError() }, LogMessages.Error);
-    reply.code(404).send(getResponseFromFastifyError(error, request));
+    manageLifeEventsError(error, request, reply);
   });
 };
 
@@ -95,17 +97,10 @@ const getValidationFromFastifyError = (
 ): { fieldName: string; message: string }[] => {
   const output: { fieldName: string; message: string }[] = [];
   for (const input of validationInput) {
-    const key = input.params?.missingProperty;
+    const key = input.params?.missingProperty ?? input.instancePath;
     const message = input.message ?? input.keyword;
     if (key && typeof key === "string") {
       output.push({ fieldName: key, message });
-      continue;
-    }
-    const paramsKeys = Object.keys(input.params);
-    if (paramsKeys.length) {
-      for (const param of paramsKeys) {
-        output.push({ fieldName: param, message });
-      }
       continue;
     }
 
@@ -157,5 +152,23 @@ const manageLifeEventsError = (
     errorResponse.validation = error.validationErrors;
   }
 
-  reply.send(errorResponse);
+  reply.status(error.errorCode).send(errorResponse);
+};
+
+const toLifeEventsValidationError = (
+  error: FastifyError,
+  request: FastifyRequest,
+): ValidationError => {
+  if (!error.validation) {
+    throw new LifeEventsError(
+      "ERROR_HANDLER_SETUP",
+      "This is not a validation error",
+    );
+  }
+
+  return new ValidationError(
+    request.url,
+    error.message,
+    getValidationFromFastifyError(error.validation),
+  );
 };

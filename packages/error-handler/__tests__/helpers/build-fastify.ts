@@ -49,7 +49,6 @@ export const buildFastify = (
       },
     ];
     error.validationContext = "body";
-    error.headers = { error_header: "value" };
     error.status = 423;
 
     throw error;

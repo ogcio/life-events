@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import { createError } from "@fastify/error";
 import { Type } from "@sinclair/typebox";
 import {
   CreateMessage,
@@ -13,12 +12,13 @@ import {
   getMessage,
   getMessages,
 } from "../../services/messages/messages";
-import { newMessagingService } from "../../services/messages/mesaging";
+import { newMessagingService } from "../../services/messages/messaging";
 import {
   getUserProfiles,
   ProfileSdkFacade,
 } from "../../services/users/shared-users";
 import { Profile } from "building-blocks-sdk";
+import { NotFoundError, ServerError } from "shared-errors";
 
 const MESSAGES_TAGS = ["Messages"];
 
@@ -170,7 +170,7 @@ export default async function messages(app: FastifyInstance) {
         }),
       },
     },
-    async (req, res) => {
+    async (req, _res) => {
       const errorKey = "FAILED_TO_CREATE_MESSAGE_FROM_TEMPLATE";
 
       // Get users
@@ -185,11 +185,11 @@ export default async function messages(app: FastifyInstance) {
       const allUsers = await profileService.selectUsers(req.body.userIds);
 
       if (allUsers.error) {
-        throw createError(errorKey, "couldn't fetch user profiles", 500)();
+        throw new ServerError(errorKey, "couldn't fetch user profiles");
       }
 
       if (!allUsers.data?.length) {
-        throw createError(errorKey, "no receiver profiles found", 404)();
+        throw new NotFoundError(errorKey, "no receiver profiles found");
       }
 
       // Get template contents
@@ -200,7 +200,7 @@ export default async function messages(app: FastifyInstance) {
       );
 
       if (!contents.length) {
-        throw createError(errorKey, "no template contents found", 500)();
+        throw new NotFoundError(errorKey, "no template contents found");
       }
 
       // Create messages
@@ -215,11 +215,10 @@ export default async function messages(app: FastifyInstance) {
           req.body.security,
         );
       } catch (err) {
-        throw createError(
+        throw new ServerError(
           errorKey,
           "failed to create messages from template",
-          500,
-        )();
+        );
       }
 
       // Schedule messages
@@ -229,11 +228,7 @@ export default async function messages(app: FastifyInstance) {
           req.body.scheduleAt,
         );
       } catch (err) {
-        throw createError(
-          errorKey,
-          "failed to send messages to scheduler",
-          500,
-        )();
+        throw new ServerError(errorKey, "failed to send messages to scheduler");
       }
     },
   );

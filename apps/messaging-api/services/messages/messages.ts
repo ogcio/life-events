@@ -4,8 +4,7 @@ import {
   ReadMessage,
   ReadMessages,
 } from "../../types/schemaDefinitions";
-import { HttpError, ServiceError, organisationId, utils } from "../../utils";
-import { createError } from "@fastify/error";
+import { ServiceError, organisationId, utils } from "../../utils";
 import { FastifyBaseLogger } from "fastify";
 import { JobType } from "aws-sdk/clients/importexport";
 import { Pool } from "pg";
@@ -14,6 +13,8 @@ import { awsSnsSmsService } from "../sms/aws";
 import { Profile } from "building-blocks-sdk";
 import { getUserProfiles, ProfileSdkFacade } from "../users/shared-users";
 import { isNativeError } from "util/types";
+import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
+import { LoggingError, toLoggingError } from "logging-wrapper";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -36,11 +37,10 @@ export const createMessage = async (params: {
     });
   }
 
-  throw createError(
+  throw new BadRequestError(
     "CREATE_MESSAGE_ERROR",
     "At least one between 'message' and 'template' must be set",
-    400,
-  )();
+  );
 };
 
 const createRawMessage = async (params: {
@@ -268,11 +268,10 @@ export const getMessage = async (params: {
   );
 
   if (data.rowCount === 0) {
-    throw createError(
+    throw new NotFoundError(
       "GET_MESSAGE_ERROR",
       `No message with id ${params.messageId} for the logged in user does exist`,
-      404,
-    )();
+    );
   }
 
   return data.rows[0];
@@ -338,13 +337,16 @@ export const executeJob = async (params: {
     );
 
     if (!jobStatusResult.rowCount) {
-      throw createError(EXECUTE_JOB_ERROR, "job doesn't exist", 404)();
+      throw new NotFoundError(EXECUTE_JOB_ERROR, "job doesn't exist");
     }
 
     const jobStatus = jobStatusResult.rows.at(0)?.status;
 
     if (jobStatus === "working") {
-      throw createError(EXECUTE_JOB_ERROR, "job is already in progress", 400)();
+      throw new BadRequestError(
+        EXECUTE_JOB_ERROR,
+        "job is already in progress",
+      );
     }
 
     job = await client
@@ -370,20 +372,16 @@ export const executeJob = async (params: {
   } catch (err) {
     client.query("rollback");
     const msg = utils.isError(err) ? err.message : "failed to fetch job";
-    throw createError(EXECUTE_JOB_ERROR, msg, 500)();
+    throw new ServerError(EXECUTE_JOB_ERROR, msg);
   } finally {
     client.release();
   }
 
   if (!job?.userId || !job.type) {
-    throw createError(
-      EXECUTE_JOB_ERROR,
-      "job row missing critical fields",
-      500,
-    )();
+    throw new ServerError(EXECUTE_JOB_ERROR, "job row missing critical fields");
   }
 
-  let error: HttpError | undefined;
+  let error: LoggingError | undefined;
   if (job.type === "template") {
     try {
       const serviceErrors = await scheduledTemplate(
@@ -397,13 +395,15 @@ export const executeJob = async (params: {
 
       const firstError = serviceErrors.filter((err) => err.critical).at(0);
       if (firstError) {
-        error = createError(EXECUTE_JOB_ERROR, firstError.msg, 500)();
+        error = toLoggingError(
+          new ServerError(EXECUTE_JOB_ERROR, firstError.msg),
+        );
       }
     } catch (err) {
       const msg = utils.isError(err)
         ? err.message
         : "failed to create message from template job";
-      error = createError(EXECUTE_JOB_ERROR, msg, 500)();
+      error = toLoggingError(new ServerError(EXECUTE_JOB_ERROR, msg));
     }
   } else if (job.type === "message") {
     try {
@@ -419,13 +419,15 @@ export const executeJob = async (params: {
 
       const firstError = serviceErrors.filter((err) => err.critical).at(0);
       if (firstError) {
-        error = createError(EXECUTE_JOB_ERROR, firstError.msg, 500)();
+        error = toLoggingError(
+          new ServerError(EXECUTE_JOB_ERROR, firstError.msg),
+        );
       }
     } catch (err) {
       const msg = utils.isError(err)
         ? err.message
         : "failed to create message job";
-      error = createError(EXECUTE_JOB_ERROR, msg, 500)();
+      error = toLoggingError(new ServerError(EXECUTE_JOB_ERROR, msg));
     }
   }
 
@@ -444,10 +446,10 @@ export const executeJob = async (params: {
       const msg = utils.isError(err)
         ? err.message
         : "failed to update job delivery status";
-      throw createError(EXECUTE_JOB_ERROR, msg, 500)();
+      throw new ServerError(EXECUTE_JOB_ERROR, msg);
     }
 
-    throw createError(EXECUTE_JOB_ERROR, error.message, error.statusCode)();
+    throw new ServerError(EXECUTE_JOB_ERROR, error.message);
   }
 };
 
@@ -456,6 +458,8 @@ type scheduledMessageByTemplateStatus =
   | "working"
   | "failed"
   | "delivered";
+
+const ERROR_PROCESS = "SCHEDULE_MESSAGE";
 
 const scheduleMessage = async (
   pool: Pool,
@@ -496,7 +500,10 @@ const scheduleMessage = async (
       .then((res) => res.rows.at(0));
 
     if (!messageUser) {
-      throw new Error(`failed to find message for id ${messageId}`);
+      throw new NotFoundError(
+        ERROR_PROCESS,
+        `failed to find message for id ${messageId}`,
+      );
     }
 
     preferredTransports.push(...(messageUser?.transports ?? []));
@@ -538,7 +545,7 @@ const scheduleMessage = async (
     const { data } = await profileService.selectUsers([userId]);
     const user = data?.at(0);
     if (!user) {
-      throw new Error("no user profile found");
+      throw new NotFoundError(ERROR_PROCESS, "no user profile found");
     }
 
     for (const transport of preferredTransports) {
