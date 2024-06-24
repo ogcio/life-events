@@ -155,8 +155,10 @@
     }
   },
   "formErrors": {
+    "generalServerError": "There was an unforseen error when trying to {{action}} the {{entity}}",
     "empty": "Enter {indArticleCheck, select, an {an} other {a}} {field}",
     "illegalVariable": "We have found an unknown variable. Please refer to the above list of Allowed variables for recipient specific content",
+    "alreadyInUse": "The value is already in use",
     "fields": {
       "subject": "subject",
       "message": "message",

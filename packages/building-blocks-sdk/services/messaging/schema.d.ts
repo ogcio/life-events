@@ -200,13 +200,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -241,13 +261,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -283,13 +323,33 @@ export interface paths {
         /** @description Default Response */
         404: {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         500: {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -320,13 +380,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -341,13 +421,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -766,7 +866,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -779,7 +882,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -792,7 +898,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -870,7 +979,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -883,7 +995,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -896,7 +1011,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -981,7 +1099,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -994,7 +1115,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1007,7 +1131,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1037,7 +1164,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1050,7 +1180,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1063,7 +1196,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1135,7 +1271,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1148,7 +1287,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1161,7 +1303,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1184,7 +1329,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1197,7 +1345,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1252,7 +1403,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1265,7 +1419,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1319,7 +1476,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1332,7 +1492,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1410,7 +1573,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1423,7 +1589,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1514,7 +1683,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1527,7 +1699,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1608,7 +1783,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1621,7 +1799,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1649,7 +1830,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1662,7 +1846,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
