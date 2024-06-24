@@ -2,11 +2,11 @@ import { PgSessions } from "auth/sessions";
 import { redirect, RedirectType } from "next/navigation";
 import { sendAMessage } from "../../utils/routes";
 import { headers } from "next/headers";
-import { getCorrelationId, getLogger } from "../../../libraries/logger";
+import { getRequestId, getLogger } from "../../../libraries/logger";
 
 export default async () => {
-  const correlationId = getCorrelationId(headers());
-  const logger = getLogger().child({ correlationId });
+  const requestId = getRequestId(headers());
+  const logger = getLogger().child({ requestId });
   logger.info("YUPPI YEAH YEAH YUPPI YEAH YEAH YUPPI");
 
   const { publicServant } = await PgSessions.get();

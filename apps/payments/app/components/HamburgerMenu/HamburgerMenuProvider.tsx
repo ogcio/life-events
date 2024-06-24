@@ -3,6 +3,18 @@ import ds from "design-system/";
 import { useCallback, useState } from "react";
 import styles from "./HamburgerMenu.module.scss";
 import HamburgerMenu from "./HamburgerMenu";
+import pinoLogger, { Logger } from "pino";
+
+let logger: Logger;
+export const getLogger = () => {
+  if (!logger) {
+    const deploymentEnv = process.env.NODE_ENV || "development";
+    logger = pinoLogger({
+      level: deploymentEnv === "production" ? "info" : "debug",
+    });
+  }
+  return logger;
+};
 
 type MenuProviderProps = {
   userName: string;
@@ -18,7 +30,7 @@ export default ({
   logout,
 }: MenuProviderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
-
+  getLogger().info("TESTING CLIENT COMPONENT");
   const handleClick = useCallback(() => setMenuOpen(false), [setMenuOpen]);
 
   return (

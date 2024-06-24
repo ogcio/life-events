@@ -6,14 +6,14 @@ import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
-import { getCorrelationId, getLogger } from "../../../../../libraries/logger";
+import { getRequestId, getLogger } from "../../../../../libraries/logger";
 
 export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.ComposeMessageMeta");
   async function submit(formData: FormData) {
     "use server";
-    const correlationId = getCorrelationId(headers());
-    const logger = getLogger().child({ correlationId });
+    const requestId = getRequestId(headers());
+    const logger = getLogger().child({ requestId });
     logger.info("INTO COMPOSE MESSAGE META");
     const templateMetaId = formData.get("templateMetaId")?.toString();
 

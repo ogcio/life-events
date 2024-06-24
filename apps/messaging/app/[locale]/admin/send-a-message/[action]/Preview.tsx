@@ -7,7 +7,7 @@ import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import { PgSessions } from "auth/sessions";
 import { headers } from "next/headers";
-import { getCorrelationId, getLogger } from "../../../../../libraries/logger";
+import { getRequestId, getLogger } from "../../../../../libraries/logger";
 
 export default async (props: MessageCreateProps) => {
   const [t, tCommons] = await Promise.all([
@@ -16,8 +16,8 @@ export default async (props: MessageCreateProps) => {
   ]);
   async function submit() {
     "use server";
-    const correlationId = getCorrelationId(headers());
-    const logger = getLogger().child({ correlationId });
+    const requestId = getRequestId(headers());
+    const logger = getLogger().child({ requestId });
     logger.info("INTO PREVIEW");
     await api.upsertMessageState(
       Object.assign({}, props.state, {

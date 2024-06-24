@@ -12,7 +12,7 @@ import TemplateForm from "./TemplateForm";
 
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 import { headers } from "next/headers";
-import { getCorrelationId, getLogger } from "../../../../../libraries/logger";
+import { getRequestId, getLogger } from "../../../../../libraries/logger";
 
 const metaSlug = "meta";
 const contentSlug = "content";
@@ -66,8 +66,8 @@ export default async (props: {
   params: { action: string };
   searchParams: { state_id: string };
 }) => {
-  const correlationId = getCorrelationId(headers());
-  const logger = getLogger().child({ correlationId });
+  const requestId = getRequestId(headers());
+  const logger = getLogger().child({ requestId });
   logger.info("INO SEND MESSAGE");
   const { userId } = await PgSessions.get();
   const urlAction = props.params.action;

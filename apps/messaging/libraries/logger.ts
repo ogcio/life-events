@@ -11,8 +11,8 @@ export const getLogger = () => {
   return logger;
 };
 
-export const getCorrelationId = (headers: Headers) => {
-  let correlationId = headers.get("x-correlation-id");
+export const getRequestId = (headers: Headers) => {
+  let correlationId = headers.get("x-request-id");
   if (!correlationId) {
     correlationId = crypto.randomUUID();
   }
