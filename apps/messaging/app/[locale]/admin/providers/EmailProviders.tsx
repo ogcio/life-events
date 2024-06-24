@@ -46,7 +46,7 @@ export default async () => {
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               <div style={{ display: "flex", alignItems: "center" }}>
-                <Link
+                <a
                   className="govie-link govie-!-margin-right-3"
                   href={(() => {
                     const url = new URL(
@@ -58,7 +58,7 @@ export default async () => {
                   })()}
                 >
                   {t("editLink")}
-                </Link>
+                </a>
                 <Link
                   className="govie-link govie-!-margin-right-3"
                   href={(() => {

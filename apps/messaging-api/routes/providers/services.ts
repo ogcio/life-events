@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { PoolClient } from "pg";
 import { ServiceError } from "../../utils";
+import { ServerError, ValidationError } from "shared-errors";
 
 export type EmailProvider = {
   id: string;
@@ -23,40 +24,115 @@ export interface SendMailParams {
 
 export interface MailService {
   createProvider(
-    params: Omit<EmailProvider, "id">,
+    organisationId: string,
+    provider: Omit<EmailProvider, "id">,
   ): Promise<string | undefined>;
-  updateProvider(params: EmailProvider): Promise<void>;
-  getProvider(id: string): Promise<EmailProvider | undefined>;
-  getProviders(): Promise<EmailProvider[]>;
-  deleteProvider(id: string): Promise<void>;
-  sendMail(params: SendMailParams): Promise<ServiceError | undefined>;
+  updateProvider(organisationId: string, params: EmailProvider): Promise<void>;
+  getProvider(
+    organisationId: string,
+    providerId: string,
+  ): Promise<EmailProvider | undefined>;
+  getProviders(organisationId: string): Promise<EmailProvider[]>;
+  deleteProvider(organisationId: string, providerId: string): Promise<void>;
+  sendMail(
+    organisationId: string,
+    params: SendMailParams,
+  ): Promise<ServiceError | undefined>;
   getFirstOrEtherealMailProvider(): Promise<string>;
 }
 
 export function mailService(client: PoolClient): MailService {
   return {
-    async createProvider({
-      host,
-      name,
-      password,
-      port,
-      username,
-      fromAddress,
-      throttle,
-      ssl,
-    }: Omit<EmailProvider, "id">) {
-      return client
-        .query<{ id: string }>(
-          `
-          INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw, from_address, throttle_ms, is_ssl)
-          VALUES($1,$2,$3,$4,$5,$6,$7,$8)
+    async createProvider(
+      organisationId: string,
+      {
+        host,
+        name,
+        password,
+        port,
+        username,
+        fromAddress,
+        throttle,
+        ssl,
+      }: Omit<EmailProvider, "id">,
+    ) {
+      const duplicationQueryResult = await client.query<{ exists: boolean }>(
+        `
+        select exists(
+          select * from email_providers
+          where organisation_id = $1 and lower(from_address) = lower($2)
+        )
+      `,
+        [organisationId, fromAddress],
+      );
+
+      if (duplicationQueryResult.rows.at(0)?.exists) {
+        throw new ValidationError(
+          "EMAIL_PROVIDER_ERROR",
+          "from address already in use",
+          [
+            {
+              fieldName: "fromAddress",
+              message: "alreadyInUse",
+            },
+          ],
+        );
+      }
+
+      const insertQueryResult = await client.query<{ id: string }>(
+        `
+          INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw, from_address, throttle_ms, is_ssl, organisation_id)
+          VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
           RETURNING id
           `,
-          [name, host, port, username, password, fromAddress, throttle, ssl],
-        )
-        .then((res) => res.rows.at(0)?.id);
+        [
+          name,
+          host,
+          port,
+          username,
+          password,
+          fromAddress,
+          throttle,
+          ssl,
+          organisationId,
+        ],
+      );
+
+      const id = insertQueryResult.rows.at(0)?.id;
+
+      if (!id) {
+        throw new ServerError(
+          "EMAIL_PROVIDER_ERROR",
+          "failed to create provider",
+        );
+      }
+
+      return id;
     },
-    async updateProvider(data: EmailProvider) {
+    async updateProvider(organisationId: string, provider: EmailProvider) {
+      const duplicationQueryResult = await client.query<{ exists: boolean }>(
+        `
+        select exists(
+          select * from email_providers
+          where organisation_id = $1 and lower(from_address) = lower($2)
+        )
+      `,
+        [organisationId, provider.fromAddress],
+      );
+
+      if (duplicationQueryResult.rows.at(0)?.exists) {
+        throw new ValidationError(
+          "EMAIL_PROVIDER_ERROR",
+          "from address already in use",
+          [
+            {
+              fieldName: "fromAddress",
+              message: "alreadyInUse",
+            },
+          ],
+        );
+      }
+
       await client.query(
         `
           UPDATE email_providers set 
@@ -68,22 +144,23 @@ export function mailService(client: PoolClient): MailService {
             from_address = $6,
             throttle_ms = $7,
             is_ssl = $8
-          WHERE id = $9
+          WHERE id = $9 and organisation_id = $10
         `,
         [
-          data.name,
-          data.host,
-          data.port,
-          data.username,
-          data.password,
-          data.fromAddress,
-          data.throttle,
-          data.ssl,
-          data.id,
+          provider.name,
+          provider.host,
+          provider.port,
+          provider.username,
+          provider.password,
+          provider.fromAddress,
+          provider.throttle,
+          provider.ssl,
+          provider.id,
+          organisationId,
         ],
       );
     },
-    async getProvider(id: string) {
+    async getProvider(organisationId: string, providerId: string) {
       return client
         .query<EmailProvider>(
           `
@@ -97,16 +174,15 @@ export function mailService(client: PoolClient): MailService {
           from_address as "fromAddress",
           is_ssl as "ssl"
         FROM email_providers
-        WHERE id =$1
+        WHERE id =$1 and organisation_id = $2
       `,
-          [id],
+          [providerId, organisationId],
         )
         .then((res) => res.rows.at(0));
     },
-    async getProviders() {
-      return client
-        .query<EmailProvider>(
-          `
+    async getProviders(organisationId: string) {
+      const providerResult = await client.query<EmailProvider>(
+        `
         SELECT 
           id, 
           provider_name as "name", 
@@ -117,17 +193,28 @@ export function mailService(client: PoolClient): MailService {
           from_address as "fromAddress",
           is_ssl as "ssl"
         FROM email_providers
+        WHERE organisation_id = $1
         ORDER BY created_at DESC
       `,
-        )
-        .then((res) => res.rows);
+        [organisationId],
+      );
+      return providerResult.rows;
     },
-    async deleteProvider(id: string) {
-      await client.query(`delete from email_providers where id = $1`, [id]);
+    async deleteProvider(organisationId: string, providerId: string) {
+      await client.query(
+        `delete from email_providers where id = $1 and organisation_id = $2`,
+        [providerId, organisationId],
+      );
     },
-    async sendMail(params: SendMailParams): Promise<ServiceError | undefined> {
+    async sendMail(
+      organisationId: string,
+      params: SendMailParams,
+    ): Promise<ServiceError | undefined> {
       try {
-        const provider = await this.getProvider(params.providerId);
+        const provider = await this.getProvider(
+          organisationId,
+          params.providerId,
+        );
 
         if (!provider) {
           return {
@@ -182,19 +269,19 @@ export function mailService(client: PoolClient): MailService {
         )
         .then((res) => res.rows.at(0)?.id);
 
-      if (!id) {
-        const createProviderMethod = this.createProvider;
-        const testAccount = await nodemailer.createTestAccount();
-        id = await createProviderMethod({
-          name: "Ethreal Email Dev Provider",
-          host: testAccount.smtp.host,
-          port: 587,
-          username: testAccount.user,
-          password: testAccount.pass,
-          fromAddress: "",
-          ssl: false,
-        });
-      }
+      // if (!id) {
+      //   const createProviderMethod = this.createProvider;
+      //   const testAccount = await nodemailer.createTestAccount();
+      //   id = await createProviderMethod({
+      //     name: "Ethreal Email Dev Provider",
+      //     host: testAccount.smtp.host,
+      //     port: 587,
+      //     username: testAccount.user,
+      //     password: testAccount.pass,
+      //     fromAddress: "",
+      //     ssl: false,
+      //   });
+      // }
 
       return id ?? "";
     },

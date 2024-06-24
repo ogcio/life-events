@@ -9,6 +9,8 @@ import { FormElement } from "../../FormElement";
 import { getTranslations } from "next-intl/server";
 const defaultErrorStateId = "email_provider_form";
 
+type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
+
 export default async (props: {
   params: { locale: string };
   searchParams?: { id: string };
@@ -32,8 +34,7 @@ export default async (props: {
 
     const id = formData.get("id")?.toString();
 
-    const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] =
-      [];
+    const formErrors: FormErrors = [];
 
     const required = { name, host, port, username, password, fromAddress };
     for (const field of Object.keys(required)) {
@@ -51,7 +52,7 @@ export default async (props: {
       await temporaryMockUtils.createErrors(
         formErrors,
         userId,
-        id || defaultErrorStateId,
+        defaultErrorStateId,
       );
       return revalidatePath("/");
     }
@@ -63,8 +64,12 @@ export default async (props: {
 
     const messagesClient = new Messaging(userId);
 
+    let serverError:
+      | Awaited<ReturnType<typeof messagesClient.createEmailProvider>>["error"]
+      | undefined;
+
     if (!id) {
-      await messagesClient.createEmailProvider({
+      const { error } = await messagesClient.createEmailProvider({
         name,
         host,
         username,
@@ -74,8 +79,12 @@ export default async (props: {
         throttle,
         ssl,
       });
+
+      if (error) {
+        serverError = error;
+      }
     } else {
-      await messagesClient.updateEmailProvider(id, {
+      const { error } = await messagesClient.updateEmailProvider(id, {
         host,
         port,
         id,
@@ -86,6 +95,36 @@ export default async (props: {
         throttle,
         ssl,
       });
+
+      if (error) {
+        serverError = error;
+      }
+    }
+
+    if (serverError) {
+      if (serverError.validation) {
+        formErrors.push(
+          ...serverError.validation.map((v) => ({
+            errorValue: fromAddress,
+            field: v.fieldName,
+            messageKey: v.message,
+          })),
+        );
+      } else {
+        formErrors.push({
+          errorValue: "",
+          field: "general",
+          messageKey: "generalServerError",
+        });
+      }
+
+      await temporaryMockUtils.createErrors(
+        formErrors,
+        userId,
+        defaultErrorStateId,
+      );
+
+      return revalidatePath("/");
     }
 
     const url = new URL(
@@ -114,7 +153,7 @@ export default async (props: {
 
   const errors = await temporaryMockUtils.getErrors(
     userId,
-    props.searchParams?.id || defaultErrorStateId,
+    defaultErrorStateId,
   );
 
   const nameError = errors.find((error) => error.field === "name");
