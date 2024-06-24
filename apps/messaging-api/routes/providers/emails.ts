@@ -106,11 +106,6 @@ export default async function emails(app: FastifyInstance) {
           );
         }
         return { data };
-      } catch (err) {
-        throw new ServerError(
-          EMAIL_PROVIDER_ERROR,
-          "failed to get email provider",
-        );
       } finally {
         client.release();
       }
@@ -194,11 +189,6 @@ export default async function emails(app: FastifyInstance) {
 
       try {
         await service.deleteProvider(organisationId, request.params.providerId);
-      } catch (err) {
-        throw new ServerError(
-          EMAIL_PROVIDER_ERROR,
-          "failed to delete provider",
-        );
       } finally {
         client.release();
       }
