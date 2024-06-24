@@ -3,6 +3,7 @@ services:
     image: postgres:15.2-alpine
     restart: always
     environment:
+      PGUSER: ${POSTGRES_USER:-postgres} # will use current os user otherwise.
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:

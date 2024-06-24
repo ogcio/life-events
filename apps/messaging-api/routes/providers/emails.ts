@@ -2,9 +2,11 @@ import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { EmailProvider, mailService } from "./services";
 import { NotFoundError, ServerError } from "shared-errors";
+import { organisationId } from "../../utils";
+import { HttpError } from "../../types/httpErrors";
 const tags = ["Providers - Emails"];
 
-const EMAIL_PROVIDER_ERROR = "EMAIL_PROVIDER_ERROR";
+export const EMAIL_PROVIDER_ERROR = "EMAIL_PROVIDER_ERROR";
 
 interface GetEmailProvider {
   Params: {
@@ -58,16 +60,16 @@ export default async function emails(app: FastifyInstance) {
           200: Type.Object({
             data: Type.Array(EmailProviderType),
           }),
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
     async function handler() {
-      const client = await app.pg.connect();
+      const client = await app.pg.pool.connect();
       const service = mailService(client);
       try {
-        return { data: await service.getProviders() };
+        return { data: await service.getProviders(organisationId) };
       } finally {
         client.release();
       }
@@ -84,16 +86,19 @@ export default async function emails(app: FastifyInstance) {
           200: Type.Object({
             data: EmailProviderType,
           }),
-          404: { $ref: "HttpError" },
-          500: { $ref: "HttpError" },
+          404: HttpError,
+          500: HttpError,
         },
       },
     },
     async function handler(request, _reply) {
-      const client = await app.pg.connect();
-      const service = await mailService(client);
+      const client = await app.pg.pool.connect();
+      const service = mailService(client);
       try {
-        const data = await service.getProvider(request.params.providerId);
+        const data = await service.getProvider(
+          organisationId,
+          request.params.providerId,
+        );
         if (!data) {
           throw new NotFoundError(
             EMAIL_PROVIDER_ERROR,
@@ -101,11 +106,6 @@ export default async function emails(app: FastifyInstance) {
           );
         }
         return { data };
-      } catch (err) {
-        throw new ServerError(
-          EMAIL_PROVIDER_ERROR,
-          "failed to get email provider",
-        );
       } finally {
         client.release();
       }
@@ -125,22 +125,17 @@ export default async function emails(app: FastifyInstance) {
               id: Type.String({ format: "uuid" }),
             }),
           }),
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
-    async function handler(request, reply) {
-      const client = await app.pg.connect();
+    async function createEmailProviderHandler(request, reply) {
+      const client = await app.pg.pool.connect();
       const service = mailService(client);
+
       try {
-        const id = await service.createProvider(request.body);
-        if (!id) {
-          throw new ServerError(
-            EMAIL_PROVIDER_ERROR,
-            "failed to create provider",
-          );
-        }
+        const id = await service.createProvider(organisationId, request.body);
 
         reply.statusCode = 201;
         const data = { id };
@@ -159,21 +154,17 @@ export default async function emails(app: FastifyInstance) {
         tags,
         body: EmailProviderType,
         response: {
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
-    async function handler(request, _reply) {
-      const client = await app.pg.connect();
+    async function updateEmailProviderHandler(request, _reply) {
+      const client = await app.pg.pool.connect();
       const service = mailService(client);
       try {
-        await service.updateProvider(request.body);
-      } catch (err) {
-        throw new ServerError(
-          EMAIL_PROVIDER_ERROR,
-          "failed to update email provider",
-        );
+        const placeholderOrganisationId = organisationId;
+        await service.updateProvider(placeholderOrganisationId, request.body);
       } finally {
         client.release();
       }
@@ -187,21 +178,17 @@ export default async function emails(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
     async function handler(request, _reply) {
-      const client = await app.pg.connect();
-      const service = await mailService(client);
+      const client = await app.pg.pool.connect();
+      const service = mailService(client);
+
       try {
-        await service.deleteProvider(request.params.providerId);
-      } catch (err) {
-        throw new ServerError(
-          EMAIL_PROVIDER_ERROR,
-          "failed to delete provider",
-        );
+        await service.deleteProvider(organisationId, request.params.providerId);
       } finally {
         client.release();
       }

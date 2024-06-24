@@ -566,7 +566,7 @@ const scheduleMessage = async (
             await mailService(
               transportsClient,
             ).getFirstOrEtherealMailProvider();
-          await mailService(transportsClient).sendMail({
+          await mailService(transportsClient).sendMail(organisationId, {
             providerId,
             email: user.email,
             subject: transportationSubject,
@@ -862,7 +862,7 @@ const scheduledTemplate = async (
           providerId =
             await mailService(transportClient).getFirstOrEtherealMailProvider();
 
-          void mailService(transportClient).sendMail({
+          void mailService(transportClient).sendMail(organisationId, {
             providerId,
             email: "",
             subject: transportationSubject,
