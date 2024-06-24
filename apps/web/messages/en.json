@@ -885,7 +885,7 @@
       "dateColumn": "Date",
       "nameColumn": "Name",
       "deviceColumn": "Device type",
-      "myGovIdEmailColumn": "MyGovID email",
+      "workEmailColumn": "Work email",
       "verifiedWorkEmail": "Verified work email",
       "typeColumn": "Submission",
       "statusColumn": "Status",
@@ -905,7 +905,10 @@
       "nameColumn": "Name",
       "myGovIdEmailColumn": "MyGovID email",
       "workEmailColumn": "Work email",
-      "applicationStatusColumn": "Application status"
+      "applicationStatusColumn": "Application status",
+      "verificationLevelColumn": "Verification level",
+      "started": "Started",
+      "notStarted": "Not started"
     },
     "StatusMenu": {
       "pending": "Pending",

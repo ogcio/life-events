@@ -137,7 +137,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
               {t("nameColumn")}
             </th>
             <th scope="col" className="govie-table__header">
-              {t("myGovIdEmailColumn")}
+              {t("workEmailColumn")}
             </th>
             <th scope="col" className="govie-table__header">
               {t("deviceColumn")}
