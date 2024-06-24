@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { form, routes, postgres, workflow } from "../../../../utils";
 import ds from "design-system";
+import authenticatedAction from "../../../../utils/authenticatedAction";
 
 export default async (props: {
   data: workflow.GetDigitalWallet;
@@ -22,7 +23,7 @@ export default async (props: {
     props.flow,
   );
 
-  async function submitAction(formData: FormData) {
+  const submitAction = authenticatedAction(async (formData: FormData) => {
     "use server";
 
     const formErrors: form.Error[] = [];
@@ -101,7 +102,7 @@ export default async (props: {
     );
 
     return redirect(urlBase);
-  }
+  });
 
   const govIEEmailError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.govIEEmail,
