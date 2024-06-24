@@ -29,6 +29,7 @@
     "next": "14.2.2",
     "next-intl": "^3.14.1",
     "pg": "^8.12.0",
+    "pino": "^9.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "shared-components": "*"
