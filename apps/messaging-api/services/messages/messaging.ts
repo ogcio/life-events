@@ -7,6 +7,7 @@
 import { Pool } from "pg";
 import { organisationId, utils } from "../../utils";
 import { isNativeError } from "util/types";
+import { BadRequestError, ThirdPartyError } from "shared-errors";
 
 type TemplateContent = {
   subject: string;
@@ -25,6 +26,8 @@ type User = {
   email: string;
   phone: string;
 };
+
+const ERROR_PROCESS = "Messaging Service";
 
 export interface MessagingService {
   /**
@@ -73,7 +76,10 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
       security: string,
     ): Promise<{ userId: string; messageId: string }[]> {
       if (!templateContents.length) {
-        throw new Error("no template contents provided");
+        throw new BadRequestError(
+          ERROR_PROCESS,
+          "no template contents provided",
+        );
       }
 
       const valueArgsArray: string[] = [];
@@ -246,9 +252,12 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
         });
       } catch (err) {
         // TODO Error handling
-        throw new Error("failed to post messages", {
-          cause: isNativeError(err) ? err.cause : err,
-        });
+        throw new ThirdPartyError(
+          "failed to post messages",
+          isNativeError(err)
+            ? err.cause?.toString() ?? ""
+            : err?.toString() ?? "",
+        );
       }
     },
   });
