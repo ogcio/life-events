@@ -226,7 +226,8 @@ export function mailService(client: PoolClient): MailService {
           };
         }
 
-        const { host, password, username, port, fromAddress, ssl } = provider;
+        const { host, password, username, port, fromAddress, ssl, name } =
+          provider;
 
         const transporter: nodemailer.Transporter = nodemailer.createTransport({
           host,
@@ -240,7 +241,7 @@ export function mailService(client: PoolClient): MailService {
         });
 
         await transporter.sendMail({
-          from: fromAddress,
+          from: `${name} <${fromAddress}>`,
           to: params.email,
           subject: params.subject,
           html: params.body,

@@ -107,7 +107,6 @@ export default async function templates(app: FastifyInstance) {
     async function handleGetAll(request, _reply) {
       const lang = request.query?.lang || "";
 
-      console.log("skapligt troett", lang);
       const result = await app.pg.pool.query<{
         templateMetaId: string;
         lang: string;
