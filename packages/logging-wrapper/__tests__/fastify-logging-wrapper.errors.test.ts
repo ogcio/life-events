@@ -1,9 +1,16 @@
 import { LogErrorClasses } from "../src/logging-wrapper-entities.js";
 import { t } from "tap";
 import {
+  DEFAULT_METHOD,
+  checkExpectedApiTrackEntry,
+  checkExpectedErrorEntry,
+  checkExpectedRequestEntry,
+  checkExpectedResponseEntry,
   initializeServer,
+  parseLogEntry,
   runErrorTest,
 } from "./helpers/fastify-test-helpers.js";
+import { LifeEventsError } from "shared-errors";
 
 t.test("Error data are correctly set", async () => {
   const { server, loggingDestination } = initializeServer();
@@ -76,6 +83,52 @@ t.test("Error without status code logs expected values", async () => {
     errorMessage: "Unknown!",
     expectedClass: LogErrorClasses.UnknownError,
     expectedFastifyCode: "UNHANDLED_EXCEPTION",
+  });
+
+  t.end();
+});
+
+t.test("Life events error logs expected values", async () => {
+  const { server, loggingDestination } = initializeServer();
+  t.teardown(() => server.close());
+  const response = await server.inject({
+    method: DEFAULT_METHOD,
+    url: "/life-events-error",
+  });
+
+  t.ok(typeof response !== "undefined");
+  t.equal(response.statusCode, 500);
+  const loggedRecords = loggingDestination.getLoggedRecords();
+  t.equal(loggedRecords.length, 4);
+  const mockErrorInstance = new LifeEventsError("MOCK", "mock");
+  checkExpectedRequestEntry({
+    requestLogEntry: loggedRecords[0],
+    inputPath: "/life-events-error",
+  });
+
+  checkExpectedErrorEntry({
+    errorLogEntry: loggedRecords[1],
+    inputPath: "/life-events-error",
+    errorClass: LogErrorClasses.ServerError,
+    errorMessage: "mock",
+    errorCode: mockErrorInstance.name,
+    expectedLevelName: "ERROR",
+  });
+  const parsed = parseLogEntry(loggedRecords[1]);
+  t.equal(parsed.error.process, "TESTING");
+
+  checkExpectedResponseEntry({
+    responseLogEntry: loggedRecords[2],
+    inputPath: "/life-events-error",
+    responseStatusCode: 500,
+  });
+  checkExpectedApiTrackEntry({
+    apiTrackLogEntry: loggedRecords[3],
+    inputPath: "/life-events-error",
+    responseStatusCode: 500,
+    errorClass: LogErrorClasses.ServerError,
+    errorMessage: "mock",
+    errorCode: mockErrorInstance.name,
   });
 
   t.end();

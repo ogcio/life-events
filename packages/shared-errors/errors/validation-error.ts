@@ -2,12 +2,12 @@ import { LifeEventsError } from "./life-events-error.js";
 
 export class ValidationError extends LifeEventsError {
   readonly errorCode: number = 422;
-  validationErrors: { [fieldName: string]: string };
+  validationErrors: { fieldName: string; message: string }[];
 
   constructor(
     errorProcess: string,
     message: string,
-    validationErrors: { [fieldName: string]: string } = {},
+    validationErrors: { fieldName: string; message: string }[] = [],
   ) {
     super(errorProcess, message);
     this.name = "VALIDATION_ERROR";

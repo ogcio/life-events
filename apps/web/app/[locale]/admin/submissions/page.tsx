@@ -31,6 +31,7 @@ const componentsMap: {
 export default async (props: SubmissionsTableProps) => {
   const t = await getTranslations("Admin.Submissions");
   const { publicServant } = await PgSessions.get();
+  const searchParams = new URLSearchParams(props.searchParams);
 
   if (!publicServant) {
     redirect("/", RedirectType.replace);
@@ -43,6 +44,15 @@ export default async (props: SubmissionsTableProps) => {
       <h1 className="govie-heading-l">{t("title")}</h1>
       <StatusMenu searchParams={props.searchParams} />
       <Component {...props} />
+      <div style={{ textAlign: "right" }}>
+        <a
+          href={`/admin/submissions/api?${searchParams.toString()}`}
+          target="_blank"
+          className="govie-link"
+        >
+          {t("exportCsvFile")}
+        </a>
+      </div>
     </>
   );
 };
