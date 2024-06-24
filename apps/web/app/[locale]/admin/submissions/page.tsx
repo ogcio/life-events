@@ -1,5 +1,3 @@
-import { RedirectType, redirect } from "next/navigation";
-import { PgSessions } from "auth/sessions";
 import EventTable from "./EventTable";
 import { web } from "../../../utils";
 import StatusMenu from "./StatusMenu";
@@ -30,12 +28,7 @@ const componentsMap: {
 
 export default async (props: SubmissionsTableProps) => {
   const t = await getTranslations("Admin.Submissions");
-  const { publicServant } = await PgSessions.get();
   const searchParams = new URLSearchParams(props.searchParams);
-
-  if (!publicServant) {
-    redirect("/", RedirectType.replace);
-  }
 
   const Component = componentsMap[props.searchParams?.status ?? "submitted"];
 

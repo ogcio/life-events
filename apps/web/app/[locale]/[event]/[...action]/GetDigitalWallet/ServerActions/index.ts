@@ -1,7 +1,6 @@
 "use server";
 import nodemailer from "nodemailer";
 import { getTranslations } from "next-intl/server";
-import { get } from "http";
 
 const buildTransport = () =>
   nodemailer.createTransport({

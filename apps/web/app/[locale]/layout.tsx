@@ -34,6 +34,11 @@ export default async function RootLayout({
   const { userId, firstName, lastName, publicServant, verificationLevel } =
     await PgSessions.get(redirectUrl);
 
+  // if the requested path is not under the admin routes and the user is a publc servant, redirect to the admin page
+  if (publicServant && !path?.startsWith(`/${locale}/admin`)) {
+    redirect(`/${locale}/admin`, RedirectType.replace);
+  }
+
   const userName = [firstName, lastName].join(" ");
 
   const result = await pgpool.query<{ is_consenting: boolean }>(

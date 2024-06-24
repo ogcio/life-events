@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { form, routes, postgres, workflow } from "../../../../utils";
 import ds from "design-system";
+import authenticatedAction from "../../../../utils/authenticatedAction";
 
 export default async (props: {
   data: workflow.GetDigitalWallet;
@@ -12,7 +13,6 @@ export default async (props: {
 }) => {
   const { data, userId, urlBase, flow } = props;
   const t = await getTranslations("GetDigitalWallet.DeviceSelection");
-  const errorT = await getTranslations("formErrors");
 
   const red = ds.colours.ogcio.red;
 
@@ -22,7 +22,7 @@ export default async (props: {
     props.flow,
   );
 
-  async function submitAction(formData: FormData) {
+  const submitAction = authenticatedAction(async (formData: FormData) => {
     "use server";
 
     const formErrors: form.Error[] = [];
@@ -90,7 +90,78 @@ export default async (props: {
     );
 
     return redirect(urlBase);
-  }
+  });
+
+  // async function submitAction(async (formData: FormData) {
+  //   "use server";
+  //   await PgSessions.get("get-digital-wallet");
+
+  //   const formErrors: form.Error[] = [];
+
+  //   const deviceType = formData.get("deviceType")?.toString() as
+  //     | "android"
+  //     | "ios";
+  //   formErrors.push(
+  //     ...form.validation.stringNotEmpty(
+  //       form.fieldTranslationKeys.deviceType,
+  //       deviceType,
+  //     ),
+  //   );
+
+  //   if (formErrors.length) {
+  //     await form.insertErrors(
+  //       formErrors,
+  //       userId,
+  //       routes.digitalWallet.getDigitalWallet.deviceSelection.slug,
+  //       flow,
+  //     );
+
+  //     return revalidatePath("/");
+  //   }
+
+  //   const data: Pick<workflow.GetDigitalWallet, "deviceType"> = {
+  //     deviceType,
+  //   };
+
+  //   const currentDataResults = await postgres.pgpool.query<{
+  //     currentData: workflow.GetDigitalWallet;
+  //   }>(
+  //     `
+  //     SELECT flow_data as "currentData" FROM user_flow_data
+  //     WHERE user_id = $1 AND flow = $2
+  //     `,
+  //     [userId, workflow.keys.getDigitalWallet],
+  //   );
+
+  //   let dataToUpdate: workflow.GetDigitalWallet;
+  //   if (currentDataResults.rowCount) {
+  //     const [{ currentData }] = currentDataResults.rows;
+  //     Object.assign(currentData, data);
+  //     dataToUpdate = currentData;
+  //   } else {
+  //     const base: workflow.GetDigitalWallet = workflow.emptyGetDigitalWallet();
+  //     Object.assign(base, data);
+  //     dataToUpdate = base;
+  //   }
+
+  //   await postgres.pgpool.query(
+  //     `
+  //       INSERT INTO user_flow_data (user_id, flow, flow_data, category)
+  //       VALUES ($1, $2, $3, $4)
+  //       ON CONFLICT (flow, user_id)
+  //       DO UPDATE SET flow_data = $3
+  //       WHERE user_flow_data.user_id=$1 AND user_flow_data.flow=$2
+  //   `,
+  //     [
+  //       userId,
+  //       workflow.keys.getDigitalWallet,
+  //       JSON.stringify(dataToUpdate),
+  //       workflow.categories.digitalWallet,
+  //     ],
+  //   );
+
+  //   return redirect(urlBase);
+  // }
 
   const deviceTypeError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.deviceType,
