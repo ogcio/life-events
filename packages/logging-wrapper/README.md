@@ -1,6 +1,6 @@
 # Logging Wrapper
 
-This logging wrapper goal is to standardize the records written by our services.
+This logging wrapper goal is to standardize the records written by our Fastify services.
 
 ## How to
 
