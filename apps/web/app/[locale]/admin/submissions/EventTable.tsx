@@ -72,8 +72,7 @@ export const getSubmissions = async (params: {
   if (filters) {
     for (const [key, value] of Object.entries(filters)) {
       dataQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
-      sqlQueryParams.push(key);
-      sqlQueryParams.push(value);
+      sqlQueryParams.push(key, value);
       paramIndex += 2;
     }
   }
