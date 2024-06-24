@@ -203,7 +203,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
                 </td>
 
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {row.flow_data ? "Started" : "Not started"}
+                  {row.flow_data ? t("started") : t("notStarted")}
                 </td>
               </tr>
             );
