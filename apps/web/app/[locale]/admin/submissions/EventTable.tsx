@@ -10,18 +10,18 @@ import {
 import Pagination from "./components/Pagination";
 import TableControls from "./components/TableControls/TableControls";
 import { QueryResult } from "pg";
+import page from "../page";
+import { off } from "process";
+import { get } from "http";
 
-export default async ({ searchParams, params }: SubmissionsTableProps) => {
-  const t = await getTranslations("Admin.EventsTable");
-
-  //allow only submitted approved rejected from Pages type excluding pending
-  const statusSelection =
-    (searchParams?.status as Exclude<Pages, "pending">) || "submitted";
-
-  const urlParms = new URLSearchParams(searchParams);
-  const url = `${process.env.HOST_URL}/${params.locale}/admin/submissions?status=${statusSelection}`;
-
-  const queryParams = getQueryParams(urlParms);
+export const getSubmissions = async (params: {
+  status: Exclude<Pages, "pending">;
+  pageSize?: number;
+  offset?: number;
+  search?: string;
+  filters?: Record<string, string>;
+}) => {
+  const { status, search, filters, pageSize, offset } = params;
 
   const dataSelect = `SELECT 
   fd.user_id as "userId", 
@@ -32,7 +32,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
   let dataQuery = `
   FROM user_flow_data fd`;
 
-  switch (statusSelection) {
+  switch (status) {
     case "rejected":
       dataQuery += ` WHERE (flow_data ->> 'rejectedAt') != ''`;
       break;
@@ -56,9 +56,9 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
     updatedAt: string;
   }>;
 
-  const sqlQueryParams: (string | boolean)[] = [];
+  const sqlQueryParams: (string | boolean | number)[] = [];
   let paramIndex = 1;
-  if (queryParams.search) {
+  if (search) {
     dataQuery += ` AND (
       (flow_data ->> 'govIEEmail') ILIKE $${paramIndex}
       OR (flow_data ->> 'myGovIdEmail') ILIKE $${paramIndex}
@@ -66,28 +66,51 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
       OR (flow_data ->> 'lastName') ILIKE $${paramIndex}
       )`;
     paramIndex++;
-    sqlQueryParams.push(`%${queryParams.search}%`);
+    sqlQueryParams.push(`%${search}%`);
   }
 
-  const filters = queryParams.filters;
-  for (const [key, value] of Object.entries(filters)) {
-    dataQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
-    sqlQueryParams.push(key);
-    sqlQueryParams.push(value);
-    paramIndex += 2;
+  if (filters) {
+    for (const [key, value] of Object.entries(filters)) {
+      dataQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
+      sqlQueryParams.push(key, value);
+      paramIndex += 2;
+    }
   }
-
-  userFlows = await postgres.pgpool.query(
-    `${dataSelect} ${dataQuery} ORDER BY updated_at DESC  LIMIT $${paramIndex++} OFFSET $${paramIndex}`,
-    [...sqlQueryParams, queryParams.limit, queryParams.offset],
-  );
 
   const countQueryResult = await postgres.pgpool.query<{ count: number }>(
     `SELECT COUNT(*) ${dataQuery}`,
     sqlQueryParams,
   );
 
-  const count = countQueryResult.rows[0].count;
+  if (pageSize !== undefined && offset !== undefined) {
+    dataQuery += ` ORDER BY updated_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex}`;
+    sqlQueryParams.push(pageSize, offset);
+  }
+
+  userFlows = await postgres.pgpool.query(
+    `${dataSelect} ${dataQuery}`,
+    sqlQueryParams,
+  );
+
+  return { data: userFlows, count: countQueryResult.rows[0].count };
+};
+
+export default async ({ searchParams, params }: SubmissionsTableProps) => {
+  const t = await getTranslations("Admin.EventsTable");
+
+  const urlParms = new URLSearchParams(searchParams);
+  const statusSelection =
+    (searchParams?.status as Exclude<Pages, "pending">) || "submitted";
+  const url = `${process.env.HOST_URL}/${params.locale}/admin/submissions?status=${statusSelection}`;
+  const queryParams = getQueryParams(urlParms);
+
+  const { data: userFlows, count } = await getSubmissions({
+    status: statusSelection,
+    pageSize: queryParams.limit,
+    filters: queryParams.filters,
+    offset: queryParams.offset,
+    search: queryParams.search,
+  });
 
   const links: PaginationLinks = getPaginationLinks({
     url,
