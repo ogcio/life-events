@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import { PoolClient } from "pg";
 import { ServiceError } from "../../utils";
 import { ServerError, ValidationError } from "shared-errors";
+import { EMAIL_PROVIDER_ERROR } from "./emails";
 
 export type EmailProvider = {
   id: string;
@@ -68,7 +69,7 @@ export function mailService(client: PoolClient): MailService {
 
       if (duplicationQueryResult.rows.at(0)?.exists) {
         throw new ValidationError(
-          "EMAIL_PROVIDER_ERROR",
+          EMAIL_PROVIDER_ERROR,
           "from address already in use",
           [
             {
@@ -102,7 +103,7 @@ export function mailService(client: PoolClient): MailService {
 
       if (!id) {
         throw new ServerError(
-          "EMAIL_PROVIDER_ERROR",
+          EMAIL_PROVIDER_ERROR,
           "failed to create provider",
         );
       }
@@ -122,7 +123,7 @@ export function mailService(client: PoolClient): MailService {
 
       if (duplicationQueryResult.rows.at(0)?.exists) {
         throw new ValidationError(
-          "EMAIL_PROVIDER_ERROR",
+          EMAIL_PROVIDER_ERROR,
           "from address already in use",
           [
             {

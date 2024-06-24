@@ -1,18 +1,12 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { EmailProvider, mailService } from "./services";
-import {
-  isLifeEventsError,
-  NotFoundError,
-  ServerError,
-  ValidationError,
-} from "shared-errors";
+import { NotFoundError, ServerError } from "shared-errors";
 import { organisationId } from "../../utils";
-import { isNativeError } from "util/types";
 import { HttpError } from "../../types/httpErrors";
 const tags = ["Providers - Emails"];
 
-const EMAIL_PROVIDER_ERROR = "EMAIL_PROVIDER_ERROR";
+export const EMAIL_PROVIDER_ERROR = "EMAIL_PROVIDER_ERROR";
 
 interface GetEmailProvider {
   Params: {
