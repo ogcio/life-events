@@ -1,4 +1,3 @@
-import { createError } from "@fastify/error";
 import { Pool, PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
 import {
@@ -7,6 +6,7 @@ import {
   UsersImport,
 } from "../../types/usersSchemaDefinitions";
 import { Profile } from "building-blocks-sdk";
+import { NotFoundError, ServerError } from "shared-errors";
 
 const getUser = async (params: {
   client: PoolClient;
@@ -34,15 +34,14 @@ const getUser = async (params: {
     );
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw createError(
+    throw new ServerError(
       params.errorCode,
       `Error retrieving user: ${message}`,
-      500,
-    )();
+    );
   }
 
   if (!result || result.rowCount === 0) {
-    throw createError(params.errorCode, "Cannot find the user", 404)();
+    throw new NotFoundError(params.errorCode, "Cannot find the user");
   }
 
   return result.rows[0];
@@ -136,11 +135,10 @@ export const getUserImports = async (params: {
     return result.rows;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw createError(
+    throw new ServerError(
       params.errorCode,
       `Error retrieving user imports: ${message}`,
-      500,
-    )();
+    );
   }
 };
 
@@ -195,11 +193,10 @@ export const getUserInvitationsForOrganisation = async (params: {
     return result.rows;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw createError(
+    throw new ServerError(
       params.errorCode,
       `Error retrieving user invitations: ${message}`,
-      500,
-    )();
+    );
   }
 };
 

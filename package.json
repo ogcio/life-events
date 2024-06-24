@@ -12,10 +12,11 @@
   "scripts": {
     "build:ds": "npm run build --workspace=design-system",
     "build:auth": "npm run build --workspace=auth",
+    "build:shared-errors": "npm run build --workspace=shared-errors",
     "build:logging-wrapper": "npm run build --workspace=logging-wrapper",
     "build:api-auth": "npm run build --workspace=api-auth",
     "build:error-handler": "npm run build --workspace=error-handler",
-    "build:packages": "npm run build:logging-wrapper && npm run build:error-handler && npm run build:api-auth",
+    "build:packages": "npm run build:shared-errors && npm run build:logging-wrapper && npm run build:error-handler && npm run build:api-auth",
     "update-env": "MODE=update node scripts/init-env.mjs",
     "init:packages": "npm i && npm run build:packages",
     "init:ds": "[ -d packages/design-system/dist ] || npm run build:ds",

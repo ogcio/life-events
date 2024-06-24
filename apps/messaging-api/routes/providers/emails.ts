@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
-import { createError } from "@fastify/error";
 import { FastifyInstance } from "fastify";
 import { EmailProvider, mailService } from "./services";
+import { NotFoundError, ServerError } from "shared-errors";
 const tags = ["Providers - Emails"];
 
 const EMAIL_PROVIDER_ERROR = "EMAIL_PROVIDER_ERROR";
@@ -95,19 +95,17 @@ export default async function emails(app: FastifyInstance) {
       try {
         const data = await service.getProvider(request.params.providerId);
         if (!data) {
-          throw createError(
+          throw new NotFoundError(
             EMAIL_PROVIDER_ERROR,
             "email provider not found",
-            404,
-          )();
+          );
         }
         return { data };
       } catch (err) {
-        throw createError(
+        throw new ServerError(
           EMAIL_PROVIDER_ERROR,
           "failed to get email provider",
-          500,
-        )();
+        );
       } finally {
         client.release();
       }
@@ -138,11 +136,10 @@ export default async function emails(app: FastifyInstance) {
       try {
         const id = await service.createProvider(request.body);
         if (!id) {
-          throw createError(
+          throw new ServerError(
             EMAIL_PROVIDER_ERROR,
             "failed to create provider",
-            500,
-          )();
+          );
         }
 
         reply.statusCode = 201;
@@ -173,11 +170,10 @@ export default async function emails(app: FastifyInstance) {
       try {
         await service.updateProvider(request.body);
       } catch (err) {
-        throw createError(
+        throw new ServerError(
           EMAIL_PROVIDER_ERROR,
           "failed to update email provider",
-          500,
-        )();
+        );
       } finally {
         client.release();
       }
@@ -202,11 +198,10 @@ export default async function emails(app: FastifyInstance) {
       try {
         await service.deleteProvider(request.params.providerId);
       } catch (err) {
-        throw createError(
+        throw new ServerError(
           EMAIL_PROVIDER_ERROR,
           "failed to delete provider",
-          500,
-        )();
+        );
       } finally {
         client.release();
       }

@@ -1,4 +1,3 @@
-import { createError } from "@fastify/error";
 import { FastifyBaseLogger, FastifyError } from "fastify";
 import { PoolClient } from "pg";
 import {
@@ -22,6 +21,7 @@ import {
 } from "../shared-users";
 import { processTagsPerUser } from "../../tags/manage-tags";
 import { executeUpdateOrganisationFeedback } from "../invitations/shared-invitations";
+import { NotFoundError, NotImplementedError, ServerError } from "shared-errors";
 
 interface FoundUser {
   id: string;
@@ -50,7 +50,10 @@ const mapUsersAsync = async (_params: {
   requestUser: RequestUser;
 }): Promise<UsersImport> => {
   // Here we will invoke the scheduler
-  throw new Error("Not implemented yet");
+  throw new NotImplementedError(
+    IMPORT_USERS_ERROR,
+    "async users mapping not yet implemented, change the SYNCHRONOUS_USER_IMPORT key to true",
+  );
 };
 
 const mapUsersSync = async (params: {
@@ -105,12 +108,10 @@ const updateUsersImport = async (params: {
     return usersImport;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
+    throw new ServerError(
       IMPORT_USERS_ERROR,
       `Error during updating users import on db: ${message}`,
-      500,
-    )();
-    throw toOutput;
+    );
   }
 };
 
@@ -129,11 +130,10 @@ const getUsersImport = async (params: {
   });
 
   if (results.length === 0) {
-    throw createError(
+    throw new NotFoundError(
       IMPORT_USERS_ERROR,
       `Users import with id ${params.importId} not found`,
-      404,
-    )();
+    );
   }
 
   return results[0];
@@ -292,11 +292,10 @@ const processToImportUser = async (params: {
   });
 
   if (!user.id) {
-    throw createError(
+    throw new ServerError(
       IMPORT_USERS_ERROR,
       "Error inserting the user in the db",
-      500,
-    )();
+    );
   }
 
   const organisationUser = await processOrganizationUserRelation({
@@ -356,13 +355,10 @@ const insertNewUser = async (params: {
     return toInsert;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
+    throw new ServerError(
       IMPORT_USERS_ERROR,
       `Error inserting new user: ${message}`,
-      500,
-    )();
-
-    throw toOutput;
+    );
   }
 };
 
@@ -390,19 +386,19 @@ const getUserOrganisationRelation = async (params: {
     );
 
     if (result.rowCount === 0) {
-      throw new Error(USER_ORGANIZATION_RELATION_MISSING_ERROR);
+      throw new NotFoundError(
+        IMPORT_USERS_ERROR,
+        USER_ORGANIZATION_RELATION_MISSING_ERROR,
+      );
     }
 
     return result.rows[0];
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
+    throw new ServerError(
       IMPORT_USERS_ERROR,
       `Error retrieving organisation user relation: ${message}`,
-      500,
-    )();
-
-    throw toOutput;
+    );
   }
 };
 
@@ -431,13 +427,10 @@ const insertNewOrganizationUserRelation = async (params: {
     return toInsert;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
+    throw new ServerError(
       IMPORT_USERS_ERROR,
       `Error inserting new organization user relation: ${message}`,
-      500,
-    )();
-
-    throw toOutput;
+    );
   }
 };
 
