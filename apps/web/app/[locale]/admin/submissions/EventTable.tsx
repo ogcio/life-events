@@ -84,8 +84,7 @@ export const getSubmissions = async (params: {
 
   if (pageSize !== undefined && offset !== undefined) {
     dataQuery += ` ORDER BY updated_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex}`;
-    sqlQueryParams.push(pageSize);
-    sqlQueryParams.push(offset);
+    sqlQueryParams.push(pageSize, offset);
   }
 
   userFlows = await postgres.pgpool.query(

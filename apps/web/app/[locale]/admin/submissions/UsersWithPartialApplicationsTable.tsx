@@ -88,8 +88,7 @@ export const getPartialApplications = async (params: {
   if (filters) {
     for (const [key, value] of Object.entries(filters)) {
       flowQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
-      queryParams.push(key);
-      queryParams.push(value);
+      queryParams.push(key, value);
       paramIndex += 2;
     }
   }
