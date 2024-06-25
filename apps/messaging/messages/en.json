@@ -201,7 +201,9 @@
       "editLink": "Edit",
       "addProviderLink": "Add provider",
       "providersSubtitle": "Providers",
-      "deleteButton": "Delete"
+      "primaryHeader": "Primary",
+      "deleteButton": "Delete",
+      "primaryCellValue": "Yes"
     },
     "EmailProvider": {
       "titleAdd": "Add email provider",
@@ -216,7 +218,8 @@
       "throttleHint": "Optional field to adjust how long time between each mail, in miliseconds.",
       "updateButton": "Update",
       "createButton": "Create",
-      "ssl": "SSL"
+      "ssl": "SSL",
+      "isPrimary": "Primary"
     },
     "Sms": {
       "addProviderLink": "Add provider",
@@ -225,7 +228,9 @@
       "typeTableHeader": "Type",
       "actionTableHeader": "Action",
       "deleteButton": "Delete",
-      "editLink": "Edit"
+      "editLink": "Edit",
+      "primaryHeader": "Primary",
+      "primaryCellValue": "Yes"
     },
     "SmsProvider": {
       "titleAdd": "Add SMS provider",
@@ -237,7 +242,8 @@
       "region": "Region",
       "submitUpdate": "Update",
       "submitCreate": "Create",
-      "selectProviderLabel": "Select provider"
+      "selectProviderLabel": "Select provider",
+      "isPrimary": "Primary"
     }
   },
   "AlphaBanner": {

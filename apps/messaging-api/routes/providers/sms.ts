@@ -2,6 +2,7 @@ import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { organisationId } from "../../utils";
 import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
+import { HttpError } from "../../types/httpErrors";
 const tags = ["Providers - SMS"];
 
 const SMS_PROVIDER_ERROR = "SMS_PROVIDER_ERROR";
@@ -20,6 +21,7 @@ type SmsProvider = {
   id: string;
   name: string;
   config: ConfigBase & AwsSnsProvider; // Union any other provider types.
+  isPrimary: boolean;
 };
 
 const awsConfigType = Type.Object({
@@ -45,11 +47,12 @@ export default async function sms(app: FastifyInstance) {
                 id: Type.String({ format: "uuid" }),
                 name: Type.String(),
                 type: Type.String(),
+                isPrimary: Type.Boolean(),
               }),
             ),
           }),
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -59,14 +62,19 @@ export default async function sms(app: FastifyInstance) {
           id: string;
           name: string;
           type: string;
+          isPrimary: boolean;
         }>(
           `
-        select id, provider_name as "name", (config ->> 'type') as "type" from
-        sms_providers
-        -- where organisation_id = $1
+        select 
+          id, 
+          provider_name as "name", 
+          (config ->> 'type') as "type",
+          COALESCE(is_primary, false) as "isPrimary"
+        from sms_providers
+        where organisation_id = $1
         order by provider_name
         `,
-          // [organisationId],
+          [organisationId],
         );
 
         return { data: providers.rows };
@@ -90,10 +98,11 @@ export default async function sms(app: FastifyInstance) {
               id: Type.String({ format: "uuid" }),
               name: Type.String(),
               config: Type.Union([configType]),
+              isPrimary: Type.Boolean(),
             }),
           },
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -105,13 +114,13 @@ export default async function sms(app: FastifyInstance) {
         select 
             id,
             provider_name as "name", 
-            config
+            config,
+            COALESCE(is_primary, false) as "isPrimary"
         from sms_providers
         where id = $1 
-        -- and organisation_id = $2
+        and organisation_id = $2
       `,
-          // [providerId, organisationId],
-          [providerId],
+          [providerId, organisationId],
         );
 
         if (provider.rowCount === 0) {
@@ -136,29 +145,53 @@ export default async function sms(app: FastifyInstance) {
         body: Type.Object({
           name: Type.String(),
           config: configType,
+          isPrimary: Type.Boolean(),
         }),
         response: {
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
     async function createHandler(request, _reply) {
       const body = request.body;
+      const client = await app.pg.pool.connect();
+
       try {
-        await app.pg.pool.query(
+        client.query("begin");
+
+        if (body.isPrimary) {
+          await client.query(
+            `
+            update sms_providers
+            set is_primary = null
+            where organisation_id = $1
+          `,
+            [organisationId],
+          );
+        }
+
+        await client.query(
           `
         insert into sms_providers(
             provider_name,
             organisation_id,
-            config
+            config,
+            is_primary
         ) values(
-            $1, $2, $3
+            $1, $2, $3, $4
         )
     `,
-          [body.name, organisationId, JSON.stringify(body.config)],
+          [
+            body.name,
+            organisationId,
+            JSON.stringify(body.config),
+            body.isPrimary,
+          ],
         );
+        client.query("commit");
       } catch (err) {
+        client.query("rollback");
         throw new ServerError(SMS_PROVIDER_ERROR, "failed to create provider");
       }
     },
@@ -177,35 +210,57 @@ export default async function sms(app: FastifyInstance) {
           id: Type.String({ format: "uuid" }),
           name: Type.String(),
           config: configType,
+          isPrimary: Type.Boolean(),
         }),
         response: {
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
     async function updateHandler(request, _reply) {
+      console.log(":D", request.body);
       if (request.body.id !== request.params.providerId) {
         throw new BadRequestError(
           SMS_PROVIDER_ERROR,
           "body and url param ids are not the same",
         );
       }
+
+      const client = await app.pg.pool.connect();
       try {
-        await app.pg.pool.query(
+        client.query("begin");
+
+        if (request.body.isPrimary) {
+          await client.query(
+            `
+            update sms_providers 
+            set is_primary = null
+            where organisation_id = $1
+          `,
+            [organisationId],
+          );
+        }
+
+        await client.query(
           `
         update sms_providers set 
         provider_name = $1,
-        config = $2
-        where id = $3
+        config = $2,
+        is_primary = $3
+        where id = $4
         `,
           [
             request.body.name,
             JSON.stringify(request.body.config),
+            request.body.isPrimary,
             request.body.id,
           ],
         );
+
+        client.query("commit");
       } catch (err) {
+        client.query("rollback");
         throw new ServerError(SMS_PROVIDER_ERROR, "failed to update provider");
       }
     },
@@ -218,8 +273,8 @@ export default async function sms(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },

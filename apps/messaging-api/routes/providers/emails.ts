@@ -36,6 +36,7 @@ const EmailProviderType = Type.Object({
   throttle: Type.Optional(Type.Number()),
   fromAddress: Type.String(),
   ssl: Type.Boolean(),
+  isPrimary: Type.Boolean(),
 });
 
 const EmailProviderWithoutIdType = Type.Object({
@@ -47,6 +48,7 @@ const EmailProviderWithoutIdType = Type.Object({
   throttle: Type.Optional(Type.Number()),
   fromAddress: Type.String(),
   ssl: Type.Boolean(),
+  isPrimary: Type.Boolean(),
 });
 
 export default async function emails(app: FastifyInstance) {

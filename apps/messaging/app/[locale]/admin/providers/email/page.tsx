@@ -31,6 +31,7 @@ export default async (props: {
     const fromAddress = formData.get("fromAddress")?.toString();
     const throttle = Number(formData.get("throttle")?.toString()) || undefined;
     const ssl = Boolean(formData.get("ssl"));
+    const isPrimary = Boolean(formData.get("isPrimary"));
 
     const id = formData.get("id")?.toString();
 
@@ -78,6 +79,7 @@ export default async (props: {
         fromAddress,
         throttle,
         ssl,
+        isPrimary,
       });
 
       if (error) {
@@ -94,6 +96,7 @@ export default async (props: {
         fromAddress,
         throttle,
         ssl,
+        isPrimary,
       });
 
       if (error) {
@@ -101,6 +104,7 @@ export default async (props: {
       }
     }
 
+    console.log({ serverError });
     if (serverError) {
       if (serverError.validation) {
         formErrors.push(
@@ -272,6 +276,29 @@ export default async (props: {
                   htmlFor="ssl"
                 >
                   {t("ssl")}
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </FormElement>
+
+        <FormElement id="isPrimary">
+          <fieldset className="govie-fieldset">
+            <div className="govie-checkboxes govie-checkboxes--medium">
+              <div className="govie-checkboxes__item">
+                <input
+                  className="govie-checkboxes__input"
+                  id="isPrimary"
+                  name="isPrimary"
+                  type="checkbox"
+                  value="isPrimary"
+                  defaultChecked={data?.isPrimary}
+                />
+                <label
+                  className="govie-label--s govie-checkboxes__label"
+                  htmlFor="isPrimary"
+                >
+                  {t("isPrimary")}
                 </label>
               </div>
             </div>
