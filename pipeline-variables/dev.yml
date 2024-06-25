@@ -23,5 +23,6 @@ variables:
   logtoMessagingAppSectret: oTSELx7KrykDs8X57f4HOUni9eK91DNi
 
   nextPublicMatomoUrl: //analytics.ogcio.gov.ie
-  nextPublicMatomoSiteId: 11
   nextPublicMatomoProtocol: https
+  nextPublicLifeEventsMatomoSiteId: 11
+  nextPublicBuildingBlocksMatomoSiteId: 14

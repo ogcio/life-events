@@ -8,7 +8,7 @@ const withNextIntl = createNextIntlPlugin("./i18n.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["design-system"],
+  transpilePackages: ["analytics", "design-system"],
   output: "standalone",
   poweredByHeader: false,
   experimental: {
