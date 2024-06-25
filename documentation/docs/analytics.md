@@ -31,7 +31,7 @@ It also has some React components (client components) that we can easily use to 
 
 This component must be placed in the page's layout at the top, right after the opening Body tag. It can take two optional parameters:
 - **userId**: this information can be sensitive; if used, it must comply with GDPR, and no sensitive data can be accessed based on this ID. This ID should not be a **PII** (Personally identifiable information), like `MyGovId`.
-- **customDimensions**: It is a custom attribute; we can have as many dimensions as we want. However, the current limit is 40 (dimension1 - dimension40). These attributes describe specific characteristics within your Matomo table report. Typically, dimensions are displayed in the first column of the report and provide context to the metrics.
+- **customDimensions**: It is a custom attribute; we can have as many dimensions as we want. However, the current limit is 40 (dimension1 - dimension40). These attributes describe specific characteristics within your Matomo table report. Typically, dimensions are displayed in the first column of the report and provide context to the metrics. Dimensions must be configured on Matomo by admins before using them in the code.
 
 ### The AnalyticsEvent component
 
