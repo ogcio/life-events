@@ -9,6 +9,7 @@ import {
   parseLogEntry,
   checkGenericEntryFields,
 } from "./helpers/fastify-test-helpers.js";
+import { REQUEST_ID_HEADER } from "shared-errors";
 
 t.test(
   "Logging entries when all works fine are the expected ones",
@@ -41,24 +42,24 @@ t.test(
   },
 );
 
-t.test("Request id is not overriden by header", async () => {
+t.test("Request id is overriden by header", async () => {
   const { server, loggingDestination } = initializeServer();
   t.teardown(() => server.close());
   const customRequestId = "Another request id";
   const response = await server.inject({
     method: DEFAULT_METHOD,
     url: DEFAULT_PATH,
-    headers: { "request-id": customRequestId },
+    headers: { [REQUEST_ID_HEADER]: customRequestId },
   });
   t.ok(typeof response !== "undefined");
   t.equal(response?.statusCode, 200);
   const logged = loggingDestination.getLoggedRecords();
   checkExpectedRequestEntry({
     requestLogEntry: logged[0],
-    inputHeaders: { "request-id": customRequestId },
+    inputHeaders: { [REQUEST_ID_HEADER]: customRequestId },
   });
   const parsedEntry = parseLogEntry(logged[0]);
-  t.notSame(parsedEntry.request_id, customRequestId);
+  t.same(parsedEntry.request_id, customRequestId);
 
   t.end();
 });
