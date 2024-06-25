@@ -302,6 +302,8 @@ paths:
                           type: string
                         ssl:
                           type: boolean
+                        isPrimary:
+                          type: boolean
                       required:
                         - id
                         - name
@@ -311,6 +313,7 @@ paths:
                         - password
                         - fromAddress
                         - ssl
+                        - isPrimary
                 required:
                   - data
         4XX:
@@ -405,6 +408,8 @@ paths:
                   type: string
                 ssl:
                   type: boolean
+                isPrimary:
+                  type: boolean
               required:
                 - name
                 - host
@@ -413,6 +418,7 @@ paths:
                 - password
                 - fromAddress
                 - ssl
+                - isPrimary
         required: true
       responses:
         "201":
@@ -539,6 +545,8 @@ paths:
                         type: string
                       ssl:
                         type: boolean
+                      isPrimary:
+                        type: boolean
                     required:
                       - id
                       - name
@@ -548,6 +556,7 @@ paths:
                       - password
                       - fromAddress
                       - ssl
+                      - isPrimary
                 required:
                   - data
         "404":
@@ -645,6 +654,8 @@ paths:
                   type: string
                 ssl:
                   type: boolean
+                isPrimary:
+                  type: boolean
               required:
                 - id
                 - name
@@ -654,6 +665,7 @@ paths:
                 - password
                 - fromAddress
                 - ssl
+                - isPrimary
         required: true
       parameters:
         - schema:
@@ -831,10 +843,13 @@ paths:
                           type: string
                         type:
                           type: string
+                        isPrimary:
+                          type: boolean
                       required:
                         - id
                         - name
                         - type
+                        - isPrimary
                 required:
                   - data
         4XX:
@@ -842,13 +857,69 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
         5XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
     post:
       tags: *a3
       requestBody:
@@ -875,9 +946,12 @@ paths:
                     - accessKey
                     - secretAccessKey
                     - region
+                isPrimary:
+                  type: boolean
               required:
                 - name
                 - config
+                - isPrimary
         required: true
       responses:
         4XX:
@@ -885,13 +959,69 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
         5XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
   /api/v1/providers/sms/{providerId}:
     get:
       tags: *a3
@@ -934,22 +1064,81 @@ paths:
                           - accessKey
                           - secretAccessKey
                           - region
+                      isPrimary:
+                        type: boolean
                     required:
                       - id
                       - name
                       - config
+                      - isPrimary
         4XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
         5XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
     put:
       tags: *a3
       requestBody:
@@ -979,10 +1168,13 @@ paths:
                     - accessKey
                     - secretAccessKey
                     - region
+                isPrimary:
+                  type: boolean
               required:
                 - id
                 - name
                 - config
+                - isPrimary
         required: true
       parameters:
         - schema:
@@ -997,13 +1189,69 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
         5XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
     delete:
       tags: *a3
       parameters:
@@ -1018,13 +1266,69 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
         5XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
   /api/v1/templates/:
     get:
       tags: &a4
