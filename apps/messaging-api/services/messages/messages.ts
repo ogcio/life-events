@@ -577,24 +577,33 @@ const scheduleMessage = async (
           continue;
         }
 
-        // todo proper query
-        const config = await transportsClient
-          .query<{ config: unknown }>(
-            `
+        const configQueryResult = await transportsClient.query<{
+          config: unknown;
+        }>(
+          `
           select config from sms_providers
+          where is_primary and organisation_id = $1
           limit 1
         `,
-          )
-          .then((res) => res.rows.at(0)?.config);
+          [organisationId],
+        );
+
+        const config = configQueryResult.rows.at(0)?.config;
+
+        if (!config) {
+          // LOG
+          continue;
+        }
 
         if (utils.isSmsAwsConfig(config)) {
           const service = awsSnsSmsService(
             config.accessKey,
             config.secretAccessKey,
+            config.region,
           );
 
           try {
-            await service.Send(transportationExcerpt, "");
+            await service.Send(transportationExcerpt, user.phone);
           } catch (err) {
             const msg = utils.isError(err) ? err.message : "failed to send sms";
             errors.push({
