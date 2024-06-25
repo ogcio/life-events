@@ -158,3 +158,28 @@ export const getLinks = (
       };
   }
 };
+
+/**
+ * Checks for all values inside double curly brackets
+ *
+ * eg. {{value}} => ["value"]
+ */
+export function getInterpolationValues(text: string): string[] {
+  return text.match(/[^{{]+(?=}})/g) || [];
+}
+
+export const avaliableMessagingTemplateStaticVariables = new Set([
+  "firstName",
+  "lastName",
+  "phone",
+  "email",
+  "ppsn",
+]);
+
+export const AVAILABLE_TRANSPORTS = ["sms", "email", "lifeEvent"] as const;
+
+export function isAvailableTransport(
+  t: string,
+): t is (typeof AVAILABLE_TRANSPORTS)[number] {
+  return AVAILABLE_TRANSPORTS.some((at) => at === t);
+}

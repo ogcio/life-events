@@ -102,3 +102,8 @@
   mask-image: url("../assets/icons/settings.svg");
   -webkit-mask-image: url("../assets/icons/settings.svg");
 }
+
+.ds-icon-check-mark {
+  mask-image: url("../assets/icons/check-mark.svg");
+  -webkit-mask-image: url("../assets/icons/check-mark.svg");
+}

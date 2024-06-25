@@ -4,13 +4,17 @@ import {
   ReadMessage,
   ReadMessages,
 } from "../../types/schemaDefinitions";
-import { HttpError, ServiceError, organisationId, utils } from "../../utils";
-import { createError } from "@fastify/error";
+import { ServiceError, organisationId, utils } from "../../utils";
 import { FastifyBaseLogger } from "fastify";
 import { JobType } from "aws-sdk/clients/importexport";
 import { Pool } from "pg";
 import { mailService } from "../../routes/providers/services";
 import { awsSnsSmsService } from "../sms/aws";
+import { Profile } from "building-blocks-sdk";
+import { getUserProfiles, ProfileSdkFacade } from "../users/shared-users";
+import { isNativeError } from "util/types";
+import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
+import { LoggingError, toLoggingError } from "logging-wrapper";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -25,6 +29,7 @@ export const createMessage = async (params: {
     });
   }
 
+  // Deprecated
   if (params.payload.template) {
     return createMessageFromTemplate({
       pg: params.pg,
@@ -32,11 +37,10 @@ export const createMessage = async (params: {
     });
   }
 
-  throw createError(
+  throw new BadRequestError(
     "CREATE_MESSAGE_ERROR",
     "At least one between 'message' and 'template' must be set",
-    400,
-  )();
+  );
 };
 
 const createRawMessage = async (params: {
@@ -138,6 +142,7 @@ const createRawMessage = async (params: {
   });
 };
 
+// Deprecated
 const createMessageFromTemplate = async (params: {
   pg: PostgresDb;
   payload: Omit<Required<CreateMessage>, "message">;
@@ -263,11 +268,10 @@ export const getMessage = async (params: {
   );
 
   if (data.rowCount === 0) {
-    throw createError(
+    throw new NotFoundError(
       "GET_MESSAGE_ERROR",
       `No message with id ${params.messageId} for the logged in user does exist`,
-      404,
-    )();
+    );
   }
 
   return data.rows[0];
@@ -333,13 +337,16 @@ export const executeJob = async (params: {
     );
 
     if (!jobStatusResult.rowCount) {
-      throw createError(EXECUTE_JOB_ERROR, "job doesn't exist", 404)();
+      throw new NotFoundError(EXECUTE_JOB_ERROR, "job doesn't exist");
     }
 
     const jobStatus = jobStatusResult.rows.at(0)?.status;
 
     if (jobStatus === "working") {
-      throw createError(EXECUTE_JOB_ERROR, "job is already in progress", 400)();
+      throw new BadRequestError(
+        EXECUTE_JOB_ERROR,
+        "job is already in progress",
+      );
     }
 
     job = await client
@@ -365,20 +372,16 @@ export const executeJob = async (params: {
   } catch (err) {
     client.query("rollback");
     const msg = utils.isError(err) ? err.message : "failed to fetch job";
-    throw createError(EXECUTE_JOB_ERROR, msg, 500)();
+    throw new ServerError(EXECUTE_JOB_ERROR, msg);
   } finally {
     client.release();
   }
 
   if (!job?.userId || !job.type) {
-    throw createError(
-      EXECUTE_JOB_ERROR,
-      "job row missing critical fields",
-      500,
-    )();
+    throw new ServerError(EXECUTE_JOB_ERROR, "job row missing critical fields");
   }
 
-  let error: HttpError | undefined;
+  let error: LoggingError | undefined;
   if (job.type === "template") {
     try {
       const serviceErrors = await scheduledTemplate(
@@ -392,13 +395,15 @@ export const executeJob = async (params: {
 
       const firstError = serviceErrors.filter((err) => err.critical).at(0);
       if (firstError) {
-        error = createError(EXECUTE_JOB_ERROR, firstError.msg, 500)();
+        error = toLoggingError(
+          new ServerError(EXECUTE_JOB_ERROR, firstError.msg),
+        );
       }
     } catch (err) {
       const msg = utils.isError(err)
         ? err.message
         : "failed to create message from template job";
-      error = createError(EXECUTE_JOB_ERROR, msg, 500)();
+      error = toLoggingError(new ServerError(EXECUTE_JOB_ERROR, msg));
     }
   } else if (job.type === "message") {
     try {
@@ -414,13 +419,15 @@ export const executeJob = async (params: {
 
       const firstError = serviceErrors.filter((err) => err.critical).at(0);
       if (firstError) {
-        error = createError(EXECUTE_JOB_ERROR, firstError.msg, 500)();
+        error = toLoggingError(
+          new ServerError(EXECUTE_JOB_ERROR, firstError.msg),
+        );
       }
     } catch (err) {
       const msg = utils.isError(err)
         ? err.message
         : "failed to create message job";
-      error = createError(EXECUTE_JOB_ERROR, msg, 500)();
+      error = toLoggingError(new ServerError(EXECUTE_JOB_ERROR, msg));
     }
   }
 
@@ -439,10 +446,10 @@ export const executeJob = async (params: {
       const msg = utils.isError(err)
         ? err.message
         : "failed to update job delivery status";
-      throw createError(EXECUTE_JOB_ERROR, msg, 500)();
+      throw new ServerError(EXECUTE_JOB_ERROR, msg);
     }
 
-    throw createError(EXECUTE_JOB_ERROR, error.message, error.statusCode)();
+    throw new ServerError(EXECUTE_JOB_ERROR, error.message);
   }
 };
 
@@ -451,6 +458,8 @@ type scheduledMessageByTemplateStatus =
   | "working"
   | "failed"
   | "delivered";
+
+const ERROR_PROCESS = "SCHEDULE_MESSAGE";
 
 const scheduleMessage = async (
   pool: Pool,
@@ -491,7 +500,10 @@ const scheduleMessage = async (
       .then((res) => res.rows.at(0));
 
     if (!messageUser) {
-      throw new Error(`failed to find message for id ${messageId}`);
+      throw new NotFoundError(
+        ERROR_PROCESS,
+        `failed to find message for id ${messageId}`,
+      );
     }
 
     preferredTransports.push(...(messageUser?.transports ?? []));
@@ -519,20 +531,31 @@ const scheduleMessage = async (
     client.release();
   }
 
-  /**
-   * There's a lot of logic to determine which transports, if any, to use
-   * for each user.
-   * eg.
-   * Does user accept the preferred transport?
-   * Which transport can we defer to?
-   * Persist logs?
-   * Fetch user information. Email and number
-   */
+  const profileSdk = new Profile(userId);
+  const messageSdk = {
+    selectUsers(ids: string[]) {
+      return getUserProfiles(ids, pool);
+    },
+  };
+
+  const profileService = ProfileSdkFacade(profileSdk, messageSdk);
+
   const transportsClient = await pool.connect();
   try {
+    const { data } = await profileService.selectUsers([userId]);
+    const user = data?.at(0);
+    if (!user) {
+      throw new NotFoundError(ERROR_PROCESS, "no user profile found");
+    }
+
     for (const transport of preferredTransports) {
       if (transport === "email") {
+        if (!user.email) {
+          // LOG
+          continue;
+        }
         if (!transportationSubject) {
+          // LOG
           continue;
         }
 
@@ -543,9 +566,9 @@ const scheduleMessage = async (
             await mailService(
               transportsClient,
             ).getFirstOrEtherealMailProvider();
-          await mailService(transportsClient).sendMail({
+          await mailService(transportsClient).sendMail(organisationId, {
             providerId,
-            email: "",
+            email: user.email,
             subject: transportationSubject,
             body: transportationBody ?? "",
           });
@@ -562,7 +585,12 @@ const scheduleMessage = async (
           });
         }
       } else if (transport === "sms") {
+        if (!user.phone) {
+          // LOG
+          continue;
+        }
         if (!transportationExcerpt || !transportationSubject) {
+          // LOG
           continue;
         }
 
@@ -599,6 +627,14 @@ const scheduleMessage = async (
         }
       }
     }
+  } catch (err) {
+    errors.push({
+      critical: false,
+      error: { err },
+      msg: isNativeError(err)
+        ? err.message
+        : "failed to externally transport message",
+    });
   } finally {
     transportsClient.release();
   }
@@ -606,6 +642,9 @@ const scheduleMessage = async (
   return errors;
 };
 
+/**
+ * Deprecated
+ */
 const scheduledTemplate = async (
   pool: Pool,
   scheduledId: string,
@@ -823,7 +862,7 @@ const scheduledTemplate = async (
           providerId =
             await mailService(transportClient).getFirstOrEtherealMailProvider();
 
-          void mailService(transportClient).sendMail({
+          void mailService(transportClient).sendMail(organisationId, {
             providerId,
             email: "",
             subject: transportationSubject,

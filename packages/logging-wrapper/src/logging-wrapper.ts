@@ -5,16 +5,18 @@ import {
   LoggingRequest,
   FullLoggingRequest,
   LoggingResponse,
-  LogErrorClasses,
   LoggingError,
   REDACTED_VALUE,
   REDACTED_PATHS,
   MESSAGE_KEY,
+  toLoggingError,
 } from "./logging-wrapper-entities.js";
 import { LogLevel, PinoLoggerOptions } from "fastify/types/logger.js";
+import { LifeEventsError } from "shared-errors";
 
 const loggingContext: LoggingContext = {};
-const UNHANDLED_EXCEPTION_CODE = "UNHANDLED_EXCEPTION";
+
+type INPUT_ERROR_TYPES = FastifyError | LifeEventsError;
 
 export const getLoggingContext = (params: {
   includeError: boolean;
@@ -26,7 +28,7 @@ export const getLoggingContext = (params: {
 export const setLoggingContext = (params: {
   request?: FastifyRequest;
   response?: FastifyReply;
-  error?: FastifyError;
+  error?: INPUT_ERROR_TYPES;
 }): void => {
   if (params.request !== undefined) {
     loggingContext.request = parseLoggingRequest(params.request);
@@ -35,7 +37,7 @@ export const setLoggingContext = (params: {
     loggingContext.response = parseLoggingResponse(params.response);
   }
   if (params.error !== undefined) {
-    loggingContext.error = parseLoggingError(params.error);
+    loggingContext.error = toLoggingError(params.error);
   }
 };
 
@@ -78,34 +80,6 @@ export const parseFullLoggingRequest = (
 const parseLoggingResponse = (res: FastifyReply): LoggingResponse => ({
   status_code: res.statusCode,
   headers: res.getHeaders(),
-});
-
-export const parseErrorClass = (error: FastifyError): LogErrorClasses => {
-  // TODO Implement the management of GATEWAY_ERROR
-
-  if (!error.statusCode) {
-    return LogErrorClasses.UnknownError;
-  }
-  const statusCode = Number(error.statusCode);
-
-  if (statusCode >= 500) {
-    return LogErrorClasses.ServerError;
-  }
-  if (statusCode === 422) {
-    return LogErrorClasses.ValidationError;
-  }
-  if (statusCode >= 400) {
-    return LogErrorClasses.RequestError;
-  }
-
-  return LogErrorClasses.UnknownError;
-};
-
-const parseLoggingError = (error: FastifyError): LoggingError => ({
-  class: parseErrorClass(error),
-  message: error.message,
-  trace: error.stack,
-  code: error.code ?? UNHANDLED_EXCEPTION_CODE,
 });
 
 export const getLoggerConfiguration = (
