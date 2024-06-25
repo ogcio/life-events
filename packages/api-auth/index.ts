@@ -37,6 +37,30 @@ const decodeLogtoToken = async (
   return payload;
 };
 
+const isScopeMatching = (permission: string[], scope: string[]): boolean => {
+  if (
+    permission.length === scope.length &&
+    permission.every((p, i) => p === scope[i])
+  ) {
+    return true;
+  }
+
+  if (scope[scope.length - 1] === "*") {
+    const subScope = scope.slice(0, -1);
+    return (
+      permission.length >= subScope.length &&
+      subScope.every((s, i) => s === permission[i])
+    );
+  }
+
+  return false;
+};
+
+export const validateScopes = (
+  permission: string[],
+  scopes: string[][],
+): boolean => scopes.some((scope) => isScopeMatching(permission, scope));
+
 export const checkPermissions = async (
   authHeader: string,
   config: {
@@ -54,10 +78,14 @@ export const checkPermissions = async (
     aud: string;
   };
 
-  for (const permission of requiredPermissions) {
-    if (!scope.includes(permission)) {
-      throw new Error("Forbidden");
-    }
+  const permissions = requiredPermissions.map((p) => p.split(":"));
+  const scopeParts = scope.split(" ").map((s) => s.split(":"));
+
+  const scopesValidated = permissions.map((permission) =>
+    validateScopes(permission, scopeParts),
+  );
+  if (scopesValidated.some((s) => !s)) {
+    throw new Error("Forbidden");
   }
 
   const organizationId = aud.includes("urn:logto:organization:")
