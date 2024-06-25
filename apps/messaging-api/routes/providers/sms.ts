@@ -159,8 +159,8 @@ export default async function sms(app: FastifyInstance) {
 
       try {
         client.query("begin");
-
-        if (body.isPrimary) {
+        const isPrimaryConverted = body.isPrimary || null;
+        if (isPrimaryConverted) {
           await client.query(
             `
             update sms_providers
@@ -173,20 +173,20 @@ export default async function sms(app: FastifyInstance) {
 
         await client.query(
           `
-        insert into sms_providers(
-            provider_name,
-            organisation_id,
-            config,
-            is_primary
-        ) values(
-            $1, $2, $3, $4
-        )
-    `,
+              insert into sms_providers(
+                  provider_name,
+                  organisation_id,
+                  config,
+                  is_primary
+              ) values(
+                  $1, $2, $3, $4
+              )
+          `,
           [
             body.name,
             organisationId,
             JSON.stringify(body.config),
-            body.isPrimary,
+            isPrimaryConverted,
           ],
         );
         client.query("commit");
@@ -219,7 +219,6 @@ export default async function sms(app: FastifyInstance) {
       },
     },
     async function updateHandler(request, _reply) {
-      console.log(":D", request.body);
       if (request.body.id !== request.params.providerId) {
         throw new BadRequestError(
           SMS_PROVIDER_ERROR,
@@ -230,8 +229,8 @@ export default async function sms(app: FastifyInstance) {
       const client = await app.pg.pool.connect();
       try {
         client.query("begin");
-
-        if (request.body.isPrimary) {
+        const isPrimaryConverted = request.body.isPrimary || null;
+        if (isPrimaryConverted) {
           await client.query(
             `
             update sms_providers 
@@ -253,7 +252,7 @@ export default async function sms(app: FastifyInstance) {
           [
             request.body.name,
             JSON.stringify(request.body.config),
-            request.body.isPrimary,
+            isPrimaryConverted,
             request.body.id,
           ],
         );

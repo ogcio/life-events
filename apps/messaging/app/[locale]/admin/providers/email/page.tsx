@@ -104,7 +104,6 @@ export default async (props: {
       }
     }
 
-    console.log({ serverError });
     if (serverError) {
       if (serverError.validation) {
         formErrors.push(

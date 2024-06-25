@@ -8,7 +8,7 @@ export function awsSnsSmsService(
 ): SMSService {
   const aws = new AWS.SNS({
     apiVersion: "latest",
-    region: region,
+    region,
     credentials: { accessKeyId, secretAccessKey },
   });
 

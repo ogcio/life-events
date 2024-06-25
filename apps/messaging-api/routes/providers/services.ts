@@ -31,7 +31,9 @@ export interface MailService {
     provider: Omit<EmailProvider, "id">,
   ): Promise<string>;
   updateProvider(organisationId: string, params: EmailProvider): Promise<void>;
-  getPrimaryProvider(organisaionId: string): Promise<EmailProvider | undefined>;
+  getPrimaryProvider(
+    organisationId: string,
+  ): Promise<EmailProvider | undefined>;
   getProvider(
     organisationId: string,
     providerId: string,
@@ -84,8 +86,9 @@ export function mailService(client: PoolClient): MailService {
       let id: string | undefined;
       try {
         client.query("begin");
+        const isPrimaryConverted = isPrimary || null;
 
-        if (isPrimary) {
+        if (isPrimaryConverted) {
           await client.query(
             `
           update email_providers set is_primary = null
@@ -113,7 +116,7 @@ export function mailService(client: PoolClient): MailService {
             throttle,
             ssl,
             organisationId,
-            isPrimary,
+            isPrimaryConverted,
           ],
         );
 
@@ -161,8 +164,8 @@ export function mailService(client: PoolClient): MailService {
 
       try {
         client.query("begin");
-
-        if (provider.isPrimary) {
+        const isPrimaryConverted = provider.isPrimary || null;
+        if (isPrimaryConverted) {
           await client.query(
             `
           update email_providers set is_primary = null
@@ -195,7 +198,7 @@ export function mailService(client: PoolClient): MailService {
             provider.fromAddress,
             provider.throttle,
             provider.ssl,
-            provider.isPrimary,
+            isPrimaryConverted,
             provider.id,
             organisationId,
           ],
@@ -207,7 +210,7 @@ export function mailService(client: PoolClient): MailService {
         throw err;
       }
     },
-    async getPrimaryProvider(organisaionId) {
+    async getPrimaryProvider(organisationId) {
       const providerQueryResult = await client.query<EmailProvider>(
         `
       select 
@@ -219,11 +222,11 @@ export function mailService(client: PoolClient): MailService {
         throttle_ms as "throttle",
         from_address as "fromAddress",
         is_ssl as "ssl",
-        is_primary as "isPrimary"
+        COALESCE(is_primary, false) as "isPrimary"
       FROM email_providers
       WHERE organisation_id = $1 and is_primary
       `,
-        [organisaionId],
+        [organisationId],
       );
 
       return providerQueryResult.rows.at(0);
@@ -241,7 +244,7 @@ export function mailService(client: PoolClient): MailService {
           throttle_ms as "throttle",
           from_address as "fromAddress",
           is_ssl as "ssl",
-          is_primary as "isPrimary"
+          COALESCE(is_primary, false) as "isPrimary"
         FROM email_providers
         WHERE id =$1 and organisation_id = $2
       `,
@@ -261,7 +264,7 @@ export function mailService(client: PoolClient): MailService {
           throttle_ms as "throttle",
           from_address as "fromAddress",
           is_ssl as "ssl",
-          is_primary as "isPrimary"
+          COALESCE(is_primary, false) as "isPrimary"
         FROM email_providers
         WHERE organisation_id = $1
         ORDER BY created_at DESC
@@ -321,21 +324,6 @@ export function mailService(client: PoolClient): MailService {
           [],
         )
         .then((res) => res.rows.at(0)?.id);
-
-      // if (!id) {
-      //   const createProviderMethod = this.createProvider;
-      //   const testAccount = await nodemailer.createTestAccount();
-      //   id = await createProviderMethod({
-      //     name: "Ethreal Email Dev Provider",
-      //     host: testAccount.smtp.host,
-      //     port: 587,
-      //     username: testAccount.user,
-      //     password: testAccount.pass,
-      //     fromAddress: "",
-      //     ssl: false,
-      //   });
-      // }
-
       return id ?? "";
     },
   };
