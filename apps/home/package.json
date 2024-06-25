@@ -15,6 +15,7 @@
     "exec": "next dev -p 3004"
   },
   "dependencies": {
+    "analytics": "*",
     "design-system": "*",
     "dotenv": "^16.4.5",
     "next": "14.2.2",
