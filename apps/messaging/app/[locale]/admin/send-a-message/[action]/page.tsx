@@ -11,6 +11,7 @@ import SuccessForm from "./SuccessForm";
 import TemplateForm from "./TemplateForm";
 
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
+import { getLogger } from "nextjs-logging-wrapper";
 
 const metaSlug = "meta";
 const contentSlug = "content";
@@ -65,6 +66,7 @@ export default async (props: {
   searchParams: { state_id: string };
 }) => {
   const { userId } = await PgSessions.get();
+  getLogger().info("FIRST TEST");
   const urlAction = props.params.action;
   const { state, id: stateId } = await api.getMessageState(userId);
   const step = getCurrentStep<ApiMessageState>(rules, state);
