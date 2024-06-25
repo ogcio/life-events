@@ -26,7 +26,6 @@
     "design-system": "*",
     "feature-flags": "*",
     "messages": "*",
-    "nextjs-logging-wrapper": "*",
     "next": "14.2.2",
     "next-intl": "^3.14.1",
     "pg": "^8.12.0",
