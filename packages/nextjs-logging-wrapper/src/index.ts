@@ -1,5 +1,5 @@
 import { hostname } from "os";
-import pinoLogger, { Level, LoggerOptions, Logger } from "pino";
+import { pino, Level, LoggerOptions, Logger, levels } from "pino";
 
 export const REDACTED_VALUE = "[redacted]";
 
@@ -18,9 +18,11 @@ export const REQUEST_ID_LOG_LABEL = "request_id";
 
 //const UNHANDLED_EXCEPTION_CODE = "UNHANDLED_EXCEPTION";
 let logger: Logger;
-export const getLogger = (minimumLevel: Level = "debug"): Logger => {
+export const getLogger = (minimumLevel?: Level): Logger => {
   if (!logger) {
-    logger = pinoLogger.pino(getLoggerConfiguration(minimumLevel));
+    const toCheckLevel = minimumLevel ?? process.env.LOG_LEVEL;
+    const level = isValidLevel(toCheckLevel) ? toCheckLevel : "debug";
+    logger = pino(getLoggerConfiguration(level));
   }
 
   return logger;
@@ -48,3 +50,6 @@ export const getLoggerConfiguration = (
   },
   level: minimumLevel,
 });
+
+const isValidLevel = (level: string | undefined): level is Level =>
+  level !== undefined && Object.keys(levels.values).includes(level);
