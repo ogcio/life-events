@@ -1,59 +1,88 @@
-import { validateScopes } from "../index.js";
+import { validatePermission, getMapFromScope, ScopeMap } from "../index.js";
 import t from "tap";
 
-const testCases = [
+const mapFromScopeTestCases: {
+  description: string;
+  scope: string;
+  expected: ScopeMap;
+}[] = [
   {
-    description: "Single permission matches one of the scopes",
-    permissions: [["payments", "read", "payment"]],
-    scopes: [
-      ["payments", "read", "*"],
-      ["payments", "create", "payment"],
-    ],
-    expected: true,
+    description: "getMapFromScope: Single scope",
+    scope: "payments:payment:create",
+    expected: new Map([
+      ["payments", new Map([["payment", new Map([["create", true]])]])],
+    ]),
   },
   {
-    description: "Single permission does not match any of the scopes",
-    permissions: [["payments", "delete", "payment"]],
-    scopes: [
-      ["payments", "read", "*"],
-      ["payments", "create", "payment"],
-    ],
-    expected: false,
+    description: "getMapFromScope: Single scope with wildcard",
+    scope: "payments:payment:*",
+    expected: new Map([["payments", new Map([["payment", true]])]]),
   },
   {
-    description: "Multiple permissions, all matching",
-    permissions: [
-      ["payments", "read", "payment"],
-      ["payments", "create", "payment"],
-    ],
-    scopes: [
-      ["payments", "read", "*"],
-      ["payments", "create", "payment"],
-    ],
-    expected: true,
+    description: "getMapFromScope: Multiple scopes",
+    scope: "payments:payment:create payments:transaction:read",
+    expected: new Map([
+      [
+        "payments",
+        new Map([
+          ["payment", new Map([["create", true]])],
+          ["transaction", new Map([["read", true]])],
+        ]),
+      ],
+    ]),
   },
   {
-    description: "Multiple permissions, only one matches",
-    permissions: [
-      ["payments", "read", "payment"],
-      ["payments", "delete", "payment"],
-    ],
-    scopes: [
-      ["payments", "read", "*"],
-      ["payments", "create", "payment"],
-    ],
-    expected: false,
+    description: "getMapFromScope: Multiple scopes with resource wildcard",
+    scope: "payments:payment:create payments:* payments:transaction:read",
+    expected: new Map([["payments", true]]),
+  },
+  {
+    description: "getMapFromScope: Multiple scopes with action wildcard",
+    scope:
+      "payments:payment:create payments:transaction:* payments:transaction:read",
+    expected: new Map([
+      [
+        "payments",
+        new Map([
+          ["payment", new Map([["create", true]])],
+          ["transaction", true],
+        ]),
+      ],
+    ]),
   },
 ];
 
-testCases.forEach(({ description, permissions, scopes, expected }) => {
+mapFromScopeTestCases.forEach(({ description, scope, expected }) => {
   t.test(description, (t) => {
-    const matches = permissions.map((permission) =>
-      validateScopes(permission, scopes),
-    );
-    const validationPasses = matches.every((m) => m);
-
-    t.equal(validationPasses, expected);
+    const result = getMapFromScope(scope);
+    t.match(result, expected);
     t.end();
   });
+});
+
+t.test("validatePermission: passes with wildcard scope", (t) => {
+  const scope = "payments:payment:create payments:* payments:transaction:read";
+  const permission = "payments:transaction:read";
+
+  const result = validatePermission(permission, getMapFromScope(scope));
+  t.equal(result, true);
+  t.end();
+});
+
+t.test("validatePermission: does not pass", (t) => {
+  const scope = "payments:payment:create payments:transaction:read";
+  const permission = "payments:transaction:create";
+
+  const result = validatePermission(permission, getMapFromScope(scope));
+  t.equal(result, false);
+  t.end();
+});
+
+t.test("validatePermission: passes with exact match", (t) => {
+  const scope = "payments:payment:create payments:transaction:read";
+  const permission = "payments:transaction:read";
+
+  const result = validatePermission(permission, getMapFromScope(scope));
+  t.equal(result, true);
+  t.end();
 });
