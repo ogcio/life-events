@@ -1,4 +1,4 @@
-import { validatePermission, getMapFromScope, ScopeMap } from "../index.js";
+import { validatePermission, getMapFromScope, ScopeMap } from "../utils.js";
 import t from "tap";
 
 const mapFromScopeTestCases: {
