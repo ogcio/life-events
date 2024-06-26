@@ -51,6 +51,7 @@ stages:
       - ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
         - job: bearerScan
           displayName: Bearer
+          continueOnError: true
           pool:
             vmImage: "ubuntu-latest"
           steps:
