@@ -145,7 +145,7 @@ export const checkPermissionsPlugin = async (
       req: FastifyRequest,
       rep: FastifyReply,
       permissions: string[],
-      matchConfig: MatchConfig,
+      matchConfig?: MatchConfig,
     ) => {
       const authHeader = req.headers.authorization;
       if (!authHeader) {
