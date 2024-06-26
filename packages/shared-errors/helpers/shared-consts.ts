@@ -36,3 +36,5 @@ export const parseHttpErrorClass = (
 
   return HttpErrorClasses.UnknownError;
 };
+
+export const REQUEST_ID_HEADER = "x-life-events-request-id";

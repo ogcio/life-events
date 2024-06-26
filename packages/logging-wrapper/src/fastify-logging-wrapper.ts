@@ -13,6 +13,7 @@ import {
   setLoggingContext,
 } from "./logging-wrapper.js";
 import { pino, DestinationStream } from "pino";
+import { REQUEST_ID_HEADER } from "shared-errors";
 
 const hyperidInstance = hyperid({ fixedLength: true, urlSafe: true });
 
@@ -54,5 +55,5 @@ export const getLoggingConfiguration = (
   disableRequestLogging: true,
   genReqId: () => hyperidInstance(),
   requestIdLogLabel: REQUEST_ID_LOG_LABEL,
-  requestIdHeader: false,
+  requestIdHeader: REQUEST_ID_HEADER,
 });
