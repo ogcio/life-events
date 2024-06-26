@@ -1,5 +1,5 @@
-import { Level, LoggerOptions, Logger } from "pino";
-import { MESSAGE_KEY, REDACTED_VALUE, getPinoInstance } from "./shared.js";
+import { Level, Logger } from "pino";
+import { getPinoInstance } from "./shared.js";
 import { useParams, usePathname, useSearchParams } from "next/navigation.js";
 
 export const REDACTED_PATHS = [];
@@ -8,37 +8,13 @@ let logger: Logger;
 export const getClientLogger = (minimumLevel?: Level): Logger => {
   if (!logger) {
     logger = getPinoInstance({
-      getConfigurations: getLoggerConfiguration,
-      minLevel: minimumLevel,
+      minimumLevel,
+      loggingContext: getLoggingContext(),
+      pathsToRedact: REDACTED_PATHS,
     });
   }
 
   return logger;
-};
-
-export const getLoggerConfiguration = (
-  minimumLevel: Level = "debug",
-): LoggerOptions => {
-  return {
-    base: {},
-    messageKey: MESSAGE_KEY,
-    mixin: () => ({
-      timestamp: Date.now(),
-      ...getLoggingContext(),
-    }),
-    redact: {
-      paths: REDACTED_PATHS,
-      censor: REDACTED_VALUE,
-    },
-    timestamp: false,
-    formatters: {
-      level: (name: string, levelVal: number) => ({
-        level: levelVal,
-        level_name: name.toUpperCase(),
-      }),
-    },
-    level: minimumLevel,
-  };
 };
 
 interface ClientLoggingRequest {

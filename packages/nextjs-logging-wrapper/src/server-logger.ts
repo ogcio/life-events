@@ -1,13 +1,8 @@
 import { headers } from "next/headers.js";
 import { hostname } from "os";
-import { Level, LoggerOptions, Logger } from "pino";
+import { Level, Logger } from "pino";
 import { REQUEST_ID_HEADER } from "shared-errors";
-import {
-  MESSAGE_KEY,
-  REDACTED_VALUE,
-  REQUEST_ID_LOG_LABEL,
-  getPinoInstance,
-} from "./shared.js";
+import { REQUEST_ID_LOG_LABEL, getPinoInstance } from "./shared.js";
 
 export interface LoggingRequest {
   scheme: string | undefined;
@@ -24,37 +19,14 @@ let logger: Logger;
 export const getServerLogger = (minimumLevel?: Level): Logger => {
   if (!logger) {
     logger = getPinoInstance({
-      getConfigurations: getLoggerConfiguration,
-      minLevel: minimumLevel,
+      minimumLevel,
+      loggingContext: getLoggingContext(),
+      baseProperties: { hostname: hostname() },
+      pathsToRedact: REDACTED_PATHS,
     });
   }
 
   return logger;
-};
-
-export const getLoggerConfiguration = (
-  minimumLevel: Level = "debug",
-): LoggerOptions => {
-  return {
-    base: { hostname: hostname() },
-    messageKey: MESSAGE_KEY,
-    mixin: () => ({
-      timestamp: Date.now(),
-      ...getLoggingContext(),
-    }),
-    redact: {
-      paths: REDACTED_PATHS,
-      censor: REDACTED_VALUE,
-    },
-    timestamp: false,
-    formatters: {
-      level: (name: string, levelVal: number) => ({
-        level: levelVal,
-        level_name: name.toUpperCase(),
-      }),
-    },
-    level: minimumLevel,
-  };
 };
 
 const getRequestInfo = (mappedHeaders: {
