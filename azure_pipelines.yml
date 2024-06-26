@@ -48,6 +48,20 @@ stages:
           - script: |
               docker run --rm -i -v "$(pwd):/src" zricethezav/gitleaks:v8.18.4 detect --source="/src" -c "src/.gitleaks.toml"  --no-git -v
             displayName: GitLeaks Scan
+      - ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+        - job: bearerScan
+          displayName: Bearer
+          pool:
+            vmImage: "ubuntu-latest"
+          steps:
+            - task: DockerInstaller@0
+              displayName: Docker Installer
+              inputs:
+                dockerVersion: 17.09.0-ce
+                releaseType: stable
+            - script: |
+                docker run --rm -v $(pwd):/tmp/scan bearer/bearer:latest-amd64 scan --no-color --hide-progress-bar --fail-on-severity critical,high /tmp/scan
+              displayName: Code Scan
   - stage: BuildDeps
     displayName: Build service dependencies
     jobs:
