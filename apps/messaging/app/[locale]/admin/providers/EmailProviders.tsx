@@ -25,7 +25,7 @@ export default async () => {
             {t("hostTableHeader")}
           </th>
           <th scope="col" className="govie-table__header">
-            {t("portTableHeader")}
+            {t("primaryHeader")}
           </th>
           <th scope="col" className="govie-table__header">
             {t("actionTableHeader")}
@@ -42,7 +42,7 @@ export default async () => {
               {provider.host}
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-              {provider.port}
+              {provider.isPrimary && t("primaryCellValue")}
             </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               <div style={{ display: "flex", alignItems: "center" }}>

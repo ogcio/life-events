@@ -14,10 +14,12 @@ export type EmailProvider = {
   throttle?: number;
   fromAddress: string;
   ssl: boolean;
+  isPrimary: boolean;
 };
 
 export interface SendMailParams {
-  providerId: string;
+  // providerId: string;
+  provider: EmailProvider;
   email: string;
   subject: string;
   body: string;
@@ -27,18 +29,18 @@ export interface MailService {
   createProvider(
     organisationId: string,
     provider: Omit<EmailProvider, "id">,
-  ): Promise<string | undefined>;
+  ): Promise<string>;
   updateProvider(organisationId: string, params: EmailProvider): Promise<void>;
+  getPrimaryProvider(
+    organisationId: string,
+  ): Promise<EmailProvider | undefined>;
   getProvider(
     organisationId: string,
     providerId: string,
   ): Promise<EmailProvider | undefined>;
   getProviders(organisationId: string): Promise<EmailProvider[]>;
   deleteProvider(organisationId: string, providerId: string): Promise<void>;
-  sendMail(
-    organisationId: string,
-    params: SendMailParams,
-  ): Promise<ServiceError | undefined>;
+  sendMail(params: SendMailParams): Promise<ServiceError | undefined>;
   getFirstOrEtherealMailProvider(): Promise<string>;
 }
 
@@ -55,6 +57,7 @@ export function mailService(client: PoolClient): MailService {
         fromAddress,
         throttle,
         ssl,
+        isPrimary,
       }: Omit<EmailProvider, "id">,
     ) {
       const duplicationQueryResult = await client.query<{ exists: boolean }>(
@@ -80,32 +83,55 @@ export function mailService(client: PoolClient): MailService {
         );
       }
 
-      const insertQueryResult = await client.query<{ id: string }>(
-        `
-          INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw, from_address, throttle_ms, is_ssl, organisation_id)
-          VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
-          RETURNING id
+      let id: string | undefined;
+      try {
+        client.query("begin");
+        const isPrimaryConverted = isPrimary || null;
+
+        if (isPrimaryConverted) {
+          await client.query(
+            `
+          update email_providers set is_primary = null
+          where organisation_id = $1
           `,
-        [
-          name,
-          host,
-          port,
-          username,
-          password,
-          fromAddress,
-          throttle,
-          ssl,
-          organisationId,
-        ],
-      );
+            [organisationId],
+          );
+        }
 
-      const id = insertQueryResult.rows.at(0)?.id;
+        const insertQuery = `
+        INSERT INTO email_providers(provider_name, smtp_host, smtp_port, username, pw, from_address, throttle_ms, is_ssl, organisation_id, is_primary)
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+        RETURNING id
+      `;
 
-      if (!id) {
-        throw new ServerError(
-          EMAIL_PROVIDER_ERROR,
-          "failed to create provider",
+        const insertQueryResult = await client.query<{ id: string }>(
+          insertQuery,
+          [
+            name,
+            host,
+            port,
+            username,
+            password,
+            fromAddress,
+            throttle,
+            ssl,
+            organisationId,
+            isPrimaryConverted,
+          ],
         );
+
+        id = insertQueryResult.rows.at(0)?.id;
+
+        if (!id) {
+          throw new ServerError(
+            EMAIL_PROVIDER_ERROR,
+            "failed to create provider",
+          );
+        }
+        client.query("commit");
+      } catch (err) {
+        client.query("rollback");
+        throw err;
       }
 
       return id;
@@ -115,10 +141,12 @@ export function mailService(client: PoolClient): MailService {
         `
         select exists(
           select * from email_providers
-          where organisation_id = $1 and lower(from_address) = lower($2)
+          where organisation_id = $1 
+          and lower(from_address) = lower($2)
+          and id != $3
         )
       `,
-        [organisationId, provider.fromAddress],
+        [organisationId, provider.fromAddress, provider.id],
       );
 
       if (duplicationQueryResult.rows.at(0)?.exists) {
@@ -134,32 +162,74 @@ export function mailService(client: PoolClient): MailService {
         );
       }
 
-      await client.query(
+      try {
+        client.query("begin");
+        const isPrimaryConverted = provider.isPrimary || null;
+        if (isPrimaryConverted) {
+          await client.query(
+            `
+          update email_providers set is_primary = null
+          where organisation_id = $1
+          `,
+            [organisationId],
+          );
+        }
+
+        await client.query(
+          `
+            UPDATE email_providers set 
+              provider_name = $1, 
+              smtp_host = $2,
+              smtp_port = $3,
+              username = $4,
+              pw = $5,
+              from_address = $6,
+              throttle_ms = $7,
+              is_ssl = $8,
+              is_primary = $9
+            WHERE id = $10 and organisation_id = $11
+          `,
+          [
+            provider.name,
+            provider.host,
+            provider.port,
+            provider.username,
+            provider.password,
+            provider.fromAddress,
+            provider.throttle,
+            provider.ssl,
+            isPrimaryConverted,
+            provider.id,
+            organisationId,
+          ],
+        );
+
+        client.query("commit");
+      } catch (err) {
+        client.query("rollback");
+        throw err;
+      }
+    },
+    async getPrimaryProvider(organisationId) {
+      const providerQueryResult = await client.query<EmailProvider>(
         `
-          UPDATE email_providers set 
-            provider_name = $1, 
-            smtp_host = $2,
-            smtp_port = $3,
-            username = $4,
-            pw = $5,
-            from_address = $6,
-            throttle_ms = $7,
-            is_ssl = $8
-          WHERE id = $9 and organisation_id = $10
-        `,
-        [
-          provider.name,
-          provider.host,
-          provider.port,
-          provider.username,
-          provider.password,
-          provider.fromAddress,
-          provider.throttle,
-          provider.ssl,
-          provider.id,
-          organisationId,
-        ],
+      select 
+        id,
+        provider_name as "name", 
+        smtp_host as "host", 
+        smtp_port as "port", 
+        username, pw as "password",
+        throttle_ms as "throttle",
+        from_address as "fromAddress",
+        is_ssl as "ssl",
+        COALESCE(is_primary, false) as "isPrimary"
+      FROM email_providers
+      WHERE organisation_id = $1 and is_primary
+      `,
+        [organisationId],
       );
+
+      return providerQueryResult.rows.at(0);
     },
     async getProvider(organisationId: string, providerId: string) {
       return client
@@ -173,7 +243,8 @@ export function mailService(client: PoolClient): MailService {
           username, pw as "password",
           throttle_ms as "throttle",
           from_address as "fromAddress",
-          is_ssl as "ssl"
+          is_ssl as "ssl",
+          COALESCE(is_primary, false) as "isPrimary"
         FROM email_providers
         WHERE id =$1 and organisation_id = $2
       `,
@@ -192,7 +263,8 @@ export function mailService(client: PoolClient): MailService {
           username, pw as "password",
           throttle_ms as "throttle",
           from_address as "fromAddress",
-          is_ssl as "ssl"
+          is_ssl as "ssl",
+          COALESCE(is_primary, false) as "isPrimary"
         FROM email_providers
         WHERE organisation_id = $1
         ORDER BY created_at DESC
@@ -207,28 +279,10 @@ export function mailService(client: PoolClient): MailService {
         [providerId, organisationId],
       );
     },
-    async sendMail(
-      organisationId: string,
-      params: SendMailParams,
-    ): Promise<ServiceError | undefined> {
+    async sendMail(params: SendMailParams): Promise<ServiceError | undefined> {
       try {
-        const provider = await this.getProvider(
-          organisationId,
-          params.providerId,
-        );
-
-        if (!provider) {
-          return {
-            critical: false,
-            error: {
-              ...params,
-            },
-            msg: `failed to get mail provider for ${params.providerId}`,
-          };
-        }
-
         const { host, password, username, port, fromAddress, ssl, name } =
-          provider;
+          params.provider;
 
         const transporter: nodemailer.Transporter = nodemailer.createTransport({
           host,
@@ -270,21 +324,6 @@ export function mailService(client: PoolClient): MailService {
           [],
         )
         .then((res) => res.rows.at(0)?.id);
-
-      // if (!id) {
-      //   const createProviderMethod = this.createProvider;
-      //   const testAccount = await nodemailer.createTestAccount();
-      //   id = await createProviderMethod({
-      //     name: "Ethreal Email Dev Provider",
-      //     host: testAccount.smtp.host,
-      //     port: 587,
-      //     username: testAccount.user,
-      //     password: testAccount.pass,
-      //     fromAddress: "",
-      //     ssl: false,
-      //   });
-      // }
-
       return id ?? "";
     },
   };

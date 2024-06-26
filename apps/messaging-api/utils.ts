@@ -5,6 +5,7 @@ type AwsSmsProviderConfig = {
   secretAccessKey: string;
   accessKey: string;
   type: "AWS";
+  region: string;
 };
 
 export const utils = {
