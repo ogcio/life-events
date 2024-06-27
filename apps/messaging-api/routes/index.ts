@@ -6,6 +6,7 @@ import sms from "./providers/sms";
 import templates from "./templates";
 import userSettings from "./users/settings";
 import usersImports from "./users/imports";
+import recipients from "./users/recipients";
 
 export default async function routes(app: FastifyInstance) {
   app.register(messages, { prefix: "/messages" });
@@ -14,6 +15,7 @@ export default async function routes(app: FastifyInstance) {
   app.register(templates, { prefix: "/templates" });
   app.register(userSettings, { prefix: "/users/settings" });
   app.register(usersImports, { prefix: "/users/imports" });
+  app.register(recipients, { prefix: "/recipients" });
 }
 
 export interface SMSService {
