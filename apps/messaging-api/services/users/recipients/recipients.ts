@@ -67,15 +67,14 @@ const buildGetRecipientsQueries = (params: {
   let transportsWhereClause = "";
   let paginationIndex = 2;
   const queryValues = [params.organisationId];
-  let search = params.search ? params.search.trim() : "";
+  const search = params.search ? params.search.trim() : "";
   if (search.length > 0) {
-    search = `%${search}%`;
     searchWhereClause = ` AND (${[
       `u.email ILIKE $2`,
       `u.details->>'firstName' ILIKE $2`,
       `u.details->>'lastName' ILIKE $2`,
     ].join(" OR ")}) `;
-    queryValues.push(search);
+    queryValues.push(`%${search}%`);
     paginationIndex = 3;
   }
 
