@@ -4,10 +4,11 @@ import AWS from "aws-sdk";
 export function awsSnsSmsService(
   accessKeyId: string,
   secretAccessKey: string,
+  region: string,
 ): SMSService {
   const aws = new AWS.SNS({
     apiVersion: "latest",
-    region: "eu-west-1",
+    region,
     credentials: { accessKeyId, secretAccessKey },
   });
 

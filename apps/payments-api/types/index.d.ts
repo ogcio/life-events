@@ -33,6 +33,13 @@ declare module "fastify" {
       reply: FastifyReply,
     ) => Promise<void>;
 
+    checkPermissions: (
+      request: FastifyRequest,
+      reply: FastifyReply,
+      permissions: string[],
+      matchConfig?: { method: "AND" | "OR" },
+    ) => Promise<void>;
+
     providers: ProvidersPlugin;
     citizen: CitizenPlugin;
     transactions: TransactionsPlugin;

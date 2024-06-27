@@ -1,5 +1,3 @@
-import { RedirectType, redirect } from "next/navigation";
-import { PgSessions } from "auth/sessions";
 import EventTable from "./EventTable";
 import { web } from "../../../utils";
 import StatusMenu from "./StatusMenu";
@@ -30,11 +28,7 @@ const componentsMap: {
 
 export default async (props: SubmissionsTableProps) => {
   const t = await getTranslations("Admin.Submissions");
-  const { publicServant } = await PgSessions.get();
-
-  if (!publicServant) {
-    redirect("/", RedirectType.replace);
-  }
+  const searchParams = new URLSearchParams(props.searchParams);
 
   const Component = componentsMap[props.searchParams?.status ?? "submitted"];
 
@@ -43,6 +37,15 @@ export default async (props: SubmissionsTableProps) => {
       <h1 className="govie-heading-l">{t("title")}</h1>
       <StatusMenu searchParams={props.searchParams} />
       <Component {...props} />
+      <div style={{ textAlign: "right" }}>
+        <a
+          href={`/admin/submissions/api?${searchParams.toString()}`}
+          target="_blank"
+          className="govie-link"
+        >
+          {t("exportCsvFile")}
+        </a>
+      </div>
     </>
   );
 };

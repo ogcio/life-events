@@ -1,5 +1,4 @@
 import { FastifyBaseLogger } from "fastify";
-import { createError } from "@fastify/error";
 import {
   CsvRecord,
   ImportChannel,
@@ -16,6 +15,7 @@ import { mapUsers } from "./map-users";
 import { RequestUser } from "../../../plugins/auth";
 import { sendInvitationsForUsersImport } from "./send-invitations";
 import { PostgresDb } from "@fastify/postgres";
+import { BadRequestError, ServerError } from "shared-errors";
 
 export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
 const TAGS_SEPARATOR = ";";
@@ -29,11 +29,10 @@ export const importCsvFileFromRequest = async (params: {
   const usersToImport = await getUsersFromCsv(params.filepath);
 
   if (usersToImport.length === 0) {
-    throw createError(
+    throw new BadRequestError(
       IMPORT_USERS_ERROR,
       "Files must have at least one user",
-      400,
-    )();
+    );
   }
 
   await importUsers({
@@ -56,7 +55,7 @@ export const importCsvRecords = async (params: {
   );
 
   if (toImportUsers.length === 0) {
-    throw new Error("At least one user needed");
+    throw new BadRequestError(IMPORT_USERS_ERROR, "At least one user needed");
   }
 
   await importUsers({
@@ -191,19 +190,19 @@ const insertToImportUsers = async (params: {
     );
 
     if (result.rowCount === 0) {
-      throw new Error("Cannot store the users_import data");
+      throw new ServerError(
+        IMPORT_USERS_ERROR,
+        "Cannot store the users_import data",
+      );
     }
 
     return result.rows[0].import_id;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
+    throw new ServerError(
       IMPORT_USERS_ERROR,
       `Error during CSV file store on db: ${message}`,
-      500,
-    )();
-
-    throw toOutput;
+    );
   }
 };
 

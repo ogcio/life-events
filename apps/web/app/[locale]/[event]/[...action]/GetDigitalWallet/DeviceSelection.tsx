@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { form, routes, postgres, workflow } from "../../../../utils";
 import ds from "design-system";
+import authenticatedAction from "../../../../utils/authenticatedAction";
 
 export default async (props: {
   data: workflow.GetDigitalWallet;
@@ -12,7 +13,6 @@ export default async (props: {
 }) => {
   const { data, userId, urlBase, flow } = props;
   const t = await getTranslations("GetDigitalWallet.DeviceSelection");
-  const errorT = await getTranslations("formErrors");
 
   const red = ds.colours.ogcio.red;
 
@@ -22,7 +22,7 @@ export default async (props: {
     props.flow,
   );
 
-  async function submitAction(formData: FormData) {
+  const submitAction = authenticatedAction(async (formData: FormData) => {
     "use server";
 
     const formErrors: form.Error[] = [];
@@ -90,7 +90,7 @@ export default async (props: {
     );
 
     return redirect(urlBase);
-  }
+  });
 
   const deviceTypeError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.deviceType,

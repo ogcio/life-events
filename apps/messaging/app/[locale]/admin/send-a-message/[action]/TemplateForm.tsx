@@ -47,9 +47,10 @@ export default async (props: MessageCreateProps) => {
     await new Messaging(userId).getTemplate(props.state.templateMetaId)
   )?.data;
 
-  const template = templateResult?.contents.find(
-    (x) => x.lang === headers().get("x-next-intl-locale") ?? "en",
-  );
+  const template =
+    templateResult?.contents.find(
+      (x) => x.lang === headers().get("x-next-intl-locale"),
+    ) || templateResult?.contents.at(0);
 
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">

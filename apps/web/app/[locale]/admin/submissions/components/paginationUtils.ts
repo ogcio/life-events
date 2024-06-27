@@ -197,13 +197,26 @@ export type QueryParams = {
   filters: Record<string, string>;
 };
 
+const sanitizeNumber = (
+  value: number,
+  min: number,
+  max: number,
+  fallback: number,
+) => {
+  return value >= min && value <= max ? value : fallback;
+};
+
 export const getQueryParams = (params: URLSearchParams): QueryParams => {
   const page = params.get("page");
   const limit = params.get("limit");
   const searchQuery = params.get("search") || undefined;
 
-  const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
-  const pageLimit = limit ? parseInt(limit) : PAGINATION_LIMIT_DEFAULT;
+  const currentPage = page
+    ? sanitizeNumber(parseInt(page), 1, 100, PAGINATION_PAGE_DEFAULT)
+    : PAGINATION_PAGE_DEFAULT;
+  const pageLimit = limit
+    ? sanitizeNumber(parseInt(limit), 1, 100, PAGINATION_LIMIT_DEFAULT)
+    : PAGINATION_LIMIT_DEFAULT;
 
   const deviceType = (params.get("deviceType") as "ios" | "android") || "";
   const verifiedEmail = (params.get("verifiedEmail") as "yes" | "no") || "";

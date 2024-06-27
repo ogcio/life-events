@@ -5,6 +5,7 @@ import {
 } from "../../src/fastify-logging-wrapper.js";
 import { DestinationStream } from "pino";
 import { createError } from "@fastify/error";
+import { LifeEventsError } from "shared-errors";
 
 export const buildFastify = (loggerDestination?: DestinationStream) => {
   const server = Fastify({
@@ -31,6 +32,10 @@ export const buildFastify = (loggerDestination?: DestinationStream) => {
       requestedMessage as string,
       requestedStatusCode as number,
     )();
+  });
+
+  server.get("/life-events-error", async (_request, _reply) => {
+    throw new LifeEventsError("TESTING", "mock");
   });
 
   server.post("/logs", async (request, _reply) => {
