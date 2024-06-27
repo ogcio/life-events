@@ -364,4 +364,13 @@ export class Messaging {
 
     return { data, error };
   }
+
+  async getRecipients(
+    query: paths["/api/v1/users/recipients/"]["get"]["parameters"]["query"],
+  ) {
+    const { error, data } = await this.client.GET("/api/v1/users/recipients/", {
+      query,
+    });
+    return { error, data: data?.data, metadata: data?.metadata };
+  }
 }
