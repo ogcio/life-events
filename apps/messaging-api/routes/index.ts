@@ -15,7 +15,7 @@ export default async function routes(app: FastifyInstance) {
   app.register(templates, { prefix: "/templates" });
   app.register(userSettings, { prefix: "/users/settings" });
   app.register(usersImports, { prefix: "/users/imports" });
-  app.register(recipients, { prefix: "/recipients" });
+  app.register(recipients, { prefix: "/users/recipients" });
 }
 
 export interface SMSService {

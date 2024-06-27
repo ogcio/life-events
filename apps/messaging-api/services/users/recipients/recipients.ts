@@ -2,6 +2,7 @@ import { Pool } from "pg";
 import { PaginationParams } from "../../../types/schemaDefinitions";
 import { Recipient } from "../../../types/usersSchemaDefinitions";
 import { utils } from "../../../utils";
+import { ServerError } from "shared-errors";
 
 const normalizePagination = (
   pagination: PaginationParams,
@@ -32,6 +33,7 @@ export const getRecipients = async (params: {
   const pagination = normalizePagination(params.pagination);
   try {
     const queries = buildGetRecipientsQueries({ ...params, pagination });
+    console.log({ queries: queries.count });
     const countResponse = client.query<{ count: number }>(
       queries.count.query,
       queries.count.values,
@@ -45,6 +47,8 @@ export const getRecipients = async (params: {
       recipients: (await response).rows,
       total: (await countResponse).rows[0].count,
     };
+  } catch (error) {
+    throw new ServerError("GET_RECIPIENTS", `error fetching recipients`);
   } finally {
     client.release();
   }
@@ -63,12 +67,13 @@ const buildGetRecipientsQueries = (params: {
   let transportsWhereClause = "";
   let paginationIndex = 2;
   const queryValues = [params.organisationId];
-  const search = params.search ? params.search.trim() : "";
+  let search = params.search ? params.search.trim() : "";
   if (search.length > 0) {
+    search = `%${search}%`;
     searchWhereClause = ` AND (${[
-      `u.email ILIKE '%$2%`,
-      `u.details->>'firstName' ILIKE '%$2%'`,
-      `u.details->>'lastName' ILIKE '%$2%'`,
+      `u.email ILIKE $2`,
+      `u.details->>'firstName' ILIKE $2`,
+      `u.details->>'lastName' ILIKE $2`,
     ].join(" OR ")}) `;
     queryValues.push(search);
     paginationIndex = 3;

@@ -4056,7 +4056,7 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/recipients/:
+  /api/v1/users/recipients/:
     get:
       tags:
         - Users
