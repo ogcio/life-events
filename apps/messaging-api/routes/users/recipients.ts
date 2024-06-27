@@ -21,6 +21,7 @@ export default async function recipients(app: FastifyInstance) {
     Querystring: {
       organisationId?: string;
       search?: string;
+      transports?: string;
     } & PaginationParams;
     Response: { data: Recipient[] };
   }
@@ -36,6 +37,7 @@ export default async function recipients(app: FastifyInstance) {
             Type.Object({
               organisationId: Type.Optional(Type.String({ format: "uuid" })),
               search: Type.Optional(Type.String()),
+              transports: Type.Optional(Type.String()),
             }),
             PaginationParamsSchema,
           ]),
@@ -51,14 +53,16 @@ export default async function recipients(app: FastifyInstance) {
       request: FastifyRequest<GetRecipientsSchema>,
       _reply: FastifyReply,
     ) => {
+      const query = request.query;
       const recipientsResponse = await getRecipients({
         pool: app.pg.pool,
         organisationId: getOrganisationIdFromRequest(request, "GET_RECIPIENTS"),
-        search: request.query.search,
+        search: query.search,
         pagination: {
-          limit: request.query.limit,
-          offset: request.query.offset,
+          limit: query.limit,
+          offset: query.offset,
         },
+        transports: query.transports ? query.transports.trim().split(",") : [],
       });
 
       return {

@@ -1,6 +1,7 @@
 import { Pool } from "pg";
 import { PaginationParams } from "../../../types/schemaDefinitions";
 import { Recipient } from "../../../types/usersSchemaDefinitions";
+import { utils } from "../../../utils";
 
 const normalizePagination = (
   pagination: PaginationParams,
@@ -25,6 +26,7 @@ export const getRecipients = async (params: {
   organisationId: string;
   pagination: PaginationParams;
   search?: string | undefined;
+  transports: string[];
 }): Promise<{ recipients: Recipient[]; total: number }> => {
   const client = await params.pool.connect();
   const pagination = normalizePagination(params.pagination);
@@ -52,11 +54,13 @@ const buildGetRecipientsQueries = (params: {
   organisationId: string;
   pagination: { limit: number; offset: number };
   search?: string;
+  transports: string[];
 }): {
   count: { query: string; values: (string | number)[] };
   data: { query: string; values: (string | number)[] };
 } => {
   let searchWhereClause = "";
+  let transportsWhereClause = "";
   let paginationIndex = 2;
   const queryValues = [params.organisationId];
   const search = params.search ? params.search.trim() : "";
@@ -68,6 +72,13 @@ const buildGetRecipientsQueries = (params: {
     ].join(" OR ")}) `;
     queryValues.push(search);
     paginationIndex = 3;
+  }
+
+  if (params.transports.length > 0) {
+    // at least one of the needed transports
+    // is set as valid for the user
+    transportsWhereClause = ` AND ouc.preferred_transports && $${paginationIndex++}`;
+    queryValues.push(utils.postgresArrayify(params.transports));
   }
 
   const dataSelect = `SELECT 
@@ -90,7 +101,7 @@ const buildGetRecipientsQueries = (params: {
             ouc.organisation_id = $1 AND
             ouc.user_id = u.id AND
             ouc.invitation_status = 'accepted'
-        WHERE u.user_status = 'active' ${searchWhereClause}
+        WHERE u.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
     `;
 
   return {
