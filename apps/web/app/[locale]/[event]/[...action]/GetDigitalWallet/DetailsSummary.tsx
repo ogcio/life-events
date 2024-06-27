@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { ListRow } from "../shared/SummaryListRow";
 import { workflow, postgres, routes, web } from "../../../../utils";
 import { sendGovAddressConfirmationEmail } from "./ServerActions";
+import authenticatedAction from "../../../../utils/authenticatedAction";
 
 export default (props: {
   data: workflow.GetDigitalWallet;
@@ -14,7 +15,8 @@ export default (props: {
 }) => {
   const { data, flow, userId, urlBase } = props;
   const t = useTranslations("GetDigitalWallet.DetailsSummary");
-  async function submitAction() {
+
+  const submitAction = authenticatedAction(async () => {
     "use server";
 
     const { govIEEmail, firstName, lastName } = data;
@@ -44,7 +46,7 @@ export default (props: {
     }
 
     revalidatePath("/");
-  }
+  });
 
   const changeDetailsHref =
     routes.digitalWallet.getDigitalWallet.changeDetails.slug;

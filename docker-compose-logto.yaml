@@ -1,68 +1,28 @@
 services:
   postgresql:
-    image: postgres:15.2-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-    ports:
-      - 5432:5432
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/01_init.sql
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready", "-U", "postgres" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    extends:
+      file: docker-compose.yaml
+      service: postgresql
 
   maildev:
-    image: maildev/maildev
-    ports:
-      - 1080:1080
-      - 1025:1025
-    healthcheck:
-      test: 'wget -O - http://127.0.0.1:1080/healthz || exit 1'
+    extends:
+      file: docker-compose.yaml
+      service: maildev
 
   localstack:
-    image: localstack/localstack:2.3.2
-    ports:
-      - 4566:4566
-    environment:
-      SERVICES: "s3,secretsmanager"
-      DATA_DIR: "/tmp/localstack/data"
-      FILES_S3_BUCKET: "life-events-files"
-      IMAGES_S3_BUCKET: "life-events-images"
-    volumes:
-      - './.localstack:/tmp/localstack'
-      - '/var/run/docker.sock:/var/run/docker.sock'
-      - './init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh' # ready hook
+    extends:
+      file: docker-compose.yaml
+      service: localstack
+
   scheduler_migrations:
-    image: scheduler-api-container:latest
-    build:
-      context: .
-      dockerfile: ./apps/scheduler-api/Dockerfile
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST=postgresql
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB_NAME=scheduler
-    command: [ "npm", "run", "migrate:scheduler-api" ]
-    depends_on:
-      postgresql:
-        condition: service_healthy
+    extends:
+      file: docker-compose-scheduler.yaml
+      service: scheduler_migrations
 
   scheduler:
-    image: scheduler-api-container:latest
-    ports:
-      - 8005:8005
-    env_file:
-      - './apps/scheduler-api/.env'
-    environment:
-      - POSTGRES_HOST=postgresql
-    depends_on:
-      scheduler_migrations:
-        condition: service_completed_successfully
+    extends:
+      file: docker-compose-scheduler.yaml
+      service: scheduler
 
   logto:
     depends_on:

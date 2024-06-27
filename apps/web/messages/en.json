@@ -448,7 +448,7 @@
         "subject": "You’re ready to get your Government Digital Wallet",
         "title": "Congratulations",
         "paragraphs": {
-          "p1": "You have been approved as a civil servant and can join the Government Digital Wallet pilot scheme.",
+          "p1": "You have been approved as a public servant and can join the Government Digital Wallet pilot scheme.",
           "p2": "<important>What’s next?</important>",
           "ios": {
             "p1": "This is a pilot programme which runs on a testing platform called Testflight. This is Apple’s way of giving people early access to an app.",
@@ -766,7 +766,8 @@
   },
   "Admin": {
     "Submissions": {
-      "title": "Submissions"
+      "title": "Submissions",
+      "exportCsvFile": "export CSV file"
     },
     "RenewLicenceUserDetails": {
       "title": "Review {flow} application",
@@ -884,7 +885,7 @@
       "dateColumn": "Date",
       "nameColumn": "Name",
       "deviceColumn": "Device type",
-      "myGovIdEmailColumn": "MyGovID email",
+      "workEmailColumn": "Work email",
       "verifiedWorkEmail": "Verified work email",
       "typeColumn": "Submission",
       "statusColumn": "Status",
@@ -904,7 +905,10 @@
       "nameColumn": "Name",
       "myGovIdEmailColumn": "MyGovID email",
       "workEmailColumn": "Work email",
-      "applicationStatusColumn": "Application status"
+      "applicationStatusColumn": "Application status",
+      "verificationLevelColumn": "Verification level",
+      "started": "Started",
+      "notStarted": "Not started"
     },
     "StatusMenu": {
       "pending": "Pending",
@@ -1026,6 +1030,6 @@
   },
   "FeedbackBanner": {
     "tag": "Alpha",
-    "bannerText": "This is a new service - your <mail>feedback</mail> will help us improve it."
+    "bannerText": "This is a new service - your <link1>feedback</link1> will help us improve it. If you're having problems submit a <link2>support</link2> request"
   }
 }

@@ -9,7 +9,7 @@ export default async () => {
       <li tabIndex={0}>
         <Link
           className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
-          href={"/featureFlags"}
+          href={"/admin/featureFlags"}
           style={{
             margin: "unset",
             paddingLeft: "12px",

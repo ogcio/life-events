@@ -29,13 +29,14 @@ type DigitalWalletFlow = {
   flow_data: workflow.GetDigitalWallet;
 };
 
-const getPartialApplications = async (
-  pageSize: number,
-  offset: number,
-  search?: string,
-  filters?: Record<string, string>,
-) => {
+export const getPartialApplications = async (params: {
+  pageSize?: number;
+  offset?: number;
+  search?: string;
+  filters?: Record<string, string>;
+}) => {
   // Step 1: Fetch users from the shared DB - CHANGE THIS AFTER LOGTO INTEGRATION
+  const { pageSize, offset, search, filters } = params;
   const baseUserQuery = `SELECT * FROM users WHERE is_public_servant = false`;
   let usersQuery = baseUserQuery;
   const searchQuery = search?.trim();
@@ -87,8 +88,7 @@ const getPartialApplications = async (
   if (filters) {
     for (const [key, value] of Object.entries(filters)) {
       flowQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
-      queryParams.push(key);
-      queryParams.push(value);
+      queryParams.push(key, value);
       paramIndex += 2;
     }
   }
@@ -98,7 +98,6 @@ const getPartialApplications = async (
     queryParams,
   );
 
-  // Step 3: Process and combine the results using efficient data structures
   const userMap = new Map<string, User>(
     usersQueryResult.rows.map((user) => [user.id, user]),
   );
@@ -109,9 +108,16 @@ const getPartialApplications = async (
 
   flowQueryResult.rows.forEach((row) => {
     if (row.flow_data.confirmedApplication === "") {
+      // If the user has a flow but it's not confirmed, add it to the list
       const user = userMap.get(row.user_id);
       if (user) {
         usersWithPartial.push({ ...user, ...row });
+        userMap.delete(row.user_id); // Only add the user once
+      }
+    } else if (row.flow_data.confirmedApplication.length > 0) {
+      // If the user has a confirmed application, remove them from the list
+      const user = userMap.get(row.user_id);
+      if (user) {
         userMap.delete(row.user_id); // Only add the user once
       }
     }
@@ -125,6 +131,14 @@ const getPartialApplications = async (
   }
 
   const totalCount = usersWithPartial.length;
+
+  if (pageSize === undefined || offset === undefined) {
+    return {
+      data: usersWithPartial,
+      totalCount: totalCount,
+      totalPages: 1,
+    };
+  }
 
   return {
     data: usersWithPartial.slice(offset, offset + pageSize),
@@ -141,12 +155,12 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
 
   const queryParams = getQueryParams(urlParms);
 
-  const usersWithPartial = await getPartialApplications(
-    queryParams.limit,
-    queryParams.offset,
-    queryParams.search,
-    queryParams.filters,
-  );
+  const usersWithPartial = await getPartialApplications({
+    pageSize: queryParams.limit,
+    offset: queryParams.offset,
+    search: queryParams.search,
+    filters: queryParams.filters,
+  });
 
   const links: PaginationLinks = getPaginationLinks({
     url,
@@ -197,7 +211,7 @@ export default async ({ searchParams, params }: SubmissionsTableProps) => {
                 </td>
 
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {row.flow_data ? "Started" : "Not started"}
+                  {row.flow_data ? t("started") : t("notStarted")}
                 </td>
               </tr>
             );

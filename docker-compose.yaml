@@ -3,6 +3,7 @@ services:
     image: postgres:15.2-alpine
     restart: always
     environment:
+      PGUSER: ${POSTGRES_USER:-postgres} # will use current os user otherwise.
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
@@ -36,6 +37,7 @@ services:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh' # ready hook
+  
   scheduler_migrations:
     image: scheduler-api-container:latest
     build:
@@ -63,6 +65,7 @@ services:
     depends_on:
       scheduler_migrations:
         condition: service_completed_successfully
+        
 volumes:
   db:
     driver: local

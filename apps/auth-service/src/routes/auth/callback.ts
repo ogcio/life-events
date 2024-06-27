@@ -60,20 +60,36 @@ export default async (app: FastifyInstance) => {
       const { id_token } = data;
 
       // // Note, this is purely conceptual. There's no signing at this time. Read description of jose.decodeJwt for further info once we're at that stage.
-      const { email, firstName, lastName } = decodeJWT(id_token);
+      const { email, firstName, lastName, dspOnlineLevel, mobile } =
+        decodeJWT(id_token);
+
+      let verificationLevel = 0;
+      if (dspOnlineLevel !== "0") {
+        if (mobile === "+0000000000000") {
+          verificationLevel = 1;
+        } else {
+          verificationLevel = 2;
+        }
+      }
 
       const q = await app.pg.query(
         `
           WITH get AS (
               SELECT id, is_public_servant FROM users WHERE govid_email=$1
             ), insert_new AS (
-                INSERT INTO users(govid_email, govid, user_name)
-                values($1, $2, $3)
-                ON CONFLICT DO NOTHING
+                INSERT INTO users(govid_email, govid, user_name, verification_level)
+                values($1, $2, $3, $4)
+                ON CONFLICT (govid_email) DO UPDATE
+                SET verification_level = EXCLUDED.verification_level
                 RETURNING id, is_public_servant
             )
             SELECT * FROM get UNION SELECT * FROM insert_new`,
-        [email, "not needed atm", [firstName, lastName].join(" ")],
+        [
+          email,
+          "not needed atm",
+          [firstName, lastName].join(" "),
+          verificationLevel,
+        ],
       );
 
       const [{ id: user_id }] = q.rows;

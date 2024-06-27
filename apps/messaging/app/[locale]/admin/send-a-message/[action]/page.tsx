@@ -9,7 +9,6 @@ import Recipients from "./Recipients";
 import ScheduleForm from "./ScheduleForm";
 import SuccessForm from "./SuccessForm";
 import TemplateForm from "./TemplateForm";
-
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 
 const metaSlug = "meta";
@@ -34,7 +33,7 @@ const rules: Parameters<typeof getCurrentStep<ApiMessageState>>[0] = [
       ? { key: templateSlug, isStepValid: true }
       : next,
 
-  // Receients
+  // Recipients
   (state) => {
     if (state.confirmedRecipientsAt) {
       return next;

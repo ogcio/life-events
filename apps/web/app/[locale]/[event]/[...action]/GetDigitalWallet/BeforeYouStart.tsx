@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { postgres, workflow } from "../../../../utils";
+import { PgSessions } from "auth/sessions";
+import authenticatedAction from "../../../../utils/authenticatedAction";
 
 export default async (props: {
   userId: string;
@@ -8,7 +10,8 @@ export default async (props: {
   data: workflow.GetDigitalWallet;
 }) => {
   const t = await getTranslations("GetDigitalWallet.BeforeYouStartForm");
-  async function submitAction() {
+
+  const submitAction = authenticatedAction(async () => {
     "use server";
 
     const dataToUpdate: workflow.GetDigitalWallet = {
@@ -33,7 +36,7 @@ export default async (props: {
     );
 
     revalidatePath("/");
-  }
+  });
 
   return (
     <div className="govie-grid-row">

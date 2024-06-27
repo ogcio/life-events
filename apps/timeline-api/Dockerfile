@@ -3,13 +3,16 @@ FROM base-deps as deps
 WORKDIR /app
 
 COPY ./package*.json /app/
-COPY ./apps/timeline-api/ /app/apps/timeline-api/ 
+COPY ./apps/timeline-api/ /app/apps/timeline-api/
+COPY ./packages/shared-errors/ /app/packages/shared-errors/
 COPY ./packages/logging-wrapper/ /app/packages/logging-wrapper/
 COPY ./packages/error-handler/ /app/packages/error-handler/
 RUN npm ci
 
-
 FROM deps AS builder
+
+WORKDIR /app/packages/shared-errors/
+RUN npm run build
 
 WORKDIR /app/packages/logging-wrapper/
 RUN npm run build

@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
-import { createError } from "@fastify/error";
 import { FastifyInstance } from "fastify";
 import { organisationId } from "../../utils";
+import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 const tags = ["Templates"];
 
 const TEMPLATES_ERROR = "TEMPLATES_ERROR";
@@ -54,12 +54,6 @@ interface GetTemplate {
   };
 }
 
-const TemplateListType = Type.Object({
-  templateMetaId: Type.String({ format: "uuid" }),
-  lang: Type.String(),
-  templateName: Type.String(),
-});
-
 const TemplateTypeWithoutId = Type.Object({
   templateName: Type.String(),
   lang: Type.String(),
@@ -93,7 +87,17 @@ export default async function templates(app: FastifyInstance) {
         tags,
         response: {
           200: Type.Object({
-            data: Type.Array(TemplateListType),
+            data: Type.Array(
+              Type.Object({
+                templateMetaId: Type.String({ format: "uuid" }),
+                contents: Type.Array(
+                  Type.Object({
+                    lang: Type.String(),
+                    templateName: Type.String(),
+                  }),
+                ),
+              }),
+            ),
           }),
           "4xx": { $ref: "HttpError" },
           "5xx": { $ref: "HttpError" },
@@ -101,7 +105,8 @@ export default async function templates(app: FastifyInstance) {
       },
     },
     async function handleGetAll(request, _reply) {
-      const lang = request.query?.lang ?? "en";
+      const lang = request.query?.lang || "";
+
       const result = await app.pg.pool.query<{
         templateMetaId: string;
         lang: string;
@@ -110,16 +115,34 @@ export default async function templates(app: FastifyInstance) {
         `
         select  
           m.id as "templateMetaId",
-          lang,
+          c.lang,
           template_name as "templateName"
         from message_template_meta m
         join message_template_contents c on c.template_meta_id = m.id
-        where lang=$1
+        where 
+          case when length($1) > 0 then lang=$1 else true end
+          order by c.created_at desc
       `,
         [lang],
       );
 
-      return { data: result.rows };
+      const data: {
+        templateMetaId: string;
+        contents: { templateName: string; lang: string }[];
+      }[] = [];
+
+      for (const row of result.rows) {
+        const content = { lang: row.lang, templateName: row.templateName };
+        data
+          .find((item) => item.templateMetaId === row.templateMetaId)
+          ?.contents.push(content) ||
+          data.push({
+            templateMetaId: row.templateMetaId,
+            contents: [content],
+          });
+      }
+
+      return { data };
     },
   );
 
@@ -244,7 +267,7 @@ export default async function templates(app: FastifyInstance) {
       }
 
       if (!template.contents.length) {
-        throw createError(TEMPLATES_ERROR, "no template found", 404)();
+        throw new NotFoundError(TEMPLATES_ERROR, "no template found");
       }
 
       return { data: template };
@@ -307,11 +330,10 @@ export default async function templates(app: FastifyInstance) {
         );
 
         if (templateNameExists.rows[0]?.exists) {
-          throw createError(
+          throw new BadRequestError(
             TEMPLATES_ERROR,
             "template name already exists",
-            400,
-          )();
+          );
         }
 
         const templateMetaResponse = await client.query<{ id: string }>(
@@ -325,11 +347,10 @@ export default async function templates(app: FastifyInstance) {
         templateMetaId = templateMetaResponse.rows.at(0)?.id;
 
         if (!templateMetaId) {
-          throw createError(
+          throw new ServerError(
             TEMPLATES_ERROR,
             "failed to create a template meta",
-            500,
-          )();
+          );
         }
 
         for (const content of contents) {
@@ -377,7 +398,7 @@ export default async function templates(app: FastifyInstance) {
         if (err instanceof Error) {
           this.log.error(err.message);
         }
-        throw createError(TEMPLATES_ERROR, "failed to create template", 500)();
+        throw new ServerError(TEMPLATES_ERROR, "failed to create template");
       } finally {
         client.release();
       }
@@ -415,6 +436,14 @@ export default async function templates(app: FastifyInstance) {
       const client = await app.pg.pool.connect();
       try {
         client.query("BEGIN");
+
+        await client.query(
+          `
+          delete from message_template_contents
+          where template_meta_id = $1
+        `,
+          [templateId],
+        );
         for (const content of contents) {
           const { excerpt, lang, templateName, plainText, richText, subject } =
             content;
@@ -427,6 +456,7 @@ export default async function templates(app: FastifyInstance) {
             richText,
             plainText,
           ];
+
           const args = [...new Array(values.length)].map((_, i) => `$${i + 1}`);
           await client.query(
             `
@@ -440,15 +470,7 @@ export default async function templates(app: FastifyInstance) {
                     plain_text
                 ) values(
                  ${args.join(", ")}   
-                ) on conflict(template_meta_id, lang) do update 
-                set 
-                    template_name = $2,
-                    subject = $4,
-                    excerpt = $5,
-                    rich_text = $6, 
-                    plain_text = $7,
-                    updated_at = now()
-                where message_template_contents.template_meta_id = $1 and message_template_contents.lang = $3
+                )
             `,
             values,
           );
@@ -480,8 +502,7 @@ export default async function templates(app: FastifyInstance) {
         await client.query("COMMIT");
       } catch (err) {
         client.query("ROLLBACK");
-        this.log.error(err);
-        throw createError(TEMPLATES_ERROR, "failed to update", 500);
+        throw new ServerError(TEMPLATES_ERROR, "failed to update");
       } finally {
         client.release();
       }
