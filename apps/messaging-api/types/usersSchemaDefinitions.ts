@@ -200,3 +200,17 @@ export const InvitationFeedbackSchema = Type.Object({
   userStatusFeedback: UserStatusFeedbackUnionType,
 });
 export type InvitationFeedback = Static<typeof InvitationFeedbackSchema>;
+
+export const RecipientSchema = Type.Object({
+  id: Type.String({ format: "uuid" }),
+  userProfileId: Type.Union([Type.Null(), Type.String({ format: "uuid" })], {
+    default: null,
+  }),
+  firstName: NullableStringType,
+  lastName: NullableStringType,
+  phoneNumber: NullableStringType,
+  emailAddress: NullableStringType,
+  birthDate: NullableStringType,
+  preferredTransports: Type.Array(Type.String()),
+});
+export type Recipient = Static<typeof RecipientSchema>;

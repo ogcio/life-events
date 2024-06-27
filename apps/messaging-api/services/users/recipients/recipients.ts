@@ -1,0 +1,110 @@
+import { Pool } from "pg";
+import { PaginationParams } from "../../../types/schemaDefinitions";
+import { Recipient } from "../../../types/usersSchemaDefinitions";
+
+const normalizePagination = (
+  pagination: PaginationParams,
+): Required<PaginationParams> => {
+  const maxAvailableLimit = 100;
+  const minAvailableLimit = 1;
+  const defaultLimit = 20;
+  const minAvailableOffset = 0;
+  const defaultOffset = 0;
+  return {
+    limit: Math.max(
+      Math.min(maxAvailableLimit, pagination.limit ?? defaultLimit),
+      minAvailableLimit,
+    ),
+
+    offset: Math.max(pagination.offset ?? defaultOffset, minAvailableOffset),
+  };
+};
+
+export const getRecipients = async (params: {
+  pool: Pool;
+  organisationId: string;
+  pagination: PaginationParams;
+  search?: string | undefined;
+}): Promise<{ recipients: Recipient[]; total: number }> => {
+  const client = await params.pool.connect();
+  const pagination = normalizePagination(params.pagination);
+  try {
+    const queries = buildGetRecipientsQueries({ ...params, pagination });
+    const countResponse = client.query<{ count: number }>(
+      queries.count.query,
+      queries.count.values,
+    );
+    const response = client.query<Recipient>(
+      queries.data.query,
+      queries.data.values,
+    );
+
+    return {
+      recipients: (await response).rows,
+      total: (await countResponse).rows[0].count,
+    };
+  } finally {
+    client.release();
+  }
+};
+
+const buildGetRecipientsQueries = (params: {
+  organisationId: string;
+  pagination: { limit: number; offset: number };
+  search?: string;
+}): {
+  count: { query: string; values: (string | number)[] };
+  data: { query: string; values: (string | number)[] };
+} => {
+  let searchWhereClause = "";
+  let paginationIndex = 2;
+  const queryValues = [params.organisationId];
+  const search = params.search ? params.search.trim() : "";
+  if (search.length > 0) {
+    searchWhereClause = ` AND (${[
+      `u.email ILIKE '%$2%`,
+      `u.details->>'firstName' ILIKE '%$2%'`,
+      `u.details->>'lastName' ILIKE '%$2%'`,
+    ].join(" OR ")}) `;
+    queryValues.push(search);
+    paginationIndex = 3;
+  }
+
+  const dataSelect = `SELECT 
+        u.id as "id",
+        u.user_profile_id as "userProfileId",
+        u.phone as "phoneNumber",
+        u.email as "emailAddress",
+        u.details->>'firstName' as "firstName",
+        u.details->>'lastName' as "lastName",
+        u.details->>'birthDate' as "birthDate",
+        ouc.preferred_transports as "preferredTransports"
+    `;
+  const paginationQuery = `
+        ORDER BY u.id DESC
+        LIMIT $${paginationIndex++} OFFSET $${paginationIndex}
+    `;
+  const basicQuery = `
+        FROM users u
+        JOIN organisation_user_configurations ouc ON 
+            ouc.organisation_id = $1 AND
+            ouc.user_id = u.id AND
+            ouc.invitation_status = 'accepted'
+        WHERE u.user_status = 'active' ${searchWhereClause}
+    `;
+
+  return {
+    count: {
+      query: `SELECT COUNT(*) as count ${basicQuery}`,
+      values: queryValues,
+    },
+    data: {
+      query: `${dataSelect} ${basicQuery} ${paginationQuery}`,
+      values: [
+        ...queryValues,
+        params.pagination.limit,
+        params.pagination.offset,
+      ],
+    },
+  };
+};
