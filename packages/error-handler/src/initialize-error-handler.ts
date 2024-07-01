@@ -15,6 +15,7 @@ import {
   LifeEventsError,
   NotFoundError,
   ValidationError,
+  ValidationErrorData,
   isLifeEventsError,
   isValidationLifeEventsError,
   parseHttpErrorClass,
@@ -25,7 +26,7 @@ export interface HttpError {
   detail: string;
   request_id: string;
   name: string;
-  validation?: { fieldName: string; message: string }[];
+  validation?: ValidationErrorData[];
   process?: string;
 }
 
@@ -94,17 +95,28 @@ export const initializeNotFoundHandler = (server: FastifyInstance): void => {
 
 const getValidationFromFastifyError = (
   validationInput: FastifySchemaValidationError[],
-): { fieldName: string; message: string }[] => {
-  const output: { fieldName: string; message: string }[] = [];
+): ValidationErrorData[] => {
+  const output: ValidationErrorData[] = [];
   for (const input of validationInput) {
-    const key = input.params?.missingProperty ?? input.instancePath;
+    const key =
+      input.params?.missingProperty ?? input.instancePath.split("/").pop();
     const message = input.message ?? input.keyword;
     if (key && typeof key === "string") {
-      output.push({ fieldName: key, message });
+      output.push({
+        fieldName: key,
+        message,
+        validationRule: input.keyword,
+        additionalInfo: input.params,
+      });
       continue;
     }
 
-    output.push({ fieldName: input.schemaPath, message });
+    output.push({
+      fieldName: input.schemaPath,
+      message,
+      validationRule: input.keyword,
+      additionalInfo: input.params,
+    });
   }
 
   return output;
