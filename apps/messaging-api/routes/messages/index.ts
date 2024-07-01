@@ -269,9 +269,6 @@ export default async function messages(app: FastifyInstance) {
 
       // Schedule messages
       try {
-        if (~~(Math.random() * 100) > 30) {
-          throw new Error("REMOVE ME");
-        }
         const jobs = await messageService.scheduleMessages(
           createdTemplateMessages,
           req.body.scheduledAt,

@@ -414,9 +414,6 @@ export const executeJob = async (params: {
   let error: LoggingError | undefined;
   if (job.type === "message") {
     try {
-      if (~~(Math.random() * 100) > 30) {
-        throw new Error("REMOVE ME");
-      }
       const serviceErrors = await scheduleMessage(
         params.pg.pool,
         job.jobId,
