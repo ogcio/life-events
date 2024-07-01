@@ -33,6 +33,10 @@ COPY --from=builder /app/apps/auth-service/dist /app/apps/auth-service/dist
 COPY --from=builder /app/apps/auth-service/node_modules /app/apps/auth-service/node_modules
 COPY --from=builder /app/apps/auth-service/package*.json /app/apps/auth-service/
 
+COPY --from=builder /app/packages/shared-errors/dist /app/packages/shared-errors/dist
+COPY --from=builder /app/packages/shared-errors/node_modules /app/packages/shared-errors/node_modules
+COPY --from=builder /app/packages/shared-errors/package.json /app/packages/shared-errors/
+
 COPY --from=builder /app/packages/logging-wrapper/dist /app/packages/logging-wrapper/dist
 COPY --from=builder /app/packages/logging-wrapper/node_modules /app/packages/logging-wrapper/node_modules
 COPY --from=builder /app/packages/logging-wrapper/package.json /app/packages/logging-wrapper/
