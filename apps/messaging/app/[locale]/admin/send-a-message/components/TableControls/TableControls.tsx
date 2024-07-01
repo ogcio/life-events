@@ -15,7 +15,6 @@ export default async ({
   limit,
 }: TableControlsProps) => {
   const t = await getTranslations("TableControls");
-
   const handleChange = async (formData: FormData) => {
     "use server";
 
@@ -70,7 +69,7 @@ export default async ({
               id="search-query"
               name="search-query"
               className="govie-input govie-!-width-one-half"
-              defaultValue={search}
+              defaultValue={search ?? ""}
             />
           </div>
         </div>

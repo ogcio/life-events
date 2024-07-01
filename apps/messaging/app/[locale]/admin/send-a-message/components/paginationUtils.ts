@@ -209,8 +209,8 @@ const sanitizeNumber = (
 export const getQueryParams = (params: URLSearchParams): QueryParams => {
   const page = params.get("page");
   const limit = params.get("limit");
-  const searchQuery = params.get("search") || undefined;
-
+  let searchQuery = params.get("search") || undefined;
+  searchQuery = !searchQuery || searchQuery === "undefined" ? "" : searchQuery;
   const currentPage = page
     ? sanitizeNumber(parseInt(page), 1, 100, PAGINATION_PAGE_DEFAULT)
     : PAGINATION_PAGE_DEFAULT;
