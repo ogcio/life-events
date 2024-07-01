@@ -67,7 +67,6 @@ export default async (props: { searchParams: { search?: string } }) => {
   async function submitSearch(formData: FormData) {
     "use server";
     const search = formData.get("textSearch")?.toString();
-    // const url = new URL()
     redirect(`?search=${search}`);
   }
 
