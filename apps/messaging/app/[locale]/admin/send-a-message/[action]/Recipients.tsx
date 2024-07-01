@@ -5,12 +5,17 @@ import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { getUsers } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
+import TableControls from "../components/TableControls/TableControls";
+import { getQueryParams } from "../components/paginationUtils";
+import { sendAMessage } from "../../../../utils/routes";
 
 export default async (props: MessageCreateProps) => {
   const [t, tCommons] = await Promise.all([
     getTranslations("sendAMessage.EmailRecipients"),
     getTranslations("Commons"),
   ]);
+
+  console.log({ props });
 
   async function submit(formData: FormData) {
     "use server";
@@ -76,78 +81,93 @@ export default async (props: MessageCreateProps) => {
   }
 
   const users = await getUsers();
+  const urlParams = new URLSearchParams(props.searchParams);
+  const queryParams = getQueryParams(urlParams);
   return (
-    <div className="govie-grid-column-two-thirds-from-desktop">
-      <form action={recipientAction}>
-        <h1>
-          <span style={{ margin: "unset" }} className="govie-heading-xl">
-            {t("title")}
-          </span>
-        </h1>
+    <>
+      <TableControls
+        itemsCount={users.length}
+        baseUrl={(() => {
+          const url = new URL(
+            `${sendAMessage.url}/recipients`,
+            process.env.HOST_URL,
+          );
+          return url.href;
+        })()}
+        {...queryParams}
+      />
+      <div className="govie-grid-column-two-thirds-from-desktop">
+        <form action={recipientAction}>
+          <h1>
+            <span style={{ margin: "unset" }} className="govie-heading-xl">
+              {t("title")}
+            </span>
+          </h1>
 
-        <div className="govie-form-group">
-          <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
-            {t("addRecipientHint")}
+          <div className="govie-form-group">
+            <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
+              {t("addRecipientHint")}
+            </div>
+            <div className="govie-input__wrapper">
+              <select className="govie-select" name="recipient">
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.email}
+                  </option>
+                ))}
+              </select>
+              <button className="govie-input__suffix">{t("add")}</button>
+            </div>
           </div>
-          <div className="govie-input__wrapper">
-            <select className="govie-select" name="recipient">
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.email}
-                </option>
-              ))}
-            </select>
-            <button className="govie-input__suffix">{t("add")}</button>
-          </div>
-        </div>
-      </form>
+        </form>
 
-      <table className="govie-table">
-        <thead className="govie-table__head">
-          <tr className="govie-table__row">
-            <th
-              scope="col"
-              className="govie-table__header govie-!-font-size-27"
-            >
-              {t("tableRecipientsHeader")}
-            </th>
-            <th scope="col" className="govie-table__header"></th>
-          </tr>
-        </thead>
-        <tbody className="govie-table__body">
-          {props.state.userIds.map((id) => (
-            <tr key={id} className="govie-table__row">
-              <td className="govie-table__cell">
-                {users.find((user) => user.id === id)?.email}
-              </td>
-              <td className="govie-table__cell">
-                <form action={recipientsListAction}>
-                  <input type="hidden" name="userId" value={id} />
-                  <button
-                    type="submit"
-                    className="govie-button govie-button--small govie-button--outlined"
-                    style={{ margin: "unset" }}
-                  >
-                    {t("tableRemoveButtonText")}
-                  </button>
-                </form>
-              </td>
+        <table className="govie-table">
+          <thead className="govie-table__head">
+            <tr className="govie-table__row">
+              <th
+                scope="col"
+                className="govie-table__header govie-!-font-size-27"
+              >
+                {t("tableRecipientsHeader")}
+              </th>
+              <th scope="col" className="govie-table__header"></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="govie-table__body">
+            {props.state.userIds.map((id) => (
+              <tr key={id} className="govie-table__row">
+                <td className="govie-table__cell">
+                  {users.find((user) => user.id === id)?.email}
+                </td>
+                <td className="govie-table__cell">
+                  <form action={recipientsListAction}>
+                    <input type="hidden" name="userId" value={id} />
+                    <button
+                      type="submit"
+                      className="govie-button govie-button--small govie-button--outlined"
+                      style={{ margin: "unset" }}
+                    >
+                      {t("tableRemoveButtonText")}
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      <form action={submit}>
-        <button
-          disabled={!Boolean(props.state.userIds.length)}
-          className="govie-button"
-        >
-          {t("submitText")}
-        </button>
-      </form>
-      <form action={goBack}>
-        <BackButton>{tCommons("backLink")}</BackButton>
-      </form>
-    </div>
+        <form action={submit}>
+          <button
+            disabled={!Boolean(props.state.userIds.length)}
+            className="govie-button"
+          >
+            {t("submitText")}
+          </button>
+        </form>
+        <form action={goBack}>
+          <BackButton>{tCommons("backLink")}</BackButton>
+        </form>
+      </div>
+    </>
   );
 };
