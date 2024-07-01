@@ -3,7 +3,7 @@
  */
 
 export const PAGINATION_PAGE_DEFAULT = 1;
-export const PAGINATION_LIMIT_DEFAULT = 10;
+export const PAGINATION_LIMIT_DEFAULT = 100;
 export const PAGINATION_OFFSET_DEFAULT = 0;
 
 export type PaginationLink = {

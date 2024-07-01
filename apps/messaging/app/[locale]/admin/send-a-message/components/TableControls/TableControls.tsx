@@ -13,9 +13,8 @@ export default async ({
   baseUrl,
   search,
   limit,
-  filters,
 }: TableControlsProps) => {
-  const t = await getTranslations("Admin.TableControls");
+  const t = await getTranslations("TableControls");
 
   const handleChange = async (formData: FormData) => {
     "use server";

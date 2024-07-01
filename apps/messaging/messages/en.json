@@ -369,5 +369,15 @@
         "declined": "Declined"
       }
     }
-  }
+  },
+  "Pagination": {
+      "next": "Next",
+      "previous": "Previous"
+    },
+    "TableControls": {
+      "itemsPerPage": "Items per page",
+      "itemsCount": "Items count",
+      "submit": "Submit",
+      "searchUser": "Search user"
+    }
 }
