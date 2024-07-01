@@ -121,7 +121,11 @@ export default async (props: MessageCreateProps) => {
               <select className="govie-select" name="recipient">
                 {users.map((user) => (
                   <option key={user.id} value={user.id}>
-                    {user.emailAddress}
+                    {(() => {
+                      const toUseContact =
+                        user.emailAddress ?? user.phoneNumber;
+                      return `${toUseContact} - ${user.firstName} ${user.lastName}`;
+                    })()}
                   </option>
                 ))}
               </select>
