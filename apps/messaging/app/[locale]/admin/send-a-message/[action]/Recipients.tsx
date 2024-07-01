@@ -10,6 +10,41 @@ import { getQueryParams } from "../components/paginationUtils";
 import { sendAMessage } from "../../../../utils/routes";
 import { Messaging } from "building-blocks-sdk";
 import { notFound } from "next/navigation";
+import { pgpool } from "messages/dbConnection";
+
+interface RecipientContact {
+  id: string;
+  emailAddress?: string;
+  phoneNumber?: string;
+  firstName: string;
+  lastName: string;
+}
+
+// Why are not using SDKs?
+// To avoid to transport thousand of users through REST APIs every time
+const getRecipientContacts = async (
+  userIds: string[],
+): Promise<RecipientContact[]> => {
+  if (userIds.length === 0) {
+    return [];
+  }
+
+  const response = await pgpool.query<RecipientContact>(
+    `
+    SELECT 
+        u.id as "id",
+        u.phone as "phoneNumber",
+        u.email as "emailAddress",
+        u.details->>'firstName' as "firstName",
+        u.details->>'lastName' as "lastName"
+    FROM users u
+    WHERE u.id in ($1)
+  `,
+    [userIds.join(", ")],
+  );
+
+  return response.rows;
+};
 
 export default async (props: MessageCreateProps) => {
   const [t, tCommons] = await Promise.all([
@@ -92,6 +127,16 @@ export default async (props: MessageCreateProps) => {
     throw notFound();
   }
   const users = response.data;
+  const addedUsers = await getRecipientContacts(props.state.userIds);
+  const buildContactLabel = (user: {
+    emailAddress?: string | null;
+    phoneNumber?: string | null;
+    firstName: string | null;
+    lastName: string | null;
+  }): string => {
+    const toUseContact = user.emailAddress ?? user.phoneNumber;
+    return `${toUseContact} - ${user.firstName} ${user.lastName}`;
+  };
 
   return (
     <>
@@ -121,11 +166,7 @@ export default async (props: MessageCreateProps) => {
               <select className="govie-select" name="recipient">
                 {users.map((user) => (
                   <option key={user.id} value={user.id}>
-                    {(() => {
-                      const toUseContact =
-                        user.emailAddress ?? user.phoneNumber;
-                      return `${toUseContact} - ${user.firstName} ${user.lastName}`;
-                    })()}
+                    {buildContactLabel(user)}
                   </option>
                 ))}
               </select>
@@ -147,14 +188,14 @@ export default async (props: MessageCreateProps) => {
             </tr>
           </thead>
           <tbody className="govie-table__body">
-            {props.state.userIds.map((id) => (
-              <tr key={id} className="govie-table__row">
+            {addedUsers.map((recip) => (
+              <tr key={recip.id} className="govie-table__row">
                 <td className="govie-table__cell">
-                  {users.find((user) => user.id === id)?.emailAddress}
+                  {buildContactLabel(recip)}
                 </td>
                 <td className="govie-table__cell">
                   <form action={recipientsListAction}>
-                    <input type="hidden" name="userId" value={id} />
+                    <input type="hidden" name="userId" value={recip.id} />
                     <button
                       type="submit"
                       className="govie-button govie-button--small govie-button--outlined"
