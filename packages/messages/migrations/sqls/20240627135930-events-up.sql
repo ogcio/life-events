@@ -9,4 +9,6 @@ create table messaging_event_logs(
         created_at timestamptz default now()
 );
 
-alter table messages add created_at timestamptz;
+alter table messages add scheduled_at timestamptz;
+
+create index messaging_event_logs_msgid_idx  on messaging_event_logs(message_id);

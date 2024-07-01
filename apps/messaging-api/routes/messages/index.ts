@@ -332,19 +332,24 @@ export default async function messages(app: FastifyInstance) {
         `    
     with message_selections as (
       select 
-        l.message_id,
-        l.data,
-        last_value(event_status) over(order by l.created_at) as event_status,
-        last_value(event_type) over(order by l.created_at) as event_type,
-        m.scheduled_at,
-        l.created_at
-      from messages m
-      join messaging_event_logs l on m.id = l.message_id
-      where m.organisation_id = $1
-      and lower(m.subject) ilike $2
-    ), sorted as (
-      select * from message_selections
-      order by created_at
+        id,
+        subject,
+        scheduled_at
+      from messages
+      where organisation_id = $1
+      and lower(subject) ilike $2
+      order by created_at desc
+      limit 20
+      ), sorted as (
+        select
+          l.message_id,
+          l.data,
+          last_value(event_status) over(order by l.created_at) as event_status,
+          last_value(event_type) over(order by l.created_at) as event_type,
+          m.scheduled_at,
+          l.created_at
+        from message_selections m
+        join messaging_event_logs l on m.id = l.message_id
     ), aggregations as(
     select
        message_id,
