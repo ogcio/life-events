@@ -1,4 +1,4 @@
-import { Static, Type } from "@sinclair/typebox";
+import { Static, TSchema, Type } from "@sinclair/typebox";
 
 export const AVAILABLE_LANGUAGES = ["en", "ga"];
 export const DEFAULT_LANGUAGE = "en";
@@ -56,3 +56,47 @@ export const CreateMessageSchema = Type.Composite([
   }),
 ]);
 export type CreateMessage = Static<typeof CreateMessageSchema>;
+
+export const PaginationParamsSchema = Type.Object({
+  offset: Type.Optional(Type.Integer({ default: 0 })),
+  limit: Type.Optional(Type.Integer({ default: 20 })),
+});
+
+export type PaginationParams = Static<typeof PaginationParamsSchema>;
+
+export const PaginationLinkSchema = Type.Object({
+  href: Type.Optional(Type.String()),
+});
+
+export type PaginationLink = Static<typeof PaginationLinkSchema>;
+
+export const PaginationLinksSchema = Type.Object({
+  self: PaginationLinkSchema,
+  next: Type.Optional(PaginationLinkSchema),
+  prev: Type.Optional(PaginationLinkSchema),
+  first: PaginationLinkSchema,
+  last: PaginationLinkSchema,
+  pages: Type.Record(Type.String(), PaginationLinkSchema),
+});
+
+export type PaginationLinks = Static<typeof PaginationLinksSchema>;
+
+export const ResponseMetadataSchema = Type.Optional(
+  Type.Object({
+    links: Type.Optional(PaginationLinksSchema),
+    totalCount: Type.Optional(Type.Number()),
+  }),
+);
+
+export type ResponseMetadata = Static<typeof ResponseMetadataSchema>;
+
+export const getGenericResponseSchema = <T extends TSchema>(dataType: T) =>
+  Type.Object({
+    data: Type.Array(dataType),
+    metadata: ResponseMetadataSchema,
+  });
+
+export type GenericResponse<T> = {
+  data: T[];
+  metadata?: ResponseMetadata;
+};
