@@ -8,7 +8,8 @@
     "providers": "Providers",
     "templates": "Message templates",
     "users": "Citizens",
-    "userSettings": "Settings"
+    "userSettings": "Settings",
+    "events": "Events"
   },
   "MessageTemplates": {
     "menu": {
@@ -368,6 +369,22 @@
         "accepted": "Accepted",
         "declined": "Declined"
       }
+    }
+  },
+  "MessageEvents": {
+    "mainHeader": "Message logs",
+    "searchPlaceholder": "Search logs",
+    "tableDateHeader":"Date",
+    "tableStatusHeader":"Status",
+    "tableSubjectHeader":"Subject",
+    "tableRecipientHeader":"Recipient",
+    "status": {
+      "delivered": "DELIVERED",
+      "deliveredFailed": "FAILED TO DELIVER",
+      "delivering": "DELIVERING",
+      "scheduled": "SCHEDULED",
+      "schedulingFailed": "FAILED TO SCHEDULE",
+      "scheduling": "SCHEDULING"
     }
   }
 }

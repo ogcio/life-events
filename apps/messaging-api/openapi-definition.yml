@@ -253,7 +253,7 @@ paths:
                           - lifeEvent
                 security:
                   type: string
-                scheduleAt:
+                scheduledAt:
                   format: date-time
                   type: string
               required:
@@ -261,11 +261,41 @@ paths:
                 - userIds
                 - transportations
                 - security
-                - scheduleAt
+                - scheduledAt
         required: true
       responses:
         "200":
           description: Default Response
+  /api/v1/messages/events:
+    get:
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: search
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        messageId:
+                          format: uuid
+                          type: string
+                        data: {}
+                      required:
+                        - messageId
+                        - data
+                required:
+                  - data
   /api/v1/providers/emails/:
     get:
       tags: &a2

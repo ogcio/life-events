@@ -163,7 +163,7 @@ export interface paths {
             transportations: ("email" | "sms" | "lifeEvent")[];
             security: string;
             /** Format: date-time */
-            scheduleAt: string;
+            scheduledAt: string;
           };
         };
       };
@@ -171,6 +171,29 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: never;
+        };
+      };
+    };
+  };
+  "/api/v1/messages/events": {
+    get: {
+      parameters: {
+        query?: {
+          search?: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                messageId: string;
+                data: unknown;
+              }[];
+            };
+          };
         };
       };
     };
