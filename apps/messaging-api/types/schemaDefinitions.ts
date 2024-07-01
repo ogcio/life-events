@@ -81,13 +81,17 @@ export const PaginationLinksSchema = Type.Object({
 
 export type PaginationLinks = Static<typeof PaginationLinksSchema>;
 
+export const ResponseMetadataSchema = Type.Optional(
+  Type.Object({
+    links: Type.Optional(PaginationLinksSchema),
+    totalCount: Type.Optional(Type.Number()),
+  }),
+);
+
+export type ResponseMetadata = Static<typeof ResponseMetadataSchema>;
+
 export const getGenericResponseSchema = <T extends TSchema>(dataType: T) =>
   Type.Object({
     data: Type.Array(dataType),
-    metadata: Type.Optional(
-      Type.Object({
-        links: Type.Optional(PaginationLinksSchema),
-        totalCount: Type.Optional(Type.Number()),
-      }),
-    ),
+    metadata: ResponseMetadataSchema,
   });

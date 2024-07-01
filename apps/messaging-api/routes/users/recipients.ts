@@ -6,6 +6,7 @@ import { getOrganisationIdFromRequest } from "../../utils/request-utils";
 import {
   PaginationParams,
   PaginationParamsSchema,
+  ResponseMetadata,
   getGenericResponseSchema,
 } from "../../types/schemaDefinitions";
 import { getRecipients } from "../../services/users/recipients/recipients";
@@ -23,7 +24,7 @@ export default async function recipients(app: FastifyInstance) {
       search?: string;
       transports?: string;
     } & PaginationParams;
-    Response: { data: Recipient[] };
+    Response: { data: Recipient[]; metadata?: ResponseMetadata };
   }
 
   app.get<GetRecipientsSchema>(
