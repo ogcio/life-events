@@ -3,19 +3,19 @@ import { MessageCreateProps } from "../../../../utils/messaging";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
-import { getUsers } from "auth/sessions";
+import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import TableControls from "../components/TableControls/TableControls";
 import { getQueryParams } from "../components/paginationUtils";
 import { sendAMessage } from "../../../../utils/routes";
+import { Messaging } from "building-blocks-sdk";
+import { notFound } from "next/navigation";
 
 export default async (props: MessageCreateProps) => {
   const [t, tCommons] = await Promise.all([
     getTranslations("sendAMessage.EmailRecipients"),
     getTranslations("Commons"),
   ]);
-
-  console.log({ props });
 
   async function submit(formData: FormData) {
     "use server";
@@ -79,20 +79,29 @@ export default async (props: MessageCreateProps) => {
     await api.upsertMessageState(next, props.userId, props.stateId);
     revalidatePath("/");
   }
-
-  const users = await getUsers();
   const urlParams = new URLSearchParams(props.searchParams);
   const queryParams = getQueryParams(urlParams);
+  const { userId } = await PgSessions.get();
+  const messaging = new Messaging(userId);
+  const { data: organisationId } = await messaging.getMockOrganisationId();
+  const response = await messaging.getRecipients({
+    ...queryParams,
+    organisationId,
+  });
+  if (response.error || !response.data) {
+    throw notFound();
+  }
+  const users = response.data;
+
   return (
     <>
       <TableControls
-        itemsCount={users.length}
+        itemsCount={response.metadata?.totalCount ?? users.length}
         baseUrl={(() => {
-          const url = new URL(
-            `${sendAMessage.url}/recipients`,
-            process.env.HOST_URL,
+          return (
+            props.searchParams?.baseUrl ??
+            new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL).href
           );
-          return url.href;
         })()}
         {...queryParams}
       />
@@ -112,7 +121,7 @@ export default async (props: MessageCreateProps) => {
               <select className="govie-select" name="recipient">
                 {users.map((user) => (
                   <option key={user.id} value={user.id}>
-                    {user.email}
+                    {user.emailAddress}
                   </option>
                 ))}
               </select>
@@ -137,7 +146,7 @@ export default async (props: MessageCreateProps) => {
             {props.state.userIds.map((id) => (
               <tr key={id} className="govie-table__row">
                 <td className="govie-table__cell">
-                  {users.find((user) => user.id === id)?.email}
+                  {users.find((user) => user.id === id)?.emailAddress}
                 </td>
                 <td className="govie-table__cell">
                   <form action={recipientsListAction}>

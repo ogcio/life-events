@@ -93,6 +93,7 @@ export type EventTableSearchParams = {
   offset: string;
   baseUrl: string;
   limit: string;
+  search?: string;
 };
 export type MessageCreateProps = {
   state: ApiMessageState;
