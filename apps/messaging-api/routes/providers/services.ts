@@ -78,6 +78,7 @@ export function mailService(client: PoolClient): MailService {
             {
               fieldName: "fromAddress",
               message: "alreadyInUse",
+              validationRule: "already-in-use",
             },
           ],
         );
@@ -157,6 +158,7 @@ export function mailService(client: PoolClient): MailService {
             {
               fieldName: "fromAddress",
               message: "alreadyInUse",
+              validationRule: "already-in-use",
             },
           ],
         );
@@ -312,7 +314,7 @@ export function mailService(client: PoolClient): MailService {
 
     // Temporary demonstrational util functions
     async getFirstOrEtherealMailProvider() {
-      let id = await client
+      const id = await client
         .query<{ id: string }>(
           `
           select 

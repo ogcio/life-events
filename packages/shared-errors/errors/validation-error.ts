@@ -4,7 +4,7 @@ export interface ValidationErrorData {
   fieldName: string;
   message: string;
   validationRule: string;
-  additionalInfo: Record<string, unknown>;
+  additionalInfo?: Record<string, unknown>;
 }
 
 export class ValidationError extends LifeEventsError {
