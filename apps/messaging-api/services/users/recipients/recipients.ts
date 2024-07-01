@@ -67,20 +67,6 @@ const buildGetRecipientsQueries = (params: {
     queryValues.push(utils.postgresArrayify(params.transports));
   }
 
-  const dataSelect = `SELECT 
-        u.id as "id",
-        u.user_profile_id as "userProfileId",
-        u.phone as "phoneNumber",
-        u.email as "emailAddress",
-        u.details->>'firstName' as "firstName",
-        u.details->>'lastName' as "lastName",
-        u.details->>'birthDate' as "birthDate",
-        ouc.preferred_transports as "preferredTransports"
-    `;
-  const paginationQuery = `
-        ORDER BY u.id DESC
-        LIMIT $${paginationIndex++} OFFSET $${paginationIndex}
-    `;
   const basicQuery = `
         FROM users u
         JOIN organisation_user_configurations ouc ON 
@@ -90,13 +76,27 @@ const buildGetRecipientsQueries = (params: {
         WHERE u.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
     `;
 
+  const dataSelect = `SELECT 
+        u.id as "id",
+        u.user_profile_id as "userProfileId",
+        u.phone as "phoneNumber",
+        u.email as "emailAddress",
+        u.details->>'firstName' as "firstName",
+        u.details->>'lastName' as "lastName",
+        u.details->>'birthDate' as "birthDate",
+        ouc.preferred_transports as "preferredTransports"
+        ${basicQuery}
+        ORDER BY u.id DESC
+        LIMIT $${paginationIndex++} OFFSET $${paginationIndex}
+    `;
+
   return {
     count: {
       query: `SELECT COUNT(*) as count ${basicQuery}`,
       values: queryValues,
     },
     data: {
-      query: `${dataSelect} ${basicQuery} ${paginationQuery}`,
+      query: dataSelect,
       values: [
         ...queryValues,
         params.pagination.limit,
