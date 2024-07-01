@@ -33,7 +33,6 @@ export const getRecipients = async (params: {
   const pagination = normalizePagination(params.pagination);
   try {
     const queries = buildGetRecipientsQueries({ ...params, pagination });
-    console.log({ queries: queries.count });
     const countResponse = client.query<{ count: number }>(
       queries.count.query,
       queries.count.values,
