@@ -95,3 +95,8 @@ export const getGenericResponseSchema = <T extends TSchema>(dataType: T) =>
     data: Type.Array(dataType),
     metadata: ResponseMetadataSchema,
   });
+
+export type GenericResponse<T> = {
+  data: T[];
+  metadata?: ResponseMetadata;
+};

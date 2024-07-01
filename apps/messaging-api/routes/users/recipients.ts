@@ -4,12 +4,13 @@ import { HttpError } from "../../types/httpErrors";
 import { Recipient, RecipientSchema } from "../../types/usersSchemaDefinitions";
 import { getOrganisationIdFromRequest } from "../../utils/request-utils";
 import {
+  GenericResponse,
   PaginationParams,
   PaginationParamsSchema,
-  ResponseMetadata,
   getGenericResponseSchema,
 } from "../../types/schemaDefinitions";
 import { getRecipients } from "../../services/users/recipients/recipients";
+import { PaginationDetails, formatAPIResponse } from "../../utils/pagination";
 
 const tags = ["Users", "Recipients"];
 
@@ -24,7 +25,7 @@ export default async function recipients(app: FastifyInstance) {
       search?: string;
       transports?: string;
     } & PaginationParams;
-    Response: { data: Recipient[]; metadata?: ResponseMetadata };
+    Response: GenericResponse<Recipient>;
   }
 
   app.get<GetRecipientsSchema>(
@@ -66,10 +67,17 @@ export default async function recipients(app: FastifyInstance) {
         transports: query.transports ? query.transports.trim().split(",") : [],
       });
 
-      return {
-        data: recipientsResponse.recipients,
-        metadata: { totalCount: recipientsResponse.total },
+      const paginationDetails: PaginationDetails = {
+        offset: query.offset,
+        limit: query.limit,
+        totalCount: recipientsResponse.total,
+        url: request.url,
       };
+
+      return formatAPIResponse(
+        recipientsResponse.recipients,
+        paginationDetails,
+      );
     },
   );
 }
