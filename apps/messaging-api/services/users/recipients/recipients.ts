@@ -3,29 +3,7 @@ import { PaginationParams } from "../../../types/schemaDefinitions";
 import { Recipient } from "../../../types/usersSchemaDefinitions";
 import { utils } from "../../../utils";
 import { ServerError } from "shared-errors";
-import {
-  PAGINATION_LIMIT_DEFAULT,
-  PAGINATION_OFFSET_DEFAULT,
-} from "../../../utils/pagination";
-
-const normalizePagination = (
-  pagination: PaginationParams,
-): Required<PaginationParams> => {
-  const maxAvailableLimit = 100;
-  const minAvailableLimit = 1;
-  const minAvailableOffset = 0;
-  return {
-    limit: Math.max(
-      Math.min(maxAvailableLimit, pagination.limit ?? PAGINATION_LIMIT_DEFAULT),
-      minAvailableLimit,
-    ),
-
-    offset: Math.max(
-      pagination.offset ?? PAGINATION_OFFSET_DEFAULT,
-      minAvailableOffset,
-    ),
-  };
-};
+import { sanitizePagination } from "../../../utils/pagination";
 
 export const getRecipients = async (params: {
   pool: Pool;
@@ -35,7 +13,7 @@ export const getRecipients = async (params: {
   transports: string[];
 }): Promise<{ recipients: Recipient[]; total: number }> => {
   const client = await params.pool.connect();
-  const pagination = normalizePagination(params.pagination);
+  const pagination = sanitizePagination(params.pagination);
   try {
     const queries = buildGetRecipientsQueries({ ...params, pagination });
     const countResponse = client.query<{ count: number }>(

@@ -1,4 +1,4 @@
-import { GenericResponse } from "../types/schemaDefinitions";
+import { GenericResponse, PaginationParams } from "../types/schemaDefinitions";
 
 export type PaginationDetails = {
   offset?: number;
@@ -123,4 +123,23 @@ const generatePageLinks = (details: Required<PaginationDetails>) => {
   }
 
   return pageLinks;
+};
+
+export const sanitizePagination = (
+  pagination: PaginationParams,
+): Required<PaginationParams> => {
+  const maxAvailableLimit = 100;
+  const minAvailableLimit = 1;
+  const minAvailableOffset = 0;
+  return {
+    limit: Math.max(
+      Math.min(maxAvailableLimit, pagination.limit ?? PAGINATION_LIMIT_DEFAULT),
+      minAvailableLimit,
+    ),
+
+    offset: Math.max(
+      pagination.offset ?? PAGINATION_OFFSET_DEFAULT,
+      minAvailableOffset,
+    ),
+  };
 };
