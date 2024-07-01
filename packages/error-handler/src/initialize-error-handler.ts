@@ -98,7 +98,8 @@ const getValidationFromFastifyError = (
 ): ValidationErrorData[] => {
   const output: ValidationErrorData[] = [];
   for (const input of validationInput) {
-    const key = input.params?.missingProperty ?? input.instancePath;
+    const key =
+      input.params?.missingProperty ?? input.instancePath.split("/").pop();
     const message = input.message ?? input.keyword;
     if (key && typeof key === "string") {
       output.push({
