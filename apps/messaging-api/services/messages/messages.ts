@@ -331,10 +331,6 @@ export const executeJob = async (params: {
 
   const eventLogger = newMessagingEventLogger(params.pg.pool);
 
-  const baseEventLog = {
-    organisationId,
-  };
-
   const client = await params.pg.pool.connect();
   try {
     client.query("begin");
@@ -355,23 +351,15 @@ export const executeJob = async (params: {
     const jobResult = jobStatusResult.rows.at(0);
 
     if (!jobResult) {
-      await eventLogger.log(
-        MessagingEventType.deliverMessageError,
-        baseEventLog,
-        [
-          { messageId: "" }, // job id error field?
-        ],
-      );
+      await eventLogger.log(MessagingEventType.deliverMessageError, [
+        { messageId: "" }, // job id error field?
+      ]);
       throw new NotFoundError(EXECUTE_JOB_ERROR, "job doesn't exist");
     }
 
-    await eventLogger.log(
-      MessagingEventType.deliverMessagePending,
-      baseEventLog,
-      [
-        { messageId: jobResult.entityId }, // job id error field?
-      ],
-    );
+    await eventLogger.log(MessagingEventType.deliverMessagePending, [
+      { messageId: jobResult.entityId }, // job id error field?
+    ]);
 
     if (jobResult.status === "working") {
       throw new BadRequestError(
@@ -403,11 +391,9 @@ export const executeJob = async (params: {
   } catch (err) {
     client.query("rollback");
 
-    await eventLogger.log(
-      MessagingEventType.deliverMessageError,
-      baseEventLog,
-      [{ messageId: "" }],
-    );
+    await eventLogger.log(MessagingEventType.deliverMessageError, [
+      { messageId: "" },
+    ]);
     if (isLifeEventsError(err)) {
       throw err;
     }
@@ -419,11 +405,9 @@ export const executeJob = async (params: {
   }
 
   if (!job?.userId || !job.type) {
-    await eventLogger.log(
-      MessagingEventType.deliverMessageError,
-      baseEventLog,
-      [{ messageId: job?.jobId || "" }],
-    );
+    await eventLogger.log(MessagingEventType.deliverMessageError, [
+      { messageId: job?.jobId || "" },
+    ]);
     throw new ServerError(EXECUTE_JOB_ERROR, "job row missing critical fields");
   }
 
@@ -469,25 +453,21 @@ export const executeJob = async (params: {
         [statusFailed, params.jobId],
       );
     } catch (err) {
-      await eventLogger.log(
-        MessagingEventType.deliverMessageError,
-        baseEventLog,
-        [{ messageId: job.jobId }],
-      );
+      await eventLogger.log(MessagingEventType.deliverMessageError, [
+        { messageId: job.jobId },
+      ]);
       const msg = utils.isError(err)
         ? err.message
         : "failed to update job delivery status";
       throw new ServerError(EXECUTE_JOB_ERROR, msg);
     }
 
-    await eventLogger.log(
-      MessagingEventType.deliverMessageError,
-      baseEventLog,
-      [{ messageId: job.jobId }],
-    );
+    await eventLogger.log(MessagingEventType.deliverMessageError, [
+      { messageId: job.jobId },
+    ]);
     throw new ServerError(EXECUTE_JOB_ERROR, error.message);
   }
-  await eventLogger.log(MessagingEventType.deliverMessage, baseEventLog, [
+  await eventLogger.log(MessagingEventType.deliverMessage, [
     { messageId: job.jobId },
   ]);
 };

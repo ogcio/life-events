@@ -107,10 +107,6 @@ type MessageScheduleEvent = {
 
 type MessageErrorEvent = {};
 
-type LogBaseData = {
-  organisationId: string;
-};
-
 type Required = { messageId: string };
 type EventData = Required &
   (MessageUpsertEvent | MessageScheduleEvent | MessageErrorEvent);
@@ -129,16 +125,12 @@ export interface MessagingEventLogger {
    * @param eventData Specific message data such as content, security eg.
    * @param receiverUserData Array of name and other information on receiving users. Contains optional message id associated with the user. One log row will be created for each receiving user.
    */
-  log(
-    type: EventType,
-    baseData: LogBaseData,
-    eventData: EventData[],
-  ): Promise<void>;
+  log(type: EventType, eventData: EventData[]): Promise<void>;
 }
 
 export function newMessagingEventLogger(pool: Pool) {
   return Object.freeze<MessagingEventLogger>({
-    async log(type: EventType, baseData: LogBaseData, eventData: EventData[]) {
+    async log(type: EventType, eventData: EventData[]) {
       if (!eventData.length) {
         // surely we don't throw. Log?
         return;

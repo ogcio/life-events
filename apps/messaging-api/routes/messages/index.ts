@@ -214,16 +214,6 @@ export default async function messages(app: FastifyInstance) {
         throw new NotFoundError(errorKey, "no template contents found");
       }
 
-      const baseEventLog = {
-        organisationId,
-        organisationName: "test",
-        senderFullName: sender
-          ? `${sender.firstName} ${sender.lastName}`
-          : "unknown",
-        senderPPSN: sender?.ppsn || "unknown",
-        senderUserId: sender?.id || userId,
-      };
-
       const allUsersLookup = allUsers.data.reduce<{
         [userId: string]: (typeof allUsers.data)[0];
       }>((acc, user) => {
@@ -246,7 +236,6 @@ export default async function messages(app: FastifyInstance) {
 
         await eventLogger.log(
           MessagingEventType.createRawMessage,
-          baseEventLog,
           createdTemplateMessages.map((msg) => {
             const user = allUsersLookup[msg.userId];
             return {
@@ -262,6 +251,12 @@ export default async function messages(app: FastifyInstance) {
               threadName: "", // thread name isn't feature defined at this point
               transports: req.body.transportations,
               scheduledAt: req.body.scheduledAt,
+              organisationName: "test",
+              senderFullName: sender
+                ? `${sender.firstName} ${sender.lastName}`
+                : "unknown",
+              senderPPSN: sender?.ppsn || "unknown",
+              senderUserId: sender?.id || userId,
             };
           }),
         );
@@ -284,7 +279,7 @@ export default async function messages(app: FastifyInstance) {
 
         eventLogger.log(
           MessagingEventType.scheduleMessage,
-          baseEventLog,
+
           jobs.map((job) => {
             const user = allUsersLookup[job.userId];
             return {
@@ -299,7 +294,6 @@ export default async function messages(app: FastifyInstance) {
       } catch (err) {
         await eventLogger.log(
           MessagingEventType.scheduleMessageError,
-          baseEventLog,
           createdTemplateMessages.map((msg) => ({ messageId: msg.messageId })),
         );
         throw err;
