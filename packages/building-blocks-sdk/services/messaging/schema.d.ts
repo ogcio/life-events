@@ -1965,6 +1965,102 @@ export interface paths {
       };
     };
   };
+  "/api/v1/users/recipients/": {
+    get: {
+      parameters: {
+        query?: {
+          organisationId?: string;
+          search?: string;
+          transports?: string;
+          offset?: number;
+          limit?: number;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+                /** @default null */
+                userProfileId: null | string;
+                /** @default null */
+                firstName: null | string;
+                /** @default null */
+                lastName: null | string;
+                /** @default null */
+                phoneNumber: null | string;
+                /** @default null */
+                emailAddress: null | string;
+                /** @default null */
+                birthDate: null | string;
+                preferredTransports: string[];
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;

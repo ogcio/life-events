@@ -218,7 +218,6 @@ const createMessageFromTemplate = async (params: {
           values.push(key, template.interpolations[key]);
         }
 
-        console.log("yolo i interpolation ", values, args);
         await client.query(
           `
               insert into message_template_interpolations(message_by_template_id, interpolation_key, interpolation_value)

@@ -1,11 +1,14 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import fp from "fastify-plugin";
+import { getMapFromScope, validatePermission } from "./utils.js";
 
 type ExtractedUserData = {
   userId: string;
   organizationId?: string;
 };
+
+type MatchConfig = { method: "AND" | "OR" };
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -45,6 +48,7 @@ export const checkPermissions = async (
     currentApiResourceIndicator: string;
   },
   requiredPermissions: string[],
+  matchConfig = { method: "AND" },
 ): Promise<ExtractedUserData> => {
   const token = extractBearerToken(authHeader);
   const payload = await decodeLogtoToken(token, config);
@@ -54,10 +58,15 @@ export const checkPermissions = async (
     aud: string;
   };
 
-  for (const permission of requiredPermissions) {
-    if (!scope.includes(permission)) {
-      throw new Error("Forbidden");
-    }
+  const scopesMap = getMapFromScope(scope);
+
+  const grantAccess =
+    matchConfig.method === "AND"
+      ? requiredPermissions.every((p) => validatePermission(p, scopesMap))
+      : requiredPermissions.some((p) => validatePermission(p, scopesMap));
+
+  if (!grantAccess) {
+    throw new Error("Forbidden");
   }
 
   const organizationId = aud.includes("urn:logto:organization:")
@@ -81,14 +90,24 @@ export const checkPermissionsPlugin = async (
 ) => {
   app.decorate(
     "checkPermissions",
-    async (req: FastifyRequest, rep: FastifyReply, permissions: string[]) => {
+    async (
+      req: FastifyRequest,
+      rep: FastifyReply,
+      permissions: string[],
+      matchConfig?: MatchConfig,
+    ) => {
       const authHeader = req.headers.authorization;
       if (!authHeader) {
         rep.status(401).send({ message: "Unauthorized" });
         return;
       }
       try {
-        const userData = await checkPermissions(authHeader, opts, permissions);
+        const userData = await checkPermissions(
+          authHeader,
+          opts,
+          permissions,
+          matchConfig,
+        );
         req.userData = userData;
       } catch (e) {
         rep.status(403).send({ message: (e as Error).message });
