@@ -3,24 +3,7 @@ import { PaginationParams } from "../../../types/schemaDefinitions";
 import { Recipient } from "../../../types/usersSchemaDefinitions";
 import { utils } from "../../../utils";
 import { ServerError } from "shared-errors";
-
-const normalizePagination = (
-  pagination: PaginationParams,
-): Required<PaginationParams> => {
-  const maxAvailableLimit = 100;
-  const minAvailableLimit = 1;
-  const defaultLimit = 20;
-  const minAvailableOffset = 0;
-  const defaultOffset = 0;
-  return {
-    limit: Math.max(
-      Math.min(maxAvailableLimit, pagination.limit ?? defaultLimit),
-      minAvailableLimit,
-    ),
-
-    offset: Math.max(pagination.offset ?? defaultOffset, minAvailableOffset),
-  };
-};
+import { sanitizePagination } from "../../../utils/pagination";
 
 export const getRecipients = async (params: {
   pool: Pool;
@@ -30,7 +13,7 @@ export const getRecipients = async (params: {
   transports: string[];
 }): Promise<{ recipients: Recipient[]; total: number }> => {
   const client = await params.pool.connect();
-  const pagination = normalizePagination(params.pagination);
+  const pagination = sanitizePagination(params.pagination);
   try {
     const queries = buildGetRecipientsQueries({ ...params, pagination });
     const countResponse = client.query<{ count: number }>(
@@ -84,20 +67,6 @@ const buildGetRecipientsQueries = (params: {
     queryValues.push(utils.postgresArrayify(params.transports));
   }
 
-  const dataSelect = `SELECT 
-        u.id as "id",
-        u.user_profile_id as "userProfileId",
-        u.phone as "phoneNumber",
-        u.email as "emailAddress",
-        u.details->>'firstName' as "firstName",
-        u.details->>'lastName' as "lastName",
-        u.details->>'birthDate' as "birthDate",
-        ouc.preferred_transports as "preferredTransports"
-    `;
-  const paginationQuery = `
-        ORDER BY u.id DESC
-        LIMIT $${paginationIndex++} OFFSET $${paginationIndex}
-    `;
   const basicQuery = `
         FROM users u
         JOIN organisation_user_configurations ouc ON 
@@ -107,13 +76,27 @@ const buildGetRecipientsQueries = (params: {
         WHERE u.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
     `;
 
+  const dataSelect = `SELECT 
+        u.id as "id",
+        u.user_profile_id as "userProfileId",
+        u.phone as "phoneNumber",
+        u.email as "emailAddress",
+        u.details->>'firstName' as "firstName",
+        u.details->>'lastName' as "lastName",
+        u.details->>'birthDate' as "birthDate",
+        ouc.preferred_transports as "preferredTransports"
+        ${basicQuery}
+        ORDER BY u.id DESC
+        LIMIT $${paginationIndex++} OFFSET $${paginationIndex}
+    `;
+
   return {
     count: {
       query: `SELECT COUNT(*) as count ${basicQuery}`,
       values: queryValues,
     },
     data: {
-      query: `${dataSelect} ${basicQuery} ${paginationQuery}`,
+      query: dataSelect,
       values: [
         ...queryValues,
         params.pagination.limit,
