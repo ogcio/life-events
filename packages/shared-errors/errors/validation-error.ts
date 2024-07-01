@@ -1,13 +1,20 @@
 import { LifeEventsError } from "./life-events-error.js";
 
+export interface ValidationErrorData {
+  fieldName: string;
+  message: string;
+  validationRule: string;
+  additionalInfo: Record<string, unknown>;
+}
+
 export class ValidationError extends LifeEventsError {
   readonly errorCode: number = 422;
-  validationErrors: { fieldName: string; message: string }[];
+  validationErrors: ValidationErrorData[];
 
   constructor(
     errorProcess: string,
     message: string,
-    validationErrors: { fieldName: string; message: string }[] = [],
+    validationErrors: ValidationErrorData[] = [],
   ) {
     super(errorProcess, message);
     this.name = "VALIDATION_ERROR";
