@@ -21,6 +21,12 @@ interface RecipientContact {
   lastName: string;
 }
 
+const TO_ADD_IDS_KEY = "recipientToAddIds";
+const TO_REMOVE_ID_KEY = "recipientToRemoveId";
+
+const getBaseUrl = (): URL =>
+  new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL);
+
 // Why are not using SDKs?
 // To avoid to transport thousand of users through REST APIs every time
 const getRecipientContacts = async (
@@ -59,6 +65,7 @@ const buildContactLabel = (user: {
 };
 
 export default async (props: MessageCreateProps) => {
+  console.log({ pippo: props.searchParams });
   const [t, tCommons] = await Promise.all([
     getTranslations("sendAMessage.EmailRecipients"),
     getTranslations("Commons"),
@@ -127,16 +134,32 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  async function submitSearch(formData: FormData) {
+  const fillSearchParams = async (
+    searchParams: URLSearchParams,
+    search?: string,
+    toAddRecipientIds?: string[],
+    toRemoveRecipientId?: string,
+  ) => {
     "use server";
-    const url = new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL);
-    const searchParams = url.searchParams;
-
-    const searchQuery = (formData.get("textSearch") as string).trim();
-    if (searchQuery.length > 0) {
-      searchParams.set("search", searchQuery);
+    if (search?.length) {
+      searchParams.set("search", search);
     }
     searchParams.set("limit", "100");
+    if (toAddRecipientIds?.length) {
+      searchParams.set(TO_ADD_IDS_KEY, toAddRecipientIds.join(","));
+    }
+    if (toRemoveRecipientId?.length) {
+      searchParams.set(TO_REMOVE_ID_KEY, toRemoveRecipientId);
+    }
+    return searchParams;
+  };
+
+  async function submitSearch(formData: FormData) {
+    "use server";
+    const searchQuery = (formData.get("textSearch") as string).trim();
+    const url = getBaseUrl();
+    let searchParams = url.searchParams;
+    await fillSearchParams(searchParams, searchQuery);
 
     redirect(url.toString(), RedirectType.replace);
   }
@@ -191,21 +214,64 @@ export default async (props: MessageCreateProps) => {
           </div>
         </div>
       </form>
+
       <form action={recipientAction}>
         <div className="govie-form-group">
           <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
             {t("addRecipientHint")}
           </div>
-          <div className="govie-input__wrapper">
-            <select className="govie-select" name="recipient">
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {buildContactLabel(user)}
-                </option>
+          <table className="govie-table">
+            <thead className="govie-table__head">
+              <tr className="govie-table__row">
+                <th scope="col" className="govie-table__header">
+                  {t("nameTableHeader")}
+                </th>
+                <th scope="col" className="govie-table__header">
+                  {t("hostTableHeader")}
+                </th>
+                <th scope="col" className="govie-table__header">
+                  {t("primaryHeader")}
+                </th>
+                <th scope="col" className="govie-table__header">
+                  {t("actionTableHeader")}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="govie-table__body">
+              {users?.map((foundUser) => (
+                <tr className="govie-table__row" key={foundUser.id}>
+                  <th className="govie-table__header govie-table__header--vertical-centralized govie-body-s">
+                    {foundUser.firstName} {foundUser.lastName}
+                  </th>
+                  <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                    {foundUser.emailAddress}
+                  </td>
+                  <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                    {foundUser.phoneNumber}
+                  </td>
+                  <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <a
+                        className="govie-link govie-!-margin-right-3"
+                        href={(() => {
+                          const url = getBaseUrl();
+                          fillSearchParams(
+                            url.searchParams,
+                            props.searchParams?.search,
+                            [foundUser.id],
+                          );
+
+                          return url.toString();
+                        })()}
+                      >
+                        {t("editLink")}
+                      </a>
+                    </div>
+                  </td>
+                </tr>
               ))}
-            </select>
-            <button className="govie-input__suffix">{t("add")}</button>
-          </div>
+            </tbody>
+          </table>
         </div>
       </form>
 

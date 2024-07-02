@@ -3,6 +3,7 @@ import { api } from "messages";
 import {
   ApiMessageState,
   EventTableSearchParams,
+  MessageCreateSearchParams,
   getCurrentStep,
 } from "../../../../utils/messaging";
 import { PgSessions } from "auth/sessions";
@@ -71,7 +72,7 @@ const urlStateHandler = (url: string, key: string) => (Cmp: JSX.Element) => {
 
 export default async (props: {
   params: { action: string };
-  searchParams: { state_id: string } & Partial<EventTableSearchParams>;
+  searchParams: { state_id: string } & Partial<MessageCreateSearchParams>;
 }) => {
   const { userId } = await PgSessions.get();
   const urlAction = props.params.action;
@@ -116,7 +117,7 @@ export default async (props: {
         />,
       );
     case recipientsSlug:
-      const searchParams: EventTableSearchParams = {
+      const searchParams: MessageCreateSearchParams = {
         limit: props.searchParams.limit ?? String(PAGINATION_LIMIT_DEFAULT),
         offset: props.searchParams.offset ?? String(PAGINATION_OFFSET_DEFAULT),
         page: props.searchParams.page ?? String(PAGINATION_PAGE_DEFAULT),
@@ -124,6 +125,8 @@ export default async (props: {
           props.searchParams.baseUrl ??
           new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL).href,
         search: props.searchParams.search,
+        recipientToAddIds: props.searchParams.recipientToAddIds,
+        recipientToRemoveId: props.searchParams.recipientToRemoveId,
       };
       return maybe(
         <Recipients

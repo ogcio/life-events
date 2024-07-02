@@ -101,12 +101,18 @@ export type EventTableSearchParams = {
   limit: string;
   search?: string;
 };
+
+export type MessageCreateSearchParams = EventTableSearchParams & {
+  recipientToAddIds?: string;
+  recipientToRemoveId?: string;
+};
+
 export type MessageCreateProps = {
   state: ApiMessageState;
   userId: string;
   stateId?: string;
   disabledSubmit?: boolean;
-  searchParams?: EventTableSearchParams;
+  searchParams?: MessageCreateSearchParams;
 };
 
 export const searchKeyProvider = "provider";
