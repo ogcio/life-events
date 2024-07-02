@@ -150,7 +150,7 @@ export default async (props: MessageCreateProps) => {
     organisationId,
     transports: props.state.transportations.join(","),
   });
-  console.log({ ciao: response });
+
   if (response.error || !response.data) {
     throw notFound();
   }
