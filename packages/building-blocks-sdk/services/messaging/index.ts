@@ -365,6 +365,16 @@ export class Messaging {
     return { data, error };
   }
 
+  async getMessageEvents({
+    query,
+  }: paths["/api/v1/messages/events"]["get"]["parameters"]) {
+    const { data, error } = await this.client.GET("/api/v1/messages/events", {
+      params: { query },
+    });
+
+    return { data: data?.data, error };
+  }
+
   async getRecipients(
     query: paths["/api/v1/users/recipients/"]["get"]["parameters"]["query"],
   ) {

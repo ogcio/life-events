@@ -253,7 +253,7 @@ paths:
                           - lifeEvent
                 security:
                   type: string
-                scheduleAt:
+                scheduledAt:
                   format: date-time
                   type: string
               required:
@@ -261,11 +261,122 @@ paths:
                 - userIds
                 - transportations
                 - security
-                - scheduleAt
+                - scheduledAt
         required: true
       responses:
         "200":
           description: Default Response
+  /api/v1/messages/events:
+    get:
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: search
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        messageId:
+                          format: uuid
+                          type: string
+                        subject:
+                          type: string
+                        receiverFullName:
+                          type: string
+                        eventType:
+                          type: string
+                        eventStatus:
+                          type: string
+                        scheduledAt:
+                          type: string
+                      required:
+                        - messageId
+                        - subject
+                        - receiverFullName
+                        - eventType
+                        - eventStatus
+                        - scheduledAt
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
   /api/v1/providers/emails/:
     get:
       tags: &a2
