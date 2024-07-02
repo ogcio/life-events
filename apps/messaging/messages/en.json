@@ -8,7 +8,8 @@
     "providers": "Providers",
     "templates": "Message templates",
     "users": "Citizens",
-    "userSettings": "Settings"
+    "userSettings": "Settings",
+    "events": "Events"
   },
   "MessageTemplates": {
     "menu": {
@@ -371,15 +372,5 @@
         "declined": "Declined"
       }
     }
-  },
-  "Pagination": {
-      "next": "Next",
-      "previous": "Previous"
-    },
-    "TableControls": {
-      "itemsPerPage": "Items per page",
-      "itemsCount": "Items count",
-      "submit": "Submit",
-      "searchUser": "Search user"
-    }
+  }
 }

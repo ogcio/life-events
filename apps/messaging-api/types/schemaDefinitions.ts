@@ -100,3 +100,13 @@ export type GenericResponse<T> = {
   data: T[];
   metadata?: ResponseMetadata;
 };
+
+export const MessageEventTypeObject = Type.Object({
+  messageId: Type.String({ format: "uuid" }),
+  subject: Type.String(),
+  receiverFullName: Type.String(),
+  eventType: Type.String(),
+  eventStatus: Type.String(),
+  scheduledAt: Type.String(),
+});
+export type MessageEventType = Static<typeof MessageEventTypeObject>;
