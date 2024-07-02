@@ -329,7 +329,7 @@ export const executeJob = async (params: {
       }
     | undefined;
 
-  const eventLogger = newMessagingEventLogger(params.pg.pool);
+  const eventLogger = newMessagingEventLogger(params.pg.pool, params.logger);
 
   const client = await params.pg.pool.connect();
   try {

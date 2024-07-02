@@ -1,6 +1,5 @@
 import { Pool } from "pg";
-import { FastifyPluginCallback } from "fastify";
-import { Profile } from "building-blocks-sdk";
+import { FastifyBaseLogger } from "fastify";
 
 /**
  * Might go with
@@ -126,11 +125,17 @@ export interface MessagingEventLogger {
   log(type: EventType, eventData: EventData[]): Promise<void>;
 }
 
-export function newMessagingEventLogger(pool: Pool) {
+export function newMessagingEventLogger(
+  pool: Pool,
+  stdLogger: FastifyBaseLogger,
+) {
   return Object.freeze<MessagingEventLogger>({
     async log(type: EventType, eventData: EventData[]) {
       if (!eventData.length) {
-        // surely we don't throw. Log?
+        stdLogger.warn(
+          { at: Date.now(), type },
+          "tried to message event log without event data",
+        );
         return;
       }
 
@@ -157,6 +162,17 @@ export function newMessagingEventLogger(pool: Pool) {
       try {
         await pool.query(query, values);
       } catch (err) {
+        stdLogger.error(
+          {
+            at: Date.now(),
+            type,
+            err,
+            messageIds: eventData.map((event) => {
+              event.messageId;
+            }),
+          },
+          "failed to create message event log",
+        );
         // Log?
       }
     },

@@ -181,10 +181,13 @@ export default async function messages(app: FastifyInstance) {
       },
     },
     async (req, _res) => {
-      const userId = req.user?.id!;
+      const userId = req.user?.id;
       const errorKey = "FAILED_TO_CREATE_MESSAGE_FROM_TEMPLATE";
+      if (!userId) {
+        throw new ServerError(errorKey, "no user id on request");
+      }
 
-      const eventLogger = newMessagingEventLogger(app.pg.pool);
+      const eventLogger = newMessagingEventLogger(app.pg.pool, app.log);
 
       // Get users
       const profileSdk = new Profile(req.user!.id);
