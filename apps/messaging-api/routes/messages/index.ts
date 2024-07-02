@@ -257,11 +257,11 @@ export default async function messages(app: FastifyInstance) {
               threadName: "", // thread name isn't feature defined at this point
               transports: req.body.transportations,
               scheduledAt: req.body.scheduledAt,
-              organisationName: "test",
+              organisationName: "", // will be derived from jwt once logto is integrated
               senderFullName: sender
                 ? `${sender.firstName} ${sender.lastName}`
-                : "unknown",
-              senderPPSN: sender?.ppsn || "unknown",
+                : "",
+              senderPPSN: sender?.ppsn || "",
               senderUserId: sender?.id || userId,
             };
           }),
