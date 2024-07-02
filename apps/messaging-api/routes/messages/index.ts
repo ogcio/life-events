@@ -251,7 +251,7 @@ export default async function messages(app: FastifyInstance) {
               messageName: "", // message name isn't feature defined at this point
               plainText: msg.plainText,
               receiverFullName: `${user.firstName} ${user.lastName}`,
-              receiverPPSN: user.ppsn,
+              receiverPPSN: user.ppsn || "",
               richText: msg.richText,
               subject: msg.subject,
               threadName: "", // thread name isn't feature defined at this point
