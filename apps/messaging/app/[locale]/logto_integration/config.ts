@@ -1,4 +1,4 @@
-import { AuthUserScope } from "auth/auth-session";
+import { AuthSession, AuthUserScope } from "auth/auth-session";
 
 export const messagingApiResource = process.env.MESSAGES_BACKEND_URL + "/";
 
@@ -31,6 +31,30 @@ export default {
   resources: [messagingApiResource],
   scopes: [...orgScopes, ...citizenScopes, ...publicServantScopes],
 };
+
+export const getCitizenContext = () =>
+  AuthSession.get(
+    {
+      ...baseConfig,
+      resources: [messagingApiResource],
+      scopes: [...citizenScopes],
+    },
+    {
+      getAccessToken: true,
+      resource: messagingApiResource,
+    },
+  );
+
+export const getPublicServantContext = () =>
+  AuthSession.get(
+    {
+      ...baseConfig,
+      scopes: [...orgScopes, ...publicServantScopes],
+    },
+    {
+      getOrganizationToken: true,
+    },
+  );
 
 export const postSignoutRedirect =
   process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT;
