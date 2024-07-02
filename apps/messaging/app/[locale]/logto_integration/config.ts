@@ -53,6 +53,7 @@ export const getPublicServantContext = () =>
     },
     {
       getOrganizationToken: true,
+      fetchUserInfo: true,
     },
   );
 

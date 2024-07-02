@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Payments } from "building-blocks-sdk";
+import { Messaging, Payments } from "building-blocks-sdk";
 import { getCitizenContext, getPublicServantContext } from "./config";
 
 const actionCitizen = async () => {
@@ -9,14 +9,14 @@ const actionCitizen = async () => {
 
   const token = context.accessToken;
   if (!token) return console.log("missing token...");
-  //new Payments(token).testCitizenAuth();
+  new Messaging(token).testCitizenAuth();
 };
 
 const actionOrganization = async () => {
   "use server";
   const organizations = await getPublicServantContext();
   const orgToken = organizations!.organizationTokens!.ogcio;
-  //new Payments(orgToken).testPublicServantAuth();
+  new Messaging(orgToken).testPublicServantAuth();
 };
 
 export default async function () {
