@@ -1,6 +1,7 @@
 import { api } from "messages";
 import { MessageCreateProps } from "../../../../utils/messaging";
 import dayjs from "dayjs";
+import ds from "design-system";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { PgSessions } from "auth/sessions";
@@ -126,12 +127,12 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  async function handleChange(formData: FormData) {
+  async function submitSearch(formData: FormData) {
     "use server";
     const url = new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL);
     const searchParams = url.searchParams;
 
-    const searchQuery = (formData.get("search-query") as string).trim();
+    const searchQuery = (formData.get("textSearch") as string).trim();
     if (searchQuery.length > 0) {
       searchParams.set("search", searchQuery);
     }
@@ -164,29 +165,31 @@ export default async (props: MessageCreateProps) => {
           {t("title")}
         </span>
       </h1>
-      <form action={handleChange}>
-        <div className={styles.controlsBar}>
-          <div className={`govie-form-group ${styles.selectGroup}`}>
-            <label htmlFor="search-query" className="govie-label--s">
-              {t("searchUsers")}
-            </label>
+      <form action={submitSearch}>
+        <div className="govie-form-group">
+          <div className="govie-input__wrapper">
             <input
               type="text"
-              id="search-query"
-              name="search-query"
-              className="govie-input govie-!-width-one-half"
+              id="textSearch"
+              name="textSearch"
+              className="govie-input"
+              autoComplete="off"
               defaultValue={props.searchParams?.search ?? ""}
+              autoFocus
+              placeholder={t("searchUsersButton")}
             />
+            <button
+              aria-hidden="true"
+              className="govie-input__suffix"
+              style={{
+                background: ds.colours.ogcio.gold,
+                borderColor: ds.colours.ogcio.gold,
+              }}
+            >
+              <ds.Icon icon="search" color={ds.colours.ogcio.white} />
+            </button>
           </div>
-          <input
-            type="submit"
-            id="button"
-            data-module="govie-button"
-            className="govie-button"
-            value={t("searchUsersButton")}
-          />
         </div>
-        <div className={`${styles.selectGroup} ${styles.reverse}`}></div>
       </form>
       <form action={recipientAction}>
         <div className="govie-form-group">

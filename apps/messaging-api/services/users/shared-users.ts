@@ -287,7 +287,7 @@ export enum AvailableTransports {
 
 export const ALL_TRANSPORTS = [
   AvailableTransports.EMAIL,
-  AvailableTransports.EMAIL,
+  AvailableTransports.SMS,
   AvailableTransports.LIFE_EVENT,
 ];
 
