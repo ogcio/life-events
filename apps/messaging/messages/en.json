@@ -374,10 +374,11 @@
   "MessageEvents": {
     "mainHeader": "Message logs",
     "searchPlaceholder": "Search logs",
-    "tableDateHeader":"Date",
-    "tableStatusHeader":"Status",
-    "tableSubjectHeader":"Subject",
-    "tableRecipientHeader":"Recipient",
+    "tableDateHeader": "Date",
+    "tableStatusHeader": "Status",
+    "tableSubjectHeader": "Subject",
+    "tableRecipientHeader": "Recipient",
+    "failedToFetchParagraph": "Failed to get message logs!",
     "status": {
       "delivered": "DELIVERED",
       "deliveredFailed": "FAILED TO DELIVER",

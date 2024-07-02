@@ -72,9 +72,22 @@ export default async (props: { searchParams: { search?: string } }) => {
   const freeSearch = props.searchParams.search;
   const { userId } = await PgSessions.get();
   const client = new Messaging(userId);
-  const { data } = await client.getMessageEvents({
+  const { data, error } = await client.getMessageEvents({
     query: { search: freeSearch },
   });
+
+  if (error) {
+    return (
+      <FlexMenuWrapper>
+        <h1>
+          <span style={{ margin: "unset" }} className="govie-heading-xl">
+            {t("mainHeader")}
+          </span>
+        </h1>
+        <p className="govie-body">{t("failedToFetchParagraph")}</p>
+      </FlexMenuWrapper>
+    );
+  }
 
   return (
     <FlexMenuWrapper>

@@ -162,12 +162,3 @@ export function newMessagingEventLogger(pool: Pool) {
     },
   });
 }
-
-export const messagingLoggerPlugin: FastifyPluginCallback<any> = (
-  fastify,
-  _opts,
-  done,
-) => {
-  fastify.decorate("messagingLogger", newMessagingEventLogger(fastify.pg.pool));
-  done();
-};

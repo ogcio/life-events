@@ -27,6 +27,7 @@ import {
   newMessagingEventLogger,
 } from "../../services/messages/eventLogger";
 import { organisationId } from "../../utils";
+import { HttpError } from "../../types/httpErrors";
 
 const MESSAGES_TAGS = ["Messages"];
 
@@ -314,6 +315,8 @@ export default async function messages(app: FastifyInstance) {
           200: Type.Object({
             data: Type.Array(MessageEventTypeObject),
           }),
+          "5xx": HttpError,
+          "4xx": HttpError,
         },
       },
     },
@@ -330,7 +333,7 @@ export default async function messages(app: FastifyInstance) {
             scheduled_at
           from messages
           where organisation_id = $1
-          and lower(subject) ilike $2
+          and subject ilike $2
           order by created_at
           limit 20
           ) select
