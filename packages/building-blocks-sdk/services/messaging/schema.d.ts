@@ -43,6 +43,11 @@ export interface paths {
   };
   "/api/v1/messages/": {
     get: {
+      parameters: {
+        query?: {
+          type?: string;
+        };
+      };
       responses: {
         /** @description Default Response */
         200: {
@@ -147,6 +152,29 @@ export interface paths {
       };
     };
   };
+  "/api/v1/messages/template": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            /** Format: uuid */
+            templateMetaId: string;
+            userIds: string[];
+            transportations: ("email" | "sms" | "lifeEvent")[];
+            security: string;
+            /** Format: date-time */
+            scheduleAt: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
   "/api/v1/providers/emails/": {
     get: {
       responses: {
@@ -164,6 +192,8 @@ export interface paths {
                 password: string;
                 throttle?: number;
                 fromAddress: string;
+                ssl: boolean;
+                isPrimary: boolean;
               }[];
             };
           };
@@ -171,13 +201,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -193,6 +243,8 @@ export interface paths {
             password: string;
             throttle?: number;
             fromAddress: string;
+            ssl: boolean;
+            isPrimary: boolean;
           };
         };
       };
@@ -211,13 +263,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -245,6 +317,8 @@ export interface paths {
                 password: string;
                 throttle?: number;
                 fromAddress: string;
+                ssl: boolean;
+                isPrimary: boolean;
               };
             };
           };
@@ -252,13 +326,33 @@ export interface paths {
         /** @description Default Response */
         404: {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         500: {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -281,6 +375,8 @@ export interface paths {
             password: string;
             throttle?: number;
             fromAddress: string;
+            ssl: boolean;
+            isPrimary: boolean;
           };
         };
       };
@@ -288,13 +384,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -309,13 +425,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -333,6 +469,7 @@ export interface paths {
                 id: string;
                 name: string;
                 type: string;
+                isPrimary: boolean;
               }[];
             };
           };
@@ -340,13 +477,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -362,6 +519,7 @@ export interface paths {
               secretAccessKey: string;
               region: string;
             };
+            isPrimary: boolean;
           };
         };
       };
@@ -369,13 +527,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -403,6 +581,7 @@ export interface paths {
                   secretAccessKey: string;
                   region: string;
                 };
+                isPrimary: boolean;
               };
             };
           };
@@ -410,13 +589,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -439,6 +638,7 @@ export interface paths {
               secretAccessKey: string;
               region: string;
             };
+            isPrimary: boolean;
           };
         };
       };
@@ -446,13 +646,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -467,13 +687,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -494,8 +734,10 @@ export interface paths {
               data: {
                 /** Format: uuid */
                 templateMetaId: string;
-                lang: string;
-                templateName: string;
+                contents: {
+                  lang: string;
+                  templateName: string;
+                }[];
               }[];
             };
           };
@@ -676,7 +918,8 @@ export interface paths {
             "application/json": {
               data: {
                 id: string;
-                userProfileId: string;
+                /** @default null */
+                userProfileId: string | null;
                 organisationId: string;
                 /** @default pending */
                 organisationInvitationStatus:
@@ -716,6 +959,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               }[];
             };
@@ -729,7 +974,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -742,7 +990,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -755,7 +1006,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -777,7 +1031,8 @@ export interface paths {
             "application/json": {
               data: {
                 id: string;
-                userProfileId: string;
+                /** @default null */
+                userProfileId: string | null;
                 organisationId: string;
                 /** @default pending */
                 organisationInvitationStatus:
@@ -817,6 +1072,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               };
             };
@@ -830,7 +1087,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -843,7 +1103,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -856,7 +1119,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -885,7 +1151,8 @@ export interface paths {
             "application/json": {
               data: {
                 id: string;
-                userProfileId: string;
+                /** @default null */
+                userProfileId: string | null;
                 organisationId: string;
                 /** @default pending */
                 organisationInvitationStatus:
@@ -925,6 +1192,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               };
             };
@@ -938,7 +1207,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -951,7 +1223,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -964,7 +1239,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -994,7 +1272,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1007,7 +1288,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1020,7 +1304,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1075,6 +1362,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
                 /** @default null */
                 usersImportId: null | string;
@@ -1090,7 +1379,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1103,7 +1395,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1116,7 +1411,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1139,7 +1437,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1152,7 +1453,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1207,7 +1511,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1220,7 +1527,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1256,6 +1566,8 @@ export interface paths {
             addressRegion?: null | string;
             /** @default null */
             tags?: null | string;
+            /** @default null */
+            collectedConsent?: null | string;
           }[];
         };
       };
@@ -1272,7 +1584,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1285,7 +1600,107 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/imports/users": {
+    get: {
+      parameters: {
+        query?: {
+          organisationId?: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                id: string;
+                /** @default null */
+                userProfileId: string | null;
+                organisationId: string;
+                /** @default pending */
+                organisationInvitationStatus:
+                  | "to_be_invited"
+                  | "pending"
+                  | "accepted"
+                  | "declined";
+                organisationInvitationSentAt?: string;
+                organisationInvitationFeedbackAt?: string;
+                organisationPreferredTransports?: string[];
+                correlationQuality: "full" | "partial" | "not_related";
+                /** @default pending */
+                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+                /** @default null */
+                phone: null | string;
+                /** @default null */
+                email: null | string;
+                details?: {
+                  /** @default null */
+                  publicIdentityId: null | string;
+                  /** @default null */
+                  firstName: null | string;
+                  /** @default null */
+                  lastName: null | string;
+                  /** @default null */
+                  birthDate: null | string;
+                  /** @default null */
+                  address: {
+                    /** @default null */
+                    city: null | string;
+                    /** @default null */
+                    zipCode: null | string;
+                    /** @default null */
+                    street: null | string;
+                    /** @default null */
+                    country: null | string;
+                    /** @default null */
+                    region: null | string;
+                  } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
+                };
+              }[];
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1296,8 +1711,9 @@ export interface paths {
   "/api/v1/users/imports/{importId}": {
     get: {
       parameters: {
-        query?: {
+        query: {
           organisationId?: string;
+          includeUsersData: boolean;
         };
         path: {
           importId: string;
@@ -1353,6 +1769,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 }[];
                 /** @default api */
                 importChannel: "api" | "csv";
@@ -1373,7 +1791,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1386,7 +1807,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1411,7 +1835,8 @@ export interface paths {
             "application/json": {
               data: {
                 id: string;
-                userProfileId: string;
+                /** @default null */
+                userProfileId: string | null;
                 organisationId: string;
                 /** @default pending */
                 organisationInvitationStatus:
@@ -1451,6 +1876,8 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
                 };
               }[];
             };
@@ -1464,7 +1891,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1477,7 +1907,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1505,7 +1938,10 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };
@@ -1518,7 +1954,106 @@ export interface paths {
               detail: string;
               request_id: string;
               name: string;
-              validation?: unknown;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/recipients/": {
+    get: {
+      parameters: {
+        query?: {
+          organisationId?: string;
+          search?: string;
+          transports?: string;
+          offset?: number;
+          limit?: number;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+                /** @default null */
+                userProfileId: null | string;
+                /** @default null */
+                firstName: null | string;
+                /** @default null */
+                lastName: null | string;
+                /** @default null */
+                phoneNumber: null | string;
+                /** @default null */
+                emailAddress: null | string;
+                /** @default null */
+                birthDate: null | string;
+                preferredTransports: string[];
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
               validationContext?: string;
             };
           };

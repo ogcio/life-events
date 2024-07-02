@@ -1,13 +1,12 @@
 "use server";
 import nodemailer from "nodemailer";
 import { getTranslations } from "next-intl/server";
-import { get } from "http";
 
 const buildTransport = () =>
   nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT),
-    secure: true,
+    secure: Number(process.env.SMTP_PORT) === 465,
     version: "TLSv1_2_method",
     auth: {
       user: process.env.SMTP_USER,

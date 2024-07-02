@@ -52,9 +52,10 @@ export default async (props: {
   params: { locale: string };
   searchParams?: { id: string };
 }) => {
-  const [t, terror] = await Promise.all([
+  const [t, terror, tCommons] = await Promise.all([
     getTranslations("settings.SmsProvider"),
     getTranslations("formErrors"),
+    getTranslations("Commons"),
   ]);
 
   async function submitAction(formData: FormData) {
@@ -63,11 +64,13 @@ export default async (props: {
     const state = await getState(userId);
 
     const name = formData.get("name")?.toString();
+    const providerType = formData.get("providerType")?.toString();
 
-    if (isAwsState(state)) {
+    if (providerType === "aws") {
       const secretAccessKey = formData.get("secretAccessKey")?.toString();
       const accessKey = formData.get("accessKey")?.toString();
       const region = formData.get("region")?.toString();
+      const isPrimary = Boolean(formData.get("isPrimary")?.toString());
 
       const required = { accessKey, secretAccessKey, name, region };
       const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] =
@@ -104,6 +107,7 @@ export default async (props: {
             region,
             type: "AWS",
           },
+          isPrimary,
         });
         error = updateError;
       } else {
@@ -115,6 +119,7 @@ export default async (props: {
             region,
             type: "AWS",
           },
+          isPrimary,
         });
         error = createError;
       }
@@ -212,8 +217,9 @@ export default async (props: {
       </form>
       <form action={submitAction}>
         <input name="id" value={props.searchParams?.id} type="hidden" />
-        {isAwsState(state) ? (
+        {isAwsState(state) || isAwsState(data?.config) ? (
           <>
+            <input type="hidden" name="providerType" value="aws" />
             <h3>AWS</h3>
             <FormElement
               id="name"
@@ -232,7 +238,7 @@ export default async (props: {
                 type="text"
                 name="name"
                 className="govie-input"
-                defaultValue={state.name ?? data?.name}
+                defaultValue={state?.name || data?.name}
               />
             </FormElement>
             <FormElement
@@ -252,7 +258,7 @@ export default async (props: {
                 type="text"
                 name="accessKey"
                 className="govie-input"
-                defaultValue={state.accessKey ?? data?.config.accessKey}
+                defaultValue={state?.accessKey || data?.config.accessKey}
               />
             </FormElement>
             <FormElement
@@ -273,7 +279,7 @@ export default async (props: {
                 name="secretAccessKey"
                 className="govie-input"
                 defaultValue={
-                  state.secretAccessKey ?? data?.config.secretAccessKey
+                  state?.secretAccessKey || data?.config.secretAccessKey
                 }
               />
             </FormElement>
@@ -294,13 +300,38 @@ export default async (props: {
                 type="text"
                 name="region"
                 className="govie-input"
-                defaultValue={state.region ?? data?.config.region}
+                defaultValue={state?.region || data?.config.region}
               />
+            </FormElement>
+            <FormElement id="isPrimary">
+              <fieldset className="govie-fieldset">
+                <div className="govie-checkboxes govie-checkboxes--medium">
+                  <div className="govie-checkboxes__item">
+                    <input
+                      className="govie-checkboxes__input"
+                      id="isPrimary"
+                      name="isPrimary"
+                      type="checkbox"
+                      value="isPrimary"
+                      defaultChecked={data?.isPrimary}
+                    />
+                    <label
+                      className="govie-label--s govie-checkboxes__label"
+                      htmlFor="isPrimary"
+                    >
+                      {t("isPrimary")}
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
             </FormElement>
           </>
         ) : null}
 
-        <button className="govie-button" disabled={!Boolean(state?.type)}>
+        <button
+          className="govie-button"
+          disabled={!Boolean(state?.type || data?.id)}
+        >
           {props.searchParams?.id ? t("submitUpdate") : t("submitCreate")}
         </button>
       </form>
@@ -314,7 +345,7 @@ export default async (props: {
         }
         className="govie-back-link"
       >
-        {t("backLink")}
+        {tCommons("backLink")}
       </a>
     </FlexMenuWrapper>
   );

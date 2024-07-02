@@ -1,4 +1,3 @@
-import { createError } from "@fastify/error";
 import { FastifyBaseLogger } from "fastify";
 import { Pool } from "pg";
 import {
@@ -9,6 +8,7 @@ import {
   UserInvitation,
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
+import { NotFoundError } from "shared-errors";
 
 export const READ_USER_IMPORTS_ERROR = "READ_USER_IMPORTS_ERROR";
 
@@ -36,6 +36,7 @@ export const getUserImportForOrganisation = async (params: {
   organisationId: string;
   importId: string;
   pool: Pool;
+  includeUsersData: boolean;
 }): Promise<UsersImport> => {
   const client = await params.pool.connect();
   try {
@@ -45,15 +46,14 @@ export const getUserImportForOrganisation = async (params: {
       whereValues: [params.importId, params.organisationId],
       limit: 1,
       errorCode: READ_USER_IMPORTS_ERROR,
-      includeUsersData: true,
+      includeUsersData: params.includeUsersData,
     });
 
     if (results.length === 0) {
-      throw createError(
+      throw new NotFoundError(
         READ_USER_IMPORTS_ERROR,
         `Users import with id ${params.importId} and organisation ${params.organisationId} not found`,
-        404,
-      )();
+      );
     }
 
     return results[0];
@@ -76,6 +76,26 @@ export const getUserInvitationsForImport = async (params: {
       whereValues: [params.importId],
       errorCode: READ_USER_IMPORTS_ERROR,
       organisationId: params.organisationId,
+    });
+  } finally {
+    client.release();
+  }
+};
+
+export const getAllUserInvitationsForOrganisation = async (params: {
+  logger: FastifyBaseLogger;
+  organisationId: string;
+  pool: Pool;
+}): Promise<UserInvitation[]> => {
+  const client = await params.pool.connect();
+  try {
+    return await getUserInvitationsForOrganisation({
+      client,
+      whereClauses: [],
+      whereValues: [],
+      errorCode: READ_USER_IMPORTS_ERROR,
+      organisationId: params.organisationId,
+      joinUsersImports: false,
     });
   } finally {
     client.release();

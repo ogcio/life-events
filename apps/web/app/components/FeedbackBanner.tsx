@@ -8,23 +8,25 @@ import {
 
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";
+  /**
+   * this switch is useless
+   * but we may use it in the futur
+   * to use different links for different environments
+   */
   switch (environment) {
     case envUAT:
     case envStaging:
     case envDevelopment:
-      return {
-        feedbackLink: new URL(
-          `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
-        ),
-      };
-
     case envProduction:
     default:
       return {
         feedbackLink: new URL(
-          `en/form/935b1-government-digital-wallet-pilot-support-form/`,
-          "https://www.gov.ie",
+          `${locale}/6669869c2fe1ff00242a1547`,
+          " https://www.forms.gov.ie",
+        ),
+        supportLink: new URL(
+          `${locale}/6663287aff870300248b6232`,
+          " https://www.forms.gov.ie",
         ),
       };
   }
@@ -32,6 +34,12 @@ const getLinks = (environment: string, locale: string) => {
 
 export default ({ locale }: { locale: string }) => {
   const t = useTranslations("FeedbackBanner");
+
+  const { feedbackLink, supportLink } = getLinks(
+    String(process.env.ENVIRONMENT),
+    locale,
+  );
+
   return (
     <div className="govie-phase-banner">
       <p
@@ -43,14 +51,13 @@ export default ({ locale }: { locale: string }) => {
         </strong>
         <span className="govie-phase-banner__text">
           {t.rich("bannerText", {
-            mail: (chunks) => (
-              <a
-                className="govie-link"
-                href={
-                  getLinks(String(process.env.ENVIRONMENT), locale).feedbackLink
-                    .href
-                }
-              >
+            link1: (chunks) => (
+              <a className="govie-link" href={feedbackLink.href}>
+                {chunks}
+              </a>
+            ),
+            link2: (chunks) => (
+              <a className="govie-link" href={supportLink.href}>
                 {chunks}
               </a>
             ),

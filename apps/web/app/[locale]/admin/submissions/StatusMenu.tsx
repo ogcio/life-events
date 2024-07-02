@@ -3,6 +3,7 @@ import { web } from "../../../utils";
 import ds from "design-system";
 import { CSSProperties } from "react";
 import { useTranslations } from "next-intl";
+import { EventTableSearchParams } from "./page";
 
 const linkStyle = (selected: boolean): CSSProperties => {
   const props: CSSProperties = {
@@ -26,7 +27,11 @@ const linkClassName = (selected: boolean): string =>
     selected ? "govie-link--no-underline" : ""
   }`.trim();
 
-export default ({ searchParams }: Pick<web.NextPageProps, "searchParams">) => {
+export default ({
+  searchParams,
+}: {
+  searchParams: EventTableSearchParams | undefined;
+}) => {
   const t = useTranslations("Admin.StatusMenu");
   const isSubmitted =
     searchParams?.status === "submitted" ||
@@ -37,21 +42,21 @@ export default ({ searchParams }: Pick<web.NextPageProps, "searchParams">) => {
 
   return (
     <nav style={{ display: "flex", width: "fit-content", gap: "15px" }}>
-      <div style={linkStyle(isSubmitted)}>
-        <Link
-          href={"?" + new URLSearchParams({ status: "submitted" }).toString()}
-          className={linkClassName(isSubmitted)}
-        >
-          {t("submitted")}
-        </Link>
-      </div>
-
       <div style={linkStyle(isPending)}>
         <Link
           href={"?" + new URLSearchParams({ status: "pending" }).toString()}
           className={linkClassName(isPending)}
         >
           {t("pending")}
+        </Link>
+      </div>
+
+      <div style={linkStyle(isSubmitted)}>
+        <Link
+          href={"?" + new URLSearchParams({ status: "submitted" }).toString()}
+          className={linkClassName(isSubmitted)}
+        >
+          {t("submitted")}
         </Link>
       </div>
 

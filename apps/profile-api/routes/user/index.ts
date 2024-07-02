@@ -290,4 +290,76 @@ export default async function user(app: FastifyInstance) {
       reply.code(404);
     },
   );
+
+  /**
+   * Gets user general details. Add more fields as needed
+   * todo: change to :id/details ?
+   * todo: add ppsn
+   */
+  app.post<{ Body: { ids: string[] } }>(
+    "/select",
+    {
+      schema: {
+        tags: ["users"],
+        body: Type.Object({
+          ids: Type.Array(Type.String({ format: "uuid" })),
+        }),
+        response: {
+          200: Type.Object({
+            data: Type.Array(
+              Type.Object({
+                id: Type.String(),
+                firstName: Type.String(),
+                lastName: Type.String(),
+                ppsn: Type.String(),
+                lang: Type.String(),
+                email: Type.String({ format: "email" }),
+                phone: Type.String(),
+              }),
+            ),
+          }),
+          404: Type.Null(),
+        },
+      },
+    },
+    async function handler(request, reply) {
+      try {
+        const ids = request.body.ids;
+        const users = await app.pg.pool
+          .query<{
+            id: string;
+            firstName: string;
+            lastName: string;
+            ppsn: string;
+            lang: string;
+            email: string;
+            phone: string;
+          }>(
+            `
+        select 
+          user_id as "id", 
+          firstname as "firstName", 
+          lastname as "lastName", 
+          ppsn,
+          'en' as "lang",
+          phone,
+          email
+        from user_details
+        where user_id::text = any ($1)
+      `,
+            [ids],
+          )
+          .then((res) => res.rows);
+
+        if (!users.length) {
+          reply.code(404);
+          return;
+        }
+
+        reply.send({ data: users });
+      } catch (err) {
+        reply.send({ data: null, error: err });
+      }
+    },
+  );
 }

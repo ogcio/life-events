@@ -1,5 +1,8 @@
 import { api } from "messages";
-import { MessageCreateProps } from "../../../../utils/messaging";
+import {
+  isAvailableTransport,
+  MessageCreateProps,
+} from "../../../../utils/messaging";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import tz from "dayjs/plugin/timezone";
@@ -8,12 +11,15 @@ dayjs.extend(tz);
 
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
-import { useTranslations } from "next-intl";
 import { Messaging } from "building-blocks-sdk";
 import { DUBLIN_TIMEZONE } from "../../../../../types/shared";
+import { getTranslations } from "next-intl/server";
 
-export default (props: MessageCreateProps) => {
-  const t = useTranslations("sendAMessage.ScheduleForm");
+export default async (props: MessageCreateProps) => {
+  const [t, tCommons] = await Promise.all([
+    getTranslations("sendAMessage.ScheduleForm"),
+    getTranslations("Commons"),
+  ]);
   async function submit(formData: FormData) {
     "use server";
 
@@ -56,15 +62,25 @@ export default (props: MessageCreateProps) => {
       };
     }
 
-    // TODO deconstruct error and handle
-    await messagesClient.createMessage({
-      message,
-      template,
-      preferredTransports: props.state.transportations,
-      userIds: props.state.userIds,
-      security: "high",
-      scheduleAt,
-    });
+    if (template) {
+      const transportations: Parameters<
+        typeof messagesClient.createTemplateMessages
+      >[0]["transportations"] = [];
+
+      for (const transportation of props.state.transportations) {
+        if (isAvailableTransport(transportation)) {
+          transportations.push(transportation);
+        }
+      }
+
+      await messagesClient.createTemplateMessages({
+        security: "low",
+        templateMetaId: template?.id,
+        transportations,
+        userIds: props.state.userIds,
+        scheduleAt,
+      });
+    }
 
     await api.upsertMessageState(
       Object.assign({}, props.state, {
@@ -257,7 +273,7 @@ export default (props: MessageCreateProps) => {
         </button>
       </form>
       <form action={goBack}>
-        <BackButton>{t("backLink")}</BackButton>
+        <BackButton>{tCommons("backLink")}</BackButton>
       </form>
     </div>
   );

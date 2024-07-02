@@ -1,5 +1,3 @@
-import { RedirectType, redirect } from "next/navigation";
-import { PgSessions } from "auth/sessions";
 import EventTable from "./EventTable";
 import { web } from "../../../utils";
 import StatusMenu from "./StatusMenu";
@@ -8,21 +6,19 @@ import UsersWithPartialApplicationsTable from "./UsersWithPartialApplicationsTab
 
 export type Pages = "pending" | "submitted" | "approved" | "rejected";
 export type EventTableSearchParams = {
-  [key: string]: string;
   status: Pages;
+  page: string;
+  offset: string;
+  baseUrl: string;
+  limit: string;
 };
 
-type TableProps = {
-  params: {
-    event: string;
-    action: string[];
-    locale: string;
-  };
+export type SubmissionsTableProps = Pick<web.NextPageProps, "params"> & {
   searchParams?: EventTableSearchParams;
 };
 
 const componentsMap: {
-  [key in Pages]: (props: TableProps) => Promise<JSX.Element>;
+  [key in Pages]: (props: SubmissionsTableProps) => Promise<JSX.Element>;
 } = {
   pending: UsersWithPartialApplicationsTable,
   submitted: EventTable,
@@ -30,23 +26,26 @@ const componentsMap: {
   rejected: EventTable,
 };
 
-export default async (props: web.NextPageProps) => {
+export default async (props: SubmissionsTableProps) => {
   const t = await getTranslations("Admin.Submissions");
-  const { publicServant } = await PgSessions.get();
-
-  if (!publicServant) {
-    redirect("/", RedirectType.replace);
-  }
+  const searchParams = new URLSearchParams(props.searchParams);
 
   const Component = componentsMap[props.searchParams?.status ?? "submitted"];
-
-  const status = props.searchParams?.status as Pages;
 
   return (
     <>
       <h1 className="govie-heading-l">{t("title")}</h1>
       <StatusMenu searchParams={props.searchParams} />
-      <Component params={props.params} searchParams={props.searchParams} />
+      <Component {...props} />
+      <div style={{ textAlign: "right" }}>
+        <a
+          href={`/admin/submissions/api?${searchParams.toString()}`}
+          target="_blank"
+          className="govie-link"
+        >
+          {t("exportCsvFile")}
+        </a>
+      </div>
     </>
   );
 };

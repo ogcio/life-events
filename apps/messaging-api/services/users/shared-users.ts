@@ -1,11 +1,12 @@
-import { createError } from "@fastify/error";
-import { PoolClient, QueryResult } from "pg";
+import { Pool, PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
 import {
   User,
   UserInvitation,
   UsersImport,
 } from "../../types/usersSchemaDefinitions";
+import { Profile } from "building-blocks-sdk";
+import { NotFoundError, ServerError } from "shared-errors";
 
 const getUser = async (params: {
   client: PoolClient;
@@ -33,15 +34,14 @@ const getUser = async (params: {
     );
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw createError(
+    throw new ServerError(
       params.errorCode,
       `Error retrieving user: ${message}`,
-      500,
-    )();
+    );
   }
 
   if (!result || result.rowCount === 0) {
-    throw createError(params.errorCode, "Cannot find the user", 404)();
+    throw new NotFoundError(params.errorCode, "Cannot find the user");
   }
 
   return result.rows[0];
@@ -135,11 +135,10 @@ export const getUserImports = async (params: {
     return result.rows;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw createError(
+    throw new ServerError(
       params.errorCode,
       `Error retrieving user imports: ${message}`,
-      500,
-    )();
+    );
   }
 };
 
@@ -151,14 +150,22 @@ export const getUserInvitationsForOrganisation = async (params: {
   errorCode: string;
   logicalWhereOperator?: string;
   limit?: number;
+  joinUsersImports?: boolean;
 }): Promise<UserInvitation[]> => {
   try {
+    const usersImportJoin =
+      params.joinUsersImports ?? true
+        ? " left join users_imports on users_imports.organisation_id = ouc.organisation_id "
+        : "";
     const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
     const organisationIndex = `$${params.whereValues.length + 1}`;
     const operator = params.logicalWhereOperator
       ? ` ${params.logicalWhereOperator} `
       : " AND ";
-
+    const whereClauses =
+      params.whereClauses.length > 0
+        ? `WHERE ${params.whereClauses.join(operator)} `
+        : "";
     const result = await params.client.query<UserInvitation>(
       `
         SELECT 
@@ -174,11 +181,11 @@ export const getUserInvitationsForOrganisation = async (params: {
                 ouc.preferred_transports as "organisationPreferredTransports",
                 users.correlation_quality as "correlationQuality",
                 users.user_status as "userStatus"
-            from users
-            left join organisation_user_configurations ouc on ouc.user_id = users.id 
-            	and ouc.organisation_id = ${organisationIndex}
-            left join users_imports on users_imports.organisation_id = ouc.organisation_id 
-            where ${params.whereClauses.join(operator)} ${limitClause}
+          from users
+          left join organisation_user_configurations ouc on ouc.user_id = users.id 
+            and ouc.organisation_id = ${organisationIndex}
+          ${usersImportJoin}
+          ${whereClauses} ${limitClause}
       `,
       [...params.whereValues, params.organisationId],
     );
@@ -186,10 +193,90 @@ export const getUserInvitationsForOrganisation = async (params: {
     return result.rows;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw createError(
+    throw new ServerError(
       params.errorCode,
       `Error retrieving user invitations: ${message}`,
-      500,
-    )();
+    );
   }
 };
+
+export const getUserProfiles = async (ids: string[], pool: Pool) => {
+  return await pool
+    .query<{
+      firstName: string;
+      lastName: string;
+      ppsn: string;
+      id: string;
+      lang: string;
+      phone: string;
+      email: string;
+    }>(
+      `
+    select 
+      (details ->> 'firstName') as "firstName",
+      (details ->> 'lastName') as "firstName",
+      (details ->> 'publicIdentityId') as "ppsn",
+      user_profile_id as "id",
+      'en' as "lang",
+      phone,
+      email
+    from users
+    where user_profile_id = any ($1)
+    `,
+      [ids],
+    )
+    .then((res) => res.rows);
+};
+
+export function ProfileSdkFacade(
+  sdkProfile: Profile,
+  messagingProfile: {
+    selectUsers(ids: string[]): ReturnType<typeof getUserProfiles>;
+  },
+): Omit<Profile, "client"> {
+  return {
+    createAddress: sdkProfile.createAddress,
+    createUser: sdkProfile.createUser,
+    deleteAddress: sdkProfile.deleteAddress,
+    findUser: sdkProfile.findUser,
+    getAddress: sdkProfile.getAddress,
+    getAddresses: sdkProfile.getAddresses,
+    getEntitlements: sdkProfile.getEntitlements,
+    getUser: sdkProfile.getUser,
+    async selectUsers(ids: string[]) {
+      const profileResult = await sdkProfile.selectUsers(ids);
+
+      if (profileResult.error) {
+        return { data: undefined, error: profileResult.error };
+      }
+
+      const fromProfile = profileResult.data || [];
+
+      if (fromProfile.length === ids.length) {
+        return { data: fromProfile, error: undefined };
+      }
+
+      const idsNotFound: string[] = [];
+      if (fromProfile.length) {
+        const set = new Set(fromProfile.map((d) => d.id));
+        for (const id of ids) {
+          if (!set.has(id)) {
+            idsNotFound.push(id);
+          }
+        }
+      }
+
+      const fromMessage = idsNotFound.length
+        ? await messagingProfile.selectUsers(idsNotFound)
+        : [];
+
+      return { data: fromProfile.concat(fromMessage), error: undefined };
+    },
+    patchAddress: sdkProfile.patchAddress,
+    patchUser: sdkProfile.patchUser,
+    updateAddress: sdkProfile.updateAddress,
+    updateUser: sdkProfile.updateUser,
+  };
+}
+
+export const AVAILABLE_TRANSPORTS = ["sms", "email", "lifeEvent"];

@@ -1,8 +1,16 @@
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
-import { postgres, web, workflow } from "../../../utils";
+import { workflow } from "../../../utils";
 import { pgpool as sharedPgPgool } from "auth/sessions";
 import { pgpool } from "../../../utils/postgres";
+import { SubmissionsTableProps } from "./page";
+import Pagination from "./components/Pagination";
+import {
+  PaginationLinks,
+  getPaginationLinks,
+  getQueryParams,
+} from "./components/paginationUtils";
+import TableControls from "./components/TableControls/TableControls";
+import { QueryResult } from "pg";
 
 type User = {
   id: string;
@@ -21,91 +29,196 @@ type DigitalWalletFlow = {
   flow_data: workflow.GetDigitalWallet;
 };
 
-export default async (props: web.NextPageProps) => {
-  const t = await getTranslations("Admin.DigitalWalletPendingTable");
+export const getPartialApplications = async (params: {
+  pageSize?: number;
+  offset?: number;
+  search?: string;
+  filters?: Record<string, string>;
+}) => {
+  // Step 1: Fetch users from the shared DB - CHANGE THIS AFTER LOGTO INTEGRATION
+  const { pageSize, offset, search, filters } = params;
+  const baseUserQuery = `SELECT * FROM users WHERE is_public_servant = false`;
+  let usersQuery = baseUserQuery;
+  const searchQuery = search?.trim();
+  const queryParams: (string | string[])[] = [];
 
-  // Step 1: Fetch users from the shared DB
-  const allUsersQuery = "SELECT * FROM users WHERE is_public_servant = false";
-  const usersQueryResult = await sharedPgPgool.query<User>(allUsersQuery);
-  // console.log(usersQueryResult.rows);
+  if (searchQuery) {
+    usersQuery += ` AND (govid_email ILIKE $1 OR user_name ILIKE $1)`;
+    queryParams.push(`%${searchQuery}%`);
+  }
+
+  const usersQueryResult: QueryResult<User> = await sharedPgPgool.query<User>(
+    usersQuery,
+    queryParams,
+  );
 
   // Extract user IDs
-  const ids = usersQueryResult.rows.map((row) => row.id);
+  const userIds = usersQueryResult.rows.map((row) => row.id);
+
+  if (userIds.length === 0) {
+    return {
+      data: [],
+      totalCount: 0,
+      totalPages: 0,
+    };
+  }
+
+  // Step 2: Fetch geDigitalWallet flow data for users registered
+  const baseFlowQuery = `
+    SELECT user_id, flow, flow_data 
+    FROM user_flow_data 
+    WHERE flow = 'getDigitalWallet' AND user_id = ANY($1)
+  `;
+  let flowQuery = baseFlowQuery;
+  queryParams.length = 0; // Reset queryParams for reuse
+  let paramIndex = 2;
+  queryParams.push(userIds);
+
+  if (searchQuery) {
+    flowQuery += ` AND (
+      (flow_data ->> 'govIEEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'myGovIdEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'firstName') ILIKE $${paramIndex}
+      OR (flow_data ->> 'lastName') ILIKE $${paramIndex}
+    )`;
+    queryParams.push(`%${searchQuery}%`);
+    paramIndex++;
+  }
+
+  if (filters) {
+    for (const [key, value] of Object.entries(filters)) {
+      flowQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
+      queryParams.push(key, value);
+      paramIndex += 2;
+    }
+  }
+
+  const flowQueryResult: QueryResult<DigitalWalletFlow> = await pgpool.query(
+    flowQuery,
+    queryParams,
+  );
+
+  const userMap = new Map<string, User>(
+    usersQueryResult.rows.map((user) => [user.id, user]),
+  );
 
   const usersWithPartial: (User & {
     [K in keyof DigitalWalletFlow]?: DigitalWalletFlow[K];
   })[] = [];
-  // Step 2: Fetch geDigitalWallet flow data for users registered
-  if (ids.length > 0) {
-    const partialFlowsQuery = `SELECT user_id, flow, flow_data FROM user_flow_data WHERE flow = 'getDigitalWallet' AND user_id = ANY($1)`;
-    const flowQueryResult = await pgpool.query<DigitalWalletFlow>(
-      partialFlowsQuery,
-      [ids],
-    );
 
-    // Step 3: Process and combine the results using efficient data structures
-    const userMap = new Map<string, User>(
-      usersQueryResult.rows.map((user) => [user.id, user]),
-    );
-
-    flowQueryResult.rows.forEach((row) => {
-      if (row.flow_data.confirmedApplication === "") {
-        const user = userMap.get(row.user_id);
-        if (user) {
-          usersWithPartial.push({ ...user, ...row });
-        }
+  flowQueryResult.rows.forEach((row) => {
+    if (row.flow_data.confirmedApplication === "") {
+      // If the user has a flow but it's not confirmed, add it to the list
+      const user = userMap.get(row.user_id);
+      if (user) {
+        usersWithPartial.push({ ...user, ...row });
+        userMap.delete(row.user_id); // Only add the user once
       }
-      // Mark users who have flow data
-      userMap.delete(row.user_id);
-    });
+    } else if (row.flow_data.confirmedApplication.length > 0) {
+      // If the user has a confirmed application, remove them from the list
+      const user = userMap.get(row.user_id);
+      if (user) {
+        userMap.delete(row.user_id); // Only add the user once
+      }
+    }
+  });
 
-    // Add remaining users without the specified flow
+  // if filters are applied don't display users with no flow
+  if (!filters || Object.keys(filters).length === 0) {
     userMap.forEach((user) => {
       usersWithPartial.push(user);
     });
   }
 
+  const totalCount = usersWithPartial.length;
+
+  if (pageSize === undefined || offset === undefined) {
+    return {
+      data: usersWithPartial,
+      totalCount: totalCount,
+      totalPages: 1,
+    };
+  }
+
+  return {
+    data: usersWithPartial.slice(offset, offset + pageSize),
+    totalCount: totalCount,
+    totalPages: Math.ceil(totalCount / pageSize),
+  };
+};
+
+export default async ({ searchParams, params }: SubmissionsTableProps) => {
+  const t = await getTranslations("Admin.DigitalWalletPendingTable");
+
+  const urlParms = new URLSearchParams(searchParams);
+  const url = `${process.env.HOST_URL}/${params.locale}/admin/submissions?status=pending`;
+
+  const queryParams = getQueryParams(urlParms);
+
+  const usersWithPartial = await getPartialApplications({
+    pageSize: queryParams.limit,
+    offset: queryParams.offset,
+    search: queryParams.search,
+    filters: queryParams.filters,
+  });
+
+  const links: PaginationLinks = getPaginationLinks({
+    url,
+    limit: queryParams.limit,
+    offset: queryParams.offset,
+    totalCount: usersWithPartial.totalCount,
+  });
+
   return (
-    <table className="govie-table">
-      <thead className="govie-table__head">
-        <tr className="govie-table__row">
-          <th scope="col" className="govie-table__header">
-            {t("nameColumn")}
-          </th>
-          <th scope="col" className="govie-table__header">
-            {t("myGovIdEmailColumn")}
-          </th>
-          <th scope="col" className="govie-table__header">
-            {t("workEmailColumn")}
-          </th>
-          <th scope="col" className="govie-table__header">
-            {t("applicationStatusColumn")}
-          </th>
-        </tr>
-      </thead>
-      <tbody className="govie-table__body">
-        {usersWithPartial.map((row) => {
-          return (
-            <tr key={row.id} className="govie-table__row">
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {row.user_name}
-              </td>
+    <>
+      <TableControls
+        itemsCount={usersWithPartial.totalCount}
+        baseUrl={url}
+        status="pending"
+        {...queryParams}
+      />
+      <table className="govie-table">
+        <thead className="govie-table__head">
+          <tr className="govie-table__row">
+            <th scope="col" className="govie-table__header">
+              {t("nameColumn")}
+            </th>
+            <th scope="col" className="govie-table__header">
+              {t("myGovIdEmailColumn")}
+            </th>
+            <th scope="col" className="govie-table__header">
+              {t("workEmailColumn")}
+            </th>
+            <th scope="col" className="govie-table__header">
+              {t("applicationStatusColumn")}
+            </th>
+          </tr>
+        </thead>
+        <tbody className="govie-table__body">
+          {usersWithPartial.data.map((row) => {
+            return (
+              <tr key={row.id} className="govie-table__row">
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {row.user_name}
+                </td>
 
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {row.govid_email}
-              </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {row.govid_email}
+                </td>
 
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {row.flow_data?.govIEEmail}
-              </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {row.flow_data?.govIEEmail}
+                </td>
 
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {row.flow_data ? "Started" : "Not started"}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {row.flow_data ? t("started") : t("notStarted")}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <Pagination currentPage={queryParams.page} links={links} />
+    </>
   );
 };

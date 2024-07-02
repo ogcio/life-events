@@ -15,14 +15,16 @@ import {
   UsersImportSchema,
   UsersImport,
 } from "../../types/usersSchemaDefinitions";
-import { createError } from "@fastify/error";
 import {
   READ_USER_IMPORTS_ERROR,
+  getAllUserInvitationsForOrganisation,
   getUserImportForOrganisation,
   getUserImportsForOrganisation,
   getUserInvitationsForImport,
 } from "../../services/users/import/read-user-imports";
 import { organisationId } from "../../utils";
+import { BadRequestError } from "shared-errors";
+import { getOrganisationIdFromRequest } from "../../utils/request-utils";
 
 const tags = ["Users", "UserImports"];
 
@@ -130,13 +132,51 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserImportsForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(request),
+        organisationId: getOrganisationIdFromRequest(
+          request,
+          READ_USER_IMPORTS_ERROR,
+        ),
+      }),
+    }),
+  );
+
+  app.get<Omit<GetUserInvitationsSchema, "Params">>(
+    "/users",
+    {
+      preValidation: app.verifyUser,
+      schema: {
+        tags,
+        querystring: Type.Optional(
+          Type.Object({
+            organisationId: Type.Optional(Type.String({ format: "uuid" })),
+          }),
+        ),
+        response: {
+          200: Type.Object({
+            data: Type.Array(UserInvitationSchema),
+          }),
+          "5xx": HttpError,
+          "4xx": HttpError,
+        },
+      },
+    },
+    async (
+      request: FastifyRequest<Omit<GetUserInvitationsSchema, "Params">>,
+      _reply: FastifyReply,
+    ) => ({
+      data: await getAllUserInvitationsForOrganisation({
+        logger: request.log,
+        pool: app.pg.pool,
+        organisationId: getOrganisationIdFromRequest(
+          request,
+          READ_USER_IMPORTS_ERROR,
+        ),
       }),
     }),
   );
 
   interface GetImportSchema {
-    Querystring: { organisationId?: string };
+    Querystring: { organisationId?: string; includeUsersData?: boolean };
     Response: { data: UsersImport };
     Params: { importId: string };
   }
@@ -149,6 +189,7 @@ export default async function usersImports(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Object({
             organisationId: Type.Optional(Type.String({ format: "uuid" })),
+            includeUsersData: Type.Boolean({ default: true }),
           }),
         ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
@@ -165,8 +206,12 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserImportForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(request),
+        organisationId: getOrganisationIdFromRequest(
+          request,
+          READ_USER_IMPORTS_ERROR,
+        ),
         importId: request.params.importId,
+        includeUsersData: request.query.includeUsersData ?? true,
       }),
     }),
   );
@@ -176,6 +221,7 @@ export default async function usersImports(app: FastifyInstance) {
     Response: { data: UserInvitation[] };
     Params: { importId: string };
   }
+
   app.get<GetUserInvitationsSchema>(
     "/:importId/users",
     {
@@ -204,7 +250,10 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserInvitationsForImport({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(request),
+        organisationId: getOrganisationIdFromRequest(
+          request,
+          READ_USER_IMPORTS_ERROR,
+        ),
         importId: request.params.importId,
       }),
     }),
@@ -233,33 +282,14 @@ export default async function usersImports(app: FastifyInstance) {
   const saveRequestFile = async (request: FastifyRequest): Promise<string> => {
     const file = await request.files();
     if (!file) {
-      throw createError(
+      throw new BadRequestError(
         IMPORT_USERS_ERROR,
         "File is missing in the request",
-        400,
-      )();
+      );
     }
 
     const savedFiles = await request.saveRequestFiles();
 
     return savedFiles[0].filepath;
-  };
-
-  const getOrganisationIdFromRequest = (request: FastifyRequest): string => {
-    const query = request.query as { organisationId?: string };
-    // organisationId query parameter added to
-    // make us able to test it until we won't have
-    // an organisation id set into the logged in user
-    const organisationId =
-      request.user!.organisation_id ?? query.organisationId;
-    if (!organisationId) {
-      throw createError(
-        READ_USER_IMPORTS_ERROR,
-        "Cannot retrieve an organisation id",
-        400,
-      )();
-    }
-
-    return organisationId;
   };
 }

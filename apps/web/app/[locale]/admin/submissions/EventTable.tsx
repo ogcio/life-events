@@ -1,136 +1,199 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { postgres, web, workflow } from "../../../utils";
-import { EventTableSearchParams, Pages } from "./page";
+import { Pages, SubmissionsTableProps } from "./page";
+import {
+  PaginationLinks,
+  getPaginationLinks,
+  getQueryParams,
+} from "./components/paginationUtils";
+import Pagination from "./components/Pagination";
+import TableControls from "./components/TableControls/TableControls";
+import { QueryResult } from "pg";
+import page from "../page";
+import { off } from "process";
+import { get } from "http";
 
-type EventTableProps = web.NextPageProps & {
-  searchParams: EventTableSearchParams;
-};
+export const getSubmissions = async (params: {
+  status: Exclude<Pages, "pending">;
+  pageSize?: number;
+  offset?: number;
+  search?: string;
+  filters?: Record<string, string>;
+}) => {
+  const { status, search, filters, pageSize, offset } = params;
 
-export default async (props: EventTableProps) => {
-  const t = await getTranslations("Admin.EventsTable");
-
-  let query = `SELECT 
+  const dataSelect = `SELECT 
   fd.user_id as "userId", 
   fd.flow,
   fd.flow_data as "flowData",
-  fd.updated_at::DATE::TEXT as "updatedAt"
+  fd.updated_at::DATE::TEXT as "updatedAt"`;
+
+  let dataQuery = `
   FROM user_flow_data fd`;
 
-  //allow only submitted approved rejected from Pages type excluding pending
-  const statusSelection =
-    (props.searchParams?.status as Exclude<Pages, "pending">) || "submitted";
-
-  switch (statusSelection) {
+  switch (status) {
     case "rejected":
-      query += ` WHERE (flow_data ->> 'rejectReason') != ''`;
+      dataQuery += ` WHERE (flow_data ->> 'rejectedAt') != ''`;
       break;
     case "approved":
-      query += ` WHERE (flow_data ->> 'successfulAt') != ''`;
+      dataQuery += ` WHERE (flow_data ->> 'successfulAt') != ''`;
       break;
     case "submitted":
-      query += ` WHERE (flow_data ->> 'confirmedApplication') != '' AND (flow_data ->> 'successfulAt') = '' AND (flow_data ->> 'rejectReason') = ''`;
+      dataQuery += ` WHERE (flow_data ->> 'confirmedApplication') != '' AND (flow_data ->> 'successfulAt') = '' AND (flow_data ->> 'rejectedAt') = ''`;
       break;
     case undefined:
     default:
       // No funny queries
-      query += " WHERE FALSE";
+      dataQuery += " WHERE FALSE";
       break;
   }
 
-  query += " ORDER BY updated_at DESC";
-
-  const userFlows = await postgres.pgpool.query<{
+  let userFlows: QueryResult<{
     userId: string;
     flow: string;
     flowData: workflow.GetDigitalWallet;
     updatedAt: string;
-  }>(query);
+  }>;
 
-  const status = (flowData: workflow.GetDigitalWallet) => {
-    if (flowData.successfulAt) {
-      return "Approved";
+  const sqlQueryParams: (string | boolean | number)[] = [];
+  let paramIndex = 1;
+  if (search) {
+    dataQuery += ` AND (
+      (flow_data ->> 'govIEEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'myGovIdEmail') ILIKE $${paramIndex}
+      OR (flow_data ->> 'firstName') ILIKE $${paramIndex}
+      OR (flow_data ->> 'lastName') ILIKE $${paramIndex}
+      )`;
+    paramIndex++;
+    sqlQueryParams.push(`%${search}%`);
+  }
+
+  if (filters) {
+    for (const [key, value] of Object.entries(filters)) {
+      dataQuery += ` AND (flow_data ->> $${paramIndex} = $${paramIndex + 1})`;
+      sqlQueryParams.push(key, value);
+      paramIndex += 2;
     }
+  }
 
-    if (flowData.rejectReason) {
-      return "Rejected";
-    }
+  const countQueryResult = await postgres.pgpool.query<{ count: number }>(
+    `SELECT COUNT(*) ${dataQuery}`,
+    sqlQueryParams,
+  );
 
-    return "Submitted";
-  };
+  if (pageSize !== undefined && offset !== undefined) {
+    dataQuery += ` ORDER BY updated_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex}`;
+    sqlQueryParams.push(pageSize, offset);
+  }
+
+  userFlows = await postgres.pgpool.query(
+    `${dataSelect} ${dataQuery}`,
+    sqlQueryParams,
+  );
+
+  return { data: userFlows, count: countQueryResult.rows[0].count };
+};
+
+export default async ({ searchParams, params }: SubmissionsTableProps) => {
+  const t = await getTranslations("Admin.EventsTable");
+
+  const urlParms = new URLSearchParams(searchParams);
+  const statusSelection =
+    (searchParams?.status as Exclude<Pages, "pending">) || "submitted";
+  const url = `${process.env.HOST_URL}/${params.locale}/admin/submissions?status=${statusSelection}`;
+  const queryParams = getQueryParams(urlParms);
+
+  const { data: userFlows, count } = await getSubmissions({
+    status: statusSelection,
+    pageSize: queryParams.limit,
+    filters: queryParams.filters,
+    offset: queryParams.offset,
+    search: queryParams.search,
+  });
+
+  const links: PaginationLinks = getPaginationLinks({
+    url,
+    limit: queryParams.limit,
+    offset: queryParams.offset,
+    totalCount: count,
+  });
 
   return (
-    <table className="govie-table">
-      <thead className="govie-table__head">
-        <tr className="govie-table__row">
-          <th scope="col" className="govie-table__header">
-            {t("dateColumn")}
-          </th>
-          <th scope="col" className="govie-table__header">
-            {t("nameColumn")}
-          </th>
-          <th scope="col" className="govie-table__header">
-            {t("typeColumn")}
-          </th>
-          <th scope="col" className="govie-table__header">
-            {t("deviceColumn")}
-          </th>
+    <>
+      <TableControls
+        itemsCount={count}
+        baseUrl={url}
+        {...queryParams}
+        status={statusSelection}
+      />
+      <table className="govie-table">
+        <thead className="govie-table__head">
+          <tr className="govie-table__row">
+            <th scope="col" className="govie-table__header">
+              {t("dateColumn")}
+            </th>
+            <th scope="col" className="govie-table__header">
+              {t("nameColumn")}
+            </th>
+            <th scope="col" className="govie-table__header">
+              {t("workEmailColumn")}
+            </th>
+            <th scope="col" className="govie-table__header">
+              {t("deviceColumn")}
+            </th>
 
-          <th scope="col" className="govie-table__header">
-            {t("verifiedWorkEmail")}
-          </th>
+            <th scope="col" className="govie-table__header">
+              {t("verifiedWorkEmail")}
+            </th>
 
-          <th scope="col" className="govie-table__header">
-            {t("actionColumn")}
-          </th>
-        </tr>
-      </thead>
-      <tbody className="govie-table__body">
-        {userFlows.rows.map((row) => {
-          return (
-            <tr key={row.userId} className="govie-table__row">
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {web.formatDate(row.updatedAt)}
-              </td>
+            <th scope="col" className="govie-table__header">
+              {t("actionColumn")}
+            </th>
+          </tr>
+        </thead>
+        <tbody className="govie-table__body">
+          {userFlows.rows.map((row) => {
+            return (
+              <tr key={row.userId} className="govie-table__row">
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {web.formatDate(row.updatedAt)}
+                </td>
 
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {row.flowData.firstName} {row.flowData.lastName}
-              </td>
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {t(row.flow)}
-              </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {row.flowData.firstName} {row.flowData.lastName}
+                </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {row.flowData.govIEEmail}
+                </td>
 
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {row.flowData.deviceType}
-              </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {t(row.flowData.deviceType)}
+                </td>
 
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                {row.flowData.verifiedGovIEEmail ? "Yes" : "No"}
-              </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {row.flowData.verifiedGovIEEmail ? "Yes" : "No"}
+                </td>
 
-              <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                <div>
-                  <div>
-                    {status(row.flowData) === "Submitted" ? (
-                      <Link
-                        className="govie-link govie-!-margin-right-3"
-                        href={
-                          new URL(
-                            `/admin/submissions/${row.flow}/${row.userId}`,
-                            process.env.HOST_URL,
-                          ).href
-                        }
-                      >
-                        {t("view")}
-                      </Link>
-                    ) : null}
-                  </div>
-                </div>
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  <Link
+                    className="govie-link govie-!-margin-right-3"
+                    href={
+                      new URL(
+                        `/admin/submissions/${row.flow}/${row.userId}`,
+                        process.env.HOST_URL,
+                      ).href
+                    }
+                  >
+                    {t("view")}
+                  </Link>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <Pagination currentPage={queryParams.page} links={links} />
+    </>
   );
 };

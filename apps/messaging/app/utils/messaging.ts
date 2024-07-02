@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { ComponentProps } from "react";
 import ds from "design-system";
 import { api } from "messages";
-import { providerRoutes, usersImports } from "./routes";
+import { providerRoutes, users, usersImports } from "./routes";
 
 export const languages = {
   EN: "EN",
@@ -41,9 +41,9 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
         icon: "settings",
       },
       {
-        key: usersImports.slug,
-        label: t("usersImports"),
-        url: usersImports.url,
+        key: users.slug,
+        label: t("users"),
+        url: users.url,
         icon: "employment",
       },
     );
@@ -101,6 +101,10 @@ export const searchValueSms = "sms";
 export const searchKeyDeleteId = "deleteId";
 export const searchValueOrganisation = "organisation";
 export const searchKeySettingType = "settingType";
+export const searchValueImports = "imports";
+export const searchValueImportCsv = "importCsv";
+export const searchValueUsers = "users";
+export const searchKeyListType = "listType";
 export const envUAT = "UAT";
 export const envDevelopment = "DEV";
 export const envStaging = "STA";
@@ -154,3 +158,28 @@ export const getLinks = (
       };
   }
 };
+
+/**
+ * Checks for all values inside double curly brackets
+ *
+ * eg. {{value}} => ["value"]
+ */
+export function getInterpolationValues(text: string): string[] {
+  return text.match(/[^{{]+(?=}})/g) || [];
+}
+
+export const avaliableMessagingTemplateStaticVariables = new Set([
+  "firstName",
+  "lastName",
+  "phone",
+  "email",
+  "ppsn",
+]);
+
+export const AVAILABLE_TRANSPORTS = ["sms", "email", "lifeEvent"] as const;
+
+export function isAvailableTransport(
+  t: string,
+): t is (typeof AVAILABLE_TRANSPORTS)[number] {
+  return AVAILABLE_TRANSPORTS.some((at) => at === t);
+}

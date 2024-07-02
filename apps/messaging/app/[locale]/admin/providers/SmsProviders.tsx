@@ -27,6 +27,9 @@ export default async () => {
             {t("typeTableHeader")}
           </th>
           <th scope="col" className="govie-table__header">
+            {t("primaryHeader")}
+          </th>
+          <th scope="col" className="govie-table__header">
             {t("actionTableHeader")}
           </th>
         </tr>
@@ -39,6 +42,10 @@ export default async () => {
             </th>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               {provider.type}
+            </td>
+
+            <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+              {provider.isPrimary && t("primaryCellValue")}
             </td>
 
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">

@@ -9,7 +9,10 @@ import { PgSessions } from "auth/sessions";
 import { headers } from "next/headers";
 
 export default async (props: MessageCreateProps) => {
-  const t = await getTranslations("sendAMessage.EmailPreview");
+  const [t, tCommons] = await Promise.all([
+    getTranslations("sendAMessage.EmailPreview"),
+    getTranslations("Commons"),
+  ]);
   async function submit() {
     "use server";
 
@@ -44,12 +47,6 @@ export default async (props: MessageCreateProps) => {
 
   const interpolationKeys = Object.keys(interpolations);
 
-  const richText = template
-    ? interpolationKeys.reduce(
-        utils.interpolationReducer(interpolations),
-        template.richText,
-      )
-    : props.state.richText;
   const plainText = template
     ? interpolationKeys.reduce(
         utils.interpolationReducer(interpolations),
@@ -114,7 +111,7 @@ export default async (props: MessageCreateProps) => {
         <button className="govie-button">{t("submitText")}</button>
       </form>
       <form action={goBack}>
-        <BackButton>{t("backLink")}</BackButton>
+        <BackButton>{tCommons("backLink")}</BackButton>
       </form>
     </div>
   );

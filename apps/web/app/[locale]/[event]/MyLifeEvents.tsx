@@ -148,7 +148,7 @@ export default async ({ locale }) => {
   ]);
 
   const { data: messageEvents } = await new Messaging(userId).getMessages(
-    "event",
+    "lifeEvent",
   );
 
   const showDigitalWalletOnboarding =
@@ -172,6 +172,39 @@ export default async ({ locale }) => {
       <section className={styles.section}>
         <div className="govie-heading-l">{t("lifeEvents")}</div>
         <ul className="govie-list">
+          {/* hack. hardcode msg while messaging isn't ready */}
+          {eventsToRender.length === 0 && (
+            <li
+              key="message"
+              style={{
+                margin: "1rem 0",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-around",
+                gap: "1rem",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <h3>Your application is currently in a queue</h3>
+                  <p
+                    className="govie-body"
+                    style={{ margin: "unset", marginTop: "16px" }}
+                  >
+                    Our team are dealing with requests to join the pilot and
+                    will be in touch soon. We appreciate your patience.
+                  </p>
+                </div>
+              </div>
+              <hr className="govie-section-break govie-section-break--visible" />
+            </li>
+          )}
           {showDigitalWalletOnboarding &&
             eventsToRender.map((evt) => (
               <li

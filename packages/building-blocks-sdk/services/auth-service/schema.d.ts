@@ -3,7 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
   "/health": {
     get: {
@@ -140,8 +139,7 @@ export interface paths {
 export type webhooks = Record<string, never>;
 
 export interface components {
-  schemas: {
-  };
+  schemas: {};
   responses: never;
   parameters: never;
   requestBodies: never;

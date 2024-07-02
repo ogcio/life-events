@@ -56,14 +56,24 @@ export const getValidationErrors = (
   fieldMap: ValidationFieldMap,
 ): Record<string, string> => {
   return validations.reduce((errors, validation) => {
-    const errorField =
-      validation.params.field ?? validation.instancePath.slice(1);
+    const errorField = validation.additionalInfo.field ?? validation.fieldName;
     const field = fieldMap[errorField]?.field ?? errorField;
     const message =
-      fieldMap[errorField]?.errorMessage[validation.keyword] ??
+      fieldMap[errorField]?.errorMessage[validation.validationRule] ??
       validation.message;
 
-    errors[field] = message;
+    const regExp = /@\w+@/g;
+
+    const processedMessage = message.replaceAll(regExp, function (match) {
+      const variableName = match.slice(1, -1);
+
+      if (!validation.additionalInfo[variableName]) {
+        return match;
+      }
+      return validation.additionalInfo[variableName];
+    });
+
+    errors[field] = processedMessage;
 
     return errors;
   }, {});

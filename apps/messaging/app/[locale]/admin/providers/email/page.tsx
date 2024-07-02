@@ -7,16 +7,18 @@ import { providerRoutes } from "../../../../utils/routes";
 import { revalidatePath } from "next/cache";
 import { FormElement } from "../../FormElement";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 const defaultErrorStateId = "email_provider_form";
+
+type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
 
 export default async (props: {
   params: { locale: string };
   searchParams?: { id: string };
 }) => {
-  const [t, tError] = await Promise.all([
+  const [t, tError, tCommons] = await Promise.all([
     getTranslations("settings.EmailProvider"),
     getTranslations("formErrors"),
+    getTranslations("Commons"),
   ]);
   async function submitAction(formData: FormData) {
     "use server";
@@ -28,11 +30,12 @@ export default async (props: {
     const password = formData.get("password")?.toString();
     const fromAddress = formData.get("fromAddress")?.toString();
     const throttle = Number(formData.get("throttle")?.toString()) || undefined;
+    const ssl = Boolean(formData.get("ssl"));
+    const isPrimary = Boolean(formData.get("isPrimary"));
 
     const id = formData.get("id")?.toString();
 
-    const formErrors: Parameters<typeof temporaryMockUtils.createErrors>[0] =
-      [];
+    const formErrors: FormErrors = [];
 
     const required = { name, host, port, username, password, fromAddress };
     for (const field of Object.keys(required)) {
@@ -50,7 +53,7 @@ export default async (props: {
       await temporaryMockUtils.createErrors(
         formErrors,
         userId,
-        id || defaultErrorStateId,
+        defaultErrorStateId,
       );
       return revalidatePath("/");
     }
@@ -62,8 +65,12 @@ export default async (props: {
 
     const messagesClient = new Messaging(userId);
 
+    let serverError:
+      | Awaited<ReturnType<typeof messagesClient.createEmailProvider>>["error"]
+      | undefined;
+
     if (!id) {
-      await messagesClient.createEmailProvider({
+      const { error } = await messagesClient.createEmailProvider({
         name,
         host,
         username,
@@ -71,9 +78,15 @@ export default async (props: {
         port,
         fromAddress,
         throttle,
+        ssl,
+        isPrimary,
       });
+
+      if (error) {
+        serverError = error;
+      }
     } else {
-      await messagesClient.updateEmailProvider(id, {
+      const { error } = await messagesClient.updateEmailProvider(id, {
         host,
         port,
         id,
@@ -82,7 +95,39 @@ export default async (props: {
         username,
         fromAddress,
         throttle,
+        ssl,
+        isPrimary,
       });
+
+      if (error) {
+        serverError = error;
+      }
+    }
+
+    if (serverError) {
+      if (serverError.validation) {
+        formErrors.push(
+          ...serverError.validation.map((v) => ({
+            errorValue: fromAddress,
+            field: v.fieldName,
+            messageKey: v.message,
+          })),
+        );
+      } else {
+        formErrors.push({
+          errorValue: "",
+          field: "general",
+          messageKey: "generalServerError",
+        });
+      }
+
+      await temporaryMockUtils.createErrors(
+        formErrors,
+        userId,
+        defaultErrorStateId,
+      );
+
+      return revalidatePath("/");
     }
 
     const url = new URL(
@@ -111,7 +156,7 @@ export default async (props: {
 
   const errors = await temporaryMockUtils.getErrors(
     userId,
-    props.searchParams?.id || defaultErrorStateId,
+    defaultErrorStateId,
   );
 
   const nameError = errors.find((error) => error.field === "name");
@@ -150,6 +195,26 @@ export default async (props: {
             name="name"
             className="govie-input"
             defaultValue={data?.name}
+          />
+        </FormElement>
+
+        <FormElement
+          id="fromAddress"
+          label={t("fromAddressLabel")}
+          error={
+            fromAddressError &&
+            tError(fromAddressError.messageKey, {
+              field: tError(`fields.${fromAddressError.field}`),
+              indArticleCheck: "",
+            })
+          }
+        >
+          <input
+            id="fromAddress"
+            type="text"
+            name="fromAddress"
+            className="govie-input"
+            defaultValue={data?.fromAddress}
           />
         </FormElement>
 
@@ -193,6 +258,52 @@ export default async (props: {
           />
         </FormElement>
 
+        <FormElement id="ssl">
+          <fieldset className="govie-fieldset">
+            <div className="govie-checkboxes govie-checkboxes--medium">
+              <div className="govie-checkboxes__item">
+                <input
+                  className="govie-checkboxes__input"
+                  id="ssl"
+                  name="ssl"
+                  type="checkbox"
+                  value="ssl"
+                  defaultChecked={data?.ssl}
+                />
+                <label
+                  className="govie-label--s govie-checkboxes__label"
+                  htmlFor="ssl"
+                >
+                  {t("ssl")}
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </FormElement>
+
+        <FormElement id="isPrimary">
+          <fieldset className="govie-fieldset">
+            <div className="govie-checkboxes govie-checkboxes--medium">
+              <div className="govie-checkboxes__item">
+                <input
+                  className="govie-checkboxes__input"
+                  id="isPrimary"
+                  name="isPrimary"
+                  type="checkbox"
+                  value="isPrimary"
+                  defaultChecked={data?.isPrimary}
+                />
+                <label
+                  className="govie-label--s govie-checkboxes__label"
+                  htmlFor="isPrimary"
+                >
+                  {t("isPrimary")}
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </FormElement>
+
         <FormElement
           id="username"
           label={t("usernameLabel")}
@@ -234,26 +345,6 @@ export default async (props: {
         </FormElement>
 
         <FormElement
-          id="fromAddress"
-          label={t("fromAddressLabel")}
-          error={
-            fromAddressError &&
-            tError(fromAddressError.messageKey, {
-              field: tError(`fields.${fromAddressError.field}`),
-              indArticleCheck: "",
-            })
-          }
-        >
-          <input
-            id="fromAddress"
-            type="text"
-            name="fromAddress"
-            className="govie-input"
-            defaultValue={data?.fromAddress}
-          />
-        </FormElement>
-
-        <FormElement
           id="throttle"
           label={t("throttleLabel")}
           hint={t("throttleHint")}
@@ -287,7 +378,7 @@ export default async (props: {
           ).href
         }
       >
-        {t("backLink")}
+        {tCommons("backLink")}
       </a>
     </FlexMenuWrapper>
   );

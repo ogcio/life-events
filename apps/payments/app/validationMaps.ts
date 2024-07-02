@@ -112,6 +112,7 @@ export const paymentRequestValidationMap = (t): ValidationFieldMap => {
       field: "amount",
       errorMessage: {
         [ValidationErrorTypes.MINIMUM]: t("amountRequired"),
+        [ValidationErrorTypes.MAXIMUM]: t("amountMaximumValidation"),
       },
     },
     redirectUrl: {
