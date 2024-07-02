@@ -28,7 +28,8 @@ const getRecipientContacts = async (
   if (userIds.length === 0) {
     return [];
   }
-
+  let startIndex = 1;
+  const userIdsIndexes = userIds.map((u) => `$${startIndex++}`).join(",");
   const response = await pgpool.query<RecipientContact>(
     `
     SELECT 
@@ -38,9 +39,9 @@ const getRecipientContacts = async (
         u.details->>'firstName' as "firstName",
         u.details->>'lastName' as "lastName"
     FROM users u
-    WHERE u.id in ($1)
+    WHERE u.id in (${userIdsIndexes})
   `,
-    [userIds.join(", ")],
+    [...userIds],
   );
 
   return response.rows;
