@@ -173,7 +173,6 @@ export function newMessagingEventLogger(
           },
           "failed to create message event log",
         );
-        // Log?
       }
     },
   });
