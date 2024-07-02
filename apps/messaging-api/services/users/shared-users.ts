@@ -279,4 +279,20 @@ export function ProfileSdkFacade(
   };
 }
 
-export const AVAILABLE_TRANSPORTS = ["sms", "email", "lifeEvent"];
+export enum AvailableTransports {
+  SMS = "sms",
+  EMAIL = "email",
+  LIFE_EVENT = "lifeEvent",
+}
+
+export const ALL_TRANSPORTS = [
+  AvailableTransports.EMAIL,
+  AvailableTransports.EMAIL,
+  AvailableTransports.LIFE_EVENT,
+];
+
+// LifeEvent is mandatory
+export const SELECTABLE_TRANSPORTS = [
+  AvailableTransports.EMAIL,
+  AvailableTransports.SMS,
+];

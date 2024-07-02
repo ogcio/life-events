@@ -47,6 +47,16 @@ const getRecipientContacts = async (
   return response.rows;
 };
 
+const buildContactLabel = (user: {
+  emailAddress?: string | null;
+  phoneNumber?: string | null;
+  firstName: string | null;
+  lastName: string | null;
+}): string => {
+  const toUseContact = user.emailAddress ?? user.phoneNumber;
+  return `${toUseContact} - ${user.firstName} ${user.lastName}`;
+};
+
 export default async (props: MessageCreateProps) => {
   const [t, tCommons] = await Promise.all([
     getTranslations("sendAMessage.EmailRecipients"),
@@ -123,22 +133,13 @@ export default async (props: MessageCreateProps) => {
   const response = await messaging.getRecipients({
     ...queryParams,
     organisationId,
+    transports: props.state.transportations.join(","),
   });
   if (response.error || !response.data) {
     throw notFound();
   }
   const users = response.data;
   const addedUsers = await getRecipientContacts(props.state.userIds);
-  const buildContactLabel = (user: {
-    emailAddress?: string | null;
-    phoneNumber?: string | null;
-    firstName: string | null;
-    lastName: string | null;
-  }): string => {
-    const toUseContact = user.emailAddress ?? user.phoneNumber;
-    return `${toUseContact} - ${user.firstName} ${user.lastName}`;
-  };
-
   return (
     <>
       <TableControls
