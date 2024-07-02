@@ -5,12 +5,12 @@ import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
-import TableControls from "../components/TableControls/TableControls";
 import { getQueryParams } from "../components/paginationUtils";
 import { sendAMessage } from "../../../../utils/routes";
 import { Messaging } from "building-blocks-sdk";
-import { notFound } from "next/navigation";
+import { RedirectType, notFound, redirect } from "next/navigation";
 import { pgpool } from "messages/dbConnection";
+import styles from "../components/TableControls/TableControls.module.scss";
 
 interface RecipientContact {
   id: string;
@@ -125,6 +125,21 @@ export default async (props: MessageCreateProps) => {
     await api.upsertMessageState(next, props.userId, props.stateId);
     revalidatePath("/");
   }
+
+  async function handleChange(formData: FormData) {
+    "use server";
+    const url = new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL);
+    const searchParams = url.searchParams;
+
+    const searchQuery = (formData.get("search-query") as string).trim();
+    if (searchQuery.length > 0) {
+      searchParams.set("search", searchQuery);
+    }
+    searchParams.set("limit", "100");
+
+    redirect(url.toString(), RedirectType.replace);
+  }
+
   const urlParams = new URLSearchParams(props.searchParams);
   const queryParams = getQueryParams(urlParams);
   const { userId } = await PgSessions.get();
@@ -135,95 +150,106 @@ export default async (props: MessageCreateProps) => {
     organisationId,
     transports: props.state.transportations.join(","),
   });
+  console.log({ ciao: response });
   if (response.error || !response.data) {
     throw notFound();
   }
   const users = response.data;
+
   const addedUsers = await getRecipientContacts(props.state.userIds);
   return (
-    <>
-      <TableControls
-        itemsCount={response.metadata?.totalCount ?? users.length}
-        baseUrl={(() => {
-          return (
-            props.searchParams?.baseUrl ??
-            new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL).href
-          );
-        })()}
-        {...queryParams}
-      />
-      <div className="govie-grid-column-two-thirds-from-desktop">
-        <form action={recipientAction}>
-          <h1>
-            <span style={{ margin: "unset" }} className="govie-heading-xl">
-              {t("title")}
-            </span>
-          </h1>
-
-          <div className="govie-form-group">
-            <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
-              {t("addRecipientHint")}
-            </div>
-            <div className="govie-input__wrapper">
-              <select className="govie-select" name="recipient">
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {buildContactLabel(user)}
-                  </option>
-                ))}
-              </select>
-              <button className="govie-input__suffix">{t("add")}</button>
-            </div>
+    <div className="govie-grid-column-two-thirds-from-desktop">
+      <h1>
+        <span style={{ margin: "unset" }} className="govie-heading-xl">
+          {t("title")}
+        </span>
+      </h1>
+      <form action={handleChange}>
+        <div className={styles.controlsBar}>
+          <div className={`govie-form-group ${styles.selectGroup}`}>
+            <label htmlFor="search-query" className="govie-label--s">
+              {t("searchUsers")}
+            </label>
+            <input
+              type="text"
+              id="search-query"
+              name="search-query"
+              className="govie-input govie-!-width-one-half"
+              defaultValue={props.searchParams?.search ?? ""}
+            />
           </div>
-        </form>
-
-        <table className="govie-table">
-          <thead className="govie-table__head">
-            <tr className="govie-table__row">
-              <th
-                scope="col"
-                className="govie-table__header govie-!-font-size-27"
-              >
-                {t("tableRecipientsHeader")}
-              </th>
-              <th scope="col" className="govie-table__header"></th>
-            </tr>
-          </thead>
-          <tbody className="govie-table__body">
-            {addedUsers.map((recip) => (
-              <tr key={recip.id} className="govie-table__row">
-                <td className="govie-table__cell">
-                  {buildContactLabel(recip)}
-                </td>
-                <td className="govie-table__cell">
-                  <form action={recipientsListAction}>
-                    <input type="hidden" name="userId" value={recip.id} />
-                    <button
-                      type="submit"
-                      className="govie-button govie-button--small govie-button--outlined"
-                      style={{ margin: "unset" }}
-                    >
-                      {t("tableRemoveButtonText")}
-                    </button>
-                  </form>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <form action={submit}>
-          <button
-            disabled={!Boolean(props.state.userIds.length)}
+          <input
+            type="submit"
+            id="button"
+            data-module="govie-button"
             className="govie-button"
-          >
-            {t("submitText")}
-          </button>
-        </form>
-        <form action={goBack}>
-          <BackButton>{tCommons("backLink")}</BackButton>
-        </form>
-      </div>
-    </>
+            value={t("searchUsersButton")}
+          />
+        </div>
+        <div className={`${styles.selectGroup} ${styles.reverse}`}></div>
+      </form>
+      <form action={recipientAction}>
+        <div className="govie-form-group">
+          <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
+            {t("addRecipientHint")}
+          </div>
+          <div className="govie-input__wrapper">
+            <select className="govie-select" name="recipient">
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {buildContactLabel(user)}
+                </option>
+              ))}
+            </select>
+            <button className="govie-input__suffix">{t("add")}</button>
+          </div>
+        </div>
+      </form>
+
+      <table className="govie-table">
+        <thead className="govie-table__head">
+          <tr className="govie-table__row">
+            <th
+              scope="col"
+              className="govie-table__header govie-!-font-size-27"
+            >
+              {t("tableRecipientsHeader")}
+            </th>
+            <th scope="col" className="govie-table__header"></th>
+          </tr>
+        </thead>
+        <tbody className="govie-table__body">
+          {addedUsers.map((recip) => (
+            <tr key={recip.id} className="govie-table__row">
+              <td className="govie-table__cell">{buildContactLabel(recip)}</td>
+              <td className="govie-table__cell">
+                <form action={recipientsListAction}>
+                  <input type="hidden" name="userId" value={recip.id} />
+                  <button
+                    type="submit"
+                    className="govie-button govie-button--small govie-button--outlined"
+                    style={{ margin: "unset" }}
+                  >
+                    {t("tableRemoveButtonText")}
+                  </button>
+                </form>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <form action={submit}>
+        <button
+          disabled={!Boolean(props.state.userIds.length)}
+          className="govie-button"
+        >
+          {t("submitText")}
+        </button>
+      </form>
+      <form action={goBack}>
+        <BackButton>{tCommons("backLink")}</BackButton>
+      </form>
+    </div>
   );
 };
