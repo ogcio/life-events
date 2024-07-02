@@ -3,6 +3,8 @@ import { Type } from "@sinclair/typebox";
 import {
   CreateMessage,
   CreateMessageSchema,
+  MessageEventType,
+  MessageEventTypeObject,
   ReadMessageSchema,
   ReadMessagesSchema,
 } from "../../types/schemaDefinitions";
@@ -310,60 +312,65 @@ export default async function messages(app: FastifyInstance) {
         ),
         response: {
           200: Type.Object({
-            data: Type.Array(
-              Type.Object({
-                messageId: Type.String({ format: "uuid" }),
-                data: Type.Any(),
-              }),
-            ),
+            data: Type.Array(MessageEventTypeObject),
           }),
         },
       },
     },
     async function getEventsHandler(request, _reply) {
-      // Depending on the message volume, we might need any indexes and possibly look at the "starts with" directive as it's a lot faster than "contains"
       const textSearchILikeClause = request.query?.search
         ? `%${request.query.search}%`
         : "%%";
-      const eventQueryResult = await app.pg.pool.query<{
-        messageId: string;
-        data: EventDataAggregation;
-      }>(
-        `    
-    with message_selections as (
-      select 
-        id,
-        subject,
-        scheduled_at
-      from messages
-      where organisation_id = $1
-      and lower(subject) ilike $2
-      order by created_at desc
-      limit 20
-      ), sorted as (
-        select
-          l.message_id,
-          l.data,
-          last_value(event_status) over(order by l.created_at) as event_status,
-          last_value(event_type) over(order by l.created_at) as event_type,
-          m.scheduled_at,
-          l.created_at
-        from message_selections m
-        join messaging_event_logs l on m.id = l.message_id
-    ), aggregations as(
-    select
-       message_id,
-       jsonb_object_agg(t.k, t.v) as "data"
-    from sorted m , jsonb_each(m.data || jsonb_build_object('eventType', m.event_type, 'eventStatus', m.event_status)) as t(k,v)
-    group by message_id limit 20
-    )
-    select message_id as "messageId", data from aggregations
-    order by (data ->> 'scheduledAt')::timestamptz desc
-    `,
+      const eventQueryResult = await app.pg.pool.query<MessageEventType>(
+        `
+        with message_selections as (
+          select 
+            id,
+            subject,
+            scheduled_at
+          from messages
+          where organisation_id = $1
+          and lower(subject) ilike $2
+          order by created_at
+          limit 20
+          ) select
+              l.message_id as "messageId",
+              (l.data ->> 'subject') as subject,
+              (l.data ->> 'receiverFullName') as "receiverFullName",
+              event_status as "eventStatus",
+              event_type as "eventType",
+              m.scheduled_at as "scheduledAt"
+            from message_selections m
+            join messaging_event_logs l on m.id = l.message_id
+            order by l.created_at;
+        `,
         [organisationId, textSearchILikeClause],
       );
 
-      return { data: eventQueryResult.rows };
+      const aggregations = eventQueryResult.rows.reduce<
+        Record<string, MessageEventType>
+      >((acc, cur) => {
+        if (!acc[cur.messageId]) {
+          acc[cur.messageId] = cur;
+          return acc;
+        }
+
+        for (const key of Object.keys(cur)) {
+          const typeKey = key as keyof typeof cur;
+          if (cur[typeKey]) {
+            acc[cur.messageId][typeKey] = cur[typeKey];
+          }
+        }
+
+        return acc;
+      }, {});
+
+      const data: MessageEventType[] = Object.values(aggregations).sort(
+        (a, b) =>
+          new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
+      );
+
+      return { data };
     },
   );
 }

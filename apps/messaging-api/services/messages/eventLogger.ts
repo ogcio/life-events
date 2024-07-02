@@ -95,7 +95,7 @@ type MessageUpsertEvent = {
   templateName?: string;
   templateId?: string;
   organisationName: string;
-  scheduleAt: string;
+  scheduledAt: string;
 };
 
 type MessageScheduleEvent = {
@@ -121,9 +121,7 @@ export interface MessagingEventLogger {
    * Persists logs tied to messaging api. Aims to store full information on eg. users, and relevant messaging information to make sure that
    * we document everything in case of external doubt.
    * @param type Status and key object. Use exported namespace MessagingEventType for premade types.
-   * @param baseData Generic data such as sending user data, organisation and scheduling eg.
-   * @param eventData Specific message data such as content, security eg.
-   * @param receiverUserData Array of name and other information on receiving users. Contains optional message id associated with the user. One log row will be created for each receiving user.
+   * @param eventData Array of relevant inforamtion for each event type.
    */
   log(type: EventType, eventData: EventData[]): Promise<void>;
 }

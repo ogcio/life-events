@@ -190,7 +190,11 @@ export interface paths {
               data: {
                 /** Format: uuid */
                 messageId: string;
-                data: unknown;
+                subject: string;
+                receiverFullName: string;
+                eventType: string;
+                eventStatus: string;
+                scheduledAt: string;
               }[];
             };
           };

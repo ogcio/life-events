@@ -290,10 +290,23 @@ paths:
                         messageId:
                           format: uuid
                           type: string
-                        data: {}
+                        subject:
+                          type: string
+                        receiverFullName:
+                          type: string
+                        eventType:
+                          type: string
+                        eventStatus:
+                          type: string
+                        scheduledAt:
+                          type: string
                       required:
                         - messageId
-                        - data
+                        - subject
+                        - receiverFullName
+                        - eventType
+                        - eventStatus
+                        - scheduledAt
                 required:
                   - data
   /api/v1/providers/emails/:

@@ -5,7 +5,6 @@ import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
 import ds from "design-system";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { useTranslations } from "next-intl";
 
 async function messageStatus(type: string, status: string) {
   const t = await getTranslations("MessageEvents.status");
@@ -67,7 +66,6 @@ export default async (props: { searchParams: { search?: string } }) => {
   async function submitSearch(formData: FormData) {
     "use server";
     const search = formData.get("textSearch")?.toString();
-    // const url = new URL()
     redirect(`?search=${search}`);
   }
 
@@ -121,23 +119,31 @@ export default async (props: { searchParams: { search?: string } }) => {
           </tr>
         </thead>
         <tbody className="govie-table__body">
-          {data?.map(({ data }) => {
-            const gg = data as any;
-            return (
-              <tr className="govie-table__row" key={gg.messageId}>
-                <td className="govie-table__cell">
-                  {gg.scheduledAt
-                    ? dayjs(gg.scheduledAt).format("DD/MM/YYYY")
-                    : "n/a"}
-                </td>
-                <td className="govie-table__cell">
-                  {messageStatus(gg.eventType, gg.eventStatus)}
-                </td>
-                <td className="govie-table__cell">{gg.subject}</td>
-                <td className="govie-table__cell">{gg.receiverFullName}</td>
-              </tr>
-            );
-          })}
+          {data?.map(
+            ({
+              eventStatus,
+              eventType,
+              messageId,
+              scheduledAt,
+              receiverFullName,
+              subject,
+            }) => {
+              return (
+                <tr className="govie-table__row" key={messageId}>
+                  <td className="govie-table__cell">
+                    {scheduledAt
+                      ? dayjs(scheduledAt).format("DD/MM/YYYY")
+                      : "n/a"}
+                  </td>
+                  <td className="govie-table__cell">
+                    {messageStatus(eventType, eventStatus)}
+                  </td>
+                  <td className="govie-table__cell">{subject}</td>
+                  <td className="govie-table__cell">{receiverFullName}</td>
+                </tr>
+              );
+            },
+          )}
         </tbody>
       </table>
     </FlexMenuWrapper>
