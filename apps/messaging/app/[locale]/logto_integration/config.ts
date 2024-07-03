@@ -25,6 +25,8 @@ const publicServantScopes = [
   "messaging:citizen:*",
 ];
 
+const publicServantExpectedRole = "ogcio:Messaging Public Servant";
+
 export default {
   ...baseConfig,
   // All the available resources to the app
@@ -42,6 +44,8 @@ export const getCitizenContext = () =>
     {
       getAccessToken: true,
       resource: messagingApiResource,
+      fetchUserInfo: true,
+      publicServantExpectedRole,
     },
   );
 
@@ -54,6 +58,7 @@ export const getPublicServantContext = () =>
     {
       getOrganizationToken: true,
       fetchUserInfo: true,
+      publicServantExpectedRole,
     },
   );
 
