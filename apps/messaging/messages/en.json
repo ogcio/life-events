@@ -120,11 +120,21 @@
     "EmailRecipients": {
       "title": "Add recipients",
       "addRecipient": "Add recipient",
-      "addRecipientHint": "Added recipients will be added below",
       "add": "Add",
       "submitText": "Continue to schedule",
       "tableRecipientsHeader": "Recipients",
-      "tableRemoveButtonText": "Remove"
+      "tableRemoveButtonText": "Remove",
+      "searchUsersButton": "Search",
+      "searchResultsCaption" : "Search results",
+      "selectedRecipientsCaption" : "Selected recipients",
+      "searchTable": {
+        "fullNameHeader": "Name",
+        "emailHeader": "Email",
+        "phoneHeader": "Phone",
+        "actionsHeader": "Actions",
+        "addButton": "Add",
+        "removeButton": "Remove"
+      }
     },
     "TemplateForm": {
       "title": "Template {name}",
@@ -369,23 +379,6 @@
         "accepted": "Accepted",
         "declined": "Declined"
       }
-    }
-  },
-  "MessageEvents": {
-    "mainHeader": "Message logs",
-    "searchPlaceholder": "Search logs",
-    "tableDateHeader": "Date",
-    "tableStatusHeader": "Status",
-    "tableSubjectHeader": "Subject",
-    "tableRecipientHeader": "Recipient",
-    "failedToFetchParagraph": "Failed to get message logs!",
-    "status": {
-      "delivered": "DELIVERED",
-      "deliveredFailed": "FAILED TO DELIVER",
-      "delivering": "DELIVERING",
-      "scheduled": "SCHEDULED",
-      "schedulingFailed": "FAILED TO SCHEDULE",
-      "scheduling": "SCHEDULING"
     }
   }
 }

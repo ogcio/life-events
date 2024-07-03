@@ -378,7 +378,9 @@ export class Messaging {
     query: paths["/api/v1/users/recipients/"]["get"]["parameters"]["query"],
   ) {
     const { error, data } = await this.client.GET("/api/v1/users/recipients/", {
-      query,
+      params: {
+        query,
+      },
     });
     return { error, data: data?.data, metadata: data?.metadata };
   }

@@ -6,17 +6,22 @@ import {
 } from "../../../types/usersSchemaDefinitions";
 import { utils } from "../../../utils";
 import { ServerError } from "shared-errors";
+import { Omit } from "@sinclair/typebox";
+
+type MandatoryProfileIdInvitation = Omit<UserInvitation, "userProfileId"> & {
+  userProfileId: string;
+};
 
 export const getUsersInvitationsForOrganisation = async (params: {
   userProfileIds: string[];
   organisationId: string;
   client: PoolClient;
   errorCode: string;
-}): Promise<UserInvitation[]> => {
+}): Promise<MandatoryProfileIdInvitation[]> => {
   try {
     let userIndex = 2;
     const idsIndexes = params.userProfileIds.map(() => `$${userIndex++}`);
-    const result = await params.client.query<UserInvitation>(
+    const result = await params.client.query<MandatoryProfileIdInvitation>(
       `
               select
                   ouc.user_id as "id",

@@ -94,11 +94,25 @@ export function getCurrentStep<TFlowData>(
 }
 
 export type ApiMessageState = Parameters<typeof api.upsertMessageState>[0];
+export type EventTableSearchParams = {
+  page: string;
+  offset: string;
+  baseUrl: string;
+  limit: string;
+  search?: string;
+};
+
+export type MessageCreateSearchParams = EventTableSearchParams & {
+  recipientToAddIds?: string;
+  recipientToRemoveId?: string;
+};
+
 export type MessageCreateProps = {
   state: ApiMessageState;
   userId: string;
   stateId?: string;
   disabledSubmit?: boolean;
+  searchParams?: MessageCreateSearchParams;
 };
 
 export const searchKeyProvider = "provider";
