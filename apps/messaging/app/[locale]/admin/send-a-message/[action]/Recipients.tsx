@@ -12,6 +12,7 @@ import { Messaging } from "building-blocks-sdk";
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { pgpool } from "messages/dbConnection";
 import styles from "../components/TableControls/TableControls.module.scss";
+import Link from "next/link";
 
 interface RecipientContact {
   id: string;
@@ -65,7 +66,7 @@ export default async (props: MessageCreateProps) => {
     if (search?.length) {
       searchParams.set("search", search);
     }
-    searchParams.set("limit", "100");
+    searchParams.set("limit", "20");
     if (toAddRecipientIds?.length) {
       searchParams.set(TO_ADD_IDS_KEY, toAddRecipientIds.join(","));
     }
@@ -246,6 +247,7 @@ export default async (props: MessageCreateProps) => {
                       name="recipient"
                       value={foundUser.id}
                     />
+
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <button className="govie-link govie-!-margin-right-3">
                         {t("searchTable.addButton")}
