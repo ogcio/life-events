@@ -9,6 +9,7 @@ import authPlugin from "./plugins/auth";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import fs from "fs";
+import apiAuthPlugin from "api-auth";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
@@ -61,6 +62,13 @@ export async function build(opts?: FastifyServerOptions) {
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB_NAME,
+  });
+
+  app.register(apiAuthPlugin, {
+    jwkEndpoint: process.env.LOGTO_JWK_ENDPOINT as string,
+    oidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT as string,
+    currentApiResourceIndicator: process.env
+      .LOGTO_API_RESOURCE_INDICATOR as string,
   });
 
   app.register(fastifyMultipart);
