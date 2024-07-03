@@ -11,8 +11,7 @@ import { sendAMessage } from "../../../../utils/routes";
 import { Messaging } from "building-blocks-sdk";
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { pgpool } from "messages/dbConnection";
-import styles from "../components/TableControls/TableControls.module.scss";
-import Link from "next/link";
+import styles from "../components/Table.module.scss";
 
 interface RecipientContact {
   id: string;
@@ -249,7 +248,7 @@ export default async (props: MessageCreateProps) => {
                     />
 
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <button className="govie-button--secondary">
+                      <button className={`${styles.tableActionButton}`}>
                         {t("searchTable.addButton")}
                       </button>
                     </div>
@@ -304,7 +303,7 @@ export default async (props: MessageCreateProps) => {
                         value={foundUser.id}
                       />
                       <div style={{ display: "flex", alignItems: "center" }}>
-                        <button className="govie-button--secondary">
+                        <button className={`${styles.tableActionButton}`}>
                           {t("searchTable.removeButton")}
                         </button>
                       </div>
