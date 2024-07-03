@@ -75,6 +75,8 @@ While the user experience is very simple - they just click on the `Login with My
 
 Roles and permissions are seeded in Logto database as part of the Logto deployment process. Roles are currently automatically assigned to users upon registration, and permissions are coupled with roles as configured in the Logto seeder.
 
+The authorization flow follows the Authorization Code Flow in the [OIDC specification](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth). Authorization from Logto to the OGCIO app is handled with [PKCE](https://datatracker.ietf.org/doc/html/rfc7636) to enhance security.
+
 ```mermaid
 sequenceDiagram
     User Browser->>+OGCIO App: GET ogcio.app
