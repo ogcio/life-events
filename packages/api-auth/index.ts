@@ -2,6 +2,7 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import fp from "fastify-plugin";
 import { getMapFromScope, validatePermission } from "./utils.js";
+import { AuthenticationError, AuthorizationError } from "shared-errors";
 
 type ExtractedUserData = {
   userId: string;
@@ -19,7 +20,10 @@ declare module "fastify" {
 const extractBearerToken = (authHeader: string) => {
   const [type, token] = authHeader.split(" ");
   if (type !== "Bearer") {
-    throw new Error("Invalid Authorization header type, 'Bearer' expected");
+    throw new AuthenticationError(
+      "LOGTO_TOKEN",
+      "Invalid Authorization header type, 'Bearer' expected",
+    );
   }
   return token;
 };
@@ -98,8 +102,7 @@ export const checkPermissionsPlugin = async (
     ) => {
       const authHeader = req.headers.authorization;
       if (!authHeader) {
-        rep.status(401).send({ message: "Unauthorized" });
-        return;
+        throw new AuthenticationError("CHECK_PERMISSIONS");
       }
       try {
         const userData = await checkPermissions(
@@ -110,7 +113,7 @@ export const checkPermissionsPlugin = async (
         );
         req.userData = userData;
       } catch (e) {
-        rep.status(403).send({ message: (e as Error).message });
+        throw new AuthorizationError("CHECK_PERMISSIONS", (e as Error).message);
       }
     },
   );
