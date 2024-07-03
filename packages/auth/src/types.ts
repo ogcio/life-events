@@ -33,6 +33,7 @@ export type GetSessionContextParameters = {
   organizationId?: string;
   resource?: string;
   getOrganizationToken?: boolean;
+  loginUrl?: string;
 };
 
 export interface Sessions {
