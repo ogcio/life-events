@@ -30,7 +30,7 @@ export type AuthSessionUserInfo = {
   username: string | null;
 };
 
-export type AuthSessionOrganisationInfo = {
+export type AuthSessionOrganizationInfo = {
   id: string;
   name: string;
   roles: string[];
@@ -39,8 +39,8 @@ export type AuthSessionOrganisationInfo = {
 export type AuthSessionContext = {
   user?: AuthSessionUserInfo;
   isPublicServant: boolean;
-  organisation?: AuthSessionOrganisationInfo;
-  originalContext: LogtoContext;
+  organization?: AuthSessionOrganizationInfo;
+  originalContext?: LogtoContext;
   scopes: string[];
   accessToken?: string;
 };
@@ -53,6 +53,8 @@ export type GetSessionContextParameters = {
   getOrganizationToken?: boolean;
   loginUrl?: string;
   publicServantExpectedRole: string;
+  userType: "citizen" | "publicServant";
+  includeOriginalContext?: boolean;
 };
 
 export interface Sessions {

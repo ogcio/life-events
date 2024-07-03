@@ -8,6 +8,9 @@ const orgScopes = [
   AuthUserScope.OrganizationRoles,
 ];
 
+const publicServantExpectedRole = "Public Servant";
+const organizationId = "ogcio";
+
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
   baseUrl: process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT as string,
@@ -38,7 +41,10 @@ export const getPaymentsCitizenContext = () =>
     },
     {
       getAccessToken: true,
+      fetchUserInfo: true,
       resource: paymentsApiResource,
+      userType: "citizen",
+      publicServantExpectedRole,
     },
   );
 
@@ -50,6 +56,10 @@ export const getPaymentsOrganizationContext = () =>
     },
     {
       getOrganizationToken: true,
+      fetchUserInfo: true,
+      userType: "publicServant",
+      publicServantExpectedRole,
+      organizationId,
     },
   );
 

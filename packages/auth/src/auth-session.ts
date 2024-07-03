@@ -9,7 +9,7 @@ import {
   GetSessionContextParameters,
   AuthSessionContext,
   AuthSessionUserInfo,
-  AuthSessionOrganisationInfo,
+  AuthSessionOrganizationInfo,
 } from "./types";
 import { redirect } from "next/navigation";
 import { LogtoNextConfig, UserScope } from "@logto/next";
@@ -31,6 +31,16 @@ export const AuthSession: IAuthSession = {
     config: LogtoNextConfig,
     getContextParameters: GetSessionContextParameters,
   ): Promise<AuthSessionContext> {
+    if (
+      getContextParameters.userType === "publicServant" &&
+      !getContextParameters.organizationId
+    ) {
+      throw new BadRequestError(
+        PROCESS_ERROR,
+        "Organization id is mandatory when logging in as public servant",
+      );
+    }
+
     const context = await getLogtoContext(config, getContextParameters);
 
     if (!context.isAuthenticated) {
@@ -85,10 +95,15 @@ type WithOrgDataContext = Omit<LogtoContext, "userInfo"> & {
   userInfo?: WithOrgDataUserInfo;
 };
 
-const getOrganisationInfo = (
+const getOrganizationInfo = (
   context: WithOrgDataContext,
   getContextParameters: GetSessionContextParameters | undefined,
-): AuthSessionOrganisationInfo | undefined => {
+  organizationRoles: string[] | null,
+): AuthSessionOrganizationInfo | undefined => {
+  if (organizationRoles === null || organizationRoles.length === 0) {
+    return undefined;
+  }
+
   if (
     !getContextParameters?.organizationId ||
     !context.userInfo?.organization_data
@@ -104,17 +119,12 @@ const getOrganisationInfo = (
     return undefined;
   }
 
-  const organisationRoles = getOrganisationRoles(context);
-  if (organisationRoles === null || organisationRoles.length === 0) {
-    return undefined;
-  }
-
   for (const currentOrg of context.userInfo.organization_data) {
     if (currentOrg.id === getContextParameters.organizationId) {
       return {
         id: currentOrg.id,
         name: currentOrg.name,
-        roles: organisationRoles,
+        roles: organizationRoles,
       };
     }
   }
@@ -122,47 +132,52 @@ const getOrganisationInfo = (
   return undefined;
 };
 
-const getOrganisationRoles = (context: LogtoContext): string[] | null => {
-  let organisationRoles: string[] | null = null;
+const getOrganizationRoles = (context: LogtoContext): string[] | null => {
+  let organizationRoles: Set<string> | null = null;
 
   if (context.claims && Array.isArray(context.claims.organization_roles)) {
-    organisationRoles = context.claims.organization_roles;
+    organizationRoles = new Set<string>(context.claims.organization_roles);
   }
 
   if (context.userInfo && Array.isArray(context.userInfo.organization_roles)) {
-    if (organisationRoles === null) {
-      organisationRoles = [];
+    if (organizationRoles === null) {
+      organizationRoles = new Set<string>();
     }
 
-    organisationRoles.push(...context.userInfo.organization_roles);
+    organizationRoles = new Set<string>([
+      ...Array.from(organizationRoles),
+      ...context.userInfo.organization_roles,
+    ]);
   }
 
-  return organisationRoles;
+  return organizationRoles ? Array.from(organizationRoles) : null;
 };
 
 const checkIfPublicServant = (
-  orgInfo: AuthSessionOrganisationInfo | undefined,
+  orgRoles: string[] | null,
   getContextParameters: GetSessionContextParameters,
-): boolean => {
-  return (
-    orgInfo !== undefined &&
-    orgInfo.roles.includes(getContextParameters.publicServantExpectedRole)
-  );
-};
+): boolean =>
+  orgRoles !== null &&
+  orgRoles?.includes(getContextParameters.publicServantExpectedRole);
 
 const getAccessToken = (
   context: LogtoContext,
-  orgInfo: AuthSessionOrganisationInfo | undefined,
+  orgInfo: AuthSessionOrganizationInfo | undefined,
   isPublicServant: boolean,
+  getContextParameters: GetSessionContextParameters,
 ): string | undefined => {
-  if (!orgInfo || !isPublicServant) {
+  if (
+    !orgInfo ||
+    !isPublicServant ||
+    getContextParameters.userType === "citizen"
+  ) {
     return context.accessToken;
   }
 
   if (!context.organizationTokens || !context.organizationTokens[orgInfo.id]) {
     throw new BadRequestError(
       PROCESS_ERROR,
-      "Cannot find an organisation token for the requested organisation",
+      "Cannot find an organization token for the requested organization",
     );
   }
 
@@ -184,7 +199,7 @@ const getScopes = (
 
   const decoded = decodeJwt<{ scope: string }>(token);
 
-  return decoded.scope.split(" ");
+  return decoded.scope.split(" ").filter((s) => s != "");
 };
 
 const parseContext = (
@@ -192,12 +207,17 @@ const parseContext = (
   getContextParameters: GetSessionContextParameters,
 ): AuthSessionContext => {
   const userInfo = getUserInfo(context);
-  const orgInfo = getOrganisationInfo(context, getContextParameters);
-  const isPublicServant = checkIfPublicServant(orgInfo, getContextParameters);
-  const accessToken = getAccessToken(context, orgInfo, isPublicServant);
+  const orgRoles = getOrganizationRoles(context);
+  const orgInfo = getOrganizationInfo(context, getContextParameters, orgRoles);
+  const isPublicServant = checkIfPublicServant(orgRoles, getContextParameters);
+  const accessToken = getAccessToken(
+    context,
+    orgInfo,
+    isPublicServant,
+    getContextParameters,
+  );
 
   const outputContext: AuthSessionContext = {
-    originalContext: context,
     isPublicServant,
     scopes: getScopes(context, isPublicServant, accessToken),
   };
@@ -206,10 +226,13 @@ const parseContext = (
     outputContext.user = userInfo;
   }
   if (orgInfo) {
-    outputContext.organisation = orgInfo;
+    outputContext.organization = orgInfo;
   }
   if (accessToken) {
     outputContext.accessToken = accessToken;
+  }
+  if (getContextParameters.includeOriginalContext) {
+    outputContext.originalContext = context;
   }
 
   return outputContext;

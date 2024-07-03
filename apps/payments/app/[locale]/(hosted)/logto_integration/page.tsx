@@ -17,9 +17,9 @@ const actionCitizen = async () => {
 
 const actionOrganization = async () => {
   "use server";
-  const organizations = await getPaymentsOrganizationContext();
-  const orgToken = organizations!.organizationTokens!.ogcio;
-  new Payments(orgToken).testPublicServantAuth();
+  const organisation = await getPaymentsOrganizationContext();
+  if (!organisation.accessToken) return console.log("missing token...");
+  new Payments(organisation.accessToken).testPublicServantAuth();
 };
 
 export default async function () {
@@ -40,9 +40,7 @@ export default async function () {
         <button>API CALL - Organization</button>
       </form>
 
-      {context && context.isAuthenticated && (
-        <Link href="/logto_integration/signout">Logout</Link>
-      )}
+      {context && <Link href="/logto_integration/signout">Logout</Link>}
     </>
   );
 }

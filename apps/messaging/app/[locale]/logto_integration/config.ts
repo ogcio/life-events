@@ -12,6 +12,8 @@ export const baseConfig = {
   appSecret: process.env.LOGTO_MESSAGING_APP_SECRET as string,
 };
 
+const organizationId = "ogcio";
+
 const orgScopes = [
   AuthUserScope.Organizations,
   AuthUserScope.OrganizationRoles,
@@ -46,6 +48,7 @@ export const getCitizenContext = () =>
       resource: messagingApiResource,
       fetchUserInfo: true,
       publicServantExpectedRole,
+      userType: "citizen",
     },
   );
 
@@ -59,6 +62,8 @@ export const getPublicServantContext = () =>
       getOrganizationToken: true,
       fetchUserInfo: true,
       publicServantExpectedRole,
+      organizationId: organizationId,
+      userType: "publicServant",
     },
   );
 
