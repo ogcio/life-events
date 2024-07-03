@@ -249,7 +249,7 @@ export default async (props: MessageCreateProps) => {
                     />
 
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <button className="govie-link govie-!-margin-right-3">
+                      <button className="govie-button--secondary">
                         {t("searchTable.addButton")}
                       </button>
                     </div>
@@ -304,7 +304,7 @@ export default async (props: MessageCreateProps) => {
                         value={foundUser.id}
                       />
                       <div style={{ display: "flex", alignItems: "center" }}>
-                        <button className="govie-link govie-!-margin-right-3">
+                        <button className="govie-button--secondary">
                           {t("searchTable.removeButton")}
                         </button>
                       </div>
