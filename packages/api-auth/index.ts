@@ -17,11 +17,13 @@ declare module "fastify" {
   }
 }
 
+const ERROR_PROCESS = "CHECK_PERMISSIONS";
+
 const extractBearerToken = (authHeader: string) => {
   const [type, token] = authHeader.split(" ");
   if (type !== "Bearer") {
     throw new AuthenticationError(
-      "LOGTO_TOKEN",
+      ERROR_PROCESS,
       "Invalid Authorization header type, 'Bearer' expected",
     );
   }
@@ -70,7 +72,7 @@ export const checkPermissions = async (
       : requiredPermissions.some((p) => validatePermission(p, scopesMap));
 
   if (!grantAccess) {
-    throw new Error("Forbidden");
+    throw new AuthorizationError(ERROR_PROCESS);
   }
 
   const organizationId = aud.includes("urn:logto:organization:")
@@ -102,7 +104,7 @@ export const checkPermissionsPlugin = async (
     ) => {
       const authHeader = req.headers.authorization;
       if (!authHeader) {
-        throw new AuthenticationError("CHECK_PERMISSIONS");
+        throw new AuthenticationError(ERROR_PROCESS);
       }
       try {
         const userData = await checkPermissions(
@@ -113,7 +115,7 @@ export const checkPermissionsPlugin = async (
         );
         req.userData = userData;
       } catch (e) {
-        throw new AuthorizationError("CHECK_PERMISSIONS", (e as Error).message);
+        throw new AuthorizationError(ERROR_PROCESS, (e as Error).message);
       }
     },
   );
