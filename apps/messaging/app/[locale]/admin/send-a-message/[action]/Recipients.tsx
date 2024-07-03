@@ -54,22 +54,54 @@ const getRecipientContacts = async (
   return response.rows;
 };
 
-const buildContactLabel = (user: {
-  emailAddress?: string | null;
-  phoneNumber?: string | null;
-  firstName: string | null;
-  lastName: string | null;
-}): string => {
-  const toUseContact = user.emailAddress ?? user.phoneNumber;
-  return `${toUseContact} - ${user.firstName} ${user.lastName}`;
-};
-
 export default async (props: MessageCreateProps) => {
-  console.log({ pippo: props.searchParams });
+  const fillSearchParams = async (
+    searchParams: URLSearchParams,
+    search?: string,
+    toAddRecipientIds?: string[],
+    toRemoveRecipientId?: string,
+  ) => {
+    "use server";
+    if (search?.length) {
+      searchParams.set("search", search);
+    }
+    searchParams.set("limit", "100");
+    if (toAddRecipientIds?.length) {
+      searchParams.set(TO_ADD_IDS_KEY, toAddRecipientIds.join(","));
+    }
+    if (toRemoveRecipientId?.length) {
+      searchParams.set(TO_REMOVE_ID_KEY, toRemoveRecipientId);
+    }
+    return searchParams;
+  };
+
   const [t, tCommons] = await Promise.all([
     getTranslations("sendAMessage.EmailRecipients"),
     getTranslations("Commons"),
   ]);
+
+  async function removeRecipientAction(formData: FormData) {
+    "use server";
+
+    const userId = formData.get("recipient");
+    if (!userId) {
+      return;
+    }
+
+    let nextUserIds: string[] = [];
+    for (const id of props.state.userIds) {
+      if (id !== userId) {
+        nextUserIds.push(id);
+      }
+    }
+
+    const next = Object.assign({}, props.state, {
+      userIds: nextUserIds,
+    });
+
+    await api.upsertMessageState(next, props.userId, props.stateId);
+    revalidatePath("/");
+  }
 
   async function submit(formData: FormData) {
     "use server";
@@ -92,7 +124,7 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  async function recipientAction(formData: FormData) {
+  async function addRecipientAction(formData: FormData) {
     "use server";
 
     const recipient = formData.get("recipient")?.toString();
@@ -110,49 +142,6 @@ export default async (props: MessageCreateProps) => {
     await api.upsertMessageState(next, props.userId, props.stateId);
     revalidatePath("/");
   }
-
-  async function recipientsListAction(formData: FormData) {
-    "use server";
-
-    const userId = formData.get("userId");
-    if (!userId) {
-      return;
-    }
-
-    let nextUserIds: string[] = [];
-    for (const id of props.state.userIds) {
-      if (id !== userId) {
-        nextUserIds.push(id);
-      }
-    }
-
-    const next = Object.assign({}, props.state, {
-      userIds: nextUserIds,
-    });
-
-    await api.upsertMessageState(next, props.userId, props.stateId);
-    revalidatePath("/");
-  }
-
-  const fillSearchParams = async (
-    searchParams: URLSearchParams,
-    search?: string,
-    toAddRecipientIds?: string[],
-    toRemoveRecipientId?: string,
-  ) => {
-    "use server";
-    if (search?.length) {
-      searchParams.set("search", search);
-    }
-    searchParams.set("limit", "100");
-    if (toAddRecipientIds?.length) {
-      searchParams.set(TO_ADD_IDS_KEY, toAddRecipientIds.join(","));
-    }
-    if (toRemoveRecipientId?.length) {
-      searchParams.set(TO_REMOVE_ID_KEY, toRemoveRecipientId);
-    }
-    return searchParams;
-  };
 
   async function submitSearch(formData: FormData) {
     "use server";
@@ -188,6 +177,7 @@ export default async (props: MessageCreateProps) => {
           {t("title")}
         </span>
       </h1>
+      {/* Search bar */}
       <form action={submitSearch}>
         <div className="govie-form-group">
           <div className="govie-input__wrapper">
@@ -215,30 +205,85 @@ export default async (props: MessageCreateProps) => {
         </div>
       </form>
 
-      <form action={recipientAction}>
+      {/* Search results table  */}
+      <div className="govie-form-group">
+        <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
+          {t("searchResultsCaption")}
+        </div>
+        <table className="govie-table">
+          <thead className="govie-table__head">
+            <tr className="govie-table__row">
+              <th scope="col" className="govie-table__header">
+                {t("searchTable.fullNameHeader")}
+              </th>
+              <th scope="col" className="govie-table__header">
+                {t("searchTable.emailHeader")}
+              </th>
+              <th scope="col" className="govie-table__header">
+                {t("searchTable.phoneHeader")}
+              </th>
+              <th scope="col" className="govie-table__header">
+                {t("searchTable.actionsHeader")}
+              </th>
+            </tr>
+          </thead>
+          <tbody className="govie-table__body">
+            {users?.map((foundUser) => (
+              <tr className="govie-table__row" key={foundUser.id}>
+                <th className="govie-table__header govie-table__header--vertical-centralized govie-body-s">
+                  {foundUser.firstName} {foundUser.lastName}
+                </th>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {foundUser.emailAddress}
+                </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  {foundUser.phoneNumber}
+                </td>
+                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                  <form action={addRecipientAction}>
+                    <input
+                      type="hidden"
+                      name="recipient"
+                      value={foundUser.id}
+                    />
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <button className="govie-link govie-!-margin-right-3">
+                        {t("searchTable.addButton")}
+                      </button>
+                    </div>
+                  </form>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Added recipients table */}
+      <div className="govie-form-group">
         <div className="govie-form-group">
           <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
-            {t("addRecipientHint")}
+            {t("selectedRecipientsCaption")}
           </div>
           <table className="govie-table">
             <thead className="govie-table__head">
               <tr className="govie-table__row">
                 <th scope="col" className="govie-table__header">
-                  {t("nameTableHeader")}
+                  {t("searchTable.fullNameHeader")}
                 </th>
                 <th scope="col" className="govie-table__header">
-                  {t("hostTableHeader")}
+                  {t("searchTable.emailHeader")}
                 </th>
                 <th scope="col" className="govie-table__header">
-                  {t("primaryHeader")}
+                  {t("searchTable.phoneHeader")}
                 </th>
                 <th scope="col" className="govie-table__header">
-                  {t("actionTableHeader")}
+                  {t("searchTable.actionsHeader")}
                 </th>
               </tr>
             </thead>
             <tbody className="govie-table__body">
-              {users?.map((foundUser) => (
+              {addedUsers?.map((foundUser) => (
                 <tr className="govie-table__row" key={foundUser.id}>
                   <th className="govie-table__header govie-table__header--vertical-centralized govie-body-s">
                     {foundUser.firstName} {foundUser.lastName}
@@ -250,63 +295,25 @@ export default async (props: MessageCreateProps) => {
                     {foundUser.phoneNumber}
                   </td>
                   <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <a
-                        className="govie-link govie-!-margin-right-3"
-                        href={(() => {
-                          const url = getBaseUrl();
-                          fillSearchParams(
-                            url.searchParams,
-                            props.searchParams?.search,
-                            [foundUser.id],
-                          );
-
-                          return url.toString();
-                        })()}
-                      >
-                        {t("editLink")}
-                      </a>
-                    </div>
+                    <form action={removeRecipientAction}>
+                      <input
+                        type="hidden"
+                        name="recipient"
+                        value={foundUser.id}
+                      />
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <button className="govie-link govie-!-margin-right-3">
+                          {t("searchTable.removeButton")}
+                        </button>
+                      </div>
+                    </form>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </form>
-
-      <table className="govie-table">
-        <thead className="govie-table__head">
-          <tr className="govie-table__row">
-            <th
-              scope="col"
-              className="govie-table__header govie-!-font-size-27"
-            >
-              {t("tableRecipientsHeader")}
-            </th>
-            <th scope="col" className="govie-table__header"></th>
-          </tr>
-        </thead>
-        <tbody className="govie-table__body">
-          {addedUsers.map((recip) => (
-            <tr key={recip.id} className="govie-table__row">
-              <td className="govie-table__cell">{buildContactLabel(recip)}</td>
-              <td className="govie-table__cell">
-                <form action={recipientsListAction}>
-                  <input type="hidden" name="userId" value={recip.id} />
-                  <button
-                    type="submit"
-                    className="govie-button govie-button--small govie-button--outlined"
-                    style={{ margin: "unset" }}
-                  >
-                    {t("tableRemoveButtonText")}
-                  </button>
-                </form>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      </div>
 
       <form action={submit}>
         <button
