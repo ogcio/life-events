@@ -119,13 +119,15 @@ app.register(apiAuthPlugin, {
 });
 ```
 
-config values for local environment are:
+Config values for local environment are:
 
 ```
 LOGTO_JWK_ENDPOINT=http://localhost:3301/oidc/jwks
 LOGTO_OIDC_ENDPOINT=http://localhost:3301/oidc
 LOGTO_API_RESOURCE_INDICATOR=http://localhost:8001/
 ```
+
+Declare the `checkPermissions` method in the fastify types ([see example](https://github.com/ogcio/life-events/blob/d211f659709b64e3a5db74cbd897279d707a93c7/apps/payments-api/types/index.d.ts#L36-L41)).
 
 You can then call the `checkPermissions` method in the `preValidation` hook, passing the request, the response, an array with the required permissions, and optionally the matching logic. The method uses `AND` matching logic by default.
 
