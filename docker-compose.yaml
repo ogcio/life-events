@@ -25,6 +25,13 @@ services:
     healthcheck:
       test: 'wget -O - http://127.0.0.1:1080/healthz || exit 1'
 
+  clamav:
+    build: ./clamav
+    image: clamav
+    entrypoint: ./init-unprivileged
+    ports:
+      - 3310:3310
+
   localstack:
     image: localstack/localstack:2.3.2
     ports:
@@ -33,6 +40,7 @@ services:
       SERVICES: "s3,secretsmanager"
       FILES_S3_BUCKET: "life-events-files"
       IMAGES_S3_BUCKET: "life-events-images"
+      FILE_UPLOAD_SERVICE_BUCKET: "file-upload-service"
     volumes:
       - './.localstack:/var/lib/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'

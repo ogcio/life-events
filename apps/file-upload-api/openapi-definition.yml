@@ -1,0 +1,54 @@
+openapi: 3.0.3
+info:
+  title: OGCIO File Upload API
+  description: API for OGCIO file upload servce
+  version: 0.1.0
+components:
+  schemas: {}
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /files/upload:
+    post:
+      tags:
+        - Files
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+tags:
+  - name: FileUploadApi

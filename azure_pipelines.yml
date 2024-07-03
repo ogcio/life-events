@@ -12,7 +12,7 @@ pr:
 parameters:
   - name: services
     type: object
-    default: ["web", "mock-api", "payments", "messaging", "messaging-api", "payments-api", "profile", "profile-api", "timeline-api", "auth-service", "scheduler-api", "home", "forms"]
+    default: ["web", "mock-api", "payments", "messaging", "messaging-api", "payments-api", "profile", "profile-api", "timeline-api", "auth-service", "scheduler-api", "home", "forms", "file-upload-api"]
 
   - name: buildBranches
     type: object

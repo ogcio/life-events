@@ -38,7 +38,7 @@ Service URLs
 | ------------------------ | ----------------------- |
 | web (Life events portal) | `http://localhost:3000` |
 | payments                 | `http://localhost:3001` |
-| messages                 | `http://localhost:3002` | 
+| messages                 | `http://localhost:3002` |
 | profile                  | `http://localhost:3003` |
 | auth-service             | `http://localhost:3005` |
 | logto admin console      | `http://localhost:3302` |
@@ -46,14 +46,15 @@ Service URLs
 
 APIs
 
-| API Name      | URL                     |
-| ------------- | ----------------------- |
-| mock-api      | `http://localhost:8000` |
-| payments-api  | `http://localhost:8001` |
-| messages-api  | `http://localhost:8002` |
-| profile-api   | `http://localhost:8003` |
-| timeline-api  | `http://localhost:8004` |
-| scheduler-api | `http://localhost:8005` |
+| API Name        | URL                     |
+| --------------- | ----------------------- |
+| mock-api        | `http://localhost:8000` |
+| payments-api    | `http://localhost:8001` |
+| messages-api    | `http://localhost:8002` |
+| profile-api     | `http://localhost:8003` |
+| timeline-api    | `http://localhost:8004` |
+| scheduler-api   | `http://localhost:8005` |
+| file-upload-api | `http://localhost:8006` |
 
 ## Localisation
 
