@@ -1,4 +1,4 @@
-import { FastifyBaseLogger, FastifyError } from "fastify";
+import { FastifyBaseLogger } from "fastify";
 import { PoolClient } from "pg";
 import {
   CorrelationQuality,
@@ -14,14 +14,19 @@ import { Profile } from "building-blocks-sdk";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
 import {
-  AVAILABLE_TRANSPORTS,
+  ALL_TRANSPORTS,
   getUserByContacts,
   getUserByUserProfileId,
   getUserImports,
 } from "../shared-users";
 import { processTagsPerUser } from "../../tags/manage-tags";
 import { executeUpdateOrganisationFeedback } from "../invitations/shared-invitations";
-import { NotFoundError, NotImplementedError, ServerError } from "shared-errors";
+import {
+  NotFoundError,
+  NotImplementedError,
+  ServerError,
+  isLifeEventsError,
+} from "shared-errors";
 
 interface FoundUser {
   id: string;
@@ -189,15 +194,6 @@ const processUser = async (params: {
   return insertNewUser({ toInsert: user, client });
 };
 
-const isFastifyError = (error: unknown): error is FastifyError => {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    "statusCode" in error
-  );
-};
-
 const processOrganizationUserRelation = async (params: {
   userId: string;
   client: PoolClient;
@@ -208,11 +204,7 @@ const processOrganizationUserRelation = async (params: {
   try {
     orgUserRelation = await getUserOrganisationRelation(params);
   } catch (error) {
-    const nativeError = isFastifyError(error) ? error : null;
-    if (
-      nativeError === null ||
-      !nativeError.message.endsWith(USER_ORGANIZATION_RELATION_MISSING_ERROR)
-    ) {
+    if (!isLifeEventsError(error) || error.errorCode !== 404) {
       throw error;
     }
   }
@@ -221,7 +213,7 @@ const processOrganizationUserRelation = async (params: {
   let toSetTransports: string[] = [];
   if (params.consentGranted) {
     toSetStatus = "accepted";
-    toSetTransports = AVAILABLE_TRANSPORTS;
+    toSetTransports = ALL_TRANSPORTS;
   }
 
   if (orgUserRelation) {
@@ -394,6 +386,9 @@ const getUserOrganisationRelation = async (params: {
 
     return result.rows[0];
   } catch (error) {
+    if (isLifeEventsError(error) && error.errorCode === 404) {
+      throw error;
+    }
     const message = isNativeError(error) ? error.message : "unknown error";
     throw new ServerError(
       IMPORT_USERS_ERROR,
@@ -446,7 +441,7 @@ const getUserIfMapped = async (params: {
       errorCode: IMPORT_USERS_ERROR,
     });
   } catch (error) {
-    if (isFastifyError(error) && error.statusCode === 404) {
+    if (isLifeEventsError(error) && error.errorCode === 404) {
       return undefined;
     }
 
@@ -468,7 +463,7 @@ const getUserByContactsIfMapped = async (params: {
       errorCode: IMPORT_USERS_ERROR,
     });
   } catch (error) {
-    if (isFastifyError(error) && error.statusCode === 404) {
+    if (isLifeEventsError(error) && error.errorCode === 404) {
       return undefined;
     }
 

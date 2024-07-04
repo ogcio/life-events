@@ -13,8 +13,14 @@ import { awsSnsSmsService } from "../sms/aws";
 import { Profile } from "building-blocks-sdk";
 import { getUserProfiles, ProfileSdkFacade } from "../users/shared-users";
 import { isNativeError } from "util/types";
-import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
+import {
+  BadRequestError,
+  isLifeEventsError,
+  NotFoundError,
+  ServerError,
+} from "shared-errors";
 import { LoggingError, toLoggingError } from "logging-wrapper";
+import { MessagingEventType, newMessagingEventLogger } from "./eventLogger";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -218,7 +224,6 @@ const createMessageFromTemplate = async (params: {
           values.push(key, template.interpolations[key]);
         }
 
-        console.log("yolo i interpolation ", values, args);
         await client.query(
           `
               insert into message_template_interpolations(message_by_template_id, interpolation_key, interpolation_value)
@@ -310,6 +315,7 @@ export const executeJob = async (params: {
   pg: PostgresDb;
   logger: FastifyBaseLogger;
   jobId: string;
+  userId: string;
 }) => {
   const statusWorking: scheduledMessageByTemplateStatus = "working";
   const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
@@ -323,26 +329,39 @@ export const executeJob = async (params: {
       }
     | undefined;
 
+  const eventLogger = newMessagingEventLogger(params.pg.pool, params.logger);
+
   const client = await params.pg.pool.connect();
   try {
     client.query("begin");
     const jobStatusResult = await client.query<{
       status: scheduledMessageByTemplateStatus;
+      entityId: string;
     }>(
       `
-        select coalesce(delivery_status, 'pending') as "status" from jobs where id = $1
+        select
+          coalesce(delivery_status, 'pending') as "status",
+          job_id as "entityId"
+        from jobs where id = $1
         and case when delivery_status is not null then delivery_status != $2 else true end
     `,
       [params.jobId, statusDelivered],
     );
 
-    if (!jobStatusResult.rowCount) {
+    const jobResult = jobStatusResult.rows.at(0);
+
+    if (!jobResult) {
+      await eventLogger.log(MessagingEventType.deliverMessageError, [
+        { messageId: "" }, // job id error field?
+      ]);
       throw new NotFoundError(EXECUTE_JOB_ERROR, "job doesn't exist");
     }
 
-    const jobStatus = jobStatusResult.rows.at(0)?.status;
+    await eventLogger.log(MessagingEventType.deliverMessagePending, [
+      { messageId: jobResult.entityId }, // job id error field?
+    ]);
 
-    if (jobStatus === "working") {
+    if (jobResult.status === "working") {
       throw new BadRequestError(
         EXECUTE_JOB_ERROR,
         "job is already in progress",
@@ -371,6 +390,14 @@ export const executeJob = async (params: {
     client.query("commit");
   } catch (err) {
     client.query("rollback");
+
+    await eventLogger.log(MessagingEventType.deliverMessageError, [
+      { messageId: "" },
+    ]);
+    if (isLifeEventsError(err)) {
+      throw err;
+    }
+
     const msg = utils.isError(err) ? err.message : "failed to fetch job";
     throw new ServerError(EXECUTE_JOB_ERROR, msg);
   } finally {
@@ -378,6 +405,9 @@ export const executeJob = async (params: {
   }
 
   if (!job?.userId || !job.type) {
+    await eventLogger.log(MessagingEventType.deliverMessageError, [
+      { messageId: job?.jobId || "" },
+    ]);
     throw new ServerError(EXECUTE_JOB_ERROR, "job row missing critical fields");
   }
 
@@ -420,14 +450,23 @@ export const executeJob = async (params: {
         [statusFailed, params.jobId],
       );
     } catch (err) {
+      await eventLogger.log(MessagingEventType.deliverMessageError, [
+        { messageId: job.jobId },
+      ]);
       const msg = utils.isError(err)
         ? err.message
         : "failed to update job delivery status";
       throw new ServerError(EXECUTE_JOB_ERROR, msg);
     }
 
+    await eventLogger.log(MessagingEventType.deliverMessageError, [
+      { messageId: job.jobId },
+    ]);
     throw new ServerError(EXECUTE_JOB_ERROR, error.message);
   }
+  await eventLogger.log(MessagingEventType.deliverMessage, [
+    { messageId: job.jobId },
+  ]);
 };
 
 type scheduledMessageByTemplateStatus =

@@ -8,6 +8,9 @@ export const envSchema = {
     "POSTGRES_DB_NAME",
     "POSTGRES_DB_NAME_SHARED",
     "PROFILE_BACKEND_URL",
+    "LOGTO_JWK_ENDPOINT",
+    "LOGTO_OIDC_ENDPOINT",
+    "LOGTO_API_RESOURCE_INDICATOR",
   ],
   properties: {
     POSTGRES_USER: {
@@ -35,6 +38,15 @@ export const envSchema = {
     PROFILE_BACKEND_URL: {
       type: "string",
       default: "http://localhost:8003",
+    },
+    LOGTO_JWK_ENDPOINT: {
+      type: "string",
+    },
+    LOGTO_OIDC_ENDPOINT: {
+      type: "string",
+    },
+    LOGTO_API_RESOURCE_INDICATOR: {
+      type: "string",
     },
   },
 };

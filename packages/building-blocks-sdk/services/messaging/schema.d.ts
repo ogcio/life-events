@@ -163,7 +163,7 @@ export interface paths {
             transportations: ("email" | "sms" | "lifeEvent")[];
             security: string;
             /** Format: date-time */
-            scheduleAt: string;
+            scheduledAt: string;
           };
         };
       };
@@ -171,6 +171,65 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: never;
+        };
+      };
+    };
+  };
+  "/api/v1/messages/events": {
+    get: {
+      parameters: {
+        query?: {
+          search?: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                messageId: string;
+                subject: string;
+                receiverFullName: string;
+                eventType: string;
+                eventStatus: string;
+                scheduledAt: string;
+              }[];
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
         };
       };
     };
@@ -1961,6 +2020,122 @@ export interface paths {
               validationContext?: string;
             };
           };
+        };
+      };
+    };
+  };
+  "/api/v1/users/recipients/": {
+    get: {
+      parameters: {
+        query?: {
+          organisationId?: string;
+          search?: string;
+          transports?: string;
+          offset?: number;
+          limit?: number;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+                /** @default null */
+                userProfileId: null | string;
+                /** @default null */
+                firstName: null | string;
+                /** @default null */
+                lastName: null | string;
+                /** @default null */
+                phoneNumber: null | string;
+                /** @default null */
+                emailAddress: null | string;
+                /** @default null */
+                birthDate: null | string;
+                preferredTransports: string[];
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/test/citizen": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/v1/test/pub-ser": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
         };
       };
     };

@@ -24,6 +24,7 @@ import {
 } from "../../services/users/import/read-user-imports";
 import { organisationId } from "../../utils";
 import { BadRequestError } from "shared-errors";
+import { getOrganisationIdFromRequest } from "../../utils/request-utils";
 
 const tags = ["Users", "UserImports"];
 
@@ -131,7 +132,10 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserImportsForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(request),
+        organisationId: getOrganisationIdFromRequest(
+          request,
+          READ_USER_IMPORTS_ERROR,
+        ),
       }),
     }),
   );
@@ -163,7 +167,10 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getAllUserInvitationsForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(request),
+        organisationId: getOrganisationIdFromRequest(
+          request,
+          READ_USER_IMPORTS_ERROR,
+        ),
       }),
     }),
   );
@@ -199,7 +206,10 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserImportForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(request),
+        organisationId: getOrganisationIdFromRequest(
+          request,
+          READ_USER_IMPORTS_ERROR,
+        ),
         importId: request.params.importId,
         includeUsersData: request.query.includeUsersData ?? true,
       }),
@@ -240,7 +250,10 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserInvitationsForImport({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(request),
+        organisationId: getOrganisationIdFromRequest(
+          request,
+          READ_USER_IMPORTS_ERROR,
+        ),
         importId: request.params.importId,
       }),
     }),
@@ -278,22 +291,5 @@ export default async function usersImports(app: FastifyInstance) {
     const savedFiles = await request.saveRequestFiles();
 
     return savedFiles[0].filepath;
-  };
-
-  const getOrganisationIdFromRequest = (request: FastifyRequest): string => {
-    const query = request.query as { organisationId?: string };
-    // organisationId query parameter added to
-    // make us able to test it until we won't have
-    // an organisation id set into the logged in user
-    const organisationId =
-      request.user!.organisation_id ?? query.organisationId;
-    if (!organisationId) {
-      throw new BadRequestError(
-        READ_USER_IMPORTS_ERROR,
-        "Cannot retrieve an organisation id",
-      );
-    }
-
-    return organisationId;
   };
 }
