@@ -11,7 +11,7 @@ paths:
       responses:
         "200":
           description: Default Response
-  /files/upload:
+  /files/:
     post:
       tags:
         - Files

@@ -24,10 +24,10 @@ export async function build(opts?: FastifyServerOptions) {
   initializeLoggingHooks(app);
   initializeErrorHandler(app);
 
-  // limit 20 gb file
+  // limit 100 MB files
   app.register(multipart, {
     limits: {
-      fileSize: 20 * 1024 * 1024 * 1024,
+      fileSize: 100 * 1024 * 1024,
     },
   });
 
