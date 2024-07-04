@@ -279,6 +279,7 @@
         "referenceRequired": "Reference is required.",
         "amount": "Amount",
         "amountRequired": "Amount is required.",
+        "amountMaximumValidation": "Amount must be less than @limit@.",
         "currencySymbol": "€",
         "redirectUrl": "Redirect URL",
         "redirectUrlRequired": "Redirect URL is required.",

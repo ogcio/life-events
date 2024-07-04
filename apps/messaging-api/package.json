@@ -38,6 +38,7 @@
     "@fastify/type-provider-typebox": "^4.0.0",
     "@fastify/under-pressure": "^8.5.0",
     "@sinclair/typebox": "^0.32.31",
+    "api-auth": "*",
     "auth": "*",
     "aws-sdk": "^2.1637.0",
     "dotenv": "^16.4.5",

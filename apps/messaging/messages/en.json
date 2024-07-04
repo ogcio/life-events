@@ -8,7 +8,8 @@
     "providers": "Providers",
     "templates": "Message templates",
     "users": "Citizens",
-    "userSettings": "Settings"
+    "userSettings": "Settings",
+    "events": "Events"
   },
   "MessageTemplates": {
     "menu": {
@@ -119,11 +120,21 @@
     "EmailRecipients": {
       "title": "Add recipients",
       "addRecipient": "Add recipient",
-      "addRecipientHint": "Added recipients will be added below",
       "add": "Add",
       "submitText": "Continue to schedule",
       "tableRecipientsHeader": "Recipients",
-      "tableRemoveButtonText": "Remove"
+      "tableRemoveButtonText": "Remove",
+      "searchUsersButton": "Search",
+      "searchResultsCaption" : "Search results",
+      "selectedRecipientsCaption" : "Selected recipients",
+      "searchTable": {
+        "fullNameHeader": "Name",
+        "emailHeader": "Email",
+        "phoneHeader": "Phone",
+        "actionsHeader": "Actions",
+        "addButton": "Add",
+        "removeButton": "Remove"
+      }
     },
     "TemplateForm": {
       "title": "Template {name}",

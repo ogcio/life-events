@@ -1,0 +1,26 @@
+@import "app/styles/globals.scss";
+
+.tableActionButton {
+  background: none;
+  border: none;
+  font-family: "Lato", arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  padding: 0;
+  cursor: pointer;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-decoration: underline;
+  text-decoration-thickness: max(1px, 0.0625rem);
+  text-underline-offset: 0.1em;
+  color: #2c55a2;
+
+  &:hover {
+    text-decoration-thickness: max(3px, 0.1875rem, 0.12em);
+    -webkit-text-decoration-skip-ink: none;
+    text-decoration-skip-ink: none;
+    -webkit-text-decoration-skip: none;
+    text-decoration-skip: none;
+  }
+}
