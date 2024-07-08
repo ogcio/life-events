@@ -1,4 +1,5 @@
 import { AuthSession, AuthUserScope } from "auth/auth-session";
+import { AuthSessionContext } from "auth/types";
 
 export const messagingApiResource = process.env.MESSAGES_BACKEND_URL + "/";
 
@@ -36,7 +37,17 @@ export default {
   scopes: [...orgScopes, ...citizenScopes, ...publicServantScopes],
 };
 
-export const getCitizenContext = () =>
+export const getAuthenticationContext =
+  async (): Promise<AuthSessionContext> => {
+    const citizenContext = await getCitizenContext();
+    if (citizenContext.isPublicServant) {
+      return getPublicServantContext();
+    }
+
+    return citizenContext;
+  };
+
+const getCitizenContext = () =>
   AuthSession.get(
     {
       ...baseConfig,
@@ -52,7 +63,7 @@ export const getCitizenContext = () =>
     },
   );
 
-export const getPublicServantContext = () =>
+const getPublicServantContext = () =>
   AuthSession.get(
     {
       ...baseConfig,

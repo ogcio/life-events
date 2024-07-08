@@ -1,4 +1,4 @@
-import { AuthUserScope } from "auth/index";
+import { AuthSessionContext, AuthUserScope } from "auth/index";
 import { AuthSession } from "auth/auth-session";
 
 export const paymentsApiResource = process.env.PAYMENTS_BACKEND_URL + "/";
@@ -32,7 +32,17 @@ export default {
   scopes: [...orgScopes, ...citizenScopes, ...paymentsPublicServantScopes],
 };
 
-export const getPaymentsCitizenContext = () =>
+export const getAuthenticationContext =
+  async (): Promise<AuthSessionContext> => {
+    const citizenContext = await getPaymentsCitizenContext();
+    if (citizenContext.isPublicServant) {
+      return getPaymentsOrganizationContext();
+    }
+
+    return citizenContext;
+  };
+
+const getPaymentsCitizenContext = () =>
   AuthSession.get(
     {
       ...baseConfig,
@@ -48,7 +58,7 @@ export const getPaymentsCitizenContext = () =>
     },
   );
 
-export const getPaymentsOrganizationContext = () =>
+const getPaymentsOrganizationContext = () =>
   AuthSession.get(
     {
       ...baseConfig,
