@@ -175,6 +175,10 @@ export default async function paymentRequests(app: FastifyInstance) {
   }>(
     "/:requestId/public-info",
     {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [
+          "payments:payment_request.public:read",
+        ]),
       schema: {
         tags: ["PaymentRequests"],
         params: ParamsWithPaymentRequestId,

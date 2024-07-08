@@ -2,21 +2,21 @@ import OpenBankingHost from "./OpenBankingHost";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 import { errorHandler, getRealAmount } from "../../../../utils";
-import { PgSessions } from "auth/sessions";
 import { redirect, RedirectType } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
+import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
 
 const MAX_WAIT_FOR_RESULT = "60";
 
 async function getPaymentDetails(
   paymentId: string,
-  userId: string,
+  accessToken: string,
   user: { name: string; email: string },
   amount?: number,
   customAmount?: number,
 ) {
   const { data: details, error } = await new Payments(
-    userId,
+    accessToken,
   ).getPaymentRequestPublicInfo(paymentId);
 
   if (error) {
@@ -66,11 +66,13 @@ export default async function Bank(props: {
       }
     | undefined;
 }) {
-  const { userId, firstName, lastName, email, publicServant } =
-    await PgSessions.get();
+  // TODO: no email in user data
+  const email = "";
+  const { accessToken, user, isPublicServant } =
+    await getPaymentsCitizenContext();
   const t = await getTranslations("Common");
 
-  if (publicServant || !props.searchParams?.paymentId) {
+  if (isPublicServant || !accessToken || !props.searchParams?.paymentId) {
     return redirect("/not-found", RedirectType.replace);
   }
 
@@ -84,8 +86,8 @@ export default async function Bank(props: {
 
   const details = await getPaymentDetails(
     props.searchParams.paymentId,
-    userId,
-    { email, name: `${firstName} ${lastName}` },
+    accessToken,
+    { email, name: `${user?.name ?? ""}` },
     amount,
     customAmount,
   );
@@ -96,13 +98,13 @@ export default async function Bank(props: {
 
   const { paymentDetails, paymentRequest } = details;
 
-  const { error } = await new Payments(userId).createTransaction({
+  const { error } = await new Payments(accessToken).createTransaction({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentRequest.id,
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email, name: `${firstName} ${lastName}` },
+    userData: { email, name: `${user?.name ?? ""}` },
   });
 
   if (error) {

@@ -1,10 +1,10 @@
 import { pgpool } from "../../../../dbConnection";
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { getInternalStatus } from "../../../../integration/stripe";
-import { PgSessions } from "auth/sessions";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { Payments } from "building-blocks-sdk";
 import { errorHandler } from "../../../../utils";
+import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
 
 type Props = {
   searchParams: {
@@ -42,9 +42,12 @@ async function updateTransaction(extPaymentId: string, status: string) {
 }
 
 async function getRequestDetails(requestId: string) {
-  const { userId } = await PgSessions.get();
+  const { accessToken } = await getPaymentsCitizenContext();
+
+  if (!accessToken) return;
+
   const { data: details, error } = await new Payments(
-    userId,
+    accessToken,
   ).getPaymentRequestPublicInfo(requestId);
 
   if (error) {

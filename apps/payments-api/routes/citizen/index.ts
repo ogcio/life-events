@@ -25,7 +25,8 @@ export default async function citizen(app: FastifyInstance) {
   }>(
     "/transactions",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:transaction.self:read"]),
       schema: {
         tags: ["Citizen"],
         querystring: PaginationParams,
@@ -71,7 +72,8 @@ export default async function citizen(app: FastifyInstance) {
   }>(
     "/transactions/:transactionId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:transaction.self:read"]),
       schema: {
         tags: ["Transactions"],
         response: {

@@ -17,7 +17,8 @@ export default async function realex(app: FastifyInstance) {
   }>(
     "/paymentObject",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:transaction.self:write"]),
       schema: {
         tags: ["Transactions"],
         querystring: RealexPaymentObjectQueryParams,

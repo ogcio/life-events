@@ -3,17 +3,17 @@ import { routeDefinitions } from "../../../../routeDefinitions";
 import { getTranslations } from "next-intl/server";
 import { errorHandler, formatCurrency } from "../../../../utils";
 import { Payments } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { BankTransferData } from "../../paymentSetup/providers/types";
+import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
 
 async function getPaymentDetails(
-  userId: string,
+  accessToken: string,
   paymentId: string,
   amount?: number,
 ) {
   const { data: details, error } = await new Payments(
-    userId,
+    accessToken,
   ).getPaymentRequestPublicInfo(paymentId);
 
   if (error) {
@@ -38,13 +38,13 @@ async function getPaymentDetails(
 }
 
 async function confirmPayment(
-  userId: string,
+  accessToken: string,
   transactionId: string,
   redirectUrl: string,
 ) {
   "use server";
 
-  const { error } = await new Payments(userId).updateTransaction(
+  const { error } = await new Payments(accessToken).updateTransaction(
     transactionId,
     {
       status: TransactionStatuses.Pending,
@@ -58,11 +58,11 @@ async function confirmPayment(
   redirect(redirectUrl, RedirectType.replace);
 }
 
-async function generatePaymentIntentId(userId: string): Promise<string> {
+async function generatePaymentIntentId(accessToken: string): Promise<string> {
   "use server";
 
   const { data: result, error } = await new Payments(
-    userId,
+    accessToken,
   ).generatePaymentIntentId();
 
   if (error) {
@@ -87,10 +87,12 @@ export default async function Bank(params: {
       }
     | undefined;
 }) {
-  const { userId, email, firstName, lastName, publicServant } =
-    await PgSessions.get();
+  // TODO: no email in user data
+  const email = "";
+  const { accessToken, user, isPublicServant } =
+    await getPaymentsCitizenContext();
 
-  if (publicServant) {
+  if (isPublicServant || !accessToken) {
     return redirect("/not-found", RedirectType.replace);
   }
 
@@ -104,7 +106,7 @@ export default async function Bank(params: {
     ? parseFloat(params.searchParams.amount)
     : undefined;
   const paymentDetails = await getPaymentDetails(
-    userId,
+    accessToken,
     params.searchParams.paymentId,
     amount,
   );
@@ -113,17 +115,17 @@ export default async function Bank(params: {
     notFound();
   }
 
-  const paymentIntentId = await generatePaymentIntentId(userId);
+  const paymentIntentId = await generatePaymentIntentId(accessToken);
 
   const { data: transaction, error } = await new Payments(
-    userId,
+    accessToken,
   ).createTransaction({
     paymentRequestId: params.searchParams.paymentId,
     extPaymentId: paymentIntentId,
     integrationReference: params.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email, name: `${firstName} ${lastName}` },
+    userData: { email, name: `${user?.name ?? ""}` },
   });
 
   if (error) {
@@ -132,7 +134,7 @@ export default async function Bank(params: {
 
   const paymentMade = confirmPayment.bind(
     this,
-    userId,
+    accessToken,
     transaction?.data?.id,
     paymentDetails.redirectUrl,
   );

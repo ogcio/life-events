@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 import logtoConfig from "../logto_integration/config";
 
 export async function GET(request: NextRequest) {
+  // TODO: rewrite it!
   await handleSignIn(logtoConfig, request.nextUrl.searchParams);
 
   redirect("/logto_integration");

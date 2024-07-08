@@ -11,11 +11,11 @@ import { notFound, redirect } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
 import { Payments } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
 import Footer from "../../../(hosted)/Footer";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import Header from "../../../../components/Header/Header";
 import Banner from "../../../../components/Banner";
+import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
 
 type Props = {
   params: {
@@ -32,9 +32,12 @@ type Props = {
     | undefined;
 };
 
-async function getPaymentRequestDetails(paymentId: string, userId: string) {
+async function getPaymentRequestDetails(
+  paymentId: string,
+  accessToken: string,
+) {
   const { data: details, error } = await new Payments(
-    userId,
+    accessToken,
   ).getPaymentRequestPublicInfo(paymentId);
 
   if (error) {
@@ -64,12 +67,14 @@ export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return notFound();
 
-  const { userId, publicServant } = await PgSessions.get();
+  const { accessToken, isPublicServant } = await getPaymentsCitizenContext();
+
+  if (!accessToken) return notFound();
 
   const embed = props.searchParams?.embed === "true";
 
   const [details, t, tBanner, tCommon] = await Promise.all([
-    getPaymentRequestDetails(props.searchParams.paymentId, userId),
+    getPaymentRequestDetails(props.searchParams.paymentId, accessToken),
     getTranslations("PayPaymentRequest"),
     getTranslations("PreviewBanner"),
     getTranslations("Common"),
@@ -175,7 +180,7 @@ export default async function Page(props: Props) {
               providers={details.providers}
               paymentId={props.searchParams.paymentId}
               referenceId={props.searchParams.id}
-              isPublicServant={publicServant}
+              isPublicServant={isPublicServant}
               urlAmount={urlAmount}
               customAmount={customAmount}
             />
@@ -195,7 +200,7 @@ export default async function Page(props: Props) {
           flexDirection: "column",
         }}
       >
-        {publicServant && (
+        {isPublicServant && (
           <Banner text={tBanner("bannerText")} tag={tBanner("tag")} />
         )}
         {content}
@@ -221,7 +226,7 @@ export default async function Page(props: Props) {
         className="govie-width-container"
         style={{ maxWidth: "1440px", width: "100%" }}
       >
-        {publicServant && (
+        {isPublicServant && (
           <Banner text={tBanner("bannerText")} tag={tBanner("tag")} />
         )}
         <div style={{ width: "80%", margin: "0 auto", paddingTop: "20px" }}>

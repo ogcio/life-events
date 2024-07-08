@@ -1,9 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import dayjs from "dayjs";
-import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
-import { getUser } from "../../../../../libraries/auth";
+import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import {
   buildPaginationLinks,
@@ -16,9 +15,7 @@ import {
 } from "../../../../utils";
 import { routeDefinitions } from "../../../../routeDefinitions";
 import Pagination from "../../../../components/pagination";
-
-import styles from "./MyPaymentsPage.module.scss";
-import { redirect, RedirectType } from "next/navigation";
+import { notFound, redirect, RedirectType } from "next/navigation";
 
 type Props = {
   params: {
@@ -30,11 +27,10 @@ type Props = {
 export default async function (props: Props) {
   const t = await getTranslations("MyPayments");
 
-  let userId;
-  if (process.env.USE_LOGTO_AUTH === "true") {
-    userId = (await getUser()).id;
-  } else {
-    userId = (await PgSessions.get()).userId;
+  const { accessToken } = await getPaymentsCitizenContext();
+
+  if (!accessToken) {
+    return notFound();
   }
 
   const currentPage = props.searchParams.page
@@ -50,7 +46,7 @@ export default async function (props: Props) {
   };
 
   const { data: transactionsData, error } = await new Payments(
-    userId,
+    accessToken,
   ).getCitizenTransactions(pagination);
 
   const errors = errorHandler(error);

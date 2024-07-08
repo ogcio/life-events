@@ -108,7 +108,8 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/:transactionId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:transaction.self:write"]),
       schema: {
         tags: ["Transactions"],
         body: UpdateTransactionBody,
@@ -137,7 +138,8 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:transaction.self:write"]),
       schema: {
         tags: ["Transactions"],
         body: CreateTransactionBody,
@@ -172,7 +174,8 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/generatePaymentIntentId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:transaction.self:write"]),
       schema: {
         tags: ["Transactions"],
         response: {

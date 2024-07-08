@@ -22,8 +22,18 @@ export const baseConfig = {
 };
 
 // All the permissions of a normal citizen
-const citizenScopes = ["payments:create:payment"];
-const paymentsPublicServantScopes = ["payments:create:providers"];
+export const citizenScopes = [
+  "payments:provider.public:read",
+  "payments:payment_request.public:read",
+  "payments:transaction.self:write",
+  "payments:transaction.self:read",
+];
+export const paymentsPublicServantScopes = [
+  "payments:payment_request:*",
+  "payments:transaction:*",
+  "payments:provider:*",
+  "payments:payment_request.public:read",
+];
 
 export default {
   ...baseConfig,

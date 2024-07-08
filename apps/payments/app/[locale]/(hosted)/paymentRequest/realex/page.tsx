@@ -1,18 +1,18 @@
 import RealexHost from "./RealexHost";
 import { getMessages, getTranslations } from "next-intl/server";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
-import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
 import { redirect, RedirectType } from "next/navigation";
 import { errorHandler } from "../../../../utils";
+import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
 
 async function getPaymentDetails(
-  userId: string,
+  accessToken: string,
   paymentId: string,
   amount?: string,
 ) {
   const { data: details, error } = await new Payments(
-    userId,
+    accessToken,
   ).getPaymentRequestPublicInfo(paymentId);
 
   if (error) {
@@ -39,9 +39,9 @@ async function getPaymentDetails(
   };
 }
 
-async function generatePaymentIntentId(userId: string): Promise<string> {
+async function generatePaymentIntentId(accessToken: string): Promise<string> {
   const { data: result, error } = await new Payments(
-    userId,
+    accessToken,
   ).generatePaymentIntentId();
 
   if (error) {
@@ -67,10 +67,12 @@ export default async function CardWithRealex(props: {
       }
     | undefined;
 }) {
-  const { userId, email, firstName, lastName, publicServant } =
-    await PgSessions.get();
+  // TODO: no email in user data
+  const email = "";
+  const { accessToken, user, isPublicServant } =
+    await getPaymentsCitizenContext();
 
-  if (publicServant) {
+  if (isPublicServant || !accessToken) {
     return redirect("/not-found", RedirectType.replace);
   }
 
@@ -84,7 +86,7 @@ export default async function CardWithRealex(props: {
   }
 
   const paymentDetails = await getPaymentDetails(
-    userId,
+    accessToken,
     props.searchParams.paymentId,
     props.searchParams.amount,
   );
@@ -96,18 +98,18 @@ export default async function CardWithRealex(props: {
     process.env.BACKEND_URL,
   ).toString();
 
-  const intentId = await generatePaymentIntentId(userId);
+  const intentId = await generatePaymentIntentId(accessToken);
   const { amount, providerId } = paymentDetails;
 
   const { error: createTransactionError } = await new Payments(
-    userId,
+    accessToken,
   ).createTransaction({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: intentId,
     integrationReference: props.searchParams.integrationRef,
     amount,
     paymentProviderId: providerId,
-    userData: { email, name: `${firstName} ${lastName}` },
+    userData: { email, name: `${user?.name ?? ""}` },
   });
 
   if (createTransactionError) {
@@ -115,7 +117,7 @@ export default async function CardWithRealex(props: {
   }
 
   const { data: payment, error: realexPaymentObjectError } = await new Payments(
-    userId,
+    accessToken,
   ).getRealexPaymentObject({
     intentId,
     amount: amount.toString(),

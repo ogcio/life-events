@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
 import { Payments } from "building-blocks-sdk";
-import { getUser } from "../../../../../../libraries/auth";
+import { getPaymentsCitizenContext } from "../../../../../../libraries/auth";
 import { notFound } from "next/navigation";
 import { errorHandler, formatCurrency } from "../../../../../utils";
 import dayjs from "dayjs";
@@ -9,15 +8,14 @@ import dayjs from "dayjs";
 export default async function ({ params: { transactionId } }) {
   const t = await getTranslations("MyPayments.details");
 
-  let userId;
-  if (process.env.USE_LOGTO_AUTH === "true") {
-    userId = (await getUser()).id;
-  } else {
-    userId = (await PgSessions.get()).userId;
+  const { accessToken } = await getPaymentsCitizenContext();
+
+  if (!accessToken) {
+    return notFound();
   }
 
   const { data: details, error } = await new Payments(
-    userId,
+    accessToken,
   ).getCitizenTransactionDetails(transactionId);
 
   if (error) {
