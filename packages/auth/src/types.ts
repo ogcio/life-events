@@ -28,6 +28,7 @@ export type AuthConfig = LogtoNextConfig;
 export type AuthSessionUserInfo = {
   name: string | null;
   username: string | null;
+  id: string;
 };
 
 export type AuthSessionOrganizationInfo = {
