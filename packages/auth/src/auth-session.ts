@@ -61,21 +61,25 @@ const getUserInfo = (
 ): AuthSessionUserInfo | undefined => {
   let name: string | null = null;
   let username: string | null = null;
+  let id: string | null = null;
+
   if (context.claims) {
     name = context.claims.name ?? null;
     username = context.claims.username ?? null;
+    id = context.claims.sub;
   }
 
   if (context.userInfo) {
     name = name ?? context.userInfo.name ?? null;
     username = username ?? context.userInfo.username ?? null;
+    id = context.userInfo.sub;
   }
 
-  if (name === null && username === null) {
+  if (id === null || (name === null && username === null)) {
     return undefined;
   }
 
-  return { name, username };
+  return { name, username, id };
 };
 // waiting for https://github.com/logto-io/js/issues/758
 // to be resolved
