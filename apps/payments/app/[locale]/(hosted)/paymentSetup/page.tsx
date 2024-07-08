@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import dayjs from "dayjs";
-import { PgSessions } from "auth/sessions";
 import {
   buildPaginationLinks,
   errorHandler,
@@ -15,7 +14,8 @@ import { EmptyStatus } from "../../../components/EmptyStatus";
 import { Payments } from "building-blocks-sdk";
 import Pagination from "../../../components/pagination";
 import { routeDefinitions } from "../../../routeDefinitions";
-import { redirect, RedirectType } from "next/navigation";
+import { notFound, redirect, RedirectType } from "next/navigation";
+import { getPaymentsPublicServantContext } from "../../../../libraries/auth";
 
 export default async function ({
   params: { locale },
@@ -33,11 +33,14 @@ export default async function ({
     limit: pageLimit,
   };
 
-  //Let's assume Logto is not enabled yet
-  const sessionId = (await PgSessions.get()).sessionId;
+  const { accessToken } = await getPaymentsPublicServantContext();
+
+  if (!accessToken) {
+    return notFound();
+  }
 
   const { data: transactionsResponse, error } = await new Payments(
-    sessionId,
+    accessToken,
   ).getTransactions(pagination);
 
   const errors = errorHandler(error);

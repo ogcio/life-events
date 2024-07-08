@@ -1,19 +1,27 @@
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
 import WorldpayFields from "./WorldpayFields";
 import { errorHandler } from "../../../../../utils";
+import { getPaymentsPublicServantContext } from "../../../../../../libraries/auth";
 
 export default async () => {
   const t = await getTranslations("PaymentSetup.AddWorldpay");
 
-  const { userId } = await PgSessions.get();
+  const { accessToken } = await getPaymentsPublicServantContext();
+
+  if (!accessToken) {
+    return notFound();
+  }
 
   async function handleSubmit(formData: FormData) {
     "use server";
 
-    const { error } = await new Payments(userId).createProvider({
+    if (!accessToken) {
+      return notFound();
+    }
+
+    const { error } = await new Payments(accessToken).createProvider({
       name: formData.get("provider_name") as string,
       type: "worldpay",
       data: {

@@ -1,4 +1,3 @@
-import { PgSessions } from "auth/sessions";
 import { notFound, redirect } from "next/navigation";
 import PaymentSetupFormPage from "../../PaymentSetupFormPage";
 import { Payments } from "building-blocks-sdk";
@@ -13,6 +12,7 @@ import { getTranslations } from "next-intl/server";
 import { paymentRequestValidationMap } from "../../../../../validationMaps";
 import { ProviderType } from "../../providers/types";
 import { PaymentRequestFormState } from "../../create/page";
+import { getPaymentsPublicServantContext } from "../../../../../../libraries/auth";
 
 type Props = {
   params: {
@@ -22,11 +22,16 @@ type Props = {
 };
 
 export default async function ({ params: { request_id, locale } }: Props) {
-  const { userId } = await PgSessions.get();
   const t = await getTranslations("PaymentSetup.CreatePayment.form");
-  const { data: details, error } = await new Payments(userId).getPaymentRequest(
-    request_id,
-  );
+  const { accessToken } = await getPaymentsPublicServantContext();
+
+  if (!accessToken) {
+    return notFound();
+  }
+
+  const { data: details, error } = await new Payments(
+    accessToken,
+  ).getPaymentRequest(request_id);
 
   const validationMap = paymentRequestValidationMap(t);
 
@@ -63,6 +68,10 @@ export default async function ({ params: { request_id, locale } }: Props) {
       name: string;
       type: ProviderType;
     }[] = [];
+
+    if (!accessToken) {
+      return notFound();
+    }
 
     const formResult = {
       errors: {},
@@ -153,7 +162,7 @@ export default async function ({ params: { request_id, locale } }: Props) {
     };
 
     const { data: updateRes, error } = await new Payments(
-      userId,
+      accessToken,
     ).updatePaymentRequest(data);
 
     formResult.errors = errorHandler(error, validationMap) ?? {};
@@ -169,7 +178,7 @@ export default async function ({ params: { request_id, locale } }: Props) {
 
   return (
     <PaymentSetupFormPage
-      userId={userId}
+      accessToken={accessToken}
       locale={locale}
       action={handleSubmitClb}
       details={details}

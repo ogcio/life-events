@@ -12,11 +12,11 @@ import { RealexFormState } from "../add-realex/page";
 
 type Props = {
   provider: RealexProvider;
-  userId: string;
+  accessToken: string;
   locale: string;
 };
 
-export default async ({ provider, userId, locale }: Props) => {
+export default async ({ provider, accessToken, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddRealex");
   const { messages } = await getRequestConfig({ locale });
 
@@ -71,10 +71,9 @@ export default async ({ provider, userId, locale }: Props) => {
         };
     }
 
-    const { data: result, error } = await new Payments(userId).updateProvider(
-      provider.id,
-      providerData,
-    );
+    const { data: result, error } = await new Payments(
+      accessToken,
+    ).updateProvider(provider.id, providerData);
 
     formResult.errors = errorHandler(error, errorFieldMapping) ?? {};
 

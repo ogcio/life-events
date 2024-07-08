@@ -2,6 +2,7 @@ import { AuthSession } from "auth/auth-session";
 import {
   baseConfig,
   citizenScopes,
+  commonScopes,
   orgScopes,
   paymentsApiResource,
   paymentsPublicServantScopes,
@@ -15,7 +16,7 @@ export const getPaymentsCitizenContext = () =>
     {
       ...baseConfig,
       resources: [paymentsApiResource],
-      scopes: [...citizenScopes],
+      scopes: [...commonScopes, ...citizenScopes],
     },
     {
       getAccessToken: true,
@@ -23,14 +24,15 @@ export const getPaymentsCitizenContext = () =>
       resource: paymentsApiResource,
       userType: "citizen",
       publicServantExpectedRole,
+      loginUrl: "/login",
     },
   );
 
-export const getPaymentsOrganizationContext = () =>
+export const getPaymentsPublicServantContext = () =>
   AuthSession.get(
     {
       ...baseConfig,
-      scopes: [...orgScopes, ...paymentsPublicServantScopes],
+      scopes: [...commonScopes, ...orgScopes, ...paymentsPublicServantScopes],
     },
     {
       getOrganizationToken: true,
@@ -38,10 +40,6 @@ export const getPaymentsOrganizationContext = () =>
       userType: "publicServant",
       publicServantExpectedRole,
       organizationId,
+      loginUrl: "/login",
     },
   );
-
-export const getUser = async () => {
-  const context = await getPaymentsCitizenContext();
-  return context;
-};

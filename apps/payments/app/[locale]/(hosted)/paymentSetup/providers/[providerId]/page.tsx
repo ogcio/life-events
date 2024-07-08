@@ -1,5 +1,4 @@
 import { notFound, redirect } from "next/navigation";
-import { PgSessions } from "auth/sessions";
 import EditOpenBankingForm from "./EditOpenBankingForm";
 import EditBankTransferForm from "./EditBankTransferForm";
 import EditStripeForm from "./EditStripeForm";
@@ -14,6 +13,7 @@ import {
   WorldpayProvider,
 } from "../types";
 import { errorHandler } from "../../../../../utils";
+import { getPaymentsPublicServantContext } from "../../../../../../libraries/auth";
 
 type Props = {
   params: {
@@ -23,10 +23,15 @@ type Props = {
 };
 
 export default async ({ params: { providerId, locale } }: Props) => {
-  const { userId } = await PgSessions.get();
-  const { data: provider, error } = await new Payments(userId).getProviderById(
-    providerId,
-  );
+  const { accessToken } = await getPaymentsPublicServantContext();
+
+  if (!accessToken) {
+    return notFound();
+  }
+
+  const { data: provider, error } = await new Payments(
+    accessToken,
+  ).getProviderById(providerId);
 
   if (error) {
     errorHandler(error);
@@ -40,7 +45,7 @@ export default async ({ params: { providerId, locale } }: Props) => {
     return (
       <EditOpenBankingForm
         provider={provider as OpenBankingProvider}
-        userId={userId}
+        accessToken={accessToken}
         locale={locale}
       />
     );
@@ -50,7 +55,7 @@ export default async ({ params: { providerId, locale } }: Props) => {
     return (
       <EditBankTransferForm
         provider={provider as BankTransferProvider}
-        userId={userId}
+        accessToken={accessToken}
         locale={locale}
       />
     );
@@ -60,7 +65,7 @@ export default async ({ params: { providerId, locale } }: Props) => {
     return (
       <EditStripeForm
         provider={provider as StripeProvider}
-        userId={userId}
+        accessToken={accessToken}
         locale={locale}
       />
     );
@@ -70,7 +75,7 @@ export default async ({ params: { providerId, locale } }: Props) => {
     return (
       <EditWorldpayForm
         provider={provider as WorldpayProvider}
-        userId={userId}
+        accessToken={accessToken}
         locale={locale}
       />
     );
@@ -80,7 +85,7 @@ export default async ({ params: { providerId, locale } }: Props) => {
     return (
       <EditRealexForm
         provider={provider as RealexProvider}
-        userId={userId}
+        accessToken={accessToken}
         locale={locale}
       />
     );

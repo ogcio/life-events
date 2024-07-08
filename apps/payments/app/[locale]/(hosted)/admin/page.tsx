@@ -1,9 +1,9 @@
 import { notFound, redirect, RedirectType } from "next/navigation";
 import { routeDefinitions } from "../../../routeDefinitions";
-import { getPaymentsOrganizationContext } from "../../../../libraries/auth";
+import { getPaymentsPublicServantContext } from "../../../../libraries/auth";
 
 export default async () => {
-  const { isPublicServant } = await getPaymentsOrganizationContext();
+  const { isPublicServant } = await getPaymentsPublicServantContext();
 
   if (!isPublicServant) return notFound();
 

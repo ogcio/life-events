@@ -2,16 +2,18 @@ import { getTranslations } from "next-intl/server";
 import { errorHandler, formatCurrency } from "../../../../../utils";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
-import { PgSessions } from "auth/sessions";
 import { notFound } from "next/navigation";
 import { TransactionStatuses } from "../../../../../../types/TransactionStatuses";
 import Link from "next/link";
 import { Payments } from "building-blocks-sdk";
+import { getPaymentsPublicServantContext } from "../../../../../../libraries/auth";
 
-async function getTransactionDetails(transactionId: string) {
-  const { userId } = await PgSessions.get();
+async function getTransactionDetails(
+  transactionId: string,
+  accessToken: string,
+) {
   const { data: result, error } = await new Payments(
-    userId,
+    accessToken,
   ).getTransactionDetails(transactionId);
 
   if (error) {
@@ -21,11 +23,9 @@ async function getTransactionDetails(transactionId: string) {
   return result?.data;
 }
 
-async function confirmTransaction(transactionId: string) {
+async function confirmTransaction(transactionId: string, accessToken: string) {
   "use server";
-
-  const { userId } = await PgSessions.get();
-  const { error } = await new Payments(userId).updateTransaction(
+  const { error } = await new Payments(accessToken).updateTransaction(
     transactionId,
     {
       status: TransactionStatuses.Succeeded,
@@ -44,9 +44,15 @@ export default async function ({
 }: {
   params: { transactionId: string; locale: string };
 }) {
+  const { accessToken } = await getPaymentsPublicServantContext();
+
+  if (!accessToken) {
+    return notFound();
+  }
+
   const [t, details, tRequest] = await Promise.all([
     getTranslations("PaymentSetup.Request.details"),
-    getTransactionDetails(transactionId),
+    getTransactionDetails(transactionId, accessToken),
     getTranslations("PaymentSetup.Request"),
   ]);
 
@@ -54,7 +60,7 @@ export default async function ({
     notFound();
   }
 
-  const confirm = confirmTransaction.bind(null, transactionId);
+  const confirm = confirmTransaction.bind(null, transactionId, accessToken);
 
   return (
     <div>

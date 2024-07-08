@@ -10,21 +10,25 @@ import {
   PAGINATION_PAGE_DEFAULT,
 } from "../../../../../utils";
 import dayjs from "dayjs";
-import { PgSessions } from "auth/sessions";
 import { RequestDetails } from "./RequestDetails";
 import Link from "next/link";
 import { EmptyStatus } from "../../../../../components/EmptyStatus";
 import { Payments } from "building-blocks-sdk";
 import Pagination from "../../../../../components/pagination";
 import { routeDefinitions } from "../../../../../routeDefinitions";
-import { redirect, RedirectType } from "next/navigation";
+import { notFound, redirect, RedirectType } from "next/navigation";
+import { getPaymentsPublicServantContext } from "../../../../../../libraries/auth";
 
 export default async function ({
   params: { requestId, locale },
   searchParams: { action, page, limit },
 }) {
   const t = await getTranslations("PaymentSetup.Request");
-  const { userId } = await PgSessions.get();
+  const { accessToken } = await getPaymentsPublicServantContext();
+
+  if (!accessToken) {
+    return notFound();
+  }
 
   const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
   const pageLimit = limit ? parseInt(limit) : PAGINATION_LIMIT_DEFAULT;
@@ -35,7 +39,7 @@ export default async function ({
   };
 
   const { data: transactionsResponse, error } = await new Payments(
-    userId,
+    accessToken,
   ).getPaymentRequestTransactions(requestId, pagination);
 
   const errors = errorHandler(error);

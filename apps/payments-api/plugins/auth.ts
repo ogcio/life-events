@@ -2,6 +2,7 @@
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 
+// TODO: THIS HAS TO BE REMOVED!
 // Very secure, isn't it?
 const authPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.decorate(

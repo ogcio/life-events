@@ -1,5 +1,4 @@
-import { PgSessions } from "auth/sessions";
-import { RedirectType, redirect } from "next/navigation";
+import { RedirectType, notFound, redirect } from "next/navigation";
 import PaymentSetupFormPage, { ProvidersMap } from "../PaymentSetupFormPage";
 import {
   errorHandler,
@@ -12,6 +11,7 @@ import { PaymentRequestDetails } from "../db";
 import { ProviderType } from "../providers/types";
 import { paymentRequestValidationMap } from "../../../../validationMaps";
 import { getTranslations } from "next-intl/server";
+import { getPaymentsPublicServantContext } from "../../../../../libraries/auth";
 
 type Props = {
   params: {
@@ -31,7 +31,11 @@ export type PaymentRequestFormState = {
 
 export default async function Page({ params: { locale } }: Props) {
   const t = await getTranslations("PaymentSetup.CreatePayment.form");
-  const { userId } = await PgSessions.get();
+  const { accessToken } = await getPaymentsPublicServantContext();
+
+  if (!accessToken) {
+    return notFound();
+  }
 
   const validationMap = paymentRequestValidationMap(t);
 
@@ -59,6 +63,10 @@ export default async function Page({ params: { locale } }: Props) {
       name: string;
       type: ProviderType;
     }[] = [];
+
+    if (!accessToken) {
+      return notFound();
+    }
 
     const formResult = {
       errors: {},
@@ -102,7 +110,7 @@ export default async function Page({ params: { locale } }: Props) {
     });
 
     const { data: paymentRequest, error } = await new Payments(
-      userId,
+      accessToken,
     ).createPaymentRequest({
       title: titleField,
       description: descriptionField,
@@ -126,7 +134,7 @@ export default async function Page({ params: { locale } }: Props) {
 
   return (
     <PaymentSetupFormPage
-      userId={userId}
+      accessToken={accessToken}
       locale={locale}
       action={handleSubmit}
     />

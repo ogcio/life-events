@@ -34,7 +34,8 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/:transactionId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:transaction:*"]),
       schema: {
         tags: ["Transactions"],
         response: {
@@ -59,7 +60,8 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: app.validateIsPublicServant,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:transaction:*"]),
       schema: {
         tags: ["Transactions"],
         querystring: PaginationParams,
@@ -76,7 +78,7 @@ export default async function transactions(app: FastifyInstance) {
         offset = PAGINATION_OFFSET_DEFAULT,
         limit = PAGINATION_LIMIT_DEFAULT,
       } = request.query;
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       if (!userId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
@@ -109,7 +111,14 @@ export default async function transactions(app: FastifyInstance) {
     "/:transactionId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:transaction.self:write"]),
+        app.checkPermissions(
+          req,
+          res,
+          ["payments:transaction.self:write", "payments:transaction:*"],
+          {
+            method: "OR",
+          },
+        ),
       schema: {
         tags: ["Transactions"],
         body: UpdateTransactionBody,
@@ -151,7 +160,7 @@ export default async function transactions(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       if (!userId) {
         throw app.httpErrors.unauthorized("Unauthorized!");

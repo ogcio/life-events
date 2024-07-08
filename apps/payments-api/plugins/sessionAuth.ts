@@ -1,6 +1,8 @@
 import { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 
+// TODO: THIS HAS TO BE REMOVED
+
 interface User {
   id: string;
   publicServant?: boolean;

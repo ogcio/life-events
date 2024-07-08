@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { Payments } from "building-blocks-sdk";
-import { getAuthenticationContext } from "./config";
+import {
+  getPaymentsCitizenContext,
+  getPaymentsPublicServantContext,
+} from "../../../../libraries/auth";
 
 const actionCitizen = async () => {
   "use server";
 
-  const context = await getAuthenticationContext();
+  const context = await getPaymentsCitizenContext();
 
   const token = context.accessToken;
   if (!token) return console.log("missing token...");
@@ -16,7 +19,7 @@ const actionCitizen = async () => {
 const actionPublicServant = async () => {
   "use server";
 
-  const context = await getAuthenticationContext();
+  const context = await getPaymentsPublicServantContext();
 
   const token = context.accessToken;
   if (!token) return console.log("missing token...");
@@ -25,7 +28,7 @@ const actionPublicServant = async () => {
 };
 
 export default async function () {
-  const context = await getAuthenticationContext();
+  const context = await getPaymentsCitizenContext();
 
   return (
     <>
@@ -38,7 +41,7 @@ export default async function () {
         <button>API CALL - Public Servant</button>
       </form>
 
-      {context && <Link href="/logto_integration/signout">Logout</Link>}
+      {context && <Link href="/signout">Logout</Link>}
     </>
   );
 }

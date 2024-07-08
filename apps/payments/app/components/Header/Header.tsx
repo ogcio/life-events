@@ -59,7 +59,7 @@ export default async ({ locale }: HeaderProps) => {
             <UserIcon initials={initials} />
 
             <Link
-              href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
+              href={"/signout"}
               prefetch={false}
               style={{ display: "flex" }}
             >

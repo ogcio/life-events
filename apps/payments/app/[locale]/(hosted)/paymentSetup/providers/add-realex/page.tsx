@@ -1,12 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
 import { errorHandler } from "../../../../../utils";
 import RealexForm from "./RealexForm";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { realexValidationMap } from "../../../../../validationMaps";
+import { getPaymentsPublicServantContext } from "../../../../../../libraries/auth";
 
 type Props = {
   params: {
@@ -29,7 +29,11 @@ export default async (props: Props) => {
   const t = await getTranslations("PaymentSetup.AddRealex");
   const { messages } = await getRequestConfig({ locale: props.params.locale });
 
-  const { userId } = await PgSessions.get();
+  const { accessToken } = await getPaymentsPublicServantContext();
+
+  if (!accessToken) {
+    return notFound();
+  }
 
   const errorFieldMapping = realexValidationMap(t);
 
@@ -51,7 +55,13 @@ export default async (props: Props) => {
       },
     };
 
-    const { data: result, error } = await new Payments(userId).createProvider({
+    if (!accessToken) {
+      return notFound();
+    }
+
+    const { data: result, error } = await new Payments(
+      accessToken,
+    ).createProvider({
       name: nameField,
       type: "realex",
       data: {

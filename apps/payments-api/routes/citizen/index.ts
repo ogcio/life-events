@@ -39,7 +39,7 @@ export default async function citizen(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const {
         offset = PAGINATION_OFFSET_DEFAULT,
         limit = PAGINATION_LIMIT_DEFAULT,
@@ -84,7 +84,7 @@ export default async function citizen(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { transactionId } = request.params;
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       const transactionDetails = await app.transactions.getTransactionById(
         transactionId,

@@ -19,7 +19,8 @@ export default async function providers(app: FastifyInstance) {
   app.post<{ Body: CreateProviderDO; Reply: Id }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:provider:*"]),
       schema: {
         tags: ["Providers"],
         body: CreateProvider,
@@ -32,7 +33,7 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       if (!userId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
@@ -47,7 +48,8 @@ export default async function providers(app: FastifyInstance) {
   app.get<{ Reply: ProviderDO[] }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:provider:*"]),
       schema: {
         tags: ["Providers"],
         response: {
@@ -57,7 +59,7 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       if (!userId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
@@ -72,7 +74,8 @@ export default async function providers(app: FastifyInstance) {
   app.get<{ Reply: ProviderDO | Error; Params: ParamsWithProviderId }>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:provider:*"]),
       schema: {
         tags: ["Providers"],
         response: {
@@ -83,7 +86,7 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const { providerId } = request.params;
 
       if (!userId) {
@@ -103,7 +106,8 @@ export default async function providers(app: FastifyInstance) {
   }>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, ["payments:provider:*"]),
       schema: {
         tags: ["Providers"],
         body: UpdateProvider,
@@ -116,7 +120,7 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const { providerId } = request.params;
 
       if (!userId) {

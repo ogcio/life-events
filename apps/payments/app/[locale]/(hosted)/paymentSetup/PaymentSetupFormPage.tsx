@@ -16,8 +16,12 @@ export type ProvidersMap = Record<
   }[]
 >;
 
-async function getRegisteredAccounts(userId: string): Promise<ProvidersMap> {
-  const { data: providers, error } = await new Payments(userId).getProviders();
+async function getRegisteredAccounts(
+  accessToken: string,
+): Promise<ProvidersMap> {
+  const { data: providers, error } = await new Payments(
+    accessToken,
+  ).getProviders();
 
   if (error) {
     errorHandler(error);
@@ -49,7 +53,7 @@ async function getRegisteredAccounts(userId: string): Promise<ProvidersMap> {
 
 type PaymentSetupFormPageProps = {
   details?: PaymentRequestDetails;
-  userId: string;
+  accessToken: string;
   locale: string;
   action: (
     prevState: FormData,
@@ -59,13 +63,13 @@ type PaymentSetupFormPageProps = {
 
 export default async function ({
   details,
-  userId,
+  accessToken,
   locale,
   action,
 }: PaymentSetupFormPageProps) {
   const { messages } = await getRequestConfig({ locale });
 
-  const providerAccounts = await getRegisteredAccounts(userId);
+  const providerAccounts = await getRegisteredAccounts(accessToken);
 
   return (
     <NextIntlClientProvider

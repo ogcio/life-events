@@ -2,16 +2,23 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import ProviderStatusTag from "./ProviderStatusTag";
 import { Payments } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import { errorHandler } from "../../../../utils";
+import { getPaymentsPublicServantContext } from "../../../../../libraries/auth";
+import notFound from "../../../../not-found";
 
 export default async () => {
   const t = useTranslations("PaymentSetup.Providers");
 
-  const { userId } = await PgSessions.get();
+  const { accessToken } = await getPaymentsPublicServantContext();
 
-  const { data: providers, error } = await new Payments(userId).getProviders();
+  if (!accessToken) {
+    return notFound();
+  }
+
+  const { data: providers, error } = await new Payments(
+    accessToken,
+  ).getProviders();
 
   if (error) {
     errorHandler(error);

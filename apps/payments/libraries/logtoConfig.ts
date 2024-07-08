@@ -18,6 +18,8 @@ export const baseConfig = {
 };
 
 // All the permissions of a normal citizen
+export const commonScopes = [AuthUserScope.Email];
+
 export const citizenScopes = [
   "payments:provider.public:read",
   "payments:payment_request.public:read",
@@ -35,7 +37,12 @@ export default {
   ...baseConfig,
   // All the available resources to the app
   resources: [paymentsApiResource],
-  scopes: [...orgScopes, ...citizenScopes, ...paymentsPublicServantScopes],
+  scopes: [
+    ...commonScopes,
+    ...orgScopes,
+    ...citizenScopes,
+    ...paymentsPublicServantScopes,
+  ],
 };
 
 export const postSignoutRedirect =
