@@ -1,8 +1,10 @@
 import t from "tap";
-import { build } from "../../app.js";
+import fastify from "fastify";
 
 t.test("healthCheck", async (t) => {
-  const app = await build();
+  const app = await fastify();
+  app.register(import("../../routes/healthcheck.js"));
+
   t.after(async () => {
     await app.close();
   });

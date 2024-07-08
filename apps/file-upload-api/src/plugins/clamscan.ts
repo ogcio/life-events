@@ -11,7 +11,7 @@ export default fp(
   async (fastify) => {
     const avClient = await new NodeClam().init({
       clamdscan: {
-        host: fastify.config.CLAMAV_HOST,
+        host: fastify.config.CLAMAV_HOST as string,
         port: 3310,
       },
     });

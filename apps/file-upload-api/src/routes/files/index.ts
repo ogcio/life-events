@@ -2,7 +2,7 @@ import { Type } from "@sinclair/typebox";
 import { FastifyInstance, FastifyRequest } from "fastify";
 import { HttpError } from "../../types/httpErrors.js";
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { PassThrough } from "stream";
+import { PassThrough, Stream } from "stream";
 import { EventEmitter } from "node:events";
 import { pipeline } from "stream";
 import { Upload } from "@aws-sdk/lib-storage";
@@ -24,11 +24,12 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
   const data = await request.file();
 
   if (!data) {
-    throw app.multipartErrors.InvalidMultipartContentTypeError();
+    throw app.httpErrors.badRequest("Request is not multipart");
   }
-  const stream = data.file;
 
+  const stream = data.file;
   const filename = data.filename;
+
   if (!filename) {
     throw app.httpErrors.badRequest("Filename not provided");
   }
@@ -69,14 +70,12 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
       deleteObject(s3Config.client, s3Config.bucketName, filename)
         .then(() => eventEmitter.emit("fileTooLarge"))
         .catch((err) => {
-          // app.log.error(err);
           eventEmitter.emit("error", err);
         });
     } else if (fileInfected) {
       deleteObject(s3Config.client, s3Config.bucketName, filename)
         .then(() => eventEmitter.emit("infectedFileDetected"))
         .catch((err) => {
-          // app.log.error(err);
           eventEmitter.emit("error", err);
         });
     } else {
@@ -122,6 +121,7 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
     .done()
     .then(() => {
       outputFinished = true;
+
       checkCompletion();
     })
     .catch((err) => {
@@ -153,11 +153,7 @@ export default async function routes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      // try {
       await scanAndUplad(app, request);
-      // } catch (err) {
-      // log;
-      // }
 
       reply.send({ message: "File uploaded successfully" });
     },

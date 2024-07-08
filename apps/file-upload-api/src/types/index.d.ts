@@ -26,6 +26,6 @@ declare module "fastify" {
     verifyUser: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     avClient: NodeClam;
     s3Client: S3ClientConfig;
-    config: { [key: string]: string };
+    config: { [key: string]: string | number };
   }
 }

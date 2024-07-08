@@ -1,0 +1,320 @@
+import { FastifyInstance } from "fastify";
+import fp from "fastify-plugin";
+import { EventEmitter } from "node:events";
+import { PassThrough } from "stream";
+import t from "tap";
+
+const decorateRequest = (fastify: FastifyInstance, data) => {
+  fastify.decorateRequest("file", () => {
+    return Promise.resolve(data);
+  });
+};
+// return new
+
+t.test("files", async (t) => {
+  let app: FastifyInstance;
+
+  let antivirusPassthrough: PassThrough;
+  let passthroughStream: PassThrough;
+
+  // supply type param so that TS knows what it returns
+  const { build } = await t.mockImport<typeof import("../../../app.js")>(
+    "../../../app.js",
+    {
+      "@fastify/autoload": {
+        default: async () => {},
+      },
+
+      "../../../routes/index.js": {
+        default: async () => {},
+      },
+      "@fastify/multipart": {
+        default: fp(async (fastify) => {
+          fastify.addContentTypeParser(
+            "multipart/form-data",
+            (req, payload, done) => done(null),
+          );
+        }),
+      },
+    },
+  );
+  const uploadEventEmitter = new EventEmitter();
+  const deleteEventEmitter = new EventEmitter();
+
+  const routes = await t.mockImport<
+    typeof import("../../../routes/files/index.js")
+  >("../../../routes/files/index.js", {
+    "@aws-sdk/lib-storage": {
+      Upload: class {
+        constructor(config) {}
+
+        async done() {
+          return new Promise<void>((resolve, reject) => {
+            uploadEventEmitter.once("fileUploaded", () => {
+              resolve();
+            });
+            uploadEventEmitter.once("upload-error", () => {
+              reject(new Error("upload error"));
+            });
+          });
+        }
+      },
+    },
+  });
+
+  const s3Plugin = fp(
+    async (fastify) => {
+      fastify.decorate("s3Client", {
+        config: {},
+        bucketName: "",
+        client: {
+          send: () =>
+            new Promise((resolve, reject) => {
+              deleteEventEmitter.once("delete-error", () => {
+                reject(new Error("deletion error"));
+              });
+              deleteEventEmitter.once("fileDeleted", () => {
+                resolve();
+              });
+            }),
+        },
+      });
+    },
+    { name: "s3ClientPlugin" },
+  );
+
+  t.beforeEach(async () => {
+    app = await build();
+
+    antivirusPassthrough = new PassThrough();
+    passthroughStream = new PassThrough();
+    const clamscanPlugin = fp(
+      async (fastify) => {
+        fastify.decorate("avClient", {
+          passthrough: () => antivirusPassthrough,
+        });
+      },
+      { name: "clamscanPlugin" },
+    );
+
+    await app.register(s3Plugin);
+    await app.register(clamscanPlugin);
+    await app.register(routes, { prefix: "/files" });
+  });
+
+  t.afterEach(async () => {
+    await app.close();
+  });
+
+  t.test(
+    "Should throw an error when the request is not multipart",
+    async (t) => {
+      decorateRequest(app, null);
+
+      const response = await app.inject({
+        method: "POST",
+        url: "/files",
+      });
+
+      t.equal(response.statusCode, 400);
+      t.equal(
+        response.headers["content-type"],
+        "application/json; charset=utf-8",
+      );
+      t.equal(response.json().detail, "Request is not multipart");
+    },
+  );
+
+  t.test("Should throw and error when uploaded file is too large", (t) => {
+    decorateRequest(app, {
+      file: passthroughStream,
+      filename: "tooBig.txt",
+    });
+
+    app
+      .inject({
+        method: "POST",
+        url: "/files",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 400);
+        t.equal(response.json().detail, "File too large");
+        t.end();
+      });
+
+    setTimeout(() => {
+      passthroughStream.truncated = true;
+      passthroughStream.emit("limit");
+    });
+  });
+
+  t.test("Should reject when file is infected", (t) => {
+    decorateRequest(app, {
+      file: passthroughStream,
+      filename: "sample.txt",
+    });
+
+    app
+      .inject({
+        method: "POST",
+        url: "/files",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 400);
+        t.equal(response.json().detail, "File is infected");
+        t.end();
+      });
+    setTimeout(() => {
+      uploadEventEmitter.emit("fileUploaded");
+      antivirusPassthrough.emit("scan-complete", { isInfected: true });
+      setTimeout(() => {
+        deleteEventEmitter.emit("fileDeleted");
+      });
+    });
+  });
+
+  t.test("Should return a 200 status code when file is uploaded", (t) => {
+    decorateRequest(app, { file: passthroughStream, filename: "sample.txt" });
+
+    app
+      .inject({
+        method: "POST",
+        url: "/files",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 200);
+        t.end();
+      });
+
+    setTimeout(() => {
+      uploadEventEmitter.emit("fileUploaded");
+      antivirusPassthrough.emit("scan-complete", { isInfected: false });
+    });
+  });
+
+  t.test(
+    "Should return a 400 status code when an error in deletion happens",
+    (t) => {
+      decorateRequest(app, { file: passthroughStream, filename: "sample.txt" });
+
+      app
+        .inject({
+          method: "POST",
+          url: "/files",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 400);
+          t.end();
+        });
+
+      setTimeout(() => {
+        passthroughStream.truncated = true;
+        // passthroughStream.emit("limit");
+        // passthroughStream.push("");
+        uploadEventEmitter.emit("fileUploaded");
+        antivirusPassthrough.emit("scan-complete", { isInfected: false });
+        // // passthroughStream.push(Buffer.alloc(1));
+        // // streamPassThrough.end();
+        setTimeout(() => {
+          deleteEventEmitter.emit("delete-error");
+        });
+      });
+    },
+  );
+
+  t.test(
+    "should return a 400 status code when an error happens in deleting infected file",
+    (t) => {
+      decorateRequest(app, { file: passthroughStream, filename: "sample.txt" });
+
+      app
+        .inject({
+          method: "POST",
+          url: "/files",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 400);
+          t.end();
+        });
+
+      setTimeout(() => {
+        uploadEventEmitter.emit("fileUploaded");
+        antivirusPassthrough.emit("scan-complete", { isInfected: true });
+        setTimeout(() => {
+          deleteEventEmitter.emit("delete-error");
+        });
+      });
+    },
+  );
+
+  t.test("should return an error when filename is not provided", (t) => {
+    decorateRequest(app, { file: passthroughStream });
+
+    app
+      .inject({
+        method: "POST",
+        url: "/files",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 400);
+        t.equal(response.json().detail, "Filename not provided");
+        t.end();
+      });
+  });
+
+  t.test("should return an error when AV scan fails", (t) => {
+    decorateRequest(app, { file: passthroughStream, filename: "sample.txt" });
+
+    app
+      .inject({
+        method: "POST",
+        url: "/files",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 400);
+        t.end();
+      });
+
+    setTimeout(() => {
+      uploadEventEmitter.emit("fileUploaded");
+      antivirusPassthrough.emit("error", new Error("scan error"));
+    });
+  });
+
+  t.test("should return an error when upload fails", (t) => {
+    decorateRequest(app, { file: passthroughStream, filename: "sample.txt" });
+
+    app
+      .inject({
+        method: "POST",
+        url: "/files",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 400);
+        t.end();
+      });
+
+    setTimeout(() => {
+      uploadEventEmitter.emit("upload-error", new Error("upload error"));
+      antivirusPassthrough.emit("scan-complete", { isInfected: false });
+    });
+  });
+
+  t.test("should return an error when the file stream throws an error", (t) => {
+    decorateRequest(app, { file: passthroughStream, filename: "sample.txt" });
+
+    app
+      .inject({
+        method: "POST",
+        url: "/files",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 400);
+        t.end();
+      });
+
+    setTimeout(() => {
+      passthroughStream.emit("error", new Error("stream error"));
+    });
+  });
+});

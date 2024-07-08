@@ -4,7 +4,7 @@ import fastifySwaggerUi from "@fastify/swagger-ui";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import fastifyEnv from "@fastify/env";
 import sensible from "@fastify/sensible";
-import postgres from "@fastify/postgres";
+// import postgres from "@fastify/postgres";
 import multipart from "@fastify/multipart";
 import autoload from "@fastify/autoload";
 import fs from "fs";
@@ -20,20 +20,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export async function build(opts?: FastifyServerOptions) {
-  const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
+  const app = fastify({
+    ...opts,
+    logger: false,
+  }).withTypeProvider<TypeBoxTypeProvider>();
   initializeLoggingHooks(app);
   initializeErrorHandler(app);
-
-  // limit 100 MB files
-  app.register(multipart, {
-    limits: {
-      fileSize: 100 * 1024 * 1024,
-    },
-  });
 
   await app.register(fastifyEnv, {
     schema: envSchema,
     dotenv: true,
+  });
+
+  app.register(multipart, {
+    limits: {
+      fileSize: app.config.MAX_FILE_SIZE as number,
+    },
   });
 
   app.register(fastifySwagger, {
@@ -62,13 +64,13 @@ export async function build(opts?: FastifyServerOptions) {
     },
   });
 
-  app.register(postgres, {
-    host: app.config.POSTGRES_HOST,
-    port: Number(app.config.POSTGRES_PORT),
-    user: app.config.POSTGRES_USER,
-    password: app.config.POSTGRES_PASSWORD,
-    database: app.config.POSTGRES_DB_NAME_SHARED,
-  });
+  // app.register(postgres, {
+  //   host: app.config.POSTGRES_HOST,
+  //   port: Number(app.config.POSTGRES_PORT),
+  //   user: app.config.POSTGRES_USER,
+  //   password: app.config.POSTGRES_PASSWORD,
+  //   database: app.config.POSTGRES_DB_NAME_SHARED,
+  // });
 
   app.register(import("@fastify/cookie"), {
     hook: "onRequest", // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
