@@ -2,6 +2,7 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import fp from "fastify-plugin";
 import { getMapFromScope, validatePermission } from "./utils.js";
+import { AuthenticationError, AuthorizationError } from "shared-errors";
 
 type ExtractedUserData = {
   userId: string;
@@ -16,10 +17,15 @@ declare module "fastify" {
   }
 }
 
+const ERROR_PROCESS = "CHECK_PERMISSIONS";
+
 const extractBearerToken = (authHeader: string) => {
   const [type, token] = authHeader.split(" ");
   if (type !== "Bearer") {
-    throw new Error("Invalid Authorization header type, 'Bearer' expected");
+    throw new AuthenticationError(
+      ERROR_PROCESS,
+      "Invalid Authorization header type, 'Bearer' expected",
+    );
   }
   return token;
 };
@@ -66,7 +72,7 @@ export const checkPermissions = async (
       : requiredPermissions.some((p) => validatePermission(p, scopesMap));
 
   if (!grantAccess) {
-    throw new Error("Forbidden");
+    throw new AuthorizationError(ERROR_PROCESS);
   }
 
   const organizationId = aud.includes("urn:logto:organization:")
@@ -98,8 +104,7 @@ export const checkPermissionsPlugin = async (
     ) => {
       const authHeader = req.headers.authorization;
       if (!authHeader) {
-        rep.status(401).send({ message: "Unauthorized" });
-        return;
+        throw new AuthenticationError(ERROR_PROCESS);
       }
       try {
         const userData = await checkPermissions(
@@ -110,7 +115,7 @@ export const checkPermissionsPlugin = async (
         );
         req.userData = userData;
       } catch (e) {
-        rep.status(403).send({ message: (e as Error).message });
+        throw new AuthorizationError(ERROR_PROCESS, (e as Error).message);
       }
     },
   );

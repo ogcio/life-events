@@ -1,4 +1,4 @@
-import { AuthUserScope } from "auth/index";
+import { AuthSessionContext, AuthUserScope } from "auth/index";
 import { AuthSession } from "auth/auth-session";
 
 export const paymentsApiResource = process.env.PAYMENTS_BACKEND_URL + "/";
@@ -7,6 +7,9 @@ const orgScopes = [
   AuthUserScope.Organizations,
   AuthUserScope.OrganizationRoles,
 ];
+
+const publicServantExpectedRole = "Public Servant";
+const organizationId = "ogcio";
 
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
@@ -29,7 +32,17 @@ export default {
   scopes: [...orgScopes, ...citizenScopes, ...paymentsPublicServantScopes],
 };
 
-export const getPaymentsCitizenContext = () =>
+export const getAuthenticationContext =
+  async (): Promise<AuthSessionContext> => {
+    const citizenContext = await getPaymentsCitizenContext();
+    if (citizenContext.isPublicServant) {
+      return getPaymentsOrganizationContext();
+    }
+
+    return citizenContext;
+  };
+
+const getPaymentsCitizenContext = () =>
   AuthSession.get(
     {
       ...baseConfig,
@@ -38,11 +51,14 @@ export const getPaymentsCitizenContext = () =>
     },
     {
       getAccessToken: true,
+      fetchUserInfo: true,
       resource: paymentsApiResource,
+      userType: "citizen",
+      publicServantExpectedRole,
     },
   );
 
-export const getPaymentsOrganizationContext = () =>
+const getPaymentsOrganizationContext = () =>
   AuthSession.get(
     {
       ...baseConfig,
@@ -50,6 +66,10 @@ export const getPaymentsOrganizationContext = () =>
     },
     {
       getOrganizationToken: true,
+      fetchUserInfo: true,
+      userType: "publicServant",
+      publicServantExpectedRole,
+      organizationId,
     },
   );
 
