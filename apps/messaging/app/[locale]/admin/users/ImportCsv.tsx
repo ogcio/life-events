@@ -1,4 +1,3 @@
-import { PgSessions } from "auth/sessions";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
@@ -11,6 +10,7 @@ import {
   searchValueImports,
 } from "../../../utils/messaging";
 import { RedirectType, redirect } from "next/navigation";
+import { getAuthenticationContext } from "../../logto_integration/config";
 
 type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
 
@@ -19,14 +19,15 @@ const CSV_FILE_FIELD = "csv-file";
 export default async () => {
   async function upload(formData: FormData) {
     "use server";
-    const { userId } = await PgSessions.get();
+    const { accessToken: uploadToken, user: uploadUser } =
+      await getAuthenticationContext();
     const file = formData.get(CSV_FILE_FIELD);
     const organisationId = formData.get("organisationId");
 
     const toStoreErrors: FormErrors = [];
     const castedFile = file ? (file as File) : null;
     if (file && (castedFile?.size ?? 0) > 0) {
-      const uploadClient = new Messaging(userId);
+      const uploadClient = new Messaging(uploadToken);
       await uploadClient.importUsersCsv(file as File);
 
       const url = new URL(usersRoute.url, process.env.HOST_URL);
@@ -42,7 +43,7 @@ export default async () => {
 
     await temporaryMockUtils.createErrors(
       toStoreErrors,
-      userId,
+      uploadUser.id,
       `${organisationId}_import_csv`,
     );
     return revalidatePath("/");
@@ -52,13 +53,13 @@ export default async () => {
     getTranslations("UsersImports"),
     getTranslations("formErrors"),
   ]);
-  const { userId } = await PgSessions.get();
-  const messagingClient = new Messaging(userId);
+  const { user, accessToken } = await getAuthenticationContext();
+  const messagingClient = new Messaging(accessToken);
   const { data: organisationId } =
     await messagingClient.getMockOrganisationId();
 
   const formErrors = await temporaryMockUtils.getErrors(
-    userId,
+    user.id,
     `${organisationId}_import_csv`,
   );
   const csvErrors = formErrors.filter(

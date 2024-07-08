@@ -5,8 +5,8 @@ import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
 import { headers } from "next/headers";
+import { getAuthenticationContext } from "../../../logto_integration/config";
 
 export default async (props: MessageCreateProps) => {
   const [t, tCommons] = await Promise.all([
@@ -34,10 +34,10 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const { userId } = await PgSessions.get();
+  const { accessToken } = await getAuthenticationContext();
   const template = props.state.templateMetaId
     ? (
-        await new Messaging(userId).getTemplate(props.state.templateMetaId)
+        await new Messaging(accessToken).getTemplate(props.state.templateMetaId)
       ).data?.contents.find(
         (c) => c.lang === (headers().get("x-next-intl-locale") ?? "en"),
       )

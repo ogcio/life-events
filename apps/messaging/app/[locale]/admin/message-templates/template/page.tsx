@@ -1,4 +1,3 @@
-import { PgSessions } from "auth/sessions";
 import { pgpool } from "messages/dbConnection";
 import { LANG_EN, LANG_GA } from "../../../../../types/shared";
 import { revalidatePath } from "next/cache";
@@ -14,6 +13,8 @@ import {
   avaliableMessagingTemplateStaticVariables,
   getInterpolationValues,
 } from "../../../../utils/messaging";
+import { getAuthenticationContext } from "../../../logto_integration/config";
+import { AuthenticationError } from "shared-errors";
 
 type FormContent = {
   templateName: string;
@@ -426,7 +427,8 @@ export default async (props: {
   searchParams: { id?: string };
 }) => {
   const t = await getTranslations("MessageTemplate");
-  const { userId } = await PgSessions.get();
+  const { user, accessToken } = await getAuthenticationContext();
+
   const state = await pgpool
     .query<{
       state: State;
@@ -437,11 +439,11 @@ export default async (props: {
         from message_template_states
         where user_id = $1
     `,
-      [userId],
+      [user.id],
     )
     .then((res) => res.rows.at(0)?.state);
 
-  const client = new Messaging(userId);
+  const client = new Messaging(accessToken);
   const contents: State = { langs: Array<string>() };
 
   let templateFetchError: Awaited<
@@ -480,10 +482,10 @@ export default async (props: {
           {props.searchParams.id ? "Update template" : "Create a new template"}
         </span>
       </h1>
-      <LanguageForm userId={userId} state={combinedState} />
+      <LanguageForm userId={user.id} state={combinedState} />
       {combinedState.langs.length ? (
         <ContentForm
-          userId={userId}
+          userId={user.id}
           contents={combinedState}
           templateId={props.searchParams.id}
         />

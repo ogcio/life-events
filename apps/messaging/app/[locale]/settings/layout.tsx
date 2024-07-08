@@ -3,8 +3,8 @@ import { messages, routes } from "../../utils";
 import Footer from "../Footer";
 import Header from "../Header";
 import SideMenu from "../SideMenu";
-import { PgSessions } from "auth/sessions";
 import { getLinks } from "../../utils/messaging";
+import { getAuthenticationContext } from "../logto_integration/config";
 
 export default async ({
   children,
@@ -14,7 +14,7 @@ export default async ({
   params: { locale: string };
 }) => {
   const t = await getTranslations("AlphaBanner");
-  const { publicServant, firstName, lastName } = await PgSessions.get();
+  const { isPublicServant, user } = await getAuthenticationContext();
   const environment = String(process.env.ENVIRONMENT);
   const links = getLinks(environment, params.locale);
   return (
@@ -45,9 +45,9 @@ export default async ({
           <div style={{ display: "flex", gap: "30px" }}>
             <SideMenu
               locale={params.locale}
-              options={await messages.sideMenuOptions(publicServant)}
+              options={await messages.sideMenuOptions(isPublicServant)}
               selected={routes.usersSettingsRoutes.slug}
-              userName={`${firstName} ${lastName}`}
+              userName={user.name ?? ""}
             />
             <div style={{ width: "100%" }}>{children}</div>
           </div>

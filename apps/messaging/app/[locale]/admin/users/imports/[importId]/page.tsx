@@ -1,4 +1,3 @@
-import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { users as usersRoute } from "../../../../../utils/routes";
 import { Messaging } from "building-blocks-sdk";
@@ -12,6 +11,7 @@ import {
   searchValueImports,
 } from "../../../../../utils/messaging";
 import Users from "../../Users";
+import { getAuthenticationContext } from "../../../../logto_integration/config";
 
 export default async (props: {
   params: { importId: string; locale: string };
@@ -20,8 +20,8 @@ export default async (props: {
     getTranslations("UsersImport"),
     getTranslations("Commons"),
   ]);
-  const { userId } = await PgSessions.get();
-  const messagingClient = new Messaging(userId);
+  const { accessToken } = await getAuthenticationContext();
+  const messagingClient = new Messaging(accessToken);
   const { data: organisationId } =
     await messagingClient.getMockOrganisationId();
   const { data: userImport, error } = await messagingClient.getUsersImport(

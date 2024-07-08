@@ -1,5 +1,8 @@
 import { AuthSession, AuthUserScope } from "auth/auth-session";
 import { AuthSessionContext } from "auth/types";
+import { AuthenticationError } from "shared-errors";
+import { getServerLogger } from "nextjs-logging-wrapper";
+import { notFound } from "next/navigation";
 
 export const messagingApiResource = process.env.MESSAGES_BACKEND_URL + "/";
 
@@ -39,12 +42,31 @@ export default {
 
 export const getAuthenticationContext =
   async (): Promise<AuthSessionContext> => {
-    const citizenContext = await getCitizenContext();
-    if (citizenContext.isPublicServant) {
-      return getPublicServantContext();
+    let context = await getCitizenContext();
+    if (context.isPublicServant) {
+      context = await getPublicServantContext();
     }
 
-    return citizenContext;
+    if (!context.accessToken) {
+      getServerLogger().error({
+        error: new AuthenticationError(
+          "AUTHENTICATION_CONTEXT",
+          "Missing access token",
+        ),
+      });
+      throw notFound();
+    }
+    if (!context.user) {
+      getServerLogger().error({
+        error: new AuthenticationError(
+          "AUTHENTICATION_CONTEXT",
+          "Missing user",
+        ),
+      });
+      throw notFound();
+    }
+
+    return context as AuthSessionContext;
   };
 
 const getCitizenContext = () =>

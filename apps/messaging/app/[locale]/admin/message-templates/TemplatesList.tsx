@@ -1,18 +1,18 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Messaging } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
 import {
   messageTemplates,
   templateRoutes,
   urlWithSearchParams,
 } from "../../../utils/routes";
+import { getAuthenticationContext } from "../../logto_integration/config";
 
 export default async (props: { locale: string }) => {
   const t = await getTranslations("MessageTemplates");
-  const { userId } = await PgSessions.get();
+  const { accessToken } = await getAuthenticationContext();
 
-  const { data: templates } = await new Messaging(userId).getTemplates();
+  const { data: templates } = await new Messaging(accessToken).getTemplates();
 
   return (
     <table className="govie-table">

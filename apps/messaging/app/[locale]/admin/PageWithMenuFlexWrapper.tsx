@@ -1,14 +1,14 @@
-import { PgSessions } from "auth/sessions";
 import { headers } from "next/headers";
 import { RedirectType, redirect } from "next/navigation";
 import SideMenu from "../SideMenu";
 import { messages } from "../../utils";
 import { LANG_EN } from "../../../types/shared";
+import { getAuthenticationContext } from "../logto_integration/config";
 
 export default async ({ children }: { children: React.ReactNode }) => {
-  const { publicServant, firstName, lastName } = await PgSessions.get();
+  const { isPublicServant, user } = await getAuthenticationContext();
 
-  if (!publicServant) {
+  if (!isPublicServant) {
     redirect("/messages", RedirectType.replace);
   }
   const pathnameSplit = (headers().get("x-pathname") || "").split("/");
@@ -19,9 +19,9 @@ export default async ({ children }: { children: React.ReactNode }) => {
     <div style={{ display: "flex", gap: "30px", width: "100%" }}>
       <SideMenu
         locale={headers().get("x-next-intl-locale")?.toString() || LANG_EN}
-        options={await messages.sideMenuOptions(publicServant)}
+        options={await messages.sideMenuOptions(isPublicServant)}
         selected={selected}
-        userName={`${firstName} ${lastName}`}
+        userName={user.name ?? ""}
       />
       <div style={{ width: "100%", margin: "0 0 50px 0" }}>{children}</div>
     </div>

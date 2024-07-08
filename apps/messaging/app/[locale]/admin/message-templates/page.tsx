@@ -8,10 +8,11 @@ import {
 } from "../../../utils/routes";
 import { redirect } from "next/navigation";
 import { Messaging } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
 import { pgpool } from "messages/dbConnection";
 import ConfirmDeleteModal from "../ConfirmDeleteModal";
 import { LANG_EN } from "../../../../types/shared";
+import { AuthenticationError } from "shared-errors";
+import { getAuthenticationContext } from "../../logto_integration/config";
 
 export default async (props: {
   params: { locale: string };
@@ -31,8 +32,9 @@ export default async (props: {
   let messageNameToDelete: string | undefined;
 
   if (props.searchParams?.delete_id) {
-    const { userId: authToken } = await PgSessions.get();
-    const client = new Messaging(authToken);
+    const { accessToken } = await getAuthenticationContext();
+
+    const client = new Messaging(accessToken);
     const tmpl = await client.getTemplate(props.searchParams?.delete_id);
     const content =
       tmpl.data?.contents.find((content) => content.lang === LANG_EN) ||
@@ -48,8 +50,9 @@ export default async (props: {
     if (!id) {
       return;
     }
-    const { userId: authToken } = await PgSessions.get();
-    await new Messaging(authToken).deleteTemplate(id);
+    const { accessToken } = await getAuthenticationContext();
+
+    await new Messaging(accessToken).deleteTemplate(id);
 
     const url = urlWithSearchParams(
       `${props.params.locale || LANG_EN}/${messageTemplates.url}`,
@@ -66,13 +69,13 @@ export default async (props: {
   }
 
   // Flush the template state
-  const { userId } = await PgSessions.get();
+  const { user } = await getAuthenticationContext();
   await pgpool.query(
     `
     delete from message_template_states
     where user_id = $1
   `,
-    [userId],
+    [user.id],
   );
 
   return (

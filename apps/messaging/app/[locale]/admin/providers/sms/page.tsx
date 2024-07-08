@@ -1,14 +1,13 @@
-import { PgSessions } from "auth/sessions";
 import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { pgpool } from "messages/dbConnection";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { temporaryMockUtils } from "messages";
 import { FormElement } from "../../FormElement";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 import { providerRoutes } from "../../../../utils/routes";
+import { getAuthenticationContext } from "../../../logto_integration/config";
 const awsErrorKey = "aws-provider-form";
 const providerTypeErrorKey = "provider-type";
 
@@ -60,8 +59,9 @@ export default async (props: {
 
   async function submitAction(formData: FormData) {
     "use server";
-    const { userId } = await PgSessions.get();
-    const state = await getState(userId);
+    const { user: submitUser, accessToken: submitToken } =
+      await getAuthenticationContext();
+    const state = await getState(submitUser.id);
 
     const name = formData.get("name")?.toString();
     const providerType = formData.get("providerType")?.toString();
@@ -87,14 +87,18 @@ export default async (props: {
       }
 
       if (formErrors.length) {
-        await temporaryMockUtils.createErrors(formErrors, userId, awsErrorKey);
+        await temporaryMockUtils.createErrors(
+          formErrors,
+          submitUser.id,
+          awsErrorKey,
+        );
         return revalidatePath("/");
       }
       if (!accessKey || !secretAccessKey || !name || !region) {
         return;
       }
 
-      const sdk = new Messaging(userId);
+      const sdk = new Messaging(submitToken);
       const providerId = props.searchParams?.id;
       let error: any = undefined;
       if (providerId) {
@@ -136,7 +140,7 @@ export default async (props: {
 
   async function submitProviderType(formData: FormData) {
     "use server";
-    const { userId } = await PgSessions.get();
+    const { user: providerUser } = await getAuthenticationContext();
     const providerType = formData.get("providerType")?.toString();
 
     if (!providerType) {
@@ -148,7 +152,7 @@ export default async (props: {
             messageKey: "empty",
           },
         ],
-        userId,
+        providerUser.id,
         providerTypeErrorKey,
       );
       return revalidatePath("/");
@@ -161,22 +165,22 @@ export default async (props: {
             on conflict(user_id) do update
             set state = $2
         `,
-      [userId, { type: providerType }],
+      [providerUser.id, { type: providerType }],
     );
 
     revalidatePath("/");
   }
 
-  const { userId } = await PgSessions.get();
-  const sdkClient = new Messaging(userId);
+  const { user, accessToken } = await getAuthenticationContext();
+  const sdkClient = new Messaging(accessToken);
   const data: Awaited<ReturnType<typeof sdkClient.getSmsProvider>>["data"] =
     props.searchParams?.id
       ? (await sdkClient.getSmsProvider(props.searchParams?.id)).data
       : undefined;
 
-  const state = await getState(userId);
+  const state = await getState(user.id);
 
-  const awsErrors = await temporaryMockUtils.getErrors(userId, awsErrorKey);
+  const awsErrors = await temporaryMockUtils.getErrors(user.id, awsErrorKey);
 
   const nameError = awsErrors.find((error) => error.field === "name");
   const accessKeyError = awsErrors.find((error) => error.field === "accessKey");

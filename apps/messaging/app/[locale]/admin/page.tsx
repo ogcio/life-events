@@ -1,12 +1,12 @@
-import { PgSessions } from "auth/sessions";
 import { redirect, RedirectType } from "next/navigation";
 import { sendAMessage } from "../../utils/routes";
+import { getAuthenticationContext } from "../logto_integration/config";
 
 export default async () => {
-  const { publicServant } = await PgSessions.get();
+  const { isPublicServant } = await getAuthenticationContext();
 
   return redirect(
-    publicServant ? sendAMessage.url : "/messages",
+    isPublicServant ? sendAMessage.url : "/messages",
     RedirectType.replace,
   );
 };

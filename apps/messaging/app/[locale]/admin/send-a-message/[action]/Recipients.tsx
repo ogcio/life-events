@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 import ds from "design-system";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
-import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { getQueryParams } from "../components/paginationUtils";
 import { sendAMessage } from "../../../../utils/routes";
@@ -12,6 +11,7 @@ import { Messaging } from "building-blocks-sdk";
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { pgpool } from "messages/dbConnection";
 import styles from "../components/Table.module.scss";
+import { getAuthenticationContext } from "../../../logto_integration/config";
 
 interface RecipientContact {
   id: string;
@@ -155,8 +155,8 @@ export default async (props: MessageCreateProps) => {
 
   const urlParams = new URLSearchParams(props.searchParams);
   const queryParams = getQueryParams(urlParams);
-  const { userId } = await PgSessions.get();
-  const messaging = new Messaging(userId);
+  const { accessToken } = await getAuthenticationContext();
+  const messaging = new Messaging(accessToken);
   const { data: organisationId } = await messaging.getMockOrganisationId();
   const response = await messaging.getRecipients({
     ...queryParams,

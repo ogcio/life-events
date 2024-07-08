@@ -1,9 +1,12 @@
-import { PgSessions } from "auth/sessions";
 import ds from "design-system";
+import { getAuthenticationContext } from "./logto_integration/config";
 
 export default async () => {
-  const { firstName, lastName } = await PgSessions.get();
-  const name = firstName.charAt(0) + lastName.charAt(0);
+  const { user } = await getAuthenticationContext();
+  const names = user.name ? user.name.split(" ") : ["N", "A"];
+  const firstNameChar = names[0].charAt(0) ?? "";
+  const lastNameChar = names[1] ? names[1].charAt(0) : "";
+  const name = firstNameChar.concat(lastNameChar);
 
   return (
     <div

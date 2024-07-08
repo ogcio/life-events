@@ -1,10 +1,11 @@
-import { PgSessions } from "auth/sessions";
 import { Messaging } from "building-blocks-sdk";
 import dayjs from "dayjs";
 import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
 import ds from "design-system";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { getAuthenticationContext } from "../../logto_integration/config";
+import { AuthenticationError } from "shared-errors";
 
 async function messageStatus(type: string, status: string) {
   const t = await getTranslations("MessageEvents.status");
@@ -70,8 +71,9 @@ export default async (props: { searchParams: { search?: string } }) => {
   }
 
   const freeSearch = props.searchParams.search;
-  const { userId } = await PgSessions.get();
-  const client = new Messaging(userId);
+  const { accessToken } = await getAuthenticationContext();
+
+  const client = new Messaging(accessToken);
   const { data, error } = await client.getMessageEvents({
     query: { search: freeSearch },
   });

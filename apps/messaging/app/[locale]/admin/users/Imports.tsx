@@ -1,14 +1,14 @@
-import { PgSessions } from "auth/sessions";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import React from "react";
+import { getAuthenticationContext } from "../../logto_integration/config";
 
 export default async () => {
   const t = await getTranslations("UsersImports");
-  const { userId } = await PgSessions.get();
-  const messagingClient = new Messaging(userId);
+  const { accessToken } = await getAuthenticationContext();
+  const messagingClient = new Messaging(accessToken);
   const { data: organisationId } =
     await messagingClient.getMockOrganisationId();
   const { data: imports } =

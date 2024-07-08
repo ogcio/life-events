@@ -3,9 +3,9 @@ import { MessageCreateProps } from "../../../../utils/messaging";
 import { api } from "messages";
 import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
 import { Messaging } from "building-blocks-sdk";
 import { headers } from "next/headers";
+import { getAuthenticationContext } from "../../../logto_integration/config";
 
 export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.TemplateForm");
@@ -42,9 +42,9 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const { userId } = await PgSessions.get();
+  const { accessToken } = await getAuthenticationContext();
   const templateResult = (
-    await new Messaging(userId).getTemplate(props.state.templateMetaId)
+    await new Messaging(accessToken).getTemplate(props.state.templateMetaId)
   )?.data;
 
   const template =

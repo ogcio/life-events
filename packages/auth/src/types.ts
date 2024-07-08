@@ -37,7 +37,7 @@ export type AuthSessionOrganizationInfo = {
   roles: string[];
 };
 
-export type AuthSessionContext = {
+export type PartialAuthSessionContext = {
   user?: AuthSessionUserInfo;
   isPublicServant: boolean;
   organization?: AuthSessionOrganizationInfo;
@@ -45,6 +45,11 @@ export type AuthSessionContext = {
   scopes: string[];
   accessToken?: string;
 };
+
+export type AuthSessionContext = Omit<
+  PartialAuthSessionContext,
+  "user" | "accessToken"
+> & { user: AuthSessionUserInfo; accessToken: string };
 
 export type GetSessionContextParameters = {
   fetchUserInfo?: boolean;
@@ -76,7 +81,7 @@ export type IAuthSession = {
   get(
     config: AuthConfig,
     getContextParameters: GetSessionContextParameters,
-  ): Promise<AuthSessionContext>;
+  ): Promise<PartialAuthSessionContext>;
   isAuthenticated(
     config: AuthConfig,
     getContextParameters?: GetSessionContextParameters,

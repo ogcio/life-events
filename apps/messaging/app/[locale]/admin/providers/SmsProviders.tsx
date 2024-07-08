@@ -1,4 +1,3 @@
-import { PgSessions } from "auth/sessions";
 import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -8,11 +7,12 @@ import {
   searchKeyProvider,
   searchValueSms,
 } from "../../../utils/messaging";
+import { getAuthenticationContext } from "../../logto_integration/config";
 
 export default async () => {
   const t = await getTranslations("settings.Sms");
-  const { userId } = await PgSessions.get();
-  const sdk = new Messaging(userId);
+  const { accessToken } = await getAuthenticationContext();
+  const sdk = new Messaging(accessToken);
 
   const { data: providers } = await sdk.getSmsProviders();
 

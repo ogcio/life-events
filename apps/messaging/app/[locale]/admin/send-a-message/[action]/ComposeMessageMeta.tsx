@@ -5,7 +5,7 @@ import { MessageCreateProps } from "../../../../utils/messaging";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import { Messaging } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
+import { getAuthenticationContext } from "../../../logto_integration/config";
 
 export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.ComposeMessageMeta");
@@ -41,9 +41,9 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const { userId } = await PgSessions.get();
+  const { user } = await getAuthenticationContext();
   const lang = headers().get("x-next-intl-locale");
-  const { data: templates } = await new Messaging(userId).getTemplates();
+  const { data: templates } = await new Messaging(user.id).getTemplates();
 
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">

@@ -7,7 +7,7 @@ import {
 import {
   IAuthSession,
   GetSessionContextParameters,
-  AuthSessionContext,
+  PartialAuthSessionContext,
   AuthSessionUserInfo,
   AuthSessionOrganizationInfo,
 } from "./types";
@@ -30,7 +30,7 @@ export const AuthSession: IAuthSession = {
   async get(
     config: LogtoNextConfig,
     getContextParameters: GetSessionContextParameters,
-  ): Promise<AuthSessionContext> {
+  ): Promise<PartialAuthSessionContext> {
     if (
       getContextParameters.userType === "publicServant" &&
       !getContextParameters.organizationId
@@ -209,7 +209,7 @@ const getScopes = (
 const parseContext = (
   context: LogtoContext,
   getContextParameters: GetSessionContextParameters,
-): AuthSessionContext => {
+): PartialAuthSessionContext => {
   const userInfo = getUserInfo(context);
   const orgRoles = getOrganizationRoles(context);
   const orgInfo = getOrganizationInfo(context, getContextParameters, orgRoles);
@@ -221,7 +221,7 @@ const parseContext = (
     getContextParameters,
   );
 
-  const outputContext: AuthSessionContext = {
+  const outputContext: PartialAuthSessionContext = {
     isPublicServant,
     scopes: getScopes(context, isPublicServant, accessToken),
   };

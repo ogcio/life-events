@@ -1,12 +1,12 @@
 import { Messaging } from "building-blocks-sdk";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
-import { PgSessions } from "auth/sessions";
 import { temporaryMockUtils } from "messages";
 import { redirect } from "next/navigation";
 import { providerRoutes } from "../../../../utils/routes";
 import { revalidatePath } from "next/cache";
 import { FormElement } from "../../FormElement";
 import { getTranslations } from "next-intl/server";
+import { getAuthenticationContext } from "../../../logto_integration/config";
 const defaultErrorStateId = "email_provider_form";
 
 type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
@@ -48,11 +48,12 @@ export default async (props: {
       }
     }
 
-    const { userId } = await PgSessions.get();
+    const { accessToken: submitAccessToken, user: submitUser } =
+      await getAuthenticationContext();
     if (formErrors.length) {
       await temporaryMockUtils.createErrors(
         formErrors,
-        userId,
+        submitUser.id,
         defaultErrorStateId,
       );
       return revalidatePath("/");
@@ -63,7 +64,7 @@ export default async (props: {
       return;
     }
 
-    const messagesClient = new Messaging(userId);
+    const messagesClient = new Messaging(submitAccessToken);
 
     let serverError:
       | Awaited<ReturnType<typeof messagesClient.createEmailProvider>>["error"]
@@ -123,7 +124,7 @@ export default async (props: {
 
       await temporaryMockUtils.createErrors(
         formErrors,
-        userId,
+        user.id,
         defaultErrorStateId,
       );
 
@@ -138,24 +139,22 @@ export default async (props: {
     redirect(url.href);
   }
 
-  const { userId } = await PgSessions.get();
-  const client = new Messaging(userId);
+  const { accessToken, user } = await getAuthenticationContext();
+  const client = new Messaging(accessToken);
 
   let data:
     | Awaited<ReturnType<typeof client.getEmailProvider>>["data"]
     | undefined;
 
   if (props.searchParams?.id) {
-    const res = await new Messaging(userId).getEmailProvider(
-      props.searchParams.id,
-    );
+    const res = await client.getEmailProvider(props.searchParams.id);
     if (res.data) {
       data = res.data;
     }
   }
 
   const errors = await temporaryMockUtils.getErrors(
-    userId,
+    user.id,
     defaultErrorStateId,
   );
 

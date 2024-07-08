@@ -7,7 +7,6 @@ import SmsProviders from "./SmsProviders";
 import { redirect } from "next/navigation";
 import ConfirmDeleteModal from "../ConfirmDeleteModal";
 import { Messaging } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
 import EmailProviders from "./EmailProviders";
 import { getTranslations } from "next-intl/server";
 import {
@@ -15,6 +14,7 @@ import {
   searchValueEmail,
   searchValueSms,
 } from "../../../utils/messaging";
+import { getAuthenticationContext } from "../../logto_integration/config";
 
 export const linkStyle = (selected: boolean): CSSProperties => {
   const props: CSSProperties = {
@@ -73,8 +73,8 @@ export default async (props: {
 
   let toDelete: string | undefined;
   if (props.searchParams?.deleteId) {
-    const { userId } = await PgSessions.get();
-    const client = new Messaging(userId);
+    const { accessToken } = await getAuthenticationContext();
+    const client = new Messaging(accessToken);
 
     if (props.searchParams.provider === searchValueSms) {
       const { data } = await client.getSmsProvider(
@@ -106,8 +106,8 @@ export default async (props: {
   async function handleDeleteProvider(formData: FormData) {
     "use server";
 
-    const { userId } = await PgSessions.get();
-    const client = new Messaging(userId);
+    const { accessToken } = await getAuthenticationContext();
+    const client = new Messaging(accessToken);
 
     if (!props.searchParams?.deleteId) {
       return;

@@ -1,4 +1,3 @@
-import { PgSessions } from "auth/sessions";
 import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
@@ -8,11 +7,12 @@ import {
   searchKeyProvider,
   searchValueEmail,
 } from "../../../utils/messaging";
+import { getAuthenticationContext } from "../../logto_integration/config";
 
 export default async () => {
   const t = await getTranslations("settings.Emails");
-  const { userId } = await PgSessions.get();
-  const { data } = await new Messaging(userId).getEmailProviders();
+  const { accessToken } = await getAuthenticationContext();
+  const { data } = await new Messaging(accessToken).getEmailProviders();
 
   return (
     <table className="govie-table">
