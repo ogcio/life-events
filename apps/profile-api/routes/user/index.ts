@@ -17,7 +17,6 @@ import {
 import { Type } from "@sinclair/typebox";
 import { findUser, getUser } from "../../services/users/find-user";
 import { createUser } from "../../services/users/create-user";
-import { isLifeEventsError } from "shared-errors";
 
 const USER_TAGS = ["user"];
 
