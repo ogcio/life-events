@@ -6,6 +6,7 @@
     "build": "next build",
     "start": "next start -p 3000",
     "test:e2e": "playwright test",
+    "test:lighthouse": "node performance-tests/main.mjs",
     "migrate": "db-migrate up"
   },
   "nodemonConfig": {
@@ -46,6 +47,11 @@
     "@types/node": "20.10.4",
     "@types/pg": "^8.11.0",
     "@types/react": "18.2.45",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "chrome-launcher": "^1.1.2",
+    "fs": "0.0.1-security",
+    "lighthouse": "^12.1.0",
+    "puppeteer": "^22.12.1",
+    "request": "^2.88.2"
   }
 }
