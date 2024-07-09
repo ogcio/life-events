@@ -3,6 +3,7 @@ import { AuthSessionContext } from "auth/types";
 import { AuthenticationError } from "shared-errors";
 import { getServerLogger } from "nextjs-logging-wrapper";
 import { notFound } from "next/navigation";
+import { logtoLogin } from "../../utils/routes";
 
 export const messagingApiResource = process.env.MESSAGES_BACKEND_URL + "/";
 
@@ -82,6 +83,7 @@ const getCitizenContext = () =>
       fetchUserInfo: true,
       publicServantExpectedRole,
       userType: "citizen",
+      loginUrl: logtoLogin.url,
     },
   );
 
@@ -97,6 +99,7 @@ const getPublicServantContext = () =>
       publicServantExpectedRole,
       organizationId: organizationId,
       userType: "publicServant",
+      loginUrl: logtoLogin.url,
     },
   );
 
