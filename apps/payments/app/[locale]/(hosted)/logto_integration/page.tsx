@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Payments } from "building-blocks-sdk";
 import {
+  getAuthenticationContext,
   getPaymentsCitizenContext,
   getPaymentsPublicServantContext,
 } from "../../../../libraries/auth";
@@ -28,7 +29,7 @@ const actionPublicServant = async () => {
 };
 
 export default async function () {
-  const context = await getPaymentsCitizenContext();
+  const context = await getAuthenticationContext();
 
   return (
     <>

@@ -8,8 +8,17 @@ import {
   paymentsPublicServantScopes,
 } from "./logtoConfig";
 
-const publicServantExpectedRole = "Public Servant";
+const publicServantExpectedRole = "ogcio:Public Servant";
 const organizationId = "ogcio";
+
+export const getAuthenticationContext = async (): Promise<any> => {
+  const citizenContext = await getPaymentsCitizenContext();
+  if (citizenContext.isPublicServant) {
+    return getPaymentsPublicServantContext();
+  }
+
+  return citizenContext;
+};
 
 export const getPaymentsCitizenContext = () =>
   AuthSession.get(

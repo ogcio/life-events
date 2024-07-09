@@ -66,8 +66,6 @@ export default async function Bank(props: {
       }
     | undefined;
 }) {
-  // TODO: no email in user data
-  const email = "";
   const { accessToken, user, isPublicServant } =
     await getPaymentsCitizenContext();
   const t = await getTranslations("Common");
@@ -104,7 +102,7 @@ export default async function Bank(props: {
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email, name: `${user?.name ?? ""}` },
+    userData: { email: user?.email ?? "", name: user?.name ?? "" },
   });
 
   if (error) {

@@ -67,8 +67,6 @@ export default async function CardWithRealex(props: {
       }
     | undefined;
 }) {
-  // TODO: no email in user data
-  const email = "";
   const { accessToken, user, isPublicServant } =
     await getPaymentsCitizenContext();
 
@@ -109,7 +107,7 @@ export default async function CardWithRealex(props: {
     integrationReference: props.searchParams.integrationRef,
     amount,
     paymentProviderId: providerId,
-    userData: { email, name: `${user?.name ?? ""}` },
+    userData: { email: user?.email ?? "", name: user?.name ?? "" },
   });
 
   if (createTransactionError) {
