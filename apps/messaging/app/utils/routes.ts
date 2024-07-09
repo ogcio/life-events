@@ -51,6 +51,14 @@ export const userOrganisationsRoutes = {
   url: "settings/organisations",
 };
 
+export const logtoLogin = {
+  url: "/logto_integration/login",
+};
+
+export const logtoSignout = {
+  url: "/logto_integration/signout",
+};
+
 export function urlWithSearchParams(
   dir: string,
   ...searchParams: { key: string; value?: string }[]
