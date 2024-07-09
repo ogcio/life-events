@@ -1,7 +1,6 @@
 import { Payments } from "building-blocks-sdk";
 import { getAuthenticationContext } from "./auth";
-import notFound from "../app/not-found";
-
+import { notFound } from "next/navigation";
 export class PaymentsApiFactory {
   private static instance: Payments | null = null;
 
