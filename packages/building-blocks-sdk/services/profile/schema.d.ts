@@ -14,6 +14,16 @@ export interface paths {
       };
     };
   };
+  "/user-login-wh": {
+    post: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
   "/api/v1/addresses/": {
     get: {
       responses: {
