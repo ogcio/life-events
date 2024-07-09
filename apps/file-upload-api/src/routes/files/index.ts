@@ -1,11 +1,16 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance, FastifyRequest } from "fastify";
 import { HttpError } from "../../types/httpErrors.js";
-import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { PassThrough, Stream } from "stream";
+import {
+  DeleteObjectCommand,
+  ListObjectsCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
+import { PassThrough } from "stream";
 import { EventEmitter } from "node:events";
 import { pipeline } from "stream";
 import { Upload } from "@aws-sdk/lib-storage";
+import { Object } from "../../types/schemaDefinitions.js";
 
 const deleteObject = (
   s3Client: S3Client,
@@ -50,6 +55,7 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
     });
 
     eventEmitter.once("error", (err) => {
+      app.log.error(err);
       reject(app.httpErrors.badRequest(err.message));
     });
     eventEmitter.on("error", () => {
@@ -131,7 +137,6 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
 
   pipeline(stream, antivirusPassthrough, s3uploadPassthrough, (err) => {
     if (err) {
-      // app.log.error(err);
       eventEmitter.emit("error", err);
     }
   });
@@ -156,6 +161,69 @@ export default async function routes(app: FastifyInstance) {
       await scanAndUplad(app, request);
 
       reply.send({ message: "File uploaded successfully" });
+    },
+  );
+
+  app.get(
+    "/",
+    {
+      schema: {
+        tags: ["Files"],
+        response: {
+          200: Type.Array(Object),
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      let response = null;
+      try {
+        const data = await app.s3Client.client.send(
+          new ListObjectsCommand({ Bucket: app.s3Client.bucketName }),
+        );
+        response = data.Contents?.map((item) => ({
+          url: `${app.config.S3_ENDPOINT}/${app.s3Client.bucketName}/${item.Key}`,
+          key: item.Key,
+          size: item.Size,
+        }));
+      } catch (err) {
+        app.log.error(err);
+        throw app.httpErrors.internalServerError();
+      }
+
+      reply.send(response);
+    },
+  );
+
+  app.delete<{ Params: { key: string } }>(
+    "/:key",
+    {
+      schema: {
+        tags: ["Files"],
+        params: Type.Object({ key: Type.String() }),
+        response: {
+          // 200: Type.Object({ message: Type.String() }),
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      if (!request.params.key) {
+        throw app.httpErrors.badRequest("Key not provided");
+      }
+      try {
+        await app.s3Client.client.send(
+          new DeleteObjectCommand({
+            Bucket: app.s3Client.bucketName,
+            Key: request.params.key,
+          }),
+        );
+      } catch (err) {
+        app.log.error(err);
+        throw app.httpErrors.internalServerError();
+      }
+
+      reply.send({ response: "File deleted succesfully" });
     },
   );
 }

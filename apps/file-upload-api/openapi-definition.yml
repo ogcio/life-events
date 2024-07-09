@@ -50,5 +50,85 @@ paths:
                   - detail
                   - request_id
                   - name
+    get:
+      tags:
+        - Files
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    url:
+                      type: string
+                    key:
+                      type: string
+                    size:
+                      type: number
+                  required:
+                    - url
+                    - key
+                    - size
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /files/{key}:
+    delete:
+      tags:
+        - Files
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: key
+          required: true
+      responses:
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
 tags:
   - name: FileUploadApi

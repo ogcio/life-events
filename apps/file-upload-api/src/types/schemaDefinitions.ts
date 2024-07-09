@@ -10,3 +10,9 @@ export const Token = Type.Object({
 });
 
 export type TokenType = Static<typeof Token>;
+
+export const Object = Type.Object({
+  url: Type.String(),
+  key: Type.String(),
+  size: Type.Number(),
+});

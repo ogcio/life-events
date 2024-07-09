@@ -39,7 +39,7 @@ t.test("files", async (t) => {
     },
   );
   const uploadEventEmitter = new EventEmitter();
-  const deleteEventEmitter = new EventEmitter();
+  const s3SendEventEmitter = new EventEmitter();
 
   const routes = await t.mockImport<
     typeof import("../../../routes/files/index.js")
@@ -70,11 +70,11 @@ t.test("files", async (t) => {
         client: {
           send: () =>
             new Promise((resolve, reject) => {
-              deleteEventEmitter.once("delete-error", () => {
-                reject(new Error("deletion error"));
+              s3SendEventEmitter.once("send-error", () => {
+                reject(new Error("Send error"));
               });
-              deleteEventEmitter.once("fileDeleted", () => {
-                resolve();
+              s3SendEventEmitter.once("sendComplete", (data) => {
+                resolve(data);
               });
             }),
         },
@@ -168,7 +168,7 @@ t.test("files", async (t) => {
       uploadEventEmitter.emit("fileUploaded");
       antivirusPassthrough.emit("scan-complete", { isInfected: true });
       setTimeout(() => {
-        deleteEventEmitter.emit("fileDeleted");
+        s3SendEventEmitter.emit("sendComplete");
       });
     });
   });
@@ -216,7 +216,7 @@ t.test("files", async (t) => {
         // // passthroughStream.push(Buffer.alloc(1));
         // // streamPassThrough.end();
         setTimeout(() => {
-          deleteEventEmitter.emit("delete-error");
+          s3SendEventEmitter.emit("send-error");
         });
       });
     },
@@ -241,7 +241,7 @@ t.test("files", async (t) => {
         uploadEventEmitter.emit("fileUploaded");
         antivirusPassthrough.emit("scan-complete", { isInfected: true });
         setTimeout(() => {
-          deleteEventEmitter.emit("delete-error");
+          s3SendEventEmitter.emit("send-error");
         });
       });
     },
@@ -315,6 +315,92 @@ t.test("files", async (t) => {
 
     setTimeout(() => {
       passthroughStream.emit("error", new Error("stream error"));
+    });
+  });
+
+  t.test("Should return a list of all files uploaded by a user", (t) => {
+    app
+      .inject({
+        method: "GET",
+        url: "/files",
+      })
+      .then((response) => {
+        t.same(response.json(), [
+          {
+            url: "http://localhost:4566//file1.txt",
+            key: "file1.txt",
+            size: 100,
+          },
+        ]);
+
+        t.equal(response.statusCode, 200);
+        t.end();
+      });
+
+    setTimeout(() => {
+      s3SendEventEmitter.emit("sendComplete", {
+        Contents: [{ Key: "file1.txt", Size: 100 }],
+      });
+    });
+  });
+
+  t.test("Should throw an errror when list files throws", (t) => {
+    app
+      .inject({
+        method: "GET",
+        url: "/files",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 500);
+        t.end();
+      });
+
+    setTimeout(() => {
+      s3SendEventEmitter.emit("send-error");
+    });
+  });
+
+  t.test("Should throw an error when DELETE with no key is called", (t) => {
+    app
+      .inject({
+        method: "DELETE",
+        url: "/files/",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 400);
+        t.end();
+      });
+  });
+
+  t.test("Should delete a file successfully", (t) => {
+    app
+      .inject({
+        method: "DELETE",
+        url: "/files/dummyfile.txt",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 200);
+        t.end();
+      });
+
+    setTimeout(() => {
+      s3SendEventEmitter.emit("sendComplete");
+    });
+  });
+
+  t.test("should throw an error when delete fails", (t) => {
+    app
+      .inject({
+        method: "DELETE",
+        url: "/files/dummyfile.txt",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 500);
+        t.end();
+      });
+
+    setTimeout(() => {
+      s3SendEventEmitter.emit("send-error");
     });
   });
 });

@@ -20,10 +20,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export async function build(opts?: FastifyServerOptions) {
-  const app = fastify({
-    ...opts,
-    logger: false,
-  }).withTypeProvider<TypeBoxTypeProvider>();
+  const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
   initializeLoggingHooks(app);
   initializeErrorHandler(app);
 
