@@ -15,8 +15,9 @@ import {
   UserDetailsSchema,
 } from "../../types/schemaDefinitions";
 import { Type } from "@sinclair/typebox";
-import { findUser } from "../../services/users/find-user";
+import { findUser, getUser } from "../../services/users/find-user";
 import { createUser } from "../../services/users/create-user";
+import { isLifeEventsError } from "shared-errors";
 
 const USER_TAGS = ["user"];
 
@@ -35,7 +36,7 @@ export default async function user(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.user!.id;
 
       /**  NOTE: the defaults below are for demo purposes only given we don't have access to real user data yet */
       const defaultData = {
@@ -51,44 +52,26 @@ export default async function user(app: FastifyInstance) {
         consent_to_prefill_data: false,
       };
 
-      let result;
-      try {
-        result = await app.pg.query(
-          `SELECT title, firstName, lastName, date_of_birth, ppsn, ppsn_visible, gender, email, phone, consent_to_prefill_data FROM user_details WHERE user_id = $1`,
-          [userId],
-        );
-      } catch (err) {
-        app.log.error((err as Error).message);
-      }
-
-      if (!result?.rows.length) {
-        const error = app.httpErrors.notFound("User not found");
-        error.statusCode = 404;
-        error.code = "USER_NOT_FOUND";
-
-        throw error;
-      }
-
-      const data = result.rows[0];
+      const data = await getUser({ pool: app.pg.pool, id: userId });
 
       const dataWithDefaults = {
-        firstname: data.firstname || defaultData.firstname,
-        lastname: data.lastname || defaultData.lastname,
+        firstName: data.firstName || defaultData.firstname,
+        lastName: data.lastName || defaultData.lastname,
         email: data.email || defaultData.email,
         title: data.title || defaultData.title,
-        dateOfBirth: data.date_of_birth || defaultData.date_of_birth,
+        dateOfBirth: data.dateOfBirth || defaultData.date_of_birth,
         ppsn: data.ppsn || defaultData.ppsn,
         ppsnVisible:
-          data.ppsn_visible !== undefined
-            ? data.ppsn_visible
+          data.ppsnVisible !== undefined
+            ? data.ppsnVisible
             : defaultData.ppsn_visible,
         gender: data.gender || defaultData.gender,
         phone: data.phone || defaultData.phone,
         consentToPrefillData:
-          data.consent_to_prefill_data || defaultData.consent_to_prefill_data,
+          data.consentToPrefillData || defaultData.consent_to_prefill_data,
       };
 
-      return reply.send(dataWithDefaults);
+      reply.send(dataWithDefaults);
     },
   );
 

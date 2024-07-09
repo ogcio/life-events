@@ -345,16 +345,24 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              firstname: string;
-              lastname: string;
+              /** @default null */
+              title?: null | string;
+              firstName: string;
+              lastName: string;
+              /** @default null */
+              dateOfBirth?: null | string;
+              /** @default null */
+              ppsn?: null | string;
+              /** @default false */
+              ppsnVisible?: null | boolean;
+              /** @default null */
+              gender?: null | string;
+              /** Format: email */
               email: string;
-              title: string;
-              dateOfBirth?: string;
-              ppsn: string;
-              ppsnVisible: boolean;
-              gender: string;
-              phone: string;
-              consentToPrefillData: boolean;
+              /** @default null */
+              phone?: null | string;
+              /** @default false */
+              consentToPrefillData?: null | boolean;
             };
           };
         };
