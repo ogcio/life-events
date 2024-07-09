@@ -16,6 +16,7 @@ import {
 } from "../../types/schemaDefinitions";
 import { Type } from "@sinclair/typebox";
 import { findUser } from "../../services/users/find-user";
+import { createUser } from "../../services/users/create-user";
 
 const USER_TAGS = ["user"];
 
@@ -111,25 +112,14 @@ export default async function user(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
       try {
-        const keys = Object.keys({ ...request.body, user_id: userId });
-        const values = Object.values({ ...request.body, user_id: userId });
-        const columns = keys.join(", ");
-        const placeholders = values
-          .map((_, index) => `$${index + 1}`)
-          .join(", ");
-
-        const result = await app.pg.query(
-          `
-            INSERT INTO user_details (${columns})
-            VALUES (${placeholders})
-            RETURNING user_id as id
-          `,
-          values,
+        reply.send(
+          await createUser({
+            pool: app.pg.pool,
+            createUserData: request.body,
+            userId: request.user!.id,
+          }),
         );
-
-        reply.send({ id: result.rows[0].id });
       } catch (error) {
         throw app.httpErrors.internalServerError((error as Error).message);
       }
