@@ -2,13 +2,12 @@ import React from "react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { Payments } from "building-blocks-sdk";
 import CopyLink from "./CopyBtn";
 import { errorHandler, formatCurrency } from "../../../../../utils";
 import Tooltip from "../../../../../components/Tooltip";
 import Modal from "../../../../../components/Modal";
 import styles from "../PaymentRequests.module.scss";
-import { getPaymentsPublicServantContext } from "../../../../../../libraries/auth";
+import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
 
 async function showDeleteModal() {
   "use server";
@@ -22,12 +21,11 @@ async function closeDeleteModal() {
   redirect("?");
 }
 
-async function deletePaymentRequest(requestId: string, accessToken: string) {
+async function deletePaymentRequest(requestId: string) {
   "use server";
 
-  const { error } = await new Payments(accessToken).deletePaymentRequest(
-    requestId,
-  );
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { error } = await paymentsApi.deletePaymentRequest(requestId);
 
   if (error) {
     errorHandler(error);
@@ -36,10 +34,13 @@ async function deletePaymentRequest(requestId: string, accessToken: string) {
   redirect("/paymentSetup/requests");
 }
 
-async function hasTransactions(requestId: string, accessToken: string) {
-  const { data: transactions, error } = await new Payments(
-    accessToken,
-  ).getPaymentRequestTransactions(requestId, { limit: 5, offset: 0 });
+async function hasTransactions(requestId: string) {
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: transactions, error } =
+    await paymentsApi.getPaymentRequestTransactions(requestId, {
+      limit: 5,
+      offset: 0,
+    });
 
   if (error) {
     errorHandler(error);
@@ -57,15 +58,9 @@ export const RequestDetails = async ({
   action: string | undefined;
   locale: string;
 }) => {
-  const { accessToken } = await getPaymentsPublicServantContext();
-
-  if (!accessToken) {
-    return notFound();
-  }
-
-  const { data: details, error } = await new Payments(
-    accessToken,
-  ).getPaymentRequest(requestId);
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: details, error } =
+    await paymentsApi.getPaymentRequest(requestId);
 
   if (error) {
     errorHandler(error);
@@ -79,14 +74,10 @@ export const RequestDetails = async ({
     notFound();
   }
 
-  const deletePR = deletePaymentRequest.bind(
-    this,
-    details.paymentRequestId,
-    accessToken,
-  );
+  const deletePR = deletePaymentRequest.bind(this, details.paymentRequestId);
 
   // Cannot delete the payment request if we already have transactions
-  const disableDeleteButton = await hasTransactions(requestId, accessToken);
+  const disableDeleteButton = await hasTransactions(requestId);
 
   const integrationReference = requestId;
   const completePaymentLink = new URL(

@@ -8,7 +8,7 @@ import {
   paymentsPublicServantScopes,
 } from "./logtoConfig";
 
-const publicServantExpectedRole = "ogcio:Public Servant";
+const publicServantExpectedRole = "ogcio:Payments Public Servant";
 const organizationId = "ogcio";
 
 export const getAuthenticationContext = async (): Promise<any> => {

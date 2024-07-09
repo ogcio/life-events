@@ -1,22 +1,15 @@
 import { getTranslations } from "next-intl/server";
-import { Payments } from "building-blocks-sdk";
-import { getPaymentsCitizenContext } from "../../../../../../libraries/auth";
 import { notFound } from "next/navigation";
 import { errorHandler, formatCurrency } from "../../../../../utils";
 import dayjs from "dayjs";
+import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
 
 export default async function ({ params: { transactionId } }) {
   const t = await getTranslations("MyPayments.details");
+  const paymentsApi = await PaymentsApiFactory.getInstance();
 
-  const { accessToken } = await getPaymentsCitizenContext();
-
-  if (!accessToken) {
-    return notFound();
-  }
-
-  const { data: details, error } = await new Payments(
-    accessToken,
-  ).getCitizenTransactionDetails(transactionId);
+  const { data: details, error } =
+    await paymentsApi.getCitizenTransactionDetails(transactionId);
 
   if (error) {
     errorHandler(error);

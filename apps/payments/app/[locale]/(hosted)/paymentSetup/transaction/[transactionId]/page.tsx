@@ -5,16 +5,12 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { TransactionStatuses } from "../../../../../../types/TransactionStatuses";
 import Link from "next/link";
-import { Payments } from "building-blocks-sdk";
-import { getPaymentsPublicServantContext } from "../../../../../../libraries/auth";
+import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
 
-async function getTransactionDetails(
-  transactionId: string,
-  accessToken: string,
-) {
-  const { data: result, error } = await new Payments(
-    accessToken,
-  ).getTransactionDetails(transactionId);
+async function getTransactionDetails(transactionId: string) {
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: result, error } =
+    await paymentsApi.getTransactionDetails(transactionId);
 
   if (error) {
     errorHandler(error);
@@ -23,14 +19,13 @@ async function getTransactionDetails(
   return result?.data;
 }
 
-async function confirmTransaction(transactionId: string, accessToken: string) {
+async function confirmTransaction(transactionId: string) {
   "use server";
-  const { error } = await new Payments(accessToken).updateTransaction(
-    transactionId,
-    {
-      status: TransactionStatuses.Succeeded,
-    },
-  );
+
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { error } = await paymentsApi.updateTransaction(transactionId, {
+    status: TransactionStatuses.Succeeded,
+  });
 
   if (error) {
     errorHandler(error);
@@ -44,15 +39,9 @@ export default async function ({
 }: {
   params: { transactionId: string; locale: string };
 }) {
-  const { accessToken } = await getPaymentsPublicServantContext();
-
-  if (!accessToken) {
-    return notFound();
-  }
-
   const [t, details, tRequest] = await Promise.all([
     getTranslations("PaymentSetup.Request.details"),
-    getTransactionDetails(transactionId, accessToken),
+    getTransactionDetails(transactionId),
     getTranslations("PaymentSetup.Request"),
   ]);
 
@@ -60,7 +49,7 @@ export default async function ({
     notFound();
   }
 
-  const confirm = confirmTransaction.bind(null, transactionId, accessToken);
+  const confirm = confirmTransaction.bind(null, transactionId);
 
   return (
     <div>

@@ -3,20 +3,19 @@ import EditProviderForm from "./EditProviderForm";
 import type { RealexProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import RealexFields from "../add-realex/RealexFields";
-import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
 import { errorHandler } from "../../../../../utils";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { realexValidationMap } from "../../../../../validationMaps";
 import { RealexFormState } from "../add-realex/page";
+import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
 
 type Props = {
   provider: RealexProvider;
-  accessToken: string;
   locale: string;
 };
 
-export default async ({ provider, accessToken, locale }: Props) => {
+export default async ({ provider, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddRealex");
   const { messages } = await getRequestConfig({ locale });
 
@@ -27,6 +26,9 @@ export default async ({ provider, accessToken, locale }: Props) => {
     formData: FormData,
   ): Promise<RealexFormState> {
     "use server";
+
+    const paymentsApi = await PaymentsApiFactory.getInstance();
+
     const nameField = formData.get("provider_name") as string;
     const merchantIdField = formData.get("merchant_id") as string;
     const sharedSecretField = formData.get("shared_secret") as string;
@@ -71,9 +73,10 @@ export default async ({ provider, accessToken, locale }: Props) => {
         };
     }
 
-    const { data: result, error } = await new Payments(
-      accessToken,
-    ).updateProvider(provider.id, providerData);
+    const { data: result, error } = await paymentsApi.updateProvider(
+      provider.id,
+      providerData,
+    );
 
     formResult.errors = errorHandler(error, errorFieldMapping) ?? {};
 

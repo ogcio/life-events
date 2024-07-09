@@ -64,8 +64,6 @@ const getUserInfo = (
   let id: string | null = null;
   let email: string | null = null;
 
-  console.log(JSON.stringify(context, undefined, 2));
-
   if (context.claims) {
     name = context.claims.name ?? null;
     username = context.claims.username ?? null;

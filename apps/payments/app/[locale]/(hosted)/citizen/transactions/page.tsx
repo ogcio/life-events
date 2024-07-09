@@ -1,8 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import dayjs from "dayjs";
-import { Payments } from "building-blocks-sdk";
-import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import {
   buildPaginationLinks,
@@ -15,7 +13,8 @@ import {
 } from "../../../../utils";
 import { routeDefinitions } from "../../../../routeDefinitions";
 import Pagination from "../../../../components/pagination";
-import { notFound, redirect, RedirectType } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
+import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
 
 type Props = {
   params: {
@@ -26,12 +25,7 @@ type Props = {
 
 export default async function (props: Props) {
   const t = await getTranslations("MyPayments");
-
-  const { accessToken } = await getPaymentsCitizenContext();
-
-  if (!accessToken) {
-    return notFound();
-  }
+  const paymentsApi = await PaymentsApiFactory.getInstance();
 
   const currentPage = props.searchParams.page
     ? parseInt(props.searchParams.page)
@@ -45,9 +39,8 @@ export default async function (props: Props) {
     limit: pageLimit,
   };
 
-  const { data: transactionsData, error } = await new Payments(
-    accessToken,
-  ).getCitizenTransactions(pagination);
+  const { data: transactionsData, error } =
+    await paymentsApi.getCitizenTransactions(pagination);
 
   const errors = errorHandler(error);
 

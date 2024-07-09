@@ -10,12 +10,12 @@ import {
 import { notFound, redirect } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
 import getRequestConfig from "../../../../../i18n";
-import { Payments } from "building-blocks-sdk";
 import Footer from "../../../(hosted)/Footer";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import Header from "../../../../components/Header/Header";
 import Banner from "../../../../components/Banner";
 import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
+import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
 
 type Props = {
   params: {
@@ -32,13 +32,10 @@ type Props = {
     | undefined;
 };
 
-async function getPaymentRequestDetails(
-  paymentId: string,
-  accessToken: string,
-) {
-  const { data: details, error } = await new Payments(
-    accessToken,
-  ).getPaymentRequestPublicInfo(paymentId);
+async function getPaymentRequestDetails(paymentId: string) {
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: details, error } =
+    await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
   if (error) {
     errorHandler(error);
@@ -67,14 +64,12 @@ export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return notFound();
 
-  const { accessToken, isPublicServant } = await getPaymentsCitizenContext();
-
-  if (!accessToken) return notFound();
+  const { isPublicServant } = await getPaymentsCitizenContext();
 
   const embed = props.searchParams?.embed === "true";
 
   const [details, t, tBanner, tCommon] = await Promise.all([
-    getPaymentRequestDetails(props.searchParams.paymentId, accessToken),
+    getPaymentRequestDetails(props.searchParams.paymentId),
     getTranslations("PayPaymentRequest"),
     getTranslations("PreviewBanner"),
     getTranslations("Common"),

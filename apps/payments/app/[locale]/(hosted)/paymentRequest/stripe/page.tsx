@@ -3,18 +3,14 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { createPaymentIntent } from "../../../../integration/stripe";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { redirect, RedirectType } from "next/navigation";
-import { Payments } from "building-blocks-sdk";
 import { errorHandler } from "../../../../utils";
 import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
+import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
 
-async function getPaymentDetails(
-  accessToken: string,
-  paymentId: string,
-  amount?: string,
-) {
-  const { data: details, error } = await new Payments(
-    accessToken,
-  ).getPaymentRequestPublicInfo(paymentId);
+async function getPaymentDetails(paymentId: string, amount?: string) {
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: details, error } =
+    await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
   if (error) {
     errorHandler(error);
@@ -50,10 +46,10 @@ export default async function Card(props: {
       }
     | undefined;
 }) {
-  const { accessToken, user, isPublicServant } =
-    await getPaymentsCitizenContext();
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { user, isPublicServant } = await getPaymentsCitizenContext();
 
-  if (isPublicServant || !accessToken) {
+  if (isPublicServant) {
     return redirect("/not-found", RedirectType.replace);
   }
 
@@ -67,7 +63,6 @@ export default async function Card(props: {
   }
 
   const paymentDetails = await getPaymentDetails(
-    accessToken,
     props.searchParams.paymentId,
     props.searchParams.amount,
   );
@@ -79,7 +74,7 @@ export default async function Card(props: {
   const { paymentIntent, providerKeysValid } =
     await createPaymentIntent(paymentDetails);
 
-  const { error } = await new Payments(accessToken).createTransaction({
+  const { error } = await paymentsApi.createTransaction({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentIntent.id,
     integrationReference: props.searchParams.integrationRef,

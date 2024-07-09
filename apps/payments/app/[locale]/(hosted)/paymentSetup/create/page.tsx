@@ -1,17 +1,16 @@
-import { RedirectType, notFound, redirect } from "next/navigation";
+import { RedirectType, redirect } from "next/navigation";
 import PaymentSetupFormPage, { ProvidersMap } from "../PaymentSetupFormPage";
 import {
   errorHandler,
   paymentMethods,
   stringToAmount,
 } from "../../../../utils";
-import { Payments } from "building-blocks-sdk";
 import { PaymentRequestStatus } from "../../../../../types/common";
 import { PaymentRequestDetails } from "../db";
 import { ProviderType } from "../providers/types";
 import { paymentRequestValidationMap } from "../../../../validationMaps";
 import { getTranslations } from "next-intl/server";
-import { getPaymentsPublicServantContext } from "../../../../../libraries/auth";
+import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
 
 type Props = {
   params: {
@@ -31,12 +30,6 @@ export type PaymentRequestFormState = {
 
 export default async function Page({ params: { locale } }: Props) {
   const t = await getTranslations("PaymentSetup.CreatePayment.form");
-  const { accessToken } = await getPaymentsPublicServantContext();
-
-  if (!accessToken) {
-    return notFound();
-  }
-
   const validationMap = paymentRequestValidationMap(t);
 
   async function handleSubmit(
@@ -44,6 +37,9 @@ export default async function Page({ params: { locale } }: Props) {
     formData: FormData,
   ): Promise<PaymentRequestFormState> {
     "use server";
+
+    const paymentsApi = await PaymentsApiFactory.getInstance();
+
     const providerAccountsField = formData.get("providerAccounts") as string;
 
     const titleField = formData.get("title") as string;
@@ -63,10 +59,6 @@ export default async function Page({ params: { locale } }: Props) {
       name: string;
       type: ProviderType;
     }[] = [];
-
-    if (!accessToken) {
-      return notFound();
-    }
 
     const formResult = {
       errors: {},
@@ -109,19 +101,18 @@ export default async function Page({ params: { locale } }: Props) {
       }
     });
 
-    const { data: paymentRequest, error } = await new Payments(
-      accessToken,
-    ).createPaymentRequest({
-      title: titleField,
-      description: descriptionField,
-      reference: referenceField,
-      amount: amountField,
-      redirectUrl: redirectUrlField,
-      allowAmountOverride: allowAmountOverrideField,
-      allowCustomAmount: allowCustomAmountField,
-      status: statusField,
-      providers,
-    });
+    const { data: paymentRequest, error } =
+      await paymentsApi.createPaymentRequest({
+        title: titleField,
+        description: descriptionField,
+        reference: referenceField,
+        amount: amountField,
+        redirectUrl: redirectUrlField,
+        allowAmountOverride: allowAmountOverrideField,
+        allowCustomAmount: allowCustomAmountField,
+        status: statusField,
+        providers,
+      });
 
     formResult.errors = errorHandler(error, validationMap) ?? {};
 
@@ -132,11 +123,5 @@ export default async function Page({ params: { locale } }: Props) {
     return formResult;
   }
 
-  return (
-    <PaymentSetupFormPage
-      accessToken={accessToken}
-      locale={locale}
-      action={handleSubmit}
-    />
-  );
+  return <PaymentSetupFormPage locale={locale} action={handleSubmit} />;
 }

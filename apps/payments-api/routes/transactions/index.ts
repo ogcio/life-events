@@ -111,14 +111,10 @@ export default async function transactions(app: FastifyInstance) {
     "/:transactionId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(
-          req,
-          res,
-          ["payments:transaction.self:write", "payments:transaction:*"],
-          {
-            method: "OR",
-          },
-        ),
+        app.checkPermissions(req, res, [
+          "payments:transaction.self:write",
+          "payments:transaction:*",
+        ]),
       schema: {
         tags: ["Transactions"],
         body: UpdateTransactionBody,

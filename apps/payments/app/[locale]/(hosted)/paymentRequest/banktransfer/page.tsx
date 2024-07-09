@@ -2,19 +2,15 @@ import { RedirectType, notFound, redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
 import { getTranslations } from "next-intl/server";
 import { errorHandler, formatCurrency } from "../../../../utils";
-import { Payments } from "building-blocks-sdk";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { BankTransferData } from "../../paymentSetup/providers/types";
 import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
+import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
 
-async function getPaymentDetails(
-  accessToken: string,
-  paymentId: string,
-  amount?: number,
-) {
-  const { data: details, error } = await new Payments(
-    accessToken,
-  ).getPaymentRequestPublicInfo(paymentId);
+async function getPaymentDetails(paymentId: string, amount?: number) {
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: details, error } =
+    await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
   if (error) {
     errorHandler(error);
@@ -37,19 +33,13 @@ async function getPaymentDetails(
   };
 }
 
-async function confirmPayment(
-  accessToken: string,
-  transactionId: string,
-  redirectUrl: string,
-) {
+async function confirmPayment(transactionId: string, redirectUrl: string) {
   "use server";
 
-  const { error } = await new Payments(accessToken).updateTransaction(
-    transactionId,
-    {
-      status: TransactionStatuses.Pending,
-    },
-  );
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { error } = await paymentsApi.updateTransaction(transactionId, {
+    status: TransactionStatuses.Pending,
+  });
 
   if (error) {
     errorHandler(error);
@@ -58,12 +48,11 @@ async function confirmPayment(
   redirect(redirectUrl, RedirectType.replace);
 }
 
-async function generatePaymentIntentId(accessToken: string): Promise<string> {
+async function generatePaymentIntentId(): Promise<string> {
   "use server";
 
-  const { data: result, error } = await new Payments(
-    accessToken,
-  ).generatePaymentIntentId();
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: result, error } = await paymentsApi.generatePaymentIntentId();
 
   if (error) {
     errorHandler(error);
@@ -87,10 +76,10 @@ export default async function Bank(params: {
       }
     | undefined;
 }) {
-  const { accessToken, user, isPublicServant } =
-    await getPaymentsCitizenContext();
+  const { user, isPublicServant } = await getPaymentsCitizenContext();
+  const paymentsApi = await PaymentsApiFactory.getInstance();
 
-  if (isPublicServant || !accessToken) {
+  if (isPublicServant) {
     return redirect("/not-found", RedirectType.replace);
   }
 
@@ -104,7 +93,6 @@ export default async function Bank(params: {
     ? parseFloat(params.searchParams.amount)
     : undefined;
   const paymentDetails = await getPaymentDetails(
-    accessToken,
     params.searchParams.paymentId,
     amount,
   );
@@ -113,11 +101,9 @@ export default async function Bank(params: {
     notFound();
   }
 
-  const paymentIntentId = await generatePaymentIntentId(accessToken);
+  const paymentIntentId = await generatePaymentIntentId();
 
-  const { data: transaction, error } = await new Payments(
-    accessToken,
-  ).createTransaction({
+  const { data: transaction, error } = await paymentsApi.createTransaction({
     paymentRequestId: params.searchParams.paymentId,
     extPaymentId: paymentIntentId,
     integrationReference: params.searchParams.integrationRef,
@@ -132,7 +118,6 @@ export default async function Bank(params: {
 
   const paymentMade = confirmPayment.bind(
     this,
-    accessToken,
     transaction?.data?.id,
     paymentDetails.redirectUrl,
   );

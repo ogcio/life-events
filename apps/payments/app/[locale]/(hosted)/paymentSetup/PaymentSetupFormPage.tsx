@@ -1,11 +1,11 @@
 import { PaymentRequestDetails } from "./db";
-import { Payments } from "building-blocks-sdk";
 import { errorHandler, providerTypeToPaymentMethod } from "../../../utils";
 import PaymentSetupForm from "./PaymentSetupForm";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import getRequestConfig from "../../../../i18n";
 import { ProviderType } from "./providers/types";
 import { PaymentRequestFormState } from "./create/page";
+import { PaymentsApiFactory } from "../../../../libraries/payments-api";
 
 export type ProvidersMap = Record<
   string,
@@ -16,12 +16,9 @@ export type ProvidersMap = Record<
   }[]
 >;
 
-async function getRegisteredAccounts(
-  accessToken: string,
-): Promise<ProvidersMap> {
-  const { data: providers, error } = await new Payments(
-    accessToken,
-  ).getProviders();
+async function getRegisteredAccounts(): Promise<ProvidersMap> {
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: providers, error } = await paymentsApi.getProviders();
 
   if (error) {
     errorHandler(error);
@@ -53,7 +50,6 @@ async function getRegisteredAccounts(
 
 type PaymentSetupFormPageProps = {
   details?: PaymentRequestDetails;
-  accessToken: string;
   locale: string;
   action: (
     prevState: FormData,
@@ -63,13 +59,11 @@ type PaymentSetupFormPageProps = {
 
 export default async function ({
   details,
-  accessToken,
   locale,
   action,
 }: PaymentSetupFormPageProps) {
   const { messages } = await getRequestConfig({ locale });
-
-  const providerAccounts = await getRegisteredAccounts(accessToken);
+  const providerAccounts = await getRegisteredAccounts();
 
   return (
     <NextIntlClientProvider
