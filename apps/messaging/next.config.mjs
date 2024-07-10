@@ -11,8 +11,7 @@ const nextConfig = {
   output: "standalone",
   poweredByHeader: false,
   experimental: {
-    outputFileTracingRoot: path.join(__dirname, "../../"),
-    instrumentationHook: true,
+    outputFileTracingRoot: path.join(__dirname, "../../")
   },
 };
 
