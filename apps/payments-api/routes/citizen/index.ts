@@ -17,6 +17,10 @@ import { CitizenTransactionDO } from "../../plugins/entities/citizen/types";
 import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
 import { PaginationParams as PaginationParamsType } from "../../types/pagination";
 import { TransactionDetailsDO } from "../../plugins/entities/transactions/types";
+import { authPermissions } from "../../types/authPermissions";
+
+const TAGS_CITIZEN = ["Citizen"];
+const TAGS_TRANSACTION = ["Transactions"];
 
 export default async function citizen(app: FastifyInstance) {
   app.get<{
@@ -25,9 +29,10 @@ export default async function citizen(app: FastifyInstance) {
   }>(
     "/transactions",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_SELF_READ]),
       schema: {
-        tags: ["Citizen"],
+        tags: TAGS_CITIZEN,
         querystring: PaginationParams,
         response: {
           200: GenericResponse(CitizenTransactions),
@@ -38,7 +43,7 @@ export default async function citizen(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const {
         offset = PAGINATION_OFFSET_DEFAULT,
         limit = PAGINATION_LIMIT_DEFAULT,
@@ -71,9 +76,10 @@ export default async function citizen(app: FastifyInstance) {
   }>(
     "/transactions/:transactionId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_SELF_READ]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS_TRANSACTION,
         response: {
           200: GenericResponse(TransactionDetails),
           404: HttpError,
@@ -82,7 +88,7 @@ export default async function citizen(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { transactionId } = request.params;
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       const transactionDetails = await app.transactions.getTransactionById(
         transactionId,

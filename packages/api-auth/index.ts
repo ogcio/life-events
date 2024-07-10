@@ -54,7 +54,7 @@ export const checkPermissions = async (
     currentApiResourceIndicator: string;
   },
   requiredPermissions: string[],
-  matchConfig = { method: "AND" },
+  matchConfig = { method: "OR" },
 ): Promise<ExtractedUserData> => {
   const token = extractBearerToken(authHeader);
   const payload = await decodeLogtoToken(token, config);
@@ -63,7 +63,6 @@ export const checkPermissions = async (
     sub: string;
     aud: string;
   };
-
   const scopesMap = getMapFromScope(scope);
 
   const grantAccess =
