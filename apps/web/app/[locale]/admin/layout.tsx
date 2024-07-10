@@ -1,8 +1,7 @@
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
 import "../../styles/globals.scss";
-import { PgSessions } from "auth/sessions";
-import { RedirectType, redirect } from "next/navigation";
+import { getAuthenticationContext } from "./logto_integration/config";
 import FeedbackBanner from "../../components/FeedbackBanner";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
@@ -15,11 +14,7 @@ export default async ({
   children: React.ReactNode;
   params: { locale: string };
 }) => {
-  const { publicServant } = await PgSessions.get();
-
-  if (!publicServant) {
-    return redirect("/", RedirectType.replace);
-  }
+  await getAuthenticationContext();
 
   return (
     <html lang={locale}>
@@ -35,7 +30,11 @@ export default async ({
           flexDirection: "column",
         }}
       >
-        <Header showHamburgerButton={false} locale={locale} />
+        <Header
+          signoutUrl="/admin/logto_integration/signout"
+          showHamburgerButton={false}
+          locale={locale}
+        />
         {/* All designs are made for 1440 px  */}
         <main className={styles.mainContainer}>
           <FeedbackBanner locale={locale} />

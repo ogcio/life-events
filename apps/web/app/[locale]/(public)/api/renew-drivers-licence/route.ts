@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { redirect } from "next/navigation";
-import { pgpool } from "../../../utils/postgres";
-import { driving } from "../../../utils/routes";
+import { pgpool } from "../../../../utils/postgres";
+import { driving } from "../../../../utils/routes";
 import { temporaryMockUtils } from "messages";
 import { PgSessions } from "auth/sessions";
 
