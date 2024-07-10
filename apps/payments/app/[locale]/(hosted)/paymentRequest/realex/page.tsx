@@ -62,13 +62,13 @@ export default async function CardWithRealex(props: {
       }
     | undefined;
 }) {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
   const { user, isPublicServant } = await getPaymentsCitizenContext();
 
   if (isPublicServant) {
     return redirect("/not-found", RedirectType.replace);
   }
 
+  const paymentsApi = await PaymentsApiFactory.getInstance();
   const messages = await getMessages({ locale: props.params.locale });
   const realexMessages =
     (await messages.PayRealex) as unknown as AbstractIntlMessages;

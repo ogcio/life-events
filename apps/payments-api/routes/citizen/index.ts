@@ -17,6 +17,10 @@ import { CitizenTransactionDO } from "../../plugins/entities/citizen/types";
 import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
 import { PaginationParams as PaginationParamsType } from "../../types/pagination";
 import { TransactionDetailsDO } from "../../plugins/entities/transactions/types";
+import { authPermissions } from "../../types/authPermissions";
+
+const TAGS_CITIZEN = ["Citizen"];
+const TAGS_TRANSACTION = ["Transactions"];
 
 export default async function citizen(app: FastifyInstance) {
   app.get<{
@@ -26,9 +30,9 @@ export default async function citizen(app: FastifyInstance) {
     "/transactions",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:transaction.self:read"]),
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_SELF_READ]),
       schema: {
-        tags: ["Citizen"],
+        tags: TAGS_CITIZEN,
         querystring: PaginationParams,
         response: {
           200: GenericResponse(CitizenTransactions),
@@ -73,9 +77,9 @@ export default async function citizen(app: FastifyInstance) {
     "/transactions/:transactionId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:transaction.self:read"]),
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_SELF_READ]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS_TRANSACTION,
         response: {
           200: GenericResponse(TransactionDetails),
           404: HttpError,

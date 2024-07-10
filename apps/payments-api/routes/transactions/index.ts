@@ -26,6 +26,9 @@ import {
   UpdateTransactionBodyDO,
 } from "../../plugins/entities/transactions/types";
 import { TransactionStatusesEnum } from "../../plugins/entities/transactions";
+import { authPermissions } from "../../types/authPermissions";
+
+const TAGS = ["Transactions"];
 
 export default async function transactions(app: FastifyInstance) {
   app.get<{
@@ -35,9 +38,9 @@ export default async function transactions(app: FastifyInstance) {
     "/:transactionId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:transaction:*"]),
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_ALL]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         response: {
           200: GenericResponse(TransactionDetails),
           404: HttpError,
@@ -61,9 +64,9 @@ export default async function transactions(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:transaction:*"]),
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_ALL]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         querystring: PaginationParams,
         response: {
           200: GenericResponse(Transactions),
@@ -112,11 +115,11 @@ export default async function transactions(app: FastifyInstance) {
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [
-          "payments:transaction.self:write",
-          "payments:transaction:*",
+          authPermissions.TRANSACTION_SELF_WRITE,
+          authPermissions.TRANSACTION_ALL,
         ]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         body: UpdateTransactionBody,
         response: {
           200: Type.Object({}),
@@ -144,9 +147,11 @@ export default async function transactions(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:transaction.self:write"]),
+        app.checkPermissions(req, res, [
+          authPermissions.TRANSACTION_SELF_WRITE,
+        ]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         body: CreateTransactionBody,
         response: {
           200: GenericResponse(Id),
@@ -180,9 +185,11 @@ export default async function transactions(app: FastifyInstance) {
     "/generatePaymentIntentId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:transaction.self:write"]),
+        app.checkPermissions(req, res, [
+          authPermissions.TRANSACTION_SELF_WRITE,
+        ]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         response: {
           200: GenericResponse(PaymentIntentId),
           404: HttpError,

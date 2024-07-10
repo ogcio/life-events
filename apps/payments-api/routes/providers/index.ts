@@ -14,15 +14,18 @@ import {
   ProviderDO,
   UpdateProviderDO,
 } from "../../plugins/entities/providers/types";
+import { authPermissions } from "../../types/authPermissions";
+
+const TAGS = ["Providers"];
 
 export default async function providers(app: FastifyInstance) {
   app.post<{ Body: CreateProviderDO; Reply: Id }>(
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:provider:*"]),
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         body: CreateProvider,
         response: {
           200: Id,
@@ -49,9 +52,9 @@ export default async function providers(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:provider:*"]),
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         response: {
           200: ProvidersList,
           401: HttpError,
@@ -75,9 +78,9 @@ export default async function providers(app: FastifyInstance) {
     "/:providerId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:provider:*"]),
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         response: {
           200: ProviderReply,
           401: HttpError,
@@ -107,9 +110,9 @@ export default async function providers(app: FastifyInstance) {
     "/:providerId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:provider:*"]),
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         body: UpdateProvider,
         response: {
           200: OkResponse,

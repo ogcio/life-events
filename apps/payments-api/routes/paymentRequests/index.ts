@@ -21,6 +21,9 @@ import { formatAPIResponse } from "../../utils/responseFormatter";
 import { PaginationParams as PaginationParamsType } from "../../types/pagination";
 import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
 import { TransactionDO } from "../../plugins/entities/transactions/types";
+import { authPermissions } from "../../types/authPermissions";
+
+const TAGS = ["PaymentRequests"];
 
 export default async function paymentRequests(app: FastifyInstance) {
   app.get<{
@@ -30,9 +33,9 @@ export default async function paymentRequests(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:payment_request:*"]),
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         querystring: PaginationParams,
         response: { 200: GenericResponse(Type.Array(PaymentRequest)) },
       },
@@ -111,9 +114,9 @@ export default async function paymentRequests(app: FastifyInstance) {
     "/:requestId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:payment_request:*"]),
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         params: ParamsWithPaymentRequestId,
         response: {
           200: PaymentRequestDetails,
@@ -179,10 +182,10 @@ export default async function paymentRequests(app: FastifyInstance) {
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [
-          "payments:payment_request.public:read",
+          authPermissions.PAYMENT_REQUEST_PUBLIC_READ,
         ]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         params: ParamsWithPaymentRequestId,
         response: {
           200: PaymentRequestDetails,
@@ -242,9 +245,9 @@ export default async function paymentRequests(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:payment_request:*"]),
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         body: CreatePaymentRequest,
         response: { 200: Id },
       },
@@ -327,9 +330,9 @@ export default async function paymentRequests(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:payment_request:*"]),
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         body: EditPaymentRequest,
         response: { 200: Id },
       },
@@ -409,9 +412,9 @@ export default async function paymentRequests(app: FastifyInstance) {
     "/:requestId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:payment_request:*"]),
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         response: {
           200: Type.Object({}),
           404: HttpError,
@@ -479,7 +482,7 @@ export default async function paymentRequests(app: FastifyInstance) {
     "/:requestId/transactions",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, ["payments:payment_request:*"]),
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
         tags: ["Transactions"],
         querystring: PaginationParams,
