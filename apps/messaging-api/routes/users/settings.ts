@@ -58,7 +58,7 @@ export default async function userSettings(app: FastifyInstance) {
       schema: {
         tags,
         params: Type.Object({
-          organisationId: Type.String({ format: "uuid" }),
+          organisationId: Type.String(),
         }),
         response: {
           200: Type.Object({ data: UserInvitationSchema }),
@@ -97,7 +97,7 @@ export default async function userSettings(app: FastifyInstance) {
         tags,
         body: OrganisationInvitationFeedbackSchema,
         params: Type.Object({
-          organisationId: Type.String({ format: "uuid" }),
+          organisationId: Type.String(),
         }),
         response: {
           202: Type.Object({ data: UserInvitationSchema }),
