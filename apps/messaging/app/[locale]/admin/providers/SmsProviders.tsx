@@ -8,8 +8,9 @@ import {
   searchValueSms,
 } from "../../../utils/messaging";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { withContext } from "../../with-context";
 
-export default async () => {
+export default withContext(async () => {
   const t = await getTranslations("settings.Sms");
   const accessToken = await AuthenticationContextFactory.getAccessToken();
   const sdk = new Messaging(accessToken);
@@ -84,4 +85,4 @@ export default async () => {
       </tbody>
     </table>
   );
-};
+});

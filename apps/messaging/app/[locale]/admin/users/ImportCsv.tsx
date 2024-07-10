@@ -11,12 +11,13 @@ import {
 } from "../../../utils/messaging";
 import { RedirectType, redirect } from "next/navigation";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { withContext } from "../../with-context";
 
 type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
 
 const CSV_FILE_FIELD = "csv-file";
 
-export default async () => {
+export default withContext(async () => {
   async function upload(formData: FormData) {
     "use server";
     const { accessToken: uploadToken, user: uploadUser } =
@@ -110,4 +111,4 @@ export default async () => {
       </form>
     </>
   );
-};
+});

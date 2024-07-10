@@ -6,8 +6,9 @@ import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import { Messaging } from "building-blocks-sdk";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { withContext } from "../../../with-context";
 
-export default async (props: MessageCreateProps) => {
+export default withContext(async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.ComposeMessageMeta");
   async function submit(formData: FormData) {
     "use server";
@@ -41,7 +42,7 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const { accessToken } = await AuthenticationContextFactory.getCitizen();
+  const user = await AuthenticationContextFactory.getUser();
   const lang = headers().get("x-next-intl-locale");
   const { data: templates } = await new Messaging(user.id).getTemplates();
 
@@ -160,4 +161,4 @@ export default async (props: MessageCreateProps) => {
       </form>
     </div>
   );
-};
+});

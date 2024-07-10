@@ -1,7 +1,8 @@
 import ds from "design-system";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { withContext } from "./with-context";
 
-export default async () => {
+export default withContext(async () => {
   const user = await AuthenticationContextFactory.getUser();
   const names = user.name ? user.name.split(" ") : ["N", "A"];
   const firstNameChar = names[0].charAt(0) ?? "";
@@ -26,4 +27,4 @@ export default async () => {
       {name}
     </div>
   );
-};
+});

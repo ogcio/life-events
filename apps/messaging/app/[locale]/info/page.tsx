@@ -11,6 +11,7 @@ import template from "../../../public/landingPage/template.png";
 import postbox from "../../../public/landingPage/postbox.png";
 import type { Metadata } from "next";
 import { getLinks } from "../../utils/messaging";
+import { withContext } from "../with-context";
 
 export const metadata: Metadata = {
   title: "Messaging",
@@ -22,7 +23,7 @@ type Props = {
   };
 };
 
-export default async (props: Props) => {
+export default withContext(async (props: Props) => {
   const t = await getTranslations("LandingPage");
   const tBanner = await getTranslations("AlphaBanner");
 
@@ -192,4 +193,4 @@ export default async (props: Props) => {
       <Footer />
     </>
   );
-};
+});

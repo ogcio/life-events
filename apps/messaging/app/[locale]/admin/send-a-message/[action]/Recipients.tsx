@@ -12,6 +12,7 @@ import { RedirectType, notFound, redirect } from "next/navigation";
 import { pgpool } from "messages/dbConnection";
 import styles from "../components/Table.module.scss";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { withContext } from "../../../with-context";
 
 interface RecipientContact {
   id: string;
@@ -54,7 +55,7 @@ const getRecipientContacts = async (
   return response.rows;
 };
 
-export default async (props: MessageCreateProps) => {
+export default withContext(async (props: MessageCreateProps) => {
   const fillSearchParams = async (
     searchParams: URLSearchParams,
     search?: string,
@@ -329,4 +330,4 @@ export default async (props: MessageCreateProps) => {
       </form>
     </div>
   );
-};
+});

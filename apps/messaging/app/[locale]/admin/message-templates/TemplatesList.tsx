@@ -7,8 +7,9 @@ import {
   urlWithSearchParams,
 } from "../../../utils/routes";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { withContext } from "../../with-context";
 
-export default async (props: { locale: string }) => {
+export default withContext(async (props: { locale: string }) => {
   const t = await getTranslations("MessageTemplates");
   const accessToken = await AuthenticationContextFactory.getAccessToken();
 
@@ -78,4 +79,4 @@ export default async (props: { locale: string }) => {
       </tbody>
     </table>
   );
-};
+});

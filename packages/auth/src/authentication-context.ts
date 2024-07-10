@@ -1,7 +1,7 @@
 import { AuthSession, AuthUserScope } from "auth/auth-session";
 import { PartialAuthSessionContext } from "auth/types";
 
-export const baseConfig = {
+export const getBaseLogtoConfig = () => ({
   cookieSecure: process.env.NODE_ENV === "production",
   baseUrl: process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
   endpoint: process.env.LOGTO_ENDPOINT as string,
@@ -9,7 +9,7 @@ export const baseConfig = {
 
   appId: process.env.LOGTO_MESSAGING_APP_ID as string,
   appSecret: process.env.LOGTO_MESSAGING_APP_SECRET as string,
-};
+});
 
 const orgScopes = [
   AuthUserScope.Organizations,
@@ -17,7 +17,7 @@ const orgScopes = [
 ];
 
 export const getCitizenContext = (params: {
-  resourceUrl: URL;
+  resourceUrl: string;
   citizenScopes: string[];
   loginUrl: string;
   publicServantExpectedRole: string;
@@ -27,16 +27,16 @@ export const getCitizenContext = (params: {
 }): Promise<PartialAuthSessionContext> =>
   AuthSession.get(
     {
-      ...baseConfig,
+      ...getBaseLogtoConfig(),
       baseUrl: params.baseUrl,
       appId: params.appId,
       appSecret: params.appSecret,
-      resources: [params.resourceUrl.toString()],
+      resources: [params.resourceUrl],
       scopes: [...params.citizenScopes],
     },
     {
       getAccessToken: true,
-      resource: params.resourceUrl.toString(),
+      resource: params.resourceUrl,
       fetchUserInfo: true,
       publicServantExpectedRole: params.publicServantExpectedRole,
       userType: "citizen",
@@ -45,7 +45,7 @@ export const getCitizenContext = (params: {
   );
 
 export const getPublicServantContext = (params: {
-  resourceUrl: URL;
+  resourceUrl: string;
   publicServantScopes: string[];
   organizationId: string;
   loginUrl: string;
@@ -56,11 +56,12 @@ export const getPublicServantContext = (params: {
 }): Promise<PartialAuthSessionContext> =>
   AuthSession.get(
     {
-      ...baseConfig,
+      ...getBaseLogtoConfig(),
       baseUrl: params.baseUrl,
       appId: params.appId,
       appSecret: params.appSecret,
       scopes: [...orgScopes, ...params.publicServantScopes],
+      resources: [params.resourceUrl],
     },
     {
       getOrganizationToken: true,
@@ -69,5 +70,6 @@ export const getPublicServantContext = (params: {
       organizationId: params.organizationId,
       userType: "publicServant",
       loginUrl: params.loginUrl,
+      resource: params.resourceUrl,
     },
   );

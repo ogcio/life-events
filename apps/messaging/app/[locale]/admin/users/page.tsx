@@ -14,6 +14,7 @@ import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
 import { Messaging } from "building-blocks-sdk";
 import ImportCsv from "./ImportCsv";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { withContext } from "../../with-context";
 
 export interface UiUserInvitation {
   id: string;
@@ -46,72 +47,77 @@ export interface UiUserInvitation {
   };
 }
 
-export default async (props: {
-  params: { locale: string };
-  searchParams?: { listType?: string };
-}) => {
-  const t = await getTranslations("Users");
-  const listType = props.searchParams?.listType;
-  const isUsers = listType === searchValueUsers || !listType;
-  const isImports = listType === searchValueImports;
-  const isImportCsv = listType === searchValueImportCsv;
-  let users: UiUserInvitation[] | undefined = [];
-  if (isUsers) {
-    const accessToken = await AuthenticationContextFactory.getAccessToken();
-    const messagingClient = new Messaging(accessToken);
-    const { data: organisationId } =
-      await messagingClient.getMockOrganisationId();
-    const { data } = await messagingClient.getUsers(organisationId);
-    users = data;
-  }
-  return (
-    <FlexMenuWrapper>
-      <h1>
-        <span style={{ margin: "unset" }} className="govie-heading-l">
-          {t("header")}
-        </span>
-      </h1>
-      <nav style={{ display: "flex", width: "fit-content", gap: "15px" }}>
-        <div style={linkStyle(isUsers)}>
-          <Link
-            href={(() => {
-              const url = new URL(usersRoute.url, process.env.HOST_URL);
-              url.searchParams.append(searchKeyListType, searchValueUsers);
-              return url.href;
-            })()}
-            className={linkClassName(isUsers)}
-          >
-            {t("usersLink")}
-          </Link>
-        </div>
-        <div style={linkStyle(isImports)}>
-          <Link
-            href={(() => {
-              const url = new URL(usersRoute.url, process.env.HOST_URL);
-              url.searchParams.append(searchKeyListType, searchValueImports);
-              return url.href;
-            })()}
-            className={linkClassName(isImports)}
-          >
-            {t("importsLink")}
-          </Link>
-        </div>
-        <div style={linkStyle(isImportCsv)}>
-          <Link
-            href={(() => {
-              const url = new URL(usersRoute.url, process.env.HOST_URL);
-              url.searchParams.append(searchKeyListType, searchValueImportCsv);
-              return url.href;
-            })()}
-            className={linkClassName(isImportCsv)}
-          >
-            {t("importCsvLink")}
-          </Link>
-        </div>
-      </nav>
-      <div>{isUsers && <Users users={users} />}</div>
-      <div>{isImports && <Imports />}</div>
-      <div>{isImportCsv && <ImportCsv />}</div>
-    </FlexMenuWrapper>
-  );
-};
+export default withContext(
+  async (props: {
+    params: { locale: string };
+    searchParams?: { listType?: string };
+  }) => {
+    const t = await getTranslations("Users");
+    const listType = props.searchParams?.listType;
+    const isUsers = listType === searchValueUsers || !listType;
+    const isImports = listType === searchValueImports;
+    const isImportCsv = listType === searchValueImportCsv;
+    let users: UiUserInvitation[] | undefined = [];
+    if (isUsers) {
+      const accessToken = await AuthenticationContextFactory.getAccessToken();
+      const messagingClient = new Messaging(accessToken);
+      const { data: organisationId } =
+        await messagingClient.getMockOrganisationId();
+      const { data } = await messagingClient.getUsers(organisationId);
+      users = data;
+    }
+    return (
+      <FlexMenuWrapper>
+        <h1>
+          <span style={{ margin: "unset" }} className="govie-heading-l">
+            {t("header")}
+          </span>
+        </h1>
+        <nav style={{ display: "flex", width: "fit-content", gap: "15px" }}>
+          <div style={linkStyle(isUsers)}>
+            <Link
+              href={(() => {
+                const url = new URL(usersRoute.url, process.env.HOST_URL);
+                url.searchParams.append(searchKeyListType, searchValueUsers);
+                return url.href;
+              })()}
+              className={linkClassName(isUsers)}
+            >
+              {t("usersLink")}
+            </Link>
+          </div>
+          <div style={linkStyle(isImports)}>
+            <Link
+              href={(() => {
+                const url = new URL(usersRoute.url, process.env.HOST_URL);
+                url.searchParams.append(searchKeyListType, searchValueImports);
+                return url.href;
+              })()}
+              className={linkClassName(isImports)}
+            >
+              {t("importsLink")}
+            </Link>
+          </div>
+          <div style={linkStyle(isImportCsv)}>
+            <Link
+              href={(() => {
+                const url = new URL(usersRoute.url, process.env.HOST_URL);
+                url.searchParams.append(
+                  searchKeyListType,
+                  searchValueImportCsv,
+                );
+                return url.href;
+              })()}
+              className={linkClassName(isImportCsv)}
+            >
+              {t("importCsvLink")}
+            </Link>
+          </div>
+        </nav>
+        <div>{isUsers && <Users users={users} />}</div>
+        <div>{isImports && <Imports />}</div>
+        <div>{isImportCsv && <ImportCsv />}</div>
+      </FlexMenuWrapper>
+    );
+  },
+);

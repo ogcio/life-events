@@ -2,8 +2,9 @@ import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { withContext } from "../../with-context";
 
-export default async (props: { params: { messageId: string } }) => {
+export default withContext(async (props: { params: { messageId: string } }) => {
   const t = await getTranslations("Message");
 
   const accessToken = await AuthenticationContextFactory.getAccessToken();
@@ -23,4 +24,4 @@ export default async (props: { params: { messageId: string } }) => {
       <p className="govie-body">{message.plainText}</p>
     </>
   );
-};
+});

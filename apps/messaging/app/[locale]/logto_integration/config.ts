@@ -25,7 +25,7 @@ export const getAuthenticationContextConfig =
     publicServantExpectedRole,
     publicServantScopes,
     loginUrl: logtoLogin.url,
-    resourceUrl: new URL(messagingApiResource),
+    resourceUrl: messagingApiResource,
   });
 
 export const postSignoutRedirect =

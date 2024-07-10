@@ -7,7 +7,7 @@ import { Messaging } from "building-blocks-sdk";
 import { headers } from "next/headers";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
-export default async (props: MessageCreateProps) => {
+export default withContext(async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.TemplateForm");
   async function action(formData: FormData) {
     "use server";
@@ -79,4 +79,4 @@ export default async (props: MessageCreateProps) => {
       </form>
     </div>
   );
-};
+});

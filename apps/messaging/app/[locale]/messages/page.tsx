@@ -5,8 +5,9 @@ import { getTranslations } from "next-intl/server";
 import ds from "design-system";
 import { Messaging } from "building-blocks-sdk";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { withContext } from "../with-context";
 
-export default async (props: { searchParams: any }) => {
+export default withContext(async (props: { searchParams: any }) => {
   const t = await getTranslations("Messages");
   const accessToken = await AuthenticationContextFactory.getAccessToken();
   const { data: messages } = await new Messaging(accessToken).getMessages();
@@ -84,4 +85,4 @@ export default async (props: { searchParams: any }) => {
       </table>
     </>
   );
-};
+});

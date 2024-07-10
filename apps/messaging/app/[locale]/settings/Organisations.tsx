@@ -3,8 +3,9 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { userOrganisationsRoutes } from "../../utils/routes";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { withContext } from "../with-context";
 
-export default async () => {
+export default withContext(async () => {
   const t = await getTranslations("userSettings.Organisations");
   const accessToken = await AuthenticationContextFactory.getAccessToken();
   const { data } = await new Messaging(
@@ -63,4 +64,4 @@ export default async () => {
       </tbody>
     </table>
   );
-};
+});
