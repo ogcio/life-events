@@ -11,7 +11,7 @@ export const getBaseLogtoConfig = () => ({
   appSecret: process.env.LOGTO_MESSAGING_APP_SECRET as string,
 });
 
-const orgScopes = [
+export const organizationScopes = [
   AuthUserScope.Organizations,
   AuthUserScope.OrganizationRoles,
 ];
@@ -60,7 +60,7 @@ export const getPublicServantContext = (params: {
       baseUrl: params.baseUrl,
       appId: params.appId,
       appSecret: params.appSecret,
-      scopes: [...orgScopes, ...params.publicServantScopes],
+      scopes: [...organizationScopes, ...params.publicServantScopes],
       resources: [params.resourceUrl],
     },
     {
@@ -70,6 +70,5 @@ export const getPublicServantContext = (params: {
       organizationId: params.organizationId,
       userType: "publicServant",
       loginUrl: params.loginUrl,
-      resource: params.resourceUrl,
     },
   );

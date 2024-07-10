@@ -1,3 +1,7 @@
+import {
+  getBaseLogtoConfig,
+  organizationScopes,
+} from "auth/authentication-context";
 import { logtoLogin } from "../../utils/routes";
 import { AuthenticationContextConfig } from "auth/authentication-context-factory";
 
@@ -30,3 +34,10 @@ export const getAuthenticationContextConfig =
 
 export const postSignoutRedirect =
   process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT;
+
+export const getSignInConfiguration = () => ({
+  ...getBaseLogtoConfig(),
+  // All the available resources to the app
+  resources: [messagingApiResource],
+  scopes: [...organizationScopes, ...citizenScopes, ...publicServantScopes],
+});

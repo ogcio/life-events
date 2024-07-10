@@ -55,7 +55,6 @@ export class AuthenticationContextFactory {
           ? this.sharedContext
           : await getCitizenContext(this.getConfig());
     }
-
     return this.citizenContext as PartialAuthSessionContext;
   }
 
@@ -66,7 +65,6 @@ export class AuthenticationContextFactory {
           ? this.publicServantContext
           : await getPublicServantContext(this.getConfig());
     }
-
     return this.publicServantContext as PartialAuthSessionContext;
   }
 
