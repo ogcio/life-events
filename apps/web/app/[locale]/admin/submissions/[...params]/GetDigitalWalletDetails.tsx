@@ -3,9 +3,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { postgres, routes, web, workflow } from "../../../../utils";
-import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
+import { ListRow } from "../../../(public)/[event]/[...action]/shared/SummaryListRow";
 import FormLayout from "../../../../components/FormLayout";
-import { sendAppOnboardingEmail } from "../../../[event]/[...action]/GetDigitalWallet/ServerActions";
+import { sendAppOnboardingEmail } from "../../../(public)/[event]/[...action]/GetDigitalWallet/ServerActions";
 import ds from "design-system";
 import ExclamationMark from "./components/exclamationMark";
 

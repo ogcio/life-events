@@ -1,6 +1,6 @@
 import Link from "next/link";
 import ds from "design-system/";
-import NotificationsLink from "../[locale]/notifications/NotificationsLink";
+// import NotificationsLink from "../[locale]/(public)/notifications/NotificationsLink";
 import UserIcon from "./UserIcon";
 import { headers } from "next/headers";
 import styles from "./Header.module.scss";
