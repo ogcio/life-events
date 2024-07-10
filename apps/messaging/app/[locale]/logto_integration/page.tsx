@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Messaging } from "building-blocks-sdk";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
-import { withContext } from "../with-context";
 
 const actionCitizen = async () => {
   "use server";
@@ -25,7 +24,7 @@ const actionPublicServant = async () => {
   new Messaging(token).testPublicServantAuth();
 };
 
-export default withContext(async function () {
+export default async function () {
   const context = await AuthenticationContextFactory.getContext();
 
   return (
@@ -42,4 +41,4 @@ export default withContext(async function () {
       {context && <Link href="/logto_integration/signout">Logout</Link>}
     </>
   );
-});
+}

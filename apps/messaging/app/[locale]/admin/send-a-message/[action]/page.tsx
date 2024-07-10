@@ -20,7 +20,6 @@ import {
 } from "../components/paginationUtils";
 import { sendAMessage } from "../../../../utils/routes";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
-import { withContext } from "../../../with-context";
 
 const metaSlug = "meta";
 const contentSlug = "content";
@@ -70,85 +69,81 @@ const urlStateHandler = (url: string, key: string) => (Cmp: JSX.Element) => {
   redirect(key);
 };
 
-export default withContext(
-  async (props: {
-    params: { action: string };
-    searchParams: { state_id: string } & Partial<MessageCreateSearchParams>;
-  }) => {
-    const user = await AuthenticationContextFactory.getUser();
-    const urlAction = props.params.action;
-    const { state, id: stateId } = await api.getMessageState(user.id);
-    const step = getCurrentStep<ApiMessageState>(rules, state);
-    const maybe = urlStateHandler(urlAction, step.key || "");
-    switch (step.key) {
-      case metaSlug:
-        return maybe(
-          <ComposeMessageMeta
-            state={state}
-            userId={user.id}
-            stateId={stateId}
-            disabledSubmit={!step.isStepValid}
-          />,
-        );
-      case templateSlug:
-        return maybe(
-          <TemplateForm
-            state={state}
-            userId={user.id}
-            stateId={stateId}
-            disabledSubmit={!step.isStepValid}
-          />,
-        );
-      case contentSlug:
-        return maybe(
-          <ContentForm
-            state={state}
-            userId={user.id}
-            stateId={stateId}
-            disabledSubmit={!step.isStepValid}
-          />,
-        );
-      case previewSlug:
-        return maybe(
-          <EmailPreview
-            state={state}
-            userId={user.id}
-            stateId={stateId}
-            disabledSubmit={!step.isStepValid}
-          />,
-        );
-      case recipientsSlug:
-        const searchParams: MessageCreateSearchParams = {
-          limit: props.searchParams.limit ?? String(PAGINATION_LIMIT_DEFAULT),
-          offset:
-            props.searchParams.offset ?? String(PAGINATION_OFFSET_DEFAULT),
-          page: props.searchParams.page ?? String(PAGINATION_PAGE_DEFAULT),
-          baseUrl:
-            props.searchParams.baseUrl ??
-            new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL)
-              .href,
-          search: props.searchParams.search,
-          recipientToAddIds: props.searchParams.recipientToAddIds,
-          recipientToRemoveId: props.searchParams.recipientToRemoveId,
-        };
-        return maybe(
-          <Recipients
-            state={state}
-            userId={user.id}
-            stateId={stateId}
-            searchParams={searchParams}
-          />,
-        );
-      case scheduleSlug:
-        return maybe(
-          <ScheduleForm state={state} userId={user.id} stateId={stateId} />,
-        );
-      case successSlug:
-        return maybe(
-          <SuccessForm state={state} userId={user.id} stateId={stateId} />,
-        );
-      default:
-        throw notFound();
-    }
-  },
-);
+export default async (props: {
+  params: { action: string };
+  searchParams: { state_id: string } & Partial<MessageCreateSearchParams>;
+}) => {
+  const user = await AuthenticationContextFactory.getUser();
+  const urlAction = props.params.action;
+  const { state, id: stateId } = await api.getMessageState(user.id);
+  const step = getCurrentStep<ApiMessageState>(rules, state);
+  const maybe = urlStateHandler(urlAction, step.key || "");
+  switch (step.key) {
+    case metaSlug:
+      return maybe(
+        <ComposeMessageMeta
+          state={state}
+          userId={user.id}
+          stateId={stateId}
+          disabledSubmit={!step.isStepValid}
+        />,
+      );
+    case templateSlug:
+      return maybe(
+        <TemplateForm
+          state={state}
+          userId={user.id}
+          stateId={stateId}
+          disabledSubmit={!step.isStepValid}
+        />,
+      );
+    case contentSlug:
+      return maybe(
+        <ContentForm
+          state={state}
+          userId={user.id}
+          stateId={stateId}
+          disabledSubmit={!step.isStepValid}
+        />,
+      );
+    case previewSlug:
+      return maybe(
+        <EmailPreview
+          state={state}
+          userId={user.id}
+          stateId={stateId}
+          disabledSubmit={!step.isStepValid}
+        />,
+      );
+    case recipientsSlug:
+      const searchParams: MessageCreateSearchParams = {
+        limit: props.searchParams.limit ?? String(PAGINATION_LIMIT_DEFAULT),
+        offset: props.searchParams.offset ?? String(PAGINATION_OFFSET_DEFAULT),
+        page: props.searchParams.page ?? String(PAGINATION_PAGE_DEFAULT),
+        baseUrl:
+          props.searchParams.baseUrl ??
+          new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL).href,
+        search: props.searchParams.search,
+        recipientToAddIds: props.searchParams.recipientToAddIds,
+        recipientToRemoveId: props.searchParams.recipientToRemoveId,
+      };
+      return maybe(
+        <Recipients
+          state={state}
+          userId={user.id}
+          stateId={stateId}
+          searchParams={searchParams}
+        />,
+      );
+    case scheduleSlug:
+      return maybe(
+        <ScheduleForm state={state} userId={user.id} stateId={stateId} />,
+      );
+    case successSlug:
+      return maybe(
+        <SuccessForm state={state} userId={user.id} stateId={stateId} />,
+      );
+    default:
+      throw notFound();
+  }
+};

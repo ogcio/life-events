@@ -6,9 +6,8 @@ import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import { Messaging } from "building-blocks-sdk";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
-import { withContext } from "../../../with-context";
 
-export default withContext(async (props: MessageCreateProps) => {
+export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.ComposeMessageMeta");
   async function submit(formData: FormData) {
     "use server";
@@ -161,4 +160,4 @@ export default withContext(async (props: MessageCreateProps) => {
       </form>
     </div>
   );
-});
+};

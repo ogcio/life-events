@@ -12,97 +12,94 @@ import { pgpool } from "messages/dbConnection";
 import ConfirmDeleteModal from "../ConfirmDeleteModal";
 import { LANG_EN } from "../../../../types/shared";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
-import { withContext } from "../../with-context";
 
-export default withContext(
-  async (props: {
-    params: { locale: string };
-    searchParams?: { delete_id?: string };
-  }) => {
-    const t = await getTranslations("MessageTemplates");
+export default async (props: {
+  params: { locale: string };
+  searchParams?: { delete_id?: string };
+}) => {
+  const t = await getTranslations("MessageTemplates");
 
-    async function createNewAction() {
-      "use server";
+  async function createNewAction() {
+    "use server";
 
-      const url = urlWithSearchParams(
-        `${props.params.locale}/${templateRoutes.url}`,
-      );
-      redirect(url.href);
+    const url = urlWithSearchParams(
+      `${props.params.locale}/${templateRoutes.url}`,
+    );
+    redirect(url.href);
+  }
+
+  let messageNameToDelete: string | undefined;
+
+  if (props.searchParams?.delete_id) {
+    const accessToken = await AuthenticationContextFactory.getAccessToken();
+
+    const client = new Messaging(accessToken);
+    const tmpl = await client.getTemplate(props.searchParams?.delete_id);
+    const content =
+      tmpl.data?.contents.find((content) => content.lang === LANG_EN) ||
+      tmpl.data?.contents.at(0);
+
+    messageNameToDelete = content?.templateName;
+  }
+
+  async function handleDelete(formData: FormData) {
+    "use server";
+
+    const id = formData.get("id")?.toString();
+    if (!id) {
+      return;
     }
+    const accessToken = await AuthenticationContextFactory.getAccessToken();
 
-    let messageNameToDelete: string | undefined;
+    await new Messaging(accessToken).deleteTemplate(id);
 
-    if (props.searchParams?.delete_id) {
-      const accessToken = await AuthenticationContextFactory.getAccessToken();
+    const url = urlWithSearchParams(
+      `${props.params.locale || LANG_EN}/${messageTemplates.url}`,
+    );
+    redirect(url.href);
+  }
 
-      const client = new Messaging(accessToken);
-      const tmpl = await client.getTemplate(props.searchParams?.delete_id);
-      const content =
-        tmpl.data?.contents.find((content) => content.lang === LANG_EN) ||
-        tmpl.data?.contents.at(0);
+  async function handleCancelDelete() {
+    "use server";
+    const url = urlWithSearchParams(
+      `${props.params.locale || LANG_EN}/${messageTemplates.url}`,
+    );
+    redirect(url.href);
+  }
 
-      messageNameToDelete = content?.templateName;
-    }
-
-    async function handleDelete(formData: FormData) {
-      "use server";
-
-      const id = formData.get("id")?.toString();
-      if (!id) {
-        return;
-      }
-      const accessToken = await AuthenticationContextFactory.getAccessToken();
-
-      await new Messaging(accessToken).deleteTemplate(id);
-
-      const url = urlWithSearchParams(
-        `${props.params.locale || LANG_EN}/${messageTemplates.url}`,
-      );
-      redirect(url.href);
-    }
-
-    async function handleCancelDelete() {
-      "use server";
-      const url = urlWithSearchParams(
-        `${props.params.locale || LANG_EN}/${messageTemplates.url}`,
-      );
-      redirect(url.href);
-    }
-
-    // Flush the template state
-    const user = await AuthenticationContextFactory.getUser();
-    await pgpool.query(
-      `
+  // Flush the template state
+  const user = await AuthenticationContextFactory.getUser();
+  await pgpool.query(
+    `
     delete from message_template_states
     where user_id = $1
   `,
-      [user.id],
-    );
+    [user.id],
+  );
 
-    return (
-      <FlexMenuWrapper>
-        <h1>
-          <span style={{ margin: "unset" }} className="govie-heading-xl">
-            {t("title")}
-          </span>
-        </h1>
+  return (
+    <FlexMenuWrapper>
+      <h1>
+        <span style={{ margin: "unset" }} className="govie-heading-xl">
+          {t("title")}
+        </span>
+      </h1>
 
-        <form action={createNewAction}>
-          <button className="govie-button">{t("createNewButton")}</button>
-        </form>
+      <form action={createNewAction}>
+        <button className="govie-button">{t("createNewButton")}</button>
+      </form>
 
-        {messageNameToDelete && props.searchParams?.delete_id && (
-          <ConfirmDeleteModal
-            resourceDescription="the saved message"
-            id={props.searchParams?.delete_id}
-            toDelete={messageNameToDelete}
-            onCancelAction={handleCancelDelete}
-            onDeleteAction={handleDelete}
-          />
-        )}
+      {messageNameToDelete && props.searchParams?.delete_id && (
+        <ConfirmDeleteModal
+          resourceDescription="the saved message"
+          id={props.searchParams?.delete_id}
+          toDelete={messageNameToDelete}
+          onCancelAction={handleCancelDelete}
+          onDeleteAction={handleDelete}
+        />
+      )}
 
-        <TemplatesList locale={props.params.locale} />
-      </FlexMenuWrapper>
-    );
-  },
-);
+      <TemplatesList locale={props.params.locale} />
+    </FlexMenuWrapper>
+  );
+};

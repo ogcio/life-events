@@ -8,9 +8,8 @@ import {
   searchValueEmail,
 } from "../../../utils/messaging";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
-import { withContext } from "../../with-context";
 
-export default withContext(async () => {
+export default async () => {
   const t = await getTranslations("settings.Emails");
   const accessToken = await AuthenticationContextFactory.getAccessToken();
   const { data } = await new Messaging(accessToken).getEmailProviders();
@@ -84,4 +83,4 @@ export default withContext(async () => {
       </tbody>
     </table>
   );
-});
+};

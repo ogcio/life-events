@@ -15,7 +15,6 @@ import {
 } from "../../../../utils/messaging";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 import { AuthenticationError } from "shared-errors";
-import { withContext } from "../../../with-context";
 
 type FormContent = {
   templateName: string;
@@ -423,82 +422,77 @@ type State = {
   [LANG_GA]?: FormContent;
 };
 
-export default withContext(
-  async (props: {
-    params: { locale: string };
-    searchParams: { id?: string };
-  }) => {
-    const t = await getTranslations("MessageTemplate");
-    const { user, accessToken } =
-      await AuthenticationContextFactory.getContext();
+export default async (props: {
+  params: { locale: string };
+  searchParams: { id?: string };
+}) => {
+  const t = await getTranslations("MessageTemplate");
+  const { user, accessToken } = await AuthenticationContextFactory.getContext();
 
-    const state = await pgpool
-      .query<{
-        state: State;
-      }>(
-        `
+  const state = await pgpool
+    .query<{
+      state: State;
+    }>(
+      `
         select 
             state
         from message_template_states
         where user_id = $1
     `,
-        [user.id],
-      )
-      .then((res) => res.rows.at(0)?.state);
+      [user.id],
+    )
+    .then((res) => res.rows.at(0)?.state);
 
-    const client = new Messaging(accessToken);
-    const contents: State = { langs: Array<string>() };
+  const client = new Messaging(accessToken);
+  const contents: State = { langs: Array<string>() };
 
-    let templateFetchError: Awaited<
-      ReturnType<typeof client.getTemplate>
-    >["error"];
+  let templateFetchError: Awaited<
+    ReturnType<typeof client.getTemplate>
+  >["error"];
 
-    if (props.searchParams.id) {
-      const { data, error } = await client.getTemplate(props.searchParams.id);
-      if (data?.contents) {
-        for (const item of data.contents) {
-          contents[item.lang] = item;
-          contents.langs.push(item.lang);
-        }
+  if (props.searchParams.id) {
+    const { data, error } = await client.getTemplate(props.searchParams.id);
+    if (data?.contents) {
+      for (const item of data.contents) {
+        contents[item.lang] = item;
+        contents.langs.push(item.lang);
       }
-
-      templateFetchError = error;
     }
 
-    if (templateFetchError) {
-      return (
-        <FlexMenuWrapper>
-          <h1>Failed to fetch template </h1>
-          <Link className="govie-back-link" href="./">
-            {t("backLink")}
-          </Link>
-        </FlexMenuWrapper>
-      );
-    }
+    templateFetchError = error;
+  }
 
-    const combinedState = Object.assign(contents || {}, state || {});
-
+  if (templateFetchError) {
     return (
       <FlexMenuWrapper>
-        <h1>
-          <span style={{ margin: "unset" }} className="govie-heading-xl">
-            {props.searchParams.id
-              ? "Update template"
-              : "Create a new template"}
-          </span>
-        </h1>
-        <LanguageForm userId={user.id} state={combinedState} />
-        {combinedState.langs.length ? (
-          <ContentForm
-            userId={user.id}
-            contents={combinedState}
-            templateId={props.searchParams.id}
-          />
-        ) : null}
-        <Link href="./" className="govie-back-link">
+        <h1>Failed to fetch template </h1>
+        <Link className="govie-back-link" href="./">
           {t("backLink")}
         </Link>
       </FlexMenuWrapper>
     );
-  },
-);
+  }
+
+  const combinedState = Object.assign(contents || {}, state || {});
+
+  return (
+    <FlexMenuWrapper>
+      <h1>
+        <span style={{ margin: "unset" }} className="govie-heading-xl">
+          {props.searchParams.id ? "Update template" : "Create a new template"}
+        </span>
+      </h1>
+      <LanguageForm userId={user.id} state={combinedState} />
+      {combinedState.langs.length ? (
+        <ContentForm
+          userId={user.id}
+          contents={combinedState}
+          templateId={props.searchParams.id}
+        />
+      ) : null}
+      <Link href="./" className="govie-back-link">
+        {t("backLink")}
+      </Link>
+    </FlexMenuWrapper>
+  );
+};

@@ -7,9 +7,8 @@ import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import { headers } from "next/headers";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
-import { withContext } from "../../../with-context";
 
-export default withContext(async (props: MessageCreateProps) => {
+export default async (props: MessageCreateProps) => {
   const [t, tCommons] = await Promise.all([
     getTranslations("sendAMessage.EmailPreview"),
     getTranslations("Commons"),
@@ -116,4 +115,4 @@ export default withContext(async (props: MessageCreateProps) => {
       </form>
     </div>
   );
-});
+};
