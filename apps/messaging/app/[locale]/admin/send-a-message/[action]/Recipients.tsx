@@ -11,7 +11,7 @@ import { Messaging } from "building-blocks-sdk";
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { pgpool } from "messages/dbConnection";
 import styles from "../components/Table.module.scss";
-import { getAuthenticationContext } from "../../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 interface RecipientContact {
   id: string;
@@ -155,7 +155,7 @@ export default async (props: MessageCreateProps) => {
 
   const urlParams = new URLSearchParams(props.searchParams);
   const queryParams = getQueryParams(urlParams);
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await AuthenticationContextFactory.getAccessToken();
   const messaging = new Messaging(accessToken);
   const { data: organisationId } = await messaging.getMockOrganisationId();
   const response = await messaging.getRecipients({

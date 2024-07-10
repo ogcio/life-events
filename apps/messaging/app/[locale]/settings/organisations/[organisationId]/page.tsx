@@ -10,7 +10,7 @@ import {
   searchValueOrganisation,
 } from "../../../../utils/messaging";
 import { FormElement } from "../../../admin/FormElement";
-import { getAuthenticationContext } from "../../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 enum AVAILABLE_TRANSPORTS {
   SMS = "sms",
@@ -31,8 +31,9 @@ enum ACTIVE_STATUSES {
 export default async (props: { params: { organisationId: string } }) => {
   async function submitAction(formData: FormData) {
     "use server";
-    const { user: submitUser, accessToken: submitAccessToken } =
-      await getAuthenticationContext();
+    const submitUser = await AuthenticationContextFactory.getUser();
+    const submitAccessToken =
+      await AuthenticationContextFactory.getAccessToken();
     const submitTrans = await getTranslations("userSettings.Organisation");
     const url = new URL(usersSettingsRoutes.url, process.env.HOST_URL);
     url.searchParams.append(searchKeySettingType, searchValueOrganisation);
@@ -93,7 +94,7 @@ export default async (props: { params: { organisationId: string } }) => {
     getTranslations("Commons"),
   ]);
 
-  const { user, accessToken } = await getAuthenticationContext();
+  const { user, accessToken } = await AuthenticationContextFactory.getContext();
   const messagingClient = await new Messaging(accessToken);
   const configurations = await messagingClient.getOrganisationInvitation(
     props.params.organisationId,

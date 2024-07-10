@@ -2,7 +2,7 @@ import { Messaging } from "building-blocks-sdk";
 import { getAuthenticationContext } from "../../[locale]/logto_integration/config";
 
 export async function GET() {
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await AuthenticationContextFactory.getAccessToken();
   const messagingClient = new Messaging(accessToken);
   const toDownloadTemplate = await messagingClient.downloadUsersCsvTemplate();
 

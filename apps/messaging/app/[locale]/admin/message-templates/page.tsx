@@ -12,7 +12,7 @@ import { pgpool } from "messages/dbConnection";
 import ConfirmDeleteModal from "../ConfirmDeleteModal";
 import { LANG_EN } from "../../../../types/shared";
 import { AuthenticationError } from "shared-errors";
-import { getAuthenticationContext } from "../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async (props: {
   params: { locale: string };
@@ -32,7 +32,7 @@ export default async (props: {
   let messageNameToDelete: string | undefined;
 
   if (props.searchParams?.delete_id) {
-    const { accessToken } = await getAuthenticationContext();
+    const accessToken = await AuthenticationContextFactory.getAccessToken();
 
     const client = new Messaging(accessToken);
     const tmpl = await client.getTemplate(props.searchParams?.delete_id);
@@ -50,7 +50,7 @@ export default async (props: {
     if (!id) {
       return;
     }
-    const { accessToken } = await getAuthenticationContext();
+    const accessToken = await AuthenticationContextFactory.getAccessToken();
 
     await new Messaging(accessToken).deleteTemplate(id);
 
@@ -69,7 +69,7 @@ export default async (props: {
   }
 
   // Flush the template state
-  const { user } = await getAuthenticationContext();
+  const user = await AuthenticationContextFactory.getUser();
   await pgpool.query(
     `
     delete from message_template_states

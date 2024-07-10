@@ -14,7 +14,7 @@ import {
   searchValueEmail,
   searchValueSms,
 } from "../../../utils/messaging";
-import { getAuthenticationContext } from "../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export const linkStyle = (selected: boolean): CSSProperties => {
   const props: CSSProperties = {
@@ -73,7 +73,7 @@ export default async (props: {
 
   let toDelete: string | undefined;
   if (props.searchParams?.deleteId) {
-    const { accessToken } = await getAuthenticationContext();
+    const accessToken = await AuthenticationContextFactory.getAccessToken();
     const client = new Messaging(accessToken);
 
     if (props.searchParams.provider === searchValueSms) {
@@ -106,7 +106,7 @@ export default async (props: {
   async function handleDeleteProvider(formData: FormData) {
     "use server";
 
-    const { accessToken } = await getAuthenticationContext();
+    const accessToken = await AuthenticationContextFactory.getAccessToken();
     const client = new Messaging(accessToken);
 
     if (!props.searchParams?.deleteId) {

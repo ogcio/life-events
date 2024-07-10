@@ -2,11 +2,11 @@ import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { userOrganisationsRoutes } from "../../utils/routes";
-import { getAuthenticationContext } from "../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async () => {
   const t = await getTranslations("userSettings.Organisations");
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await AuthenticationContextFactory.getAccessToken();
   const { data } = await new Messaging(
     accessToken,
   ).getOrganisationInvitations();

@@ -3,11 +3,11 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import React from "react";
-import { getAuthenticationContext } from "../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async () => {
   const t = await getTranslations("UsersImports");
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await AuthenticationContextFactory.getAccessToken();
   const messagingClient = new Messaging(accessToken);
   const { data: organisationId } =
     await messagingClient.getMockOrganisationId();

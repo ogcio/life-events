@@ -5,7 +5,7 @@ import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import { headers } from "next/headers";
-import { getAuthenticationContext } from "../../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.TemplateForm");
@@ -42,7 +42,7 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await AuthenticationContextFactory.getAccessToken();
   const templateResult = (
     await new Messaging(accessToken).getTemplate(props.state.templateMetaId)
   )?.data;

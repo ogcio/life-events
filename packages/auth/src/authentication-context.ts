@@ -1,10 +1,5 @@
 import { AuthSession, AuthUserScope } from "auth/auth-session";
-import { AuthSessionContext } from "auth/types";
-import { AuthenticationError } from "shared-errors";
-import { getServerLogger } from "nextjs-logging-wrapper";
-import { notFound } from "next/navigation";
-
-const ERROR_PROCESS = "AUTHENTICATION_CONTEXT";
+import { PartialAuthSessionContext } from "auth/types";
 
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
@@ -21,38 +16,6 @@ const orgScopes = [
   AuthUserScope.OrganizationRoles,
 ];
 
-export const getAuthenticationContext = async (params: {
-  resourceUrl: URL;
-  citizenScopes: string[];
-  publicServantScopes: string[];
-  organizationId: string;
-  loginUrl: string;
-  publicServantExpectedRole: string;
-  baseUrl: string;
-  appId: string;
-  appSecret: string;
-}): Promise<AuthSessionContext> => {
-  let context = await getCitizenContext({ ...params });
-  if (context.isPublicServant) {
-    context = await getPublicServantContext({ ...params });
-  }
-
-  if (!context.accessToken) {
-    getServerLogger().error({
-      error: new AuthenticationError(ERROR_PROCESS, "Missing access token"),
-    });
-    throw notFound();
-  }
-  if (!context.user) {
-    getServerLogger().error({
-      error: new AuthenticationError(ERROR_PROCESS, "Missing user"),
-    });
-    throw notFound();
-  }
-
-  return context as AuthSessionContext;
-};
-
 export const getCitizenContext = (params: {
   resourceUrl: URL;
   citizenScopes: string[];
@@ -61,7 +24,7 @@ export const getCitizenContext = (params: {
   baseUrl: string;
   appId: string;
   appSecret: string;
-}) =>
+}): Promise<PartialAuthSessionContext> =>
   AuthSession.get(
     {
       ...baseConfig,
@@ -83,7 +46,6 @@ export const getCitizenContext = (params: {
 
 export const getPublicServantContext = (params: {
   resourceUrl: URL;
-  citizenScopes: string[];
   publicServantScopes: string[];
   organizationId: string;
   loginUrl: string;
@@ -91,7 +53,7 @@ export const getPublicServantContext = (params: {
   baseUrl: string;
   appId: string;
   appSecret: string;
-}) =>
+}): Promise<PartialAuthSessionContext> =>
   AuthSession.get(
     {
       ...baseConfig,
@@ -109,6 +71,3 @@ export const getPublicServantContext = (params: {
       loginUrl: params.loginUrl,
     },
   );
-
-export const postSignoutRedirect =
-  process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT;

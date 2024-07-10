@@ -13,7 +13,7 @@ import {
   avaliableMessagingTemplateStaticVariables,
   getInterpolationValues,
 } from "../../../../utils/messaging";
-import { getAuthenticationContext } from "../../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 import { AuthenticationError } from "shared-errors";
 
 type FormContent = {
@@ -427,7 +427,7 @@ export default async (props: {
   searchParams: { id?: string };
 }) => {
   const t = await getTranslations("MessageTemplate");
-  const { user, accessToken } = await getAuthenticationContext();
+  const { user, accessToken } = await AuthenticationContextFactory.getContext();
 
   const state = await pgpool
     .query<{

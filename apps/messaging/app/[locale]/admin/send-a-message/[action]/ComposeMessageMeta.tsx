@@ -5,7 +5,7 @@ import { MessageCreateProps } from "../../../../utils/messaging";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import { Messaging } from "building-blocks-sdk";
-import { getAuthenticationContext } from "../../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.ComposeMessageMeta");
@@ -41,7 +41,7 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const { user } = await getAuthenticationContext();
+  const { accessToken } = await AuthenticationContextFactory.getCitizen();
   const lang = headers().get("x-next-intl-locale");
   const { data: templates } = await new Messaging(user.id).getTemplates();
 

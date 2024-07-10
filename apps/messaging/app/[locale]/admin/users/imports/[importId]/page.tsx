@@ -11,7 +11,7 @@ import {
   searchValueImports,
 } from "../../../../../utils/messaging";
 import Users from "../../Users";
-import { getAuthenticationContext } from "../../../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async (props: {
   params: { importId: string; locale: string };
@@ -20,7 +20,7 @@ export default async (props: {
     getTranslations("UsersImport"),
     getTranslations("Commons"),
   ]);
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await AuthenticationContextFactory.getAccessToken();
   const messagingClient = new Messaging(accessToken);
   const { data: organisationId } =
     await messagingClient.getMockOrganisationId();

@@ -7,11 +7,11 @@ import {
   searchKeyProvider,
   searchValueEmail,
 } from "../../../utils/messaging";
-import { getAuthenticationContext } from "../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async () => {
   const t = await getTranslations("settings.Emails");
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await AuthenticationContextFactory.getAccessToken();
   const { data } = await new Messaging(accessToken).getEmailProviders();
 
   return (

@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { Messaging } from "building-blocks-sdk";
-import { getAuthenticationContext } from "./config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { withContext } from "../with-context";
 
 const actionCitizen = async () => {
   "use server";
 
-  const context = await getAuthenticationContext();
+  const context = await AuthenticationContextFactory.getCitizen();
 
   const token = context.accessToken;
   if (!token) return console.log("missing token...");
@@ -16,7 +17,7 @@ const actionCitizen = async () => {
 const actionPublicServant = async () => {
   "use server";
 
-  const context = await getAuthenticationContext();
+  const context = await AuthenticationContextFactory.getPublicServant();
 
   const token = context.accessToken;
   if (!token) return console.log("missing token...");
@@ -24,8 +25,8 @@ const actionPublicServant = async () => {
   new Messaging(token).testPublicServantAuth();
 };
 
-export default async function () {
-  const context = await getAuthenticationContext();
+export default withContext(async function () {
+  const context = await AuthenticationContextFactory.getContext();
 
   return (
     <>
@@ -41,4 +42,4 @@ export default async function () {
       {context && <Link href="/logto_integration/signout">Logout</Link>}
     </>
   );
-}
+});

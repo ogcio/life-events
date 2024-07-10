@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { ComponentProps } from "react";
 import ds from "design-system";
 import { api } from "messages";
-import { events, providerRoutes, users, usersImports } from "./routes";
+import { events, providerRoutes, users } from "./routes";
 
 export const languages = {
   EN: "EN",

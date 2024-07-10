@@ -4,7 +4,7 @@ import Footer from "../Footer";
 import Header from "../Header";
 import SideMenu from "../SideMenu";
 import { getLinks } from "../../utils/messaging";
-import { getAuthenticationContext } from "../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async ({
   children,
@@ -14,7 +14,6 @@ export default async ({
   params: { locale: string };
 }) => {
   const t = await getTranslations("AlphaBanner");
-  const { isPublicServant, user } = await getAuthenticationContext();
   const environment = String(process.env.ENVIRONMENT);
   const links = getLinks(environment, params.locale);
   return (
@@ -45,9 +44,13 @@ export default async ({
           <div style={{ display: "flex", gap: "30px" }}>
             <SideMenu
               locale={params.locale}
-              options={await messages.sideMenuOptions(isPublicServant)}
+              options={await messages.sideMenuOptions(
+                await AuthenticationContextFactory.isPublicServant(),
+              )}
               selected={routes.usersSettingsRoutes.slug}
-              userName={user.name ?? ""}
+              userName={
+                (await AuthenticationContextFactory.getUser()).name ?? ""
+              }
             />
             <div style={{ width: "100%" }}>{children}</div>
           </div>

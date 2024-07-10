@@ -10,7 +10,7 @@ import {
   searchValueImports,
 } from "../../../utils/messaging";
 import { RedirectType, redirect } from "next/navigation";
-import { getAuthenticationContext } from "../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
 
@@ -20,7 +20,7 @@ export default async () => {
   async function upload(formData: FormData) {
     "use server";
     const { accessToken: uploadToken, user: uploadUser } =
-      await getAuthenticationContext();
+      await AuthenticationContextFactory.getContext();
     const file = formData.get(CSV_FILE_FIELD);
     const organisationId = formData.get("organisationId");
 
@@ -53,7 +53,7 @@ export default async () => {
     getTranslations("UsersImports"),
     getTranslations("formErrors"),
   ]);
-  const { user, accessToken } = await getAuthenticationContext();
+  const { user, accessToken } = await AuthenticationContextFactory.getContext();
   const messagingClient = new Messaging(accessToken);
   const { data: organisationId } =
     await messagingClient.getMockOrganisationId();

@@ -1,12 +1,12 @@
 import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { getAuthenticationContext } from "../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async (props: { params: { messageId: string } }) => {
   const t = await getTranslations("Message");
 
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await AuthenticationContextFactory.getAccessToken();
 
   const { data: message, error } = await new Messaging(accessToken).getMessage(
     props.params.messageId,
