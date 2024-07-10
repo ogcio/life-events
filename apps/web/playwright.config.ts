@@ -2,21 +2,21 @@ import { defineConfig, devices } from "@playwright/test";
 import { testPlanFilter } from "allure-playwright/testplan";
 import path from "path";
 
-// Use process.env.PORT by default and fallback to port 3000
+// Use process.env.PORT by default and fallback to port 3000 {{for local running}}
 const PORT = process.env.PORT || 3000;
 
 // Set webServer.url and use.baseURL with the location of the WebServer respecting the correct set port
-const baseURL = `http://localhost:${PORT}`;
+const baseURL = `https://dev.life.gov.ie`;
 
 // Reference: https://playwright.dev/docs/test-configuration
 export default defineConfig({
   // Timeout per test
-  timeout: 5000,
+  timeout: 100000,
   grep: testPlanFilter(),
   reporter: [["line"], ["allure-playwright"], ["html"]], // Test directory
   testDir: path.join(__dirname, "e2e"),
   // If a test fails, retry it additional 2 times
-  retries: 1,
+  retries: 0,
   // Artifacts folder where screenshots, videos, and traces are stored.
   outputDir: "test-results/",
 
@@ -50,6 +50,7 @@ export default defineConfig({
       name: "Desktop Chrome",
       use: {
         ...devices["Desktop Chrome"],
+        launchOptions: { slowMo: 1000 },
       },
     },
   ],

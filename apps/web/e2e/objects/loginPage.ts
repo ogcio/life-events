@@ -8,7 +8,7 @@ export class LoginPage {
   }
 
   async navigateTo() {
-    await this.page.goto("/");
+    await this.page.goto("");
   }
 
   async clickPublicServant() {
@@ -21,7 +21,7 @@ export class LoginPage {
 
   async expectPublicServantText() {
     await expect(
-      this.page.locator('//*[@id="login-form"]/label'),
+      this.page.locator("label >> text=Public Servant"),
     ).toContainText("Public Servant");
   }
 
