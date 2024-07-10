@@ -4,6 +4,8 @@ import { ComponentProps } from "react";
 import ds from "design-system";
 import { api } from "messages";
 import { events, providerRoutes, users } from "./routes";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { getAuthenticationContextConfig } from "../[locale]/logto_integration/config";
 
 export const languages = {
   EN: "EN",
@@ -203,3 +205,6 @@ export function isAvailableTransport(
 ): t is (typeof AVAILABLE_TRANSPORTS)[number] {
   return AVAILABLE_TRANSPORTS.some((at) => at === t);
 }
+
+AuthenticationContextFactory.setConfig(getAuthenticationContextConfig());
+export const MessagingAuthenticationFactory = AuthenticationContextFactory;

@@ -7,7 +7,7 @@ import { temporaryMockUtils } from "messages";
 import { FormElement } from "../../FormElement";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 import { providerRoutes } from "../../../../utils/routes";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { MessagingAuthenticationFactory } from "../../../../utils/messaging";
 
 const awsErrorKey = "aws-provider-form";
 const providerTypeErrorKey = "provider-type";
@@ -61,7 +61,7 @@ export default async (props: {
   async function submitAction(formData: FormData) {
     "use server";
     const { user: submitUser, accessToken: submitToken } =
-      await AuthenticationContextFactory.getContext();
+      await MessagingAuthenticationFactory.getContext();
     const state = await getState(submitUser.id);
 
     const name = formData.get("name")?.toString();
@@ -141,7 +141,7 @@ export default async (props: {
 
   async function submitProviderType(formData: FormData) {
     "use server";
-    const providerUser = await AuthenticationContextFactory.getUser();
+    const providerUser = await MessagingAuthenticationFactory.getUser();
     const providerType = formData.get("providerType")?.toString();
 
     if (!providerType) {
@@ -172,7 +172,8 @@ export default async (props: {
     revalidatePath("/");
   }
 
-  const { user, accessToken } = await AuthenticationContextFactory.getContext();
+  const { user, accessToken } =
+    await MessagingAuthenticationFactory.getContext();
   const sdkClient = new Messaging(accessToken);
   const data: Awaited<ReturnType<typeof sdkClient.getSmsProvider>>["data"] =
     props.searchParams?.id

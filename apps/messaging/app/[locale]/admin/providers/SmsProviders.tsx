@@ -6,12 +6,12 @@ import {
   searchKeyDeleteId,
   searchKeyProvider,
   searchValueSms,
+  MessagingAuthenticationFactory,
 } from "../../../utils/messaging";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async () => {
   const t = await getTranslations("settings.Sms");
-  const accessToken = await AuthenticationContextFactory.getAccessToken();
+  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
   const sdk = new Messaging(accessToken);
 
   const { data: providers } = await sdk.getSmsProviders();

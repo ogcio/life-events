@@ -40,7 +40,6 @@ export const AuthSession: IAuthSession = {
         "Organization id is mandatory when logging in as public servant",
       );
     }
-    console.log({ config, getContextParameters, giovanni: 1 });
     const context = await getLogtoContext(config, getContextParameters);
 
     if (!context.isAuthenticated) {

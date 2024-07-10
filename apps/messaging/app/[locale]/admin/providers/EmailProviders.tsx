@@ -6,12 +6,12 @@ import {
   searchKeyDeleteId,
   searchKeyProvider,
   searchValueEmail,
+  MessagingAuthenticationFactory,
 } from "../../../utils/messaging";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async () => {
   const t = await getTranslations("settings.Emails");
-  const accessToken = await AuthenticationContextFactory.getAccessToken();
+  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
   const { data } = await new Messaging(accessToken).getEmailProviders();
 
   return (

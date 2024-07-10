@@ -9,9 +9,9 @@ import Link from "next/link";
 import {
   searchKeyListType,
   searchValueImports,
+  MessagingAuthenticationFactory,
 } from "../../../../../utils/messaging";
 import Users from "../../Users";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export default async (props: {
   params: { importId: string; locale: string };
@@ -20,7 +20,7 @@ export default async (props: {
     getTranslations("UsersImport"),
     getTranslations("Commons"),
   ]);
-  const accessToken = await AuthenticationContextFactory.getAccessToken();
+  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
   const messagingClient = new Messaging(accessToken);
   const { data: organisationId } =
     await messagingClient.getMockOrganisationId();

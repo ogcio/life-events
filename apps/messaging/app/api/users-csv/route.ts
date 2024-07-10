@@ -1,10 +1,8 @@
 import { Messaging } from "building-blocks-sdk";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
-import { getAuthenticationContextConfig } from "../../[locale]/logto_integration/config";
+import { MessagingAuthenticationFactory } from "../../utils/messaging";
 
 export async function GET() {
-  AuthenticationContextFactory.setConfig(getAuthenticationContextConfig());
-  const accessToken = await AuthenticationContextFactory.getAccessToken();
+  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
   const messagingClient = new Messaging(accessToken);
   const toDownloadTemplate = await messagingClient.downloadUsersCsvTemplate();
 

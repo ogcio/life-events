@@ -4,7 +4,7 @@ import Footer from "../Footer";
 import Header from "../Header";
 import SideMenu from "../SideMenu";
 import { getLinks } from "../../utils/messaging";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { MessagingAuthenticationFactory } from "../../utils/messaging";
 
 export default async ({
   children,
@@ -45,11 +45,11 @@ export default async ({
             <SideMenu
               locale={params.locale}
               options={await messages.sideMenuOptions(
-                await AuthenticationContextFactory.isPublicServant(),
+                await MessagingAuthenticationFactory.isPublicServant(),
               )}
               selected={routes.usersSettingsRoutes.slug}
               userName={
-                (await AuthenticationContextFactory.getUser()).name ?? ""
+                (await MessagingAuthenticationFactory.getUser()).name ?? ""
               }
             />
             <div style={{ width: "100%" }}>{children}</div>

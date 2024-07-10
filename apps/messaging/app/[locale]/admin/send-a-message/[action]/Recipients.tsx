@@ -1,5 +1,8 @@
 import { api } from "messages";
-import { MessageCreateProps } from "../../../../utils/messaging";
+import {
+  MessageCreateProps,
+  MessagingAuthenticationFactory,
+} from "../../../../utils/messaging";
 import dayjs from "dayjs";
 import ds from "design-system";
 import { revalidatePath } from "next/cache";
@@ -11,7 +14,6 @@ import { Messaging } from "building-blocks-sdk";
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { pgpool } from "messages/dbConnection";
 import styles from "../components/Table.module.scss";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 interface RecipientContact {
   id: string;
@@ -155,7 +157,7 @@ export default async (props: MessageCreateProps) => {
 
   const urlParams = new URLSearchParams(props.searchParams);
   const queryParams = getQueryParams(urlParams);
-  const accessToken = await AuthenticationContextFactory.getAccessToken();
+  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
   const messaging = new Messaging(accessToken);
   const { data: organisationId } = await messaging.getMockOrganisationId();
   const response = await messaging.getRecipients({

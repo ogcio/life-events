@@ -12,9 +12,8 @@ import { useTranslations } from "next-intl";
 import {
   avaliableMessagingTemplateStaticVariables,
   getInterpolationValues,
+  MessagingAuthenticationFactory,
 } from "../../../../utils/messaging";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
-import { AuthenticationError } from "shared-errors";
 
 type FormContent = {
   templateName: string;
@@ -427,7 +426,8 @@ export default async (props: {
   searchParams: { id?: string };
 }) => {
   const t = await getTranslations("MessageTemplate");
-  const { user, accessToken } = await AuthenticationContextFactory.getContext();
+  const { user, accessToken } =
+    await MessagingAuthenticationFactory.getContext();
 
   const state = await pgpool
     .query<{

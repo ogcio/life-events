@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Messaging } from "building-blocks-sdk";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { MessagingAuthenticationFactory } from "../../utils/messaging";
 
 const actionCitizen = async () => {
   "use server";
 
-  const context = await AuthenticationContextFactory.getCitizen();
+  const context = await MessagingAuthenticationFactory.getCitizen();
 
   const token = context.accessToken;
   if (!token) return console.log("missing token...");
@@ -16,7 +16,7 @@ const actionCitizen = async () => {
 const actionPublicServant = async () => {
   "use server";
 
-  const context = await AuthenticationContextFactory.getPublicServant();
+  const context = await MessagingAuthenticationFactory.getPublicServant();
 
   const token = context.accessToken;
   if (!token) return console.log("missing token...");
@@ -25,7 +25,7 @@ const actionPublicServant = async () => {
 };
 
 export default async function () {
-  const context = await AuthenticationContextFactory.getContext();
+  const context = await MessagingAuthenticationFactory.getContext();
 
   return (
     <>

@@ -8,9 +8,9 @@ import Link from "next/link";
 import {
   searchKeySettingType,
   searchValueOrganisation,
+  MessagingAuthenticationFactory,
 } from "../../../../utils/messaging";
 import { FormElement } from "../../../admin/FormElement";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 enum AVAILABLE_TRANSPORTS {
   SMS = "sms",
@@ -31,9 +31,9 @@ enum ACTIVE_STATUSES {
 export default async (props: { params: { organisationId: string } }) => {
   async function submitAction(formData: FormData) {
     "use server";
-    const submitUser = await AuthenticationContextFactory.getUser();
+    const submitUser = await MessagingAuthenticationFactory.getUser();
     const submitAccessToken =
-      await AuthenticationContextFactory.getAccessToken();
+      await MessagingAuthenticationFactory.getAccessToken();
     const submitTrans = await getTranslations("userSettings.Organisation");
     const url = new URL(usersSettingsRoutes.url, process.env.HOST_URL);
     url.searchParams.append(searchKeySettingType, searchValueOrganisation);
@@ -94,7 +94,8 @@ export default async (props: { params: { organisationId: string } }) => {
     getTranslations("Commons"),
   ]);
 
-  const { user, accessToken } = await AuthenticationContextFactory.getContext();
+  const { user, accessToken } =
+    await MessagingAuthenticationFactory.getContext();
   const messagingClient = await new Messaging(accessToken);
   const configurations = await messagingClient.getOrganisationInvitation(
     props.params.organisationId,

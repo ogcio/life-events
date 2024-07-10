@@ -1,8 +1,8 @@
 import ds from "design-system";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { MessagingAuthenticationFactory } from "../utils/messaging";
 
 export default async () => {
-  const user = await AuthenticationContextFactory.getUser();
+  const user = await MessagingAuthenticationFactory.getUser();
   const names = user.name ? user.name.split(" ") : ["N", "A"];
   const firstNameChar = names[0].charAt(0) ?? "";
   const lastNameChar = names[1] ? names[1].charAt(0) : "";
