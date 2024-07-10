@@ -2,19 +2,15 @@ import StripeHost from "./StripeHost";
 import { getMessages, getTranslations } from "next-intl/server";
 import { createPaymentIntent } from "../../../../integration/stripe";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
-import { PgSessions } from "auth/sessions";
 import { redirect, RedirectType } from "next/navigation";
-import { Payments } from "building-blocks-sdk";
 import { errorHandler } from "../../../../utils";
+import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
+import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
 
-async function getPaymentDetails(
-  userId: string,
-  paymentId: string,
-  amount?: string,
-) {
-  const { data: details, error } = await new Payments(
-    userId,
-  ).getPaymentRequestPublicInfo(paymentId);
+async function getPaymentDetails(paymentId: string, amount?: string) {
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: details, error } =
+    await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
   if (error) {
     errorHandler(error);
@@ -50,13 +46,13 @@ export default async function Card(props: {
       }
     | undefined;
 }) {
-  const { userId, email, firstName, lastName, publicServant } =
-    await PgSessions.get();
+  const { user, isPublicServant } = await getPaymentsCitizenContext();
 
-  if (publicServant) {
+  if (isPublicServant) {
     return redirect("/not-found", RedirectType.replace);
   }
 
+  const paymentsApi = await PaymentsApiFactory.getInstance();
   const messages = await getMessages({ locale: props.params.locale });
   const stripeMessages =
     (await messages.PayStripe) as unknown as AbstractIntlMessages;
@@ -67,7 +63,6 @@ export default async function Card(props: {
   }
 
   const paymentDetails = await getPaymentDetails(
-    userId,
     props.searchParams.paymentId,
     props.searchParams.amount,
   );
@@ -79,13 +74,13 @@ export default async function Card(props: {
   const { paymentIntent, providerKeysValid } =
     await createPaymentIntent(paymentDetails);
 
-  const { error } = await new Payments(userId).createTransaction({
+  const { error } = await paymentsApi.createTransaction({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentIntent.id,
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email, name: `${firstName} ${lastName}` },
+    userData: { email: user?.email ?? "", name: user?.name ?? "" },
   });
 
   if (error) {

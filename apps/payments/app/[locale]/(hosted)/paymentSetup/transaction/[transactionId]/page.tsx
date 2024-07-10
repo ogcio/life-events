@@ -2,17 +2,15 @@ import { getTranslations } from "next-intl/server";
 import { errorHandler, formatCurrency } from "../../../../../utils";
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
-import { PgSessions } from "auth/sessions";
 import { notFound } from "next/navigation";
 import { TransactionStatuses } from "../../../../../../types/TransactionStatuses";
 import Link from "next/link";
-import { Payments } from "building-blocks-sdk";
+import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
 
 async function getTransactionDetails(transactionId: string) {
-  const { userId } = await PgSessions.get();
-  const { data: result, error } = await new Payments(
-    userId,
-  ).getTransactionDetails(transactionId);
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: result, error } =
+    await paymentsApi.getTransactionDetails(transactionId);
 
   if (error) {
     errorHandler(error);
@@ -24,13 +22,10 @@ async function getTransactionDetails(transactionId: string) {
 async function confirmTransaction(transactionId: string) {
   "use server";
 
-  const { userId } = await PgSessions.get();
-  const { error } = await new Payments(userId).updateTransaction(
-    transactionId,
-    {
-      status: TransactionStatuses.Succeeded,
-    },
-  );
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { error } = await paymentsApi.updateTransaction(transactionId, {
+    status: TransactionStatuses.Succeeded,
+  });
 
   if (error) {
     errorHandler(error);

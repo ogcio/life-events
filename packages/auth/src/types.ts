@@ -29,6 +29,7 @@ export type AuthSessionUserInfo = {
   name: string | null;
   username: string | null;
   id: string;
+  email: string | null;
 };
 
 export type AuthSessionOrganizationInfo = {
