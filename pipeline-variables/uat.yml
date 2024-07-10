@@ -2,6 +2,8 @@ variables:
   awsServiceConnection: life-events-uat-ecr
   awsRegion: eu-west-1
   ecrEndpoint: 339713032391.dkr.ecr.eu-west-1.amazonaws.com
+  environment: LifeEvents-uat
+
   nextPublicStripePublishableKey: pk_test_51OzFkUK1VL0xyyr2E3EvcEmzsAGLowKH3jlM4g3AhQwUjhlpxQvfjZizc5GRSAnNzf8HHwTdzhz2rRYS69nooxtg00ZF7kRvyN
   nextPublicHostUrl: https://payments.uat.blocks.gov.ie/
   nextPublicApiEndpoint: https://api.uat.blocks.gov.ie
