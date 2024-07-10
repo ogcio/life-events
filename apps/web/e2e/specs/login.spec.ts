@@ -129,4 +129,46 @@ test.describe("Login Page Tests", () => {
       }
     }
   });
+
+  test("should validate successfull end-user login level 0 @critical", async ({
+    page,
+  }) => {
+    await allure.description(
+      "This test attempts to log into the website using a login and an empty password.",
+    );
+    await allure.owner("OGCIO");
+    await allure.tags("Login", "Essentials", "Authentication");
+    await allure.severity(Severity.CRITICAL);
+
+    await loginPage.clickSubmit();
+    await loginPage.expectPasswordRequired();
+
+    await loginPage.enterPassword("123");
+    await loginPage.clickSubmit();
+
+    const h1Locator = page.locator("h1.govie-heading-l");
+    await expect(h1Locator).toBeVisible();
+    await expect(h1Locator).toHaveText("Welcome to Life Events");
+  });
+
+  test.only("should validate successfull end-user login level 1 @critical", async ({
+    page,
+  }) => {
+    await allure.description(
+      "This test attempts to log into the website using a login and an empty password.",
+    );
+    await allure.owner("OGCIO");
+    await allure.tags("Login", "Essentials", "Authentication");
+    await allure.severity(Severity.CRITICAL);
+
+    await loginPage.clickSubmit();
+    await loginPage.expectPasswordRequired();
+
+    await loginPage.enterPassword("123");
+    await loginPage.clickSubmit();
+
+    const h1Locator = page.locator("h1.govie-heading-l");
+    await expect(h1Locator).toBeVisible();
+    await expect(h1Locator).toHaveText("Welcome to Life Events");
+  });
 });
