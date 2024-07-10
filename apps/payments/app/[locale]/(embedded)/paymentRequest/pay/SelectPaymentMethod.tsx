@@ -98,7 +98,7 @@ export default function ({
         </div>
       );
     });
-  }, [providers]);
+  }, [providers, isPublicServant, t]);
 
   const redirectToPayment = redirectToPaymentUrl.bind(this, {
     paymentId,

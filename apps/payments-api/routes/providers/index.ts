@@ -14,14 +14,18 @@ import {
   ProviderDO,
   UpdateProviderDO,
 } from "../../plugins/entities/providers/types";
+import { authPermissions } from "../../types/authPermissions";
+
+const TAGS = ["Providers"];
 
 export default async function providers(app: FastifyInstance) {
   app.post<{ Body: CreateProviderDO; Reply: Id }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         body: CreateProvider,
         response: {
           200: Id,
@@ -32,7 +36,7 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       if (!userId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
@@ -47,9 +51,10 @@ export default async function providers(app: FastifyInstance) {
   app.get<{ Reply: ProviderDO[] }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         response: {
           200: ProvidersList,
           401: HttpError,
@@ -57,7 +62,7 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       if (!userId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
@@ -72,9 +77,10 @@ export default async function providers(app: FastifyInstance) {
   app.get<{ Reply: ProviderDO | Error; Params: ParamsWithProviderId }>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         response: {
           200: ProviderReply,
           401: HttpError,
@@ -83,7 +89,7 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const { providerId } = request.params;
 
       if (!userId) {
@@ -103,9 +109,10 @@ export default async function providers(app: FastifyInstance) {
   }>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         body: UpdateProvider,
         response: {
           200: OkResponse,
@@ -116,7 +123,7 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const { providerId } = request.params;
 
       if (!userId) {
