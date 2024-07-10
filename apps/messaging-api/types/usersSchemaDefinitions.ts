@@ -167,7 +167,7 @@ export const TagSchema = Type.Object({
 export type Tag = Static<typeof TagSchema>;
 
 export const TagForUserSchema = Type.Object({
-  userId: Type.String({ format: "uuid" }),
+  userId: Type.String(),
   tagId: Type.String({ format: "uuid" }),
 });
 export type TagForUser = Static<typeof TagForUserSchema>;
@@ -202,8 +202,8 @@ export const InvitationFeedbackSchema = Type.Object({
 export type InvitationFeedback = Static<typeof InvitationFeedbackSchema>;
 
 export const RecipientSchema = Type.Object({
-  id: Type.String({ format: "uuid" }),
-  userProfileId: Type.Union([Type.Null(), Type.String({ format: "uuid" })], {
+  id: Type.String(),
+  userProfileId: Type.Union([Type.Null(), Type.String()], {
     default: null,
   }),
   firstName: NullableStringType,

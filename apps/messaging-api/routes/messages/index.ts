@@ -167,7 +167,7 @@ export default async function messages(app: FastifyInstance) {
       schema: {
         body: Type.Object({
           templateMetaId: Type.String({ format: "uuid" }),
-          userIds: Type.Array(Type.String({ format: "uuid" })),
+          userIds: Type.Array(Type.String()),
           transportations: Type.Array(
             Type.Union([
               Type.Literal("email"),
