@@ -98,27 +98,21 @@ test.describe("Login Page Tests", () => {
     const buttonText = await loginButton.textContent();
     expect(buttonText).toContain("Login");
 
-    // Locate the dropdown element using its name attribute
     const verificationLevelDropdown = await page.locator(
       'select[name="verificationLevel"]',
     );
 
-    // Check dropdown existence and visibility (optional)
     await expect(verificationLevelDropdown).toBeVisible();
 
-    // Get all options within the dropdown
     const options = await verificationLevelDropdown.locator("option");
 
-    // Verify the existence of all three options
     await expect(options).toHaveCount(3);
 
-    // Loop through each option
     for (let i = 0; i < 3; i++) {
       const option = await options.nth(i);
       const optionText = await option.textContent();
       const optionValue = await option.getAttribute("value");
 
-      // Check option text based on index (adjust text content if needed)
       switch (i) {
         case 0:
           expect(optionText).toBe("Level 0");
