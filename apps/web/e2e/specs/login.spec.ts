@@ -98,23 +98,41 @@ test.describe("Login Page Tests", () => {
     const buttonText = await loginButton.textContent();
     expect(buttonText).toContain("Login");
 
-    // // Locate the "Select User" label
-    // const selectUserLabel = await userSelectContainer.locator('label');
+    // Locate the dropdown element using its name attribute
+    const verificationLevelDropdown = await page.locator(
+      'select[name="verificationLevel"]',
+    );
 
-    // // Check label existence and visibility
-    // await expect(selectUserLabel).toBeVisible();
+    // Check dropdown existence and visibility (optional)
+    await expect(verificationLevelDropdown).toBeVisible();
 
-    // // Verify the text content of the label
-    // await expect(selectUserLabel).toHaveText('Select user');
+    // Get all options within the dropdown
+    const options = await verificationLevelDropdown.locator("option");
 
-    // // Locate the dropdown element
-    // const userSelectDropdown = await userSelectContainer.locator('#user_select');
+    // Verify the existence of all three options
+    await expect(options).toHaveCount(3);
 
-    // // Check dropdown existence and visibility
-    // await expect(userSelectDropdown).toBeVisible();
+    // Loop through each option
+    for (let i = 0; i < 3; i++) {
+      const option = await options.nth(i);
+      const optionText = await option.textContent();
+      const optionValue = await option.getAttribute("value");
 
-    // // Verify the text content of the first option (Create Random User)
-    // const firstOptionText = await userSelectDropdown.locator('option >> nth=0').textContent();
-    // await expect(firstOptionText).toBe('Create random user');
+      // Check option text based on index (adjust text content if needed)
+      switch (i) {
+        case 0:
+          expect(optionText).toBe("Level 0");
+          expect(optionValue).toBe("0");
+          break;
+        case 1:
+          expect(optionText).toBe("Level 1");
+          expect(optionValue).toBe("1");
+          break;
+        case 2:
+          expect(optionText).toBe("Level 2");
+          expect(optionValue).toBe("2");
+          break;
+      }
+    }
   });
 });
