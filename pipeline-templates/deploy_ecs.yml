@@ -6,24 +6,24 @@ parameters:
 
 jobs:
   - deployment: DeployECS_${{ replace(serviceName, '-', '_') }}
-            displayName: Deploy - ${{ parameters.serviceName }}
-            environment: ${{ parameters.environment }}
-            strategy:
-              runOnce:
-                deploy:
-                  steps:
-                  - checkout: self
-                  - task: AWSCLI@1
-                    inputs:
-                      awsCredentials: ${{ parameters.awsServiceConnection }}
-                      regionName: ${{ parameters.awsRegion }}
-                      awsCommand: 'ecs'
-                      awsSubCommand: 'update-service'
-                      awsArguments: '--force-new-deployment --cluster life-events-ecs --service ${{ parameters.serviceName }}-service'
-                  - task: AWSCLI@1
-                    inputs:
-                      awsCredentials: ${{ parameters.awsServiceConnection }}
-                      regionName: ${{ parameters.awsRegion }}
-                      awsCommand: 'ecs'
-                      awsSubCommand: 'wait'
-                      awsArguments: 'services-stable --cluster life-events-ecs --service ${{ parameters.serviceName }}-service'
+    displayName: Deploy - ${{ parameters.serviceName }}
+    environment: ${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - task: AWSCLI@1
+            inputs:
+              awsCredentials: ${{ parameters.awsServiceConnection }}
+              regionName: ${{ parameters.awsRegion }}
+              awsCommand: 'ecs'
+              awsSubCommand: 'update-service'
+              awsArguments: '--force-new-deployment --cluster life-events-ecs --service ${{ parameters.serviceName }}-service'
+          - task: AWSCLI@1
+            inputs:
+              awsCredentials: ${{ parameters.awsServiceConnection }}
+              regionName: ${{ parameters.awsRegion }}
+              awsCommand: 'ecs'
+              awsSubCommand: 'wait'
+              awsArguments: 'services-stable --cluster life-events-ecs --service ${{ parameters.serviceName }}-service'
