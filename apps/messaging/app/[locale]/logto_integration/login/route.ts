@@ -1,6 +1,6 @@
 import { AuthSession } from "auth/auth-session";
-import { getBaseLogtoConfig } from "auth/authentication-context";
+import { getSignInConfiguration } from "../config";
 
 export async function GET() {
-  await AuthSession.login(getBaseLogtoConfig());
+  await AuthSession.login(getSignInConfiguration());
 }

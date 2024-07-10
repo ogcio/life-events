@@ -1,7 +1,6 @@
 import { AuthSession } from "auth/auth-session";
-import { postSignoutRedirect } from "../config";
-import { getBaseLogtoConfig } from "auth/authentication-context";
+import { getSignInConfiguration, postSignoutRedirect } from "../config";
 
 export async function GET() {
-  await AuthSession.logout(getBaseLogtoConfig(), postSignoutRedirect);
+  await AuthSession.logout(getSignInConfiguration(), postSignoutRedirect);
 }
