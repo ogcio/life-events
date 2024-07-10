@@ -27,5 +27,11 @@ declare module "fastify" {
     avClient: NodeClam;
     s3Client: S3ClientConfig;
     config: { [key: string]: string | number };
+    checkPermissions: (
+      request: FastifyRequest,
+      reply: FastifyReply,
+      permissions: string[],
+      matchConfig?: { method: "AND" | "OR" },
+    ) => Promise<void>;
   }
 }

@@ -10,8 +10,10 @@ import autoload from "@fastify/autoload";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+
 import { initializeLoggingHooks } from "logging-wrapper";
 import { initializeErrorHandler } from "error-handler";
+import apiAuthPlugin from "api-auth";
 
 import routes from "./routes/index.js";
 import { envSchema } from "./config.js";
@@ -27,6 +29,13 @@ export async function build(opts?: FastifyServerOptions) {
   await app.register(fastifyEnv, {
     schema: envSchema,
     dotenv: true,
+  });
+
+  app.register(apiAuthPlugin, {
+    jwkEndpoint: process.env.LOGTO_JWK_ENDPOINT as string,
+    oidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT as string,
+    currentApiResourceIndicator: process.env
+      .LOGTO_API_RESOURCE_INDICATOR as string,
   });
 
   app.register(multipart, {

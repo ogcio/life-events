@@ -36,6 +36,11 @@ t.test("files", async (t) => {
           );
         }),
       },
+      "api-auth": {
+        default: fp(async (fastify) => {
+          fastify.decorate("checkPermissions", () => {});
+        }),
+      },
     },
   );
   const uploadEventEmitter = new EventEmitter();

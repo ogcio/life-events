@@ -3,6 +3,7 @@ import { FastifyInstance, FastifyRequest } from "fastify";
 import { HttpError } from "../../types/httpErrors.js";
 import {
   DeleteObjectCommand,
+  GetObjectCommand,
   ListObjectsCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -11,6 +12,17 @@ import { EventEmitter } from "node:events";
 import { pipeline } from "stream";
 import { Upload } from "@aws-sdk/lib-storage";
 import { Object } from "../../types/schemaDefinitions.js";
+
+const permissions = {
+  citizen: {
+    test: "upload:object.self:read",
+    testError: "fake_permission",
+  },
+  publicServant: {
+    test: "payments:create:object",
+    testError: "fake_permission",
+  },
+};
 
 const deleteObject = (
   s3Client: S3Client,
@@ -145,6 +157,10 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
 };
 
 export default async function routes(app: FastifyInstance) {
+  app.addHook("preValidation", async (request, reply) => {
+    await app.checkPermissions(request, reply, [permissions.citizen.test]);
+  });
+
   app.post(
     "/",
     {
@@ -202,7 +218,7 @@ export default async function routes(app: FastifyInstance) {
         tags: ["Files"],
         params: Type.Object({ key: Type.String() }),
         response: {
-          // 200: Type.Object({ message: Type.String() }),
+          200: Type.Object({ message: Type.String() }),
           500: HttpError,
         },
       },
@@ -223,7 +239,39 @@ export default async function routes(app: FastifyInstance) {
         throw app.httpErrors.internalServerError();
       }
 
-      reply.send({ response: "File deleted succesfully" });
+      reply.send({ message: "File deleted succesfully" });
     },
   );
+
+  // app.get<{ Params: { key: string } }>(
+  //   "/:key",
+  //   {
+  //     schema: {
+  //       tags: ["Files"],
+  //       params: Type.Object({ key: Type.String() }),
+  //       response: {
+  //         // 200: Type.Object({ message: Type.String() }),
+  //         500: HttpError,
+  //       },
+  //     },
+  //   },
+  //   async (request, reply) => {
+  //     if (!request.params.key) {
+  //       throw app.httpErrors.badRequest("Key not provided");
+  //     }
+  //     try {
+  //       const response = await app.s3Client.client.send(
+  //         new GetObjectCommand({
+  //           Bucket: app.s3Client.bucketName,
+  //           Key: request.params.key,
+  //         }),
+  //       );
+  //     } catch (err) {
+  //       app.log.error(err);
+  //       throw app.httpErrors.internalServerError();
+  //     }
+
+  //     reply.send({ response: "File deleted succesfully" });
+  //   },
+  // );
 }
