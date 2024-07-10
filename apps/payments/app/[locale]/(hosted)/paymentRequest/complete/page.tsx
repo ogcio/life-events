@@ -1,10 +1,9 @@
 import { pgpool } from "../../../../dbConnection";
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { getInternalStatus } from "../../../../integration/stripe";
-import { PgSessions } from "auth/sessions";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
-import { Payments } from "building-blocks-sdk";
 import { errorHandler } from "../../../../utils";
+import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
 
 type Props = {
   searchParams: {
@@ -42,10 +41,9 @@ async function updateTransaction(extPaymentId: string, status: string) {
 }
 
 async function getRequestDetails(requestId: string) {
-  const { userId } = await PgSessions.get();
-  const { data: details, error } = await new Payments(
-    userId,
-  ).getPaymentRequestPublicInfo(requestId);
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: details, error } =
+    await paymentsApi.getPaymentRequestPublicInfo(requestId);
 
   if (error) {
     errorHandler(error);

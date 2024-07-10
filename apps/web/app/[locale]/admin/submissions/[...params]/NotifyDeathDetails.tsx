@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { postgres, routes, web, workflow } from "../../../../utils";
-import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
+import { ListRow } from "../../../(public)/[event]/[...action]/shared/SummaryListRow";
 import FormLayout from "../../../../components/FormLayout";
 
 type Props = {

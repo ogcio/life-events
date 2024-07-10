@@ -63,7 +63,7 @@ export default function StripeHost({
       pk = PUBLISHABLE_KEY;
     }
     return loadStripe(pk);
-  }, [paymentRequest]);
+  }, [paymentRequest, providerKeysValid]);
 
   return (
     <div>

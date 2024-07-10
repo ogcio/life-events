@@ -1,13 +1,49 @@
-import { UserScope } from "@logto/next";
+import { AuthUserScope } from "auth/index";
 
-export const logtoConfig = {
-  appId: process.env.LOGTO_APP_ID as string,
+export const paymentsApiResource = process.env.PAYMENTS_BACKEND_URL + "/";
+
+export const orgScopes = [
+  AuthUserScope.Organizations,
+  AuthUserScope.OrganizationRoles,
+];
+
+export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
-  baseUrl: process.env.LOGTO_BASE_URL as string,
+  baseUrl: process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT as string,
   endpoint: process.env.LOGTO_ENDPOINT as string,
-  appSecret: process.env.LOGTO_APP_SECRET as string,
   cookieSecret: process.env.LOGTO_COOKIE_SECRET as string,
-  // All the availabie resources to the app
-  resources: [process.env.PAYMENTS_BACKEND_URL + "/"],
-  scopes: [UserScope.Organizations, UserScope.OrganizationRoles],
+
+  appId: process.env.LOGTO_PAYMENTS_APP_ID as string,
+  appSecret: process.env.LOGTO_PAYMENTS_APP_SECRET as string,
 };
+
+// All the permissions of a normal citizen
+export const commonScopes = [AuthUserScope.Email];
+
+export const citizenScopes = [
+  "payments:provider.public:read",
+  "payments:payment_request.public:read",
+  "payments:transaction.self:write",
+  "payments:transaction.self:read",
+];
+export const paymentsPublicServantScopes = [
+  "payments:payment_request:*",
+  "payments:transaction:*",
+  "payments:provider:*",
+  "payments:payment_request.public:read",
+];
+
+export default {
+  ...baseConfig,
+  // All the available resources to the app
+  resources: [paymentsApiResource],
+  scopes: [
+    ...commonScopes,
+    ...orgScopes,
+    ...citizenScopes,
+    ...paymentsPublicServantScopes,
+  ],
+};
+
+export const postSignoutRedirect =
+  process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT;
