@@ -5,7 +5,7 @@ parameters:
   - name: environment
 
 jobs:
-  - deployment: DeployECS_${{ replace(serviceName, '-', '_') }}
+  - deployment: DeployECS_${{ replace(parameters.serviceName, '-', '_') }}
     displayName: Deploy - ${{ parameters.serviceName }}
     environment: ${{ parameters.environment }}
     strategy:
