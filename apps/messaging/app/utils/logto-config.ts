@@ -2,7 +2,7 @@ import {
   getBaseLogtoConfig,
   organizationScopes,
 } from "auth/authentication-context";
-import { logtoLogin } from "../../utils/routes";
+import { logtoLogin } from "./routes";
 import { AuthenticationContextConfig } from "auth/authentication-context-factory";
 
 export const messagingApiResource = process.env.MESSAGES_BACKEND_URL + "/";

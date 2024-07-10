@@ -5,7 +5,7 @@ import ds from "design-system";
 import { api } from "messages";
 import { events, providerRoutes, users } from "./routes";
 import { AuthenticationContextFactory } from "auth/authentication-context-factory";
-import { getAuthenticationContextConfig } from "../[locale]/logto_integration/config";
+import { getAuthenticationContextConfig } from "../utils/logto-config";
 
 export const languages = {
   EN: "EN",
