@@ -6,7 +6,7 @@
     "build": "next build",
     "start": "next start -p 3000",
     "test:e2e": "playwright test",
-    "test:lighthouse": "node performance-tests/main.mjs",
+    "test:lighthouse": "node performance-tests/lighthouse/main.mjs",
     "migrate": "db-migrate up"
   },
   "nodemonConfig": {

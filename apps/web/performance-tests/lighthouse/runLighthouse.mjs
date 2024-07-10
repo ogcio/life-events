@@ -25,13 +25,13 @@ export async function runLighthouseForURL (pageURL, opts, reportName) {
       SEO: 0.90
     }
 
-    fs.writeFile('performance-tests/reports/' + reportNameForFile + '.html', html, (err) => {
+    fs.writeFile('performance-tests/lighthouse/reports/' + reportNameForFile + '.html', html, (err) => {
       if (err) {
         console.error(err)
       }
     })
 
-    fs.writeFile('performance-tests/reports/' + reportNameForFile + '.json', json, (err) => {
+    fs.writeFile('performance-tests/lighthouse/reports/' + reportNameForFile + '.json', json, (err) => {
       if (err) {
         console.error(err)
       }
@@ -43,7 +43,7 @@ export async function runLighthouseForURL (pageURL, opts, reportName) {
         if (scores[key] != null && baselineValue > scores[key]) {
           Object.keys(baselineScores).forEach(key => {
           })
-          console.log(key + ' is below ' + baselineScores[key] * 100 + '%')
+          console.log(key + ' is below ' + baselineScores[key] * 100 + '% for ' + reportNameForFile)
       } 
      })
     } catch (e) {
