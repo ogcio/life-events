@@ -9,8 +9,6 @@ type Props = {
 };
 
 export default async (props: Props) => {
-  console.log("page");
-
   const path = `${props.params.locale}/${routes.events.slug}`;
 
   const { publicServant } = await PgSessions.get();

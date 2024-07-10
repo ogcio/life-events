@@ -1,11 +1,9 @@
 import { AuthSession, AuthUserScope } from "auth/auth-session";
 import { AuthSessionContext } from "auth/types";
 
-// export const messagingApiResource = process.env.MESSAGES_BACKEND_URL + "/";
-
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
-  baseUrl: process.env.NEXT_PUBLIC_LIFE_EVENTS_ENTRY_POINT as string,
+  baseUrl: process.env.LIFE_EVENTS_ENTRY_POINT as string,
   endpoint: process.env.LOGTO_ENDPOINT as string,
   cookieSecret: process.env.LOGTO_COOKIE_SECRET as string,
 
@@ -35,31 +33,8 @@ export default {
 
 export const getAuthenticationContext =
   async (): Promise<AuthSessionContext> => {
-    // const citizenContext = await getCitizenContext();
-    // console.log("citizen", citizenContext);
-
-    // if (citizenContext.isPublicServant) {
     return getPublicServantContext();
-    // }
-
-    // return citizenContext;
   };
-
-// unused for now, will add back when adding logto for citizens
-const getCitizenContext = () =>
-  AuthSession.get(
-    {
-      ...baseConfig,
-      resources: [],
-      scopes: [...citizenScopes],
-    },
-    {
-      getAccessToken: true,
-      fetchUserInfo: true,
-      publicServantExpectedRole,
-      userType: "citizen",
-    },
-  );
 
 export const authConfig = {
   ...baseConfig,
@@ -76,5 +51,4 @@ const getPublicServantContext = () =>
     userType: "publicServant",
   });
 
-export const postSignoutRedirect =
-  process.env.NEXT_PUBLIC_LIFE_EVENTS_ENTRY_POINT;
+export const postSignoutRedirect = process.env.LIFE_EVENTS_ENTRY_POINT;
