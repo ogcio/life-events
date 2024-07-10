@@ -21,6 +21,9 @@ import { formatAPIResponse } from "../../utils/responseFormatter";
 import { PaginationParams as PaginationParamsType } from "../../types/pagination";
 import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
 import { TransactionDO } from "../../plugins/entities/transactions/types";
+import { authPermissions } from "../../types/authPermissions";
+
+const TAGS = ["PaymentRequests"];
 
 export default async function paymentRequests(app: FastifyInstance) {
   app.get<{
@@ -29,15 +32,16 @@ export default async function paymentRequests(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         querystring: PaginationParams,
         response: { 200: GenericResponse(Type.Array(PaymentRequest)) },
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const {
         offset = PAGINATION_OFFSET_DEFAULT,
         limit = PAGINATION_LIMIT_DEFAULT,
@@ -109,9 +113,10 @@ export default async function paymentRequests(app: FastifyInstance) {
   }>(
     "/:requestId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         params: ParamsWithPaymentRequestId,
         response: {
           200: PaymentRequestDetails,
@@ -120,7 +125,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const { requestId } = request.params;
 
       let result;
@@ -175,8 +180,12 @@ export default async function paymentRequests(app: FastifyInstance) {
   }>(
     "/:requestId/public-info",
     {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [
+          authPermissions.PAYMENT_REQUEST_PUBLIC_READ,
+        ]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         params: ParamsWithPaymentRequestId,
         response: {
           200: PaymentRequestDetails,
@@ -235,15 +244,16 @@ export default async function paymentRequests(app: FastifyInstance) {
   app.post<{ Body: CreatePaymentRequest; Reply: Id | Error }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         body: CreatePaymentRequest,
         response: { 200: Id },
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const {
         title,
         description,
@@ -319,15 +329,16 @@ export default async function paymentRequests(app: FastifyInstance) {
   app.put<{ Body: EditPaymentRequest; Reply: Id | Error }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         body: EditPaymentRequest,
         response: { 200: Id },
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const {
         title,
         description,
@@ -400,9 +411,10 @@ export default async function paymentRequests(app: FastifyInstance) {
   }>(
     "/:requestId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
-        tags: ["PaymentRequests"],
+        tags: TAGS,
         response: {
           200: Type.Object({}),
           404: HttpError,
@@ -411,7 +423,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const { requestId } = request.params;
 
       let transactions;
@@ -469,7 +481,8 @@ export default async function paymentRequests(app: FastifyInstance) {
   }>(
     "/:requestId/transactions",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
         tags: ["Transactions"],
         querystring: PaginationParams,

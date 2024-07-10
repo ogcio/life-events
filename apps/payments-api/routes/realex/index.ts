@@ -9,6 +9,9 @@ import { Type } from "@sinclair/typebox";
 import secretsHandlerFactory from "../../services/providersSecretsService";
 import { RealexService } from "../../services/realexService";
 import { getSecretFields } from "../../plugins/entities/providers/dataMapper";
+import { authPermissions } from "../../types/authPermissions";
+
+const TAGS = ["Transactions"];
 
 export default async function realex(app: FastifyInstance) {
   app.get<{
@@ -17,9 +20,12 @@ export default async function realex(app: FastifyInstance) {
   }>(
     "/paymentObject",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [
+          authPermissions.TRANSACTION_SELF_WRITE,
+        ]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         querystring: RealexPaymentObjectQueryParams,
         response: {
           200: RealexPaymentObject,
@@ -88,7 +94,7 @@ export default async function realex(app: FastifyInstance) {
     "/verifyPaymentResponse",
     {
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         body: Type.Object({}),
         response: {
           200: Type.String(),

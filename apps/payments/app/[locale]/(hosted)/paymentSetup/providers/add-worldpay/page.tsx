@@ -1,19 +1,17 @@
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
-import { Payments } from "building-blocks-sdk";
 import WorldpayFields from "./WorldpayFields";
 import { errorHandler } from "../../../../../utils";
+import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
 
 export default async () => {
   const t = await getTranslations("PaymentSetup.AddWorldpay");
 
-  const { userId } = await PgSessions.get();
-
   async function handleSubmit(formData: FormData) {
     "use server";
 
-    const { error } = await new Payments(userId).createProvider({
+    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const { error } = await paymentsApi.createProvider({
       name: formData.get("provider_name") as string,
       type: "worldpay",
       data: {

@@ -10,21 +10,20 @@ import {
   PAGINATION_PAGE_DEFAULT,
 } from "../../../../../utils";
 import dayjs from "dayjs";
-import { PgSessions } from "auth/sessions";
 import { RequestDetails } from "./RequestDetails";
 import Link from "next/link";
 import { EmptyStatus } from "../../../../../components/EmptyStatus";
-import { Payments } from "building-blocks-sdk";
 import Pagination from "../../../../../components/pagination";
 import { routeDefinitions } from "../../../../../routeDefinitions";
 import { redirect, RedirectType } from "next/navigation";
+import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
 
 export default async function ({
   params: { requestId, locale },
   searchParams: { action, page, limit },
 }) {
   const t = await getTranslations("PaymentSetup.Request");
-  const { userId } = await PgSessions.get();
+  const paymentsApi = await PaymentsApiFactory.getInstance();
 
   const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
   const pageLimit = limit ? parseInt(limit) : PAGINATION_LIMIT_DEFAULT;
@@ -34,9 +33,8 @@ export default async function ({
     limit: pageLimit,
   };
 
-  const { data: transactionsResponse, error } = await new Payments(
-    userId,
-  ).getPaymentRequestTransactions(requestId, pagination);
+  const { data: transactionsResponse, error } =
+    await paymentsApi.getPaymentRequestTransactions(requestId, pagination);
 
   const errors = errorHandler(error);
 
