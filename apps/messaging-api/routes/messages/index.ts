@@ -26,6 +26,7 @@ import {
   newMessagingEventLogger,
 } from "../../services/messages/eventLogger";
 import { HttpError } from "../../types/httpErrors";
+import { Permissions } from "../../types/permissions";
 
 const MESSAGES_TAGS = ["Messages"];
 
@@ -42,6 +43,8 @@ interface GetMessage {
 }
 
 export default async function messages(app: FastifyInstance) {
+  // Didn't add permissions here because
+  // we need to manage the scheduler permissions
   app.post<{ Params: { id: string } }>(
     "/jobs/:id",
     {
@@ -71,7 +74,8 @@ export default async function messages(app: FastifyInstance) {
   app.get<GetAllMessages>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.MessageSelf.Read]),
       schema: {
         tags: MESSAGES_TAGS,
         querystring: Type.Optional(
@@ -102,7 +106,8 @@ export default async function messages(app: FastifyInstance) {
   app.get<GetMessage>(
     "/:messageId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.MessageSelf.Read]),
       schema: {
         tags: MESSAGES_TAGS,
         params: {
@@ -136,7 +141,8 @@ export default async function messages(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Message.Write]),
       schema: {
         tags: MESSAGES_TAGS,
         body: CreateMessageSchema,
@@ -166,7 +172,8 @@ export default async function messages(app: FastifyInstance) {
   }>(
     "/template",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Write]),
       schema: {
         body: Type.Object({
           templateMetaId: Type.String({ format: "uuid" }),
