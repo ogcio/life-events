@@ -56,6 +56,7 @@ ENV AUTH_SERVICE_URL=$AUTH_SERVICE_URL
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 RUN npm run build --workspace=packages/shared-errors
+RUN npm run build --workspace=packages/nextjs-logging-wrapper
 RUN npm run build --workspace=apps/messaging
 
 FROM base-deps as runner
