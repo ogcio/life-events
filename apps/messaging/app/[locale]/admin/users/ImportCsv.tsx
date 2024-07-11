@@ -10,7 +10,7 @@ import {
   searchValueImports,
   MessagingAuthenticationFactory,
 } from "../../../utils/messaging";
-import { RedirectType, redirect } from "next/navigation";
+import { RedirectType, notFound, redirect } from "next/navigation";
 
 type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
 
@@ -53,15 +53,15 @@ export default async () => {
     getTranslations("UsersImports"),
     getTranslations("formErrors"),
   ]);
-  const { user, accessToken } =
+  const { user, organization } =
     await MessagingAuthenticationFactory.getContext();
-  const messagingClient = new Messaging(accessToken);
-  const { data: organisationId } =
-    await messagingClient.getMockOrganisationId();
+  if (!organization) {
+    throw notFound();
+  }
 
   const formErrors = await temporaryMockUtils.getErrors(
     user.id,
-    `${organisationId}_import_csv`,
+    `${organization}_import_csv`,
   );
   const csvErrors = formErrors.filter(
     (value) => value.field === CSV_FILE_FIELD,
@@ -74,7 +74,7 @@ export default async () => {
         {t("downloadFileBtn")}
       </Link>
       <form action={upload}>
-        <input name="organisationId" value={organisationId} type="hidden" />
+        <input name="organisationId" value={organization.id} type="hidden" />
         <div
           className={
             csvError

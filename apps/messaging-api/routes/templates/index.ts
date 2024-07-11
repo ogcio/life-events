@@ -1,6 +1,5 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
-import { organisationId } from "../../utils";
 import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 const tags = ["Templates"];
 
@@ -322,7 +321,7 @@ export default async function templates(app: FastifyInstance) {
             limit 1);
         `,
           [
-            organisationId,
+            request.userData!.organizationId!,
             contents
               .map((content) => content.templateName.toLowerCase())
               .join(", "),
@@ -342,7 +341,7 @@ export default async function templates(app: FastifyInstance) {
           values($1,$2)
           returning id
         `,
-          [organisationId, userId],
+          [request.userData!.organizationId!, userId],
         );
         templateMetaId = templateMetaResponse.rows.at(0)?.id;
 

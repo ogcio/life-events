@@ -22,7 +22,6 @@ import {
   getUserImportsForOrganisation,
   getUserInvitationsForImport,
 } from "../../services/users/import/read-user-imports";
-import { organisationId } from "../../utils";
 import { BadRequestError } from "shared-errors";
 import { getOrganisationIdFromRequest } from "../../utils/request-utils";
 import { Permissions } from "../../types/permissions";
@@ -264,27 +263,6 @@ export default async function usersImports(app: FastifyInstance) {
         ),
         importId: request.params.importId,
       }),
-    }),
-  );
-
-  app.get(
-    "/mock-organisation-id",
-    {
-      preValidation: (req, res) =>
-        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
-      schema: {
-        tags,
-        response: {
-          200: Type.Object({
-            data: Type.String({ format: "uuid" }),
-          }),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async (_request: FastifyRequest, _reply: FastifyReply) => ({
-      data: organisationId,
     }),
   );
 

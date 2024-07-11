@@ -9,7 +9,6 @@ import {
 import "@fastify/multipart";
 import { parseFile, writeToBuffer } from "fast-csv";
 import { Pool, PoolClient } from "pg";
-import { organisationId } from "../../../utils";
 import { isNativeError } from "util/types";
 import { mapUsers } from "./map-users";
 import { sendInvitationsForUsersImport } from "./send-invitations";
@@ -177,6 +176,7 @@ const insertToImportUsers = async (params: {
   logger: FastifyBaseLogger;
   toImportUsers: ToImportUser[];
   channel: ImportChannel;
+  organizationId: string;
 }): Promise<string> => {
   try {
     // for now the organisation id is randomic, we have
@@ -190,7 +190,11 @@ const insertToImportUsers = async (params: {
             import_channel)
          values ($1, $2, $3) RETURNING import_id
       `,
-      [organisationId, JSON.stringify(params.toImportUsers), params.channel],
+      [
+        params.organizationId,
+        JSON.stringify(params.toImportUsers),
+        params.channel,
+      ],
     );
 
     if (result.rowCount === 0) {
@@ -222,7 +226,11 @@ const processUserImport = async (params: {
   try {
     await client.query("BEGIN");
 
-    const importId = await insertToImportUsers({ ...params, client });
+    const importId = await insertToImportUsers({
+      ...params,
+      client,
+      organizationId: params.requestUser.organizationId!,
+    });
     importedUsers = await mapUsers({
       importId,
       client,

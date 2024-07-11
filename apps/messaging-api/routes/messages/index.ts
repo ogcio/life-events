@@ -25,7 +25,6 @@ import {
   MessagingEventType,
   newMessagingEventLogger,
 } from "../../services/messages/eventLogger";
-import { organisationId } from "../../utils";
 import { HttpError } from "../../types/httpErrors";
 
 const MESSAGES_TAGS = ["Messages"];
@@ -61,6 +60,7 @@ export default async function messages(app: FastifyInstance) {
         logger: request.log,
         jobId: request.params!.id,
         userId: request.userData?.userId || "", // we will require scheduler to callback same creds (jwt?) including the user id caller or include it somewhere else.
+        organizationId: request.userData!.organizationId!,
       });
 
       reply.statusCode = 202;
@@ -147,7 +147,11 @@ export default async function messages(app: FastifyInstance) {
       },
     },
     async function createMessageHandler(request, _reply) {
-      return createMessage({ payload: request.body, pg: app.pg });
+      return createMessage({
+        payload: request.body,
+        pg: app.pg,
+        organizationId: request.userData!.organizationId!,
+      });
     },
   );
 
@@ -237,6 +241,7 @@ export default async function messages(app: FastifyInstance) {
           req.body.transportations,
           req.body.security,
           req.body.scheduledAt,
+          req.userData!.organizationId!,
         );
 
         await eventLogger.log(
@@ -349,7 +354,7 @@ export default async function messages(app: FastifyInstance) {
             join messaging_event_logs l on m.id = l.message_id
             order by l.created_at;
         `,
-        [organisationId, textSearchILikeClause],
+        [request.userData?.organizationId, textSearchILikeClause],
       );
 
       const aggregations = eventQueryResult.rows.reduce<

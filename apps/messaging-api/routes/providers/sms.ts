@@ -1,6 +1,5 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
-import { organisationId } from "../../utils";
 import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 import { HttpError } from "../../types/httpErrors";
 const tags = ["Providers - SMS"];
@@ -56,7 +55,7 @@ export default async function sms(app: FastifyInstance) {
         },
       },
     },
-    async function getProviders(_request, _reply) {
+    async function getProviders(request, _reply) {
       try {
         const providers = await app.pg.pool.query<{
           id: string;
@@ -74,7 +73,7 @@ export default async function sms(app: FastifyInstance) {
         where organisation_id = $1
         order by provider_name
         `,
-          [organisationId],
+          [request.userData!.organizationId!],
         );
 
         return { data: providers.rows };
@@ -120,7 +119,7 @@ export default async function sms(app: FastifyInstance) {
         where id = $1 
         and organisation_id = $2
       `,
-          [providerId, organisationId],
+          [providerId, request.userData!.organizationId!],
         );
 
         if (provider.rowCount === 0) {
@@ -167,7 +166,7 @@ export default async function sms(app: FastifyInstance) {
             set is_primary = null
             where organisation_id = $1
           `,
-            [organisationId],
+            [request.userData!.organizationId!],
           );
         }
 
@@ -184,7 +183,7 @@ export default async function sms(app: FastifyInstance) {
           `,
           [
             body.name,
-            organisationId,
+            request.userData!.organizationId!,
             JSON.stringify(body.config),
             isPrimaryConverted,
           ],
@@ -237,7 +236,7 @@ export default async function sms(app: FastifyInstance) {
             set is_primary = null
             where organisation_id = $1
           `,
-            [organisationId],
+            [request.userData!.organizationId!],
           );
         }
 

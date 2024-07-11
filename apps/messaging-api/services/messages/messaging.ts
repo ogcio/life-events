@@ -5,10 +5,9 @@
  */
 
 import { Pool } from "pg";
-import { organisationId, utils } from "../../utils";
+import { utils } from "../../utils";
 import { isNativeError } from "util/types";
 import { BadRequestError, ServerError, ThirdPartyError } from "shared-errors";
-import { MessagingEventType, newMessagingEventLogger } from "./eventLogger";
 
 type TemplateContent = {
   subject: string;
@@ -58,6 +57,7 @@ export interface MessagingService {
     transports: string[],
     security: string,
     scheduleAt: string,
+    organizationId: string,
   ): Promise<CreatedTemplateMessage[]>;
 
   /**
@@ -89,6 +89,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
       transports: string[],
       security: string,
       scheduleAt: string,
+      organizationId: string,
     ): Promise<CreatedTemplateMessage[]> {
       if (!templateContents.length) {
         throw new BadRequestError(
@@ -154,7 +155,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
           utils.postgresArrayify(transports),
           userKeys.reduce(interpolationReducer, templateContent.subject),
           undefined,
-          organisationId,
+          organizationId,
           scheduleAt,
         ];
 

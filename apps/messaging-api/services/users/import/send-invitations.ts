@@ -14,7 +14,6 @@ import {
   ALL_TRANSPORTS,
   getUserInvitationsForOrganisation,
 } from "../shared-users";
-import { ServerError } from "shared-errors";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
 
@@ -32,10 +31,12 @@ export const sendInvitationsForUsersImport = async (params: {
   } = {};
   for (const userData of toImportUsers.usersData) {
     if (!userData.relatedUserId) {
-      throw new ServerError(
-        "SEND_INVITATIONS_ERROR",
-        `Something went wrong importing users, user with index ${userData.importIndex} is missing user id`,
-      );
+      // throw new ServerError(
+      //   "SEND_INVITATIONS_ERROR",
+      //   `Something went wrong importing users, user with index ${userData.importIndex} is missing user id`,
+      // );
+      // means that the user has no contacts, nor email or phone
+      continue;
     }
     if (userData.relatedUserProfileId) {
       importedUserIds.push({

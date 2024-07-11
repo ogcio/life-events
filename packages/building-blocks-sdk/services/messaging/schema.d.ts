@@ -1983,53 +1983,6 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/imports/mock-organisation-id": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              /** Format: uuid */
-              data: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
   "/api/v1/users/recipients/": {
     get: {
       parameters: {

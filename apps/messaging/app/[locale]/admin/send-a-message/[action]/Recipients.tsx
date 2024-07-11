@@ -157,12 +157,15 @@ export default async (props: MessageCreateProps) => {
 
   const urlParams = new URLSearchParams(props.searchParams);
   const queryParams = getQueryParams(urlParams);
-  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+  const { accessToken, organization } =
+    await MessagingAuthenticationFactory.getPublicServant();
+  if (!accessToken || !organization) {
+    throw notFound();
+  }
   const messaging = new Messaging(accessToken);
-  const { data: organisationId } = await messaging.getMockOrganisationId();
   const response = await messaging.getRecipients({
     ...queryParams,
-    organisationId,
+    organisationId: organization.id,
     transports: props.state.transportations.join(","),
   });
 
