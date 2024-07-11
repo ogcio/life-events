@@ -42,7 +42,7 @@ export default async function userSettings(app: FastifyInstance) {
     },
     async (request: FastifyRequest, _reply: FastifyReply) => ({
       data: await getInvitationsForUser({
-        userProfileId: request.user!.id,
+        userProfileId: request.userData!.userId,
         pg: app.pg,
       }),
     }),
@@ -76,7 +76,7 @@ export default async function userSettings(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await getInvitationForUser({
-        userProfileId: request.user!.id,
+        userProfileId: request.userData!.userId,
         organisationId: request.params.organisationId,
         pg: app.pg,
       }),
@@ -112,7 +112,7 @@ export default async function userSettings(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await updateOrganisationFeedback({
-        userProfileId: request.user!.id,
+        userProfileId: request.userData!.userId,
         organisationId: request.params.organisationId,
         pg: app.pg,
         feedback: request.body,
@@ -145,7 +145,7 @@ export default async function userSettings(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await updateInvitationStatus({
-        userProfileId: request.user!.id,
+        userProfileId: request.userData!.userId,
         pg: app.pg,
         feedback: request.body,
       }),
@@ -170,7 +170,7 @@ export default async function userSettings(app: FastifyInstance) {
     },
     async (request: FastifyRequest, _reply: FastifyReply) => ({
       data: await getInvitationStatus({
-        userProfileId: request.user!.id,
+        userProfileId: request.userData!.userId,
         pg: app.pg,
       }),
     }),

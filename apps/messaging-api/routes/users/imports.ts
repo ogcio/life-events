@@ -51,7 +51,7 @@ export default async function usersImports(app: FastifyInstance) {
       // verifyUser preValidation
       await importCsvFileFromRequest({
         filepath: await saveRequestFile(request),
-        user: request.user!,
+        user: request.userData!,
         pg: app.pg,
         logger: request.log,
       });
@@ -95,7 +95,7 @@ export default async function usersImports(app: FastifyInstance) {
         pg: app.pg,
         logger: request.log,
         csvRecords: request.body as CsvRecord[],
-        requestUser: request.user!,
+        requestUser: request.userData!,
       });
     },
   );
