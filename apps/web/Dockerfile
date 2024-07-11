@@ -20,6 +20,8 @@ COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/messages/ /app/packages/messages/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 COPY ./packages/analytics/ /app/packages/analytics/
+COPY ./packages/shared-errors/ /app/packages/shared-errors/
+
 
 FROM deps AS builder
 
@@ -33,6 +35,7 @@ ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
 ENV NEXT_PUBLIC_MATOMO_URL=$NEXT_PUBLIC_MATOMO_URL
 ENV NEXT_PUBLIC_MATOMO_SITE_ID=$NEXT_PUBLIC_LIFE_EVENTS_MATOMO_SITE_ID
 ENV NEXT_PUBLIC_MATOMO_PROTOCOL=$NEXT_PUBLIC_MATOMO_PROTOCOL
+RUN npm run build --workspace=packages/shared-errors
 RUN npm run build --workspace=apps/web
 
 FROM base-deps as runner
