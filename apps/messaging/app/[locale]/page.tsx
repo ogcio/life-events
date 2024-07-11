@@ -1,8 +1,9 @@
 import { redirect, RedirectType } from "next/navigation";
-import { getAuthenticationContext } from "./logto_integration/config";
+import { MessagingAuthenticationFactory } from "../utils/messaging";
 
 export default async () => {
-  const { isPublicServant } = await getAuthenticationContext();
+  const isPublicServant =
+    await MessagingAuthenticationFactory.isPublicServant();
 
   redirect(isPublicServant ? "/admin" : "/messages", RedirectType.replace);
 };

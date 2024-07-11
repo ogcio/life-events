@@ -3,8 +3,10 @@ import { messages, routes } from "../../utils";
 import Footer from "../Footer";
 import Header from "../Header";
 import SideMenu from "../SideMenu";
-import { getLinks } from "../../utils/messaging";
-import { getAuthenticationContext } from "../logto_integration/config";
+import {
+  getLinks,
+  MessagingAuthenticationFactory,
+} from "../../utils/messaging";
 
 export default async ({
   children,
@@ -14,7 +16,8 @@ export default async ({
   params: { locale: string };
 }) => {
   const t = await getTranslations("AlphaBanner");
-  const { isPublicServant, user } = await getAuthenticationContext();
+  const { isPublicServant, user } =
+    await MessagingAuthenticationFactory.getContext();
   const environment = String(process.env.ENVIRONMENT);
   const links = getLinks(environment, params.locale);
   return (

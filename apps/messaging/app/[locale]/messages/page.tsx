@@ -4,11 +4,11 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import ds from "design-system";
 import { Messaging } from "building-blocks-sdk";
-import { getAuthenticationContext } from "../logto_integration/config";
+import { MessagingAuthenticationFactory } from "../../utils/messaging";
 
 export default async (props: { searchParams: any }) => {
   const t = await getTranslations("Messages");
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
   const { data: messages } = await new Messaging(accessToken).getMessages();
 
   async function searchAction(formData: FormData) {

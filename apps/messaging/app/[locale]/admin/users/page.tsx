@@ -13,7 +13,7 @@ import { linkStyle, linkClassName } from "../providers/page";
 import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
 import { Messaging } from "building-blocks-sdk";
 import ImportCsv from "./ImportCsv";
-import { getAuthenticationContext } from "../../logto_integration/config";
+import { AuthenticationContextFactory } from "auth/authentication-context-factory";
 
 export interface UiUserInvitation {
   id: string;
@@ -57,7 +57,7 @@ export default async (props: {
   const isImportCsv = listType === searchValueImportCsv;
   let users: UiUserInvitation[] | undefined = [];
   if (isUsers) {
-    const { accessToken } = await getAuthenticationContext();
+    const accessToken = await AuthenticationContextFactory.getAccessToken();
     const messagingClient = new Messaging(accessToken);
     const { data: organisationId } =
       await messagingClient.getMockOrganisationId();

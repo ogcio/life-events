@@ -6,12 +6,12 @@ import {
   searchKeyDeleteId,
   searchKeyProvider,
   searchValueSms,
+  MessagingAuthenticationFactory,
 } from "../../../utils/messaging";
-import { getAuthenticationContext } from "../../logto_integration/config";
 
 export default async () => {
   const t = await getTranslations("settings.Sms");
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
   const sdk = new Messaging(accessToken);
 
   const { data: providers } = await sdk.getSmsProviders();

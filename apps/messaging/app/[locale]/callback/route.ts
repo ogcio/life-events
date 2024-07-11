@@ -1,10 +1,10 @@
 import { handleSignIn } from "@logto/next/server-actions";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
-import logtoConfig from "../logto_integration/config";
+import { getSignInConfiguration } from "../../utils/logto-config";
 
 export async function GET(request: NextRequest) {
-  await handleSignIn(logtoConfig, request.nextUrl.searchParams);
+  await handleSignIn(getSignInConfiguration(), request.nextUrl.searchParams);
 
-  redirect("/logto_integration");
+  redirect("/");
 }

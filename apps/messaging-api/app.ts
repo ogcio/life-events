@@ -5,7 +5,6 @@ import postgres from "@fastify/postgres";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import dotenv from "dotenv";
 import { envSchema } from "./config";
-import authPlugin from "./plugins/auth";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import fs from "fs";
@@ -27,8 +26,6 @@ export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
   initializeLoggingHooks(app);
   initializeErrorHandler(app);
-
-  app.register(authPlugin);
 
   app.register(fastifyEnv, {
     schema: envSchema,
