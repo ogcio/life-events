@@ -318,7 +318,8 @@ export default async function messages(app: FastifyInstance) {
   app.get<{ Querystring: { search?: string } }>(
     "/events",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Event.Read]),
       schema: {
         querystring: Type.Optional(
           Type.Object({

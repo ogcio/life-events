@@ -38,6 +38,10 @@ enum TemplatePermissions {
   Write = "messaging:template:Write",
 }
 
+enum EventPermissions {
+  Read = "messaging:event:read",
+}
+
 export const Permissions = {
   Message: MessagePermissions,
   MessageSelf: MessageSelfPermissions,
@@ -47,4 +51,5 @@ export const Permissions = {
   CitizenSelf: CitizenSelfPermissions,
   Provider: ProviderPermissions,
   Template: TemplatePermissions,
+  Event: EventPermissions,
 };
