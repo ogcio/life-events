@@ -976,6 +976,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1089,6 +1090,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1209,6 +1211,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1388,6 +1391,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id?: string;
                 /** @default null */
                 userProfileId: null | string;
@@ -1683,6 +1687,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1893,6 +1898,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;

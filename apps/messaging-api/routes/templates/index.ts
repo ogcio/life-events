@@ -302,7 +302,7 @@ export default async function templates(app: FastifyInstance) {
       },
     },
     async function handleCreate(request, reply) {
-      const userId = request.user!.id;
+      const userId = request.userData!.userId;
 
       const { contents, variables } = request.body;
 

@@ -4,8 +4,7 @@ import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
 import ds from "design-system";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { getAuthenticationContext } from "../../logto_integration/config";
-import { AuthenticationError } from "shared-errors";
+import { MessagingAuthenticationFactory } from "../../../utils/messaging";
 
 async function messageStatus(type: string, status: string) {
   const t = await getTranslations("MessageEvents.status");
@@ -71,7 +70,7 @@ export default async (props: { searchParams: { search?: string } }) => {
   }
 
   const freeSearch = props.searchParams.search;
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
 
   const client = new Messaging(accessToken);
   const { data, error } = await client.getMessageEvents({

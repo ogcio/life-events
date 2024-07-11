@@ -3,14 +3,16 @@ import { RedirectType, redirect } from "next/navigation";
 import SideMenu from "../SideMenu";
 import { messages } from "../../utils";
 import { LANG_EN } from "../../../types/shared";
-import { getAuthenticationContext } from "../logto_integration/config";
+import { MessagingAuthenticationFactory } from "../../utils/messaging";
 
 export default async ({ children }: { children: React.ReactNode }) => {
-  const { isPublicServant, user } = await getAuthenticationContext();
-
+  const isPublicServant =
+    await MessagingAuthenticationFactory.isPublicServant();
   if (!isPublicServant) {
     redirect("/messages", RedirectType.replace);
   }
+
+  const user = await MessagingAuthenticationFactory.getUser();
   const pathnameSplit = (headers().get("x-pathname") || "").split("/");
   const selected =
     pathnameSplit.slice(pathnameSplit.indexOf("admin") + 1).at(0) || "";

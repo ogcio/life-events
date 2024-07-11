@@ -6,7 +6,8 @@ import { providerRoutes } from "../../../../utils/routes";
 import { revalidatePath } from "next/cache";
 import { FormElement } from "../../FormElement";
 import { getTranslations } from "next-intl/server";
-import { getAuthenticationContext } from "../../../logto_integration/config";
+import { MessagingAuthenticationFactory } from "../../../../utils/messaging";
+
 const defaultErrorStateId = "email_provider_form";
 
 type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
@@ -49,7 +50,7 @@ export default async (props: {
     }
 
     const { accessToken: submitAccessToken, user: submitUser } =
-      await getAuthenticationContext();
+      await MessagingAuthenticationFactory.getContext();
     if (formErrors.length) {
       await temporaryMockUtils.createErrors(
         formErrors,
@@ -139,7 +140,8 @@ export default async (props: {
     redirect(url.href);
   }
 
-  const { accessToken, user } = await getAuthenticationContext();
+  const { accessToken, user } =
+    await MessagingAuthenticationFactory.getContext();
   const client = new Messaging(accessToken);
 
   let data:

@@ -52,11 +52,11 @@ export const userOrganisationsRoutes = {
 };
 
 export const logtoLogin = {
-  url: "/logto_integration/login",
+  url: "/login",
 };
 
 export const logtoSignout = {
-  url: "/logto_integration/signout",
+  url: "/signout",
 };
 
 export function urlWithSearchParams(

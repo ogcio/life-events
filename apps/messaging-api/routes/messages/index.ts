@@ -60,7 +60,7 @@ export default async function messages(app: FastifyInstance) {
         pg: app.pg,
         logger: request.log,
         jobId: request.params!.id,
-        userId: request.user?.id || "", // we will require scheduler to callback same creds (jwt?) including the user id caller or include it somewhere else.
+        userId: request.userData?.userId || "", // we will require scheduler to callback same creds (jwt?) including the user id caller or include it somewhere else.
       });
 
       reply.statusCode = 202;
@@ -91,7 +91,7 @@ export default async function messages(app: FastifyInstance) {
       return {
         data: await getMessages({
           pg: app.pg,
-          userId: request.user!.id,
+          userId: request.userData!.userId,
           transportType: request.query?.type,
         }),
       };
@@ -123,7 +123,7 @@ export default async function messages(app: FastifyInstance) {
       return {
         data: await getMessage({
           pg: app.pg,
-          userId: request.user!.id,
+          userId: request.userData!.userId,
           messageId: request.params.messageId,
         }),
       };
@@ -180,7 +180,7 @@ export default async function messages(app: FastifyInstance) {
       },
     },
     async (req, _res) => {
-      const userId = req.user?.id;
+      const userId = req.userData?.userId;
       const errorKey = "FAILED_TO_CREATE_MESSAGE_FROM_TEMPLATE";
       if (!userId) {
         throw new ServerError(errorKey, "no user id on request");
@@ -189,7 +189,7 @@ export default async function messages(app: FastifyInstance) {
       const eventLogger = newMessagingEventLogger(app.pg.pool, app.log);
 
       // Get users
-      const profileSdk = new Profile(req.user!.id);
+      const profileSdk = new Profile(req.userData!.userId);
       const messageSdk = {
         selectUsers(ids: string[]) {
           return getUserProfiles(ids, app.pg.pool);

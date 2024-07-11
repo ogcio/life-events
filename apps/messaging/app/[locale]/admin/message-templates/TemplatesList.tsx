@@ -6,11 +6,11 @@ import {
   templateRoutes,
   urlWithSearchParams,
 } from "../../../utils/routes";
-import { getAuthenticationContext } from "../../logto_integration/config";
+import { MessagingAuthenticationFactory } from "../../../utils/messaging";
 
 export default async (props: { locale: string }) => {
   const t = await getTranslations("MessageTemplates");
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
 
   const { data: templates } = await new Messaging(accessToken).getTemplates();
 

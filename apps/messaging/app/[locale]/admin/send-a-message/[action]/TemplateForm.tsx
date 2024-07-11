@@ -1,11 +1,13 @@
 import { revalidatePath } from "next/cache";
-import { MessageCreateProps } from "../../../../utils/messaging";
+import {
+  MessageCreateProps,
+  MessagingAuthenticationFactory,
+} from "../../../../utils/messaging";
 import { api } from "messages";
 import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import { headers } from "next/headers";
-import { getAuthenticationContext } from "../../../logto_integration/config";
 
 export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.TemplateForm");
@@ -42,7 +44,7 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const { accessToken } = await getAuthenticationContext();
+  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
   const templateResult = (
     await new Messaging(accessToken).getTemplate(props.state.templateMetaId)
   )?.data;
