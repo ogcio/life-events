@@ -14,8 +14,6 @@ export default async ({
   children: React.ReactNode;
   params: { locale: string };
 }) => {
-  await getAuthenticationContext();
-
   return (
     <html lang={locale}>
       <head>

@@ -51,4 +51,4 @@ const getPublicServantContext = () =>
     userType: "publicServant",
   });
 
-export const postSignoutRedirect = process.env.LIFE_EVENTS_ENTRY_POINT;
+export const postSignoutRedirect = process.env.LIFE_EVENTS_ADMIN_ENTRY_POINT;

@@ -3,6 +3,10 @@ import { web } from "../../../utils";
 import StatusMenu from "./StatusMenu";
 import { getTranslations } from "next-intl/server";
 import UsersWithPartialApplicationsTable from "./UsersWithPartialApplicationsTable";
+import { getAuthenticationContext } from "../logto_integration/config";
+import { hasPermissions } from "auth/check-permissions";
+import hasAdminPermissions from "../utils/hasAdminPermissions";
+import { redirect, RedirectType } from "next/navigation";
 
 export type Pages = "pending" | "submitted" | "approved" | "rejected";
 export type EventTableSearchParams = {
@@ -27,6 +31,17 @@ const componentsMap: {
 };
 
 export default async (props: SubmissionsTableProps) => {
+  const context = await getAuthenticationContext();
+
+  const hasPermissions = hasAdminPermissions(
+    context.accessToken as string,
+    context.scopes,
+  );
+
+  if (!hasPermissions) {
+    return redirect("/admin/unauthorized", RedirectType.replace);
+  }
+
   const t = await getTranslations("Admin.Submissions");
   const searchParams = new URLSearchParams(props.searchParams);
 
