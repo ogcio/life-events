@@ -1759,6 +1759,7 @@ paths:
                       type: object
                       properties:
                         id:
+                          format: uuid
                           type: string
                         userProfileId:
                           default: null
@@ -2030,6 +2031,7 @@ paths:
                     type: object
                     properties:
                       id:
+                        format: uuid
                         type: string
                       userProfileId:
                         default: null
@@ -2323,6 +2325,7 @@ paths:
                     type: object
                     properties:
                       id:
+                        format: uuid
                         type: string
                       userProfileId:
                         default: null
@@ -2606,6 +2609,7 @@ paths:
                     type: object
                     properties:
                       id:
+                        format: uuid
                         type: string
                       userProfileId:
                         default: null
@@ -3354,6 +3358,7 @@ paths:
                       type: object
                       properties:
                         id:
+                          format: uuid
                           type: string
                         userProfileId:
                           default: null
@@ -3859,6 +3864,7 @@ paths:
                       type: object
                       properties:
                         id:
+                          format: uuid
                           type: string
                         userProfileId:
                           default: null

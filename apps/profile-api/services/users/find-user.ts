@@ -1,10 +1,46 @@
 import { Pool, PoolClient } from "pg";
-import { FindUserParams, FoundUser } from "../../types/schemaDefinitions";
+import {
+  FindUserParams,
+  FoundUser,
+  UserDetails,
+} from "../../types/schemaDefinitions";
 import { isNativeError } from "util/types";
 import { createError } from "@fastify/error";
+import { NotFoundError } from "shared-errors";
 
 type WhereClauseTypes = string | number | null | boolean;
 type PartialFoundUser = Omit<FoundUser, "matchQuality">;
+
+export const getUser = async (params: {
+  pool: Pool;
+  id: string;
+}): Promise<UserDetails> => {
+  const result = await params.pool.query<UserDetails>(
+    `
+    SELECT 
+      title as "title", 
+      firstname as "firstName", 
+      lastname as "lastName",
+      date_of_birth as "dateOfBirth",
+      ppsn as "ppsn",
+      ppsn_visible as "ppsnVisible",
+      gender as "gender",
+      email as "email",
+      phone as "phone",
+      consent_to_prefill_data as "consentToPrefillData"
+    FROM user_details WHERE user_id = $1 LIMIT 1`,
+    [params.id],
+  );
+
+  if (result.rowCount === 0) {
+    throw new NotFoundError(
+      "GET_USER",
+      `Cannot find user with id ${params.id}`,
+    );
+  }
+
+  return result.rows[0];
+};
 
 export const findUser = async (params: {
   pool: Pool;
