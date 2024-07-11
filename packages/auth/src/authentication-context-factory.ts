@@ -9,7 +9,7 @@ import {
 } from "./authentication-context";
 import { AuthenticationError, BadRequestError } from "shared-errors";
 import { notFound } from "next/navigation";
-import { getCommonLogger } from "nextjs-logging-wrapper/common-logger";
+import { getCommonLogger } from "nextjs-logging-wrapper";
 
 const ERROR_PROCESS = "AUTHENTICATION_CONTEXT";
 
