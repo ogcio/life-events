@@ -19,6 +19,7 @@ import {
   updateInvitationStatus,
   updateOrganisationFeedback,
 } from "../../services/users/invitations/accept-invitations";
+import { Permissions } from "../../types/permissions";
 
 const tags = ["UserSettings"];
 
@@ -29,7 +30,8 @@ export default async function userSettings(app: FastifyInstance) {
   app.get(
     "/organisations",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
         tags,
         response: {
@@ -54,7 +56,8 @@ export default async function userSettings(app: FastifyInstance) {
   }>(
     "/organisations/:organisationId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
         tags,
         params: Type.Object({
@@ -92,7 +95,8 @@ export default async function userSettings(app: FastifyInstance) {
   app.patch<PatchOrgInvitationSchema>(
     "/organisations/:organisationId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.CitizenSelf.Write]),
       schema: {
         tags,
         body: OrganisationInvitationFeedbackSchema,
@@ -128,7 +132,8 @@ export default async function userSettings(app: FastifyInstance) {
   app.patch<PatchInvitationSchema>(
     "/invitations/me",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.CitizenSelf.Write]),
       schema: {
         tags,
         body: InvitationFeedbackSchema,
@@ -155,7 +160,8 @@ export default async function userSettings(app: FastifyInstance) {
   app.get(
     "/invitations/me",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
         tags,
         response: {

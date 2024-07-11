@@ -1,41 +1,43 @@
 enum MessagePermissions {
   Read = "messaging:message:read",
-  Write = "messaging:message:Write",
+  Write = "messaging:message:write",
 }
 
 enum MessageSelfPermissions {
   Read = "messaging:message.self:read",
-  Write = "messaging:message.self:Write",
+  Write = "messaging:message.self:write",
 }
 
 enum MessagePublicPermissions {
   Read = "messaging:message.public:read",
-  Write = "messaging:message.public:Write",
+  Write = "messaging:message.public:write",
 }
 
 enum CitizenPermissions {
   Read = "messaging:citizen:read",
-  Write = "messaging:citizen:Write",
+  Write = "messaging:citizen:write",
 }
 
 enum CitizenSelfPermissions {
   Read = "messaging:citizen.self:read",
-  Write = "messaging:citizen.self:Write",
+  Write = "messaging:citizen.self:write",
 }
 
 enum CitizenPublicPermissions {
   Read = "messaging:citizen.public:read",
-  Write = "messaging:citizen.public:Write",
+  Write = "messaging:citizen.public:write",
 }
 
 enum ProviderPermissions {
   Read = "messaging:provider:read",
-  Write = "messaging:provider:Write",
+  Write = "messaging:provider:write",
+  Delete = "messaging:provider:delete",
 }
 
 enum TemplatePermissions {
   Read = "messaging:template:read",
-  Write = "messaging:template:Write",
+  Write = "messaging:template:write",
+  Delete = "messaging:template:delete",
 }
 
 enum EventPermissions {

@@ -1,6 +1,8 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
+import { Permissions } from "../../types/permissions";
+
 const tags = ["Templates"];
 
 const TEMPLATES_ERROR = "TEMPLATES_ERROR";
@@ -76,7 +78,8 @@ export default async function templates(app: FastifyInstance) {
   app.get<GetTemplates>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Read]),
       schema: {
         querystring: Type.Optional(
           Type.Object({
@@ -148,7 +151,8 @@ export default async function templates(app: FastifyInstance) {
   app.get<GetTemplate>(
     "/:templateId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Read]),
       schema: {
         tags,
         response: {
@@ -276,7 +280,8 @@ export default async function templates(app: FastifyInstance) {
   app.post<CreateTemplate>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Write]),
       schema: {
         tags,
         body: Type.Object({
@@ -410,7 +415,8 @@ export default async function templates(app: FastifyInstance) {
   app.put<UpdateTemplate>(
     "/:templateId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Write]),
       schema: {
         tags,
         body: Type.Object({
@@ -510,7 +516,8 @@ export default async function templates(app: FastifyInstance) {
   app.delete<GetTemplate>(
     "/:templateId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Delete]),
       schema: {
         tags,
         response: {

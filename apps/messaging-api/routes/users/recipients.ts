@@ -11,6 +11,7 @@ import {
 } from "../../types/schemaDefinitions";
 import { getRecipients } from "../../services/users/recipients/recipients";
 import { PaginationDetails, formatAPIResponse } from "../../utils/pagination";
+import { Permissions } from "../../types/permissions";
 
 const tags = ["Users", "Recipients"];
 
@@ -31,7 +32,8 @@ export default async function recipients(app: FastifyInstance) {
   app.get<GetRecipientsSchema>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
         querystring: Type.Optional(

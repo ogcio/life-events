@@ -178,8 +178,8 @@ const ContentForm = async (props: {
       );
       return revalidatePath("/");
     }
-
-    const sdkClient = new Messaging(props.userId);
+    const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+    const sdkClient = new Messaging(accessToken);
     const contents: Parameters<typeof sdkClient.createTemplate>[0]["contents"] =
       [];
 

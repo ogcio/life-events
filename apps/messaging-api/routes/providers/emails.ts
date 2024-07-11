@@ -3,6 +3,8 @@ import { FastifyInstance } from "fastify";
 import { EmailProvider, mailService } from "./services";
 import { NotFoundError } from "shared-errors";
 import { HttpError } from "../../types/httpErrors";
+import { Permissions } from "../../types/permissions";
+
 const tags = ["Providers - Emails"];
 
 export const EMAIL_PROVIDER_ERROR = "EMAIL_PROVIDER_ERROR";
@@ -54,7 +56,8 @@ export default async function emails(app: FastifyInstance) {
   app.get(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Read]),
       schema: {
         tags,
         response: {
@@ -82,7 +85,8 @@ export default async function emails(app: FastifyInstance) {
   app.get<GetEmailProvider>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Read]),
       schema: {
         tags,
         response: {
@@ -118,7 +122,8 @@ export default async function emails(app: FastifyInstance) {
   app.post<CreateEmailProvider>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Write]),
       schema: {
         tags,
         body: EmailProviderWithoutIdType,
@@ -155,7 +160,8 @@ export default async function emails(app: FastifyInstance) {
   app.put<UpdateEmailProvider>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Write]),
       schema: {
         tags,
         body: EmailProviderType,
@@ -182,7 +188,8 @@ export default async function emails(app: FastifyInstance) {
   app.delete<GetEmailProvider>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Delete]),
       schema: {
         tags,
         response: {

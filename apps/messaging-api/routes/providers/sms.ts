@@ -2,6 +2,7 @@ import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 import { HttpError } from "../../types/httpErrors";
+import { Permissions } from "../../types/permissions";
 const tags = ["Providers - SMS"];
 
 const SMS_PROVIDER_ERROR = "SMS_PROVIDER_ERROR";
@@ -36,7 +37,8 @@ export default async function sms(app: FastifyInstance) {
   app.get(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Read]),
       schema: {
         tags,
         response: {
@@ -138,7 +140,8 @@ export default async function sms(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Write]),
       schema: {
         tags,
         body: Type.Object({
@@ -199,7 +202,8 @@ export default async function sms(app: FastifyInstance) {
   app.put<{ Body: SmsProvider; Params: { providerId: string } }>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Write]),
       schema: {
         params: {
           providerId: Type.String({ format: "uuid" }),
@@ -267,7 +271,8 @@ export default async function sms(app: FastifyInstance) {
   app.delete<{ Params: { providerId: string } }>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Delete]),
       schema: {
         tags,
         response: {
