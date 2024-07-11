@@ -91,7 +91,6 @@ export class AuthenticationContextFactory {
   private static ensureIsFullContext(
     context: PartialAuthSessionContext,
   ): AuthSessionContext {
-    getCommonLogger().fatal({ context });
     if (!context.accessToken) {
       getCommonLogger().error({
         error: new AuthenticationError(ERROR_PROCESS, "Missing access token"),
