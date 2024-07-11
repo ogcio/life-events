@@ -270,7 +270,8 @@ export default async function usersImports(app: FastifyInstance) {
   app.get(
     "/mock-organisation-id",
     {
-      preValidation: (req, res) => app.checkPermissions(req, res, []),
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
         response: {

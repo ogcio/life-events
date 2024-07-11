@@ -12,13 +12,17 @@ import { Pool, PoolClient } from "pg";
 import { organisationId } from "../../../utils";
 import { isNativeError } from "util/types";
 import { mapUsers } from "./map-users";
-import { RequestUser } from "../../../plugins/auth";
 import { sendInvitationsForUsersImport } from "./send-invitations";
 import { PostgresDb } from "@fastify/postgres";
 import { BadRequestError, ServerError } from "shared-errors";
 
 export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
 const TAGS_SEPARATOR = ";";
+
+interface RequestUser {
+  userId: string;
+  organizationId?: string;
+}
 
 export const importCsvFileFromRequest = async (params: {
   user: RequestUser;
@@ -139,7 +143,7 @@ const importUsers = async (params: {
     pg: params.pg,
     toImportUsers: importedUsers,
     logger: params.logger,
-    requestUserId: params.requestUser.id,
+    requestUserId: params.requestUser.userId,
   });
 
   return importedUsers;
