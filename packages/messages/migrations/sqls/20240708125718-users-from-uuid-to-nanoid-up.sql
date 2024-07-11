@@ -10,6 +10,10 @@ ALTER COLUMN importer_organisation_id SET DATA TYPE varchar(21) USING SUBSTRING(
 ALTER TABLE email_providers
 ALTER COLUMN organisation_id SET DATA TYPE varchar(21) USING SUBSTRING(organisation_id::text, 0, 21);
 
+ALTER TABLE form_errors
+-- can both be a uuid or a nanoid
+ALTER COLUMN user_id SET DATA TYPE varchar(128) USING SUBSTRING(user_id::text, 0, 128);
+
 ALTER TABLE jobs
 -- can both be a uuid or a nanoid
 ALTER COLUMN user_id SET DATA TYPE varchar(128) USING SUBSTRING(user_id::text, 0, 128);
@@ -32,15 +36,12 @@ ALTER COLUMN user_id SET DATA TYPE varchar(128) USING SUBSTRING(user_id::text, 0
 ALTER COLUMN organisation_id SET DATA TYPE varchar(21) USING SUBSTRING(organisation_id::text, 0, 21);
 
 ALTER TABLE organisation_user_configurations
-ALTER COLUMN organisation_id SET DATA TYPE varchar(21) USING SUBSTRING(organisation_id::text, 0, 21),
+ALTER COLUMN organisation_id SET DATA TYPE varchar(21) USING SUBSTRING(organisation_id::text, 0, 21);
 
 ALTER TABLE sms_provider_states
 ALTER COLUMN user_id SET DATA TYPE varchar(128) USING SUBSTRING(user_id::text, 0, 128);
 
 ALTER TABLE sms_providers
 ALTER COLUMN organisation_id SET DATA TYPE varchar(21) USING SUBSTRING(organisation_id::text, 0, 21);
-
-ALTER TABLE tags_users
-ADD CONSTRAINT tags_users_user_id_fkey FOREIGN KEY (user_id) REFERENCES users (id);
 
 COMMIT;
