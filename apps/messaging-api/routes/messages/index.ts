@@ -22,7 +22,6 @@ import {
 import { Profile } from "building-blocks-sdk";
 import { NotFoundError, ServerError } from "shared-errors";
 import {
-  EventDataAggregation,
   MessagingEventType,
   newMessagingEventLogger,
 } from "../../services/messages/eventLogger";
