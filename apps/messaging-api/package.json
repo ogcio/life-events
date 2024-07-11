@@ -18,7 +18,8 @@
       "../../packages/feature-flags/src/**/*",
       "../../packages/messages/src/**/*",
       "../../packages/logging-wrapper/src/**/*",
-      "../../packages/error-handler/src/**/*"
+      "../../packages/error-handler/src/**/*",
+      "./**/*"
     ],
     "ext": "ts,json",
     "exec": "node --import tsx index.ts"

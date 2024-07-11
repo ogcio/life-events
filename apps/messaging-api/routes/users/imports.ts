@@ -36,7 +36,8 @@ export default async function usersImports(app: FastifyInstance) {
   app.post(
     "/csv",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Write]),
       schema: {
         tags,
         response: {
@@ -62,7 +63,8 @@ export default async function usersImports(app: FastifyInstance) {
   app.get(
     "/csv/template",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
         response: {
@@ -80,7 +82,8 @@ export default async function usersImports(app: FastifyInstance) {
   app.post<{ Body: CsvRecord[] }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Write]),
       schema: {
         tags,
         body: Type.Array(CsvRecordSchema),
@@ -145,7 +148,8 @@ export default async function usersImports(app: FastifyInstance) {
   app.get<Omit<GetUserInvitationsSchema, "Params">>(
     "/users",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
         querystring: Type.Optional(
@@ -185,7 +189,8 @@ export default async function usersImports(app: FastifyInstance) {
   app.get<GetImportSchema>(
     "/:importId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
         querystring: Type.Optional(
@@ -227,7 +232,8 @@ export default async function usersImports(app: FastifyInstance) {
   app.get<GetUserInvitationsSchema>(
     "/:importId/users",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
         querystring: Type.Optional(
@@ -264,7 +270,7 @@ export default async function usersImports(app: FastifyInstance) {
   app.get(
     "/mock-organisation-id",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) => app.checkPermissions(req, res, []),
       schema: {
         tags,
         response: {
