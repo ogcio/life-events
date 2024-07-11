@@ -25,6 +25,7 @@ import {
 import { organisationId } from "../../utils";
 import { BadRequestError } from "shared-errors";
 import { getOrganisationIdFromRequest } from "../../utils/request-utils";
+import { Permissions } from "../../types/permissions";
 
 const tags = ["Users", "UserImports"];
 
@@ -108,7 +109,8 @@ export default async function usersImports(app: FastifyInstance) {
   app.get<GetImportsSchema>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
         querystring: Type.Optional(
