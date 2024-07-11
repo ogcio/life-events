@@ -37,7 +37,7 @@ export default async function recipients(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Composite([
             Type.Object({
-              organisationId: Type.Optional(Type.String({ format: "uuid" })),
+              organisationId: Type.Optional(Type.String()),
               search: Type.Optional(Type.String()),
               transports: Type.Optional(Type.String()),
             }),

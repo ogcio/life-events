@@ -113,7 +113,7 @@ export default async function usersImports(app: FastifyInstance) {
         tags,
         querystring: Type.Optional(
           Type.Object({
-            organisationId: Type.Optional(Type.String({ format: "uuid" })),
+            organisationId: Type.Optional(Type.String()),
           }),
         ),
         response: {
@@ -148,7 +148,7 @@ export default async function usersImports(app: FastifyInstance) {
         tags,
         querystring: Type.Optional(
           Type.Object({
-            organisationId: Type.Optional(Type.String({ format: "uuid" })),
+            organisationId: Type.Optional(Type.String()),
           }),
         ),
         response: {
@@ -188,7 +188,7 @@ export default async function usersImports(app: FastifyInstance) {
         tags,
         querystring: Type.Optional(
           Type.Object({
-            organisationId: Type.Optional(Type.String({ format: "uuid" })),
+            organisationId: Type.Optional(Type.String()),
             includeUsersData: Type.Boolean({ default: true }),
           }),
         ),
@@ -230,7 +230,7 @@ export default async function usersImports(app: FastifyInstance) {
         tags,
         querystring: Type.Optional(
           Type.Object({
-            organisationId: Type.Optional(Type.String({ format: "uuid" })),
+            organisationId: Type.Optional(Type.String()),
           }),
         ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
