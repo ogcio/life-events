@@ -3,7 +3,7 @@ import { allure } from "allure-playwright";
 import { Severity } from "allure-js-commons";
 import { LoginPage } from "../objects/loginPage";
 
-test.describe("Login Page Tests", () => {
+test.describe("Login Tests", () => {
   let loginPage: LoginPage;
 
   test.beforeEach(async ({ page }) => {
@@ -151,7 +151,7 @@ test.describe("Login Page Tests", () => {
     await expect(h1Locator).toHaveText("Welcome to Life Events");
   });
 
-  test.only("should validate successfull end-user login level 1 @critical", async ({
+  test("should validate successfull end-user login level 1 @critical", async ({
     page,
   }) => {
     await allure.description(
