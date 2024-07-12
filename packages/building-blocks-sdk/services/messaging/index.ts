@@ -294,13 +294,6 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getMockOrganisationId() {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/mock-organisation-id",
-    );
-    return { error, data: data?.data };
-  }
-
   async getOrganisationInvitations() {
     const { error, data } = await this.client.GET(
       "/api/v1/users/settings/organisations",

@@ -1,18 +1,19 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { Messaging } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
+
 import {
   messageTemplates,
   templateRoutes,
   urlWithSearchParams,
 } from "../../../utils/routes";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async (props: { locale: string }) => {
   const t = await getTranslations("MessageTemplates");
-  const { userId } = await PgSessions.get();
 
-  const { data: templates } = await new Messaging(userId).getTemplates();
+  const { data: templates } = await (
+    await AuthenticationFactory.getMessagingClient()
+  ).getTemplates();
 
   return (
     <table className="govie-table">

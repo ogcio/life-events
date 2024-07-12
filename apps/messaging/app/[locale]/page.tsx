@@ -1,8 +1,9 @@
-import { PgSessions } from "auth/sessions";
 import { redirect, RedirectType } from "next/navigation";
+import { AuthenticationFactory } from "../utils/authentication-factory";
 
 export default async () => {
-  const { publicServant } = await PgSessions.get();
+  const isPublicServant =
+    await AuthenticationFactory.getInstance().isPublicServant();
 
-  redirect(publicServant ? "/admin" : "/messages", RedirectType.replace);
+  redirect(isPublicServant ? "/admin" : "/messages", RedirectType.replace);
 };

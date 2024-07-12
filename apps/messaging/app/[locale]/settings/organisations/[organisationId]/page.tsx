@@ -1,5 +1,3 @@
-import { Messaging } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
 import { temporaryMockUtils } from "messages";
 import { notFound, redirect } from "next/navigation";
 import { usersSettingsRoutes } from "../../../../utils/routes";
@@ -11,6 +9,7 @@ import {
   searchValueOrganisation,
 } from "../../../../utils/messaging";
 import { FormElement } from "../../../admin/FormElement";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 enum AVAILABLE_TRANSPORTS {
   SMS = "sms",
@@ -31,7 +30,8 @@ enum ACTIVE_STATUSES {
 export default async (props: { params: { organisationId: string } }) => {
   async function submitAction(formData: FormData) {
     "use server";
-    const { userId } = await PgSessions.get();
+    const authenticationContext = await AuthenticationFactory.getInstance();
+    const submitUser = await authenticationContext.getUser();
     const submitTrans = await getTranslations("userSettings.Organisation");
     const url = new URL(usersSettingsRoutes.url, process.env.HOST_URL);
     url.searchParams.append(searchKeySettingType, searchValueOrganisation);
@@ -68,7 +68,7 @@ export default async (props: { params: { organisationId: string } }) => {
     }
 
     if (formErrors.length) {
-      await temporaryMockUtils.createErrors(formErrors, userId, orgId);
+      await temporaryMockUtils.createErrors(formErrors, submitUser.id, orgId);
       return revalidatePath("/");
     }
 
@@ -76,7 +76,9 @@ export default async (props: { params: { organisationId: string } }) => {
       preferredTransports = [];
     }
 
-    const submitClient = await new Messaging(userId);
+    const submitClient = await AuthenticationFactory.getMessagingClient({
+      authenticationContext,
+    });
 
     await submitClient.updateInvitation({ userStatusFeedback: "active" });
     await submitClient.updateOrganisationInvitation(orgId, {
@@ -92,8 +94,11 @@ export default async (props: { params: { organisationId: string } }) => {
     getTranslations("Commons"),
   ]);
 
-  const { userId } = await PgSessions.get();
-  const messagingClient = await new Messaging(userId);
+  const { user, accessToken } =
+    await AuthenticationFactory.getInstance().getContext();
+  const messagingClient = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const configurations = await messagingClient.getOrganisationInvitation(
     props.params.organisationId,
   );
@@ -102,7 +107,7 @@ export default async (props: { params: { organisationId: string } }) => {
   }
 
   const errors = await temporaryMockUtils.getErrors(
-    userId,
+    user.id,
     props.params.organisationId,
   );
 

@@ -42,7 +42,7 @@ export type TemplateInput = Static<typeof TemplateInputSchema>;
 
 export const CreateMessageOptionsSchema = Type.Object({
   preferredTransports: Type.Array(Type.String()),
-  userIds: Type.Array(Type.String({ format: "uuid" })),
+  userIds: Type.Array(Type.String()),
   security: Type.String(),
   scheduleAt: Type.String({ format: "date-time" }),
 });
