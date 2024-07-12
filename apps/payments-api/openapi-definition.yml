@@ -13,7 +13,7 @@ paths:
           description: Default Response
   /api/v1/providers/:
     post:
-      tags:
+      tags: &a1
         - Providers
       requestBody:
         content:
@@ -133,8 +133,7 @@ paths:
                   - request_id
                   - name
     get:
-      tags:
-        - Providers
+      tags: *a1
       responses:
         "200":
           description: Default Response
@@ -252,8 +251,7 @@ paths:
                   - name
   /api/v1/providers/{providerId}:
     get:
-      tags:
-        - Providers
+      tags: *a1
       parameters:
         - schema:
             type: string
@@ -397,8 +395,7 @@ paths:
                   - request_id
                   - name
     put:
-      tags:
-        - Providers
+      tags: *a1
       requestBody:
         content:
           application/json:
@@ -533,7 +530,7 @@ paths:
                   - name
   /api/v1/requests/:
     get:
-      tags:
+      tags: &a2
         - PaymentRequests
       parameters:
         - schema:
@@ -732,8 +729,7 @@ paths:
                 required:
                   - data
     post:
-      tags:
-        - PaymentRequests
+      tags: *a2
       requestBody:
         content:
           application/json:
@@ -750,6 +746,7 @@ paths:
                   type: string
                 amount:
                   minimum: 1
+                  maximum: 10000
                   type: number
                 redirectUrl:
                   validator: RequiredValidator
@@ -795,8 +792,7 @@ paths:
                 required:
                   - id
     put:
-      tags:
-        - PaymentRequests
+      tags: *a2
       requestBody:
         content:
           application/json:
@@ -813,6 +809,7 @@ paths:
                   type: string
                 amount:
                   minimum: 1
+                  maximum: 10000
                   type: number
                 redirectUrl:
                   validator: RequiredValidator
@@ -877,8 +874,7 @@ paths:
                   - id
   /api/v1/requests/{requestId}:
     get:
-      tags:
-        - PaymentRequests
+      tags: *a2
       parameters:
         - schema:
             type: string
@@ -1045,8 +1041,7 @@ paths:
                   - request_id
                   - name
     delete:
-      tags:
-        - PaymentRequests
+      tags: *a2
       parameters:
         - schema:
             type: string
@@ -1109,8 +1104,7 @@ paths:
                   - name
   /api/v1/requests/{requestId}/public-info:
     get:
-      tags:
-        - PaymentRequests
+      tags: *a2
       parameters:
         - schema:
             type: string
@@ -1395,7 +1389,7 @@ paths:
                   - data
   /api/v1/transactions/{transactionId}:
     get:
-      tags:
+      tags: &a3
         - Transactions
       parameters:
         - schema:
@@ -1542,8 +1536,7 @@ paths:
                   - request_id
                   - name
     patch:
-      tags:
-        - Transactions
+      tags: *a3
       requestBody:
         content:
           application/json:
@@ -1609,8 +1602,7 @@ paths:
                   - name
   /api/v1/transactions/:
     get:
-      tags:
-        - Transactions
+      tags: *a3
       parameters:
         - schema:
             default: 0
@@ -1815,8 +1807,7 @@ paths:
                   - request_id
                   - name
     post:
-      tags:
-        - Transactions
+      tags: *a3
       requestBody:
         content:
           application/json:
@@ -1961,8 +1952,7 @@ paths:
                   - name
   /api/v1/transactions/generatePaymentIntentId:
     get:
-      tags:
-        - Transactions
+      tags: *a3
       responses:
         "200":
           description: Default Response
@@ -2379,7 +2369,7 @@ paths:
                   - name
   /api/v1/realex/paymentObject:
     get:
-      tags:
+      tags: &a4
         - Transactions
       parameters:
         - schema:
@@ -2478,8 +2468,7 @@ paths:
                   - name
   /api/v1/realex/verifyPaymentResponse:
     post:
-      tags:
-        - Transactions
+      tags: *a4
       requestBody:
         content:
           application/json:

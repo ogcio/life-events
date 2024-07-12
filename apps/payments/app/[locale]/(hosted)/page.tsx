@@ -1,6 +1,6 @@
 import { redirect, RedirectType } from "next/navigation";
 import { routeDefinitions } from "../../routeDefinitions";
-import { PgSessions } from "auth/sessions";
+import { getPaymentsCitizenContext } from "../../../libraries/auth";
 
 type Props = {
   params: {
@@ -10,9 +10,9 @@ type Props = {
 
 export default async (props: Props) => {
   const path = `${props.params.locale}/${routeDefinitions.paymentSetup.slug}`;
-  const { publicServant } = await PgSessions.get();
+  const { isPublicServant } = await getPaymentsCitizenContext();
 
-  if (publicServant) return redirect(path, RedirectType.replace);
+  if (isPublicServant) return redirect(path, RedirectType.replace);
 
   const citizenPath = `${props.params.locale}/${routeDefinitions.citizen.transactions.path()}`;
   return redirect(citizenPath, RedirectType.replace);

@@ -7,7 +7,8 @@
 import { Pool } from "pg";
 import { organisationId, utils } from "../../utils";
 import { isNativeError } from "util/types";
-import { BadRequestError, ThirdPartyError } from "shared-errors";
+import { BadRequestError, ServerError, ThirdPartyError } from "shared-errors";
+import { MessagingEventType, newMessagingEventLogger } from "./eventLogger";
 
 type TemplateContent = {
   subject: string;
@@ -15,6 +16,7 @@ type TemplateContent = {
   richText: string;
   plainText: string;
   lang: string;
+  templateName: string;
 };
 
 type User = {
@@ -28,6 +30,17 @@ type User = {
 };
 
 const ERROR_PROCESS = "Messaging Service";
+
+type CreatedTemplateMessage = {
+  userId: string;
+  messageId: string;
+  excerpt: string;
+  lang: string;
+  plainText: string;
+  richText: string;
+  subject: string;
+  threadName: string;
+};
 
 export interface MessagingService {
   /**
@@ -44,7 +57,8 @@ export interface MessagingService {
     recipients: User[],
     transports: string[],
     security: string,
-  ): Promise<{ userId: string; messageId: string }[]>;
+    scheduleAt: string,
+  ): Promise<CreatedTemplateMessage[]>;
 
   /**
    * Get the template contents for the root meta id
@@ -64,7 +78,7 @@ export interface MessagingService {
   scheduleMessages(
     userMessageIds: { userId: string; messageId: string }[],
     scheduleAt: string,
-  ): Promise<void>;
+  ): Promise<{ jobId: string; userId: string; entityId: string }[]>;
 }
 
 export function newMessagingService(pool: Pool): Readonly<MessagingService> {
@@ -74,7 +88,8 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
       recipients: User[],
       transports: string[],
       security: string,
-    ): Promise<{ userId: string; messageId: string }[]> {
+      scheduleAt: string,
+    ): Promise<CreatedTemplateMessage[]> {
       if (!templateContents.length) {
         throw new BadRequestError(
           ERROR_PROCESS,
@@ -140,6 +155,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
           userKeys.reduce(interpolationReducer, templateContent.subject),
           undefined,
           organisationId,
+          scheduleAt,
         ];
 
         const args = [...Array(values.length)]
@@ -157,9 +173,8 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
       }
 
       // If we need to consider how many values we want to insert in one commit, do so here
-      return pool
-        .query<{ userId: string; messageId: string }>(
-          `
+      const insertQueryResult = await pool.query<CreatedTemplateMessage>(
+        `
         insert into messages(
             is_delivered,
             user_id,
@@ -172,14 +187,26 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
             preferred_transports,
             message_name,
             thread_name,
-            organisation_id
+            organisation_id,
+            scheduled_at
         ) values ${valueArgsArray.join(",")}
-        returning user_id as "userId", id as "messageId"
+        returning 
+          user_id as "userId", 
+          id as "messageId",
+          excerpt,
+          lang,
+          message_name as "messageName",
+          plain_text as "plainText",
+          rich_text as "richText",
+          subject,
+          thread_name as "threadName"
       `,
-          valueArray,
-        )
-        .then((res) => res.rows);
+        valueArray,
+      );
+
+      return insertQueryResult.rows;
     },
+
     async getTemplateContents(
       templateMetaId: string,
     ): Promise<TemplateContent[]> {
@@ -191,7 +218,8 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
                 excerpt,
                 rich_text as "richText",
                 plain_text as "plainText",
-                lang
+                lang,
+                template_name as "templateName"
             from message_template_contents
             where template_meta_id = $1
             `,
@@ -212,19 +240,28 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
         values.push(pt.messageId, pt.userId);
       }
 
-      const jobInsertResult = await pool.query<{
+      const jobs: {
         jobId: string;
         userId: string;
-      }>(
-        `
+        entityId: string;
+      }[] = [];
+      try {
+        const jobInsertResult = await pool.query<{
+          jobId: string;
+          userId: string;
+          entityId: string;
+        }>(
+          `
         insert into jobs(job_type, job_id, user_id)
         values ${valueArgs.join(", ")}
-        returning id as "jobId", user_id as "userId"
+        returning id as "jobId", user_id as "userId", job_id as "entityId"
       `,
-        values,
-      );
-
-      const jobs = jobInsertResult.rows;
+          values,
+        );
+        jobs.push(...jobInsertResult.rows);
+      } catch (err) {
+        throw new ServerError(ERROR_PROCESS, "failed to create jobs");
+      }
 
       const scheduleBody = jobs.map((job) => {
         const callbackUrl = new URL(
@@ -251,7 +288,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
           headers: { "x-user-id": "tmp", "Content-Type": "application/json" },
         });
       } catch (err) {
-        // TODO Error handling
         throw new ThirdPartyError(
           "failed to post messages",
           isNativeError(err)
@@ -259,6 +295,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
             : err?.toString() ?? "",
         );
       }
+      return jobs;
     },
   });
 }

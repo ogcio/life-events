@@ -26,6 +26,9 @@ import {
   UpdateTransactionBodyDO,
 } from "../../plugins/entities/transactions/types";
 import { TransactionStatusesEnum } from "../../plugins/entities/transactions";
+import { authPermissions } from "../../types/authPermissions";
+
+const TAGS = ["Transactions"];
 
 export default async function transactions(app: FastifyInstance) {
   app.get<{
@@ -34,9 +37,10 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/:transactionId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_ALL]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         response: {
           200: GenericResponse(TransactionDetails),
           404: HttpError,
@@ -59,9 +63,10 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: app.validateIsPublicServant,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_ALL]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         querystring: PaginationParams,
         response: {
           200: GenericResponse(Transactions),
@@ -76,7 +81,7 @@ export default async function transactions(app: FastifyInstance) {
         offset = PAGINATION_OFFSET_DEFAULT,
         limit = PAGINATION_LIMIT_DEFAULT,
       } = request.query;
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       if (!userId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
@@ -108,9 +113,13 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/:transactionId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [
+          authPermissions.TRANSACTION_SELF_WRITE,
+          authPermissions.TRANSACTION_ALL,
+        ]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         body: UpdateTransactionBody,
         response: {
           200: Type.Object({}),
@@ -137,9 +146,12 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [
+          authPermissions.TRANSACTION_SELF_WRITE,
+        ]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         body: CreateTransactionBody,
         response: {
           200: GenericResponse(Id),
@@ -149,7 +161,7 @@ export default async function transactions(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       if (!userId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
@@ -172,9 +184,12 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/generatePaymentIntentId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [
+          authPermissions.TRANSACTION_SELF_WRITE,
+        ]),
       schema: {
-        tags: ["Transactions"],
+        tags: TAGS,
         response: {
           200: GenericResponse(PaymentIntentId),
           404: HttpError,

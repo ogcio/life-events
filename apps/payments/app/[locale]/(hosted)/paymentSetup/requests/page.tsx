@@ -1,7 +1,5 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { PgSessions } from "auth/sessions";
-import { Payments } from "building-blocks-sdk";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import {
   buildPaginationLinks,
@@ -15,6 +13,7 @@ import { routeDefinitions } from "../../../../routeDefinitions";
 import Pagination from "../../../../components/pagination";
 import styles from "./PaymentRequests.module.scss";
 import { redirect, RedirectType } from "next/navigation";
+import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
 
 export default async function ({
   params: { locale },
@@ -23,10 +22,7 @@ export default async function ({
   params: { locale: string };
   searchParams: { page?: string; limit?: string };
 }) {
-  const [t, { userId }] = await Promise.all([
-    getTranslations("PaymentSetup.Payments"),
-    PgSessions.get(),
-  ]);
+  const t = await getTranslations("PaymentSetup.Payments");
 
   const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
   const pageLimit = limit ? parseInt(limit) : PAGINATION_LIMIT_DEFAULT;
@@ -36,9 +32,9 @@ export default async function ({
     limit: pageLimit,
   };
 
-  const { data: paymentRequestsData, error } = await new Payments(
-    userId,
-  ).getPaymentRequests(pagination);
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: paymentRequestsData, error } =
+    await paymentsApi.getPaymentRequests(pagination);
 
   const errors = errorHandler(error);
 

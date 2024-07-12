@@ -30,11 +30,10 @@ services:
       - 4566:4566
     environment:
       SERVICES: "s3,secretsmanager"
-      DATA_DIR: "/tmp/localstack/data"
       FILES_S3_BUCKET: "life-events-files"
       IMAGES_S3_BUCKET: "life-events-images"
     volumes:
-      - './.localstack:/tmp/localstack'
+      - './.localstack:/var/lib/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh' # ready hook
   
@@ -69,3 +68,8 @@ services:
 volumes:
   db:
     driver: local
+
+# custom network to be able to reach Logto running on same network with another Docker Compose file
+networks:
+  logto_network:
+    external: true
