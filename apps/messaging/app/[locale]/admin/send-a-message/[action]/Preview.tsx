@@ -6,7 +6,7 @@ import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import { headers } from "next/headers";
-import { MessagingAuthenticationFactory } from "../../../../utils/messaging";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 export default async (props: MessageCreateProps) => {
   const [t, tCommons] = await Promise.all([
@@ -34,7 +34,8 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+  const accessToken =
+    await AuthenticationFactory.getInstance().getAccessToken();
   const template = props.state.templateMetaId
     ? (
         await new Messaging(accessToken).getTemplate(props.state.templateMetaId)

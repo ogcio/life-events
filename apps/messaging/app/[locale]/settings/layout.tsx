@@ -4,7 +4,7 @@ import Footer from "../Footer";
 import Header from "../Header";
 import SideMenu from "../SideMenu";
 import { getLinks } from "../../utils/messaging";
-import { MessagingAuthenticationFactory } from "../../utils/messaging";
+import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export default async ({
   children,
@@ -16,6 +16,7 @@ export default async ({
   const t = await getTranslations("AlphaBanner");
   const environment = String(process.env.ENVIRONMENT);
   const links = getLinks(environment, params.locale);
+  const authenticationContext = await AuthenticationFactory.getInstance();
   return (
     <>
       <Header locale={params.locale} />
@@ -45,12 +46,10 @@ export default async ({
             <SideMenu
               locale={params.locale}
               options={await messages.sideMenuOptions(
-                await MessagingAuthenticationFactory.isPublicServant(),
+                await authenticationContext.isPublicServant(),
               )}
               selected={routes.usersSettingsRoutes.slug}
-              userName={
-                (await MessagingAuthenticationFactory.getUser()).name ?? ""
-              }
+              userName={(await authenticationContext.getUser()).name ?? ""}
             />
             <div style={{ width: "100%" }}>{children}</div>
           </div>

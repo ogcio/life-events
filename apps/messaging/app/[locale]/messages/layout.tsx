@@ -3,10 +3,8 @@ import { messages, routes } from "../../utils";
 import Footer from "../Footer";
 import Header from "../Header";
 import SideMenu from "../SideMenu";
-import {
-  getLinks,
-  MessagingAuthenticationFactory,
-} from "../../utils/messaging";
+import { getLinks } from "../../utils/messaging";
+import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export default async ({
   children,
@@ -17,7 +15,7 @@ export default async ({
 }) => {
   const t = await getTranslations("AlphaBanner");
   const { isPublicServant, user } =
-    await MessagingAuthenticationFactory.getContext();
+    await AuthenticationFactory.getInstance().getContext();
   const environment = String(process.env.ENVIRONMENT);
   const links = getLinks(environment, params.locale);
   return (

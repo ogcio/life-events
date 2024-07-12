@@ -6,11 +6,12 @@ import {
   templateRoutes,
   urlWithSearchParams,
 } from "../../../utils/routes";
-import { MessagingAuthenticationFactory } from "../../../utils/messaging";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async (props: { locale: string }) => {
   const t = await getTranslations("MessageTemplates");
-  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+  const accessToken =
+    await AuthenticationFactory.getInstance().getAccessToken();
 
   const { data: templates } = await new Messaging(accessToken).getTemplates();
 

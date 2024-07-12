@@ -1,12 +1,13 @@
 import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { MessagingAuthenticationFactory } from "../../../utils/messaging";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async (props: { params: { messageId: string } }) => {
   const t = await getTranslations("Message");
 
-  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+  const accessToken =
+    await AuthenticationFactory.getInstance().getAccessToken();
 
   const { data: message, error } = await new Messaging(accessToken).getMessage(
     props.params.messageId,

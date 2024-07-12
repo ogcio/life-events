@@ -4,11 +4,12 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import ds from "design-system";
 import { Messaging } from "building-blocks-sdk";
-import { MessagingAuthenticationFactory } from "../../utils/messaging";
+import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export default async (props: { searchParams: any }) => {
   const t = await getTranslations("Messages");
-  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+  const accessToken =
+    await AuthenticationFactory.getInstance().getAccessToken();
   const { data: messages } = await new Messaging(accessToken).getMessages();
 
   async function searchAction(formData: FormData) {

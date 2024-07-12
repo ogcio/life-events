@@ -3,13 +3,13 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import React from "react";
-import { MessagingAuthenticationFactory } from "../../../utils/messaging";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 import { notFound } from "next/navigation";
 
 export default async () => {
   const t = await getTranslations("UsersImports");
   const { accessToken, organization } =
-    await MessagingAuthenticationFactory.getPublicServant();
+    await AuthenticationFactory.getInstance().getPublicServant();
   if (!accessToken || !organization) {
     throw notFound();
   }

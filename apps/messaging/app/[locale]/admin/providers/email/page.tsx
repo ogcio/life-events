@@ -6,7 +6,7 @@ import { providerRoutes } from "../../../../utils/routes";
 import { revalidatePath } from "next/cache";
 import { FormElement } from "../../FormElement";
 import { getTranslations } from "next-intl/server";
-import { MessagingAuthenticationFactory } from "../../../../utils/messaging";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 const defaultErrorStateId = "email_provider_form";
 
@@ -50,7 +50,7 @@ export default async (props: {
     }
 
     const { accessToken: submitAccessToken, user: submitUser } =
-      await MessagingAuthenticationFactory.getContext();
+      await AuthenticationFactory.getInstance().getContext();
     if (formErrors.length) {
       await temporaryMockUtils.createErrors(
         formErrors,
@@ -141,7 +141,7 @@ export default async (props: {
   }
 
   const { accessToken, user } =
-    await MessagingAuthenticationFactory.getContext();
+    await AuthenticationFactory.getInstance().getContext();
   const client = new Messaging(accessToken);
 
   let data:

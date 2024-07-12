@@ -13,8 +13,8 @@ import {
   searchKeyProvider,
   searchValueEmail,
   searchValueSms,
-  MessagingAuthenticationFactory,
 } from "../../../utils/messaging";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export const linkStyle = (selected: boolean): CSSProperties => {
   const props: CSSProperties = {
@@ -73,7 +73,8 @@ export default async (props: {
 
   let toDelete: string | undefined;
   if (props.searchParams?.deleteId) {
-    const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+    const accessToken =
+      await AuthenticationFactory.getInstance().getAccessToken();
     const client = new Messaging(accessToken);
 
     if (props.searchParams.provider === searchValueSms) {
@@ -106,7 +107,8 @@ export default async (props: {
   async function handleDeleteProvider(formData: FormData) {
     "use server";
 
-    const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+    const accessToken =
+      await AuthenticationFactory.getInstance().getAccessToken();
     const client = new Messaging(accessToken);
 
     if (!props.searchParams?.deleteId) {

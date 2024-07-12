@@ -8,9 +8,9 @@ import { temporaryMockUtils } from "messages";
 import {
   searchKeyListType,
   searchValueImports,
-  MessagingAuthenticationFactory,
 } from "../../../utils/messaging";
 import { RedirectType, notFound, redirect } from "next/navigation";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
 
@@ -20,7 +20,7 @@ export default async () => {
   async function upload(formData: FormData) {
     "use server";
     const { accessToken: uploadToken, user: uploadUser } =
-      await MessagingAuthenticationFactory.getContext();
+      await AuthenticationFactory.getInstance().getContext();
     const file = formData.get(CSV_FILE_FIELD);
     const organisationId = formData.get("organisationId");
 
@@ -54,7 +54,7 @@ export default async () => {
     getTranslations("formErrors"),
   ]);
   const { user, organization } =
-    await MessagingAuthenticationFactory.getContext();
+    await AuthenticationFactory.getInstance().getContext();
   if (!organization) {
     throw notFound();
   }

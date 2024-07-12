@@ -11,7 +11,7 @@ import { Messaging } from "building-blocks-sdk";
 import { pgpool } from "messages/dbConnection";
 import ConfirmDeleteModal from "../ConfirmDeleteModal";
 import { LANG_EN } from "../../../../types/shared";
-import { MessagingAuthenticationFactory } from "../../../utils/messaging";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async (props: {
   params: { locale: string };
@@ -31,7 +31,8 @@ export default async (props: {
   let messageNameToDelete: string | undefined;
 
   if (props.searchParams?.delete_id) {
-    const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+    const accessToken =
+      await AuthenticationFactory.getInstance().getAccessToken();
 
     const client = new Messaging(accessToken);
     const tmpl = await client.getTemplate(props.searchParams?.delete_id);
@@ -49,7 +50,8 @@ export default async (props: {
     if (!id) {
       return;
     }
-    const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+    const accessToken =
+      await AuthenticationFactory.getInstance().getAccessToken();
 
     await new Messaging(accessToken).deleteTemplate(id);
 
@@ -68,7 +70,7 @@ export default async (props: {
   }
 
   // Flush the template state
-  const user = await MessagingAuthenticationFactory.getUser();
+  const user = await AuthenticationFactory.getInstance().getUser();
   await pgpool.query(
     `
     delete from message_template_states

@@ -11,7 +11,8 @@ import {
 
 export default async () => {
   const t = await getTranslations("settings.Sms");
-  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+  const accessToken =
+    await AuthenticationFactory.getInstance().getAccessToken();
   const sdk = new Messaging(accessToken);
 
   const { data: providers } = await sdk.getSmsProviders();

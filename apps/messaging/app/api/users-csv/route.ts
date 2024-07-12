@@ -1,8 +1,9 @@
 import { Messaging } from "building-blocks-sdk";
-import { MessagingAuthenticationFactory } from "../../utils/messaging";
+import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export async function GET() {
-  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+  const accessToken =
+    await AuthenticationFactory.getInstance().getAccessToken();
   const messagingClient = new Messaging(accessToken);
   const toDownloadTemplate = await messagingClient.downloadUsersCsvTemplate();
 

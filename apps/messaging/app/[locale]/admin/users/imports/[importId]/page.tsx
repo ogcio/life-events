@@ -9,9 +9,9 @@ import Link from "next/link";
 import {
   searchKeyListType,
   searchValueImports,
-  MessagingAuthenticationFactory,
 } from "../../../../../utils/messaging";
 import Users from "../../Users";
+import { AuthenticationFactory } from "../../../../../utils/authentication-factory";
 
 export default async (props: {
   params: { importId: string; locale: string };
@@ -21,7 +21,7 @@ export default async (props: {
     getTranslations("Commons"),
   ]);
   const { accessToken, organization } =
-    await MessagingAuthenticationFactory.getPublicServant();
+    await AuthenticationFactory.getInstance().getPublicServant();
   if (!accessToken || !organization) {
     throw notFound();
   }

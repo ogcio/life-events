@@ -12,8 +12,8 @@ import { useTranslations } from "next-intl";
 import {
   avaliableMessagingTemplateStaticVariables,
   getInterpolationValues,
-  MessagingAuthenticationFactory,
 } from "../../../../utils/messaging";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 type FormContent = {
   templateName: string;
@@ -178,7 +178,8 @@ const ContentForm = async (props: {
       );
       return revalidatePath("/");
     }
-    const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+    const accessToken =
+      await AuthenticationFactory.getInstance().getAccessToken();
     const sdkClient = new Messaging(accessToken);
     const contents: Parameters<typeof sdkClient.createTemplate>[0]["contents"] =
       [];
@@ -427,7 +428,7 @@ export default async (props: {
 }) => {
   const t = await getTranslations("MessageTemplate");
   const { user, accessToken } =
-    await MessagingAuthenticationFactory.getContext();
+    await AuthenticationFactory.getInstance().getContext();
 
   const state = await pgpool
     .query<{

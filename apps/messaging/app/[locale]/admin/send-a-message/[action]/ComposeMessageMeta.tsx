@@ -1,13 +1,11 @@
 import dayjs from "dayjs";
 import { api } from "messages";
 import { revalidatePath } from "next/cache";
-import {
-  MessageCreateProps,
-  MessagingAuthenticationFactory,
-} from "../../../../utils/messaging";
+import { MessageCreateProps } from "../../../../utils/messaging";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
 import { Messaging } from "building-blocks-sdk";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.ComposeMessageMeta");
@@ -43,7 +41,8 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+  const accessToken =
+    await AuthenticationFactory.getInstance().getAccessToken();
   const lang = headers().get("x-next-intl-locale");
   const { data: templates } = await new Messaging(accessToken).getTemplates();
 
