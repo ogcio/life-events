@@ -1,4 +1,3 @@
-import { Messaging } from "building-blocks-sdk";
 import { temporaryMockUtils } from "messages";
 import { notFound, redirect } from "next/navigation";
 import { usersSettingsRoutes } from "../../../../utils/routes";
@@ -8,9 +7,9 @@ import Link from "next/link";
 import {
   searchKeySettingType,
   searchValueOrganisation,
-  MessagingAuthenticationFactory,
 } from "../../../../utils/messaging";
 import { FormElement } from "../../../admin/FormElement";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 enum AVAILABLE_TRANSPORTS {
   SMS = "sms",
@@ -31,9 +30,8 @@ enum ACTIVE_STATUSES {
 export default async (props: { params: { organisationId: string } }) => {
   async function submitAction(formData: FormData) {
     "use server";
-    const submitUser = await MessagingAuthenticationFactory.getUser();
-    const submitAccessToken =
-      await MessagingAuthenticationFactory.getAccessToken();
+    const authenticationContext = await AuthenticationFactory.getInstance();
+    const submitUser = await authenticationContext.getUser();
     const submitTrans = await getTranslations("userSettings.Organisation");
     const url = new URL(usersSettingsRoutes.url, process.env.HOST_URL);
     url.searchParams.append(searchKeySettingType, searchValueOrganisation);
@@ -78,7 +76,9 @@ export default async (props: { params: { organisationId: string } }) => {
       preferredTransports = [];
     }
 
-    const submitClient = await new Messaging(submitAccessToken);
+    const submitClient = await AuthenticationFactory.getMessagingClient({
+      authenticationContext,
+    });
 
     await submitClient.updateInvitation({ userStatusFeedback: "active" });
     await submitClient.updateOrganisationInvitation(orgId, {
@@ -95,8 +95,10 @@ export default async (props: { params: { organisationId: string } }) => {
   ]);
 
   const { user, accessToken } =
-    await MessagingAuthenticationFactory.getContext();
-  const messagingClient = await new Messaging(accessToken);
+    await AuthenticationFactory.getInstance().getContext();
+  const messagingClient = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const configurations = await messagingClient.getOrganisationInvitation(
     props.params.organisationId,
   );

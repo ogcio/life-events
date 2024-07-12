@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import React from "react";
 import { temporaryMockUtils } from "messages";
 import { getTranslations } from "next-intl/server";
-import { Messaging } from "building-blocks-sdk";
+
 import { redirect } from "next/navigation";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 import Link from "next/link";
@@ -12,8 +12,8 @@ import { useTranslations } from "next-intl";
 import {
   avaliableMessagingTemplateStaticVariables,
   getInterpolationValues,
-  MessagingAuthenticationFactory,
 } from "../../../../utils/messaging";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 type FormContent = {
   templateName: string;
@@ -178,8 +178,7 @@ const ContentForm = async (props: {
       );
       return revalidatePath("/");
     }
-    const accessToken = await MessagingAuthenticationFactory.getAccessToken();
-    const sdkClient = new Messaging(accessToken);
+    const sdkClient = await AuthenticationFactory.getMessagingClient();
     const contents: Parameters<typeof sdkClient.createTemplate>[0]["contents"] =
       [];
 
@@ -427,7 +426,7 @@ export default async (props: {
 }) => {
   const t = await getTranslations("MessageTemplate");
   const { user, accessToken } =
-    await MessagingAuthenticationFactory.getContext();
+    await AuthenticationFactory.getInstance().getContext();
 
   const state = await pgpool
     .query<{
@@ -443,7 +442,9 @@ export default async (props: {
     )
     .then((res) => res.rows.at(0)?.state);
 
-  const client = new Messaging(accessToken);
+  const client = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const contents: State = { langs: Array<string>() };
 
   let templateFetchError: Awaited<

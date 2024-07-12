@@ -1,4 +1,3 @@
-import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { pgpool } from "messages/dbConnection";
 import { revalidatePath } from "next/cache";
@@ -7,7 +6,7 @@ import { temporaryMockUtils } from "messages";
 import { FormElement } from "../../FormElement";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 import { providerRoutes } from "../../../../utils/routes";
-import { MessagingAuthenticationFactory } from "../../../../utils/messaging";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 const awsErrorKey = "aws-provider-form";
 const providerTypeErrorKey = "provider-type";
@@ -61,8 +60,7 @@ export default async (props: {
   async function submitAction(formData: FormData) {
     "use server";
     const { user: submitUser, accessToken: submitToken } =
-      await MessagingAuthenticationFactory.getContext();
-    const state = await getState(submitUser.id);
+      await AuthenticationFactory.getInstance().getContext();
 
     const name = formData.get("name")?.toString();
     const providerType = formData.get("providerType")?.toString();
@@ -99,7 +97,9 @@ export default async (props: {
         return;
       }
 
-      const sdk = new Messaging(submitToken);
+      const sdk = await AuthenticationFactory.getMessagingClient({
+        token: submitToken,
+      });
       const providerId = props.searchParams?.id;
       let error: any = undefined;
       if (providerId) {
@@ -141,7 +141,7 @@ export default async (props: {
 
   async function submitProviderType(formData: FormData) {
     "use server";
-    const providerUser = await MessagingAuthenticationFactory.getUser();
+    const providerUser = await AuthenticationFactory.getInstance().getUser();
     const providerType = formData.get("providerType")?.toString();
 
     if (!providerType) {
@@ -173,8 +173,10 @@ export default async (props: {
   }
 
   const { user, accessToken } =
-    await MessagingAuthenticationFactory.getContext();
-  const sdkClient = new Messaging(accessToken);
+    await AuthenticationFactory.getInstance().getContext();
+  const sdkClient = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const data: Awaited<ReturnType<typeof sdkClient.getSmsProvider>>["data"] =
     props.searchParams?.id
       ? (await sdkClient.getSmsProvider(props.searchParams?.id)).data

@@ -3,16 +3,16 @@ import { RedirectType, redirect } from "next/navigation";
 import SideMenu from "../SideMenu";
 import { messages } from "../../utils";
 import { LANG_EN } from "../../../types/shared";
-import { MessagingAuthenticationFactory } from "../../utils/messaging";
+import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export default async ({ children }: { children: React.ReactNode }) => {
-  const isPublicServant =
-    await MessagingAuthenticationFactory.isPublicServant();
+  const instanceAuth = await AuthenticationFactory.getInstance();
+  const isPublicServant = await instanceAuth.isPublicServant();
   if (!isPublicServant) {
     redirect("/messages", RedirectType.replace);
   }
 
-  const user = await MessagingAuthenticationFactory.getUser();
+  const user = await instanceAuth.getUser();
   const pathnameSplit = (headers().get("x-pathname") || "").split("/");
   const selected =
     pathnameSplit.slice(pathnameSplit.indexOf("admin") + 1).at(0) || "";

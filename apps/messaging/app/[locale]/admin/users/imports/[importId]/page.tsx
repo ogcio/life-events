@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { users as usersRoute } from "../../../../../utils/routes";
-import { Messaging } from "building-blocks-sdk";
+
 import React from "react";
 import { notFound } from "next/navigation";
 import FlexMenuWrapper from "../../../PageWithMenuFlexWrapper";
@@ -9,9 +9,9 @@ import Link from "next/link";
 import {
   searchKeyListType,
   searchValueImports,
-  MessagingAuthenticationFactory,
 } from "../../../../../utils/messaging";
 import Users from "../../Users";
+import { AuthenticationFactory } from "../../../../../utils/authentication-factory";
 
 export default async (props: {
   params: { importId: string; locale: string };
@@ -21,11 +21,13 @@ export default async (props: {
     getTranslations("Commons"),
   ]);
   const { accessToken, organization } =
-    await MessagingAuthenticationFactory.getPublicServant();
+    await AuthenticationFactory.getInstance().getPublicServant();
   if (!accessToken || !organization) {
     throw notFound();
   }
-  const messagingClient = new Messaging(accessToken);
+  const messagingClient = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const { data: userImport, error } = await messagingClient.getUsersImport(
     props.params.importId,
     organization.id,

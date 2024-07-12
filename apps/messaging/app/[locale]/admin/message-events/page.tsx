@@ -1,10 +1,9 @@
-import { Messaging } from "building-blocks-sdk";
 import dayjs from "dayjs";
 import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
 import ds from "design-system";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { MessagingAuthenticationFactory } from "../../../utils/messaging";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 async function messageStatus(type: string, status: string) {
   const t = await getTranslations("MessageEvents.status");
@@ -70,9 +69,8 @@ export default async (props: { searchParams: { search?: string } }) => {
   }
 
   const freeSearch = props.searchParams.search;
-  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
 
-  const client = new Messaging(accessToken);
+  const client = await AuthenticationFactory.getMessagingClient();
   const { data, error } = await client.getMessageEvents({
     query: { search: freeSearch },
   });

@@ -11,9 +11,10 @@ dayjs.extend(tz);
 
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
-import { Messaging } from "building-blocks-sdk";
+
 import { DUBLIN_TIMEZONE } from "../../../../../types/shared";
 import { getTranslations } from "next-intl/server";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 export default async (props: MessageCreateProps) => {
   const [t, tCommons] = await Promise.all([
@@ -39,7 +40,7 @@ export default async (props: MessageCreateProps) => {
       scheduledAt = dayjs().format();
     }
 
-    const messagesClient = new Messaging(props.userId);
+    const messagesClient = await AuthenticationFactory.getMessagingClient();
     let message: Parameters<typeof messagesClient.createMessage>[0]["message"];
     let template: Parameters<
       typeof messagesClient.createMessage

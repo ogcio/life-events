@@ -1,8 +1,5 @@
 import { api } from "messages";
-import {
-  MessageCreateProps,
-  MessagingAuthenticationFactory,
-} from "../../../../utils/messaging";
+import { MessageCreateProps } from "../../../../utils/messaging";
 import dayjs from "dayjs";
 import ds from "design-system";
 import { revalidatePath } from "next/cache";
@@ -10,10 +7,11 @@ import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
 import { getQueryParams } from "../components/paginationUtils";
 import { sendAMessage } from "../../../../utils/routes";
-import { Messaging } from "building-blocks-sdk";
+
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { pgpool } from "messages/dbConnection";
 import styles from "../components/Table.module.scss";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 interface RecipientContact {
   id: string;
@@ -158,11 +156,13 @@ export default async (props: MessageCreateProps) => {
   const urlParams = new URLSearchParams(props.searchParams);
   const queryParams = getQueryParams(urlParams);
   const { accessToken, organization } =
-    await MessagingAuthenticationFactory.getPublicServant();
+    await AuthenticationFactory.getInstance().getPublicServant();
   if (!accessToken || !organization) {
     throw notFound();
   }
-  const messaging = new Messaging(accessToken);
+  const messaging = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const response = await messaging.getRecipients({
     ...queryParams,
     organisationId: organization.id,

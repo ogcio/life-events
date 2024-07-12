@@ -1,4 +1,3 @@
-import { Messaging } from "building-blocks-sdk";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 import { temporaryMockUtils } from "messages";
 import { redirect } from "next/navigation";
@@ -6,7 +5,7 @@ import { providerRoutes } from "../../../../utils/routes";
 import { revalidatePath } from "next/cache";
 import { FormElement } from "../../FormElement";
 import { getTranslations } from "next-intl/server";
-import { MessagingAuthenticationFactory } from "../../../../utils/messaging";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 const defaultErrorStateId = "email_provider_form";
 
@@ -50,7 +49,7 @@ export default async (props: {
     }
 
     const { accessToken: submitAccessToken, user: submitUser } =
-      await MessagingAuthenticationFactory.getContext();
+      await AuthenticationFactory.getInstance().getContext();
     if (formErrors.length) {
       await temporaryMockUtils.createErrors(
         formErrors,
@@ -65,7 +64,9 @@ export default async (props: {
       return;
     }
 
-    const messagesClient = new Messaging(submitAccessToken);
+    const messagesClient = await AuthenticationFactory.getMessagingClient({
+      token: accessToken,
+    });
 
     let serverError:
       | Awaited<ReturnType<typeof messagesClient.createEmailProvider>>["error"]
@@ -141,8 +142,10 @@ export default async (props: {
   }
 
   const { accessToken, user } =
-    await MessagingAuthenticationFactory.getContext();
-  const client = new Messaging(accessToken);
+    await AuthenticationFactory.getInstance().getContext();
+  const client = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
 
   let data:
     | Awaited<ReturnType<typeof client.getEmailProvider>>["data"]

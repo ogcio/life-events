@@ -3,7 +3,7 @@ import {
   organizationScopes,
 } from "auth/authentication-context";
 import { logtoLogin } from "./routes";
-import { AuthenticationContextConfig } from "auth/authentication-context-factory";
+import { AuthenticationContextConfig } from "auth/base-authentication-context";
 
 export const messagingApiResource = process.env.MESSAGES_BACKEND_URL + "/";
 const baseUrl = process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string;

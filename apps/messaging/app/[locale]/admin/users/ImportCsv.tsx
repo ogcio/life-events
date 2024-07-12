@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Messaging } from "building-blocks-sdk";
 import React from "react";
 import { revalidatePath } from "next/cache";
 import { users as usersRoute } from "../../../utils/routes";
@@ -8,9 +7,9 @@ import { temporaryMockUtils } from "messages";
 import {
   searchKeyListType,
   searchValueImports,
-  MessagingAuthenticationFactory,
 } from "../../../utils/messaging";
 import { RedirectType, notFound, redirect } from "next/navigation";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
 
@@ -20,14 +19,16 @@ export default async () => {
   async function upload(formData: FormData) {
     "use server";
     const { accessToken: uploadToken, user: uploadUser } =
-      await MessagingAuthenticationFactory.getContext();
+      await AuthenticationFactory.getInstance().getContext();
     const file = formData.get(CSV_FILE_FIELD);
     const organisationId = formData.get("organisationId");
 
     const toStoreErrors: FormErrors = [];
     const castedFile = file ? (file as File) : null;
     if (file && (castedFile?.size ?? 0) > 0) {
-      const uploadClient = new Messaging(uploadToken);
+      const uploadClient = await AuthenticationFactory.getMessagingClient({
+        token: uploadToken,
+      });
       await uploadClient.importUsersCsv(file as File);
 
       const url = new URL(usersRoute.url, process.env.HOST_URL);
@@ -54,7 +55,7 @@ export default async () => {
     getTranslations("formErrors"),
   ]);
   const { user, organization } =
-    await MessagingAuthenticationFactory.getContext();
+    await AuthenticationFactory.getInstance().getContext();
   if (!organization) {
     throw notFound();
   }

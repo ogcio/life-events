@@ -25,17 +25,17 @@ export interface AuthenticationContextConfig {
   appSecret: string;
 }
 
-export class AuthenticationContextFactory {
-  private static sharedContext: AuthSessionContext | null = null;
-  private static citizenContext: PartialAuthSessionContext | null = null;
-  private static publicServantContext: PartialAuthSessionContext | null = null;
-  private static config: AuthenticationContextConfig | null = null;
+export class BaseAuthenticationContext {
+  readonly config: AuthenticationContextConfig;
+  sharedContext: AuthSessionContext | null = null;
+  citizenContext: PartialAuthSessionContext | null = null;
+  publicServantContext: PartialAuthSessionContext | null = null;
 
-  static setConfig(config: AuthenticationContextConfig) {
+  constructor(config: AuthenticationContextConfig) {
     this.config = config;
   }
 
-  static async getContext() {
+  async getContext() {
     if (!this.sharedContext) {
       let context = await this.getCitizen();
       if (context.isPublicServant) {
@@ -48,47 +48,27 @@ export class AuthenticationContextFactory {
     return this.sharedContext;
   }
 
-  static async getCitizen() {
+  async getCitizen() {
     if (!this.citizenContext) {
       this.citizenContext =
         this.sharedContext && !this.sharedContext.isPublicServant
           ? this.sharedContext
-          : await getCitizenContext(this.getConfig());
+          : await getCitizenContext(this.config);
     }
     return this.citizenContext as PartialAuthSessionContext;
   }
 
-  static async getPublicServant() {
+  async getPublicServant() {
     if (!this.publicServantContext) {
       this.publicServantContext =
         this.sharedContext && this.sharedContext.isPublicServant
           ? this.publicServantContext
-          : await getPublicServantContext(this.getConfig());
+          : await getPublicServantContext(this.config);
     }
     return this.publicServantContext as PartialAuthSessionContext;
   }
 
-  static async isPublicServant(): Promise<boolean> {
-    return (await this.getPartialContext()).isPublicServant;
-  }
-
-  static async getUser(): Promise<AuthSessionUserInfo> {
-    return (await this.getContext()).user;
-  }
-
-  static async getAccessToken(): Promise<string> {
-    return (await this.getContext()).accessToken;
-  }
-
-  private static getConfig() {
-    if (!this.config) {
-      throw new BadRequestError(ERROR_PROCESS, "You have to set config before");
-    }
-
-    return this.config;
-  }
-
-  private static ensureIsFullContext(
+  private ensureIsFullContext(
     context: PartialAuthSessionContext,
   ): AuthSessionContext {
     if (!context.accessToken) {
@@ -107,7 +87,19 @@ export class AuthenticationContextFactory {
     return context as AuthSessionContext;
   }
 
-  private static getPartialContext = (): Promise<PartialAuthSessionContext> => {
+  async isPublicServant(): Promise<boolean> {
+    return (await this.getPartialContext()).isPublicServant;
+  }
+
+  async getUser(): Promise<AuthSessionUserInfo> {
+    return (await this.getContext()).user;
+  }
+
+  async getAccessToken(): Promise<string> {
+    return (await this.getContext()).accessToken;
+  }
+
+  private getPartialContext = (): Promise<PartialAuthSessionContext> => {
     if (!this.citizenContext && !this.publicServantContext) {
       return this.getCitizen();
     }

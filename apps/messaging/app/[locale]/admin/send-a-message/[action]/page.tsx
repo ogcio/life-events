@@ -19,7 +19,7 @@ import {
   PAGINATION_PAGE_DEFAULT,
 } from "../components/paginationUtils";
 import { sendAMessage } from "../../../../utils/routes";
-import { MessagingAuthenticationFactory } from "../../../../utils/messaging";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 const metaSlug = "meta";
 const contentSlug = "content";
@@ -73,7 +73,7 @@ export default async (props: {
   params: { action: string };
   searchParams: { state_id: string } & Partial<MessageCreateSearchParams>;
 }) => {
-  const user = await MessagingAuthenticationFactory.getUser();
+  const user = await AuthenticationFactory.getInstance().getUser();
   const urlAction = props.params.action;
   const { state, id: stateId } = await api.getMessageState(user.id);
   const step = getCurrentStep<ApiMessageState>(rules, state);
