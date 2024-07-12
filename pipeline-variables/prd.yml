@@ -11,6 +11,7 @@ variables:
   nextPublicPaymentsServiceEntryPoint: https://payments.blocks.gov.ie/
   nextPublicLifeEventsServiceEntryPoint: https://life.gov.ie/
   nextPublicBuildingBlocksLandingPage: https://blocks.gov.ie/
+  messagesBackendUrl: https://messaging-api.blocks.gov.ie
   authServiceUrl: https://auth.blocks.gov.ie/
   nextPublicFormsUrl: https://www.formsg.testing.gov.ie/
   nextPublicMatomoUrl: //analytics.ogcio.gov.ie
