@@ -6,13 +6,13 @@ import { LANG_EN } from "../../../types/shared";
 import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export default async ({ children }: { children: React.ReactNode }) => {
-  const isPublicServant =
-    await AuthenticationFactory.getInstance().isPublicServant();
+  const instanceAuth = await AuthenticationFactory.getInstance();
+  const isPublicServant = await instanceAuth.isPublicServant();
   if (!isPublicServant) {
     redirect("/messages", RedirectType.replace);
   }
 
-  const user = await AuthenticationFactory.getInstance().getUser();
+  const user = await instanceAuth.getUser();
   const pathnameSplit = (headers().get("x-pathname") || "").split("/");
   const selected =
     pathnameSplit.slice(pathnameSplit.indexOf("admin") + 1).at(0) || "";
