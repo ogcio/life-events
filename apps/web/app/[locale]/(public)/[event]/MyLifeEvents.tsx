@@ -8,7 +8,6 @@ import { orderEHICRules } from "./[...action]/OrderEHIC/OrderEHIC";
 import { orderBirthCertificateRules } from "./[...action]/OrderBirthCertificate/OrderBirthCertificate";
 import { notifyDeathRules } from "./[...action]/NotifyDeath/NotifyDeath";
 import { applyJobseekersAllowanceRules } from "./[...action]/ApplyJobseekersAllowance/ApplyJobseekersAllowance";
-import { Messaging } from "building-blocks-sdk";
 import { isFeatureFlagEnabled } from "feature-flags/utils";
 import { verificationLevelToRulesMap } from "./[...action]/GetDigitalWallet/GetDigitalWallet";
 import styles from "./event.module.scss";
