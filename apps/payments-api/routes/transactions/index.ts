@@ -81,18 +81,21 @@ export default async function transactions(app: FastifyInstance) {
         offset = PAGINATION_OFFSET_DEFAULT,
         limit = PAGINATION_LIMIT_DEFAULT,
       } = request.query;
-      const userId = request.userData?.userId;
+      const organizationId = request.userData?.organizationId;
 
-      if (!userId) {
+      if (!organizationId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const transactions = await app.transactions.getTransactions(userId, {
-        offset,
-        limit,
-      });
+      const transactions = await app.transactions.getTransactions(
+        organizationId,
+        {
+          offset,
+          limit,
+        },
+      );
       const totalCount =
-        await app.transactions.getTransactionsTotalCount(userId);
+        await app.transactions.getTransactionsTotalCount(organizationId);
       const url = request.url.split("?")[0];
 
       const paginationDetails: PaginationDetails = {
