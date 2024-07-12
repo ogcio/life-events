@@ -2,7 +2,6 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
 import { Recipient, RecipientSchema } from "../../types/usersSchemaDefinitions";
-import { getOrganisationIdFromRequest } from "../../utils/request-utils";
 import {
   GenericResponse,
   PaginationParams,
@@ -60,7 +59,7 @@ export default async function recipients(app: FastifyInstance) {
       const query = request.query;
       const recipientsResponse = await getRecipients({
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(request, "GET_RECIPIENTS"),
+        organisationId: request.userData!.organizationId!,
         search: query.search,
         pagination: {
           limit: query.limit,

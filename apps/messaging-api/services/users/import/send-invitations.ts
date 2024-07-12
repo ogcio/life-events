@@ -31,11 +31,8 @@ export const sendInvitationsForUsersImport = async (params: {
   } = {};
   for (const userData of toImportUsers.usersData) {
     if (!userData.relatedUserId) {
-      // throw new ServerError(
-      //   "SEND_INVITATIONS_ERROR",
-      //   `Something went wrong importing users, user with index ${userData.importIndex} is missing user id`,
-      // );
       // means that the user has no contacts, nor email or phone
+      // TODO Notify to the user whom imported that is not manageable
       continue;
     }
     if (userData.relatedUserProfileId) {
@@ -223,6 +220,7 @@ const sendInvitations = async (params: {
           security: "high",
         },
         pg: params.pg,
+        organizationId: params.organisationId,
       }),
     );
     output.invitedToMessaging.push(
@@ -248,6 +246,7 @@ const sendInvitations = async (params: {
           security: "high",
         },
         pg: params.pg,
+        organizationId: params.organisationId,
       }),
     );
     output.invitedToOrganisation.push(
@@ -268,6 +267,7 @@ const sendInvitations = async (params: {
           security: "high",
         },
         pg: params.pg,
+        organizationId: params.organisationId,
       }),
     );
     output.welcomed.push(...params.toSend.welcome[language].userIds);

@@ -45,6 +45,7 @@ interface GetMessage {
 export default async function messages(app: FastifyInstance) {
   // Didn't add permissions here because
   // we need to manage the scheduler permissions
+  // TODO Add a M2M application user to make scheduler able to authenticate
   app.post<{ Params: { id: string } }>(
     "/jobs/:id",
     {

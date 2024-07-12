@@ -16,14 +16,12 @@ import {
   UsersImport,
 } from "../../types/usersSchemaDefinitions";
 import {
-  READ_USER_IMPORTS_ERROR,
   getAllUserInvitationsForOrganisation,
   getUserImportForOrganisation,
   getUserImportsForOrganisation,
   getUserInvitationsForImport,
 } from "../../services/users/import/read-user-imports";
 import { BadRequestError } from "shared-errors";
-import { getOrganisationIdFromRequest } from "../../utils/request-utils";
 import { Permissions } from "../../types/permissions";
 
 const tags = ["Users", "UserImports"];
@@ -104,8 +102,8 @@ export default async function usersImports(app: FastifyInstance) {
   );
 
   interface GetImportsSchema {
-    Querystring: { organisationId?: string };
     Response: { data: Omit<UsersImport, "usersData">[] };
+    Querystring: unknown;
   }
 
   app.get<GetImportsSchema>(
@@ -115,11 +113,6 @@ export default async function usersImports(app: FastifyInstance) {
         app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
-        querystring: Type.Optional(
-          Type.Object({
-            organisationId: Type.Optional(Type.String()),
-          }),
-        ),
         response: {
           200: Type.Object({
             data: Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
@@ -136,10 +129,7 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserImportsForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(
-          request,
-          READ_USER_IMPORTS_ERROR,
-        ),
+        organisationId: request.userData!.organizationId!,
       }),
     }),
   );
@@ -151,11 +141,6 @@ export default async function usersImports(app: FastifyInstance) {
         app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
-        querystring: Type.Optional(
-          Type.Object({
-            organisationId: Type.Optional(Type.String()),
-          }),
-        ),
         response: {
           200: Type.Object({
             data: Type.Array(UserInvitationSchema),
@@ -172,16 +157,13 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getAllUserInvitationsForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(
-          request,
-          READ_USER_IMPORTS_ERROR,
-        ),
+        organisationId: request.userData!.organizationId!,
       }),
     }),
   );
 
   interface GetImportSchema {
-    Querystring: { organisationId?: string; includeUsersData?: boolean };
+    Querystring: { includeUsersData?: boolean };
     Response: { data: UsersImport };
     Params: { importId: string };
   }
@@ -194,7 +176,6 @@ export default async function usersImports(app: FastifyInstance) {
         tags,
         querystring: Type.Optional(
           Type.Object({
-            organisationId: Type.Optional(Type.String()),
             includeUsersData: Type.Boolean({ default: true }),
           }),
         ),
@@ -212,10 +193,7 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserImportForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(
-          request,
-          READ_USER_IMPORTS_ERROR,
-        ),
+        organisationId: request.userData!.organizationId!,
         importId: request.params.importId,
         includeUsersData: request.query.includeUsersData ?? true,
       }),
@@ -223,9 +201,9 @@ export default async function usersImports(app: FastifyInstance) {
   );
 
   interface GetUserInvitationsSchema {
-    Querystring: { organisationId?: string };
     Response: { data: UserInvitation[] };
     Params: { importId: string };
+    Querystring: unknown;
   }
 
   app.get<GetUserInvitationsSchema>(
@@ -235,11 +213,6 @@ export default async function usersImports(app: FastifyInstance) {
         app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
-        querystring: Type.Optional(
-          Type.Object({
-            organisationId: Type.Optional(Type.String()),
-          }),
-        ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
         response: {
           200: Type.Object({
@@ -257,10 +230,7 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserInvitationsForImport({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(
-          request,
-          READ_USER_IMPORTS_ERROR,
-        ),
+        organisationId: request.userData!.organizationId!,
         importId: request.params.importId,
       }),
     }),
