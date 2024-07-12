@@ -4,7 +4,6 @@ import { pgpool } from "../../../utils/postgres";
 import { driving } from "../../../utils/routes";
 import { temporaryMockUtils } from "messages";
 import { PgSessions } from "auth/sessions";
-import { Messaging } from "building-blocks-sdk";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -27,44 +26,8 @@ export async function GET(request: NextRequest) {
   const paymentTemplateIdPlaceholder =
     await temporaryMockUtils.autoPaymentTemplateId();
 
-  const messagingClient = new Messaging(userId);
-  // This is for demonstrational purposes.
-  if (paymentTemplateIdPlaceholder) {
-    void messagingClient.createMessage({
-      preferredTransports: [],
-      security: "high",
-      userIds: [userId],
-      template: {
-        id: paymentTemplateIdPlaceholder,
-        interpolations: {
-          pay: pay ? (+pay / 100).toString() : "0",
-          date: new Date().toDateString(),
-          ref: transactionId || "failed",
-          reason: "Drivers licence renewal",
-        },
-      },
-      scheduleAt: new Date().toISOString(),
-    });
-  }
-
   const eventSuccessTemplateIdPlaceholder =
     await temporaryMockUtils.autoSuccessfulTemplateId();
-
-  if (eventSuccessTemplateIdPlaceholder) {
-    void messagingClient.createMessage({
-      preferredTransports: [],
-      security: "high",
-      userIds: [userId],
-      template: {
-        id: eventSuccessTemplateIdPlaceholder,
-        interpolations: {
-          event: "Drivers licence renewal",
-          date: new Date().toDateString(),
-        },
-      },
-      scheduleAt: new Date().toISOString(),
-    });
-  }
 
   return redirect(
     `/driving/renew-licence/${
