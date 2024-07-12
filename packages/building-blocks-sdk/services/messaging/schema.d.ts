@@ -1541,11 +1541,6 @@ export interface paths {
   };
   "/api/v1/users/imports/": {
     get: {
-      parameters: {
-        query?: {
-          organisationId?: string;
-        };
-      };
       responses: {
         /** @description Default Response */
         200: {
@@ -1676,11 +1671,6 @@ export interface paths {
   };
   "/api/v1/users/imports/users": {
     get: {
-      parameters: {
-        query?: {
-          organisationId?: string;
-        };
-      };
       responses: {
         /** @description Default Response */
         200: {
@@ -1776,7 +1766,6 @@ export interface paths {
     get: {
       parameters: {
         query: {
-          organisationId?: string;
           includeUsersData: boolean;
         };
         path: {
@@ -1885,9 +1874,6 @@ export interface paths {
   "/api/v1/users/imports/{importId}/users": {
     get: {
       parameters: {
-        query?: {
-          organisationId?: string;
-        };
         path: {
           importId: string;
         };
