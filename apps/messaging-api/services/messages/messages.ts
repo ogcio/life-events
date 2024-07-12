@@ -4,7 +4,7 @@ import {
   ReadMessage,
   ReadMessages,
 } from "../../types/schemaDefinitions";
-import { ServiceError, organisationId, utils } from "../../utils";
+import { ServiceError, utils } from "../../utils";
 import { FastifyBaseLogger } from "fastify";
 import { JobType } from "aws-sdk/clients/importexport";
 import { Pool } from "pg";
@@ -27,11 +27,13 @@ const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 export const createMessage = async (params: {
   payload: CreateMessage;
   pg: PostgresDb;
+  organizationId: string;
 }): Promise<void> => {
   if (params.payload.message) {
     return createRawMessage({
       pg: params.pg,
       payload: { ...params.payload, message: params.payload.message! },
+      organizationId: params.organizationId,
     });
   }
 
@@ -52,6 +54,7 @@ export const createMessage = async (params: {
 const createRawMessage = async (params: {
   pg: PostgresDb;
   payload: Omit<Required<CreateMessage>, "template">;
+  organizationId: string;
 }): Promise<void> => {
   const { message, preferredTransports, security, userIds, scheduleAt } =
     params.payload;
@@ -63,7 +66,7 @@ const createRawMessage = async (params: {
     message.excerpt,
     message.richText,
     message.plainText,
-    organisationId,
+    params.organizationId,
     security,
     preferredTransports.length
       ? utils.postgresArrayify(preferredTransports)
@@ -316,6 +319,7 @@ export const executeJob = async (params: {
   logger: FastifyBaseLogger;
   jobId: string;
   userId: string;
+  organizationId: string;
 }) => {
   const statusWorking: scheduledMessageByTemplateStatus = "working";
   const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
@@ -418,6 +422,7 @@ export const executeJob = async (params: {
         params.pg.pool,
         job.jobId,
         job.userId,
+        params.organizationId,
       );
 
       for (const err of serviceErrors) {
@@ -481,6 +486,7 @@ const scheduleMessage = async (
   pool: Pool,
   messageId: string,
   userId: string,
+  organizationId: string,
 ): Promise<ServiceError[]> => {
   const client = await pool.connect();
   const errors: ServiceError[] = [];
@@ -580,7 +586,7 @@ const scheduleMessage = async (
           // This is a big placeholder that needs proper logic
           const provider =
             await mailService(transportsClient).getPrimaryProvider(
-              organisationId,
+              organizationId,
             );
 
           if (!provider) {
@@ -624,7 +630,7 @@ const scheduleMessage = async (
           where is_primary and organisation_id = $1
           limit 1
         `,
-          [organisationId],
+          [organizationId],
         );
 
         const config = configQueryResult.rows.at(0)?.config;

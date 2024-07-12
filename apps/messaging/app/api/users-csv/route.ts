@@ -1,9 +1,7 @@
-import { PgSessions } from "auth/sessions";
-import { Messaging } from "building-blocks-sdk";
+import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export async function GET() {
-  const { userId } = await PgSessions.get();
-  const messagingClient = new Messaging(userId);
+  const messagingClient = await AuthenticationFactory.getMessagingClient();
   const toDownloadTemplate = await messagingClient.downloadUsersCsvTemplate();
 
   // set the headers to tell the browser to download the file

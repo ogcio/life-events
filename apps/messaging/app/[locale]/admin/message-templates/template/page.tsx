@@ -1,11 +1,10 @@
-import { PgSessions } from "auth/sessions";
 import { pgpool } from "messages/dbConnection";
 import { LANG_EN, LANG_GA } from "../../../../../types/shared";
 import { revalidatePath } from "next/cache";
 import React from "react";
 import { temporaryMockUtils } from "messages";
 import { getTranslations } from "next-intl/server";
-import { Messaging } from "building-blocks-sdk";
+
 import { redirect } from "next/navigation";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 import Link from "next/link";
@@ -14,6 +13,7 @@ import {
   avaliableMessagingTemplateStaticVariables,
   getInterpolationValues,
 } from "../../../../utils/messaging";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 type FormContent = {
   templateName: string;
@@ -178,8 +178,7 @@ const ContentForm = async (props: {
       );
       return revalidatePath("/");
     }
-
-    const sdkClient = new Messaging(props.userId);
+    const sdkClient = await AuthenticationFactory.getMessagingClient();
     const contents: Parameters<typeof sdkClient.createTemplate>[0]["contents"] =
       [];
 
@@ -426,7 +425,9 @@ export default async (props: {
   searchParams: { id?: string };
 }) => {
   const t = await getTranslations("MessageTemplate");
-  const { userId } = await PgSessions.get();
+  const { user, accessToken } =
+    await AuthenticationFactory.getInstance().getContext();
+
   const state = await pgpool
     .query<{
       state: State;
@@ -437,11 +438,13 @@ export default async (props: {
         from message_template_states
         where user_id = $1
     `,
-      [userId],
+      [user.id],
     )
     .then((res) => res.rows.at(0)?.state);
 
-  const client = new Messaging(userId);
+  const client = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const contents: State = { langs: Array<string>() };
 
   let templateFetchError: Awaited<
@@ -480,10 +483,10 @@ export default async (props: {
           {props.searchParams.id ? "Update template" : "Create a new template"}
         </span>
       </h1>
-      <LanguageForm userId={userId} state={combinedState} />
+      <LanguageForm userId={user.id} state={combinedState} />
       {combinedState.langs.length ? (
         <ContentForm
-          userId={userId}
+          userId={user.id}
           contents={combinedState}
           templateId={props.searchParams.id}
         />

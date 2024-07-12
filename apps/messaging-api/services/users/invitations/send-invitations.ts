@@ -134,6 +134,7 @@ const sendInvitations = async (params: {
           security: "high",
         },
         pg: params.pg,
+        organizationId: params.organisationId,
       }),
     );
     output.invitedToMessaging.push(...userIds);
@@ -152,6 +153,7 @@ const sendInvitations = async (params: {
           security: "high",
         },
         pg: params.pg,
+        organizationId: params.organisationId,
       }),
     );
     output.invitedToOrganisation.push(...userIds);

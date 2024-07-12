@@ -9,16 +9,19 @@ import {
 import "@fastify/multipart";
 import { parseFile, writeToBuffer } from "fast-csv";
 import { Pool, PoolClient } from "pg";
-import { organisationId } from "../../../utils";
 import { isNativeError } from "util/types";
 import { mapUsers } from "./map-users";
-import { RequestUser } from "../../../plugins/auth";
 import { sendInvitationsForUsersImport } from "./send-invitations";
 import { PostgresDb } from "@fastify/postgres";
 import { BadRequestError, ServerError } from "shared-errors";
 
 export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
 const TAGS_SEPARATOR = ";";
+
+interface RequestUser {
+  userId: string;
+  organizationId?: string;
+}
 
 export const importCsvFileFromRequest = async (params: {
   user: RequestUser;
@@ -139,7 +142,7 @@ const importUsers = async (params: {
     pg: params.pg,
     toImportUsers: importedUsers,
     logger: params.logger,
-    requestUserId: params.requestUser.id,
+    requestUserId: params.requestUser.userId,
   });
 
   return importedUsers;
@@ -173,6 +176,7 @@ const insertToImportUsers = async (params: {
   logger: FastifyBaseLogger;
   toImportUsers: ToImportUser[];
   channel: ImportChannel;
+  organizationId: string;
 }): Promise<string> => {
   try {
     // for now the organisation id is randomic, we have
@@ -186,7 +190,11 @@ const insertToImportUsers = async (params: {
             import_channel)
          values ($1, $2, $3) RETURNING import_id
       `,
-      [organisationId, JSON.stringify(params.toImportUsers), params.channel],
+      [
+        params.organizationId,
+        JSON.stringify(params.toImportUsers),
+        params.channel,
+      ],
     );
 
     if (result.rowCount === 0) {
@@ -218,7 +226,11 @@ const processUserImport = async (params: {
   try {
     await client.query("BEGIN");
 
-    const importId = await insertToImportUsers({ ...params, client });
+    const importId = await insertToImportUsers({
+      ...params,
+      client,
+      organizationId: params.requestUser.organizationId!,
+    });
     importedUsers = await mapUsers({
       importId,
       client,
