@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { users as usersRoute } from "../../../../../utils/routes";
-import { Messaging } from "building-blocks-sdk";
+
 import React from "react";
 import { notFound } from "next/navigation";
 import FlexMenuWrapper from "../../../PageWithMenuFlexWrapper";
@@ -25,7 +25,9 @@ export default async (props: {
   if (!accessToken || !organization) {
     throw notFound();
   }
-  const messagingClient = new Messaging(accessToken);
+  const messagingClient = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const { data: userImport, error } = await messagingClient.getUsersImport(
     props.params.importId,
     organization.id,

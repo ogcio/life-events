@@ -1,4 +1,3 @@
-import { Messaging } from "building-blocks-sdk";
 import dayjs from "dayjs";
 import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
 import ds from "design-system";
@@ -70,10 +69,8 @@ export default async (props: { searchParams: { search?: string } }) => {
   }
 
   const freeSearch = props.searchParams.search;
-  const accessToken =
-    await AuthenticationFactory.getInstance().getAccessToken();
 
-  const client = new Messaging(accessToken);
+  const client = await AuthenticationFactory.getMessagingClient();
   const { data, error } = await client.getMessageEvents({
     query: { search: freeSearch },
   });

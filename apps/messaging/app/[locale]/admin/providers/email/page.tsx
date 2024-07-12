@@ -1,4 +1,3 @@
-import { Messaging } from "building-blocks-sdk";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 import { temporaryMockUtils } from "messages";
 import { redirect } from "next/navigation";
@@ -65,7 +64,9 @@ export default async (props: {
       return;
     }
 
-    const messagesClient = new Messaging(submitAccessToken);
+    const messagesClient = await AuthenticationFactory.getMessagingClient({
+      token: accessToken,
+    });
 
     let serverError:
       | Awaited<ReturnType<typeof messagesClient.createEmailProvider>>["error"]
@@ -142,7 +143,9 @@ export default async (props: {
 
   const { accessToken, user } =
     await AuthenticationFactory.getInstance().getContext();
-  const client = new Messaging(accessToken);
+  const client = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
 
   let data:
     | Awaited<ReturnType<typeof client.getEmailProvider>>["data"]

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import React from "react";
 import { temporaryMockUtils } from "messages";
 import { getTranslations } from "next-intl/server";
-import { Messaging } from "building-blocks-sdk";
+
 import { redirect } from "next/navigation";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 import Link from "next/link";
@@ -178,9 +178,7 @@ const ContentForm = async (props: {
       );
       return revalidatePath("/");
     }
-    const accessToken =
-      await AuthenticationFactory.getInstance().getAccessToken();
-    const sdkClient = new Messaging(accessToken);
+    const sdkClient = await AuthenticationFactory.getMessagingClient();
     const contents: Parameters<typeof sdkClient.createTemplate>[0]["contents"] =
       [];
 
@@ -444,7 +442,9 @@ export default async (props: {
     )
     .then((res) => res.rows.at(0)?.state);
 
-  const client = new Messaging(accessToken);
+  const client = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const contents: State = { langs: Array<string>() };
 
   let templateFetchError: Awaited<

@@ -7,7 +7,7 @@ import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
 import { getQueryParams } from "../components/paginationUtils";
 import { sendAMessage } from "../../../../utils/routes";
-import { Messaging } from "building-blocks-sdk";
+
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { pgpool } from "messages/dbConnection";
 import styles from "../components/Table.module.scss";
@@ -160,7 +160,9 @@ export default async (props: MessageCreateProps) => {
   if (!accessToken || !organization) {
     throw notFound();
   }
-  const messaging = new Messaging(accessToken);
+  const messaging = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const response = await messaging.getRecipients({
     ...queryParams,
     organisationId: organization.id,

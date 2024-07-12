@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { MessageCreateProps } from "../../../../utils/messaging";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
-import { Messaging } from "building-blocks-sdk";
+
 import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 export default async (props: MessageCreateProps) => {
@@ -41,10 +41,10 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const accessToken =
-    await AuthenticationFactory.getInstance().getAccessToken();
   const lang = headers().get("x-next-intl-locale");
-  const { data: templates } = await new Messaging(accessToken).getTemplates();
+  const { data: templates } = await (
+    await AuthenticationFactory.getMessagingClient()
+  ).getTemplates();
 
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">

@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { Messaging } from "building-blocks-sdk";
+
 import {
   messageTemplates,
   templateRoutes,
@@ -10,10 +10,10 @@ import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async (props: { locale: string }) => {
   const t = await getTranslations("MessageTemplates");
-  const accessToken =
-    await AuthenticationFactory.getInstance().getAccessToken();
 
-  const { data: templates } = await new Messaging(accessToken).getTemplates();
+  const { data: templates } = await (
+    await AuthenticationFactory.getMessagingClient()
+  ).getTemplates();
 
   return (
     <table className="govie-table">

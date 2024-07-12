@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
-import { Messaging } from "building-blocks-sdk";
+
 import { headers } from "next/headers";
 import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
@@ -34,11 +34,11 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const accessToken =
-    await AuthenticationFactory.getInstance().getAccessToken();
   const template = props.state.templateMetaId
     ? (
-        await new Messaging(accessToken).getTemplate(props.state.templateMetaId)
+        await (
+          await AuthenticationFactory.getMessagingClient()
+        ).getTemplate(props.state.templateMetaId)
       ).data?.contents.find(
         (c) => c.lang === (headers().get("x-next-intl-locale") ?? "en"),
       )

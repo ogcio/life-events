@@ -1,4 +1,3 @@
-import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { providerRoutes } from "../../../utils/routes";
@@ -6,14 +5,12 @@ import {
   searchKeyDeleteId,
   searchKeyProvider,
   searchValueSms,
-  MessagingAuthenticationFactory,
 } from "../../../utils/messaging";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async () => {
   const t = await getTranslations("settings.Sms");
-  const accessToken =
-    await AuthenticationFactory.getInstance().getAccessToken();
-  const sdk = new Messaging(accessToken);
+  const sdk = await AuthenticationFactory.getMessagingClient();
 
   const { data: providers } = await sdk.getSmsProviders();
 

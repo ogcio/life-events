@@ -7,7 +7,7 @@ import {
   templateRoutes,
 } from "../../../utils/routes";
 import { redirect } from "next/navigation";
-import { Messaging } from "building-blocks-sdk";
+
 import { pgpool } from "messages/dbConnection";
 import ConfirmDeleteModal from "../ConfirmDeleteModal";
 import { LANG_EN } from "../../../../types/shared";
@@ -31,10 +31,7 @@ export default async (props: {
   let messageNameToDelete: string | undefined;
 
   if (props.searchParams?.delete_id) {
-    const accessToken =
-      await AuthenticationFactory.getInstance().getAccessToken();
-
-    const client = new Messaging(accessToken);
+    const client = await AuthenticationFactory.getMessagingClient();
     const tmpl = await client.getTemplate(props.searchParams?.delete_id);
     const content =
       tmpl.data?.contents.find((content) => content.lang === LANG_EN) ||
@@ -50,10 +47,8 @@ export default async (props: {
     if (!id) {
       return;
     }
-    const accessToken =
-      await AuthenticationFactory.getInstance().getAccessToken();
 
-    await new Messaging(accessToken).deleteTemplate(id);
+    await (await AuthenticationFactory.getMessagingClient()).deleteTemplate(id);
 
     const url = urlWithSearchParams(
       `${props.params.locale || LANG_EN}/${messageTemplates.url}`,

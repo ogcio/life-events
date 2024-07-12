@@ -11,7 +11,7 @@ import Imports from "./Imports";
 import Users from "./Users";
 import { linkStyle, linkClassName } from "../providers/page";
 import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
-import { Messaging } from "building-blocks-sdk";
+
 import ImportCsv from "./ImportCsv";
 import { notFound } from "next/navigation";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
@@ -63,7 +63,9 @@ export default async (props: {
     if (!accessToken || !organization) {
       throw notFound();
     }
-    const messagingClient = new Messaging(accessToken);
+    const messagingClient = await AuthenticationFactory.getMessagingClient({
+      token: accessToken,
+    });
     const { data } = await messagingClient.getUsers(organization.id);
     users = data;
   }

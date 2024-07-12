@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Messaging } from "building-blocks-sdk";
+
 import React from "react";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
 import { notFound } from "next/navigation";
@@ -13,7 +13,9 @@ export default async () => {
   if (!accessToken || !organization) {
     throw notFound();
   }
-  const messagingClient = new Messaging(accessToken);
+  const messagingClient = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const { data: imports } = await messagingClient.getUsersImports(
     organization.id,
   );

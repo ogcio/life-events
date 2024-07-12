@@ -1,4 +1,3 @@
-import { Messaging } from "building-blocks-sdk";
 import { temporaryMockUtils } from "messages";
 import { notFound, redirect } from "next/navigation";
 import { usersSettingsRoutes } from "../../../../utils/routes";
@@ -33,7 +32,6 @@ export default async (props: { params: { organisationId: string } }) => {
     "use server";
     const authenticationContext = await AuthenticationFactory.getInstance();
     const submitUser = await authenticationContext.getUser();
-    const submitAccessToken = await authenticationContext.getAccessToken();
     const submitTrans = await getTranslations("userSettings.Organisation");
     const url = new URL(usersSettingsRoutes.url, process.env.HOST_URL);
     url.searchParams.append(searchKeySettingType, searchValueOrganisation);
@@ -78,7 +76,9 @@ export default async (props: { params: { organisationId: string } }) => {
       preferredTransports = [];
     }
 
-    const submitClient = await new Messaging(submitAccessToken);
+    const submitClient = await AuthenticationFactory.getMessagingClient({
+      authenticationContext,
+    });
 
     await submitClient.updateInvitation({ userStatusFeedback: "active" });
     await submitClient.updateOrganisationInvitation(orgId, {
@@ -96,7 +96,9 @@ export default async (props: { params: { organisationId: string } }) => {
 
   const { user, accessToken } =
     await AuthenticationFactory.getInstance().getContext();
-  const messagingClient = await new Messaging(accessToken);
+  const messagingClient = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const configurations = await messagingClient.getOrganisationInvitation(
     props.params.organisationId,
   );

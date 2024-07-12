@@ -6,7 +6,7 @@ import { providerRoutes } from "../../../utils/routes";
 import SmsProviders from "./SmsProviders";
 import { redirect } from "next/navigation";
 import ConfirmDeleteModal from "../ConfirmDeleteModal";
-import { Messaging } from "building-blocks-sdk";
+
 import EmailProviders from "./EmailProviders";
 import { getTranslations } from "next-intl/server";
 import {
@@ -73,9 +73,7 @@ export default async (props: {
 
   let toDelete: string | undefined;
   if (props.searchParams?.deleteId) {
-    const accessToken =
-      await AuthenticationFactory.getInstance().getAccessToken();
-    const client = new Messaging(accessToken);
+    const client = await AuthenticationFactory.getMessagingClient();
 
     if (props.searchParams.provider === searchValueSms) {
       const { data } = await client.getSmsProvider(
@@ -107,9 +105,7 @@ export default async (props: {
   async function handleDeleteProvider(formData: FormData) {
     "use server";
 
-    const accessToken =
-      await AuthenticationFactory.getInstance().getAccessToken();
-    const client = new Messaging(accessToken);
+    const client = await AuthenticationFactory.getMessagingClient();
 
     if (!props.searchParams?.deleteId) {
       return;

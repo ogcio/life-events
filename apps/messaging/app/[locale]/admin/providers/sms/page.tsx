@@ -1,4 +1,3 @@
-import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { pgpool } from "messages/dbConnection";
 import { revalidatePath } from "next/cache";
@@ -62,7 +61,6 @@ export default async (props: {
     "use server";
     const { user: submitUser, accessToken: submitToken } =
       await AuthenticationFactory.getInstance().getContext();
-    const state = await getState(submitUser.id);
 
     const name = formData.get("name")?.toString();
     const providerType = formData.get("providerType")?.toString();
@@ -99,7 +97,9 @@ export default async (props: {
         return;
       }
 
-      const sdk = new Messaging(submitToken);
+      const sdk = await AuthenticationFactory.getMessagingClient({
+        token: submitToken,
+      });
       const providerId = props.searchParams?.id;
       let error: any = undefined;
       if (providerId) {
@@ -174,7 +174,9 @@ export default async (props: {
 
   const { user, accessToken } =
     await AuthenticationFactory.getInstance().getContext();
-  const sdkClient = new Messaging(accessToken);
+  const sdkClient = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const data: Awaited<ReturnType<typeof sdkClient.getSmsProvider>>["data"] =
     props.searchParams?.id
       ? (await sdkClient.getSmsProvider(props.searchParams?.id)).data
