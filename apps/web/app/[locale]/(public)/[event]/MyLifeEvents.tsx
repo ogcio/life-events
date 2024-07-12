@@ -147,10 +147,6 @@ export default async ({ locale }) => {
     getEvents(),
   ]);
 
-  const { data: messageEvents } = await new Messaging(userId).getMessages(
-    "lifeEvent",
-  );
-
   const showDigitalWalletOnboarding =
     await isFeatureFlagEnabled("digitalWallet");
 
@@ -257,61 +253,6 @@ export default async ({ locale }) => {
                                 hasGovIdVerifiedAccount.toString(),
                             })
                           : t(evt.flowTitle)
-                      }
-                    >
-                      <ChevronIcon />
-                    </Link>
-                  </div>
-                </div>
-                <hr className="govie-section-break govie-section-break--visible" />
-              </li>
-            ))}
-          {!showDigitalWalletOnboarding &&
-            messageEvents?.map((msg) => (
-              <li
-                key={msg.subject}
-                style={{
-                  margin: "1rem 0",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-around",
-                  gap: "1rem",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <div>
-                    <Link
-                      className="govie-link"
-                      href={
-                        new URL(
-                          `/${locale}/messages/${msg.id}`,
-                          process.env.MESSAGES_HOST_URL,
-                        ).href
-                      }
-                    >
-                      {msg.subject}
-                    </Link>
-                    <p
-                      className="govie-body"
-                      style={{ margin: "unset", marginTop: "16px" }}
-                    >
-                      {msg.excerpt}
-                    </p>
-                  </div>
-                  <div>
-                    <Link
-                      className="govie-link"
-                      href={
-                        new URL(
-                          `/${locale}/messages/${msg.id}`,
-                          process.env.MESSAGES_HOST_URL,
-                        ).href
                       }
                     >
                       <ChevronIcon />
