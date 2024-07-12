@@ -11,7 +11,6 @@ import {
 } from "../../../types/usersSchemaDefinitions";
 import { isNativeError } from "util/types";
 import { Profile } from "building-blocks-sdk";
-import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
 import {
   ALL_TRANSPORTS,
@@ -33,6 +32,11 @@ interface FoundUser {
   firstname: string;
   lastname: string;
   matchQuality: "exact" | "approximate";
+}
+
+interface RequestUser {
+  userId: string;
+  organizationId?: string;
 }
 
 export const mapUsers = async (params: {
@@ -68,7 +72,7 @@ const mapUsersSync = async (params: {
   requestUser: RequestUser;
 }): Promise<UsersImport> => {
   const usersImport = await getUsersImport(params);
-  const profile = new Profile(params.requestUser.id);
+  const profile = new Profile(params.requestUser.userId);
 
   const processingUsers = usersImport.usersData.map(
     async (toImportUser: ToImportUser) =>

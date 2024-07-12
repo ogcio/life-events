@@ -2,6 +2,7 @@ import Link from "next/link";
 import { users as usersRoute } from "../../../utils/routes";
 import { getTranslations } from "next-intl/server";
 import {
+  MessagingAuthenticationFactory,
   searchKeyListType,
   searchValueImportCsv,
   searchValueImports,
@@ -13,7 +14,7 @@ import { linkStyle, linkClassName } from "../providers/page";
 import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
 import { Messaging } from "building-blocks-sdk";
 import ImportCsv from "./ImportCsv";
-import { AuthenticationContextFactory } from "auth/authentication-context-factory";
+import { notFound } from "next/navigation";
 
 export interface UiUserInvitation {
   id: string;
@@ -57,11 +58,13 @@ export default async (props: {
   const isImportCsv = listType === searchValueImportCsv;
   let users: UiUserInvitation[] | undefined = [];
   if (isUsers) {
-    const accessToken = await AuthenticationContextFactory.getAccessToken();
+    const { accessToken, organization } =
+      await MessagingAuthenticationFactory.getPublicServant();
+    if (!accessToken || !organization) {
+      throw notFound();
+    }
     const messagingClient = new Messaging(accessToken);
-    const { data: organisationId } =
-      await messagingClient.getMockOrganisationId();
-    const { data } = await messagingClient.getUsers(organisationId);
+    const { data } = await messagingClient.getUsers(organization.id);
     users = data;
   }
   return (

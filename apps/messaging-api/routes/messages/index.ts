@@ -25,8 +25,8 @@ import {
   MessagingEventType,
   newMessagingEventLogger,
 } from "../../services/messages/eventLogger";
-import { organisationId } from "../../utils";
 import { HttpError } from "../../types/httpErrors";
+import { Permissions } from "../../types/permissions";
 
 const MESSAGES_TAGS = ["Messages"];
 
@@ -43,6 +43,9 @@ interface GetMessage {
 }
 
 export default async function messages(app: FastifyInstance) {
+  // Didn't add permissions here because
+  // we need to manage the scheduler permissions
+  // TODO Add a M2M application user to make scheduler able to authenticate
   app.post<{ Params: { id: string } }>(
     "/jobs/:id",
     {
@@ -61,6 +64,7 @@ export default async function messages(app: FastifyInstance) {
         logger: request.log,
         jobId: request.params!.id,
         userId: request.userData?.userId || "", // we will require scheduler to callback same creds (jwt?) including the user id caller or include it somewhere else.
+        organizationId: request.userData!.organizationId!,
       });
 
       reply.statusCode = 202;
@@ -71,7 +75,8 @@ export default async function messages(app: FastifyInstance) {
   app.get<GetAllMessages>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.MessageSelf.Read]),
       schema: {
         tags: MESSAGES_TAGS,
         querystring: Type.Optional(
@@ -102,7 +107,8 @@ export default async function messages(app: FastifyInstance) {
   app.get<GetMessage>(
     "/:messageId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.MessageSelf.Read]),
       schema: {
         tags: MESSAGES_TAGS,
         params: {
@@ -136,7 +142,8 @@ export default async function messages(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Message.Write]),
       schema: {
         tags: MESSAGES_TAGS,
         body: CreateMessageSchema,
@@ -147,7 +154,11 @@ export default async function messages(app: FastifyInstance) {
       },
     },
     async function createMessageHandler(request, _reply) {
-      return createMessage({ payload: request.body, pg: app.pg });
+      return createMessage({
+        payload: request.body,
+        pg: app.pg,
+        organizationId: request.userData!.organizationId!,
+      });
     },
   );
 
@@ -162,7 +173,8 @@ export default async function messages(app: FastifyInstance) {
   }>(
     "/template",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Write]),
       schema: {
         body: Type.Object({
           templateMetaId: Type.String({ format: "uuid" }),
@@ -237,6 +249,7 @@ export default async function messages(app: FastifyInstance) {
           req.body.transportations,
           req.body.security,
           req.body.scheduledAt,
+          req.userData!.organizationId!,
         );
 
         await eventLogger.log(
@@ -306,7 +319,8 @@ export default async function messages(app: FastifyInstance) {
   app.get<{ Querystring: { search?: string } }>(
     "/events",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Event.Read]),
       schema: {
         querystring: Type.Optional(
           Type.Object({
@@ -349,7 +363,7 @@ export default async function messages(app: FastifyInstance) {
             join messaging_event_logs l on m.id = l.message_id
             order by l.created_at;
         `,
-        [organisationId, textSearchILikeClause],
+        [request.userData?.organizationId, textSearchILikeClause],
       );
 
       const aggregations = eventQueryResult.rows.reduce<

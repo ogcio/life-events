@@ -43,9 +43,9 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const user = await MessagingAuthenticationFactory.getUser();
+  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
   const lang = headers().get("x-next-intl-locale");
-  const { data: templates } = await new Messaging(user.id).getTemplates();
+  const { data: templates } = await new Messaging(accessToken).getTemplates();
 
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">

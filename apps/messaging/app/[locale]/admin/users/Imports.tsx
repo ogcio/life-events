@@ -4,15 +4,19 @@ import { getTranslations } from "next-intl/server";
 import { Messaging } from "building-blocks-sdk";
 import React from "react";
 import { MessagingAuthenticationFactory } from "../../../utils/messaging";
+import { notFound } from "next/navigation";
 
 export default async () => {
   const t = await getTranslations("UsersImports");
-  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+  const { accessToken, organization } =
+    await MessagingAuthenticationFactory.getPublicServant();
+  if (!accessToken || !organization) {
+    throw notFound();
+  }
   const messagingClient = new Messaging(accessToken);
-  const { data: organisationId } =
-    await messagingClient.getMockOrganisationId();
-  const { data: imports } =
-    await messagingClient.getUsersImports(organisationId);
+  const { data: imports } = await messagingClient.getUsersImports(
+    organization.id,
+  );
 
   return (
     <>

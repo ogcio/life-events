@@ -2,7 +2,6 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
 import { Recipient, RecipientSchema } from "../../types/usersSchemaDefinitions";
-import { getOrganisationIdFromRequest } from "../../utils/request-utils";
 import {
   GenericResponse,
   PaginationParams,
@@ -11,6 +10,7 @@ import {
 } from "../../types/schemaDefinitions";
 import { getRecipients } from "../../services/users/recipients/recipients";
 import { PaginationDetails, formatAPIResponse } from "../../utils/pagination";
+import { Permissions } from "../../types/permissions";
 
 const tags = ["Users", "Recipients"];
 
@@ -31,7 +31,8 @@ export default async function recipients(app: FastifyInstance) {
   app.get<GetRecipientsSchema>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
         querystring: Type.Optional(
@@ -58,7 +59,7 @@ export default async function recipients(app: FastifyInstance) {
       const query = request.query;
       const recipientsResponse = await getRecipients({
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(request, "GET_RECIPIENTS"),
+        organisationId: request.userData!.organizationId!,
         search: query.search,
         pagination: {
           limit: query.limit,

@@ -20,20 +20,22 @@ export default async (props: {
     getTranslations("UsersImport"),
     getTranslations("Commons"),
   ]);
-  const accessToken = await MessagingAuthenticationFactory.getAccessToken();
+  const { accessToken, organization } =
+    await MessagingAuthenticationFactory.getPublicServant();
+  if (!accessToken || !organization) {
+    throw notFound();
+  }
   const messagingClient = new Messaging(accessToken);
-  const { data: organisationId } =
-    await messagingClient.getMockOrganisationId();
   const { data: userImport, error } = await messagingClient.getUsersImport(
     props.params.importId,
-    organisationId,
+    organization.id,
     true,
   );
 
   const { data: users, error: usersError } =
     await messagingClient.getUsersForImport(
       props.params.importId,
-      organisationId,
+      organization.id,
     );
 
   if (error || !userImport || usersError || !users) {
