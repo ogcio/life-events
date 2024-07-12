@@ -6,8 +6,6 @@ import postgres from "@fastify/postgres";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import dotenv from "dotenv";
 import { envSchema } from "./config";
-import authPlugin from "./plugins/auth";
-import sessionAuthPlugin from "./plugins/sessionAuth";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import fs from "fs";
@@ -36,9 +34,6 @@ export async function build(opts?: FastifyServerOptions) {
   app.setValidatorCompiler(({ schema }) => {
     return schemaValidators(schema);
   });
-
-  app.register(authPlugin);
-  app.register(sessionAuthPlugin);
 
   app.register(fastifyEnv, {
     schema: envSchema,

@@ -1,0 +1,22 @@
+.controlsBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selectGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  input[type="submit"] {
+    margin-bottom: 0px;
+  }
+}
+
+.selectGroup.reverse {
+  justify-content: flex-end;
+}
+
+.hidden {
+  visibility: hidden;
+}

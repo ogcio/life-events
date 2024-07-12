@@ -3,20 +3,19 @@ import EditProviderForm from "./EditProviderForm";
 import type { StripeProvider } from "../types";
 import { getTranslations } from "next-intl/server";
 import StripeFields from "../add-stripe/StripeFields";
-import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
 import { errorHandler } from "../../../../../utils";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { stripeValidationMap } from "../../../../../validationMaps";
 import { StripeFormState } from "../add-stripe/page";
+import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
 
 type Props = {
   provider: StripeProvider;
-  userId: string;
   locale: string;
 };
 
-export default async ({ provider, userId, locale }: Props) => {
+export default async ({ provider, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddStripe");
   const { messages } = await getRequestConfig({ locale });
 
@@ -27,6 +26,9 @@ export default async ({ provider, userId, locale }: Props) => {
     formData: FormData,
   ): Promise<StripeFormState> {
     "use server";
+
+    const paymentsApi = await PaymentsApiFactory.getInstance();
+
     const nameField = formData.get("provider_name") as string;
     const livePublishableKeyField = formData.get(
       "live_publishable_key",
@@ -73,7 +75,7 @@ export default async ({ provider, userId, locale }: Props) => {
         };
     }
 
-    const { data: result, error } = await new Payments(userId).updateProvider(
+    const { data: result, error } = await paymentsApi.updateProvider(
       provider.id,
       providerData,
     );

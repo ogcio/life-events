@@ -9,8 +9,7 @@ export class Messaging {
         // Send temporarly the user id as auth token
         req.headers.set("x-user-id", authToken);
 
-        // Once the logto integration is complete, we will send the real auth token
-        //req.headers.set("Authorization", `Bearer ${authToken}`);
+        req.headers.set("Authorization", `Bearer ${authToken}`);
         return req;
       },
     };
@@ -365,12 +364,40 @@ export class Messaging {
     return { data, error };
   }
 
+  async getMessageEvents({
+    query,
+  }: paths["/api/v1/messages/events"]["get"]["parameters"]) {
+    const { data, error } = await this.client.GET("/api/v1/messages/events", {
+      params: { query },
+    });
+
+    return { data: data?.data, error };
+  }
+
   async getRecipients(
     query: paths["/api/v1/users/recipients/"]["get"]["parameters"]["query"],
   ) {
     const { error, data } = await this.client.GET("/api/v1/users/recipients/", {
-      query,
+      params: {
+        query,
+      },
     });
     return { error, data: data?.data, metadata: data?.metadata };
+  }
+
+  /**
+   * TESTS - To remove once Logto has been fully integrated
+   */
+
+  async testCitizenAuth() {
+    const result = await this.client.GET("/api/v1/test/citizen", {});
+
+    return { data: result.data, error: result.error };
+  }
+
+  async testPublicServantAuth() {
+    const result = await this.client.GET("/api/v1/test/pub-ser", {});
+
+    return { data: result.data, error: result.error };
   }
 }

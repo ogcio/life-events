@@ -38,3 +38,5 @@ export default async function () {
     </>
   );
 }
+
+export const dynamic = "force-dynamic";

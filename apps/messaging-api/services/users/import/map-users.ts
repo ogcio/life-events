@@ -14,7 +14,7 @@ import { Profile } from "building-blocks-sdk";
 import { RequestUser } from "../../../plugins/auth";
 import { IMPORT_USERS_ERROR } from "./import-users";
 import {
-  AVAILABLE_TRANSPORTS,
+  ALL_TRANSPORTS,
   getUserByContacts,
   getUserByUserProfileId,
   getUserImports,
@@ -213,7 +213,7 @@ const processOrganizationUserRelation = async (params: {
   let toSetTransports: string[] = [];
   if (params.consentGranted) {
     toSetStatus = "accepted";
-    toSetTransports = AVAILABLE_TRANSPORTS;
+    toSetTransports = ALL_TRANSPORTS;
   }
 
   if (orgUserRelation) {

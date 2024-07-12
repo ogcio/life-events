@@ -9,6 +9,7 @@ COPY ./packages/feature-flags/package*.json /app/packages/feature-flags/
 COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/package*.json /app/packages/shared-components/
+COPY ./packages/shared-errors/package*.json /app/packages/shared-errors/
 
 RUN npm ci
 
@@ -18,6 +19,7 @@ COPY ./packages/feature-flags/ /app/packages/feature-flags/
 COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/ /app/packages/shared-components/
+COPY ./packages/shared-errors/ /app/packages/shared-errors/
 
 FROM deps AS builder
 WORKDIR /app
@@ -51,6 +53,7 @@ ENV NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_LIFE_EVENTS_SERVICE
 ENV NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE=$NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE
 ENV AUTH_SERVICE_URL=$AUTH_SERVICE_URL
 ENV NEXT_PUBLIC_FORMS_URL=$NEXT_PUBLIC_FORMS_URL
+RUN npm run build --workspace=packages/shared-errors
 RUN npm run build --workspace=apps/payments
 
 FROM base-deps as runner
