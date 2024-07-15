@@ -224,7 +224,6 @@ export default async function messages(app: FastifyInstance) {
       }
 
       if (!allUsers.data?.length) {
-        console.log("hitta inga users 2 :(", allUsers.error);
         throw new NotFoundError(errorKey, "no receiver profiles found");
       }
 
