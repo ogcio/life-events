@@ -11,9 +11,10 @@ import Imports from "./Imports";
 import Users from "./Users";
 import { linkStyle, linkClassName } from "../providers/page";
 import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
-import { Messaging } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
+
 import ImportCsv from "./ImportCsv";
+import { notFound } from "next/navigation";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export interface UiUserInvitation {
   id: string;
@@ -57,11 +58,15 @@ export default async (props: {
   const isImportCsv = listType === searchValueImportCsv;
   let users: UiUserInvitation[] | undefined = [];
   if (isUsers) {
-    const { userId } = await PgSessions.get();
-    const messagingClient = new Messaging(userId);
-    const { data: organisationId } =
-      await messagingClient.getMockOrganisationId();
-    const { data } = await messagingClient.getUsers(organisationId);
+    const { accessToken, organization } =
+      await AuthenticationFactory.getInstance().getPublicServant();
+    if (!accessToken || !organization) {
+      throw notFound();
+    }
+    const messagingClient = await AuthenticationFactory.getMessagingClient({
+      token: accessToken,
+    });
+    const { data } = await messagingClient.getUsers(organization.id);
     users = data;
   }
   return (

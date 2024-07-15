@@ -1,7 +1,5 @@
-import { PgSessions } from "auth/sessions";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Messaging } from "building-blocks-sdk";
 import React from "react";
 import { revalidatePath } from "next/cache";
 import { users as usersRoute } from "../../../utils/routes";
@@ -10,7 +8,8 @@ import {
   searchKeyListType,
   searchValueImports,
 } from "../../../utils/messaging";
-import { RedirectType, redirect } from "next/navigation";
+import { RedirectType, notFound, redirect } from "next/navigation";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 type FormErrors = Parameters<typeof temporaryMockUtils.createErrors>[0];
 
@@ -19,14 +18,17 @@ const CSV_FILE_FIELD = "csv-file";
 export default async () => {
   async function upload(formData: FormData) {
     "use server";
-    const { userId } = await PgSessions.get();
+    const { accessToken: uploadToken, user: uploadUser } =
+      await AuthenticationFactory.getInstance().getContext();
     const file = formData.get(CSV_FILE_FIELD);
     const organisationId = formData.get("organisationId");
 
     const toStoreErrors: FormErrors = [];
     const castedFile = file ? (file as File) : null;
     if (file && (castedFile?.size ?? 0) > 0) {
-      const uploadClient = new Messaging(userId);
+      const uploadClient = await AuthenticationFactory.getMessagingClient({
+        token: uploadToken,
+      });
       await uploadClient.importUsersCsv(file as File);
 
       const url = new URL(usersRoute.url, process.env.HOST_URL);
@@ -42,7 +44,7 @@ export default async () => {
 
     await temporaryMockUtils.createErrors(
       toStoreErrors,
-      userId,
+      uploadUser.id,
       `${organisationId}_import_csv`,
     );
     return revalidatePath("/");
@@ -52,14 +54,15 @@ export default async () => {
     getTranslations("UsersImports"),
     getTranslations("formErrors"),
   ]);
-  const { userId } = await PgSessions.get();
-  const messagingClient = new Messaging(userId);
-  const { data: organisationId } =
-    await messagingClient.getMockOrganisationId();
+  const { user, organization } =
+    await AuthenticationFactory.getInstance().getContext();
+  if (!organization) {
+    throw notFound();
+  }
 
   const formErrors = await temporaryMockUtils.getErrors(
-    userId,
-    `${organisationId}_import_csv`,
+    user.id,
+    `${organization}_import_csv`,
   );
   const csvErrors = formErrors.filter(
     (value) => value.field === CSV_FILE_FIELD,
@@ -72,7 +75,7 @@ export default async () => {
         {t("downloadFileBtn")}
       </Link>
       <form action={upload}>
-        <input name="organisationId" value={organisationId} type="hidden" />
+        <input name="organisationId" value={organization.id} type="hidden" />
         <div
           className={
             csvError

@@ -13,6 +13,7 @@ variables:
   nextPublicBuildingBlocksLandingPage: https://dev.blocks.gov.ie
   authServiceUrl: https://auth.dev.blocks.gov.ie/
   nextPublicFormsUrl: https://www.formsg.testing.gov.ie/
+  messagesBackendUrl: https://messaging-api.dev.blocks.gov.ie
 
   logtoEndpoint: https://authorization.dev.blocks.gov.ie/
   logtoPaymentsAppId: r5f56tpkytpqyyshiutd2

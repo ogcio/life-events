@@ -976,6 +976,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1089,6 +1090,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1209,6 +1211,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1388,6 +1391,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id?: string;
                 /** @default null */
                 userProfileId: null | string;
@@ -1537,11 +1541,6 @@ export interface paths {
   };
   "/api/v1/users/imports/": {
     get: {
-      parameters: {
-        query?: {
-          organisationId?: string;
-        };
-      };
       responses: {
         /** @description Default Response */
         200: {
@@ -1672,17 +1671,13 @@ export interface paths {
   };
   "/api/v1/users/imports/users": {
     get: {
-      parameters: {
-        query?: {
-          organisationId?: string;
-        };
-      };
       responses: {
         /** @description Default Response */
         200: {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1771,7 +1766,6 @@ export interface paths {
     get: {
       parameters: {
         query: {
-          organisationId?: string;
           includeUsersData: boolean;
         };
         path: {
@@ -1880,9 +1874,6 @@ export interface paths {
   "/api/v1/users/imports/{importId}/users": {
     get: {
       parameters: {
-        query?: {
-          organisationId?: string;
-        };
         path: {
           importId: string;
         };
@@ -1893,6 +1884,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1939,53 +1931,6 @@ export interface paths {
                   collectedConsent: boolean;
                 };
               }[];
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/users/imports/mock-organisation-id": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              /** Format: uuid */
-              data: string;
             };
           };
         };

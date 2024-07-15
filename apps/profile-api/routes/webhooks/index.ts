@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { createHmac } from "node:crypto";
+import { processUserWebhook } from "../../services/webhooks/users";
 
 // https://docs.logto.io/docs/recipes/webhooks/securing-your-webhooks/
 export const verifySignature = (
@@ -31,13 +32,8 @@ export default async function webhooks(app: FastifyInstance) {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const body = req.body as any;
-      const identities = body.user.identities;
 
-      const firstIdentity = Object.keys(identities)[0];
-      const identityData = identities[firstIdentity];
-
-      //TODO: Evaluate what fields to save
-      console.log("Raw identity data:", identityData.details.rawData);
+      await processUserWebhook({ body, pool: app.pg.pool });
 
       return { status: "ok" };
     },

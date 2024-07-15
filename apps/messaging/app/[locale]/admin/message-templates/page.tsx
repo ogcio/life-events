@@ -7,11 +7,11 @@ import {
   templateRoutes,
 } from "../../../utils/routes";
 import { redirect } from "next/navigation";
-import { Messaging } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
+
 import { pgpool } from "messages/dbConnection";
 import ConfirmDeleteModal from "../ConfirmDeleteModal";
 import { LANG_EN } from "../../../../types/shared";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async (props: {
   params: { locale: string };
@@ -31,8 +31,7 @@ export default async (props: {
   let messageNameToDelete: string | undefined;
 
   if (props.searchParams?.delete_id) {
-    const { userId: authToken } = await PgSessions.get();
-    const client = new Messaging(authToken);
+    const client = await AuthenticationFactory.getMessagingClient();
     const tmpl = await client.getTemplate(props.searchParams?.delete_id);
     const content =
       tmpl.data?.contents.find((content) => content.lang === LANG_EN) ||
@@ -48,8 +47,8 @@ export default async (props: {
     if (!id) {
       return;
     }
-    const { userId: authToken } = await PgSessions.get();
-    await new Messaging(authToken).deleteTemplate(id);
+
+    await (await AuthenticationFactory.getMessagingClient()).deleteTemplate(id);
 
     const url = urlWithSearchParams(
       `${props.params.locale || LANG_EN}/${messageTemplates.url}`,
@@ -66,13 +65,13 @@ export default async (props: {
   }
 
   // Flush the template state
-  const { userId } = await PgSessions.get();
+  const user = await AuthenticationFactory.getInstance().getUser();
   await pgpool.query(
     `
     delete from message_template_states
     where user_id = $1
   `,
-    [userId],
+    [user.id],
   );
 
   return (
