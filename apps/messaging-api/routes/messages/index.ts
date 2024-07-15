@@ -481,7 +481,6 @@ export default async function messages(app: FastifyInstance) {
         [messageId],
       );
 
-      console.log(queryResult.rows);
 
       return { data: queryResult.rows };
     },
