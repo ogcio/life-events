@@ -257,16 +257,13 @@ export function ProfileSdkFacade(
       }
 
       const idsNotFound: string[] = [];
-      // if (fromProfile.length) {
       const set = new Set(fromProfile.map((d) => d.id));
       for (const id of ids) {
         if (!set.has(id)) {
           idsNotFound.push(id);
         }
       }
-      // }
 
-      console.log("ids not found", idsNotFound);
 
       const fromMessage = idsNotFound.length
         ? await messagingProfile.selectUsers(idsNotFound)

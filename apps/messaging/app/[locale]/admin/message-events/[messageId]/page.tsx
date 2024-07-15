@@ -26,7 +26,6 @@ export default async (props: { params: { messageId: string } }) => {
     }
   }
 
-  console.log(JSON.stringify(messageEvents));
   return (
     <FlexMenuWrapper>
       <h1>Message {subject}</h1>

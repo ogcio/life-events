@@ -127,7 +127,6 @@ export default async (props: MessageCreateProps) => {
     "create_error",
   );
 
-  console.log(errors);
 
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">

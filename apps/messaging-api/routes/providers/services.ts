@@ -304,7 +304,6 @@ export function mailService(client: PoolClient): MailService {
           html: params.body,
         });
 
-        console.log(sent);
       } catch (err) {
         return {
           critical: false,

@@ -57,7 +57,6 @@ export default async function recipients(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => {
       const query = request.query;
-      console.log("HEJ HEJ HEJ HEJ HEJ HEJ", query);
       const recipientsResponse = await getRecipients({
         pool: app.pg.pool,
         organisationId: request.userData!.organizationId!,
@@ -69,10 +68,6 @@ export default async function recipients(app: FastifyInstance) {
         transports: query.transports ? query.transports.trim().split(",") : [],
       });
 
-      console.log(
-        "no idea what the f is going on here abstraction pasta",
-        recipientsResponse,
-      );
 
       const paginationDetails: PaginationDetails = {
         offset: query.offset,
