@@ -29,7 +29,7 @@ const getLinks = (environment: string, locale: string) => {
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.formsg.testing.gov.ie/",
+          "https://www.forms.uat.gov.ie/",
         ),
         paymentsUrl: new URL(
           `${locale}/info`,
@@ -43,7 +43,7 @@ const getLinks = (environment: string, locale: string) => {
         designSystemUrl: new URL("/", "https://ds.dev.blocks.gov.ie"),
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
       };
 
@@ -51,7 +51,7 @@ const getLinks = (environment: string, locale: string) => {
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.formsg.testing.gov.ie/",
+          "https://www.forms.uat.gov.ie/",
         ),
         paymentsUrl: new URL(
           `${locale}/info`,
@@ -65,7 +65,7 @@ const getLinks = (environment: string, locale: string) => {
         designSystemUrl: new URL("/", "https://ds.sta.blocks.gov.ie"),
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
       };
 
@@ -73,7 +73,7 @@ const getLinks = (environment: string, locale: string) => {
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.formsg.testing.gov.ie/",
+          "https://www.forms.uat.gov.ie/",
         ),
         paymentsUrl: new URL(
           `${locale}/info`,
@@ -87,7 +87,7 @@ const getLinks = (environment: string, locale: string) => {
         designSystemUrl: new URL("/", "https://ds.uat.blocks.gov.ie"),
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
       };
 
