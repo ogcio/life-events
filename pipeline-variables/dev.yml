@@ -11,20 +11,8 @@ variables:
   nextPublicPaymentsServiceEntryPoint: https://payments.dev.blocks.gov.ie
   nextPublicLifeEventsServiceEntryPoint: https://dev.life.gov.ie
   nextPublicBuildingBlocksLandingPage: https://dev.blocks.gov.ie
-  authServiceUrl: https://auth.dev.blocks.gov.ie/
   nextPublicFormsUrl: https://www.formsg.testing.gov.ie/
-  messagesBackendUrl: https://messaging-api.dev.blocks.gov.ie
-
-  logtoEndpoint: https://authorization.dev.blocks.gov.ie/
-  logtoPaymentsAppId: r5f56tpkytpqyyshiutd2
-  logtoMessagingAppId: 1lvmteh2ao3xrswyq7j3e
-
-  # Temporary demo secrets just for testing purposes
-  # Once the test is completed, we will need to add these vars to the secrets manager
-  logtoCookieSecret: CRyNGTYSGJIVoAFZc0ACJUChaFo1A3rr
-  logtoPaymentsAppSecret: z7RKXvyV9X6Ymjqfbg1A3pBLJy8m2At1
-  logtoMessagingAppSecret: oTSELx7KrykDs8X57f4HOUni9eK91DNi
-
+  
   nextPublicMatomoUrl: //analytics.ogcio.gov.ie
   nextPublicMatomoProtocol: https
   nextPublicLifeEventsMatomoSiteId: 11
