@@ -13,7 +13,7 @@ variables:
   nextPublicBuildingBlocksLandingPage: https://blocks.gov.ie/
   messagesBackendUrl: https://messaging-api.blocks.gov.ie
   authServiceUrl: https://auth.blocks.gov.ie/
-  nextPublicFormsUrl: https://www.formsg.testing.gov.ie/
+  nextPublicFormsUrl: https://www.forms.uat.gov.ie/
   nextPublicMatomoUrl: //analytics.ogcio.gov.ie
   nextPublicMatomoProtocol: https
   nextPublicLifeEventsMatomoSiteId: 12
