@@ -9,18 +9,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "scripts": {
-    "build:ds": "npm run build --workspace=design-system",
-    "build:auth": "npm run build --workspace=auth",
-    "build:shared-errors": "npm run build --workspace=shared-errors",
-    "build:logging-wrapper": "npm run build --workspace=logging-wrapper && npm run build --workspace=nextjs-logging-wrapper",
-    "build:api-auth": "npm run build --workspace=api-auth",
-    "build:error-handler": "npm run build --workspace=error-handler",
-    "build:packages": "npm run build:shared-errors && npm run build:logging-wrapper && npm run build:error-handler && npm run build:api-auth",
-    "update-env": "MODE=update node scripts/init-env.mjs",
-    "init:packages": "npm i && npm run build:packages",
-    "init:ds": "[ -d packages/design-system/dist ] || npm run build:ds",
-    "init:env": "node scripts/init-env.mjs",
+  "scripts": {    
     "init:logto": "node scripts/init-logto.mjs",
     "stop:logto": "node scripts/stop-logto.mjs",
     "init": "npm run init:packages && npm run init:env && npm run init:ds && npm run build:docker",
@@ -33,15 +22,8 @@
     "reset-docker": "docker-compose down && docker system prune -a -f && docker builder prune -f && docker image prune -f",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "(command -v husky && husky) || true",
-    "migrate": "npm run migrate --workspace=web && npm run migrate --workspace=payments && npm run migrate --workspace=messages && npm run migrate --workspace=profile",
-    "migrate:web": "npm run migrate --workspace=web",
-    "migrate:payments": "npm run migrate --workspace=payments",
-    "migrate:messaging": "npm run migrate --workspace=messages",
-    "migrate:profile": "npm run migrate --workspace=profile",
-    "migrate:scheduler-api": "npm run migrate --workspace=scheduler",
     "start:docs": "cd documentation && npm run start",
-    "kill-services": "sudo lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006 | xargs sudo kill -9",
-    "build:docker": "docker build -t base-deps:latest  --file Dockerfile . && docker build -t design-system-container:latest --file packages/design-system/Dockerfile ."
+    "kill-services": "sudo lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006 | xargs sudo kill -9"
   },
   "author": "",
   "license": "MIT",
