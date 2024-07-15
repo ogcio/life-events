@@ -48,10 +48,14 @@ export default async function transactions(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const organizationId = request.userData?.organizationId;
       const { transactionId } = request.params;
 
-      const transactionDetails =
-        await app.transactions.getTransactionById(transactionId);
+      const transactionDetails = await app.transactions.getTransactionById(
+        transactionId,
+        undefined,
+        organizationId,
+      );
 
       reply.send(formatAPIResponse(transactionDetails));
     },

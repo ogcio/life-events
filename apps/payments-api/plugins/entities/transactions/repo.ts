@@ -1,10 +1,6 @@
 import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
-import {
-  CreateTransactionBodyDO,
-  TransactionDetailsDO,
-  TransactionDO,
-} from "./types";
+import { CreateTransactionBodyDO, TransactionDetailsDO } from "./types";
 import { TransactionStatusesEnum } from ".";
 import { PaginationParams } from "../../../types/pagination";
 
@@ -18,11 +14,16 @@ export class TransactionsRepo {
   getTransactionById(
     transactionId: string,
     userId?: string,
+    organizationId?: string,
   ): Promise<QueryResult<TransactionDetailsDO>> {
     const params = [transactionId];
 
     if (userId) {
       params.push(userId);
+    }
+
+    if (organizationId) {
+      params.push(organizationId);
     }
 
     return this.pg.query(
@@ -42,7 +43,8 @@ export class TransactionsRepo {
       LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
       JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
       WHERE t.transaction_id = $1
-      ${userId ? "AND t.user_id = $2" : ""}`,
+      ${userId ? "AND t.user_id = $2" : ""}
+      ${organizationId ? "AND pr.organization_id = $2" : ""}`,
       params,
     );
   }

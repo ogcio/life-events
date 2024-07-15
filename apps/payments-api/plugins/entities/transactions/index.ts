@@ -28,11 +28,16 @@ const buildGetTransactionById =
   async (
     transactionId: string,
     userId?: string,
+    organizationId?: string,
   ): Promise<TransactionDetailsDO> => {
     let result;
 
     try {
-      result = await repo.getTransactionById(transactionId, userId);
+      result = await repo.getTransactionById(
+        transactionId,
+        userId,
+        organizationId,
+      );
     } catch (err) {
       log.error((err as Error).message);
     }
