@@ -86,7 +86,6 @@ export default async (props: MessageCreateProps) => {
         scheduledAt,
       });
 
-      console.log(error);
       if (error) {
         creationError = error;
         await temporaryMockUtils.createErrors(

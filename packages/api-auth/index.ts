@@ -58,7 +58,6 @@ export const checkPermissions = async (
 ): Promise<ExtractedUserData> => {
   const token = extractBearerToken(authHeader);
   const payload = await decodeLogtoToken(token, config);
-  console.log("ojjojojojojojojojojj", payload);
   const { scope, sub, aud } = payload as {
     scope: string;
     sub: string;
@@ -107,13 +106,6 @@ export const checkPermissionsPlugin = async (
         throw new AuthenticationError(ERROR_PROCESS);
       }
       try {
-        console.log(
-          "skojaren i skoj skojet skoj hohohoho",
-          authHeader,
-          opts,
-          permissions,
-          matchConfig,
-        );
         const userData = await checkPermissions(
           authHeader,
           opts,
