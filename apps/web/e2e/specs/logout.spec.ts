@@ -2,18 +2,19 @@ import { test, expect } from "@playwright/test";
 import { allure } from "allure-playwright";
 import { Severity } from "allure-js-commons";
 import { LoginPage } from "../objects/loginPage";
+import { LogoutPage } from "../objects/logoutPage";
 
-test.describe("Logout Page Tests", () => {
+test.describe("Logout Tests", () => {
   let loginPage: LoginPage;
+  let logoutPage: LogoutPage;
 
   test.beforeEach(async ({ page }) => {
     loginPage = new LoginPage(page);
+    logoutPage = new LogoutPage(page);
     await loginPage.navigateTo();
   });
 
-  test("should validate successfull end-user logout level 0 @minor", async ({
-    page,
-  }) => {
+  test("should validate successful end-user logout level 0 @minor", async () => {
     await allure.description(
       "This test attempts to logout from the life events application",
     );
@@ -27,21 +28,13 @@ test.describe("Logout Page Tests", () => {
     await loginPage.enterPassword("123");
     await loginPage.clickSubmit();
 
-    const h1Locator = page.locator("h1.govie-heading-l");
-    await expect(h1Locator).toBeVisible();
+    await loginPage.expectWelcomeMessage();
 
-    const logoutButton = page.getByLabel("Logout");
-    await expect(logoutButton).toBeVisible();
-    await logoutButton.click();
-
-    const mygovidLogo = await page.locator("#mygovid-logo.icon-mygovid_logo");
-    await expect(mygovidLogo).toHaveCount(1);
-    await expect(mygovidLogo).toBeVisible();
+    await logoutPage.clickLogout();
+    await logoutPage.expectMyGovIdLogo();
   });
 
-  test("should validate successfull end-user logout level 1 @minor", async ({
-    page,
-  }) => {
+  test("should validate successful end-user logout level 1 @minor", async () => {
     await allure.description(
       "This test attempts to log into the website using a login and an empty password.",
     );
@@ -55,16 +48,9 @@ test.describe("Logout Page Tests", () => {
     await loginPage.enterPassword("123");
     await loginPage.clickSubmit();
 
-    const h1Locator = page.locator("h1.govie-heading-l");
-    await expect(h1Locator).toBeVisible();
-    await expect(h1Locator).toHaveText("Welcome to Life Events");
+    await loginPage.expectWelcomeMessage();
 
-    const logoutButton = page.getByLabel("Logout");
-    await expect(logoutButton).toBeVisible();
-    await logoutButton.click();
-
-    const mygovidLogo = await page.locator("#mygovid-logo.icon-mygovid_logo");
-    await expect(mygovidLogo).toHaveCount(1);
-    await expect(mygovidLogo).toBeVisible();
+    await logoutPage.clickLogout();
+    await logoutPage.expectMyGovIdLogo();
   });
 });
