@@ -274,7 +274,7 @@ export default async function user(app: FastifyInstance) {
       schema: {
         tags: ["users"],
         body: Type.Object({
-          ids: Type.Array(Type.String({ format: "uuid" })),
+          ids: Type.Array(Type.String()),
         }),
         response: {
           200: Type.Object({

@@ -575,7 +575,6 @@ const scheduleMessage = async (
     }
 
     for (const transport of preferredTransports) {
-      console.log("VI KLIVER PA TRANSPORT", transport);
       if (transport === "email") {
         if (!user.email) {
           await eventLogger.log(MessagingEventType.emailError, [
@@ -619,7 +618,7 @@ const scheduleMessage = async (
             subject: transportationSubject,
             body: transportationBody ?? "",
           });
-          console.log("VI PROVADE SKICKA EPOST", sent);
+
           if (sent?.error) {
             // expand if we need more details.
             throw new Error();

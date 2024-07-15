@@ -50,12 +50,13 @@ export default async function messages(app: FastifyInstance) {
   app.post<{ Params: { id: string } }>(
     "/jobs/:id",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Message.Write]),
       schema: {
         response: {
           202: Type.Null(),
-          "5xx": { $ref: "HttpError" },
-          "4xx": { $ref: "HttpError" },
+          "5xx": HttpError,
+          "4xx": HttpError,
         },
       },
     },
@@ -64,7 +65,7 @@ export default async function messages(app: FastifyInstance) {
         pg: app.pg,
         logger: request.log,
         jobId: request.params!.id,
-        userId: request.userData?.userId || "", // we will require scheduler to callback same creds (jwt?) including the user id caller or include it somewhere else.
+        userId: request.userData?.userId || "",
         organizationId: request.userData!.organizationId!,
       });
 
@@ -149,8 +150,8 @@ export default async function messages(app: FastifyInstance) {
         tags: MESSAGES_TAGS,
         body: CreateMessageSchema,
         response: {
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -213,8 +214,6 @@ export default async function messages(app: FastifyInstance) {
           return getUserProfiles(ids, app.pg.pool);
         },
       };
-
-      console.log("hohoohohohohhohohoohho", req.body.userIds);
 
       const profileService = ProfileSdkFacade(profileSdk, messageSdk);
       const allUsers = await profileService.selectUsers(req.body.userIds);
@@ -295,7 +294,6 @@ export default async function messages(app: FastifyInstance) {
           }),
         );
       } catch (err) {
-        console.log("Aja...", err);
         throw new ServerError(
           errorKey,
           "failed to create messages from template",
@@ -307,6 +305,7 @@ export default async function messages(app: FastifyInstance) {
         const jobs = await messageService.scheduleMessages(
           createdTemplateMessages,
           req.body.scheduledAt,
+          req.headers.authorization || "",
         );
 
         eventLogger.log(

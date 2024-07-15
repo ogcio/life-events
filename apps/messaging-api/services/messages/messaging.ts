@@ -78,6 +78,7 @@ export interface MessagingService {
   scheduleMessages(
     userMessageIds: { userId: string; messageId: string }[],
     scheduleAt: string,
+    authentication: string,
   ): Promise<{ jobId: string; userId: string; entityId: string }[]>;
 }
 
@@ -97,8 +98,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
           "no template contents provided",
         );
       }
-
-      console.log("Bror?");
 
       const valueArgsArray: string[] = [];
       const valueArray: (string | boolean | undefined)[] = [];
@@ -233,6 +232,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
     async scheduleMessages(
       userMessageIds: { userId: string; messageId: string }[],
       scheduleAt: string,
+      authorization: string,
     ) {
       const valueArgs: string[] = [];
       const values: string[] = ["message"];
@@ -274,7 +274,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
 
         return {
           webhookUrl: callbackUrl.toString(),
-          webhookAuth: job.userId, // TODO Update when we're not using x-user-id as auth
+          webhookAuth: authorization, // job.userId, // TODO Update when we're not using x-user-id as auth
           executeAt: scheduleAt,
         };
       });
@@ -288,7 +288,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
         await fetch(scheduleUrl.toString(), {
           method: "POST",
           body: JSON.stringify(scheduleBody),
-          headers: { "x-user-id": "tmp", "Content-Type": "application/json" },
+          headers: { "x-user-id": "123", "Content-Type": "application/json" },
         });
       } catch (err) {
         throw new ThirdPartyError(

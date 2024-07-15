@@ -216,12 +216,12 @@ export const getUserProfiles = async (ids: string[], pool: Pool) => {
       (details ->> 'firstName') as "firstName",
       (details ->> 'lastName') as "firstName",
       (details ->> 'publicIdentityId') as "ppsn",
-      COALESCE(user_profile_id, id) as "id",
+      COALESCE(user_profile_id, id::text) as "id",
       'en' as "lang",
       phone,
       email
     from users
-    where user_profile_id = any ($1) or id = any ($1)
+    where user_profile_id = any ($1) or id::text = any ($1)
     `,
       [ids],
     )

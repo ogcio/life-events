@@ -978,7 +978,6 @@ paths:
                 ids:
                   type: array
                   items:
-                    format: uuid
                     type: string
               required:
                 - ids
