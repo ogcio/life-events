@@ -13,7 +13,7 @@ test.describe("Onboarding Digital Wallet Tests", () => {
     await loginPage.navigateTo();
   });
 
-  test("test", async () => {
+  test("should validate the positive onboarding workflow @smoke @blocker @onboarding", async () => {
     await onboardingDigitalWalletPage.navigateToLoginPage();
     await loginPage.enterPassword("123");
     await loginPage.clickSubmit();

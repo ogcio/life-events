@@ -3,7 +3,7 @@ import { allure } from "allure-playwright";
 import { Severity } from "allure-js-commons";
 import { LoginPage } from "../objects/loginPage";
 
-test.describe("Login Tests", () => {
+test.describe("Onboarding Digital Wallet Tests", () => {
   let loginPage: LoginPage;
 
   test.beforeEach(async ({ page }) => {
@@ -11,7 +11,9 @@ test.describe("Login Tests", () => {
     await loginPage.navigateTo();
   });
 
-  test("test", async ({ page }) => {
+  test("should validate the positive onboarding workflow @smoke @blocker @onboarding", async ({
+    page,
+  }) => {
     await page.goto(
       "https://api.dev.blocks.gov.ie/static/login/api/authorize?redirect_uri=https://auth.dev.blocks.gov.ie/auth/callback",
     );
@@ -21,10 +23,6 @@ test.describe("Login Tests", () => {
     await page.goto("https://dev.life.gov.ie/en/welcome?redirect_url=%2Fen");
     await page.getByLabel("I confirm that I am a public").check();
     await page.getByRole("button", { name: "Continue" }).click();
-    await page
-      .locator("li")
-      .filter({ hasText: "Get your Government Digital" })
-      .click();
     await page
       .locator("li")
       .filter({ hasText: "Get your Government Digital" })
@@ -189,5 +187,11 @@ test.describe("Login Tests", () => {
         .locator("div")
         .first(),
     ).toBeVisible();
+  });
+
+  test("Positive Onboarding Workflow - Login", async ({ page }) => {
+    await loginPage.enterPassword("123");
+    await loginPage.clickSubmit();
+    await loginPage.expectWelcomeMessage();
   });
 });
