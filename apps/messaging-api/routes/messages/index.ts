@@ -238,7 +238,6 @@ export default async function messages(app: FastifyInstance) {
         throw new NotFoundError(errorKey, "no template contents found");
       }
 
-      console.log("ALL USERS LALALALA", JSON.stringify(allUsers));
 
       const allUsersLookup = allUsers.data.reduce<{
         [userId: string]: (typeof allUsers.data)[0];
