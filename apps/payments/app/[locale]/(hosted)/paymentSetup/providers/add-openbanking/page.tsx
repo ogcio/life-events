@@ -1,12 +1,11 @@
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
 import { redirect } from "next/navigation";
 import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
-import { Payments } from "building-blocks-sdk";
 import getRequestConfig from "../../../../../../i18n";
 import { errorHandler } from "../../../../../utils";
 import OpenBankingForm from "./OpenBankingForm";
 import { openBankingValidationMap } from "../../../../../validationMaps";
+import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
 
 type Props = {
   params: {
@@ -29,8 +28,6 @@ export default async (props: Props) => {
   const t = await getTranslations("PaymentSetup.AddOpenbanking");
   const { messages } = await getRequestConfig({ locale: props.params.locale });
 
-  const { userId } = await PgSessions.get();
-
   const errorFieldMapping = openBankingValidationMap(t);
 
   async function handleSubmit(
@@ -38,6 +35,8 @@ export default async (props: Props) => {
     formData: FormData,
   ): Promise<OpenBankingFormState> {
     "use server";
+    const paymentsApi = await PaymentsApiFactory.getInstance();
+
     const nameField = formData.get("provider_name") as string;
     const accountHolderNameField = formData.get(
       "account_holder_name",
@@ -53,7 +52,7 @@ export default async (props: Props) => {
       },
     };
 
-    const { data: result, error } = await new Payments(userId).createProvider({
+    const { data: result, error } = await paymentsApi.createProvider({
       name: nameField,
       type: "openbanking",
       data: {

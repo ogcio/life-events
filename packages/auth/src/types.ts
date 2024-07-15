@@ -1,5 +1,4 @@
 import { LogtoContext, LogtoNextConfig, UserScope } from "@logto/next";
-import { getLogtoContext } from "@logto/next/server-actions";
 
 export type GovIdJwtPayload = {
   surname: string;
@@ -25,7 +24,33 @@ export type Session = {
 };
 
 export type AuthConfig = LogtoNextConfig;
-export type AuthSessionContext = LogtoContext;
+
+export type AuthSessionUserInfo = {
+  name: string | null;
+  username: string | null;
+  id: string;
+  email: string | null;
+};
+
+export type AuthSessionOrganizationInfo = {
+  id: string;
+  name: string;
+  roles: string[];
+};
+
+export type PartialAuthSessionContext = {
+  user?: AuthSessionUserInfo;
+  isPublicServant: boolean;
+  organization?: AuthSessionOrganizationInfo;
+  originalContext?: LogtoContext;
+  scopes: string[];
+  accessToken?: string;
+};
+
+export type AuthSessionContext = Omit<
+  PartialAuthSessionContext,
+  "user" | "accessToken"
+> & { user: AuthSessionUserInfo; accessToken: string };
 
 export type GetSessionContextParameters = {
   fetchUserInfo?: boolean;
@@ -33,6 +58,10 @@ export type GetSessionContextParameters = {
   organizationId?: string;
   resource?: string;
   getOrganizationToken?: boolean;
+  loginUrl?: string;
+  publicServantExpectedRole: string;
+  userType: "citizen" | "publicServant";
+  includeOriginalContext?: boolean;
 };
 
 export interface Sessions {
@@ -52,8 +81,8 @@ export type IAuthSession = {
   logout(config: AuthConfig, redirectUri?: string): Promise<void>;
   get(
     config: AuthConfig,
-    getContextParameters?: GetSessionContextParameters,
-  ): Promise<AuthSessionContext>;
+    getContextParameters: GetSessionContextParameters,
+  ): Promise<PartialAuthSessionContext>;
   isAuthenticated(
     config: AuthConfig,
     getContextParameters?: GetSessionContextParameters,

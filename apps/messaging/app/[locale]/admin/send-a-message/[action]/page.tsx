@@ -2,11 +2,9 @@ import { notFound, redirect } from "next/navigation";
 import { api } from "messages";
 import {
   ApiMessageState,
-  EventTableSearchParams,
   MessageCreateSearchParams,
   getCurrentStep,
 } from "../../../../utils/messaging";
-import { PgSessions } from "auth/sessions";
 import ComposeMessageMeta from "./ComposeMessageMeta";
 import ContentForm from "./ContentForm";
 import EmailPreview from "./Preview";
@@ -21,6 +19,7 @@ import {
   PAGINATION_PAGE_DEFAULT,
 } from "../components/paginationUtils";
 import { sendAMessage } from "../../../../utils/routes";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 const metaSlug = "meta";
 const contentSlug = "content";
@@ -74,9 +73,9 @@ export default async (props: {
   params: { action: string };
   searchParams: { state_id: string } & Partial<MessageCreateSearchParams>;
 }) => {
-  const { userId } = await PgSessions.get();
+  const user = await AuthenticationFactory.getInstance().getUser();
   const urlAction = props.params.action;
-  const { state, id: stateId } = await api.getMessageState(userId);
+  const { state, id: stateId } = await api.getMessageState(user.id);
   const step = getCurrentStep<ApiMessageState>(rules, state);
   const maybe = urlStateHandler(urlAction, step.key || "");
   switch (step.key) {
@@ -84,7 +83,7 @@ export default async (props: {
       return maybe(
         <ComposeMessageMeta
           state={state}
-          userId={userId}
+          userId={user.id}
           stateId={stateId}
           disabledSubmit={!step.isStepValid}
         />,
@@ -93,7 +92,7 @@ export default async (props: {
       return maybe(
         <TemplateForm
           state={state}
-          userId={userId}
+          userId={user.id}
           stateId={stateId}
           disabledSubmit={!step.isStepValid}
         />,
@@ -102,7 +101,7 @@ export default async (props: {
       return maybe(
         <ContentForm
           state={state}
-          userId={userId}
+          userId={user.id}
           stateId={stateId}
           disabledSubmit={!step.isStepValid}
         />,
@@ -111,7 +110,7 @@ export default async (props: {
       return maybe(
         <EmailPreview
           state={state}
-          userId={userId}
+          userId={user.id}
           stateId={stateId}
           disabledSubmit={!step.isStepValid}
         />,
@@ -131,18 +130,18 @@ export default async (props: {
       return maybe(
         <Recipients
           state={state}
-          userId={userId}
+          userId={user.id}
           stateId={stateId}
           searchParams={searchParams}
         />,
       );
     case scheduleSlug:
       return maybe(
-        <ScheduleForm state={state} userId={userId} stateId={stateId} />,
+        <ScheduleForm state={state} userId={user.id} stateId={stateId} />,
       );
     case successSlug:
       return maybe(
-        <SuccessForm state={state} userId={userId} stateId={stateId} />,
+        <SuccessForm state={state} userId={user.id} stateId={stateId} />,
       );
     default:
       throw notFound();

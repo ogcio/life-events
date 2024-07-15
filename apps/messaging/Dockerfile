@@ -10,6 +10,9 @@ COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/messages/package*.json /app/packages/messages/
 COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/package*.json /app/packages/shared-components/
+COPY ./packages/shared-errors/package*.json /app/packages/shared-errors/
+COPY ./packages/nextjs-logging-wrapper/package*.json /app/packages/nextjs-logging-wrapper/
+
 
 RUN npm ci
 
@@ -20,6 +23,8 @@ COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/messages/ /app/packages/messages/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/ /app/packages/shared-components/
+COPY ./packages/shared-errors/ /app/packages/shared-errors/
+COPY ./packages/nextjs-logging-wrapper/ /app/packages/nextjs-logging-wrapper/
 
 FROM deps AS builder
 WORKDIR /app
@@ -33,14 +38,14 @@ ARG LOGTO_ENDPOINT
 ARG LOGTO_COOKIE_SECRET
 ARG LOGTO_MESSAGING_APP_ID
 ARG LOGTO_MESSAGING_APP_SECRET
-
+ARG MESSAGES_BACKEND_URL
 ARG AUTH_SERVICE_URL
 
 ENV LOGTO_ENDPOINT=$LOGTO_ENDPOINT
 ENV LOGTO_COOKIE_SECRET=$LOGTO_COOKIE_SECRET
 ENV LOGTO_MESSAGING_APP_ID=$LOGTO_MESSAGING_APP_ID
 ENV LOGTO_MESSAGING_APP_SECRET=$LOGTO_MESSAGING_APP_SECRET
-
+ENV MESSAGES_BACKEND_URL=$MESSAGES_BACKEND_URL
 ENV NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT
 ENV NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT
 ENV NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT
@@ -50,6 +55,8 @@ ENV AUTH_SERVICE_URL=$AUTH_SERVICE_URL
 
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
+RUN npm run build --workspace=packages/shared-errors
+RUN npm run build --workspace=packages/nextjs-logging-wrapper
 RUN npm run build --workspace=apps/messaging
 
 FROM base-deps as runner

@@ -111,7 +111,6 @@ paths:
                 userIds:
                   type: array
                   items:
-                    format: uuid
                     type: string
                 security:
                   type: string
@@ -236,7 +235,6 @@ paths:
                 userIds:
                   type: array
                   items:
-                    format: uuid
                     type: string
                 transportations:
                   type: array
@@ -2003,6 +2001,7 @@ paths:
                       type: object
                       properties:
                         id:
+                          format: uuid
                           type: string
                         userProfileId:
                           default: null
@@ -2258,7 +2257,6 @@ paths:
       tags: *a5
       parameters:
         - schema:
-            format: uuid
             type: string
           in: path
           name: organisationId
@@ -2275,6 +2273,7 @@ paths:
                     type: object
                     properties:
                       id:
+                        format: uuid
                         type: string
                       userProfileId:
                         default: null
@@ -2552,7 +2551,6 @@ paths:
         required: true
       parameters:
         - schema:
-            format: uuid
             type: string
           in: path
           name: organisationId
@@ -2569,6 +2567,7 @@ paths:
                     type: object
                     properties:
                       id:
+                        format: uuid
                         type: string
                       userProfileId:
                         default: null
@@ -2852,6 +2851,7 @@ paths:
                     type: object
                     properties:
                       id:
+                        format: uuid
                         type: string
                       userProfileId:
                         default: null
@@ -3456,13 +3456,6 @@ paths:
                   - name
     get:
       tags: *a6
-      parameters:
-        - schema:
-            format: uuid
-            type: string
-          in: query
-          name: organisationId
-          required: false
       responses:
         "200":
           description: Default Response
@@ -3581,13 +3574,6 @@ paths:
   /api/v1/users/imports/users:
     get:
       tags: *a6
-      parameters:
-        - schema:
-            format: uuid
-            type: string
-          in: query
-          name: organisationId
-          required: false
       responses:
         "200":
           description: Default Response
@@ -3602,6 +3588,7 @@ paths:
                       type: object
                       properties:
                         id:
+                          format: uuid
                           type: string
                         userProfileId:
                           default: null
@@ -3822,12 +3809,6 @@ paths:
     get:
       tags: *a6
       parameters:
-        - schema:
-            format: uuid
-            type: string
-          in: query
-          name: organisationId
-          required: false
         - schema:
             default: true
             type: boolean
@@ -4086,12 +4067,6 @@ paths:
         - schema:
             format: uuid
             type: string
-          in: query
-          name: organisationId
-          required: false
-        - schema:
-            format: uuid
-            type: string
           in: path
           name: importId
           required: true
@@ -4109,6 +4084,7 @@ paths:
                       type: object
                       properties:
                         id:
+                          format: uuid
                           type: string
                         userProfileId:
                           default: null
@@ -4325,90 +4301,6 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/users/imports/mock-organisation-id:
-    get:
-      tags: *a6
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    format: uuid
-                    type: string
-                required:
-                  - data
-        5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        4XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
   /api/v1/users/recipients/:
     get:
       tags:
@@ -4416,7 +4308,6 @@ paths:
         - Recipients
       parameters:
         - schema:
-            format: uuid
             type: string
           in: query
           name: organisationId
@@ -4463,8 +4354,7 @@ paths:
                           default: null
                           anyOf:
                             - type: "null"
-                            - format: uuid
-                              type: string
+                            - type: string
                         firstName:
                           default: null
                           anyOf:

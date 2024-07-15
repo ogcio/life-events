@@ -1,10 +1,10 @@
-import { PgSessions } from "auth/sessions";
 import PaymentsMenu from "./PaymentsMenu";
 import { notFound } from "next/navigation";
+import { getPaymentsCitizenContext } from "../../../../libraries/auth";
 
 export default async ({ children, params: { locale } }) => {
-  const { publicServant } = await PgSessions.get();
-  if (!publicServant) return notFound();
+  const { isPublicServant } = await getPaymentsCitizenContext();
+  if (!isPublicServant) return notFound();
 
   return (
     <div

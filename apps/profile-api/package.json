@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "TAP_RCFILE=tap.yml tap",
-    "test:e2e" : "cd ./e2e && bru run --env local",
-    "test:dev" : "cd ./e2e && bru run --env dev",
+    "test:e2e": "cd ./e2e && bru run --env local",
+    "test:dev": "cd ./e2e && bru run --env dev",
     "start": "node --import tsx index.ts",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",

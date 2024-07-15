@@ -1,18 +1,24 @@
-import { PgSessions } from "auth/sessions";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Messaging } from "building-blocks-sdk";
+
 import React from "react";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
+import { notFound } from "next/navigation";
 
 export default async () => {
   const t = await getTranslations("UsersImports");
-  const { userId } = await PgSessions.get();
-  const messagingClient = new Messaging(userId);
-  const { data: organisationId } =
-    await messagingClient.getMockOrganisationId();
-  const { data: imports } =
-    await messagingClient.getUsersImports(organisationId);
+  const { accessToken, organization } =
+    await AuthenticationFactory.getInstance().getPublicServant();
+  if (!accessToken || !organization) {
+    throw notFound();
+  }
+  const messagingClient = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
+  const { data: imports } = await messagingClient.getUsersImports(
+    organization.id,
+  );
 
   return (
     <>

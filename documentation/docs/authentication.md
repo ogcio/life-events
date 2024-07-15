@@ -143,7 +143,7 @@ You can then call the `checkPermissions` method in the `preValidation` hook, pas
 
 ### How to test the integration locally
 
-A mock of MyGovId is currently spun together with the Logto app when running Logto locally.
+A mock of MyGovId is currently spun together with the Logto app when running Logto locally, either natively or with Docker Compose.
 It mocks the flow by exposing the auth, token and jwks endpoints that our custom MyGovId connector will call. A dedicated seeder file for Logto resources is executed as part of the process when running Logto locally, that configures the connector with the mocked endpoints.
 
 The mocked flow is the following:
@@ -152,8 +152,8 @@ The mocked flow is the following:
 - user logs in choosing MyGovId account
 - user is redirected to http://localhost:4005/logto/mock/auth and presented with a mock login page
 - when the login form is submitted http://localhost:4005/logto/mock/login is called. The api creates a mock, signed jwt and redirects the user to Logto callback, passing `state` and the id token as `code`
-- Logto calls our mock token endpoint on http://mock-auth-service:4005/mock/token, that will return the user tokens and info.
-- Logto calls our mock jwk set endpoint on http://mock-auth-service:4005/mock/keys to get the public key set and verify the signature of the token it just got from us
+- Logto calls our mock token endpoint on http://localhost:4005/mock/token, that will return the user tokens and info.
+- Logto calls our mock jwk set endpoint on http://localhost:4005/mock/keys to get the public key set and verify the signature of the token it just got from us
 - Logto verifies the identity of the user and signs in the user. If the user is not registered yet they are signed up first.
 
 

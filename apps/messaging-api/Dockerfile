@@ -1,4 +1,4 @@
-FROM base-deps as deps
+FROM base-deps AS deps
 
 WORKDIR /app
 
@@ -8,12 +8,15 @@ COPY ./packages/shared-errors/ /app/packages/shared-errors/
 COPY ./packages/logging-wrapper/ /app/packages/logging-wrapper/
 COPY ./packages/error-handler/ /app/packages/error-handler/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
+COPY ./packages/api-auth/ /app/packages/api-auth/
 RUN npm ci && \
     cd /app/packages/shared-errors/ && \
     npm run build && \
     cd /app/packages/logging-wrapper/ && \
     npm run build && \
     cd /app/packages/error-handler/ && \
+    npm run build && \
+    cd /app/packages/api-auth/ && \
     npm run build
 
 

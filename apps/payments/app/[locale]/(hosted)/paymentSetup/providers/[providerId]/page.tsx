@@ -1,11 +1,9 @@
 import { notFound, redirect } from "next/navigation";
-import { PgSessions } from "auth/sessions";
 import EditOpenBankingForm from "./EditOpenBankingForm";
 import EditBankTransferForm from "./EditBankTransferForm";
 import EditStripeForm from "./EditStripeForm";
 import EditWorldpayForm from "./EditWorldpayForm";
 import EditRealexForm from "./EditRealexForm";
-import { Payments } from "building-blocks-sdk";
 import {
   BankTransferProvider,
   OpenBankingProvider,
@@ -14,6 +12,7 @@ import {
   WorldpayProvider,
 } from "../types";
 import { errorHandler } from "../../../../../utils";
+import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
 
 type Props = {
   params: {
@@ -23,10 +22,9 @@ type Props = {
 };
 
 export default async ({ params: { providerId, locale } }: Props) => {
-  const { userId } = await PgSessions.get();
-  const { data: provider, error } = await new Payments(userId).getProviderById(
-    providerId,
-  );
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: provider, error } =
+    await paymentsApi.getProviderById(providerId);
 
   if (error) {
     errorHandler(error);
@@ -40,7 +38,6 @@ export default async ({ params: { providerId, locale } }: Props) => {
     return (
       <EditOpenBankingForm
         provider={provider as OpenBankingProvider}
-        userId={userId}
         locale={locale}
       />
     );
@@ -50,7 +47,6 @@ export default async ({ params: { providerId, locale } }: Props) => {
     return (
       <EditBankTransferForm
         provider={provider as BankTransferProvider}
-        userId={userId}
         locale={locale}
       />
     );
@@ -58,11 +54,7 @@ export default async ({ params: { providerId, locale } }: Props) => {
 
   if (provider.type === "stripe") {
     return (
-      <EditStripeForm
-        provider={provider as StripeProvider}
-        userId={userId}
-        locale={locale}
-      />
+      <EditStripeForm provider={provider as StripeProvider} locale={locale} />
     );
   }
 
@@ -70,7 +62,6 @@ export default async ({ params: { providerId, locale } }: Props) => {
     return (
       <EditWorldpayForm
         provider={provider as WorldpayProvider}
-        userId={userId}
         locale={locale}
       />
     );
@@ -78,11 +69,7 @@ export default async ({ params: { providerId, locale } }: Props) => {
 
   if (provider.type === "realex") {
     return (
-      <EditRealexForm
-        provider={provider as RealexProvider}
-        userId={userId}
-        locale={locale}
-      />
+      <EditRealexForm provider={provider as RealexProvider} locale={locale} />
     );
   }
 

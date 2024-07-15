@@ -1,11 +1,10 @@
 import Link from "next/link";
 import ds from "design-system/";
-import { PgSessions } from "auth/sessions";
 import Hamburger from "../HamburgerMenu";
 import HeaderSvg from "./HeaderSvg";
 import LanguageSwitch from "./LanguageSwitch";
 import UserIcon from "./UserIcon";
-import { getUser } from "../../../libraries/auth";
+import { getPaymentsCitizenContext } from "../../../libraries/auth";
 import { BuildingBlockSelector } from "shared-components";
 
 import styles from "./Header.module.scss";
@@ -15,13 +14,11 @@ type HeaderProps = {
 };
 
 export default async ({ locale }: HeaderProps) => {
-  let user;
+  const user = await getPaymentsCitizenContext();
 
-  if (process.env.USE_LOGTO_AUTH === "true") {
-    user = await getUser();
-  }
-
-  const { firstName, lastName, publicServant } = await PgSessions.get();
+  const [firstName, lastName] = user.user?.name
+    ? user.user.name.split(" ")
+    : ["", ""];
   const initials = firstName.charAt(0) + lastName.charAt(0);
 
   return (
@@ -42,7 +39,7 @@ export default async ({ locale }: HeaderProps) => {
           <div className={styles.leftSideContainer}>
             <Hamburger
               userName={`${firstName} ${lastName}`}
-              publicServant={publicServant}
+              publicServant={user.isPublicServant}
               locale={locale}
             />
             <a
@@ -58,24 +55,11 @@ export default async ({ locale }: HeaderProps) => {
             </div>
           </div>
           <div className={styles.rightsideContainer}>
-            <div className="govie-!-font-size-12">
-              {process.env.USE_LOGTO_AUTH === "true" && (
-                <>
-                  Logto enabled{" "}
-                  {user && user.isAuthenticated ? (
-                    <>{user.id + " - " + user.claims.name}</>
-                  ) : (
-                    <>Not logged in</>
-                  )}
-                </>
-              )}
-            </div>
-
             <LanguageSwitch theme="dark" />
             <UserIcon initials={initials} />
 
             <Link
-              href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
+              href={"/signout"}
               prefetch={false}
               style={{ display: "flex" }}
             >

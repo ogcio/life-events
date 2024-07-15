@@ -10,7 +10,8 @@
   "dependencies": {
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
-    "jose": "^5.2.4"
+    "jose": "^5.2.4",
+    "shared-errors": "*"
   },
   "scripts": {
     "test": "TAP_RCFILE=tap.yml tap",

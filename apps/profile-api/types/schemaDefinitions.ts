@@ -1,6 +1,9 @@
 import { Static, Type } from "@sinclair/typebox";
 
 const OptionalString = Type.Optional(Type.String());
+const OptionalNullableString = Type.Optional(
+  Type.Union([Type.Null(), Type.String()], { default: null }),
+);
 
 /**
  * Addresses types
@@ -79,16 +82,24 @@ export type EntitlementsList = Static<typeof EntitlementsListSchema>;
  */
 
 export const UserDetailsSchema = Type.Object({
-  firstname: Type.String(),
-  lastname: Type.String(),
-  email: Type.String(),
-  title: Type.String(),
-  dateOfBirth: OptionalString,
-  ppsn: Type.String(),
-  ppsnVisible: Type.Boolean(),
-  gender: Type.String(),
-  phone: Type.String(),
-  consentToPrefillData: Type.Boolean(),
+  title: OptionalNullableString,
+  firstName: Type.String(),
+  lastName: Type.String(),
+  dateOfBirth: Type.Optional(
+    Type.Union([Type.Null(), Type.String({ format: "date-time" })], {
+      default: null,
+    }),
+  ),
+  ppsn: OptionalNullableString,
+  ppsnVisible: Type.Optional(
+    Type.Union([Type.Null(), Type.Boolean()], { default: false }),
+  ),
+  gender: OptionalNullableString,
+  email: Type.String({ format: "email" }),
+  phone: OptionalNullableString,
+  consentToPrefillData: Type.Optional(
+    Type.Union([Type.Null(), Type.Boolean()], { default: false }),
+  ),
 });
 export type UserDetails = Static<typeof UserDetailsSchema>;
 
