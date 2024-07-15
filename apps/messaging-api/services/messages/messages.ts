@@ -20,7 +20,11 @@ import {
   ServerError,
 } from "shared-errors";
 import { LoggingError, toLoggingError } from "logging-wrapper";
-import { MessagingEventType, newMessagingEventLogger } from "./eventLogger";
+import {
+  MessagingEventLogger,
+  MessagingEventType,
+  newMessagingEventLogger,
+} from "./eventLogger";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -418,6 +422,7 @@ export const executeJob = async (params: {
         params.pg.pool,
         job.jobId,
         job.userId,
+        eventLogger,
       );
 
       for (const err of serviceErrors) {
@@ -481,6 +486,7 @@ const scheduleMessage = async (
   pool: Pool,
   messageId: string,
   userId: string,
+  eventLogger: MessagingEventLogger,
 ): Promise<ServiceError[]> => {
   const client = await pool.connect();
   const errors: ServiceError[] = [];
@@ -536,8 +542,6 @@ const scheduleMessage = async (
       [statusDelivered, messageId, userId],
     );
 
-    // TODO send transports
-
     client.query("COMMIT");
   } catch (err) {
     client.query("ROLLBACK");
@@ -565,36 +569,62 @@ const scheduleMessage = async (
     }
 
     for (const transport of preferredTransports) {
+      console.log("VI KLIVER PA TRANSPORT", transport);
       if (transport === "email") {
         if (!user.email) {
-          // LOG
+          await eventLogger.log(MessagingEventType.emailError, [
+            {
+              messageId,
+              messageKey: "noEmail",
+            },
+          ]);
           continue;
         }
         if (!transportationSubject) {
-          // LOG
+          await eventLogger.log(MessagingEventType.emailError, [
+            {
+              messageId,
+              messageKey: "noSubject",
+            },
+          ]);
           continue;
         }
 
         let providerId: string | undefined;
         try {
-          // This is a big placeholder that needs proper logic
           const provider =
             await mailService(transportsClient).getPrimaryProvider(
               organisationId,
             );
 
           if (!provider) {
-            // LOG
+            await eventLogger.log(MessagingEventType.emailError, [
+              {
+                messageId,
+                messageKey: "noProvider",
+              },
+            ]);
             continue;
           }
 
-          await mailService(transportsClient).sendMail({
+          const sent = await mailService(transportsClient).sendMail({
             provider,
             email: user.email,
             subject: transportationSubject,
             body: transportationBody ?? "",
           });
+          console.log("VI PROVADE SKICKA EPOST", sent);
+          if (sent?.error) {
+            // expand if we need more details.
+            throw new Error();
+          }
         } catch (err) {
+          await eventLogger.log(MessagingEventType.emailError, [
+            {
+              messageId,
+              messageKey: "failedToSend",
+            },
+          ]);
           errors.push({
             critical: false,
             error: {
@@ -608,11 +638,21 @@ const scheduleMessage = async (
         }
       } else if (transport === "sms") {
         if (!user.phone) {
-          // LOG
+          await eventLogger.log(MessagingEventType.smsError, [
+            {
+              messageId,
+              messageKey: "noPhone",
+            },
+          ]);
           continue;
         }
         if (!transportationExcerpt || !transportationSubject) {
-          // LOG
+          await eventLogger.log(MessagingEventType.smsError, [
+            {
+              messageId,
+              messageKey: "missingContent",
+            },
+          ]);
           continue;
         }
 
@@ -630,7 +670,12 @@ const scheduleMessage = async (
         const config = configQueryResult.rows.at(0)?.config;
 
         if (!config) {
-          // LOG
+          await eventLogger.log(MessagingEventType.smsError, [
+            {
+              messageId,
+              messageKey: "noProvider",
+            },
+          ]);
           continue;
         }
 
@@ -644,6 +689,11 @@ const scheduleMessage = async (
           try {
             await service.Send(transportationExcerpt, user.phone);
           } catch (err) {
+            eventLogger.log(MessagingEventType.smsError, [
+              {
+                messageId,
+              },
+            ]);
             const msg = utils.isError(err) ? err.message : "failed to send sms";
             errors.push({
               critical: false,

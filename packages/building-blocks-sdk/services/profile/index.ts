@@ -156,8 +156,7 @@ export class Profile {
 
     return {
       data: res.data?.data,
-      error:
-        res.response.status !== 200 ? await res.response.json() : undefined,
+      error: res.error,
     };
   }
 }

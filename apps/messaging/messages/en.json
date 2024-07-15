@@ -125,8 +125,8 @@
       "tableRecipientsHeader": "Recipients",
       "tableRemoveButtonText": "Remove",
       "searchUsersButton": "Search",
-      "searchResultsCaption" : "Search results",
-      "selectedRecipientsCaption" : "Selected recipients",
+      "searchResultsCaption": "Search results",
+      "selectedRecipientsCaption": "Selected recipients",
       "searchTable": {
         "fullNameHeader": "Name",
         "emailHeader": "Email",
@@ -379,6 +379,18 @@
         "accepted": "Accepted",
         "declined": "Declined"
       }
+    }
+  },
+  "MessageEvents": {
+    "mainHeader": "Message logs",
+    "searchPlaceholder": "Search Messages",
+    "tableDateHeader": "Scheduled",
+    "tableStatusHeader": "Status",
+    "tableSubjectHeader": "Subject",
+    "tableRecipientHeader": "Recipient",
+    "tableViewHeader": "Action",
+    "status": {
+      "delivered": "DELIVERED"
     }
   }
 }

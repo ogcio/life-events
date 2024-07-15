@@ -297,12 +297,14 @@ export function mailService(client: PoolClient): MailService {
           },
         });
 
-        await transporter.sendMail({
+        const sent = await transporter.sendMail({
           from: `${name} <${fromAddress}>`,
           to: params.email,
           subject: params.subject,
           html: params.body,
         });
+
+        console.log(sent);
       } catch (err) {
         return {
           critical: false,

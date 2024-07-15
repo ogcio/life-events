@@ -313,8 +313,8 @@ export default async function user(app: FastifyInstance) {
                 lastName: Type.String(),
                 ppsn: Type.String(),
                 lang: Type.String(),
-                email: Type.String({ format: "email" }),
-                phone: Type.String(),
+                email: Type.Optional(Type.String({ format: "email" })),
+                phone: Type.Optional(Type.String()),
               }),
             ),
           }),
@@ -325,17 +325,16 @@ export default async function user(app: FastifyInstance) {
     async function handler(request, reply) {
       try {
         const ids = request.body.ids;
-        const users = await app.pg.pool
-          .query<{
-            id: string;
-            firstName: string;
-            lastName: string;
-            ppsn: string;
-            lang: string;
-            email: string;
-            phone: string;
-          }>(
-            `
+        const usersQueryResult = await app.pg.pool.query<{
+          id: string;
+          firstName: string;
+          lastName: string;
+          ppsn: string;
+          lang: string;
+          email: string;
+          phone: string;
+        }>(
+          `
         select 
           user_id as "id", 
           firstname as "firstName", 
@@ -347,18 +346,19 @@ export default async function user(app: FastifyInstance) {
         from user_details
         where user_id::text = any ($1)
       `,
-            [ids],
-          )
-          .then((res) => res.rows);
+          [ids],
+        );
+
+        const users = usersQueryResult.rows;
 
         if (!users.length) {
           reply.code(404);
           return;
         }
 
-        reply.send({ data: users });
+        return { data: users };
       } catch (err) {
-        reply.send({ data: null, error: err });
+        return { error: err };
       }
     },
   );

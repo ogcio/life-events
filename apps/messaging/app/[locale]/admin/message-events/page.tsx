@@ -5,8 +5,9 @@ import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
 import ds from "design-system";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
-async function messageStatus(type: string, status: string) {
+export async function messageStatus(type: string, status: string) {
   const t = await getTranslations("MessageEvents.status");
   if (type === "message_delivery") {
     if (status === "successful") {
@@ -52,6 +53,18 @@ async function messageStatus(type: string, status: string) {
             {t("scheduling")}
           </strong>
         );
+      default:
+        break;
+    }
+  }
+
+  if (type === "message_create") {
+    switch (status) {
+      case "successful":
+        return (
+          <strong className="govie-tag govie-tag--green">{t("created")}</strong>
+        );
+
       default:
         break;
     }
@@ -129,6 +142,7 @@ export default async (props: { searchParams: { search?: string } }) => {
             <th className="govie-table__header">{t("tableStatusHeader")}</th>
             <th className="govie-table__header">{t("tableSubjectHeader")}</th>
             <th className="govie-table__header">{t("tableRecipientHeader")}</th>
+            <th className="govie-table__header">{t("tableViewHeader")}</th>
           </tr>
         </thead>
         <tbody className="govie-table__body">
@@ -153,6 +167,18 @@ export default async (props: { searchParams: { search?: string } }) => {
                   </td>
                   <td className="govie-table__cell">{subject}</td>
                   <td className="govie-table__cell">{receiverFullName}</td>
+                  <td className="govie-table__cell">
+                    <Link
+                      href={
+                        new URL(
+                          `/en/admin/message-events/${messageId}`,
+                          process.env.HOST_URL,
+                        ).href
+                      }
+                    >
+                      View
+                    </Link>
+                  </td>
                 </tr>
               );
             },

@@ -22,7 +22,7 @@ import {
 import { Profile } from "building-blocks-sdk";
 import { NotFoundError, ServerError } from "shared-errors";
 import {
-  EventDataAggregation,
+  MessageEventData,
   MessagingEventType,
   newMessagingEventLogger,
 } from "../../services/messages/eventLogger";
@@ -178,6 +178,11 @@ export default async function messages(app: FastifyInstance) {
           security: Type.String(),
           scheduledAt: Type.String({ format: "date-time" }),
         }),
+        response: {
+          200: Type.Null(),
+          "4xx": HttpError,
+          "5xx": HttpError,
+        },
       },
     },
     async (req, _res) => {
@@ -197,6 +202,8 @@ export default async function messages(app: FastifyInstance) {
         },
       };
 
+      console.log("hohoohohohohhohohoohho", req.body.userIds);
+
       const profileService = ProfileSdkFacade(profileSdk, messageSdk);
       const allUsers = await profileService.selectUsers(req.body.userIds);
       const sender = (await profileService.selectUsers([userId])).data?.at(0);
@@ -206,6 +213,7 @@ export default async function messages(app: FastifyInstance) {
       }
 
       if (!allUsers.data?.length) {
+        console.log("hitta inga users 2 :(", allUsers.error);
         throw new NotFoundError(errorKey, "no receiver profiles found");
       }
 
@@ -219,6 +227,8 @@ export default async function messages(app: FastifyInstance) {
       if (!contents.length) {
         throw new NotFoundError(errorKey, "no template contents found");
       }
+
+      console.log("ALL USERS LALALALA", JSON.stringify(allUsers));
 
       const allUsersLookup = allUsers.data.reduce<{
         [userId: string]: (typeof allUsers.data)[0];
@@ -234,7 +244,12 @@ export default async function messages(app: FastifyInstance) {
       try {
         createdTemplateMessages = await messageService.createTemplateMessages(
           contents,
-          allUsers.data.map((u) => ({ ...u, userId: u.id })),
+          allUsers.data.map((u) => ({
+            ...u,
+            email: u.email || "",
+            phone: u.phone || "",
+            userId: u.id,
+          })),
           req.body.transportations,
           req.body.security,
           req.body.scheduledAt,
@@ -267,6 +282,7 @@ export default async function messages(app: FastifyInstance) {
           }),
         );
       } catch (err) {
+        console.log("Aja...", err);
         throw new ServerError(
           errorKey,
           "failed to create messages from template",
@@ -377,6 +393,86 @@ export default async function messages(app: FastifyInstance) {
       );
 
       return { data };
+    },
+  );
+
+  app.get<{
+    Params: {
+      messageId: string;
+    };
+  }>(
+    "/events/:messageId",
+    {
+      schema: {
+        response: {
+          200: Type.Object({
+            data: Type.Array(
+              Type.Object({
+                eventStatus: Type.String(),
+                eventType: Type.String(),
+                data: Type.Union([
+                  // Create data
+                  Type.Object({
+                    messageId: Type.String(),
+                    receiverFullName: Type.String(),
+                    receiverPPSN: Type.String(),
+                    subject: Type.String(),
+                    lang: Type.String(),
+                    excerpt: Type.String(),
+                    richText: Type.String(),
+                    plainText: Type.String(),
+                    threadName: Type.String(),
+                    transports: Type.Array(Type.String()),
+                    messageName: Type.String(),
+                    scheduledAt: Type.String({ format: "date-time" }),
+                    senderUserId: Type.String(),
+                    senderFullName: Type.String(),
+                    senderPPSN: Type.String(),
+                    organisationName: Type.String(),
+                  }),
+                  // Schedule data
+                  Type.Object({
+                    messageId: Type.String(),
+                    jobId: Type.String(),
+                  }),
+                  // Error data
+                  Type.Object({
+                    messageId: Type.String(),
+                  }),
+                ]),
+                createdAt: Type.String({ format: "date-time" }),
+              }),
+            ),
+          }),
+          "5xx": HttpError,
+          "4xx": HttpError,
+        },
+      },
+    },
+    async function getEventHandler(request, _reply) {
+      const messageId = request.params.messageId;
+      const queryResult = await app.pg.pool.query<{
+        eventStatus: string;
+        eventType: string;
+        data: MessageEventData;
+        createdAt: string;
+      }>(
+        `
+      select 
+        event_status as "eventStatus",
+        event_type as "eventType",
+        data,
+        created_at as "createdAt"
+      from messaging_event_logs
+      where message_id = $1
+      order by created_at desc
+    `,
+        [messageId],
+      );
+
+      console.log(queryResult.rows);
+
+      return { data: queryResult.rows };
     },
   );
 }

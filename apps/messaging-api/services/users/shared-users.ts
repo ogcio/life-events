@@ -216,12 +216,12 @@ export const getUserProfiles = async (ids: string[], pool: Pool) => {
       (details ->> 'firstName') as "firstName",
       (details ->> 'lastName') as "firstName",
       (details ->> 'publicIdentityId') as "ppsn",
-      user_profile_id as "id",
+      COALESCE(user_profile_id, id) as "id",
       'en' as "lang",
       phone,
       email
     from users
-    where user_profile_id = any ($1)
+    where user_profile_id = any ($1) or id = any ($1)
     `,
       [ids],
     )
@@ -246,9 +246,9 @@ export function ProfileSdkFacade(
     async selectUsers(ids: string[]) {
       const profileResult = await sdkProfile.selectUsers(ids);
 
-      if (profileResult.error) {
-        return { data: undefined, error: profileResult.error };
-      }
+      // if (profileResult.error) {
+      //   return { data: undefined, error: profileResult.error };
+      // }
 
       const fromProfile = profileResult.data || [];
 
@@ -257,14 +257,16 @@ export function ProfileSdkFacade(
       }
 
       const idsNotFound: string[] = [];
-      if (fromProfile.length) {
-        const set = new Set(fromProfile.map((d) => d.id));
-        for (const id of ids) {
-          if (!set.has(id)) {
-            idsNotFound.push(id);
-          }
+      // if (fromProfile.length) {
+      const set = new Set(fromProfile.map((d) => d.id));
+      for (const id of ids) {
+        if (!set.has(id)) {
+          idsNotFound.push(id);
         }
       }
+      // }
+
+      console.log("ids not found", idsNotFound);
 
       const fromMessage = idsNotFound.length
         ? await messagingProfile.selectUsers(idsNotFound)

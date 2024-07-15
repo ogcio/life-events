@@ -97,6 +97,8 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
         );
       }
 
+      console.log("Bror?");
+
       const valueArgsArray: string[] = [];
       const valueArray: (string | boolean | undefined)[] = [];
       let valueArgsIndex = 0;

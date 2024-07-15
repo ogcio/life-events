@@ -1000,8 +1000,6 @@ paths:
                         - lastName
                         - ppsn
                         - lang
-                        - email
-                        - phone
                 required:
                   - data
         "404":
