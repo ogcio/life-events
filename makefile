@@ -60,3 +60,29 @@ migrate:
 	$(MAKE) migrate-messaging
 	$(MAKE) migrate-profile
 	$(MAKE) migrate-scheduler-api
+
+## Logto ##
+init-logto:
+	node scripts/init-logto.mjs
+
+## Run services ##
+run-auth:
+	npm run dev --workspace=auth-service
+run-mock:
+	npm run dev --workspace=mock-api
+run-life-events:
+	npm run dev --workspace=web
+run-payments:
+	npm run dev --workspace=payments-api && npm run dev --workspace=payments
+run-messaging:
+	npm run dev --workspace=messaging-api
+	npm run dev --workspace=messaging	
+run-profile:
+	npm run dev --workspace=profile-api
+	npm run dev --workspace=profile
+run-timeline:
+	npm run dev --workspace=timeline-api
+run-home:
+	npm run dev --workspace=home
+
+## Start ##
