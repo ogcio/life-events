@@ -108,4 +108,16 @@ export class MainPage {
       "https://www.gov.ie/en/help/abd3e-privacy-policy-for-the-government-digital-wallet-app/",
     );
   }
+
+  async clickContinueButton() {
+    const continueButtonLocator = this.page.locator("button.govie-button");
+    await expect(continueButtonLocator).toBeVisible();
+    await continueButtonLocator.click();
+  }
+
+  async expectNationalityError() {
+    const errorLocator = this.page.locator("#nationality-error");
+    await expect(errorLocator).toBeVisible();
+    await expect(errorLocator).toHaveText(Texts.nationalityErrorText);
+  }
 }

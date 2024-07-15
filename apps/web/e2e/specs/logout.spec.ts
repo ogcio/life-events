@@ -14,7 +14,7 @@ test.describe("Logout Tests", () => {
     await loginPage.navigateTo();
   });
 
-  test("should validate successful end-user logout level 0 @minor", async () => {
+  test("should validate successful end-user logout level 0 @smoke @critical", async () => {
     await allure.description(
       "This test attempts to logout from the life events application",
     );
@@ -34,7 +34,7 @@ test.describe("Logout Tests", () => {
     await logoutPage.expectMyGovIdLogo();
   });
 
-  test("should validate successful end-user logout level 1 @minor", async () => {
+  test("should validate successful end-user logout level 1 @smoke @critical", async () => {
     await allure.description(
       "This test attempts to log into the website using a login and an empty password.",
     );

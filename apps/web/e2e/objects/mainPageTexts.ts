@@ -9,4 +9,5 @@ export const Texts = {
     "I confirm that I am a public servant and I consent to be a participant in the Government Digital Wallet pilot. I understand that I can withdraw from the pilot at any time",
   privacyPolicyText: "Privacy Policy",
   welcomeText: "Welcome to Life Events",
+  nationalityErrorText: "Error: You must agree to continue",
 };

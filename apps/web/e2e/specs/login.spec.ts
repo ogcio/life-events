@@ -11,25 +11,25 @@ test.describe("Login Tests", () => {
     await loginPage.navigateTo();
   });
 
-  test("should validate the password is required for and end user @critical", async () => {
+  test("should validate the password is required for and end user @smoke @normal", async () => {
     await allure.description(
       "This test attempts to log into the website using a login and an empty password.",
     );
     await allure.owner("OGCIO");
     await allure.tags("Login", "Essentials", "Authentication");
-    await allure.severity(Severity.CRITICAL);
+    await allure.severity(Severity.NORMAL);
 
     await loginPage.clickSubmit();
     await loginPage.expectPasswordRequired();
   });
 
-  test("should validate the password is required for Public Servant @critical", async () => {
+  test("should validate the password is required for Public Servant @smoke @normal", async () => {
     await allure.description(
       "This test attempts to log into the website using a login and an empty password for a Public Servant.",
     );
     await allure.owner("OGCIO");
     await allure.tags("Login", "Essentials", "Authentication");
-    await allure.severity(Severity.CRITICAL);
+    await allure.severity(Severity.NORMAL);
 
     await loginPage.clickPublicServant();
     await loginPage.expectPublicServantText();
@@ -38,7 +38,7 @@ test.describe("Login Tests", () => {
     await loginPage.expectPasswordRequired();
   });
 
-  test("should validate main Login Page elements @critical", async () => {
+  test("should validate main Login Page elements @smoke @critical", async () => {
     await allure.description(
       "This test validates the main elements on the login page.",
     );
@@ -51,13 +51,13 @@ test.describe("Login Tests", () => {
     await loginPage.expectVerificationLevelOptions();
   });
 
-  test("should validate successful end-user login level 0 @critical", async () => {
+  test("should validate successful end-user login level 0 @smoke @blocker", async () => {
     await allure.description(
       "This test attempts to log into the website using a login and password.",
     );
     await allure.owner("OGCIO");
     await allure.tags("Login", "Essentials", "Authentication");
-    await allure.severity(Severity.CRITICAL);
+    await allure.severity(Severity.BLOCKER);
 
     await loginPage.enterPassword("123");
     await loginPage.clickSubmit();
@@ -65,13 +65,13 @@ test.describe("Login Tests", () => {
     await loginPage.expectWelcomeMessage();
   });
 
-  test("should validate successful end-user login level 1 @critical", async () => {
+  test("should validate successful end-user login level 1 @smoke @blocker", async () => {
     await allure.description(
       "This test attempts to log into the website using a login and password.",
     );
     await allure.owner("OGCIO");
     await allure.tags("Login", "Essentials", "Authentication");
-    await allure.severity(Severity.CRITICAL);
+    await allure.severity(Severity.BLOCKER);
 
     await loginPage.enterPassword("123");
     await loginPage.clickSubmit();
