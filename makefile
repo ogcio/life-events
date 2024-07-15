@@ -41,3 +41,22 @@ init:
 	$(MAKE) init-env
 	$(MAKE) init-ds
 	$(MAKE) build-docker
+
+## Migrations
+
+migrate-web: 
+	npm run migrate --workspace=web
+migrate-payments: 
+	npm run migrate --workspace=payments
+migrate-messaging:
+	npm run migrate --workspace=messages
+migrate-profile:
+	npm run migrate --workspace=profile
+migrate-scheduler-api: 
+	npm run migrate --workspace=scheduler
+migrate:
+	$(MAKE) migrate-web
+	$(MAKE) migrate-payments
+	$(MAKE) migrate-messaging
+	$(MAKE) migrate-profile
+	$(MAKE) migrate-scheduler-api
