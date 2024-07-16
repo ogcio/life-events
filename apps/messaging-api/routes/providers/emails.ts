@@ -4,6 +4,7 @@ import { EmailProvider, mailService } from "./services";
 import { NotFoundError } from "shared-errors";
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 
 const tags = ["Providers - Emails"];
 
@@ -61,9 +62,7 @@ export default async function emails(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: Type.Object({
-            data: Type.Array(EmailProviderType),
-          }),
+          200: getGenericResponseSchema(Type.Array(EmailProviderType)),
           "4xx": HttpError,
           "5xx": HttpError,
         },
@@ -90,9 +89,7 @@ export default async function emails(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: Type.Object({
-            data: EmailProviderType,
-          }),
+          200: getGenericResponseSchema(EmailProviderType),
           404: HttpError,
           500: HttpError,
         },

@@ -92,7 +92,7 @@ export type ResponseMetadata = Static<typeof ResponseMetadataSchema>;
 
 export const getGenericResponseSchema = <T extends TSchema>(dataType: T) =>
   Type.Object({
-    data: Type.Array(dataType),
+    data: dataType,
     metadata: ResponseMetadataSchema,
   });
 

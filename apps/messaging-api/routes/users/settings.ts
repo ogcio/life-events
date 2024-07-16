@@ -20,6 +20,7 @@ import {
   updateOrganisationFeedback,
 } from "../../services/users/invitations/accept-invitations";
 import { Permissions } from "../../types/permissions";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 
 const tags = ["UserSettings"];
 
@@ -35,7 +36,7 @@ export default async function userSettings(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: Type.Object({ data: Type.Array(UserInvitationSchema) }),
+          200: getGenericResponseSchema(Type.Array(UserInvitationSchema)),
           400: HttpError,
           404: HttpError,
           500: HttpError,
@@ -64,7 +65,7 @@ export default async function userSettings(app: FastifyInstance) {
           organisationId: Type.String(),
         }),
         response: {
-          200: Type.Object({ data: UserInvitationSchema }),
+          200: getGenericResponseSchema(UserInvitationSchema),
           400: HttpError,
           404: HttpError,
           500: HttpError,
@@ -165,9 +166,9 @@ export default async function userSettings(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: Type.Object({
-            data: Type.Object({ userStatus: UserStatusUnionType }),
-          }),
+          200: getGenericResponseSchema(
+            Type.Object({ userStatus: UserStatusUnionType }),
+          ),
           400: HttpError,
           404: HttpError,
           500: HttpError,
