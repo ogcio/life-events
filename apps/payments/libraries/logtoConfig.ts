@@ -32,6 +32,7 @@ export const paymentsPublicServantScopes = [
   "payments:provider:*",
   "payments:payment_request.public:read",
 ];
+export const inactivePublicServantScope = "bb:public-servant.inactive:*";
 
 export default {
   ...baseConfig,
@@ -42,6 +43,7 @@ export default {
     ...orgScopes,
     ...citizenScopes,
     ...paymentsPublicServantScopes,
+    inactivePublicServantScope,
   ],
 };
 

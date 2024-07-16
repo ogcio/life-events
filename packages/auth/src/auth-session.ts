@@ -18,6 +18,9 @@ import { decodeJwt } from "jose";
 
 const PROCESS_ERROR = "PARSE_LOGTO_CONTEXT";
 
+const INACTIVE_PUBLIC_SERVANT_ORG_ROLE =
+  "inactive-ps-org:Inactive Public Servant";
+
 export const AuthUserScope = UserScope;
 
 export const AuthSession: IAuthSession = {
@@ -166,6 +169,9 @@ const checkIfPublicServant = (
   orgRoles !== null &&
   orgRoles?.includes(getContextParameters.publicServantExpectedRole);
 
+const checkIfInactivePublicServant = (orgRoles: string[] | null): boolean =>
+  orgRoles !== null && orgRoles?.includes(INACTIVE_PUBLIC_SERVANT_ORG_ROLE);
+
 const getAccessToken = (
   context: LogtoContext,
   orgInfo: AuthSessionOrganizationInfo | undefined,
@@ -216,6 +222,8 @@ const parseContext = (
   const orgRoles = getOrganizationRoles(context);
   const orgInfo = getOrganizationInfo(context, getContextParameters, orgRoles);
   const isPublicServant = checkIfPublicServant(orgRoles, getContextParameters);
+  const isInactivePublicServant = checkIfInactivePublicServant(orgRoles);
+
   const accessToken = getAccessToken(
     context,
     orgInfo,
@@ -225,6 +233,7 @@ const parseContext = (
 
   const outputContext: PartialAuthSessionContext = {
     isPublicServant,
+    isInactivePublicServant,
     scopes: getScopes(context, isPublicServant, accessToken),
   };
 

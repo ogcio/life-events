@@ -431,5 +431,9 @@
   "Pagination": {
     "previous": "Previous",
     "next": "Next"
+  },
+  "InactivePublicServant": {
+    "title": "Your account is under review",
+    "description": "Thanks for creating an account in the Building Blocks Ecosystem. Your account as a public servant has now been created."
   }
 }
