@@ -6,7 +6,6 @@ import { getTranslations } from "next-intl/server";
 import dayjs from "dayjs";
 import Link from "next/link";
 
-
 export default async (props: { params: { messageId: string } }) => {
   const t = await getTranslations("MessageEvents");
   const { userId } = await PgSessions.get();
@@ -33,10 +32,12 @@ export default async (props: { params: { messageId: string } }) => {
     <FlexMenuWrapper>
       <h1>
         <span className="govie-heading-xl" style={{ margin: "unset" }}>
-          Message Event Log
+          {t("eventLogMainHeader")}
         </span>
       </h1>
-      <h2>Recipient - {recipient}</h2>
+      <h2>
+        {t("recipientSubHeader")} - {recipient}
+      </h2>
 
       <p>{excerpt}</p>
       <p>{plainText}</p>
@@ -68,7 +69,7 @@ export default async (props: { params: { messageId: string } }) => {
         </tbody>
       </table>
       <Link href="./" className="govie-back-link">
-        Back
+        {t("backLink")}
       </Link>
     </FlexMenuWrapper>
   );

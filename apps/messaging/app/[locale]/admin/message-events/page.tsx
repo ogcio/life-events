@@ -93,8 +93,6 @@ export async function messageStatus(type: string, status: string) {
     }
   }
 
-  console.log({ type, status });
-
   return null;
 }
 
@@ -201,7 +199,7 @@ export default async (props: { searchParams: { search?: string } }) => {
                         ).href
                       }
                     >
-                      View
+                      {t("viewLink")}
                     </Link>
                   </td>
                 </tr>

@@ -393,6 +393,10 @@
     "tableSubjectHeader": "Subject",
     "tableRecipientHeader": "Recipient",
     "tableViewHeader": "Action",
+    "viewLink": "View",
+    "backLink": "Back",
+    "eventLogMainHeader": "Message Event Log",
+    "recipientSubHeader": "Recipient",
     "status": {
       "delivered": "DELIVERED",
       "delivering": "DELIVERING",
