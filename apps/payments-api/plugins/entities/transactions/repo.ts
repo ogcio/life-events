@@ -1,10 +1,6 @@
 import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
-import {
-  CreateTransactionBodyDO,
-  TransactionDetailsDO,
-  TransactionDO,
-} from "./types";
+import { CreateTransactionBodyDO, TransactionDetailsDO } from "./types";
 import { TransactionStatusesEnum } from ".";
 import { PaginationParams } from "../../../types/pagination";
 
@@ -18,11 +14,16 @@ export class TransactionsRepo {
   getTransactionById(
     transactionId: string,
     userId?: string,
+    organizationId?: string,
   ): Promise<QueryResult<TransactionDetailsDO>> {
     const params = [transactionId];
 
     if (userId) {
       params.push(userId);
+    }
+
+    if (organizationId) {
+      params.push(organizationId);
     }
 
     return this.pg.query(
@@ -42,7 +43,8 @@ export class TransactionsRepo {
       LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
       JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
       WHERE t.transaction_id = $1
-      ${userId ? "AND t.user_id = $2" : ""}`,
+      ${userId ? "AND t.user_id = $2" : ""}
+      ${organizationId ? "AND pr.organization_id = $2" : ""}`,
       params,
     );
   }
@@ -61,7 +63,7 @@ export class TransactionsRepo {
   }
 
   getTransactions(
-    userId: string,
+    organizationId: string,
     pagination: PaginationParams,
   ): Promise<QueryResult<TransactionDetailsDO>> {
     return this.pg.query(
@@ -78,26 +80,26 @@ export class TransactionsRepo {
         pp.provider_name as "providerName",
         pp.provider_type as "providerType"
       FROM payment_transactions t
-      INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.user_id = $1
+      INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.organization_id = $1
       INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
       JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
       ORDER BY t.updated_at DESC
       LIMIT $2 OFFSET $3`,
-      [userId, pagination.limit, pagination.offset],
+      [organizationId, pagination.limit, pagination.offset],
     );
   }
 
   getTransactionsTotalCount(
-    userId: string,
+    organizationId: string,
   ): Promise<QueryResult<{ totalCount: number }>> {
     return this.pg.query(
       `SELECT
         count(*) as "totalCount"
       FROM payment_transactions t
-      INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.user_id = $1
+      INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.organization_id = $1
       INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
       JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id`,
-      [userId],
+      [organizationId],
     );
   }
 
