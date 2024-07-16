@@ -31,11 +31,11 @@ const getLinks = (environment: string, locale: string) => {
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
       };
 
