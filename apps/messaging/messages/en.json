@@ -158,7 +158,7 @@
       "hour": "HH",
       "minute": "MM",
       "submitText": "Send message",
-      "serverError": "Server failed to create the message"
+      "serverError": "Sorry, we were unable to create your message. Please try again"
     },
     "SuccessForm": {
       "title": "Your message has been sent",
