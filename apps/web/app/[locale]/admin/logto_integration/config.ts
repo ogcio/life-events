@@ -1,5 +1,5 @@
 import { AuthSession, AuthUserScope } from "auth/auth-session";
-import { AuthSessionContext } from "auth/types";
+import { AuthSessionContext, PartialAuthSessionContext } from "auth/types";
 
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
@@ -32,7 +32,7 @@ export default {
 };
 
 export const getAuthenticationContext =
-  async (): Promise<AuthSessionContext> => {
+  async (): Promise<PartialAuthSessionContext> => {
     return getPublicServantContext();
   };
 
