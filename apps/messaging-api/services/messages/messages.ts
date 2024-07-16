@@ -597,10 +597,8 @@ const scheduleMessage = async (
 
         let providerId: string | undefined;
         try {
-          const provider =
-            await mailService(transportsClient).getPrimaryProvider(
-              organizationId,
-            );
+          const mailservice = mailService(transportsClient);
+          const provider = await mailservice.getPrimaryProvider(organizationId);
 
           if (!provider) {
             await eventLogger.log(MessagingEventType.emailError, [
@@ -612,7 +610,7 @@ const scheduleMessage = async (
             continue;
           }
 
-          const sent = await mailService(transportsClient).sendMail({
+          const sent = await mailservice.sendMail({
             provider,
             email: user.email,
             subject: transportationSubject,
