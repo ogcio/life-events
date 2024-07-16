@@ -68,3 +68,8 @@ services:
 volumes:
   db:
     driver: local
+
+# custom network to be able to reach Logto running on same network with another Docker Compose file
+networks:
+  logto_network:
+    external: true

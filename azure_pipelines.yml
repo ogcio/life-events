@@ -103,3 +103,4 @@ stages:
           awsServiceConnection: ${{ variables.awsServiceConnection }}
           awsRegion: ${{ variables.awsRegion }}
           serviceName: ${{ serviceName }}
+          environment: ${{ variables.environment }}

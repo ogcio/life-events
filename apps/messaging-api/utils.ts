@@ -1,4 +1,3 @@
-export const organisationId = "45ed3f88-d091-4f3d-87bc-93777c297ab6";
 export type ServiceError = { error: object; msg: string; critical: boolean };
 
 type AwsSmsProviderConfig = {

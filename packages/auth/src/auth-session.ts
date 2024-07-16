@@ -7,7 +7,7 @@ import {
 import {
   IAuthSession,
   GetSessionContextParameters,
-  AuthSessionContext,
+  PartialAuthSessionContext,
   AuthSessionUserInfo,
   AuthSessionOrganizationInfo,
 } from "./types";
@@ -30,7 +30,7 @@ export const AuthSession: IAuthSession = {
   async get(
     config: LogtoNextConfig,
     getContextParameters: GetSessionContextParameters,
-  ): Promise<AuthSessionContext> {
+  ): Promise<PartialAuthSessionContext> {
     if (
       getContextParameters.userType === "publicServant" &&
       !getContextParameters.organizationId
@@ -40,7 +40,6 @@ export const AuthSession: IAuthSession = {
         "Organization id is mandatory when logging in as public servant",
       );
     }
-
     const context = await getLogtoContext(config, getContextParameters);
 
     if (!context.isAuthenticated) {
@@ -212,7 +211,7 @@ const getScopes = (
 const parseContext = (
   context: LogtoContext,
   getContextParameters: GetSessionContextParameters,
-): AuthSessionContext => {
+): PartialAuthSessionContext => {
   const userInfo = getUserInfo(context);
   const orgRoles = getOrganizationRoles(context);
   const orgInfo = getOrganizationInfo(context, getContextParameters, orgRoles);
@@ -224,7 +223,7 @@ const parseContext = (
     getContextParameters,
   );
 
-  const outputContext: AuthSessionContext = {
+  const outputContext: PartialAuthSessionContext = {
     isPublicServant,
     scopes: getScopes(context, isPublicServant, accessToken),
   };

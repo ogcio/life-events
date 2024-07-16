@@ -2,24 +2,28 @@ parameters:
   - name: serviceName
   - name: awsRegion
   - name: awsServiceConnection
+  - name: environment
 
 jobs:
-  - job: Deploy
+  - deployment: DeployECS_${{ replace(parameters.serviceName, '-', '_') }}
     displayName: Deploy - ${{ parameters.serviceName }}
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: AWSCLI@1
-      inputs:
-        awsCredentials: ${{ parameters.awsServiceConnection }}
-        regionName: ${{ parameters.awsRegion }}
-        awsCommand: 'ecs'
-        awsSubCommand: 'update-service'
-        awsArguments: '--force-new-deployment --cluster life-events-ecs --service ${{ parameters.serviceName }}-service'
-    - task: AWSCLI@1
-      inputs:
-        awsCredentials: ${{ parameters.awsServiceConnection }}
-        regionName: ${{ parameters.awsRegion }}
-        awsCommand: 'ecs'
-        awsSubCommand: 'wait'
-        awsArguments: 'services-stable --cluster life-events-ecs --service ${{ parameters.serviceName }}-service'
+    environment: ${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - task: AWSCLI@1
+            inputs:
+              awsCredentials: ${{ parameters.awsServiceConnection }}
+              regionName: ${{ parameters.awsRegion }}
+              awsCommand: 'ecs'
+              awsSubCommand: 'update-service'
+              awsArguments: '--force-new-deployment --cluster life-events-ecs --service ${{ parameters.serviceName }}-service'
+          - task: AWSCLI@1
+            inputs:
+              awsCredentials: ${{ parameters.awsServiceConnection }}
+              regionName: ${{ parameters.awsRegion }}
+              awsCommand: 'ecs'
+              awsSubCommand: 'wait'
+              awsArguments: 'services-stable --cluster life-events-ecs --service ${{ parameters.serviceName }}-service'

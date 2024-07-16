@@ -4,14 +4,14 @@ import dayjs from "dayjs";
 import ds from "design-system";
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
-import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { getQueryParams } from "../components/paginationUtils";
 import { sendAMessage } from "../../../../utils/routes";
-import { Messaging } from "building-blocks-sdk";
+
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { pgpool } from "messages/dbConnection";
 import styles from "../components/Table.module.scss";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 interface RecipientContact {
   id: string;
@@ -155,12 +155,17 @@ export default async (props: MessageCreateProps) => {
 
   const urlParams = new URLSearchParams(props.searchParams);
   const queryParams = getQueryParams(urlParams);
-  const { userId } = await PgSessions.get();
-  const messaging = new Messaging(userId);
-  const { data: organisationId } = await messaging.getMockOrganisationId();
+  const { accessToken, organization } =
+    await AuthenticationFactory.getInstance().getPublicServant();
+  if (!accessToken || !organization) {
+    throw notFound();
+  }
+  const messaging = await AuthenticationFactory.getMessagingClient({
+    token: accessToken,
+  });
   const response = await messaging.getRecipients({
     ...queryParams,
-    organisationId,
+    organisationId: organization.id,
     transports: props.state.transportations.join(","),
   });
 
