@@ -11,6 +11,11 @@ paths:
       responses:
         "200":
           description: Default Response
+  /user-login-wh:
+    post:
+      responses:
+        "200":
+          description: Default Response
   /api/v1/addresses/:
     get:
       tags: &a1
@@ -943,6 +948,64 @@ paths:
                   - detail
                   - request_id
                   - name
+  /api/v1/user/select:
+    post:
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    format: uuid
+                    type: string
+              required:
+                - ids
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        firstName:
+                          type: string
+                        lastName:
+                          type: string
+                        ppsn:
+                          type: string
+                        lang:
+                          type: string
+                        email:
+                          format: email
+                          type: string
+                        phone:
+                          type: string
+                      required:
+                        - id
+                        - firstName
+                        - lastName
+                        - ppsn
+                        - lang
+                        - email
+                        - phone
+                required:
+                  - data
+        "404":
+          description: Default Response
 tags:
   - name: User
   - name: Addresses

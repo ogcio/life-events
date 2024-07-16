@@ -1281,6 +1281,26 @@ export interface paths {
       };
     };
   };
+  "/api/v1/test/citizen": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/v1/test/pub-ser": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;

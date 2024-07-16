@@ -1,0 +1,18 @@
+services:
+  postgresql:
+    extends:
+      file: docker-compose.yaml
+      service: postgresql
+
+  maildev:
+    extends:
+      file: docker-compose.yaml
+      service: maildev
+
+  localstack:
+    extends:
+      file: docker-compose.yaml
+      service: localstack
+volumes:
+  db:
+    driver: local

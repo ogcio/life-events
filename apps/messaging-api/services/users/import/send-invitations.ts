@@ -1,5 +1,4 @@
 import { FastifyBaseLogger } from "fastify";
-import { createError } from "@fastify/error";
 import { PoolClient } from "pg";
 import {
   UserInvitation,
@@ -12,9 +11,10 @@ import {
 import { createMessage } from "../../messages/messages";
 import { PostgresDb } from "@fastify/postgres";
 import {
-  AVAILABLE_TRANSPORTS,
+  ALL_TRANSPORTS,
   getUserInvitationsForOrganisation,
 } from "../shared-users";
+import { ServerError } from "shared-errors";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
 
@@ -32,10 +32,9 @@ export const sendInvitationsForUsersImport = async (params: {
   } = {};
   for (const userData of toImportUsers.usersData) {
     if (!userData.relatedUserId) {
-      throw createError(
+      throw new ServerError(
         "SEND_INVITATIONS_ERROR",
         `Something went wrong importing users, user with index ${userData.importIndex} is missing user id`,
-        500,
       );
     }
     if (userData.relatedUserProfileId) {
@@ -217,7 +216,7 @@ const sendInvitations = async (params: {
       createMessage({
         payload: {
           message: messageInput,
-          preferredTransports: AVAILABLE_TRANSPORTS,
+          preferredTransports: ALL_TRANSPORTS,
           userIds,
           scheduleAt: new Date().toISOString(),
           security: "high",
@@ -242,7 +241,7 @@ const sendInvitations = async (params: {
       createMessage({
         payload: {
           message: messageInput,
-          preferredTransports: AVAILABLE_TRANSPORTS,
+          preferredTransports: ALL_TRANSPORTS,
           userIds,
           scheduleAt: Date.now().toString(),
           security: "high",
@@ -262,7 +261,7 @@ const sendInvitations = async (params: {
       createMessage({
         payload: {
           message: messageInput,
-          preferredTransports: AVAILABLE_TRANSPORTS,
+          preferredTransports: ALL_TRANSPORTS,
           userIds,
           scheduleAt: Date.now().toString(),
           security: "high",

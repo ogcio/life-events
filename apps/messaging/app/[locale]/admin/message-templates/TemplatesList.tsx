@@ -7,7 +7,6 @@ import {
   templateRoutes,
   urlWithSearchParams,
 } from "../../../utils/routes";
-import { LANG_EN } from "../../../../types/shared";
 
 export default async (props: { locale: string }) => {
   const t = await getTranslations("MessageTemplates");
@@ -24,6 +23,10 @@ export default async (props: { locale: string }) => {
           </th>
 
           <th scope="col" className="govie-table__header">
+            {t("list.languages")}
+          </th>
+
+          <th scope="col" className="govie-table__header">
             {t("list.actions.label")}
           </th>
         </tr>
@@ -32,18 +35,25 @@ export default async (props: { locale: string }) => {
         {templates?.map((template) => (
           <tr className="govie-table__row" key={template.templateMetaId}>
             <th className="govie-table__header" scope="row">
-              {template.templateName}
+              {template.contents.find(
+                (content) => content.lang === props.locale,
+              )?.templateName || template.contents.at(0)?.templateName}
             </th>
 
+            <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+              {template.contents
+                .map((content) => content.lang)
+                .sort()
+                .join(", ")}
+            </td>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               <Link
                 className="govie-link govie-!-margin-right-3"
                 href={
-                  urlWithSearchParams(
-                    `${props.locale}/${templateRoutes.url}`,
-                    { key: "id", value: template.templateMetaId },
-                    { key: "lang", value: LANG_EN },
-                  ).href
+                  urlWithSearchParams(`${props.locale}/${templateRoutes.url}`, {
+                    key: "id",
+                    value: template.templateMetaId,
+                  }).href
                 }
               >
                 {t("list.actions.edit")}

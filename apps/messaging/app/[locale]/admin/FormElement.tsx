@@ -6,7 +6,7 @@ export const FormElement = ({
   hint,
 }: React.PropsWithChildren<{
   error?: string;
-  label: string;
+  label?: string;
   id: string;
   hint?: string;
 }>) => {

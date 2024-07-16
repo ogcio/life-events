@@ -11,9 +11,9 @@ import {
 import { createMessage } from "../../messages/messages";
 import { PostgresDb } from "@fastify/postgres";
 import { getUsersInvitationsForOrganisation } from "./shared-invitations";
+import { ALL_TRANSPORTS } from "../shared-users";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
-const AVAILABLE_TRANSPORTS = ["sms", "email"];
 
 export const sendInvitationsForUsersImport = async (params: {
   pg: PostgresDb;
@@ -73,7 +73,9 @@ interface ToSendInvitations {
 }
 
 const prepareInvitations = (params: {
-  userInvitations: UserInvitation[];
+  userInvitations: (Omit<UserInvitation, "userProfileId"> & {
+    userProfileId: string;
+  })[];
   perIdLanguage: { [x: string]: string };
 }): ToSendInvitations => {
   const toSend: ToSendInvitations = {
@@ -126,7 +128,7 @@ const sendInvitations = async (params: {
       createMessage({
         payload: {
           message: messageInput,
-          preferredTransports: AVAILABLE_TRANSPORTS,
+          preferredTransports: ALL_TRANSPORTS,
           userIds,
           scheduleAt: new Date().toISOString(),
           security: "high",
@@ -144,7 +146,7 @@ const sendInvitations = async (params: {
       createMessage({
         payload: {
           message: messageInput,
-          preferredTransports: AVAILABLE_TRANSPORTS,
+          preferredTransports: ALL_TRANSPORTS,
           userIds,
           scheduleAt: Date.now().toString(),
           security: "high",

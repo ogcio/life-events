@@ -31,6 +31,11 @@ export const users = {
   url: "admin/users",
 };
 
+export const events = {
+  slug: "events",
+  url: "admin/message-events",
+};
+
 export const usersImports = {
   slug: "users-imports",
   url: "admin/users/imports",

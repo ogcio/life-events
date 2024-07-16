@@ -1,6 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 import { api } from "messages";
-import { ApiMessageState, getCurrentStep } from "../../../../utils/messaging";
+import {
+  ApiMessageState,
+  EventTableSearchParams,
+  MessageCreateSearchParams,
+  getCurrentStep,
+} from "../../../../utils/messaging";
 import { PgSessions } from "auth/sessions";
 import ComposeMessageMeta from "./ComposeMessageMeta";
 import ContentForm from "./ContentForm";
@@ -9,8 +14,13 @@ import Recipients from "./Recipients";
 import ScheduleForm from "./ScheduleForm";
 import SuccessForm from "./SuccessForm";
 import TemplateForm from "./TemplateForm";
-
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
+import {
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_OFFSET_DEFAULT,
+  PAGINATION_PAGE_DEFAULT,
+} from "../components/paginationUtils";
+import { sendAMessage } from "../../../../utils/routes";
 
 const metaSlug = "meta";
 const contentSlug = "content";
@@ -34,7 +44,7 @@ const rules: Parameters<typeof getCurrentStep<ApiMessageState>>[0] = [
       ? { key: templateSlug, isStepValid: true }
       : next,
 
-  // Receients
+  // Recipients
   (state) => {
     if (state.confirmedRecipientsAt) {
       return next;
@@ -62,7 +72,7 @@ const urlStateHandler = (url: string, key: string) => (Cmp: JSX.Element) => {
 
 export default async (props: {
   params: { action: string };
-  searchParams: { state_id: string };
+  searchParams: { state_id: string } & Partial<MessageCreateSearchParams>;
 }) => {
   const { userId } = await PgSessions.get();
   const urlAction = props.params.action;
@@ -107,8 +117,24 @@ export default async (props: {
         />,
       );
     case recipientsSlug:
+      const searchParams: MessageCreateSearchParams = {
+        limit: props.searchParams.limit ?? String(PAGINATION_LIMIT_DEFAULT),
+        offset: props.searchParams.offset ?? String(PAGINATION_OFFSET_DEFAULT),
+        page: props.searchParams.page ?? String(PAGINATION_PAGE_DEFAULT),
+        baseUrl:
+          props.searchParams.baseUrl ??
+          new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL).href,
+        search: props.searchParams.search,
+        recipientToAddIds: props.searchParams.recipientToAddIds,
+        recipientToRemoveId: props.searchParams.recipientToRemoveId,
+      };
       return maybe(
-        <Recipients state={state} userId={userId} stateId={stateId} />,
+        <Recipients
+          state={state}
+          userId={userId}
+          stateId={stateId}
+          searchParams={searchParams}
+        />,
       );
     case scheduleSlug:
       return maybe(

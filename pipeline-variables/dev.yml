@@ -19,9 +19,10 @@ variables:
   # Temporary demo secrets just for testing purposes
   # Once the test is completed, we will need to add these vars to the secrets manager
   logtoCookieSecret: CRyNGTYSGJIVoAFZc0ACJUChaFo1A3rr
-  logtoPaymentsAppSectret: z7RKXvyV9X6Ymjqfbg1A3pBLJy8m2At1
-  logtoMessagingAppSectret: oTSELx7KrykDs8X57f4HOUni9eK91DNi
+  logtoPaymentsAppSecret: z7RKXvyV9X6Ymjqfbg1A3pBLJy8m2At1
+  logtoMessagingAppSecret: oTSELx7KrykDs8X57f4HOUni9eK91DNi
 
   nextPublicMatomoUrl: //analytics.ogcio.gov.ie
-  nextPublicMatomoSiteId: 11
   nextPublicMatomoProtocol: https
+  nextPublicLifeEventsMatomoSiteId: 11
+  nextPublicBuildingBlocksMatomoSiteId: 14

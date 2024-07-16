@@ -7,6 +7,7 @@ export const envSchema = {
     "POSTGRES_PORT",
     "POSTGRES_DB_NAME",
     "POSTGRES_DB_NAME_SHARED",
+    "LOGTO_WEBHOOK_SIGNING_KEY",
   ],
   properties: {
     POSTGRES_USER: {
@@ -25,6 +26,9 @@ export const envSchema = {
       type: "string",
     },
     POSTGRES_DB_NAME_SHARED: {
+      type: "string",
+    },
+    LOGTO_WEBHOOK_SIGNING_KEY: {
       type: "string",
     },
   },

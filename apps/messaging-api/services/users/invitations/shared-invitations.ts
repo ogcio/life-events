@@ -1,4 +1,3 @@
-import { createError } from "@fastify/error";
 import { PoolClient } from "pg";
 import { isNativeError } from "util/types";
 import {
@@ -6,17 +5,23 @@ import {
   UserInvitation,
 } from "../../../types/usersSchemaDefinitions";
 import { utils } from "../../../utils";
+import { ServerError } from "shared-errors";
+import { Omit } from "@sinclair/typebox";
+
+type MandatoryProfileIdInvitation = Omit<UserInvitation, "userProfileId"> & {
+  userProfileId: string;
+};
 
 export const getUsersInvitationsForOrganisation = async (params: {
   userProfileIds: string[];
   organisationId: string;
   client: PoolClient;
   errorCode: string;
-}): Promise<UserInvitation[]> => {
+}): Promise<MandatoryProfileIdInvitation[]> => {
   try {
     let userIndex = 2;
     const idsIndexes = params.userProfileIds.map(() => `$${userIndex++}`);
-    const result = await params.client.query<UserInvitation>(
+    const result = await params.client.query<MandatoryProfileIdInvitation>(
       `
               select
                   ouc.user_id as "id",
@@ -38,13 +43,10 @@ export const getUsersInvitationsForOrganisation = async (params: {
     return result.rows;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
+    throw new ServerError(
       params.errorCode,
       `Error retrieving user invitations: ${message}`,
-      500,
-    )();
-
-    throw toOutput;
+    );
   }
 };
 
@@ -76,13 +78,10 @@ export const getUserInvitations = async (params: {
     return result.rows;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
+    throw new ServerError(
       params.errorCode,
       `Error retrieving user invitations: ${message}`,
-      500,
-    )();
-
-    throw toOutput;
+    );
   }
 };
 
@@ -111,12 +110,9 @@ export const executeUpdateOrganisationFeedback = async (params: {
     );
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    const toOutput = createError(
+    throw new ServerError(
       params.errorCode,
       `Error on invitation feedback: ${message}`,
-      500,
-    )();
-
-    throw toOutput;
+    );
   }
 };

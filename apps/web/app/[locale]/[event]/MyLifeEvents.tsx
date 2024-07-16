@@ -148,7 +148,7 @@ export default async ({ locale }) => {
   ]);
 
   const { data: messageEvents } = await new Messaging(userId).getMessages(
-    "event",
+    "lifeEvent",
   );
 
   const showDigitalWalletOnboarding =

@@ -4,13 +4,23 @@ import {
   ReadMessage,
   ReadMessages,
 } from "../../types/schemaDefinitions";
-import { HttpError, ServiceError, organisationId, utils } from "../../utils";
-import { createError } from "@fastify/error";
+import { ServiceError, organisationId, utils } from "../../utils";
 import { FastifyBaseLogger } from "fastify";
 import { JobType } from "aws-sdk/clients/importexport";
 import { Pool } from "pg";
 import { mailService } from "../../routes/providers/services";
 import { awsSnsSmsService } from "../sms/aws";
+import { Profile } from "building-blocks-sdk";
+import { getUserProfiles, ProfileSdkFacade } from "../users/shared-users";
+import { isNativeError } from "util/types";
+import {
+  BadRequestError,
+  isLifeEventsError,
+  NotFoundError,
+  ServerError,
+} from "shared-errors";
+import { LoggingError, toLoggingError } from "logging-wrapper";
+import { MessagingEventType, newMessagingEventLogger } from "./eventLogger";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -25,6 +35,7 @@ export const createMessage = async (params: {
     });
   }
 
+  // Deprecated
   if (params.payload.template) {
     return createMessageFromTemplate({
       pg: params.pg,
@@ -32,11 +43,10 @@ export const createMessage = async (params: {
     });
   }
 
-  throw createError(
+  throw new BadRequestError(
     "CREATE_MESSAGE_ERROR",
     "At least one between 'message' and 'template' must be set",
-    400,
-  )();
+  );
 };
 
 const createRawMessage = async (params: {
@@ -138,6 +148,7 @@ const createRawMessage = async (params: {
   });
 };
 
+// Deprecated
 const createMessageFromTemplate = async (params: {
   pg: PostgresDb;
   payload: Omit<Required<CreateMessage>, "message">;
@@ -213,7 +224,6 @@ const createMessageFromTemplate = async (params: {
           values.push(key, template.interpolations[key]);
         }
 
-        console.log("yolo i interpolation ", values, args);
         await client.query(
           `
               insert into message_template_interpolations(message_by_template_id, interpolation_key, interpolation_value)
@@ -263,11 +273,10 @@ export const getMessage = async (params: {
   );
 
   if (data.rowCount === 0) {
-    throw createError(
+    throw new NotFoundError(
       "GET_MESSAGE_ERROR",
       `No message with id ${params.messageId} for the logged in user does exist`,
-      404,
-    )();
+    );
   }
 
   return data.rows[0];
@@ -306,6 +315,7 @@ export const executeJob = async (params: {
   pg: PostgresDb;
   logger: FastifyBaseLogger;
   jobId: string;
+  userId: string;
 }) => {
   const statusWorking: scheduledMessageByTemplateStatus = "working";
   const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
@@ -319,27 +329,43 @@ export const executeJob = async (params: {
       }
     | undefined;
 
+  const eventLogger = newMessagingEventLogger(params.pg.pool, params.logger);
+
   const client = await params.pg.pool.connect();
   try {
     client.query("begin");
     const jobStatusResult = await client.query<{
       status: scheduledMessageByTemplateStatus;
+      entityId: string;
     }>(
       `
-        select coalesce(delivery_status, 'pending') as "status" from jobs where id = $1
+        select
+          coalesce(delivery_status, 'pending') as "status",
+          job_id as "entityId"
+        from jobs where id = $1
         and case when delivery_status is not null then delivery_status != $2 else true end
     `,
       [params.jobId, statusDelivered],
     );
 
-    if (!jobStatusResult.rowCount) {
-      throw createError(EXECUTE_JOB_ERROR, "job doesn't exist", 404)();
+    const jobResult = jobStatusResult.rows.at(0);
+
+    if (!jobResult) {
+      await eventLogger.log(MessagingEventType.deliverMessageError, [
+        { messageId: "" }, // job id error field?
+      ]);
+      throw new NotFoundError(EXECUTE_JOB_ERROR, "job doesn't exist");
     }
 
-    const jobStatus = jobStatusResult.rows.at(0)?.status;
+    await eventLogger.log(MessagingEventType.deliverMessagePending, [
+      { messageId: jobResult.entityId }, // job id error field?
+    ]);
 
-    if (jobStatus === "working") {
-      throw createError(EXECUTE_JOB_ERROR, "job is already in progress", 400)();
+    if (jobResult.status === "working") {
+      throw new BadRequestError(
+        EXECUTE_JOB_ERROR,
+        "job is already in progress",
+      );
     }
 
     job = await client
@@ -364,43 +390,29 @@ export const executeJob = async (params: {
     client.query("commit");
   } catch (err) {
     client.query("rollback");
+
+    await eventLogger.log(MessagingEventType.deliverMessageError, [
+      { messageId: "" },
+    ]);
+    if (isLifeEventsError(err)) {
+      throw err;
+    }
+
     const msg = utils.isError(err) ? err.message : "failed to fetch job";
-    throw createError(EXECUTE_JOB_ERROR, msg, 500)();
+    throw new ServerError(EXECUTE_JOB_ERROR, msg);
   } finally {
     client.release();
   }
 
   if (!job?.userId || !job.type) {
-    throw createError(
-      EXECUTE_JOB_ERROR,
-      "job row missing critical fields",
-      500,
-    )();
+    await eventLogger.log(MessagingEventType.deliverMessageError, [
+      { messageId: job?.jobId || "" },
+    ]);
+    throw new ServerError(EXECUTE_JOB_ERROR, "job row missing critical fields");
   }
 
-  let error: HttpError | undefined;
-  if (job.type === "template") {
-    try {
-      const serviceErrors = await scheduledTemplate(
-        params.pg.pool,
-        job.jobId,
-        job.userId,
-      );
-      for (const err of serviceErrors) {
-        params.logger.error({ error: err.error }, err.msg);
-      }
-
-      const firstError = serviceErrors.filter((err) => err.critical).at(0);
-      if (firstError) {
-        error = createError(EXECUTE_JOB_ERROR, firstError.msg, 500)();
-      }
-    } catch (err) {
-      const msg = utils.isError(err)
-        ? err.message
-        : "failed to create message from template job";
-      error = createError(EXECUTE_JOB_ERROR, msg, 500)();
-    }
-  } else if (job.type === "message") {
+  let error: LoggingError | undefined;
+  if (job.type === "message") {
     try {
       const serviceErrors = await scheduleMessage(
         params.pg.pool,
@@ -414,13 +426,15 @@ export const executeJob = async (params: {
 
       const firstError = serviceErrors.filter((err) => err.critical).at(0);
       if (firstError) {
-        error = createError(EXECUTE_JOB_ERROR, firstError.msg, 500)();
+        error = toLoggingError(
+          new ServerError(EXECUTE_JOB_ERROR, firstError.msg),
+        );
       }
     } catch (err) {
       const msg = utils.isError(err)
         ? err.message
         : "failed to create message job";
-      error = createError(EXECUTE_JOB_ERROR, msg, 500)();
+      error = toLoggingError(new ServerError(EXECUTE_JOB_ERROR, msg));
     }
   }
 
@@ -436,14 +450,23 @@ export const executeJob = async (params: {
         [statusFailed, params.jobId],
       );
     } catch (err) {
+      await eventLogger.log(MessagingEventType.deliverMessageError, [
+        { messageId: job.jobId },
+      ]);
       const msg = utils.isError(err)
         ? err.message
         : "failed to update job delivery status";
-      throw createError(EXECUTE_JOB_ERROR, msg, 500)();
+      throw new ServerError(EXECUTE_JOB_ERROR, msg);
     }
 
-    throw createError(EXECUTE_JOB_ERROR, error.message, error.statusCode)();
+    await eventLogger.log(MessagingEventType.deliverMessageError, [
+      { messageId: job.jobId },
+    ]);
+    throw new ServerError(EXECUTE_JOB_ERROR, error.message);
   }
+  await eventLogger.log(MessagingEventType.deliverMessage, [
+    { messageId: job.jobId },
+  ]);
 };
 
 type scheduledMessageByTemplateStatus =
@@ -451,6 +474,8 @@ type scheduledMessageByTemplateStatus =
   | "working"
   | "failed"
   | "delivered";
+
+const ERROR_PROCESS = "SCHEDULE_MESSAGE";
 
 const scheduleMessage = async (
   pool: Pool,
@@ -491,7 +516,10 @@ const scheduleMessage = async (
       .then((res) => res.rows.at(0));
 
     if (!messageUser) {
-      throw new Error(`failed to find message for id ${messageId}`);
+      throw new NotFoundError(
+        ERROR_PROCESS,
+        `failed to find message for id ${messageId}`,
+      );
     }
 
     preferredTransports.push(...(messageUser?.transports ?? []));
@@ -519,33 +547,50 @@ const scheduleMessage = async (
     client.release();
   }
 
-  /**
-   * There's a lot of logic to determine which transports, if any, to use
-   * for each user.
-   * eg.
-   * Does user accept the preferred transport?
-   * Which transport can we defer to?
-   * Persist logs?
-   * Fetch user information. Email and number
-   */
+  const profileSdk = new Profile(userId);
+  const messageSdk = {
+    selectUsers(ids: string[]) {
+      return getUserProfiles(ids, pool);
+    },
+  };
+
+  const profileService = ProfileSdkFacade(profileSdk, messageSdk);
+
   const transportsClient = await pool.connect();
   try {
+    const { data } = await profileService.selectUsers([userId]);
+    const user = data?.at(0);
+    if (!user) {
+      throw new NotFoundError(ERROR_PROCESS, "no user profile found");
+    }
+
     for (const transport of preferredTransports) {
       if (transport === "email") {
+        if (!user.email) {
+          // LOG
+          continue;
+        }
         if (!transportationSubject) {
+          // LOG
           continue;
         }
 
         let providerId: string | undefined;
         try {
           // This is a big placeholder that needs proper logic
-          providerId =
-            await mailService(
-              transportsClient,
-            ).getFirstOrEtherealMailProvider();
+          const provider =
+            await mailService(transportsClient).getPrimaryProvider(
+              organisationId,
+            );
+
+          if (!provider) {
+            // LOG
+            continue;
+          }
+
           await mailService(transportsClient).sendMail({
-            providerId,
-            email: "",
+            provider,
+            email: user.email,
             subject: transportationSubject,
             body: transportationBody ?? "",
           });
@@ -562,28 +607,42 @@ const scheduleMessage = async (
           });
         }
       } else if (transport === "sms") {
+        if (!user.phone) {
+          // LOG
+          continue;
+        }
         if (!transportationExcerpt || !transportationSubject) {
+          // LOG
           continue;
         }
 
-        // todo proper query
-        const config = await transportsClient
-          .query<{ config: unknown }>(
-            `
+        const configQueryResult = await transportsClient.query<{
+          config: unknown;
+        }>(
+          `
           select config from sms_providers
+          where is_primary and organisation_id = $1
           limit 1
         `,
-          )
-          .then((res) => res.rows.at(0)?.config);
+          [organisationId],
+        );
+
+        const config = configQueryResult.rows.at(0)?.config;
+
+        if (!config) {
+          // LOG
+          continue;
+        }
 
         if (utils.isSmsAwsConfig(config)) {
           const service = awsSnsSmsService(
             config.accessKey,
             config.secretAccessKey,
+            config.region,
           );
 
           try {
-            await service.Send(transportationExcerpt, "");
+            await service.Send(transportationExcerpt, user.phone);
           } catch (err) {
             const msg = utils.isError(err) ? err.message : "failed to send sms";
             errors.push({
@@ -599,288 +658,16 @@ const scheduleMessage = async (
         }
       }
     }
-  } finally {
-    transportsClient.release();
-  }
-
-  return errors;
-};
-
-const scheduledTemplate = async (
-  pool: Pool,
-  scheduledId: string,
-  userId: string,
-): Promise<ServiceError[]> => {
-  const errors: ServiceError[] = [];
-
-  const templateMeta = await pool
-    .query<{
-      id: string;
-      preferredTransports: string[];
-      security: string;
-      messageType: string;
-    }>(
-      `
-      select 
-        template_meta_id as "id",
-        message_security as "security",
-        preferred_transports as "preferredTransports"
-      from scheduled_message_by_templates
-      where id = $1
-  `,
-      [scheduledId],
-    )
-    .then((res) => res.rows.at(0));
-
-  if (!templateMeta) {
-    // We log here and return 500 so scheduler can keep failing until max retries hit to signal further admin.
-    errors.push({
-      critical: true,
-      error: { scheduledId, userId },
-      msg: "failed to get any scheduled message by template",
-    });
-    return errors;
-  }
-
-  // Let's just get the language the user expects. Need to check the user api what they prefer
-  // but also fallback if there's no template for the lang
-  const templateContents = await pool
-    .query<{
-      subject: string;
-      excerpt: string;
-      richText: string;
-      plainText: string;
-      lang: string;
-    }>(
-      `
-    select 
-        subject, 
-        excerpt, 
-        rich_text as "richText", 
-        plain_text as "plainText",
-        lang
-    from message_template_contents
-    where template_meta_id = $1 
-    `,
-      [templateMeta.id],
-    )
-    .then((res) => res.rows);
-
-  if (!templateContents.length) {
-    errors.push({
-      critical: true,
-      error: {
-        userId,
-        templateMeta,
-      },
-      msg: "failed to find a template for meta id",
-    });
-
-    return errors;
-  }
-
-  // TODO some kind of default logic here
-  const templateContent =
-    templateContents.find((tmpl) => tmpl?.lang === "en") ??
-    templateContents.at(0)!; // We know there's items in the list at this point.
-
-  // The interpolations will come from a table once we set to create a message from a scheduler
-  const interpolationsResult = await pool
-    .query<{
-      key: string;
-      value: string;
-    }>(
-      `
-    select 
-      interpolation_key as "key", 
-      interpolation_value as "value" 
-    from message_template_interpolations
-    where message_by_template_id = $1
-  `,
-      [scheduledId],
-    )
-    .then((res) => res.rows);
-
-  const interpolations = interpolationsResult.reduce<Record<string, string>>(
-    function reducer(acc, pair) {
-      acc[pair.key] = pair.value;
-      return acc;
-    },
-    {},
-  );
-
-  const interpolationKeys = Object.keys(interpolations);
-  const interpolationReducer = utils.interpolationReducer(interpolations);
-
-  const subject = interpolationKeys.reduce(
-    interpolationReducer,
-    templateContent.subject,
-  );
-
-  const plainText = interpolationKeys.reduce(
-    interpolationReducer,
-    templateContent.plainText,
-  );
-
-  const richText = interpolationKeys.reduce(
-    interpolationReducer,
-    templateContent.richText,
-  );
-
-  const excerpt = interpolationKeys.reduce(
-    interpolationReducer,
-    templateContent.excerpt,
-  );
-
-  const transportationSubject = subject;
-  const transportationBody = richText || plainText;
-  const transportationExcerpt = excerpt;
-
-  // Values for each language insert
-  const values = [
-    "true",
-    subject,
-    excerpt,
-    richText,
-    plainText,
-    templateContent.lang,
-    organisationId,
-    templateMeta.security,
-    subject, // message name, no idea what we're supposed to put here...
-    subject, //thread name, no idea how this correlates with a template
-    templateMeta.preferredTransports
-      ? utils.postgresArrayify(templateMeta.preferredTransports)
-      : null,
-    userId,
-  ];
-
-  // A job is tied to one user.
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-    await client.query(
-      `
-        insert into messages(
-          is_delivered,
-          subject,
-          excerpt, 
-          rich_text,
-          plain_text,
-          lang,
-          organisation_id,
-          security_level,
-          message_name,
-          thread_name,
-          preferred_transports,
-          user_id
-        ) values (${values.map((_, i) => `$${i + 1}`).join(", ")})
-    `,
-      values,
-    );
-
-    const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
-    await client.query(
-      `
-          update jobs set delivery_status = $1
-          where job_id = $2
-      `,
-      [statusDelivered, scheduledId],
-    );
-
-    await client.query("COMMIT");
   } catch (err) {
     errors.push({
-      critical: true,
+      critical: false,
       error: { err },
-      msg: "failed to create message from template",
+      msg: isNativeError(err)
+        ? err.message
+        : "failed to externally transport message",
     });
-    // error = utils.buildApiError("failed to create message from template", 500);
-    await client.query("ROLLBACK");
   } finally {
-    client.release;
-  }
-
-  /**
-   * There's a lot of logic to determine which transports, if any, to use
-   * for each user.
-   * eg.
-   * Does user accept the preferred transport?
-   * Which transport can we defer to?
-   * Persist logs?
-   * Fetch user information. Email and number
-   */
-  const transportClient = await pool.connect();
-  try {
-    for (const transport of templateMeta.preferredTransports) {
-      if (transport === "email") {
-        if (!transportationSubject) {
-          continue;
-        }
-
-        let providerId: string | undefined;
-        try {
-          // This is a big placeholder that needs proper logic
-          providerId =
-            await mailService(transportClient).getFirstOrEtherealMailProvider();
-
-          void mailService(transportClient).sendMail({
-            providerId,
-            email: "",
-            subject: transportationSubject,
-            body: transportationBody ?? "",
-          });
-        } catch (err) {
-          errors.push({
-            critical: false,
-            error: {
-              userId,
-              providerId,
-              transportationSubject,
-              transportationBody,
-            },
-            msg: "failed to send email",
-          });
-        }
-      } else if (transport === "sms") {
-        if (!transportationExcerpt || !transportationSubject) {
-          continue;
-        }
-
-        // todo proper query
-        const config = await pool
-          .query<{ config: unknown }>(
-            `
-          select config from sms_providers
-          limit 1
-        `,
-          )
-          .then((res) => res.rows.at(0)?.config);
-
-        if (utils.isSmsAwsConfig(config)) {
-          const service = awsSnsSmsService(
-            config.accessKey,
-            config.secretAccessKey,
-          );
-
-          try {
-            await service.Send(transportationExcerpt, "");
-          } catch (err) {
-            const msg = utils.isError(err) ? err.message : "failed to send sms";
-            errors.push({
-              critical: false,
-              error: {
-                userId,
-                transportationExcerpt,
-                transportationSubject,
-              },
-              msg,
-            });
-          }
-        }
-      }
-    }
-  } finally {
-    transportClient.release();
+    transportsClient.release();
   }
 
   return errors;

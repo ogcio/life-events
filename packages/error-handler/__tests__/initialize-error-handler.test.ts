@@ -4,6 +4,7 @@ import {
   DEFAULT_PATH,
   initializeServer,
 } from "./helpers/fastify-test-helpers.js";
+import { HttpErrorClasses, NotFoundError } from "shared-errors";
 
 t.test("Common error is managed as expected", async () => {
   const { server } = initializeServer();
@@ -17,7 +18,7 @@ t.test("Common error is managed as expected", async () => {
   t.ok(typeof response !== "undefined");
   t.equal(response?.statusCode, 500);
   t.same(response.json(), {
-    code: "SERVER_ERROR",
+    code: HttpErrorClasses.ServerError,
     detail: "error message",
     request_id: "req-1",
     name: "FastifyError",
@@ -26,7 +27,7 @@ t.test("Common error is managed as expected", async () => {
   t.end();
 });
 
-t.test("Validation error is managed as expected", async () => {
+t.test("Validation error is managed as a Life Events One", async () => {
   const { server } = initializeServer();
   t.teardown(() => server.close());
   const response = await server.inject({
@@ -36,26 +37,19 @@ t.test("Validation error is managed as expected", async () => {
   });
 
   t.ok(typeof response !== "undefined");
-  t.equal(response?.statusCode, 423);
-  t.same(response.headers.error_header, "value");
+  t.equal(response?.statusCode, 422);
   t.same(response.json(), {
-    code: "VALIDATION_ERROR",
+    code: HttpErrorClasses.ValidationError,
     detail: "error message",
     request_id: "req-1",
-    name: "FastifyError",
+    name: "VALIDATION_ERROR",
     validation: [
       {
-        keyword: "field",
-        instancePath: "the.instance.path",
-        schemaPath: "the.schema.path",
-        params: {
-          field: "one",
-          property: "two",
-        },
+        fieldName: "the.instance.path",
         message: "error message",
       },
     ],
-    validationContext: "body",
+    process: "/validation?error_message=error+message",
   });
 
   t.end();
@@ -75,7 +69,7 @@ t.test(
     t.ok(typeof response !== "undefined");
     t.equal(response?.statusCode, 500);
     t.same(response.json(), {
-      code: "UNKNOWN_ERROR",
+      code: HttpErrorClasses.UnknownError,
       detail: "error message",
       request_id: "req-1",
       name: "FastifyError",
@@ -96,10 +90,11 @@ t.test("404 error is managed as expected", async () => {
   t.ok(typeof response !== "undefined");
   t.equal(response?.statusCode, 404);
   t.same(response.json(), {
-    code: "REQUEST_ERROR",
-    detail: "Not Found",
+    code: HttpErrorClasses.NotFoundError,
+    detail: "Route not found",
     request_id: "req-1",
-    name: "FastifyError",
+    process: "/this-path-does-not-exist",
+    name: new NotFoundError("TEMP", "TEMP").name,
   });
 
   t.end();

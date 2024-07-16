@@ -1,5 +1,8 @@
 import { api } from "messages";
-import { MessageCreateProps } from "../../../../utils/messaging";
+import {
+  isAvailableTransport,
+  MessageCreateProps,
+} from "../../../../utils/messaging";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import tz from "dayjs/plugin/timezone";
@@ -27,13 +30,13 @@ export default async (props: MessageCreateProps) => {
     const hour = formData.get("schedule-date-hour")?.toString();
     const minute = formData.get("schedule-date-minute")?.toString();
 
-    let scheduleAt = "";
+    let scheduledAt = "";
     if (schedule === "future" && year && month && day && hour && minute) {
-      scheduleAt = dayjs
+      scheduledAt = dayjs
         .tz(`${year}-${month}-${day} ${hour}:${minute}`, DUBLIN_TIMEZONE)
         .format();
     } else {
-      scheduleAt = dayjs().format();
+      scheduledAt = dayjs().format();
     }
 
     const messagesClient = new Messaging(props.userId);
@@ -59,15 +62,25 @@ export default async (props: MessageCreateProps) => {
       };
     }
 
-    // TODO deconstruct error and handle
-    await messagesClient.createMessage({
-      message,
-      template,
-      preferredTransports: props.state.transportations,
-      userIds: props.state.userIds,
-      security: "high",
-      scheduleAt,
-    });
+    if (template) {
+      const transportations: Parameters<
+        typeof messagesClient.createTemplateMessages
+      >[0]["transportations"] = [];
+
+      for (const transportation of props.state.transportations) {
+        if (isAvailableTransport(transportation)) {
+          transportations.push(transportation);
+        }
+      }
+
+      await messagesClient.createTemplateMessages({
+        security: "low",
+        templateMetaId: template?.id,
+        transportations,
+        userIds: props.state.userIds,
+        scheduledAt,
+      });
+    }
 
     await api.upsertMessageState(
       Object.assign({}, props.state, {

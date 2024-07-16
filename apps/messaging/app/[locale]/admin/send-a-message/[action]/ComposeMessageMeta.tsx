@@ -42,9 +42,8 @@ export default async (props: MessageCreateProps) => {
   }
 
   const { userId } = await PgSessions.get();
-  const { data: templates } = await new Messaging(userId).getTemplates(
-    headers().get("x-next-intl-locale") ?? "en",
-  );
+  const lang = headers().get("x-next-intl-locale");
+  const { data: templates } = await new Messaging(userId).getTemplates();
 
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">
@@ -144,7 +143,8 @@ export default async (props: MessageCreateProps) => {
                 key={template.templateMetaId}
                 value={template.templateMetaId}
               >
-                {template.templateName}
+                {template.contents.find((content) => content.lang === lang)
+                  ?.templateName || template.contents.at(0)?.templateName}
               </option>
             ))}
           </select>

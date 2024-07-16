@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { ComponentProps } from "react";
 import ds from "design-system";
 import { api } from "messages";
-import { providerRoutes, users, usersImports } from "./routes";
+import { events, providerRoutes, users, usersImports } from "./routes";
 
 export const languages = {
   EN: "EN",
@@ -45,6 +45,12 @@ export const sideMenuOptions = async (isAdminUser: boolean) => {
         label: t("users"),
         url: users.url,
         icon: "employment",
+      },
+      {
+        key: events.slug,
+        label: t("events"),
+        url: events.url,
+        icon: "events",
       },
     );
   } else {
@@ -88,11 +94,25 @@ export function getCurrentStep<TFlowData>(
 }
 
 export type ApiMessageState = Parameters<typeof api.upsertMessageState>[0];
+export type EventTableSearchParams = {
+  page: string;
+  offset: string;
+  baseUrl: string;
+  limit: string;
+  search?: string;
+};
+
+export type MessageCreateSearchParams = EventTableSearchParams & {
+  recipientToAddIds?: string;
+  recipientToRemoveId?: string;
+};
+
 export type MessageCreateProps = {
   state: ApiMessageState;
   userId: string;
   stateId?: string;
   disabledSubmit?: boolean;
+  searchParams?: MessageCreateSearchParams;
 };
 
 export const searchKeyProvider = "provider";
@@ -158,3 +178,28 @@ export const getLinks = (
       };
   }
 };
+
+/**
+ * Checks for all values inside double curly brackets
+ *
+ * eg. {{value}} => ["value"]
+ */
+export function getInterpolationValues(text: string): string[] {
+  return text.match(/[^{{]+(?=}})/g) || [];
+}
+
+export const avaliableMessagingTemplateStaticVariables = new Set([
+  "firstName",
+  "lastName",
+  "phone",
+  "email",
+  "ppsn",
+]);
+
+export const AVAILABLE_TRANSPORTS = ["sms", "email", "lifeEvent"] as const;
+
+export function isAvailableTransport(
+  t: string,
+): t is (typeof AVAILABLE_TRANSPORTS)[number] {
+  return AVAILABLE_TRANSPORTS.some((at) => at === t);
+}
