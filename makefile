@@ -1,6 +1,10 @@
 GREEN=\033[0;32m
 NC=\033[0m
 
+## Prepare ##
+install-concurrently:
+	npm i -g concurrently
+
 ## env files ##
 update-env:
 		MODE=update node scripts/init-env.mjs
@@ -11,7 +15,7 @@ init-env:
 build-ds:
 	npm run build --workspace=design-system
 init-ds:
-	@if [ ! -d "packages/design-system/dist" ]; then\
+	@if [ ! -d "packages/design-system/dist" ]; then \
 		$(MAKE) build-ds; \
 	fi
 build-shared-errors:
@@ -41,9 +45,11 @@ init:
 	$(MAKE) init-env
 	$(MAKE) init-ds
 	$(MAKE) build-docker
+start-docker: 
+	docker-compose down && \
+	DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans -d --wait
 
 ## Migrations
-
 migrate-web: 
 	npm run migrate --workspace=web
 migrate-payments: 
@@ -64,25 +70,29 @@ migrate:
 ## Logto ##
 init-logto:
 	node scripts/init-logto.mjs
+stop-logto:
+	node scripts/stop-logto.mjs
 
 ## Run services ##
-run-auth:
-	npm run dev --workspace=auth-service
-run-mock:
-	npm run dev --workspace=mock-api
-run-life-events:
-	npm run dev --workspace=web
-run-payments:
-	npm run dev --workspace=payments-api && npm run dev --workspace=payments
-run-messaging:
-	npm run dev --workspace=messaging-api
-	npm run dev --workspace=messaging	
-run-profile:
-	npm run dev --workspace=profile-api
-	npm run dev --workspace=profile
-run-timeline:
-	npm run dev --workspace=timeline-api
-run-home:
-	npm run dev --workspace=home
-
-## Start ##
+start-services:
+	$(MAKE) install-concurrently && \
+	concurrently --kill-others \
+	"npm run dev --workspace=auth-service" \
+	"npm run dev --workspace=mock-api" \
+	"npm run dev --workspace=web" \
+	"npm run dev --workspace=payments" \
+	"npm run dev --workspace=messaging" \
+	"npm run dev --workspace=payments-api" \
+	"npm run dev --workspace=profile" \
+	"npm run dev --workspace=messaging-api" \
+	"npm run dev --workspace=profile-api"  \
+	"npm run dev --workspace=timeline-api" \
+	"npm run dev --workspace=home" \
+	"npm run dev --workspace=forms"
+start-all:
+	$(MAKE) init && \
+	$(MAKE) start-docker && \
+	$(MAKE) install-concurrently && \
+	concurrently \
+	"$(MAKE) start-services" \
+	"sleep 5 && $(MAKE) migrate"

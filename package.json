@@ -9,11 +9,8 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "scripts": {    
-    "init:logto": "node scripts/init-logto.mjs",
-    "stop:logto": "node scripts/stop-logto.mjs",
-    "start:services": "concurrently --kill-others \"npm run dev --workspace=auth-service\" \"npm run dev --workspace=mock-api\" \"npm run dev --workspace=web\" \"npm run dev --workspace=payments\" \"npm run dev --workspace=messaging\" \"npm run dev --workspace=payments-api\" \"npm run dev --workspace=profile\" \"npm run dev --workspace=messaging-api\" \"npm run dev --workspace=profile-api\"  \"npm run dev --workspace=timeline-api\" \"npm run dev --workspace=home\" \"npm run dev --workspace=forms\"",
-    "start:docker": "docker-compose down && DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans -d --wait",
+  "scripts": {
+
     "start:docker-no-scheduler": "docker-compose -f docker-compose-no-scheduler.yaml down && DOCKER_BUILDKIT=1 docker-compose -f docker-compose-no-scheduler.yaml up --build --remove-orphans -d --wait",
     "stop:docker": "docker-compose down",
     "start": "npm run init && npm run start:docker && concurrently \"npm run start:services\" \"sleep 5 && npm run migrate\"",
