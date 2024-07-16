@@ -246,9 +246,6 @@ export function ProfileSdkFacade(
     async selectUsers(ids: string[]) {
       const profileResult = await sdkProfile.selectUsers(ids);
 
-      // if (profileResult.error) {
-      //   return { data: undefined, error: profileResult.error };
-      // }
 
       const fromProfile = profileResult.data || [];
 

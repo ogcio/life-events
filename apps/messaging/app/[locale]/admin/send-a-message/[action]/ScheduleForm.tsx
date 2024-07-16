@@ -125,7 +125,6 @@ export default async (props: MessageCreateProps) => {
     props.userId,
     "create_error",
   );
-  console.log(errors);
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">
       {Boolean(errors.length) && (

@@ -6,7 +6,6 @@ import { getTranslations } from "next-intl/server";
 import dayjs from "dayjs";
 import Link from "next/link";
 
-// function isCreateEvent(data:unknown): data is
 
 export default async (props: { params: { messageId: string } }) => {
   const t = await getTranslations("MessageEvents");
@@ -47,7 +46,6 @@ export default async (props: { params: { messageId: string } }) => {
             <th className="govie-table__header">{t("tableStatusHeader")}</th>
             <th className="govie-table__header">{t("tableDateHeader")}</th>
             <th className="govie-table__header">{t("tableTimeHeader")}</th>
-            {/* <th className="govie-table__header">{t("tableRefHeader")}</th> */}
             <th className="govie-table__header">{t("tableActionHeader")}</th>
           </tr>
         </thead>
