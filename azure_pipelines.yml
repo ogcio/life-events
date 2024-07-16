@@ -87,7 +87,7 @@ stages:
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: 
         - EnvApproval
-      condition: ${{ variables.pushArtefacts }}
+      condition: and(${{ variables.pushArtefacts }}, succeeded())
       jobs:
       - template: pipeline-templates/push_image.yml
         parameters:
