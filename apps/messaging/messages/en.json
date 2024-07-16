@@ -384,13 +384,24 @@
   "MessageEvents": {
     "mainHeader": "Message logs",
     "searchPlaceholder": "Search Messages",
-    "tableDateHeader": "Scheduled",
+    "tableDateHeader": "Date",
+    "tableTimeHeader": "Time",
+    "tableScheduledHeader": "Scheduled",
     "tableStatusHeader": "Status",
+    "tableActionHeader": "Action",
     "tableSubjectHeader": "Subject",
     "tableRecipientHeader": "Recipient",
     "tableViewHeader": "Action",
     "status": {
-      "delivered": "DELIVERED"
+      "delivered": "DELIVERED",
+      "delivering": "DELIVERING",
+      "failed": "FAILED",
+      "scheduled": "SCHEDULED",
+      "created": "CREATED",
+      "emailDelivered": "DELIVERED",
+      "emailFailed": "EMAIL FAILED",
+      "smsDelivered": "DELIVERED",
+      "smsFailed": "SMS FAILED"
     }
   }
 }

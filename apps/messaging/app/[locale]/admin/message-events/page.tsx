@@ -30,9 +30,7 @@ export async function messageStatus(type: string, status: string) {
         </strong>
       );
     }
-  }
-
-  if (type === "message_schedule") {
+  } else if (type === "message_schedule") {
     switch (status) {
       case "successful":
         return (
@@ -48,26 +46,54 @@ export async function messageStatus(type: string, status: string) {
         );
       case "pending":
         return (
-          <strong className="govie-tag govie-tag--yellow">
+          <strong className="govie-tag govie-tag--blue">
             {t("scheduling")}
           </strong>
         );
       default:
         break;
     }
-  }
-
-  if (type === "message_create") {
+  } else if (type === "message_create") {
     switch (status) {
       case "successful":
         return (
-          <strong className="govie-tag govie-tag--green">{t("created")}</strong>
+          <strong className="govie-tag govie-tag--grey">{t("created")}</strong>
         );
 
       default:
         break;
     }
+  } else if (type === "sms_delivery") {
+    switch (status) {
+      case "successful":
+        return (
+          <strong className="govie-tag govie-tag--green">
+            {t("smslDelivered")}
+          </strong>
+        );
+      case "failed":
+        return (
+          <strong className="govie-tag govie-tag--red">{t("smsFailed")}</strong>
+        );
+    }
+  } else if (type === "email_delivery") {
+    switch (status) {
+      case "successful":
+        return (
+          <strong className="govie-tag govie-tag--green">
+            {t("emaillDelivered")}
+          </strong>
+        );
+      case "failed":
+        return (
+          <strong className="govie-tag govie-tag--red">
+            {t("emailFailed")}
+          </strong>
+        );
+    }
   }
+
+  console.log({ type, status });
 
   return null;
 }
@@ -137,7 +163,7 @@ export default async (props: { searchParams: { search?: string } }) => {
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
-            <th className="govie-table__header">{t("tableDateHeader")}</th>
+            <th className="govie-table__header">{t("tableScheduledHeader")}</th>
             <th className="govie-table__header">{t("tableStatusHeader")}</th>
             <th className="govie-table__header">{t("tableSubjectHeader")}</th>
             <th className="govie-table__header">{t("tableRecipientHeader")}</th>

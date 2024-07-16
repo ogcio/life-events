@@ -214,7 +214,7 @@ export const getUserProfiles = async (ids: string[], pool: Pool) => {
       `
     select 
       (details ->> 'firstName') as "firstName",
-      (details ->> 'lastName') as "firstName",
+      (details ->> 'lastName') as "lastName",
       (details ->> 'publicIdentityId') as "ppsn",
       COALESCE(user_profile_id, id::text) as "id",
       'en' as "lang",
@@ -263,7 +263,6 @@ export function ProfileSdkFacade(
           idsNotFound.push(id);
         }
       }
-
 
       const fromMessage = idsNotFound.length
         ? await messagingProfile.selectUsers(idsNotFound)

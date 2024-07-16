@@ -238,7 +238,6 @@ export default async function messages(app: FastifyInstance) {
         throw new NotFoundError(errorKey, "no template contents found");
       }
 
-
       const allUsersLookup = allUsers.data.reduce<{
         [userId: string]: (typeof allUsers.data)[0];
       }>((acc, user) => {
@@ -269,13 +268,15 @@ export default async function messages(app: FastifyInstance) {
           MessagingEventType.createRawMessage,
           createdTemplateMessages.map((msg) => {
             const user = allUsersLookup[msg.userId];
+
             return {
               excerpt: msg.excerpt,
               lang: msg.lang,
               messageId: msg.messageId,
               messageName: "", // message name isn't feature defined at this point
               plainText: msg.plainText,
-              receiverFullName: `${user.firstName} ${user.lastName}`,
+              receiverFullName:
+                `${user.firstName || ""} ${user.lastName || ""}`.trim(),
               receiverPPSN: user.ppsn || "",
               richText: msg.richText,
               subject: msg.subject,
@@ -284,7 +285,7 @@ export default async function messages(app: FastifyInstance) {
               scheduledAt: req.body.scheduledAt,
               organisationName: "", // will be derived from jwt once logto is integrated
               senderFullName: sender
-                ? `${sender.firstName} ${sender.lastName}`
+                ? `${sender.firstName || ""} ${sender.lastName || ""}`.trim()
                 : "",
               senderPPSN: sender?.ppsn || "",
               senderUserId: sender?.id || userId,
@@ -480,7 +481,6 @@ export default async function messages(app: FastifyInstance) {
     `,
         [messageId],
       );
-
 
       return { data: queryResult.rows };
     },

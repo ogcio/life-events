@@ -2,10 +2,14 @@ import { PgSessions } from "auth/sessions";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
 import { Messaging } from "building-blocks-sdk";
 import { messageStatus } from "../page";
+import { getTranslations } from "next-intl/server";
+import dayjs from "dayjs";
+import Link from "next/link";
 
 // function isCreateEvent(data:unknown): data is
 
 export default async (props: { params: { messageId: string } }) => {
+  const t = await getTranslations("MessageEvents");
   const { userId } = await PgSessions.get();
   const messagingClient = new Messaging(userId);
   const messageEvents = await messagingClient.getMessageEvent(
@@ -28,24 +32,46 @@ export default async (props: { params: { messageId: string } }) => {
 
   return (
     <FlexMenuWrapper>
-      <h1>Message {subject}</h1>
+      <h1>
+        <span className="govie-heading-xl" style={{ margin: "unset" }}>
+          Message Event Log
+        </span>
+      </h1>
       <h2>Recipient - {recipient}</h2>
 
       <p>{excerpt}</p>
       <p>{plainText}</p>
-      {messageEvents.data?.map(async (item) => (
-        <div
-          key={item.eventStatus + item.eventType}
-          style={{ background: "pink", margin: "15px" }}
-        >
-          <div>
-            {(await messageStatus(item.eventType, item.eventStatus)) ||
-              `${item.eventType} - ${item.eventStatus}`}
-          </div>
-
-          <div>{item.createdAt}</div>
-        </div>
-      ))}
+      <table className="govie-table">
+        <thead className="govie-table__head">
+          <tr className="govie-table__row">
+            <th className="govie-table__header">{t("tableStatusHeader")}</th>
+            <th className="govie-table__header">{t("tableDateHeader")}</th>
+            <th className="govie-table__header">{t("tableTimeHeader")}</th>
+            {/* <th className="govie-table__header">{t("tableRefHeader")}</th> */}
+            <th className="govie-table__header">{t("tableActionHeader")}</th>
+          </tr>
+        </thead>
+        <tbody className="govie-table__body">
+          {messageEvents.data?.map(async (item) => {
+            const day = dayjs(item.createdAt);
+            return (
+              <tr key={item.data.messageId} className="govie-table__row">
+                <td className="govie-table__cell">
+                  {await messageStatus(item.eventType, item.eventStatus)}
+                </td>
+                <td className="govie-table__cell">
+                  {day.format("YYYY-MM-DD")}
+                </td>
+                <td className="govie-table__cell">{day.format("HH:MM:ss")}</td>
+                <td className="govie-table__cell"></td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <Link href="./" className="govie-back-link">
+        Back
+      </Link>
     </FlexMenuWrapper>
   );
 };
