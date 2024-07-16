@@ -125,11 +125,23 @@ export default async (props: MessageCreateProps) => {
     props.userId,
     "create_error",
   );
-
-
+  console.log(errors);
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">
-      {errors && JSON.stringify(errors, null, 4)}
+      {Boolean(errors.length) && (
+        <div className="govie-error-summary">
+          <div>
+            <h2>
+              <span
+                className="govie-error-summary__title"
+                style={{ margin: "unset" }}
+              >
+                {t("serverError")}
+              </span>
+            </h2>
+          </div>
+        </div>
+      )}
       <form action={submit}>
         <h1>
           <span style={{ margin: "unset" }} className="govie-heading-xl">

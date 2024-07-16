@@ -9,7 +9,7 @@
     "templates": "Message templates",
     "users": "Citizens",
     "userSettings": "Settings",
-    "events": "Events"
+    "events": "Event log"
   },
   "MessageTemplates": {
     "menu": {
@@ -157,7 +157,8 @@
       "year": "Year",
       "hour": "HH",
       "minute": "MM",
-      "submitText": "Send message"
+      "submitText": "Send message",
+      "serverError": "Server failed to create the message"
     },
     "SuccessForm": {
       "title": "Your message has been sent",

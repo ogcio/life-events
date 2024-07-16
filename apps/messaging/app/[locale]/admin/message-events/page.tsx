@@ -34,7 +34,7 @@ export async function messageStatus(type: string, status: string) {
     switch (status) {
       case "successful":
         return (
-          <strong className="govie-tag govie-tag--green">
+          <strong className="govie-tag govie-tag--blue">
             {t("scheduled")}
           </strong>
         );
