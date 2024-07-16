@@ -3,7 +3,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ListRow } from "../../../[event]/[...action]/shared/SummaryListRow";
+import { ListRow } from "../../../(public)/[event]/[...action]/shared/SummaryListRow";
 import { aws, postgres, routes, web, workflow } from "../../../../utils";
 import { headers } from "next/headers";
 import FormLayout from "../../../../components/FormLayout";

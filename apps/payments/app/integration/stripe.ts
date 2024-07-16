@@ -1,21 +1,17 @@
 import s from "stripe";
 import { TransactionStatuses } from "../../types/TransactionStatuses";
 import { PaymentRequest } from "../../types/common";
-import { PgSessions } from "auth/sessions";
-import { Payments } from "building-blocks-sdk";
 import { StripeData } from "../[locale]/(hosted)/paymentSetup/providers/types";
 import { errorHandler } from "../utils";
+import { PaymentsApiFactory } from "../../libraries/payments-api";
 
 const getStripeProviderId = (paymentRequest: PaymentRequest) =>
   paymentRequest.providers.find((p) => p.type === "stripe")!.id;
 
-const getSecretKey = async (
-  providerId: string,
-  userId: string,
-): Promise<string> => {
-  const { data: provider, error } = await new Payments(userId).getProviderById(
-    providerId,
-  );
+const getSecretKey = async (providerId: string): Promise<string> => {
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: provider, error } =
+    await paymentsApi.getProviderById(providerId);
 
   if (error) {
     errorHandler(error);
@@ -37,8 +33,7 @@ const callCreateIntentApi = async (stripe: s, amount: number) => {
 export async function createPaymentIntent(paymentRequest: PaymentRequest) {
   try {
     const providerId = getStripeProviderId(paymentRequest);
-    const { userId } = await PgSessions.get();
-    const sk = await getSecretKey(providerId, userId);
+    const sk = await getSecretKey(providerId);
     const stripe = await getStripeInstance(sk);
 
     const paymentIntent = await callCreateIntentApi(

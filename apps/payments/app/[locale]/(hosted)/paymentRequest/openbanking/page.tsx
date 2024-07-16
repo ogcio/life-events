@@ -2,22 +2,21 @@ import OpenBankingHost from "./OpenBankingHost";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 import { errorHandler, getRealAmount } from "../../../../utils";
-import { PgSessions } from "auth/sessions";
 import { redirect, RedirectType } from "next/navigation";
-import { Payments } from "building-blocks-sdk";
+import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
+import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
 
 const MAX_WAIT_FOR_RESULT = "60";
 
 async function getPaymentDetails(
   paymentId: string,
-  userId: string,
   user: { name: string; email: string },
   amount?: number,
   customAmount?: number,
 ) {
-  const { data: details, error } = await new Payments(
-    userId,
-  ).getPaymentRequestPublicInfo(paymentId);
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { data: details, error } =
+    await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
   if (error) {
     errorHandler(error);
@@ -66,11 +65,11 @@ export default async function Bank(props: {
       }
     | undefined;
 }) {
-  const { userId, firstName, lastName, email, publicServant } =
-    await PgSessions.get();
+  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const { user, isPublicServant } = await getPaymentsCitizenContext();
   const t = await getTranslations("Common");
 
-  if (publicServant || !props.searchParams?.paymentId) {
+  if (isPublicServant || !props.searchParams?.paymentId) {
     return redirect("/not-found", RedirectType.replace);
   }
 
@@ -84,8 +83,7 @@ export default async function Bank(props: {
 
   const details = await getPaymentDetails(
     props.searchParams.paymentId,
-    userId,
-    { email, name: `${firstName} ${lastName}` },
+    { email: user?.email ?? "", name: user?.name ?? "" },
     amount,
     customAmount,
   );
@@ -96,13 +94,13 @@ export default async function Bank(props: {
 
   const { paymentDetails, paymentRequest } = details;
 
-  const { error } = await new Payments(userId).createTransaction({
+  const { error } = await paymentsApi.createTransaction({
     paymentRequestId: props.searchParams.paymentId,
     extPaymentId: paymentRequest.id,
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email, name: `${firstName} ${lastName}` },
+    userData: { email: user?.email ?? "", name: user?.name ?? "" },
   });
 
   if (error) {

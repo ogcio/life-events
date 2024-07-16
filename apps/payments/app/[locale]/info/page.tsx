@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import hero from "../../../public/landingPage/hero.png";
+import favicon from "../../../public/favicon.ico";
 import integration from "../../../public/landingPage/integration.png";
 import interfaceCitizen from "../../../public/landingPage/interfaceCitizen.png";
 import interfacePublicServant from "../../../public/landingPage/interfacePublicServant.png";
@@ -20,6 +21,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Payments",
+  icons: [{ rel: "icon", url: favicon.src }],
 };
 
 const getLinks = (environment: string, locale: string) => {
@@ -31,11 +33,11 @@ const getLinks = (environment: string, locale: string) => {
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
       };
 

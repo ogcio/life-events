@@ -14,14 +14,18 @@ import {
   ProviderDO,
   UpdateProviderDO,
 } from "../../plugins/entities/providers/types";
+import { authPermissions } from "../../types/authPermissions";
+
+const TAGS = ["Providers"];
 
 export default async function providers(app: FastifyInstance) {
   app.post<{ Body: CreateProviderDO; Reply: Id }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         body: CreateProvider,
         response: {
           200: Id,
@@ -32,13 +36,18 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
+      const organizationId = request.userData?.organizationId;
 
-      if (!userId) {
+      if (!userId || !organizationId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const result = await app.providers.createProvider(request.body, userId);
+      const result = await app.providers.createProvider(
+        request.body,
+        userId,
+        organizationId,
+      );
 
       reply.send(result);
     },
@@ -47,9 +56,10 @@ export default async function providers(app: FastifyInstance) {
   app.get<{ Reply: ProviderDO[] }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         response: {
           200: ProvidersList,
           401: HttpError,
@@ -57,13 +67,13 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const organizationId = request.userData?.organizationId;
 
-      if (!userId) {
+      if (!organizationId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const providers = await app.providers.getProvidersList(userId);
+      const providers = await app.providers.getProvidersList(organizationId);
 
       reply.send(providers);
     },
@@ -72,9 +82,10 @@ export default async function providers(app: FastifyInstance) {
   app.get<{ Reply: ProviderDO | Error; Params: ParamsWithProviderId }>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         response: {
           200: ProviderReply,
           401: HttpError,
@@ -83,14 +94,17 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const organizationId = request.userData?.organizationId;
       const { providerId } = request.params;
 
-      if (!userId) {
+      if (!organizationId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const provider = await app.providers.getProviderById(providerId, userId);
+      const provider = await app.providers.getProviderById(
+        providerId,
+        organizationId,
+      );
 
       reply.send(provider);
     },
@@ -103,9 +117,10 @@ export default async function providers(app: FastifyInstance) {
   }>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
       schema: {
-        tags: ["Providers"],
+        tags: TAGS,
         body: UpdateProvider,
         response: {
           200: OkResponse,
@@ -116,14 +131,18 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const organizationId = request.userData?.organizationId;
       const { providerId } = request.params;
 
-      if (!userId) {
+      if (!organizationId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      await app.providers.updateProvider(providerId, request.body, userId);
+      await app.providers.updateProvider(
+        providerId,
+        request.body,
+        organizationId,
+      );
 
       reply.send({ ok: true });
     },

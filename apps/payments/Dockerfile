@@ -9,6 +9,7 @@ COPY ./packages/feature-flags/package*.json /app/packages/feature-flags/
 COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/package*.json /app/packages/shared-components/
+COPY ./packages/shared-errors/package*.json /app/packages/shared-errors/
 
 RUN npm ci
 
@@ -18,6 +19,7 @@ COPY ./packages/feature-flags/ /app/packages/feature-flags/
 COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/ /app/packages/shared-components/
+COPY ./packages/shared-errors/ /app/packages/shared-errors/
 
 FROM deps AS builder
 WORKDIR /app
@@ -28,18 +30,7 @@ ARG NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT
 ARG NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT
 ARG NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT
 ARG NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE
-ARG AUTH_SERVICE_URL
 ARG NEXT_PUBLIC_FORMS_URL
-
-ARG LOGTO_ENDPOINT
-ARG LOGTO_COOKIE_SECRET
-ARG LOGTO_PAYMENTS_APP_ID
-ARG LOGTO_PAYMENTS_APP_SECRET
-
-ENV LOGTO_ENDPOINT=$LOGTO_ENDPOINT
-ENV LOGTO_COOKIE_SECRET=$LOGTO_COOKIE_SECRET
-ENV LOGTO_PAYMENTS_APP_ID=$LOGTO_PAYMENTS_APP_ID
-ENV LOGTO_PAYMENTS_APP_SECRET=$LOGTO_PAYMENTS_APP_SECRET
 
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
@@ -49,8 +40,9 @@ ENV NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_MESSAGING_SERVICE_ENT
 ENV NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT
 ENV NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT
 ENV NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE=$NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE
-ENV AUTH_SERVICE_URL=$AUTH_SERVICE_URL
 ENV NEXT_PUBLIC_FORMS_URL=$NEXT_PUBLIC_FORMS_URL
+
+RUN npm run build --workspace=packages/shared-errors
 RUN npm run build --workspace=apps/payments
 
 FROM base-deps as runner

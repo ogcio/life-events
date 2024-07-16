@@ -1,17 +1,15 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import ProviderStatusTag from "./ProviderStatusTag";
-import { Payments } from "building-blocks-sdk";
-import { PgSessions } from "auth/sessions";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import { errorHandler } from "../../../../utils";
+import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
 
 export default async () => {
   const t = useTranslations("PaymentSetup.Providers");
+  const paymentsApi = await PaymentsApiFactory.getInstance();
 
-  const { userId } = await PgSessions.get();
-
-  const { data: providers, error } = await new Payments(userId).getProviders();
+  const { data: providers, error } = await paymentsApi.getProviders();
 
   if (error) {
     errorHandler(error);
