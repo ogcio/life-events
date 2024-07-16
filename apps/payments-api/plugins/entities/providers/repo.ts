@@ -11,7 +11,7 @@ export class ProvidersRepo {
 
   getProviderById(
     providerId: string,
-    userId: string,
+    organizationId: string,
   ): Promise<QueryResult<ProviderDO>> {
     return this.pg.query(
       `
@@ -23,15 +23,15 @@ export class ProvidersRepo {
               status
             FROM payment_providers
             WHERE provider_id = $1
-            AND user_id = $2`,
-      [providerId, userId],
+            AND organization_id = $2`,
+      [providerId, organizationId],
     );
   }
 
   updateProvider(
     providerId: string,
     provider: UpdateProviderDO,
-    userId: string,
+    organizationId: string,
   ): Promise<QueryResult> {
     return this.pg.query(
       `
@@ -40,12 +40,18 @@ export class ProvidersRepo {
                 provider_data = $2,
                 status = $3
             WHERE provider_id = $4
-            AND user_id = $5`,
-      [provider.name, provider.data, provider.status, providerId, userId],
+            AND organization_id = $5`,
+      [
+        provider.name,
+        provider.data,
+        provider.status,
+        providerId,
+        organizationId,
+      ],
     );
   }
 
-  getProvidersList(userId: string): Promise<QueryResult<ProviderDO>> {
+  getProvidersList(organizationId: string): Promise<QueryResult<ProviderDO>> {
     return this.pg.query(
       `
         SELECT
@@ -55,22 +61,30 @@ export class ProvidersRepo {
           provider_data as data,
           status
         FROM payment_providers
-        WHERE user_id = $1
+        WHERE organization_id = $1
       `,
-      [userId],
+      [organizationId],
     );
   }
 
   createProvider(
     provider: CreateProviderDO,
     userId: string,
+    organizationId: string,
   ): Promise<QueryResult<{ id: string }>> {
     return this.pg.query(
       `
-        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data)
-        VALUES ($1, $2, $3, $4, $5) RETURNING provider_id as id
+        INSERT INTO payment_providers (user_id, provider_name, provider_type, status, provider_data, organization_id)
+        VALUES ($1, $2, $3, $4, $5, $6) RETURNING provider_id as id
       `,
-      [userId, provider.name, provider.type, "connected", provider.data],
+      [
+        userId,
+        provider.name,
+        provider.type,
+        "connected",
+        provider.data,
+        organizationId,
+      ],
     );
   }
 }
