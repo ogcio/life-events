@@ -41,7 +41,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.userData?.userId;
+      const organizationId = request.userData?.organizationId;
       const {
         offset = PAGINATION_OFFSET_DEFAULT,
         limit = PAGINATION_LIMIT_DEFAULT,
@@ -51,7 +51,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       let totalCountResult;
       try {
         const from = `from payment_requests pr`;
-        const conditions = `where pr.user_id = $1`;
+        const conditions = `where pr.organization_id = $1`;
         result = await app.pg.query(
           `select pr.title,
             pr.payment_request_id as "paymentRequestId",
@@ -78,7 +78,7 @@ export default async function paymentRequests(app: FastifyInstance) {
           group by pr.payment_request_id
           ORDER BY pr.created_at DESC
           LIMIT $2 OFFSET $3`,
-          [userId, limit, offset],
+          [organizationId, limit, offset],
         );
 
         totalCountResult = await app.pg.query(
@@ -86,7 +86,7 @@ export default async function paymentRequests(app: FastifyInstance) {
             count(*) as "totalCount"
           ${from}
           ${conditions}`,
-          [userId],
+          [organizationId],
         );
       } catch (err) {
         app.log.error((err as Error).message);
@@ -125,7 +125,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.userData?.userId;
+      const organizationId = request.userData?.organizationId;
       const { requestId } = request.params;
 
       let result;
@@ -156,9 +156,9 @@ export default async function paymentRequests(app: FastifyInstance) {
           LEFT JOIN payment_requests_providers ppr ON pr.payment_request_id = ppr.payment_request_id AND ppr.enabled = true
           LEFT JOIN payment_providers pp ON ppr.provider_id = pp.provider_id
           WHERE pr.payment_request_id = $1
-            AND pr.user_id = $2
+            AND pr.organization_id = $2
           GROUP BY pr.payment_request_id`,
-          [requestId, userId],
+          [requestId, organizationId],
         );
       } catch (err) {
         app.log.error((err as Error).message);
@@ -254,6 +254,7 @@ export default async function paymentRequests(app: FastifyInstance) {
     },
     async (request, reply) => {
       const userId = request.userData?.userId;
+      const organizationId = request.userData?.organizationId;
       const {
         title,
         description,
@@ -269,8 +270,8 @@ export default async function paymentRequests(app: FastifyInstance) {
       try {
         const result = await app.pg.transact(async (client) => {
           const paymentRequestQueryResult = await client.query(
-            `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override, allow_custom_amount)
-              values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override, allow_custom_amount, organization_id)
+              values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
               returning payment_request_id`,
             [
               userId,
@@ -282,6 +283,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               status,
               allowAmountOverride,
               allowCustomAmount,
+              organizationId,
             ],
           );
 
@@ -338,7 +340,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.userData?.userId;
+      const organizationId = request.userData?.organizationId;
       const {
         title,
         description,
@@ -357,7 +359,7 @@ export default async function paymentRequests(app: FastifyInstance) {
           await client.query(
             `update payment_requests 
               set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 , status = $10
-              where payment_request_id = $8 and user_id = $9`,
+              where payment_request_id = $8 and organization_id = $9`,
             [
               title,
               description,
@@ -367,7 +369,7 @@ export default async function paymentRequests(app: FastifyInstance) {
               allowAmountOverride,
               allowCustomAmount,
               paymentRequestId,
-              userId,
+              organizationId,
               status,
             ],
           );
@@ -423,7 +425,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.userData?.userId;
+      const organizationId = request.userData?.organizationId;
       const { requestId } = request.params;
 
       let transactions;
@@ -453,9 +455,9 @@ export default async function paymentRequests(app: FastifyInstance) {
           const deleted = await client.query(
             `delete from payment_requests
             where payment_request_id = $1
-              and user_id = $2
+              and organization_id = $2
             returning payment_request_id`,
-            [requestId, userId],
+            [requestId, organizationId],
           );
 
           if (deleted.rowCount === 0) {
