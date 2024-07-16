@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import hero from "../../../public/landingPage/hero.png";
+import favicon from "../../../public/favicon.ico";
 import integration from "../../../public/landingPage/integration.png";
 import interfaceCitizen from "../../../public/landingPage/interfaceCitizen.png";
 import interfacePublicServant from "../../../public/landingPage/interfacePublicServant.png";
@@ -20,6 +21,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Payments",
+  icons: [{ rel: "icon", url: favicon.src }],
 };
 
 const getLinks = (environment: string, locale: string) => {
