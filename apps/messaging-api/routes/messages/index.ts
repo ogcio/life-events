@@ -3,6 +3,7 @@ import { Type } from "@sinclair/typebox";
 import {
   CreateMessage,
   CreateMessageSchema,
+  MessageEvent,
   MessageEventType,
   MessageEventTypeObject,
   ReadMessageSchema,
@@ -50,8 +51,6 @@ export default async function messages(app: FastifyInstance) {
   app.post<{ Params: { id: string } }>(
     "/jobs/:id",
     {
-      preValidation: (req, res) =>
-        app.checkPermissions(req, res, [Permissions.Message.Write]),
       schema: {
         response: {
           202: Type.Null(),
@@ -418,43 +417,7 @@ export default async function messages(app: FastifyInstance) {
       schema: {
         response: {
           200: Type.Object({
-            data: Type.Array(
-              Type.Object({
-                eventStatus: Type.String(),
-                eventType: Type.String(),
-                data: Type.Union([
-                  // Create data
-                  Type.Object({
-                    messageId: Type.String(),
-                    receiverFullName: Type.String(),
-                    receiverPPSN: Type.String(),
-                    subject: Type.String(),
-                    lang: Type.String(),
-                    excerpt: Type.String(),
-                    richText: Type.String(),
-                    plainText: Type.String(),
-                    threadName: Type.String(),
-                    transports: Type.Array(Type.String()),
-                    messageName: Type.String(),
-                    scheduledAt: Type.String({ format: "date-time" }),
-                    senderUserId: Type.String(),
-                    senderFullName: Type.String(),
-                    senderPPSN: Type.String(),
-                    organisationName: Type.String(),
-                  }),
-                  // Schedule data
-                  Type.Object({
-                    messageId: Type.String(),
-                    jobId: Type.String(),
-                  }),
-                  // Error data
-                  Type.Object({
-                    messageId: Type.String(),
-                  }),
-                ]),
-                createdAt: Type.String({ format: "date-time" }),
-              }),
-            ),
+            data: MessageEvent,
           }),
           "5xx": HttpError,
           "4xx": HttpError,

@@ -5,11 +5,11 @@ import { messageStatus } from "../page";
 import { getTranslations } from "next-intl/server";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 export default async (props: { params: { messageId: string } }) => {
   const t = await getTranslations("MessageEvents");
-  const { userId } = await PgSessions.get();
-  const messagingClient = new Messaging(userId);
+  const messagingClient = await AuthenticationFactory.getMessagingClient();
   const messageEvents = await messagingClient.getMessageEvent(
     props.params.messageId,
   );

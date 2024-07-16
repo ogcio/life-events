@@ -68,7 +68,6 @@ export default async function recipients(app: FastifyInstance) {
         transports: query.transports ? query.transports.trim().split(",") : [],
       });
 
-
       const paginationDetails: PaginationDetails = {
         offset: query.offset,
         limit: query.limit,
