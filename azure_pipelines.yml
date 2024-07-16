@@ -74,7 +74,7 @@ stages:
     jobs:
     - deployment: VerifyDeployment
       displayName: Verify conditions for deployment
-      environment: LifeEvents-${{ variables.environment }}
+      environment: ${{ variables.environment }}
       strategy:
         runOnce:
           deploy:
@@ -87,7 +87,7 @@ stages:
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: 
         - EnvApproval
-      condition: ${{ variables.pushArtefacts }}
+      condition: and(${{ variables.pushArtefacts }}, succeeded())
       jobs:
       - template: pipeline-templates/push_image.yml
         parameters:
