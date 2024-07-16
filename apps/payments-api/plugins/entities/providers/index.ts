@@ -28,11 +28,11 @@ const dbConstraintMap: DbConstraintMap = {
 
 const buildGetProviderById =
   (repo: ProvidersRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
-  async (providerId: string, userId: string): Promise<ProviderDO> => {
+  async (providerId: string, organizationId: string): Promise<ProviderDO> => {
     let result;
 
     try {
-      result = await repo.getProviderById(providerId, userId);
+      result = await repo.getProviderById(providerId, organizationId);
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -57,11 +57,11 @@ const buildUpdateProvider =
   async (
     providerId: string,
     providerData: UpdateProviderDO,
-    userId: string,
+    organizationId: string,
   ) => {
     let provider;
     try {
-      provider = await repo.getProviderById(providerId, userId);
+      provider = await repo.getProviderById(providerId, organizationId);
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -87,16 +87,16 @@ const buildUpdateProvider =
         .getCypheredData(mappedData, secretFields),
     };
 
-    repo.updateProvider(providerId, providerEncrypted, userId);
+    repo.updateProvider(providerId, providerEncrypted, organizationId);
   };
 
 const buildGetProvidersList =
   (repo: ProvidersRepo, log: FastifyBaseLogger) =>
-  async (userId: string): Promise<Array<ProviderDO>> => {
+  async (organizationId: string): Promise<Array<ProviderDO>> => {
     let result;
 
     try {
-      result = await repo.getProvidersList(userId);
+      result = await repo.getProvidersList(organizationId);
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -121,6 +121,7 @@ const buildCreateProvider =
   async (
     createProvider: CreateProviderDO,
     userId: string,
+    organizationId: string,
   ): Promise<{ id: string }> => {
     let result;
 
@@ -143,7 +144,11 @@ const buildCreateProvider =
     };
 
     try {
-      result = await repo.createProvider(providerEncrypted, userId);
+      result = await repo.createProvider(
+        providerEncrypted,
+        userId,
+        organizationId,
+      );
     } catch (err) {
       log.error((err as Error).message);
       handleDbError(err, dbConstraintMap);

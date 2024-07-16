@@ -28,11 +28,16 @@ const buildGetTransactionById =
   async (
     transactionId: string,
     userId?: string,
+    organizationId?: string,
   ): Promise<TransactionDetailsDO> => {
     let result;
 
     try {
-      result = await repo.getTransactionById(transactionId, userId);
+      result = await repo.getTransactionById(
+        transactionId,
+        userId,
+        organizationId,
+      );
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -47,13 +52,13 @@ const buildGetTransactionById =
 const buildGetTransactions =
   (repo: TransactionsRepo, log: FastifyBaseLogger) =>
   async (
-    userId: string,
+    organizationId: string,
     pagination: PaginationParams,
   ): Promise<TransactionDetailsDO[]> => {
     let result;
 
     try {
-      result = await repo.getTransactions(userId, pagination);
+      result = await repo.getTransactions(organizationId, pagination);
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -63,11 +68,11 @@ const buildGetTransactions =
 
 const buildGetTransactionsTotalCount =
   (repo: TransactionsRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
-  async (userId: string): Promise<number> => {
+  async (organizationId: string): Promise<number> => {
     let result;
 
     try {
-      result = await repo.getTransactionsTotalCount(userId);
+      result = await repo.getTransactionsTotalCount(organizationId);
     } catch (err) {
       log.error((err as Error).message);
     }
