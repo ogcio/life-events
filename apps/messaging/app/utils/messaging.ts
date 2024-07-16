@@ -139,11 +139,11 @@ export const getLinks = (
   locale = locale || "en";
   const nonProdFeedbackLink = new URL(
     `${locale}/664c61ba5f7c9800231db294`,
-    "https://www.formsg.testing.gov.ie",
+    "https://www.forms.uat.gov.ie",
   );
   const nonProdLearnMoreForm = new URL(
     `${locale}/664b6de45f7c9800231daf22`,
-    "https://www.formsg.testing.gov.ie",
+    "https://www.forms.uat.gov.ie",
   );
 
   switch (environment) {
