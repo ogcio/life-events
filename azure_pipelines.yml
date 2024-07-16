@@ -65,9 +65,28 @@ stages:
         parameters:
           serviceName: ${{ serviceName }}
           pushArtefacts: ${{ variables.pushArtefacts }}
+  - stage: EnvApproval
+    displayName: Approvals for deployments - ${{ upper(variables.environment) }}
+    dependsOn:
+      - ${{ each serviceName in parameters.services }}:
+        - Build_${{ replace(serviceName, '-', '_') }}
+    condition: ${{ variables.pushArtefacts }}
+    jobs:
+    - deployment: VerifyDeployment
+      displayName: Verify conditions for deployment
+      environment: LifeEvents-${{ variables.environment }}
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - script: |
+                date
+              displayName: Show current date
+  - ${{ each serviceName in parameters.services }}:        
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
-      dependsOn: Build_${{ replace(serviceName, '-', '_') }}
+      dependsOn: 
+        - EnvApproval
       condition: ${{ variables.pushArtefacts }}
       jobs:
       - template: pipeline-templates/push_image.yml
@@ -84,4 +103,3 @@ stages:
           awsServiceConnection: ${{ variables.awsServiceConnection }}
           awsRegion: ${{ variables.awsRegion }}
           serviceName: ${{ serviceName }}
-          environment: ${{ variables.environment }}
