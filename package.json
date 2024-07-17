@@ -10,14 +10,11 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-
-    "stop:docker": "docker-compose down",
-    "start": "npm run init && npm run start:docker && concurrently \"npm run start:services\" \"sleep 5 && npm run migrate\"",
-    
-    "reset-docker": "docker-compose down && docker system prune -a -f && docker builder prune -f && docker image prune -f",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "(command -v husky && husky) || true",
-    "start:docs": "cd documentation && npm run start"
+    "start": "make start",
+    "start:full": "make start-full",
+    "start:no-scheduler": "make start-no-scheduler",
+    "start:logto": "make start-logto",
+    "test": "echo \"Error: no test specified\" && exit 1"
 
   },
   "author": "",

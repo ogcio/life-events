@@ -2,6 +2,8 @@ GREEN=\033[0;32m
 NC=\033[0m
 
 ## Prepare ##
+prepare:
+	(command -v husky && husky) || true
 install-concurrently:
 	npm i -g concurrently
 
@@ -46,11 +48,16 @@ init:
 	$(MAKE) init-ds
 	$(MAKE) build-docker
 start-docker: 
-	docker-compose down && \
-	DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans -d --wait
+	docker compose down && \
+	DOCKER_BUILDKIT=1 docker compose up --build --remove-orphans -d --wait
 start-docker-no-scheduler: 
-	docker-compose -f docker-compose-no-scheduler.yaml down && \
-	DOCKER_BUILDKIT=1 docker-compose -f docker-compose-no-scheduler.yaml up --build --remove-orphans -d --wait
+	docker compose -f docker-compose-no-scheduler.yaml down && \
+	DOCKER_BUILDKIT=1 docker compose -f docker-compose-no-scheduler.yaml up --build --remove-orphans -d --wait
+reset-docker:
+	docker compose down && \
+	docker system prune -a -f && \
+	docker builder prune -f && \
+	docker image prune -f
 
 ## Migrations
 migrate:
@@ -67,6 +74,10 @@ stop-logto:
 	node scripts/stop-logto.mjs
 
 ## Run services ##
+start-docs:
+	cd documentation && \
+	npm run start && \
+	cd ..
 start-services:
 	$(MAKE) install-concurrently && \
 	concurrently --kill-others \
