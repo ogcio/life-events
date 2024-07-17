@@ -25,6 +25,7 @@ export default async function transactions(app: FastifyInstance) {
       reply.send(formatAPIResponse({ ok: true }));
     },
   );
+
   // Test API - You need to be recognized as a Public Servant to use this API
   app.get(
     "/pub-ser",
