@@ -11,15 +11,14 @@
   },
   "scripts": {
 
-    "start:docker-no-scheduler": "docker-compose -f docker-compose-no-scheduler.yaml down && DOCKER_BUILDKIT=1 docker-compose -f docker-compose-no-scheduler.yaml up --build --remove-orphans -d --wait",
     "stop:docker": "docker-compose down",
     "start": "npm run init && npm run start:docker && concurrently \"npm run start:services\" \"sleep 5 && npm run migrate\"",
-    "start:no-scheduler": "npm run init && npm run start:docker-no-scheduler && concurrently \"npm run start:services\" \"sleep 5 && npm run migrate\"",
+    
     "reset-docker": "docker-compose down && docker system prune -a -f && docker builder prune -f && docker image prune -f",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "(command -v husky && husky) || true",
-    "start:docs": "cd documentation && npm run start",
-    "kill-services": "sudo lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006 | xargs sudo kill -9"
+    "start:docs": "cd documentation && npm run start"
+
   },
   "author": "",
   "license": "MIT",

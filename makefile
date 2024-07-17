@@ -48,23 +48,17 @@ init:
 start-docker: 
 	docker-compose down && \
 	DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans -d --wait
+start-docker-no-scheduler: 
+	docker-compose -f docker-compose-no-scheduler.yaml down && \
+	DOCKER_BUILDKIT=1 docker-compose -f docker-compose-no-scheduler.yaml up --build --remove-orphans -d --wait
+
 ## Migrations
-migrate-web: 
-	npm run migrate --workspace=web
-migrate-payments: 
-	npm run migrate --workspace=payments
-migrate-messaging:
-	npm run migrate --workspace=messages
-migrate-profile:
-	npm run migrate --workspace=profile
-migrate-scheduler-api: 
-	npm run migrate --workspace=scheduler
 migrate:
-	$(MAKE) migrate-web
-	$(MAKE) migrate-payments
-	$(MAKE) migrate-messaging
-	$(MAKE) migrate-profile
-	$(MAKE) migrate-scheduler-api
+	npm run migrate --workspace=web && \
+	npm run migrate --workspace=payments && \
+	npm run migrate --workspace=messages && \
+	npm run migrate --workspace=profile && \
+	npm run migrate --workspace=scheduler
 
 ## Logto ##
 init-logto:
@@ -90,11 +84,18 @@ start-services:
 	"npm run dev --workspace=forms"
 kill-services:
 	sudo lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006 | xargs sudo kill -9
-start-all:
-	$(MAKE) init && \
-	$(MAKE) start-docker && \
+start-migrate:
 	$(MAKE) install-concurrently && \
 	concurrently \
 	"$(MAKE) start-services" \
-	"sleep 5 && $(MAKE) migrate" && \
+	"sleep 5 && $(MAKE) migrate"
+start:
+	$(MAKE) init && \
+	$(MAKE) start-docker && \
+	$(MAKE) start-migrate && \
+	$(MAKE) kill-services
+start-no-scheduler:
+	$(MAKE) init && \
+	$(MAKE) start-docker-no-scheduler && \
+	$(MAKE) start-migrate && \
 	$(MAKE) kill-services
