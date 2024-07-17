@@ -246,7 +246,6 @@ export function ProfileSdkFacade(
     async selectUsers(ids: string[]) {
       const profileResult = await sdkProfile.selectUsers(ids);
 
-
       const fromProfile = profileResult.data || [];
 
       if (fromProfile.length === ids.length) {

@@ -35,4 +35,6 @@ For API e2e testing we use [Bruno](https://www.usebruno.com/). It has a Postman 
 
 ### Performance Testing
 
-[K6](https://k6.io/)
+For front end performance tests we are using [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview) which also covers basic accessibility testing. For navigation between pages we are using [Puppeteer](https://pptr.dev/) as both tools are from Google and designed to integrate easily.
+
+For back end performance testing we are looking at [K6](https://k6.io/)

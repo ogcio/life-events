@@ -253,7 +253,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
         token: string;
       }[] = [];
       try {
-        console.log(values, valueArgs);
+ 
         const jobInsertResult = await pool.query<{
           jobId: string;
           userId: string;
