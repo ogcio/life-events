@@ -4,11 +4,10 @@ import { createPaymentIntent } from "../../../../integration/stripe";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { redirect, RedirectType } from "next/navigation";
 import { errorHandler } from "../../../../utils";
-import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
-import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 
 async function getPaymentDetails(paymentId: string, amount?: string) {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
     await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
@@ -46,13 +45,16 @@ export default async function Card(props: {
       }
     | undefined;
 }) {
-  const { user, isPublicServant } = await getPaymentsCitizenContext();
+  const authContext = AuthenticationFactory.getInstance();
+  const { user, isPublicServant } = await authContext.getContext();
 
   if (isPublicServant) {
     return redirect("/not-found", RedirectType.replace);
   }
 
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient({
+    authenticationContext: authContext,
+  });
   const messages = await getMessages({ locale: props.params.locale });
   const stripeMessages =
     (await messages.PayStripe) as unknown as AbstractIntlMessages;

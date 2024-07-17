@@ -5,10 +5,10 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { TransactionStatuses } from "../../../../../../types/TransactionStatuses";
 import Link from "next/link";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 async function getTransactionDetails(transactionId: string) {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: result, error } =
     await paymentsApi.getTransactionDetails(transactionId);
 
@@ -22,7 +22,7 @@ async function getTransactionDetails(transactionId: string) {
 async function confirmTransaction(transactionId: string) {
   "use server";
 
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { error } = await paymentsApi.updateTransaction(transactionId, {
     status: TransactionStatuses.Succeeded,
   });

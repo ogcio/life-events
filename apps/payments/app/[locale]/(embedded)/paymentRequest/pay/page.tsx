@@ -14,8 +14,7 @@ import Footer from "../../../(hosted)/Footer";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import Header from "../../../../components/Header/Header";
 import Banner from "../../../../components/Banner";
-import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
-import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 
 type Props = {
   params: {
@@ -33,7 +32,7 @@ type Props = {
 };
 
 async function getPaymentRequestDetails(paymentId: string) {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
     await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
@@ -64,7 +63,8 @@ export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return notFound();
 
-  const { isPublicServant } = await getPaymentsCitizenContext();
+  const isPublicServant =
+    await AuthenticationFactory.getInstance().isPublicServant();
 
   const embed = props.searchParams?.embed === "true";
 

@@ -3,7 +3,7 @@ import { RedirectType, notFound, redirect } from "next/navigation";
 import { getInternalStatus } from "../../../../integration/stripe";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { errorHandler } from "../../../../utils";
-import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 
 type Props = {
   searchParams: {
@@ -41,7 +41,7 @@ async function updateTransaction(extPaymentId: string, status: string) {
 }
 
 async function getRequestDetails(requestId: string) {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
     await paymentsApi.getPaymentRequestPublicInfo(requestId);
 

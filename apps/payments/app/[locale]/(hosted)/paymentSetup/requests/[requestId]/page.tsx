@@ -16,14 +16,14 @@ import { EmptyStatus } from "../../../../../components/EmptyStatus";
 import Pagination from "../../../../../components/pagination";
 import { routeDefinitions } from "../../../../../routeDefinitions";
 import { redirect, RedirectType } from "next/navigation";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 export default async function ({
   params: { requestId, locale },
   searchParams: { action, page, limit },
 }) {
   const t = await getTranslations("PaymentSetup.Request");
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
   const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
   const pageLimit = limit ? parseInt(limit) : PAGINATION_LIMIT_DEFAULT;

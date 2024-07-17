@@ -8,7 +8,7 @@ import { errorHandler } from "../../../../../utils";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { stripeValidationMap } from "../../../../../validationMaps";
 import { StripeFormState } from "../add-stripe/page";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 type Props = {
   provider: StripeProvider;
@@ -27,7 +27,7 @@ export default async ({ provider, locale }: Props) => {
   ): Promise<StripeFormState> {
     "use server";
 
-    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
     const nameField = formData.get("provider_name") as string;
     const livePublishableKeyField = formData.get(
