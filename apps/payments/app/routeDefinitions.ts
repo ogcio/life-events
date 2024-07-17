@@ -96,6 +96,7 @@ export const routeDefinitions = {
     slug: "inactivePublicServant",
     path() {
       return `/${routeDefinitions.inactivePublicServant.slug}`;
+    },
   },
   login: {
     slug: "login",
