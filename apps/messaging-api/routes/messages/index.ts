@@ -6,6 +6,7 @@ import {
   MessageEvent,
   MessageEventType,
   MessageEventTypeObject,
+  PaginationParams,
   PaginationParamsSchema,
   ReadMessageSchema,
   ReadMessagesSchema,
@@ -22,7 +23,7 @@ import {
   ProfileSdkFacade,
 } from "../../services/users/shared-users";
 import { Profile } from "building-blocks-sdk";
-import { NotFoundError, ServerError } from "shared-errors";
+import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
 import {
   MessageEventData,
   MessagingEventType,
@@ -206,7 +207,7 @@ export default async function messages(app: FastifyInstance) {
       }
 
       if (!req.userData?.organizationId) {
-        throw new ServerError(
+        throw new AuthorizationError(
           errorKey,
           "no organisation id associated to request user",
         );
@@ -339,7 +340,7 @@ export default async function messages(app: FastifyInstance) {
   );
 
   app.get<{
-    Querystring: { search?: string; offset?: number; limit?: number };
+    Querystring: { search?: string } & PaginationParams;
   }>(
     "/events",
     {
