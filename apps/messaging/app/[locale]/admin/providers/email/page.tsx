@@ -65,7 +65,7 @@ export default async (props: {
     }
 
     const messagesClient = await AuthenticationFactory.getMessagingClient({
-      token: accessToken,
+      token: submitAccessToken,
     });
 
     let serverError:
