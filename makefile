@@ -48,7 +48,6 @@ init:
 start-docker: 
 	docker-compose down && \
 	DOCKER_BUILDKIT=1 docker-compose up --build --remove-orphans -d --wait
-
 ## Migrations
 migrate-web: 
 	npm run migrate --workspace=web
@@ -89,10 +88,13 @@ start-services:
 	"npm run dev --workspace=timeline-api" \
 	"npm run dev --workspace=home" \
 	"npm run dev --workspace=forms"
+kill-services:
+	sudo lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006 | xargs sudo kill -9
 start-all:
 	$(MAKE) init && \
 	$(MAKE) start-docker && \
 	$(MAKE) install-concurrently && \
 	concurrently \
 	"$(MAKE) start-services" \
-	"sleep 5 && $(MAKE) migrate"
+	"sleep 5 && $(MAKE) migrate" && \
+	$(MAKE) kill-services
