@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import banner from "../../public/landingPage/banner.png";
+import favicon from "../../public/favicon.ico";
 import interfaces from "../../public/landingPage/interfaces.png";
 import userFillingForm from "../../public/landingPage/user_filling_form.gif";
 import paymentService1 from "../../public/landingPage/payment_service1.png";
@@ -21,6 +22,7 @@ import {
 
 export const metadata: Metadata = {
   title: "FormsIE",
+  icons: [{ rel: "icon", url: favicon.src }],
 };
 
 const getLinks = (environment: string, locale: string) => {
