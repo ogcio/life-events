@@ -41,6 +41,7 @@ export type AuthSessionOrganizationInfo = {
 export type PartialAuthSessionContext = {
   user?: AuthSessionUserInfo;
   isPublicServant: boolean;
+  isInactivePublicServant: boolean;
   organization?: AuthSessionOrganizationInfo;
   originalContext?: LogtoContext;
   scopes: string[];

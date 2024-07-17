@@ -91,6 +91,10 @@ export class BaseAuthenticationContext {
     return (await this.getPartialContext()).isPublicServant;
   }
 
+  async isInactivePublicServant(): Promise<boolean> {
+    return (await this.getPartialContext()).isInactivePublicServant;
+  }
+
   async getUser(): Promise<AuthSessionUserInfo> {
     return (await this.getContext()).user;
   }
