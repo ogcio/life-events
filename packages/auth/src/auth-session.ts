@@ -20,14 +20,17 @@ const PROCESS_ERROR = "PARSE_LOGTO_CONTEXT";
 
 const INACTIVE_PUBLIC_SERVANT_ORG_ROLE =
   "inactive-ps-org:Inactive Public Servant";
+export const INACTIVE_PUBLIC_SERVANT_SCOPE = "bb:public-servant.inactive:*";
 
 export const AuthUserScope = UserScope;
 
 export const AuthSession: IAuthSession = {
   async login(config) {
+    addInactivePublicServantScope(config);
     return signIn(config);
   },
   async logout(config, redirectUri) {
+    addInactivePublicServantScope(config);
     return signOut(config, redirectUri);
   },
   async get(
@@ -43,6 +46,9 @@ export const AuthSession: IAuthSession = {
         "Organization id is mandatory when logging in as public servant",
       );
     }
+
+    addInactivePublicServantScope(config);
+
     const context = await getLogtoContext(config, getContextParameters);
 
     if (!context.isAuthenticated) {
@@ -52,10 +58,17 @@ export const AuthSession: IAuthSession = {
     return parseContext(context, getContextParameters);
   },
   async isAuthenticated(config, getContextParameters) {
+    addInactivePublicServantScope(config);
     const context = await getLogtoContext(config, getContextParameters);
 
     return context.isAuthenticated;
   },
+};
+
+const addInactivePublicServantScope = (config) => {
+  if (config.scopes && !config.scopes.includes(INACTIVE_PUBLIC_SERVANT_SCOPE)) {
+    config.scopes.push(INACTIVE_PUBLIC_SERVANT_SCOPE);
+  }
 };
 
 const getUserInfo = (
@@ -166,6 +179,7 @@ const checkIfPublicServant = (
   orgRoles: string[] | null,
   getContextParameters: GetSessionContextParameters,
 ): boolean =>
+  !checkIfInactivePublicServant(orgRoles) &&
   orgRoles !== null &&
   orgRoles?.includes(getContextParameters.publicServantExpectedRole);
 
