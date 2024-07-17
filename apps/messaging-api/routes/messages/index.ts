@@ -3,6 +3,7 @@ import { Type } from "@sinclair/typebox";
 import {
   CreateMessage,
   CreateMessageSchema,
+  MessageEvent,
   MessageEventType,
   MessageEventTypeObject,
   ReadMessageSchema,
@@ -22,6 +23,7 @@ import {
 import { Profile } from "building-blocks-sdk";
 import { NotFoundError, ServerError } from "shared-errors";
 import {
+  MessageEventData,
   MessagingEventType,
   newMessagingEventLogger,
 } from "../../services/messages/eventLogger";
@@ -49,12 +51,11 @@ export default async function messages(app: FastifyInstance) {
   app.post<{ Params: { id: string } }>(
     "/jobs/:id",
     {
-      preValidation: app.verifyUser,
       schema: {
         response: {
           202: Type.Null(),
-          "5xx": { $ref: "HttpError" },
-          "4xx": { $ref: "HttpError" },
+          "5xx": HttpError,
+          "4xx": HttpError,
         },
       },
     },
@@ -63,7 +64,7 @@ export default async function messages(app: FastifyInstance) {
         pg: app.pg,
         logger: request.log,
         jobId: request.params!.id,
-        userId: request.userData?.userId || "", // we will require scheduler to callback same creds (jwt?) including the user id caller or include it somewhere else.
+        userId: request.userData?.userId || "",
         organizationId: request.userData!.organizationId!,
       });
 
@@ -148,8 +149,8 @@ export default async function messages(app: FastifyInstance) {
         tags: MESSAGES_TAGS,
         body: CreateMessageSchema,
         response: {
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -189,6 +190,11 @@ export default async function messages(app: FastifyInstance) {
           security: Type.String(),
           scheduledAt: Type.String({ format: "date-time" }),
         }),
+        response: {
+          200: Type.Null(),
+          "4xx": HttpError,
+          "5xx": HttpError,
+        },
       },
     },
     async (req, _res) => {
@@ -245,7 +251,12 @@ export default async function messages(app: FastifyInstance) {
       try {
         createdTemplateMessages = await messageService.createTemplateMessages(
           contents,
-          allUsers.data.map((u) => ({ ...u, userId: u.id })),
+          allUsers.data.map((u) => ({
+            ...u,
+            email: u.email || "",
+            phone: u.phone || "",
+            userId: u.id,
+          })),
           req.body.transportations,
           req.body.security,
           req.body.scheduledAt,
@@ -256,13 +267,15 @@ export default async function messages(app: FastifyInstance) {
           MessagingEventType.createRawMessage,
           createdTemplateMessages.map((msg) => {
             const user = allUsersLookup[msg.userId];
+
             return {
               excerpt: msg.excerpt,
               lang: msg.lang,
               messageId: msg.messageId,
               messageName: "", // message name isn't feature defined at this point
               plainText: msg.plainText,
-              receiverFullName: `${user.firstName} ${user.lastName}`,
+              receiverFullName:
+                `${user.firstName || ""} ${user.lastName || ""}`.trim(),
               receiverPPSN: user.ppsn || "",
               richText: msg.richText,
               subject: msg.subject,
@@ -271,7 +284,7 @@ export default async function messages(app: FastifyInstance) {
               scheduledAt: req.body.scheduledAt,
               organisationName: "", // will be derived from jwt once logto is integrated
               senderFullName: sender
-                ? `${sender.firstName} ${sender.lastName}`
+                ? `${sender.firstName || ""} ${sender.lastName || ""}`.trim()
                 : "",
               senderPPSN: sender?.ppsn || "",
               senderUserId: sender?.id || userId,
@@ -290,6 +303,7 @@ export default async function messages(app: FastifyInstance) {
         const jobs = await messageService.scheduleMessages(
           createdTemplateMessages,
           req.body.scheduledAt,
+          req.headers.authorization || "",
         );
 
         eventLogger.log(
@@ -390,6 +404,48 @@ export default async function messages(app: FastifyInstance) {
       );
 
       return { data };
+    },
+  );
+
+  app.get<{
+    Params: {
+      messageId: string;
+    };
+  }>(
+    "/events/:messageId",
+    {
+      schema: {
+        response: {
+          200: Type.Object({
+            data: MessageEvent,
+          }),
+          "5xx": HttpError,
+          "4xx": HttpError,
+        },
+      },
+    },
+    async function getEventHandler(request, _reply) {
+      const messageId = request.params.messageId;
+      const queryResult = await app.pg.pool.query<{
+        eventStatus: string;
+        eventType: string;
+        data: MessageEventData;
+        createdAt: string;
+      }>(
+        `
+      select 
+        event_status as "eventStatus",
+        event_type as "eventType",
+        data,
+        created_at as "createdAt"
+      from messaging_event_logs
+      where message_id = $1
+      order by created_at desc
+    `,
+        [messageId],
+      );
+
+      return { data: queryResult.rows };
     },
   );
 }
