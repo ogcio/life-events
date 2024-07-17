@@ -29,13 +29,33 @@ export interface paths {
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -61,13 +81,48 @@ export interface paths {
                 richText: string;
                 createdAt: string;
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
         /** @description Default Response */
         400: {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -104,13 +159,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -134,19 +209,64 @@ export interface paths {
                 plainText: string;
                 richText: string;
               };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -172,6 +292,38 @@ export interface paths {
         200: {
           content: never;
         };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
       };
     };
   };
@@ -195,6 +347,114 @@ export interface paths {
                 eventType: string;
                 eventStatus: string;
                 scheduledAt: string;
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/messages/events/{messageId}": {
+    get: {
+      parameters: {
+        path: {
+          messageId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                eventStatus: string;
+                eventType: string;
+                data:
+                  | {
+                      messageId: string;
+                      receiverFullName: string;
+                      receiverPPSN: string;
+                      subject: string;
+                      lang: string;
+                      excerpt: string;
+                      richText: string;
+                      plainText: string;
+                      threadName: string;
+                      transports: string[];
+                      messageName: string;
+                      /** Format: date-time */
+                      scheduledAt: string;
+                      senderUserId: string;
+                      senderFullName: string;
+                      senderPPSN: string;
+                      organisationName: string;
+                    }
+                  | {
+                      messageId: string;
+                      jobId: string;
+                    }
+                  | {
+                      messageId: string;
+                    };
+                /** Format: date-time */
+                createdAt: string;
               }[];
             };
           };
@@ -254,6 +514,31 @@ export interface paths {
                 ssl: boolean;
                 isPrimary: boolean;
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -378,6 +663,31 @@ export interface paths {
                 fromAddress: string;
                 ssl: boolean;
                 isPrimary: boolean;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
               };
             };
           };
@@ -530,6 +840,31 @@ export interface paths {
                 type: string;
                 isPrimary: boolean;
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -630,7 +965,7 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data?: {
+              data: {
                 /** Format: uuid */
                 id: string;
                 name: string;
@@ -641,6 +976,31 @@ export interface paths {
                   region: string;
                 };
                 isPrimary: boolean;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
               };
             };
           };
@@ -798,19 +1158,64 @@ export interface paths {
                   templateName: string;
                 }[];
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -888,19 +1293,64 @@ export interface paths {
                   fieldType: string;
                 }[];
               };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
         /** @description Default Response */
         404: {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -1023,6 +1473,31 @@ export interface paths {
                   collectedConsent: boolean;
                 };
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -1136,6 +1611,31 @@ export interface paths {
                   /** @default false */
                   collectedConsent: boolean;
                 };
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
               };
             };
           };
@@ -1322,6 +1822,31 @@ export interface paths {
               data: {
                 /** @default pending */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
               };
             };
           };
@@ -1558,6 +2083,31 @@ export interface paths {
                 lastRetryAt: string | null;
                 importId: string;
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -1724,6 +2274,31 @@ export interface paths {
                   collectedConsent: boolean;
                 };
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -1833,6 +2408,31 @@ export interface paths {
                 lastRetryAt: string | null;
                 importId: string;
               };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -1931,6 +2531,31 @@ export interface paths {
                   collectedConsent: boolean;
                 };
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -2061,26 +2686,6 @@ export interface paths {
               validationContext?: string;
             };
           };
-        };
-      };
-    };
-  };
-  "/api/v1/test/citizen": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
-        };
-      };
-    };
-  };
-  "/api/v1/test/pub-ser": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
         };
       };
     };

@@ -602,8 +602,8 @@ export interface paths {
                 ppsn: string;
                 lang: string;
                 /** Format: email */
-                email: string;
-                phone: string;
+                email?: string;
+                phone?: string;
               }[];
             };
           };

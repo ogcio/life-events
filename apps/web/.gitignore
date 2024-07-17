@@ -8,6 +8,7 @@
 
 # testing
 /coverage
+/performance-tests/lighthouse/reports/*
 
 # next.js
 /.next/
