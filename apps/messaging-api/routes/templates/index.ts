@@ -2,6 +2,8 @@ import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 import { Permissions } from "../../types/permissions";
+import { HttpError } from "../../types/httpErrors";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 
 const tags = ["Templates"];
 
@@ -88,8 +90,8 @@ export default async function templates(app: FastifyInstance) {
         ),
         tags,
         response: {
-          200: Type.Object({
-            data: Type.Array(
+          200: getGenericResponseSchema(
+            Type.Array(
               Type.Object({
                 templateMetaId: Type.String({ format: "uuid" }),
                 contents: Type.Array(
@@ -100,9 +102,9 @@ export default async function templates(app: FastifyInstance) {
                 ),
               }),
             ),
-          }),
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          ),
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -156,8 +158,8 @@ export default async function templates(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: Type.Object({
-            data: Type.Object({
+          200: getGenericResponseSchema(
+            Type.Object({
               contents: Type.Array(
                 Type.Object({
                   templateName: Type.String(),
@@ -175,9 +177,9 @@ export default async function templates(app: FastifyInstance) {
                 }),
               ),
             }),
-          }),
-          404: { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          ),
+          404: HttpError,
+          "5xx": HttpError,
         },
       },
     },

@@ -23,6 +23,7 @@ import {
 } from "../../services/users/import/read-user-imports";
 import { BadRequestError } from "shared-errors";
 import { Permissions } from "../../types/permissions";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 
 const tags = ["Users", "UserImports"];
 
@@ -114,9 +115,9 @@ export default async function usersImports(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: Type.Object({
-            data: Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
-          }),
+          200: getGenericResponseSchema(
+            Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
+          ),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -142,9 +143,7 @@ export default async function usersImports(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: Type.Object({
-            data: Type.Array(UserInvitationSchema),
-          }),
+          200: getGenericResponseSchema(Type.Array(UserInvitationSchema)),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -181,9 +180,7 @@ export default async function usersImports(app: FastifyInstance) {
         ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
         response: {
-          200: Type.Object({
-            data: UsersImportSchema,
-          }),
+          200: getGenericResponseSchema(UsersImportSchema),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -215,9 +212,7 @@ export default async function usersImports(app: FastifyInstance) {
         tags,
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
         response: {
-          200: Type.Object({
-            data: Type.Array(UserInvitationSchema),
-          }),
+          200: getGenericResponseSchema(Type.Array(UserInvitationSchema)),
           "5xx": HttpError,
           "4xx": HttpError,
         },
