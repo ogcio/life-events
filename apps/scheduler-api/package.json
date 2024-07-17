@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node --import=tsx --test ./test/**/*.ts",
-    "test:e2e" : "cd ./e2e && bru run --env local",
-    "test:dev" : "cd ./e2e && bru run --env dev",
+    "test:e2e": "cd ./e2e && bru run --env local",
+    "test:dev": "cd ./e2e && bru run --env dev",
     "start": "node --import tsx index.ts & node --import tsx worker.ts",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
@@ -36,13 +36,14 @@
     "@fastify/type-provider-typebox": "^4.0.0",
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.16",
+    "@usebruno/cli": "^1.20.4",
     "auth": "*",
     "dotenv": "^16.4.5",
+    "error-handler": "*",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
-    "pg": "^8.11.5",
-    "error-handler": "*",
-    "logging-wrapper": "*"
+    "logging-wrapper": "*",
+    "pg": "^8.11.5"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.1",
