@@ -25,6 +25,17 @@ paths:
           description: Default Response
   /api/v1/messages/jobs/{id}:
     post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+              required:
+                - token
+        required: true
       parameters:
         - schema:
             type: string
@@ -452,6 +463,20 @@ paths:
           in: query
           name: search
           required: false
+        - schema:
+            default: 0
+            minimum: 0
+            type: integer
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 20
+            minimum: 1
+            type: integer
+          in: query
+          name: limit
+          required: false
       responses:
         "200":
           description: Default Response
@@ -555,7 +580,7 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/messages/events/{messageId}:
+  /api/v1/messages/{messageId}/events:
     get:
       parameters:
         - schema:
@@ -4436,12 +4461,14 @@ paths:
           required: false
         - schema:
             default: 0
+            minimum: 0
             type: integer
           in: query
           name: offset
           required: false
         - schema:
             default: 20
+            minimum: 1
             type: integer
           in: query
           name: limit

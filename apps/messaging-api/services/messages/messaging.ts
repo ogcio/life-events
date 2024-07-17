@@ -8,6 +8,7 @@ import { Pool } from "pg";
 import { utils } from "../../utils";
 import { isNativeError } from "util/types";
 import { BadRequestError, ServerError, ThirdPartyError } from "shared-errors";
+import { randomUUID } from "crypto";
 
 type TemplateContent = {
   subject: string;
@@ -78,7 +79,7 @@ export interface MessagingService {
   scheduleMessages(
     userMessageIds: { userId: string; messageId: string }[],
     scheduleAt: string,
-    authentication: string,
+    organisationId: string,
   ): Promise<{ jobId: string; userId: string; entityId: string }[]>;
 }
 
@@ -232,32 +233,37 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
     async scheduleMessages(
       userMessageIds: { userId: string; messageId: string }[],
       scheduleAt: string,
-      authorization: string,
+      organisationId: string,
     ) {
       const valueArgs: string[] = [];
-      const values: string[] = ["message"];
+      const values: string[] = ["message", organisationId];
       let valueArgIndex = values.length;
 
       for (const pt of userMessageIds) {
-        valueArgs.push(`($1, $${++valueArgIndex}, $${++valueArgIndex})`);
-        values.push(pt.messageId, pt.userId);
+        valueArgs.push(
+          `($1, $2, $${++valueArgIndex}, $${++valueArgIndex}, $${++valueArgIndex})`,
+        );
+        values.push(pt.messageId, pt.userId, randomUUID());
       }
 
       const jobs: {
         jobId: string;
         userId: string;
         entityId: string;
+        token: string;
       }[] = [];
       try {
+        console.log(values, valueArgs);
         const jobInsertResult = await pool.query<{
           jobId: string;
           userId: string;
           entityId: string;
+          token: string;
         }>(
           `
-        insert into jobs(job_type, job_id, user_id)
+        insert into jobs(job_type, organisation_id, job_id, user_id, job_token)
         values ${valueArgs.join(", ")}
-        returning id as "jobId", user_id as "userId", job_id as "entityId"
+        returning id as "jobId", user_id as "userId", job_id as "entityId", job_token as "token"
       `,
           values,
         );
@@ -274,7 +280,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
 
         return {
           webhookUrl: callbackUrl.toString(),
-          webhookAuth: authorization, // job.userId, // TODO Update when we're not using x-user-id as auth
+          webhookAuth: job.token,
           executeAt: scheduleAt,
         };
       });

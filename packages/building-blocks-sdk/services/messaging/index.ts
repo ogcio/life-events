@@ -368,10 +368,10 @@ export class Messaging {
   }
 
   async getMessageEvent(
-    messageId: paths["/api/v1/messages/events/{messageId}"]["get"]["parameters"]["path"]["messageId"],
+    messageId: paths["/api/v1/messages/{messageId}/events"]["get"]["parameters"]["path"]["messageId"],
   ) {
     const { error, data } = await this.client.GET(
-      "/api/v1/messages/events/{messageId}",
+      "/api/v1/messages/{messageId}/events",
       { params: { path: { messageId } } },
     );
 
