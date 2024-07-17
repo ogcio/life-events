@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import favicon from "../public/favicon.ico";
 
 export const metadata: Metadata = {
-  title: "Payments building block",
+  title: "Payments",
   icons: [
     {
       rel: "icon",
