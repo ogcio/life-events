@@ -9,10 +9,18 @@ type Props = {
 };
 
 export default async (props: Props) => {
-  const path = `${props.params.locale}/${routeDefinitions.paymentSetup.slug}`;
-  const { isPublicServant } = await getPaymentsCitizenContext();
+  const { isPublicServant, isInactivePublicServant } =
+    await getPaymentsCitizenContext();
 
-  if (isPublicServant) return redirect(path, RedirectType.replace);
+  if (isPublicServant) {
+    const path = `${props.params.locale}/${routeDefinitions.paymentSetup.slug}`;
+    return redirect(path, RedirectType.replace);
+  }
+
+  if (isInactivePublicServant) {
+    const path = `${props.params.locale}/${routeDefinitions.inactivePublicServant.slug}`;
+    return redirect(path, RedirectType.replace);
+  }
 
   const citizenPath = `${props.params.locale}/${routeDefinitions.citizen.transactions.path()}`;
   return redirect(citizenPath, RedirectType.replace);

@@ -3,6 +3,7 @@ import { Type } from "@sinclair/typebox";
 import {
   CreateMessage,
   CreateMessageSchema,
+  getGenericResponseSchema,
   MessageEvent,
   MessageEventType,
   MessageEventTypeObject,
@@ -87,10 +88,8 @@ export default async function messages(app: FastifyInstance) {
           }),
         ),
         response: {
-          200: Type.Object({
-            data: ReadMessagesSchema,
-          }),
-          400: { $ref: "HttpError" },
+          200: getGenericResponseSchema(ReadMessagesSchema),
+          400: HttpError,
         },
       },
     },
@@ -119,11 +118,9 @@ export default async function messages(app: FastifyInstance) {
           }),
         },
         response: {
-          200: Type.Object({
-            data: ReadMessageSchema,
-          }),
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          200: getGenericResponseSchema(ReadMessageSchema),
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -355,9 +352,7 @@ export default async function messages(app: FastifyInstance) {
           ]),
         ),
         response: {
-          200: Type.Object({
-            data: Type.Array(MessageEventTypeObject),
-          }),
+          200: getGenericResponseSchema(Type.Array(MessageEventTypeObject)),
           "5xx": HttpError,
           "4xx": HttpError,
         },

@@ -46,7 +46,7 @@ export default async function recipients(app: FastifyInstance) {
           ]),
         ),
         response: {
-          200: getGenericResponseSchema(RecipientSchema),
+          200: getGenericResponseSchema(Type.Array(RecipientSchema)),
           "5xx": HttpError,
           "4xx": HttpError,
         },
