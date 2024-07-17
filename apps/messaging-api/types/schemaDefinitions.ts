@@ -92,7 +92,7 @@ export type ResponseMetadata = Static<typeof ResponseMetadataSchema>;
 
 export const getGenericResponseSchema = <T extends TSchema>(dataType: T) =>
   Type.Object({
-    data: Type.Array(dataType),
+    data: dataType,
     metadata: ResponseMetadataSchema,
   });
 
@@ -110,3 +110,41 @@ export const MessageEventTypeObject = Type.Object({
   scheduledAt: Type.String(),
 });
 export type MessageEventType = Static<typeof MessageEventTypeObject>;
+
+export const MessageEvent = Type.Array(
+  Type.Object({
+    eventStatus: Type.String(),
+    eventType: Type.String(),
+    data: Type.Union([
+      // Create data
+      Type.Object({
+        messageId: Type.String(),
+        receiverFullName: Type.String(),
+        receiverPPSN: Type.String(),
+        subject: Type.String(),
+        lang: Type.String(),
+        excerpt: Type.String(),
+        richText: Type.String(),
+        plainText: Type.String(),
+        threadName: Type.String(),
+        transports: Type.Array(Type.String()),
+        messageName: Type.String(),
+        scheduledAt: Type.String({ format: "date-time" }),
+        senderUserId: Type.String(),
+        senderFullName: Type.String(),
+        senderPPSN: Type.String(),
+        organisationName: Type.String(),
+      }),
+      // Schedule data
+      Type.Object({
+        messageId: Type.String(),
+        jobId: Type.String(),
+      }),
+      // Error data
+      Type.Object({
+        messageId: Type.String(),
+      }),
+    ]),
+    createdAt: Type.String({ format: "date-time" }),
+  }),
+);
