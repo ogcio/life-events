@@ -83,11 +83,17 @@ start-services:
 	"npm run dev --workspace=home" \
 	"npm run dev --workspace=forms"
 kill-services:
-	sudo lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006 | xargs sudo kill -9
+	sudo lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006,3301,3302 | xargs sudo kill -9
 start-migrate:
 	$(MAKE) install-concurrently && \
 	concurrently \
 	"$(MAKE) start-services" \
+	"sleep 5 && $(MAKE) migrate"
+start-migrate-logto:
+	$(MAKE) install-concurrently && \
+	concurrently \
+	"$(MAKE) start-services" \
+	"$(MAKE) init-logto" \
 	"sleep 5 && $(MAKE) migrate"
 start:
 	$(MAKE) init && \
@@ -98,4 +104,14 @@ start-no-scheduler:
 	$(MAKE) init && \
 	$(MAKE) start-docker-no-scheduler && \
 	$(MAKE) start-migrate && \
+	$(MAKE) kill-services
+start-full:
+	$(MAKE) init && \
+	$(MAKE) start-docker && \
+	$(MAKE) start-migrate-logto && \
+	$(MAKE) kill-services
+start-logto:
+	$(MAKE) init && \
+	$(MAKE) start-docker-no-scheduler && \
+	$(MAKE) start-migrate-logto && \
 	$(MAKE) kill-services
