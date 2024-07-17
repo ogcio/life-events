@@ -3,6 +3,7 @@ import { FastifyInstance } from "fastify";
 import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 const tags = ["Providers - SMS"];
 
 const SMS_PROVIDER_ERROR = "SMS_PROVIDER_ERROR";
@@ -42,8 +43,8 @@ export default async function sms(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: Type.Object({
-            data: Type.Array(
+          200: getGenericResponseSchema(
+            Type.Array(
               Type.Object({
                 id: Type.String({ format: "uuid" }),
                 name: Type.String(),
@@ -51,7 +52,7 @@ export default async function sms(app: FastifyInstance) {
                 isPrimary: Type.Boolean(),
               }),
             ),
-          }),
+          ),
           "4xx": HttpError,
           "5xx": HttpError,
         },
@@ -94,14 +95,14 @@ export default async function sms(app: FastifyInstance) {
           providerId: Type.String({ format: "uuid" }),
         },
         response: {
-          200: {
-            data: Type.Object({
+          200: getGenericResponseSchema(
+            Type.Object({
               id: Type.String({ format: "uuid" }),
               name: Type.String(),
               config: Type.Union([configType]),
               isPrimary: Type.Boolean(),
             }),
-          },
+          ),
           "4xx": HttpError,
           "5xx": HttpError,
         },
