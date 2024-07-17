@@ -147,19 +147,24 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
       return;
     });
 
-  pipeline(stream, antivirusPassthrough, s3uploadPassthrough, (err) => {
-    if (err) {
-      eventEmitter.emit("error", err);
-    }
-  });
+  pipeline(
+    stream,
+    // antivirusPassthrough,
+    s3uploadPassthrough,
+    (err) => {
+      if (err) {
+        eventEmitter.emit("error", err);
+      }
+    },
+  );
 
   return promise;
 };
 
 export default async function routes(app: FastifyInstance) {
-  app.addHook("preValidation", async (request, reply) => {
-    await app.checkPermissions(request, reply, [permissions.citizen.test]);
-  });
+  // app.addHook("preValidation", async (request, reply) => {
+  //   await app.checkPermissions(request, reply, [permissions.citizen.test]);
+  // });
 
   app.post(
     "/",
@@ -197,11 +202,12 @@ export default async function routes(app: FastifyInstance) {
         const data = await app.s3Client.client.send(
           new ListObjectsCommand({ Bucket: app.s3Client.bucketName }),
         );
-        response = data.Contents?.map((item) => ({
-          url: `${app.config.S3_ENDPOINT}/${app.s3Client.bucketName}/${item.Key}`,
-          key: item.Key,
-          size: item.Size,
-        }));
+        response =
+          data.Contents?.map((item) => ({
+            url: `${app.config.S3_ENDPOINT}/${app.s3Client.bucketName}/${item.Key}`,
+            key: item.Key,
+            size: item.Size,
+          })) || [];
       } catch (err) {
         app.log.error(err);
         throw app.httpErrors.internalServerError();
@@ -243,35 +249,75 @@ export default async function routes(app: FastifyInstance) {
     },
   );
 
-  // app.get<{ Params: { key: string } }>(
-  //   "/:key",
-  //   {
-  //     schema: {
-  //       tags: ["Files"],
-  //       params: Type.Object({ key: Type.String() }),
-  //       response: {
-  //         // 200: Type.Object({ message: Type.String() }),
-  //         500: HttpError,
-  //       },
-  //     },
-  //   },
-  //   async (request, reply) => {
-  //     if (!request.params.key) {
-  //       throw app.httpErrors.badRequest("Key not provided");
-  //     }
-  //     try {
-  //       const response = await app.s3Client.client.send(
-  //         new GetObjectCommand({
-  //           Bucket: app.s3Client.bucketName,
-  //           Key: request.params.key,
-  //         }),
-  //       );
-  //     } catch (err) {
-  //       app.log.error(err);
-  //       throw app.httpErrors.internalServerError();
-  //     }
+  app.get<{ Params: { key: string } }>(
+    "/:key",
+    {
+      schema: {
+        tags: ["Files"],
+        params: Type.Object({ key: Type.String() }),
+        response: {
+          // 200: Type.Object({ message: Type.String() }),
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      if (!request.params.key) {
+        throw app.httpErrors.badRequest("Key not provided");
+      }
 
-  //     reply.send({ response: "File deleted succesfully" });
-  //   },
-  // );
+      let response;
+      try {
+        response = await app.s3Client.client.send(
+          new GetObjectCommand({
+            Bucket: app.s3Client.bucketName,
+            Key: request.params.key,
+          }),
+        );
+      } catch (err) {
+        const err_ = err as { $metadata: { httpStatusCode: number } };
+        if (err_.$metadata.httpStatusCode === 404) {
+          throw app.httpErrors.notFound();
+        } else {
+          throw app.httpErrors.internalServerError();
+        }
+      }
+
+      const body = response.Body;
+      if (!body) {
+        throw app.httpErrors.internalServerError();
+      }
+
+      const stream = body.transformToWebStream();
+
+      const antivirusPassthrough = app.avClient.passthrough();
+      const downloadPassthrough = new PassThrough();
+
+      antivirusPassthrough.once("error", (err) => {
+        app.log.error(err);
+        downloadPassthrough.destroy();
+      });
+
+      reply.send(downloadPassthrough);
+
+      antivirusPassthrough.once("scan-complete", (result) => {
+        const { isInfected } = result;
+        if (isInfected) {
+          downloadPassthrough.destroy();
+          throw app.httpErrors.badRequest("File is infected");
+        } else {
+          downloadPassthrough.destroy();
+        }
+      });
+
+      pipeline(stream, antivirusPassthrough, downloadPassthrough, (err) => {
+        if (err) {
+          downloadPassthrough.destroy();
+          app.log.error(err);
+        }
+      });
+
+      return reply;
+    },
+  );
 }

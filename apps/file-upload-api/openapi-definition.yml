@@ -102,6 +102,50 @@ paths:
           name: key
           required: true
       responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    get:
+      tags:
+        - Files
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: key
+          required: true
+      responses:
         "500":
           description: Default Response
           content:
