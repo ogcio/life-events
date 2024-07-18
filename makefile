@@ -11,9 +11,9 @@ npm-install:
 
 ## env files ##
 update-env:
-		MODE=update node scripts/init-env.mjs
+	MODE=update node scripts/init-env.mjs
 init-env:
-		node scripts/init-env.mjs
+	node scripts/init-env.mjs
 
 ## Build packages ##
 build-ds:
