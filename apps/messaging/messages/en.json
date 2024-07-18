@@ -401,6 +401,9 @@
     "backLink": "Back",
     "eventLogMainHeader": "Message Event Log",
     "recipientSubHeader": "Recipient",
+    "failedToFetchParagraph": "Failed to get event logs",
+    "nextPage": "Next",
+    "prevPage": "Previous",
     "status": {
       "delivered": "DELIVERED",
       "delivering": "DELIVERING",

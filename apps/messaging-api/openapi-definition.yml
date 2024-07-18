@@ -660,30 +660,38 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        messageId:
-                          format: uuid
-                          type: string
-                        subject:
-                          type: string
-                        receiverFullName:
-                          type: string
-                        eventType:
-                          type: string
-                        eventStatus:
-                          type: string
-                        scheduledAt:
-                          type: string
-                      required:
-                        - messageId
-                        - subject
-                        - receiverFullName
-                        - eventType
-                        - eventStatus
-                        - scheduledAt
+                    type: object
+                    properties:
+                      count:
+                        type: number
+                      events:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            messageId:
+                              format: uuid
+                              type: string
+                            subject:
+                              type: string
+                            receiverFullName:
+                              type: string
+                            eventType:
+                              type: string
+                            eventStatus:
+                              type: string
+                            scheduledAt:
+                              type: string
+                          required:
+                            - messageId
+                            - subject
+                            - receiverFullName
+                            - eventType
+                            - eventStatus
+                            - scheduledAt
+                    required:
+                      - count
+                      - events
                   metadata:
                     type: object
                     properties:
