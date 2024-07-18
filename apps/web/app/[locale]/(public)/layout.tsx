@@ -21,7 +21,7 @@ import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import AnalyticsTracker from "analytics/components/AnalyticsTracker";
 import favicon from "../../../public/favicon.ico";
 import { AuthSession } from "auth/auth-session";
-import { baseConfig } from "../admin/logto_integration/config";
+import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export const metadata: Metadata = {
   title: "Life events",
@@ -43,8 +43,10 @@ export default async function RootLayout({
   const path = headers().get("x-pathname")?.toString();
   const queryString = headers().get("x-searchParams")?.toString();
 
+  const authFactory = AuthenticationFactory.getInstance();
+
   const isAuthenticatedWithLogto =
-    await AuthSession.isAuthenticated(baseConfig);
+    await authFactory.isPublicServantAuthenticated();
 
   if (isAuthenticatedWithLogto) {
     redirect(`/${locale}/admin`, RedirectType.replace);

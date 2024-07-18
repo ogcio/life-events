@@ -1,9 +1,10 @@
 import { RedirectType, redirect } from "next/navigation";
-import { getAuthenticationContext } from "../logto_integration/config";
 import hasAdminPermissions from "../utils/hasAdminPermissions";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async () => {
-  const context = await getAuthenticationContext();
+  const authFactory = AuthenticationFactory.getInstance();
+  const context = await authFactory.getPublicServant();
 
   const hasPermissions = hasAdminPermissions(
     context.accessToken as string,

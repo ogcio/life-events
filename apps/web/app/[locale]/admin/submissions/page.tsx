@@ -3,10 +3,10 @@ import { web } from "../../../utils";
 import StatusMenu from "./StatusMenu";
 import { getTranslations } from "next-intl/server";
 import UsersWithPartialApplicationsTable from "./UsersWithPartialApplicationsTable";
-import { getAuthenticationContext } from "../logto_integration/config";
 import { hasPermissions } from "auth/check-permissions";
 import hasAdminPermissions from "../utils/hasAdminPermissions";
 import { redirect, RedirectType } from "next/navigation";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export type Pages = "pending" | "submitted" | "approved" | "rejected";
 export type EventTableSearchParams = {
@@ -31,7 +31,8 @@ const componentsMap: {
 };
 
 export default async (props: SubmissionsTableProps) => {
-  const context = await getAuthenticationContext();
+  const authFactory = AuthenticationFactory.getInstance();
+  const context = await authFactory.getPublicServant();
 
   const hasPermissions = hasAdminPermissions(
     context.accessToken as string,

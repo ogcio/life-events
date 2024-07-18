@@ -1,11 +1,11 @@
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
 import "../../styles/globals.scss";
-import { getAuthenticationContext } from "./logto_integration/config";
 import FeedbackBanner from "../../components/FeedbackBanner";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import styles from "../(public)/layout.module.scss";
+import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export default async ({
   children,
@@ -14,6 +14,9 @@ export default async ({
   children: React.ReactNode;
   params: { locale: string };
 }) => {
+  const authFactory = AuthenticationFactory.getInstance();
+  await authFactory.getPublicServant();
+
   return (
     <html lang={locale}>
       <head>
@@ -29,7 +32,7 @@ export default async ({
         }}
       >
         <Header
-          signoutUrl="/admin/logto_integration/signout"
+          signoutUrl="/admin/signout"
           showHamburgerButton={false}
           locale={locale}
         />
