@@ -1,35 +1,36 @@
 import Link from "next/link";
-import { Payments } from "building-blocks-sdk";
-import {
-  getAuthenticationContext,
-  getPaymentsCitizenContext,
-  getPaymentsPublicServantContext,
-} from "../../../../libraries/auth";
+import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
 
 const actionCitizen = async () => {
   "use server";
 
-  const context = await getPaymentsCitizenContext();
+  const context = await AuthenticationFactory.getInstance().getCitizen();
 
   const token = context.accessToken;
   if (!token) return console.log("missing token...");
 
-  new Payments(token).testCitizenAuth();
+  const paymentClient = await AuthenticationFactory.getPaymentsClient({
+    token,
+  });
+  paymentClient.testCitizenAuth();
 };
 
 const actionPublicServant = async () => {
   "use server";
 
-  const context = await getPaymentsPublicServantContext();
+  const context = await AuthenticationFactory.getInstance().getPublicServant();
 
   const token = context.accessToken;
   if (!token) return console.log("missing token...");
 
-  new Payments(token).testPublicServantAuth();
+  const paymentClient = await AuthenticationFactory.getPaymentsClient({
+    token,
+  });
+  paymentClient.testPublicServantAuth();
 };
 
 export default async function () {
-  const context = await getAuthenticationContext();
+  const context = await AuthenticationFactory.getInstance().getContext();
 
   return (
     <>
