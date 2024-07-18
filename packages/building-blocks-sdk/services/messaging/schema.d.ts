@@ -332,6 +332,8 @@ export interface paths {
       parameters: {
         query?: {
           search?: string;
+          offset?: number;
+          limit?: number;
         };
       };
       responses: {
@@ -411,7 +413,7 @@ export interface paths {
       };
     };
   };
-  "/api/v1/messages/events/{messageId}": {
+  "/api/v1/messages/{messageId}/events": {
     get: {
       parameters: {
         path: {

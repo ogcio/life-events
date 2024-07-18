@@ -58,8 +58,8 @@ export const CreateMessageSchema = Type.Composite([
 export type CreateMessage = Static<typeof CreateMessageSchema>;
 
 export const PaginationParamsSchema = Type.Object({
-  offset: Type.Optional(Type.Integer({ default: 0 })),
-  limit: Type.Optional(Type.Integer({ default: 20 })),
+  offset: Type.Optional(Type.Integer({ default: 0, minimum: 0 })),
+  limit: Type.Optional(Type.Integer({ default: 20, minimum: 1 })),
 });
 
 export type PaginationParams = Static<typeof PaginationParamsSchema>;
