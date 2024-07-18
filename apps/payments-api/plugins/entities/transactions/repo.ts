@@ -126,6 +126,45 @@ export class TransactionsRepo {
     );
   }
 
+  getPaymentRequestTransactions(
+    paymentRequestId: string,
+    organizationId: string,
+    pagination: PaginationParams,
+  ) {
+    return this.pg.query(
+      `SELECT
+        t.transaction_id as "transactionId",
+        t.status,
+        pr.title,
+        pt.amount,
+        t.updated_at as "updatedAt"
+      FROM payment_transactions t
+      INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+      INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
+      WHERE pr.payment_request_id = $1
+        AND pr.organization_id = $2
+      ORDER BY t.updated_at DESC
+      LIMIT $3 OFFSET $4`,
+      [paymentRequestId, organizationId, pagination.limit, pagination.offset],
+    );
+  }
+
+  getPaymentRequestTransactionsTotalCount(
+    paymentRequestId: string,
+    organizationId: string,
+  ) {
+    return this.pg.query(
+      `SELECT
+        count(*) as "totalCount"
+      FROM payment_transactions t
+      INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+      INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
+      WHERE pr.payment_request_id = $1
+        AND pr.organization_id = $2`,
+      [paymentRequestId, organizationId],
+    );
+  }
+
   generatePaymentIntentId(
     length: number,
   ): Promise<QueryResult<{ intentId: string }>> {

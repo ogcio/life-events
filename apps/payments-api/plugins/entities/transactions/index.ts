@@ -154,6 +154,51 @@ const buildGeneratePaymentIntentId =
     return result.rows[0];
   };
 
+const buildGetPaymentRequestTransactions =
+  (repo: TransactionsRepo, log: FastifyBaseLogger) =>
+  async (
+    paymentRequestId: string,
+    organizationId: string,
+    pagination: PaginationParams,
+  ): Promise<TransactionDetailsDO[]> => {
+    let result;
+
+    try {
+      result = await repo.getPaymentRequestTransactions(
+        paymentRequestId,
+        organizationId,
+        pagination,
+      );
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    return result?.rows ?? [];
+  };
+
+const buildGetPaymentRequestTransactionsTotalCount =
+  (repo: TransactionsRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (paymentRequestId: string, organizationId: string): Promise<number> => {
+    let result;
+
+    try {
+      result = await repo.getPaymentRequestTransactionsTotalCount(
+        paymentRequestId,
+        organizationId,
+      );
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    const totalCount = result?.rows[0].totalCount;
+
+    if (totalCount === undefined) {
+      throw httpErrors.internalServerError("Something went wrong.");
+    }
+
+    return totalCount;
+  };
+
 const buildPlugin = (
   repo: TransactionsRepo,
   log: FastifyBaseLogger,
@@ -178,6 +223,12 @@ const buildPlugin = (
       log,
       httpErrors,
     ),
+    getPaymentRequestTransactions: buildGetPaymentRequestTransactions(
+      repo,
+      log,
+    ),
+    getPaymentRequestTransactionsTotalCount:
+      buildGetPaymentRequestTransactionsTotalCount(repo, log, httpErrors),
   };
 };
 

@@ -121,7 +121,6 @@ export const PaymentRequest = Type.Object({
   providers: Type.Array(ProviderDetails),
   status: PaymentRequestStatus,
 });
-export type PaymentRequest = Static<typeof PaymentRequest>;
 
 export const PaymentRequestDetails = Type.Composite([
   PaymentRequest,
@@ -131,7 +130,6 @@ export const PaymentRequestDetails = Type.Composite([
     allowCustomAmount: Type.Boolean(),
   }),
 ]);
-export type PaymentRequestDetails = Static<typeof PaymentRequestDetails>;
 
 export const CreatePaymentRequest = Type.Object({
   title: Type.String({ validator: "RequiredValidator" }),
@@ -146,7 +144,6 @@ export const CreatePaymentRequest = Type.Object({
     validator: "PaymentRequestStatusValidator",
   }),
 });
-export type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
 
 export const EditPaymentRequest = Type.Composite([
   CreatePaymentRequest,
@@ -158,14 +155,10 @@ export const EditPaymentRequest = Type.Composite([
     }),
   }),
 ]);
-export type EditPaymentRequest = Static<typeof EditPaymentRequest>;
 
 export const ParamsWithPaymentRequestId = Type.Object({
   requestId: Type.String(),
 });
-export type ParamsWithPaymentRequestId = Static<
-  typeof ParamsWithPaymentRequestId
->;
 
 /**
  * Transaction status
