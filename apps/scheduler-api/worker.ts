@@ -21,10 +21,8 @@ async function callbackWebHooks(
     id: event.id,
     fetch: fetch(event.webhookUrl, {
       method: "POST",
-      headers: {
-        Authorization: event.webhookAuth,
-      },
-      credentials: "include",
+      body: JSON.stringify({ token: event.webhookAuth }),
+      headers: { "Content-Type": "application/json" },
       signal: AbortSignal.timeout(callbackTimeoutMs),
     }),
   }));

@@ -323,11 +323,11 @@ export const executeJob = async (params: {
   logger: FastifyBaseLogger;
   jobId: string;
   userId: string;
-  organizationId: string;
+  token: string;
 }) => {
   const statusWorking: scheduledMessageByTemplateStatus = "working";
   const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
-
+  let organizationId = ""; // lets get this from the jobs table
   let job:
     | {
         jobId: string;
@@ -342,18 +342,22 @@ export const executeJob = async (params: {
   const client = await params.pg.pool.connect();
   try {
     client.query("begin");
+
     const jobStatusResult = await client.query<{
       status: scheduledMessageByTemplateStatus;
       entityId: string;
+      organizationId: string;
     }>(
       `
         select
           coalesce(delivery_status, 'pending') as "status",
-          job_id as "entityId"
+          job_id as "entityId",
+          organisation_id as "organizationId"
         from jobs where id = $1
         and case when delivery_status is not null then delivery_status != $2 else true end
+        and job_token = $3
     `,
-      [params.jobId, statusDelivered],
+      [params.jobId, statusDelivered, params.token],
     );
 
     const jobResult = jobStatusResult.rows.at(0);
@@ -394,7 +398,7 @@ export const executeJob = async (params: {
         [statusWorking, params.jobId],
       )
       .then((res) => res.rows.at(0));
-
+    organizationId = jobResult.organizationId;
     client.query("commit");
   } catch (err) {
     client.query("rollback");
@@ -427,7 +431,7 @@ export const executeJob = async (params: {
         job.jobId,
         job.userId,
         eventLogger,
-        params.organizationId,
+        organizationId,
       );
 
       for (const err of serviceErrors) {
