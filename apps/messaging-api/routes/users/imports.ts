@@ -16,15 +16,14 @@ import {
   UsersImport,
 } from "../../types/usersSchemaDefinitions";
 import {
-  READ_USER_IMPORTS_ERROR,
   getAllUserInvitationsForOrganisation,
   getUserImportForOrganisation,
   getUserImportsForOrganisation,
   getUserInvitationsForImport,
 } from "../../services/users/import/read-user-imports";
-import { organisationId } from "../../utils";
 import { BadRequestError } from "shared-errors";
-import { getOrganisationIdFromRequest } from "../../utils/request-utils";
+import { Permissions } from "../../types/permissions";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 
 const tags = ["Users", "UserImports"];
 
@@ -35,7 +34,8 @@ export default async function usersImports(app: FastifyInstance) {
   app.post(
     "/csv",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Write]),
       schema: {
         tags,
         response: {
@@ -51,7 +51,7 @@ export default async function usersImports(app: FastifyInstance) {
       // verifyUser preValidation
       await importCsvFileFromRequest({
         filepath: await saveRequestFile(request),
-        user: request.user!,
+        user: request.userData!,
         pg: app.pg,
         logger: request.log,
       });
@@ -61,7 +61,8 @@ export default async function usersImports(app: FastifyInstance) {
   app.get(
     "/csv/template",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
         response: {
@@ -79,7 +80,8 @@ export default async function usersImports(app: FastifyInstance) {
   app.post<{ Body: CsvRecord[] }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Write]),
       schema: {
         tags,
         body: Type.Array(CsvRecordSchema),
@@ -95,31 +97,27 @@ export default async function usersImports(app: FastifyInstance) {
         pg: app.pg,
         logger: request.log,
         csvRecords: request.body as CsvRecord[],
-        requestUser: request.user!,
+        requestUser: request.userData!,
       });
     },
   );
 
   interface GetImportsSchema {
-    Querystring: { organisationId?: string };
     Response: { data: Omit<UsersImport, "usersData">[] };
+    Querystring: unknown;
   }
 
   app.get<GetImportsSchema>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
-        querystring: Type.Optional(
-          Type.Object({
-            organisationId: Type.Optional(Type.String({ format: "uuid" })),
-          }),
-        ),
         response: {
-          200: Type.Object({
-            data: Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
-          }),
+          200: getGenericResponseSchema(
+            Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
+          ),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -132,10 +130,7 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserImportsForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(
-          request,
-          READ_USER_IMPORTS_ERROR,
-        ),
+        organisationId: request.userData!.organizationId!,
       }),
     }),
   );
@@ -143,18 +138,12 @@ export default async function usersImports(app: FastifyInstance) {
   app.get<Omit<GetUserInvitationsSchema, "Params">>(
     "/users",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
-        querystring: Type.Optional(
-          Type.Object({
-            organisationId: Type.Optional(Type.String({ format: "uuid" })),
-          }),
-        ),
         response: {
-          200: Type.Object({
-            data: Type.Array(UserInvitationSchema),
-          }),
+          200: getGenericResponseSchema(Type.Array(UserInvitationSchema)),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -167,36 +156,31 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getAllUserInvitationsForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(
-          request,
-          READ_USER_IMPORTS_ERROR,
-        ),
+        organisationId: request.userData!.organizationId!,
       }),
     }),
   );
 
   interface GetImportSchema {
-    Querystring: { organisationId?: string; includeUsersData?: boolean };
+    Querystring: { includeUsersData?: boolean };
     Response: { data: UsersImport };
     Params: { importId: string };
   }
   app.get<GetImportSchema>(
     "/:importId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
         querystring: Type.Optional(
           Type.Object({
-            organisationId: Type.Optional(Type.String({ format: "uuid" })),
             includeUsersData: Type.Boolean({ default: true }),
           }),
         ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
         response: {
-          200: Type.Object({
-            data: UsersImportSchema,
-          }),
+          200: getGenericResponseSchema(UsersImportSchema),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -206,10 +190,7 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserImportForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(
-          request,
-          READ_USER_IMPORTS_ERROR,
-        ),
+        organisationId: request.userData!.organizationId!,
         importId: request.params.importId,
         includeUsersData: request.query.includeUsersData ?? true,
       }),
@@ -217,27 +198,21 @@ export default async function usersImports(app: FastifyInstance) {
   );
 
   interface GetUserInvitationsSchema {
-    Querystring: { organisationId?: string };
     Response: { data: UserInvitation[] };
     Params: { importId: string };
+    Querystring: unknown;
   }
 
   app.get<GetUserInvitationsSchema>(
     "/:importId/users",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
-        querystring: Type.Optional(
-          Type.Object({
-            organisationId: Type.Optional(Type.String({ format: "uuid" })),
-          }),
-        ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
         response: {
-          200: Type.Object({
-            data: Type.Array(UserInvitationSchema),
-          }),
+          200: getGenericResponseSchema(Type.Array(UserInvitationSchema)),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -250,32 +225,9 @@ export default async function usersImports(app: FastifyInstance) {
       data: await getUserInvitationsForImport({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: getOrganisationIdFromRequest(
-          request,
-          READ_USER_IMPORTS_ERROR,
-        ),
+        organisationId: request.userData!.organizationId!,
         importId: request.params.importId,
       }),
-    }),
-  );
-
-  app.get(
-    "/mock-organisation-id",
-    {
-      preValidation: app.verifyUser,
-      schema: {
-        tags,
-        response: {
-          200: Type.Object({
-            data: Type.String({ format: "uuid" }),
-          }),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async (_request: FastifyRequest, _reply: FastifyReply) => ({
-      data: organisationId,
     }),
   );
 

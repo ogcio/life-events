@@ -92,4 +92,22 @@ export const routeDefinitions = {
       return `/${routeDefinitions.error.slug}`;
     },
   },
+  inactivePublicServant: {
+    slug: "inactivePublicServant",
+    path() {
+      return `/${routeDefinitions.inactivePublicServant.slug}`;
+    },
+  },
+  login: {
+    slug: "login",
+    path() {
+      return `/${routeDefinitions.login.slug}`;
+    },
+  },
+  signOut: {
+    slug: "signout",
+    path() {
+      return `/${routeDefinitions.signOut.slug}`;
+    },
+  },
 };

@@ -214,14 +214,14 @@ export const getUserProfiles = async (ids: string[], pool: Pool) => {
       `
     select 
       (details ->> 'firstName') as "firstName",
-      (details ->> 'lastName') as "firstName",
+      (details ->> 'lastName') as "lastName",
       (details ->> 'publicIdentityId') as "ppsn",
-      user_profile_id as "id",
+      COALESCE(user_profile_id, id::text) as "id",
       'en' as "lang",
       phone,
       email
     from users
-    where user_profile_id = any ($1)
+    where user_profile_id = any ($1) or id::text = any ($1)
     `,
       [ids],
     )
@@ -246,10 +246,6 @@ export function ProfileSdkFacade(
     async selectUsers(ids: string[]) {
       const profileResult = await sdkProfile.selectUsers(ids);
 
-      if (profileResult.error) {
-        return { data: undefined, error: profileResult.error };
-      }
-
       const fromProfile = profileResult.data || [];
 
       if (fromProfile.length === ids.length) {
@@ -257,12 +253,10 @@ export function ProfileSdkFacade(
       }
 
       const idsNotFound: string[] = [];
-      if (fromProfile.length) {
-        const set = new Set(fromProfile.map((d) => d.id));
-        for (const id of ids) {
-          if (!set.has(id)) {
-            idsNotFound.push(id);
-          }
+      const set = new Set(fromProfile.map((d) => d.id));
+      for (const id of ids) {
+        if (!set.has(id)) {
+          idsNotFound.push(id);
         }
       }
 

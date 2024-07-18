@@ -120,8 +120,8 @@ export default async () => {
 
   /**  NOTE: the defaults below are for demo purposes only given we don't have access to real user data yet */
   const defaultData = {
-    firstname: "Name",
-    lastname: "Surname",
+    firstName: "Name",
+    lastName: "Surname",
     email: "test@email.com",
     title: "Mr",
     dateOfBirth: String(new Date("1990-01-01T00:00:00Z")),
@@ -136,8 +136,8 @@ export default async () => {
   const userData = data || defaultData;
 
   const {
-    firstname,
-    lastname,
+    firstName,
+    lastName,
     email,
     title,
     dateOfBirth,
@@ -171,8 +171,8 @@ export default async () => {
       }
     } else {
       const { error } = await new Profile(userId).createUser({
-        firstname,
-        lastname,
+        firstname: firstName,
+        lastname: lastName,
         email,
       });
 
@@ -214,7 +214,7 @@ export default async () => {
           <select
             className="govie-select"
             aria-labelledby="title-field-hint"
-            defaultValue={title}
+            defaultValue={title ?? ""}
             style={{ pointerEvents: "none" }}
             name="title"
           >
@@ -236,7 +236,7 @@ export default async () => {
             className="govie-input"
             aria-labelledby="firstName-field-hint"
             readOnly
-            defaultValue={firstname}
+            defaultValue={firstName}
             style={{ pointerEvents: "none" }}
           />
         </div>
@@ -251,7 +251,7 @@ export default async () => {
             className="govie-input"
             aria-labelledby="lastName-field-hint"
             readOnly
-            defaultValue={lastname}
+            defaultValue={lastName}
             style={{ pointerEvents: "none" }}
           />
         </div>
@@ -330,7 +330,7 @@ export default async () => {
                   className="govie-input"
                   aria-labelledby="ppsn-field-hint"
                   readOnly
-                  defaultValue={ppsn}
+                  defaultValue={ppsn ?? ""}
                   style={{ pointerEvents: "none" }}
                 />
                 <button
@@ -431,7 +431,7 @@ export default async () => {
               name="phone"
               className="govie-input"
               aria-labelledby="telephone-field-hint"
-              defaultValue={phone}
+              defaultValue={phone ?? ""}
             />
           </div>
           <div style={{ flex: 1 }}>

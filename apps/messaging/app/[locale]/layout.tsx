@@ -1,5 +1,12 @@
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
+import { Metadata } from "next";
+import favicon from "../../public/favicon.ico";
+
+export const metadata: Metadata = {
+  title: "Messaging",
+  icons: [{ rel: "icon", url: favicon.src }],
+};
 
 export default function RootLayout({
   children,

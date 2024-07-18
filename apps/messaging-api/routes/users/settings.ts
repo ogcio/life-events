@@ -19,6 +19,8 @@ import {
   updateInvitationStatus,
   updateOrganisationFeedback,
 } from "../../services/users/invitations/accept-invitations";
+import { Permissions } from "../../types/permissions";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 
 const tags = ["UserSettings"];
 
@@ -29,11 +31,12 @@ export default async function userSettings(app: FastifyInstance) {
   app.get(
     "/organisations",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
         tags,
         response: {
-          200: Type.Object({ data: Type.Array(UserInvitationSchema) }),
+          200: getGenericResponseSchema(Type.Array(UserInvitationSchema)),
           400: HttpError,
           404: HttpError,
           500: HttpError,
@@ -42,7 +45,7 @@ export default async function userSettings(app: FastifyInstance) {
     },
     async (request: FastifyRequest, _reply: FastifyReply) => ({
       data: await getInvitationsForUser({
-        userProfileId: request.user!.id,
+        userProfileId: request.userData!.userId,
         pg: app.pg,
       }),
     }),
@@ -54,14 +57,15 @@ export default async function userSettings(app: FastifyInstance) {
   }>(
     "/organisations/:organisationId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
         tags,
         params: Type.Object({
-          organisationId: Type.String({ format: "uuid" }),
+          organisationId: Type.String(),
         }),
         response: {
-          200: Type.Object({ data: UserInvitationSchema }),
+          200: getGenericResponseSchema(UserInvitationSchema),
           400: HttpError,
           404: HttpError,
           500: HttpError,
@@ -76,7 +80,7 @@ export default async function userSettings(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await getInvitationForUser({
-        userProfileId: request.user!.id,
+        userProfileId: request.userData!.userId,
         organisationId: request.params.organisationId,
         pg: app.pg,
       }),
@@ -92,12 +96,13 @@ export default async function userSettings(app: FastifyInstance) {
   app.patch<PatchOrgInvitationSchema>(
     "/organisations/:organisationId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.CitizenSelf.Write]),
       schema: {
         tags,
         body: OrganisationInvitationFeedbackSchema,
         params: Type.Object({
-          organisationId: Type.String({ format: "uuid" }),
+          organisationId: Type.String(),
         }),
         response: {
           202: Type.Object({ data: UserInvitationSchema }),
@@ -112,7 +117,7 @@ export default async function userSettings(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await updateOrganisationFeedback({
-        userProfileId: request.user!.id,
+        userProfileId: request.userData!.userId,
         organisationId: request.params.organisationId,
         pg: app.pg,
         feedback: request.body,
@@ -128,7 +133,8 @@ export default async function userSettings(app: FastifyInstance) {
   app.patch<PatchInvitationSchema>(
     "/invitations/me",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.CitizenSelf.Write]),
       schema: {
         tags,
         body: InvitationFeedbackSchema,
@@ -145,7 +151,7 @@ export default async function userSettings(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await updateInvitationStatus({
-        userProfileId: request.user!.id,
+        userProfileId: request.userData!.userId,
         pg: app.pg,
         feedback: request.body,
       }),
@@ -155,13 +161,14 @@ export default async function userSettings(app: FastifyInstance) {
   app.get(
     "/invitations/me",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
         tags,
         response: {
-          200: Type.Object({
-            data: Type.Object({ userStatus: UserStatusUnionType }),
-          }),
+          200: getGenericResponseSchema(
+            Type.Object({ userStatus: UserStatusUnionType }),
+          ),
           400: HttpError,
           404: HttpError,
           500: HttpError,
@@ -170,7 +177,7 @@ export default async function userSettings(app: FastifyInstance) {
     },
     async (request: FastifyRequest, _reply: FastifyReply) => ({
       data: await getInvitationStatus({
-        userProfileId: request.user!.id,
+        userProfileId: request.userData!.userId,
         pg: app.pg,
       }),
     }),

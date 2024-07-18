@@ -1,4 +1,4 @@
-import { api } from "messages";
+import { api, temporaryMockUtils } from "messages";
 import {
   isAvailableTransport,
   MessageCreateProps,
@@ -11,9 +11,10 @@ dayjs.extend(tz);
 
 import { revalidatePath } from "next/cache";
 import BackButton from "./BackButton";
-import { Messaging } from "building-blocks-sdk";
+
 import { DUBLIN_TIMEZONE } from "../../../../../types/shared";
 import { getTranslations } from "next-intl/server";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 export default async (props: MessageCreateProps) => {
   const [t, tCommons] = await Promise.all([
@@ -39,7 +40,7 @@ export default async (props: MessageCreateProps) => {
       scheduledAt = dayjs().format();
     }
 
-    const messagesClient = new Messaging(props.userId);
+    const messagesClient = await AuthenticationFactory.getMessagingClient();
     let message: Parameters<typeof messagesClient.createMessage>[0]["message"];
     let template: Parameters<
       typeof messagesClient.createMessage
@@ -62,6 +63,10 @@ export default async (props: MessageCreateProps) => {
       };
     }
 
+    let creationError: Awaited<
+      ReturnType<typeof messagesClient.createTemplateMessages>
+    >["error"] = undefined;
+
     if (template) {
       const transportations: Parameters<
         typeof messagesClient.createTemplateMessages
@@ -73,22 +78,33 @@ export default async (props: MessageCreateProps) => {
         }
       }
 
-      await messagesClient.createTemplateMessages({
+      const { error } = await messagesClient.createTemplateMessages({
         security: "low",
         templateMetaId: template?.id,
         transportations,
         userIds: props.state.userIds,
         scheduledAt,
       });
+
+      if (error) {
+        creationError = error;
+        await temporaryMockUtils.createErrors(
+          [{ errorValue: error.name, field: "", messageKey: "" }],
+          props.userId,
+          "create_error",
+        );
+      }
     }
 
-    await api.upsertMessageState(
-      Object.assign({}, props.state, {
-        confirmedScheduleAt: dayjs().toISOString(),
-      }),
-      props.userId,
-      props.stateId,
-    );
+    if (!creationError) {
+      await api.upsertMessageState(
+        Object.assign({}, props.state, {
+          confirmedScheduleAt: dayjs().toISOString(),
+        }),
+        props.userId,
+        props.stateId,
+      );
+    }
 
     revalidatePath("/");
   }
@@ -105,8 +121,26 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
+  const errors = await temporaryMockUtils.getErrors(
+    props.userId,
+    "create_error",
+  );
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">
+      {Boolean(errors.length) && (
+        <div className="govie-error-summary">
+          <div>
+            <h2>
+              <span
+                className="govie-error-summary__title"
+                style={{ margin: "unset" }}
+              >
+                {t("serverError")}
+              </span>
+            </h2>
+          </div>
+        </div>
+      )}
       <form action={submit}>
         <h1>
           <span style={{ margin: "unset" }} className="govie-heading-xl">

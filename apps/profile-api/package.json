@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "TAP_RCFILE=tap.yml tap",
-    "test:e2e" : "cd ./e2e && bru run --env local",
-    "test:dev" : "cd ./e2e && bru run --env dev",
+    "test:e2e": "cd ./e2e && bru run --env local",
+    "test:dev": "cd ./e2e && bru run --env dev",
     "start": "node --import tsx index.ts",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
@@ -52,6 +52,7 @@
     "@types/node": "^20.11.28",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^7.5.0",
+    "@usebruno/cli": "^1.20.4",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",

@@ -1,12 +1,12 @@
-import { PgSessions } from "auth/sessions";
-import { Messaging } from "building-blocks-sdk";
 import dayjs from "dayjs";
 import FlexMenuWrapper from "../PageWithMenuFlexWrapper";
 import ds from "design-system";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
-async function messageStatus(type: string, status: string) {
+export async function messageStatus(type: string, status: string) {
   const t = await getTranslations("MessageEvents.status");
   if (type === "message_delivery") {
     if (status === "successful") {
@@ -30,13 +30,11 @@ async function messageStatus(type: string, status: string) {
         </strong>
       );
     }
-  }
-
-  if (type === "message_schedule") {
+  } else if (type === "message_schedule") {
     switch (status) {
       case "successful":
         return (
-          <strong className="govie-tag govie-tag--green">
+          <strong className="govie-tag govie-tag--blue">
             {t("scheduled")}
           </strong>
         );
@@ -48,12 +46,50 @@ async function messageStatus(type: string, status: string) {
         );
       case "pending":
         return (
-          <strong className="govie-tag govie-tag--yellow">
+          <strong className="govie-tag govie-tag--blue">
             {t("scheduling")}
           </strong>
         );
       default:
         break;
+    }
+  } else if (type === "message_create") {
+    switch (status) {
+      case "successful":
+        return (
+          <strong className="govie-tag govie-tag--grey">{t("created")}</strong>
+        );
+
+      default:
+        break;
+    }
+  } else if (type === "sms_delivery") {
+    switch (status) {
+      case "successful":
+        return (
+          <strong className="govie-tag govie-tag--green">
+            {t("smslDelivered")}
+          </strong>
+        );
+      case "failed":
+        return (
+          <strong className="govie-tag govie-tag--red">{t("smsFailed")}</strong>
+        );
+    }
+  } else if (type === "email_delivery") {
+    switch (status) {
+      case "successful":
+        return (
+          <strong className="govie-tag govie-tag--green">
+            {t("emaillDelivered")}
+          </strong>
+        );
+      case "failed":
+        return (
+          <strong className="govie-tag govie-tag--red">
+            {t("emailFailed")}
+          </strong>
+        );
     }
   }
 
@@ -70,8 +106,8 @@ export default async (props: { searchParams: { search?: string } }) => {
   }
 
   const freeSearch = props.searchParams.search;
-  const { userId } = await PgSessions.get();
-  const client = new Messaging(userId);
+
+  const client = await AuthenticationFactory.getMessagingClient();
   const { data, error } = await client.getMessageEvents({
     query: { search: freeSearch },
   });
@@ -125,10 +161,11 @@ export default async (props: { searchParams: { search?: string } }) => {
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
-            <th className="govie-table__header">{t("tableDateHeader")}</th>
+            <th className="govie-table__header">{t("tableScheduledHeader")}</th>
             <th className="govie-table__header">{t("tableStatusHeader")}</th>
             <th className="govie-table__header">{t("tableSubjectHeader")}</th>
             <th className="govie-table__header">{t("tableRecipientHeader")}</th>
+            <th className="govie-table__header">{t("tableViewHeader")}</th>
           </tr>
         </thead>
         <tbody className="govie-table__body">
@@ -153,6 +190,18 @@ export default async (props: { searchParams: { search?: string } }) => {
                   </td>
                   <td className="govie-table__cell">{subject}</td>
                   <td className="govie-table__cell">{receiverFullName}</td>
+                  <td className="govie-table__cell">
+                    <Link
+                      href={
+                        new URL(
+                          `/en/admin/message-events/${messageId}`,
+                          process.env.HOST_URL,
+                        ).href
+                      }
+                    >
+                      {t("viewLink")}
+                    </Link>
+                  </td>
                 </tr>
               );
             },

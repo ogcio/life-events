@@ -1,7 +1,10 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
-import { organisationId } from "../../utils";
 import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
+import { Permissions } from "../../types/permissions";
+import { HttpError } from "../../types/httpErrors";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions";
+
 const tags = ["Templates"];
 
 const TEMPLATES_ERROR = "TEMPLATES_ERROR";
@@ -77,7 +80,8 @@ export default async function templates(app: FastifyInstance) {
   app.get<GetTemplates>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Read]),
       schema: {
         querystring: Type.Optional(
           Type.Object({
@@ -86,8 +90,8 @@ export default async function templates(app: FastifyInstance) {
         ),
         tags,
         response: {
-          200: Type.Object({
-            data: Type.Array(
+          200: getGenericResponseSchema(
+            Type.Array(
               Type.Object({
                 templateMetaId: Type.String({ format: "uuid" }),
                 contents: Type.Array(
@@ -98,9 +102,9 @@ export default async function templates(app: FastifyInstance) {
                 ),
               }),
             ),
-          }),
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          ),
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -149,12 +153,13 @@ export default async function templates(app: FastifyInstance) {
   app.get<GetTemplate>(
     "/:templateId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Read]),
       schema: {
         tags,
         response: {
-          200: Type.Object({
-            data: Type.Object({
+          200: getGenericResponseSchema(
+            Type.Object({
               contents: Type.Array(
                 Type.Object({
                   templateName: Type.String(),
@@ -172,9 +177,9 @@ export default async function templates(app: FastifyInstance) {
                 }),
               ),
             }),
-          }),
-          404: { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          ),
+          404: HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -277,7 +282,8 @@ export default async function templates(app: FastifyInstance) {
   app.post<CreateTemplate>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Write]),
       schema: {
         tags,
         body: Type.Object({
@@ -302,7 +308,7 @@ export default async function templates(app: FastifyInstance) {
       },
     },
     async function handleCreate(request, reply) {
-      const userId = request.user!.id;
+      const userId = request.userData!.userId;
 
       const { contents, variables } = request.body;
 
@@ -322,7 +328,7 @@ export default async function templates(app: FastifyInstance) {
             limit 1);
         `,
           [
-            organisationId,
+            request.userData!.organizationId!,
             contents
               .map((content) => content.templateName.toLowerCase())
               .join(", "),
@@ -342,7 +348,7 @@ export default async function templates(app: FastifyInstance) {
           values($1,$2)
           returning id
         `,
-          [organisationId, userId],
+          [request.userData!.organizationId!, userId],
         );
         templateMetaId = templateMetaResponse.rows.at(0)?.id;
 
@@ -411,7 +417,8 @@ export default async function templates(app: FastifyInstance) {
   app.put<UpdateTemplate>(
     "/:templateId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Write]),
       schema: {
         tags,
         body: Type.Object({
@@ -511,7 +518,8 @@ export default async function templates(app: FastifyInstance) {
   app.delete<GetTemplate>(
     "/:templateId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Delete]),
       schema: {
         tags,
         response: {

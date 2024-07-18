@@ -3,8 +3,12 @@ import { Type } from "@sinclair/typebox";
 import {
   CreateMessage,
   CreateMessageSchema,
+  getGenericResponseSchema,
+  MessageEvent,
   MessageEventType,
   MessageEventTypeObject,
+  PaginationParams,
+  PaginationParamsSchema,
   ReadMessageSchema,
   ReadMessagesSchema,
 } from "../../types/schemaDefinitions";
@@ -20,14 +24,14 @@ import {
   ProfileSdkFacade,
 } from "../../services/users/shared-users";
 import { Profile } from "building-blocks-sdk";
-import { NotFoundError, ServerError } from "shared-errors";
+import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
 import {
-  EventDataAggregation,
+  MessageEventData,
   MessagingEventType,
   newMessagingEventLogger,
 } from "../../services/messages/eventLogger";
-import { organisationId } from "../../utils";
 import { HttpError } from "../../types/httpErrors";
+import { Permissions } from "../../types/permissions";
 
 const MESSAGES_TAGS = ["Messages"];
 
@@ -44,15 +48,17 @@ interface GetMessage {
 }
 
 export default async function messages(app: FastifyInstance) {
-  app.post<{ Params: { id: string } }>(
+  app.post<{ Params: { id: string }; Body: { token: string } }>(
     "/jobs/:id",
     {
-      preValidation: app.verifyUser,
       schema: {
+        body: Type.Object({
+          token: Type.String(),
+        }),
         response: {
           202: Type.Null(),
-          "5xx": { $ref: "HttpError" },
-          "4xx": { $ref: "HttpError" },
+          "5xx": HttpError,
+          "4xx": HttpError,
         },
       },
     },
@@ -61,7 +67,8 @@ export default async function messages(app: FastifyInstance) {
         pg: app.pg,
         logger: request.log,
         jobId: request.params!.id,
-        userId: request.user?.id || "", // we will require scheduler to callback same creds (jwt?) including the user id caller or include it somewhere else.
+        userId: request.userData?.userId || "",
+        token: request.body.token,
       });
 
       reply.statusCode = 202;
@@ -72,7 +79,8 @@ export default async function messages(app: FastifyInstance) {
   app.get<GetAllMessages>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.MessageSelf.Read]),
       schema: {
         tags: MESSAGES_TAGS,
         querystring: Type.Optional(
@@ -81,10 +89,8 @@ export default async function messages(app: FastifyInstance) {
           }),
         ),
         response: {
-          200: Type.Object({
-            data: ReadMessagesSchema,
-          }),
-          400: { $ref: "HttpError" },
+          200: getGenericResponseSchema(ReadMessagesSchema),
+          400: HttpError,
         },
       },
     },
@@ -92,7 +98,7 @@ export default async function messages(app: FastifyInstance) {
       return {
         data: await getMessages({
           pg: app.pg,
-          userId: request.user!.id,
+          userId: request.userData!.userId,
           transportType: request.query?.type,
         }),
       };
@@ -103,7 +109,8 @@ export default async function messages(app: FastifyInstance) {
   app.get<GetMessage>(
     "/:messageId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.MessageSelf.Read]),
       schema: {
         tags: MESSAGES_TAGS,
         params: {
@@ -112,11 +119,9 @@ export default async function messages(app: FastifyInstance) {
           }),
         },
         response: {
-          200: Type.Object({
-            data: ReadMessageSchema,
-          }),
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          200: getGenericResponseSchema(ReadMessageSchema),
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -124,7 +129,7 @@ export default async function messages(app: FastifyInstance) {
       return {
         data: await getMessage({
           pg: app.pg,
-          userId: request.user!.id,
+          userId: request.userData!.userId,
           messageId: request.params.messageId,
         }),
       };
@@ -137,18 +142,23 @@ export default async function messages(app: FastifyInstance) {
   }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Message.Write]),
       schema: {
         tags: MESSAGES_TAGS,
         body: CreateMessageSchema,
         response: {
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
     async function createMessageHandler(request, _reply) {
-      return createMessage({ payload: request.body, pg: app.pg });
+      return createMessage({
+        payload: request.body,
+        pg: app.pg,
+        organizationId: request.userData!.organizationId!,
+      });
     },
   );
 
@@ -163,11 +173,12 @@ export default async function messages(app: FastifyInstance) {
   }>(
     "/template",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Template.Write]),
       schema: {
         body: Type.Object({
           templateMetaId: Type.String({ format: "uuid" }),
-          userIds: Type.Array(Type.String({ format: "uuid" })),
+          userIds: Type.Array(Type.String()),
           transportations: Type.Array(
             Type.Union([
               Type.Literal("email"),
@@ -178,19 +189,31 @@ export default async function messages(app: FastifyInstance) {
           security: Type.String(),
           scheduledAt: Type.String({ format: "date-time" }),
         }),
+        response: {
+          200: Type.Null(),
+          "4xx": HttpError,
+          "5xx": HttpError,
+        },
       },
     },
     async (req, _res) => {
-      const userId = req.user?.id;
+      const userId = req.userData?.userId;
       const errorKey = "FAILED_TO_CREATE_MESSAGE_FROM_TEMPLATE";
       if (!userId) {
         throw new ServerError(errorKey, "no user id on request");
       }
 
+      if (!req.userData?.organizationId) {
+        throw new AuthorizationError(
+          errorKey,
+          "no organisation id associated to request user",
+        );
+      }
+
       const eventLogger = newMessagingEventLogger(app.pg.pool, app.log);
 
       // Get users
-      const profileSdk = new Profile(req.user!.id);
+      const profileSdk = new Profile(req.userData!.userId);
       const messageSdk = {
         selectUsers(ids: string[]) {
           return getUserProfiles(ids, app.pg.pool);
@@ -234,23 +257,31 @@ export default async function messages(app: FastifyInstance) {
       try {
         createdTemplateMessages = await messageService.createTemplateMessages(
           contents,
-          allUsers.data.map((u) => ({ ...u, userId: u.id })),
+          allUsers.data.map((u) => ({
+            ...u,
+            email: u.email || "",
+            phone: u.phone || "",
+            userId: u.id,
+          })),
           req.body.transportations,
           req.body.security,
           req.body.scheduledAt,
+          req.userData!.organizationId!,
         );
 
         await eventLogger.log(
           MessagingEventType.createRawMessage,
           createdTemplateMessages.map((msg) => {
             const user = allUsersLookup[msg.userId];
+
             return {
               excerpt: msg.excerpt,
               lang: msg.lang,
               messageId: msg.messageId,
               messageName: "", // message name isn't feature defined at this point
               plainText: msg.plainText,
-              receiverFullName: `${user.firstName} ${user.lastName}`,
+              receiverFullName:
+                `${user.firstName || ""} ${user.lastName || ""}`.trim(),
               receiverPPSN: user.ppsn || "",
               richText: msg.richText,
               subject: msg.subject,
@@ -259,7 +290,7 @@ export default async function messages(app: FastifyInstance) {
               scheduledAt: req.body.scheduledAt,
               organisationName: "", // will be derived from jwt once logto is integrated
               senderFullName: sender
-                ? `${sender.firstName} ${sender.lastName}`
+                ? `${sender.firstName || ""} ${sender.lastName || ""}`.trim()
                 : "",
               senderPPSN: sender?.ppsn || "",
               senderUserId: sender?.id || userId,
@@ -278,6 +309,7 @@ export default async function messages(app: FastifyInstance) {
         const jobs = await messageService.scheduleMessages(
           createdTemplateMessages,
           req.body.scheduledAt,
+          req.userData?.organizationId,
         );
 
         eventLogger.log(
@@ -304,20 +336,24 @@ export default async function messages(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Querystring: { search?: string } }>(
+  app.get<{
+    Querystring: { search?: string } & PaginationParams;
+  }>(
     "/events",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Event.Read]),
       schema: {
         querystring: Type.Optional(
-          Type.Object({
-            search: Type.Optional(Type.String()),
-          }),
+          Type.Composite([
+            Type.Object({
+              search: Type.Optional(Type.String()),
+            }),
+            PaginationParamsSchema,
+          ]),
         ),
         response: {
-          200: Type.Object({
-            data: Type.Array(MessageEventTypeObject),
-          }),
+          200: getGenericResponseSchema(Type.Array(MessageEventTypeObject)),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -338,7 +374,7 @@ export default async function messages(app: FastifyInstance) {
           where organisation_id = $1
           and subject ilike $2
           order by created_at
-          limit 20
+          limit $3 offset $4
           ) select
               l.message_id as "messageId",
               (l.data ->> 'subject') as subject,
@@ -350,7 +386,12 @@ export default async function messages(app: FastifyInstance) {
             join messaging_event_logs l on m.id = l.message_id
             order by l.created_at;
         `,
-        [organisationId, textSearchILikeClause],
+        [
+          request.userData?.organizationId,
+          textSearchILikeClause,
+          request.query.limit,
+          request.query.offset,
+        ],
       );
 
       const aggregations = eventQueryResult.rows.reduce<
@@ -377,6 +418,48 @@ export default async function messages(app: FastifyInstance) {
       );
 
       return { data };
+    },
+  );
+
+  app.get<{
+    Params: {
+      messageId: string;
+    };
+  }>(
+    "/:messageId/events",
+    {
+      schema: {
+        response: {
+          200: Type.Object({
+            data: MessageEvent,
+          }),
+          "5xx": HttpError,
+          "4xx": HttpError,
+        },
+      },
+    },
+    async function getEventHandler(request, _reply) {
+      const messageId = request.params.messageId;
+      const queryResult = await app.pg.pool.query<{
+        eventStatus: string;
+        eventType: string;
+        data: MessageEventData;
+        createdAt: string;
+      }>(
+        `
+      select 
+        event_status as "eventStatus",
+        event_type as "eventType",
+        data,
+        created_at as "createdAt"
+      from messaging_event_logs
+      where message_id = $1
+      order by created_at desc
+    `,
+        [messageId],
+      );
+
+      return { data: queryResult.rows };
     },
   );
 }

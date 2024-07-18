@@ -7,7 +7,7 @@ import {
 import {
   IAuthSession,
   GetSessionContextParameters,
-  AuthSessionContext,
+  PartialAuthSessionContext,
   AuthSessionUserInfo,
   AuthSessionOrganizationInfo,
 } from "./types";
@@ -18,19 +18,25 @@ import { decodeJwt } from "jose";
 
 const PROCESS_ERROR = "PARSE_LOGTO_CONTEXT";
 
+const INACTIVE_PUBLIC_SERVANT_ORG_ROLE =
+  "inactive-ps-org:Inactive Public Servant";
+export const INACTIVE_PUBLIC_SERVANT_SCOPE = "bb:public-servant.inactive:*";
+
 export const AuthUserScope = UserScope;
 
 export const AuthSession: IAuthSession = {
   async login(config) {
+    addInactivePublicServantScope(config);
     return signIn(config);
   },
   async logout(config, redirectUri) {
+    addInactivePublicServantScope(config);
     return signOut(config, redirectUri);
   },
   async get(
     config: LogtoNextConfig,
     getContextParameters: GetSessionContextParameters,
-  ): Promise<AuthSessionContext> {
+  ): Promise<PartialAuthSessionContext> {
     if (
       getContextParameters.userType === "publicServant" &&
       !getContextParameters.organizationId
@@ -41,6 +47,8 @@ export const AuthSession: IAuthSession = {
       );
     }
 
+    addInactivePublicServantScope(config);
+
     const context = await getLogtoContext(config, getContextParameters);
 
     if (!context.isAuthenticated) {
@@ -50,10 +58,17 @@ export const AuthSession: IAuthSession = {
     return parseContext(context, getContextParameters);
   },
   async isAuthenticated(config, getContextParameters) {
+    addInactivePublicServantScope(config);
     const context = await getLogtoContext(config, getContextParameters);
 
     return context.isAuthenticated;
   },
+};
+
+const addInactivePublicServantScope = (config) => {
+  if (config.scopes && !config.scopes.includes(INACTIVE_PUBLIC_SERVANT_SCOPE)) {
+    config.scopes.push(INACTIVE_PUBLIC_SERVANT_SCOPE);
+  }
 };
 
 const getUserInfo = (
@@ -164,8 +179,12 @@ const checkIfPublicServant = (
   orgRoles: string[] | null,
   getContextParameters: GetSessionContextParameters,
 ): boolean =>
+  !checkIfInactivePublicServant(orgRoles) &&
   orgRoles !== null &&
   orgRoles?.includes(getContextParameters.publicServantExpectedRole);
+
+const checkIfInactivePublicServant = (orgRoles: string[] | null): boolean =>
+  orgRoles !== null && orgRoles?.includes(INACTIVE_PUBLIC_SERVANT_ORG_ROLE);
 
 const getAccessToken = (
   context: LogtoContext,
@@ -212,11 +231,13 @@ const getScopes = (
 const parseContext = (
   context: LogtoContext,
   getContextParameters: GetSessionContextParameters,
-): AuthSessionContext => {
+): PartialAuthSessionContext => {
   const userInfo = getUserInfo(context);
   const orgRoles = getOrganizationRoles(context);
   const orgInfo = getOrganizationInfo(context, getContextParameters, orgRoles);
   const isPublicServant = checkIfPublicServant(orgRoles, getContextParameters);
+  const isInactivePublicServant = checkIfInactivePublicServant(orgRoles);
+
   const accessToken = getAccessToken(
     context,
     orgInfo,
@@ -224,8 +245,9 @@ const parseContext = (
     getContextParameters,
   );
 
-  const outputContext: AuthSessionContext = {
+  const outputContext: PartialAuthSessionContext = {
     isPublicServant,
+    isInactivePublicServant,
     scopes: getScopes(context, isPublicServant, accessToken),
   };
 

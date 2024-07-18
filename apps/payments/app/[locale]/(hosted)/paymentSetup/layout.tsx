@@ -1,9 +1,10 @@
 import PaymentsMenu from "./PaymentsMenu";
 import { notFound } from "next/navigation";
-import { getPaymentsCitizenContext } from "../../../../libraries/auth";
+import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
 
 export default async ({ children, params: { locale } }) => {
-  const { isPublicServant } = await getPaymentsCitizenContext();
+  const isPublicServant =
+    await AuthenticationFactory.getInstance().isPublicServant();
   if (!isPublicServant) return notFound();
 
   return (

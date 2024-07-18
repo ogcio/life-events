@@ -4,11 +4,10 @@ import { getTranslations } from "next-intl/server";
 import { errorHandler, formatCurrency } from "../../../../utils";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { BankTransferData } from "../../paymentSetup/providers/types";
-import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
-import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 
 async function getPaymentDetails(paymentId: string, amount?: number) {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
     await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
@@ -36,7 +35,7 @@ async function getPaymentDetails(paymentId: string, amount?: number) {
 async function confirmPayment(transactionId: string, redirectUrl: string) {
   "use server";
 
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { error } = await paymentsApi.updateTransaction(transactionId, {
     status: TransactionStatuses.Pending,
   });
@@ -51,7 +50,7 @@ async function confirmPayment(transactionId: string, redirectUrl: string) {
 async function generatePaymentIntentId(): Promise<string> {
   "use server";
 
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: result, error } = await paymentsApi.generatePaymentIntentId();
 
   if (error) {
@@ -76,8 +75,11 @@ export default async function Bank(params: {
       }
     | undefined;
 }) {
-  const { user, isPublicServant } = await getPaymentsCitizenContext();
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const authContext = AuthenticationFactory.getInstance();
+  const { user, isPublicServant } = await authContext.getContext();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient({
+    authenticationContext: authContext,
+  });
 
   if (isPublicServant) {
     return redirect("/not-found", RedirectType.replace);

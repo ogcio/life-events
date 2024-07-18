@@ -23,6 +23,8 @@ enum EventKey {
   MESSAGE_SCHEDULE = "message_schedule",
   TEMPLATE_MESSAGE_CREATE = "template_message_create",
   MESSAGE_DELIVERY = "message_delivery",
+  EMAIL_DELIVERY = "email_delivery",
+  SMS_DELIVERY = "sms_delivery",
 }
 
 type EventType = {
@@ -75,6 +77,16 @@ export namespace MessagingEventType {
     key: EventKey.MESSAGE_DELIVERY,
     status: EventStatus.SUCCESSFUL,
   };
+
+  export const emailError: EventType = {
+    key: EventKey.EMAIL_DELIVERY,
+    status: EventStatus.FAILED,
+  };
+
+  export const smsError: EventType = {
+    key: EventKey.SMS_DELIVERY,
+    status: EventStatus.FAILED,
+  };
 }
 
 type MessageUpsertEvent = {
@@ -104,10 +116,12 @@ type MessageScheduleEvent = {
   receiverPPSN: string;
 };
 
-type MessageErrorEvent = {};
+type MessageErrorEvent = {
+  messageKey?: string;
+};
 
 type Required = { messageId: string };
-type EventData = Required &
+export type MessageEventData = Required &
   (MessageUpsertEvent | MessageScheduleEvent | MessageErrorEvent);
 
 export type EventDataAggregation = Required &
@@ -122,7 +136,7 @@ export interface MessagingEventLogger {
    * @param type Status and key object. Use exported namespace MessagingEventType for premade types.
    * @param eventData Array of relevant inforamtion for each event type.
    */
-  log(type: EventType, eventData: EventData[]): Promise<void>;
+  log(type: EventType, eventData: MessageEventData[]): Promise<void>;
 }
 
 export function newMessagingEventLogger(
@@ -130,7 +144,7 @@ export function newMessagingEventLogger(
   stdLogger: FastifyBaseLogger,
 ) {
   return Object.freeze<MessagingEventLogger>({
-    async log(type: EventType, eventData: EventData[]) {
+    async log(type: EventType, eventData: MessageEventData[]) {
       if (!eventData.length) {
         stdLogger.warn(
           { at: Date.now(), type },
@@ -139,7 +153,7 @@ export function newMessagingEventLogger(
         return;
       }
 
-      const values: (string | EventData)[] = [type.status, type.key];
+      const values: (string | MessageEventData)[] = [type.status, type.key];
 
       const baseArgs = [...new Array(values.length)].map((_, i) => `$${i + 1}`);
       const parameterisedArgs: string[] = [];

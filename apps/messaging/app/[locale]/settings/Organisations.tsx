@@ -1,13 +1,13 @@
-import { PgSessions } from "auth/sessions";
-import { Messaging } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { userOrganisationsRoutes } from "../../utils/routes";
+import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export default async () => {
   const t = await getTranslations("userSettings.Organisations");
-  const { userId } = await PgSessions.get();
-  const { data } = await new Messaging(userId).getOrganisationInvitations();
+  const { data } = await (
+    await AuthenticationFactory.getMessagingClient()
+  ).getOrganisationInvitations();
 
   return (
     <table className="govie-table">

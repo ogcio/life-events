@@ -294,13 +294,6 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getMockOrganisationId() {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/mock-organisation-id",
-    );
-    return { error, data: data?.data };
-  }
-
   async getOrganisationInvitations() {
     const { error, data } = await this.client.GET(
       "/api/v1/users/settings/organisations",
@@ -374,6 +367,17 @@ export class Messaging {
     return { data: data?.data, error };
   }
 
+  async getMessageEvent(
+    messageId: paths["/api/v1/messages/{messageId}/events"]["get"]["parameters"]["path"]["messageId"],
+  ) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/messages/{messageId}/events",
+      { params: { path: { messageId } } },
+    );
+
+    return { data: data?.data, error };
+  }
+
   async getRecipients(
     query: paths["/api/v1/users/recipients/"]["get"]["parameters"]["query"],
   ) {
@@ -383,21 +387,5 @@ export class Messaging {
       },
     });
     return { error, data: data?.data, metadata: data?.metadata };
-  }
-
-  /**
-   * TESTS - To remove once Logto has been fully integrated
-   */
-
-  async testCitizenAuth() {
-    const result = await this.client.GET("/api/v1/test/citizen", {});
-
-    return { data: result.data, error: result.error };
-  }
-
-  async testPublicServantAuth() {
-    const result = await this.client.GET("/api/v1/test/pub-ser", {});
-
-    return { data: result.data, error: result.error };
   }
 }

@@ -29,13 +29,33 @@ export interface paths {
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -61,13 +81,48 @@ export interface paths {
                 richText: string;
                 createdAt: string;
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
         /** @description Default Response */
         400: {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -104,13 +159,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -134,19 +209,64 @@ export interface paths {
                 plainText: string;
                 richText: string;
               };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -172,6 +292,38 @@ export interface paths {
         200: {
           content: never;
         };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
       };
     };
   };
@@ -180,6 +332,8 @@ export interface paths {
       parameters: {
         query?: {
           search?: string;
+          offset?: number;
+          limit?: number;
         };
       };
       responses: {
@@ -195,6 +349,114 @@ export interface paths {
                 eventType: string;
                 eventStatus: string;
                 scheduledAt: string;
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/messages/{messageId}/events": {
+    get: {
+      parameters: {
+        path: {
+          messageId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                eventStatus: string;
+                eventType: string;
+                data:
+                  | {
+                      messageId: string;
+                      receiverFullName: string;
+                      receiverPPSN: string;
+                      subject: string;
+                      lang: string;
+                      excerpt: string;
+                      richText: string;
+                      plainText: string;
+                      threadName: string;
+                      transports: string[];
+                      messageName: string;
+                      /** Format: date-time */
+                      scheduledAt: string;
+                      senderUserId: string;
+                      senderFullName: string;
+                      senderPPSN: string;
+                      organisationName: string;
+                    }
+                  | {
+                      messageId: string;
+                      jobId: string;
+                    }
+                  | {
+                      messageId: string;
+                    };
+                /** Format: date-time */
+                createdAt: string;
               }[];
             };
           };
@@ -254,6 +516,31 @@ export interface paths {
                 ssl: boolean;
                 isPrimary: boolean;
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -378,6 +665,31 @@ export interface paths {
                 fromAddress: string;
                 ssl: boolean;
                 isPrimary: boolean;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
               };
             };
           };
@@ -530,6 +842,31 @@ export interface paths {
                 type: string;
                 isPrimary: boolean;
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -630,7 +967,7 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data?: {
+              data: {
                 /** Format: uuid */
                 id: string;
                 name: string;
@@ -641,6 +978,31 @@ export interface paths {
                   region: string;
                 };
                 isPrimary: boolean;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
               };
             };
           };
@@ -798,19 +1160,64 @@ export interface paths {
                   templateName: string;
                 }[];
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -888,19 +1295,64 @@ export interface paths {
                   fieldType: string;
                 }[];
               };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
         /** @description Default Response */
         404: {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -976,6 +1428,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1022,6 +1475,31 @@ export interface paths {
                   collectedConsent: boolean;
                 };
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -1089,6 +1567,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1134,6 +1613,31 @@ export interface paths {
                   /** @default false */
                   collectedConsent: boolean;
                 };
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
               };
             };
           };
@@ -1209,6 +1713,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1320,6 +1825,31 @@ export interface paths {
                 /** @default pending */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
               };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -1388,6 +1918,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id?: string;
                 /** @default null */
                 userProfileId: null | string;
@@ -1537,11 +2068,6 @@ export interface paths {
   };
   "/api/v1/users/imports/": {
     get: {
-      parameters: {
-        query?: {
-          organisationId?: string;
-        };
-      };
       responses: {
         /** @description Default Response */
         200: {
@@ -1559,6 +2085,31 @@ export interface paths {
                 lastRetryAt: string | null;
                 importId: string;
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -1672,17 +2223,13 @@ export interface paths {
   };
   "/api/v1/users/imports/users": {
     get: {
-      parameters: {
-        query?: {
-          organisationId?: string;
-        };
-      };
       responses: {
         /** @description Default Response */
         200: {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1729,6 +2276,31 @@ export interface paths {
                   collectedConsent: boolean;
                 };
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -1771,7 +2343,6 @@ export interface paths {
     get: {
       parameters: {
         query: {
-          organisationId?: string;
           includeUsersData: boolean;
         };
         path: {
@@ -1839,6 +2410,31 @@ export interface paths {
                 lastRetryAt: string | null;
                 importId: string;
               };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -1880,9 +2476,6 @@ export interface paths {
   "/api/v1/users/imports/{importId}/users": {
     get: {
       parameters: {
-        query?: {
-          organisationId?: string;
-        };
         path: {
           importId: string;
         };
@@ -1893,6 +2486,7 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
                 id: string;
                 /** @default null */
                 userProfileId: string | null;
@@ -1939,53 +2533,31 @@ export interface paths {
                   collectedConsent: boolean;
                 };
               }[];
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/users/imports/mock-organisation-id": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              /** Format: uuid */
-              data: string;
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
             };
           };
         };
@@ -2116,26 +2688,6 @@ export interface paths {
               validationContext?: string;
             };
           };
-        };
-      };
-    };
-  };
-  "/api/v1/test/citizen": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
-        };
-      };
-    };
-  };
-  "/api/v1/test/pub-ser": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
         };
       };
     };

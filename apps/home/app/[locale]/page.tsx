@@ -8,6 +8,7 @@ import Image from "next/image";
 import hero from "../../public/landingPage/hero.png";
 import payments from "../../public/landingPage/payments.png";
 import messaging from "../../public/landingPage/messaging.png";
+import favicon from "../../public/favicon.ico";
 import designSystem from "../../public/landingPage/designSystem.png";
 import forms from "../../public/landingPage/forms.png";
 import type { Metadata } from "next";
@@ -20,6 +21,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Building Blocks",
+  icons: [{ rel: "icon", url: favicon.src }],
 };
 
 const getLinks = (environment: string, locale: string) => {
@@ -29,7 +31,7 @@ const getLinks = (environment: string, locale: string) => {
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.formsg.testing.gov.ie/",
+          "https://www.forms.uat.gov.ie/",
         ),
         paymentsUrl: new URL(
           `${locale}/info`,
@@ -43,7 +45,7 @@ const getLinks = (environment: string, locale: string) => {
         designSystemUrl: new URL("/", "https://ds.dev.blocks.gov.ie"),
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
       };
 
@@ -51,7 +53,7 @@ const getLinks = (environment: string, locale: string) => {
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.formsg.testing.gov.ie/",
+          "https://www.forms.uat.gov.ie/",
         ),
         paymentsUrl: new URL(
           `${locale}/info`,
@@ -65,7 +67,7 @@ const getLinks = (environment: string, locale: string) => {
         designSystemUrl: new URL("/", "https://ds.sta.blocks.gov.ie"),
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
       };
 
@@ -73,7 +75,7 @@ const getLinks = (environment: string, locale: string) => {
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.formsg.testing.gov.ie/",
+          "https://www.forms.uat.gov.ie/",
         ),
         paymentsUrl: new URL(
           `${locale}/info`,
@@ -87,7 +89,7 @@ const getLinks = (environment: string, locale: string) => {
         designSystemUrl: new URL("/", "https://ds.uat.blocks.gov.ie"),
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
       };
 

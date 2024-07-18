@@ -3,9 +3,9 @@ import { MessageCreateProps } from "../../../../utils/messaging";
 import { api } from "messages";
 import BackButton from "./BackButton";
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
-import { Messaging } from "building-blocks-sdk";
+
 import { headers } from "next/headers";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 export default async (props: MessageCreateProps) => {
   const t = await getTranslations("sendAMessage.TemplateForm");
@@ -42,9 +42,10 @@ export default async (props: MessageCreateProps) => {
     revalidatePath("/");
   }
 
-  const { userId } = await PgSessions.get();
   const templateResult = (
-    await new Messaging(userId).getTemplate(props.state.templateMetaId)
+    await (
+      await AuthenticationFactory.getMessagingClient()
+    ).getTemplate(props.state.templateMetaId)
   )?.data;
 
   const template =

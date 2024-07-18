@@ -10,17 +10,12 @@ import integration from "../../../public/landingPage/integration.png";
 import interfaceCitizen from "../../../public/landingPage/interfaceCitizen.png";
 import interfacePublicServant from "../../../public/landingPage/interfacePublicServant.png";
 import security from "../../../public/landingPage/security.png";
-import type { Metadata } from "next";
 import {
   envDevelopment,
   envProduction,
   envStaging,
   envUAT,
 } from "../../constants";
-
-export const metadata: Metadata = {
-  title: "Payments",
-};
 
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";
@@ -31,11 +26,11 @@ const getLinks = (environment: string, locale: string) => {
       return {
         learnMoreForm: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
       };
 

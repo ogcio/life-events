@@ -2,11 +2,11 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { errorHandler, formatCurrency } from "../../../../../utils";
 import dayjs from "dayjs";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 export default async function ({ params: { transactionId } }) {
   const t = await getTranslations("MyPayments.details");
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
   const { data: details, error } =
     await paymentsApi.getCitizenTransactionDetails(transactionId);

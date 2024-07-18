@@ -546,36 +546,53 @@ paths:
               schema:
                 type: object
                 properties:
-                  firstname:
-                    type: string
-                  lastname:
-                    type: string
-                  email:
-                    type: string
                   title:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  firstName:
+                    type: string
+                  lastName:
                     type: string
                   dateOfBirth:
-                    type: string
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - format: date-time
+                        type: string
                   ppsn:
-                    type: string
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
                   ppsnVisible:
-                    type: boolean
+                    default: false
+                    anyOf:
+                      - type: "null"
+                      - type: boolean
                   gender:
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
+                  email:
+                    format: email
                     type: string
                   phone:
-                    type: string
+                    default: null
+                    anyOf:
+                      - type: "null"
+                      - type: string
                   consentToPrefillData:
-                    type: boolean
+                    default: false
+                    anyOf:
+                      - type: "null"
+                      - type: boolean
                 required:
-                  - firstname
-                  - lastname
+                  - firstName
+                  - lastName
                   - email
-                  - title
-                  - ppsn
-                  - ppsnVisible
-                  - gender
-                  - phone
-                  - consentToPrefillData
         "404":
           description: Default Response
           content:
@@ -961,7 +978,6 @@ paths:
                 ids:
                   type: array
                   items:
-                    format: uuid
                     type: string
               required:
                 - ids
@@ -1000,8 +1016,6 @@ paths:
                         - lastName
                         - ppsn
                         - lang
-                        - email
-                        - phone
                 required:
                   - data
         "404":

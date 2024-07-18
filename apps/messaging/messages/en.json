@@ -9,7 +9,7 @@
     "templates": "Message templates",
     "users": "Citizens",
     "userSettings": "Settings",
-    "events": "Events"
+    "events": "Event log"
   },
   "MessageTemplates": {
     "menu": {
@@ -125,8 +125,8 @@
       "tableRecipientsHeader": "Recipients",
       "tableRemoveButtonText": "Remove",
       "searchUsersButton": "Search",
-      "searchResultsCaption" : "Search results",
-      "selectedRecipientsCaption" : "Selected recipients",
+      "searchResultsCaption": "Search results",
+      "selectedRecipientsCaption": "Selected recipients",
       "searchTable": {
         "fullNameHeader": "Name",
         "emailHeader": "Email",
@@ -157,7 +157,8 @@
       "year": "Year",
       "hour": "HH",
       "minute": "MM",
-      "submitText": "Send message"
+      "submitText": "Send message",
+      "serverError": "Sorry, we were unable to create your message. Please try again"
     },
     "SuccessForm": {
       "title": "Your message has been sent",
@@ -379,6 +380,37 @@
         "accepted": "Accepted",
         "declined": "Declined"
       }
+    }
+  },
+  "InactivePublicServant": {
+    "title": "Your account is under review",
+    "description": "Thanks for creating an account in the Building Blocks Ecosystem. Your account as a public servant has now been created."
+  },
+  "MessageEvents": {
+    "mainHeader": "Message logs",
+    "searchPlaceholder": "Search Messages",
+    "tableDateHeader": "Date",
+    "tableTimeHeader": "Time",
+    "tableScheduledHeader": "Scheduled",
+    "tableStatusHeader": "Status",
+    "tableActionHeader": "Action",
+    "tableSubjectHeader": "Subject",
+    "tableRecipientHeader": "Recipient",
+    "tableViewHeader": "Action",
+    "viewLink": "View",
+    "backLink": "Back",
+    "eventLogMainHeader": "Message Event Log",
+    "recipientSubHeader": "Recipient",
+    "status": {
+      "delivered": "DELIVERED",
+      "delivering": "DELIVERING",
+      "failed": "FAILED",
+      "scheduled": "SCHEDULED",
+      "created": "CREATED",
+      "emailDelivered": "DELIVERED",
+      "emailFailed": "EMAIL FAILED",
+      "smsDelivered": "DELIVERED",
+      "smsFailed": "SMS FAILED"
     }
   }
 }

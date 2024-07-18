@@ -1,9 +1,11 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { EmailProvider, mailService } from "./services";
-import { NotFoundError, ServerError } from "shared-errors";
-import { organisationId } from "../../utils";
+import { NotFoundError } from "shared-errors";
 import { HttpError } from "../../types/httpErrors";
+import { Permissions } from "../../types/permissions";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions";
+
 const tags = ["Providers - Emails"];
 
 export const EMAIL_PROVIDER_ERROR = "EMAIL_PROVIDER_ERROR";
@@ -55,23 +57,24 @@ export default async function emails(app: FastifyInstance) {
   app.get(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Read]),
       schema: {
         tags,
         response: {
-          200: Type.Object({
-            data: Type.Array(EmailProviderType),
-          }),
+          200: getGenericResponseSchema(Type.Array(EmailProviderType)),
           "4xx": HttpError,
           "5xx": HttpError,
         },
       },
     },
-    async function handler() {
+    async function handler(request) {
       const client = await app.pg.pool.connect();
       const service = mailService(client);
       try {
-        return { data: await service.getProviders(organisationId) };
+        return {
+          data: await service.getProviders(request.userData!.organizationId!),
+        };
       } finally {
         client.release();
       }
@@ -81,13 +84,12 @@ export default async function emails(app: FastifyInstance) {
   app.get<GetEmailProvider>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Read]),
       schema: {
         tags,
         response: {
-          200: Type.Object({
-            data: EmailProviderType,
-          }),
+          200: getGenericResponseSchema(EmailProviderType),
           404: HttpError,
           500: HttpError,
         },
@@ -98,7 +100,7 @@ export default async function emails(app: FastifyInstance) {
       const service = mailService(client);
       try {
         const data = await service.getProvider(
-          organisationId,
+          request.userData!.organizationId!,
           request.params.providerId,
         );
         if (!data) {
@@ -117,7 +119,8 @@ export default async function emails(app: FastifyInstance) {
   app.post<CreateEmailProvider>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Write]),
       schema: {
         tags,
         body: EmailProviderWithoutIdType,
@@ -137,7 +140,10 @@ export default async function emails(app: FastifyInstance) {
       const service = mailService(client);
 
       try {
-        const id = await service.createProvider(organisationId, request.body);
+        const id = await service.createProvider(
+          request.userData!.organizationId!,
+          request.body,
+        );
 
         reply.statusCode = 201;
         const data = { id };
@@ -151,7 +157,8 @@ export default async function emails(app: FastifyInstance) {
   app.put<UpdateEmailProvider>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Write]),
       schema: {
         tags,
         body: EmailProviderType,
@@ -165,8 +172,10 @@ export default async function emails(app: FastifyInstance) {
       const client = await app.pg.pool.connect();
       const service = mailService(client);
       try {
-        const placeholderOrganisationId = organisationId;
-        await service.updateProvider(placeholderOrganisationId, request.body);
+        await service.updateProvider(
+          request.userData!.organizationId!,
+          request.body,
+        );
       } finally {
         client.release();
       }
@@ -176,7 +185,8 @@ export default async function emails(app: FastifyInstance) {
   app.delete<GetEmailProvider>(
     "/:providerId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Provider.Delete]),
       schema: {
         tags,
         response: {
@@ -190,7 +200,10 @@ export default async function emails(app: FastifyInstance) {
       const service = mailService(client);
 
       try {
-        await service.deleteProvider(organisationId, request.params.providerId);
+        await service.deleteProvider(
+          request.userData!.organizationId!,
+          request.params.providerId,
+        );
       } finally {
         client.release();
       }
