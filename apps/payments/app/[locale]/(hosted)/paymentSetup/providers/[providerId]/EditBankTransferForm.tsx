@@ -8,7 +8,7 @@ import getRequestConfig from "../../../../../../i18n";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { bankTransferValidationMap } from "../../../../../validationMaps";
 import { BankTransferFormState } from "../add-banktransfer/page";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 type Props = {
   provider: BankTransferProvider;
@@ -27,7 +27,7 @@ export default async ({ provider, locale }: Props) => {
   ): Promise<BankTransferFormState> {
     "use server";
 
-    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
     const nameField = formData.get("provider_name") as string;
     const accountHolderNameField = formData.get(

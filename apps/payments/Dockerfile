@@ -10,6 +10,7 @@ COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/package*.json /app/packages/shared-components/
 COPY ./packages/shared-errors/package*.json /app/packages/shared-errors/
+COPY ./packages/nextjs-logging-wrapper/package*.json /app/packages/nextjs-logging-wrapper/
 
 RUN npm ci
 
@@ -20,6 +21,7 @@ COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/ /app/packages/shared-components/
 COPY ./packages/shared-errors/ /app/packages/shared-errors/
+COPY ./packages/nextjs-logging-wrapper/ /app/packages/nextjs-logging-wrapper/
 
 FROM deps AS builder
 WORKDIR /app
@@ -43,6 +45,7 @@ ENV NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE=$NEXT_PUBLIC_BUILDING_BLOCKS_LANDIN
 ENV NEXT_PUBLIC_FORMS_URL=$NEXT_PUBLIC_FORMS_URL
 
 RUN npm run build --workspace=packages/shared-errors
+RUN npm run build --workspace=packages/nextjs-logging-wrapper
 RUN npm run build --workspace=apps/payments
 
 FROM base-deps as runner

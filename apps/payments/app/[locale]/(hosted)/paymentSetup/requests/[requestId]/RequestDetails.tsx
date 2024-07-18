@@ -7,7 +7,7 @@ import { errorHandler, formatCurrency } from "../../../../../utils";
 import Tooltip from "../../../../../components/Tooltip";
 import Modal from "../../../../../components/Modal";
 import styles from "../PaymentRequests.module.scss";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 async function showDeleteModal() {
   "use server";
@@ -24,7 +24,7 @@ async function closeDeleteModal() {
 async function deletePaymentRequest(requestId: string) {
   "use server";
 
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { error } = await paymentsApi.deletePaymentRequest(requestId);
 
   if (error) {
@@ -35,7 +35,7 @@ async function deletePaymentRequest(requestId: string) {
 }
 
 async function hasTransactions(requestId: string) {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: transactions, error } =
     await paymentsApi.getPaymentRequestTransactions(requestId, {
       limit: 5,
@@ -58,7 +58,7 @@ export const RequestDetails = async ({
   action: string | undefined;
   locale: string;
 }) => {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
     await paymentsApi.getPaymentRequest(requestId);
 

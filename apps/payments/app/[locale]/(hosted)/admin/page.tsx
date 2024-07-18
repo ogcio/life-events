@@ -1,9 +1,10 @@
 import { notFound, redirect, RedirectType } from "next/navigation";
 import { routeDefinitions } from "../../../routeDefinitions";
-import { getPaymentsPublicServantContext } from "../../../../libraries/auth";
+import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
 
 export default async () => {
-  const { isPublicServant } = await getPaymentsPublicServantContext();
+  const isPublicServant =
+    await AuthenticationFactory.getInstance().isPublicServant();
 
   if (!isPublicServant) return notFound();
 

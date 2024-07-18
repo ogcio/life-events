@@ -11,7 +11,7 @@ import { getTranslations } from "next-intl/server";
 import { paymentRequestValidationMap } from "../../../../../validationMaps";
 import { ProviderType } from "../../providers/types";
 import { PaymentRequestFormState } from "../../create/page";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 type Props = {
   params: {
@@ -22,7 +22,7 @@ type Props = {
 
 export default async function ({ params: { request_id, locale } }: Props) {
   const t = await getTranslations("PaymentSetup.CreatePayment.form");
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
     await paymentsApi.getPaymentRequest(request_id);
 
@@ -43,7 +43,7 @@ export default async function ({ params: { request_id, locale } }: Props) {
   ): Promise<PaymentRequestFormState> {
     "use server";
 
-    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
     const providerAccountsField = formData.get("providerAccounts") as string;
 

@@ -5,7 +5,7 @@ import getRequestConfig from "../../../../../../i18n";
 import { errorHandler } from "../../../../../utils";
 import OpenBankingForm from "./OpenBankingForm";
 import { openBankingValidationMap } from "../../../../../validationMaps";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 type Props = {
   params: {
@@ -35,7 +35,7 @@ export default async (props: Props) => {
     formData: FormData,
   ): Promise<OpenBankingFormState> {
     "use server";
-    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
     const nameField = formData.get("provider_name") as string;
     const accountHolderNameField = formData.get(

@@ -3,8 +3,7 @@ import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
 import { errorHandler, getRealAmount } from "../../../../utils";
 import { redirect, RedirectType } from "next/navigation";
-import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
-import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 
 const MAX_WAIT_FOR_RESULT = "60";
 
@@ -14,7 +13,7 @@ async function getPaymentDetails(
   amount?: number,
   customAmount?: number,
 ) {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
     await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
@@ -65,8 +64,11 @@ export default async function Bank(props: {
       }
     | undefined;
 }) {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
-  const { user, isPublicServant } = await getPaymentsCitizenContext();
+  const authContext = AuthenticationFactory.getInstance();
+  const { user, isPublicServant } = await authContext.getContext();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient({
+    authenticationContext: authContext,
+  });
   const t = await getTranslations("Common");
 
   if (isPublicServant || !props.searchParams?.paymentId) {
