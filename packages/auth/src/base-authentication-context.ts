@@ -6,8 +6,9 @@ import {
 import {
   getCitizenContext,
   getPublicServantContext,
+  isPublicServantAuthenticated,
 } from "./authentication-context";
-import { AuthenticationError, BadRequestError } from "shared-errors";
+import { AuthenticationError } from "shared-errors";
 import { notFound } from "next/navigation";
 import { getCommonLogger } from "nextjs-logging-wrapper";
 
@@ -101,6 +102,18 @@ export class BaseAuthenticationContext {
 
   async getAccessToken(): Promise<string> {
     return (await this.getContext()).accessToken;
+  }
+
+  async isPublicServantAuthenticated(): Promise<boolean> {
+    return isPublicServantAuthenticated(this.config);
+  }
+
+  async isCitizenAuthenticated(): Promise<boolean> {
+    return isPublicServantAuthenticated(this.config);
+  }
+
+  async isAuthenticated(): Promise<boolean> {
+    return this.isCitizenAuthenticated() || this.isPublicServantAuthenticated();
   }
 
   private getPartialContext = (): Promise<PartialAuthSessionContext> => {
