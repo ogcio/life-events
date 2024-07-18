@@ -12,7 +12,6 @@ variables:
   nextPublicLifeEventsServiceEntryPoint: https://dev.life.gov.ie
   nextPublicBuildingBlocksLandingPage: https://dev.blocks.gov.ie
   nextPublicFormsUrl: https://www.forms.uat.gov.ie/
-  
   nextPublicMatomoUrl: //analytics.ogcio.gov.ie
   nextPublicMatomoProtocol: https
   nextPublicLifeEventsMatomoSiteId: 11
