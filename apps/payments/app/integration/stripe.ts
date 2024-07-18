@@ -3,13 +3,13 @@ import { TransactionStatuses } from "../../types/TransactionStatuses";
 import { PaymentRequest } from "../../types/common";
 import { StripeData } from "../[locale]/(hosted)/paymentSetup/providers/types";
 import { errorHandler } from "../utils";
-import { PaymentsApiFactory } from "../../libraries/payments-api";
+import { AuthenticationFactory } from "../../libraries/authentication-factory";
 
 const getStripeProviderId = (paymentRequest: PaymentRequest) =>
   paymentRequest.providers.find((p) => p.type === "stripe")!.id;
 
 const getSecretKey = async (providerId: string): Promise<string> => {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: provider, error } =
     await paymentsApi.getProviderById(providerId);
 

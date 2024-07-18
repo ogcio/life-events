@@ -14,7 +14,7 @@ import {
 import { routeDefinitions } from "../../../../routeDefinitions";
 import Pagination from "../../../../components/pagination";
 import { redirect, RedirectType } from "next/navigation";
-import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 
 type Props = {
   params: {
@@ -25,7 +25,7 @@ type Props = {
 
 export default async function (props: Props) {
   const t = await getTranslations("MyPayments");
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
   const currentPage = props.searchParams.page
     ? parseInt(props.searchParams.page)

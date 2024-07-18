@@ -10,7 +10,7 @@ import {
   ValidationErrorTypes,
 } from "../../../../../utils";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 type Props = {
   provider: WorldpayProvider;
@@ -33,7 +33,7 @@ export default async ({ provider, locale }: Props) => {
   }> {
     "use server";
 
-    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
     const validation = {
       errors: {},

@@ -5,7 +5,7 @@ import getRequestConfig from "../../../../../../i18n";
 import { errorHandler } from "../../../../../utils";
 import StripeForm from "./StripeForm";
 import { stripeValidationMap } from "../../../../../validationMaps";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 type Props = {
   params: {
@@ -36,7 +36,7 @@ export default async (props: Props) => {
   ): Promise<StripeFormState> {
     "use server";
 
-    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
     const nameField = formData.get("provider_name") as string;
     const livePublishableKeyField = formData.get(

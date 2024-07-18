@@ -1,6 +1,6 @@
 import { redirect, RedirectType } from "next/navigation";
 import { routeDefinitions } from "../../routeDefinitions";
-import { getPaymentsCitizenContext } from "../../../libraries/auth";
+import { AuthenticationFactory } from "../../../libraries/authentication-factory";
 
 type Props = {
   params: {
@@ -10,7 +10,7 @@ type Props = {
 
 export default async (props: Props) => {
   const { isPublicServant, isInactivePublicServant } =
-    await getPaymentsCitizenContext();
+    await AuthenticationFactory.getInstance().getContext();
 
   if (isPublicServant) {
     const path = `${props.params.locale}/${routeDefinitions.paymentSetup.slug}`;

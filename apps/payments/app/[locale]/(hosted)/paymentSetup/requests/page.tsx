@@ -13,7 +13,7 @@ import { routeDefinitions } from "../../../../routeDefinitions";
 import Pagination from "../../../../components/pagination";
 import styles from "./PaymentRequests.module.scss";
 import { redirect, RedirectType } from "next/navigation";
-import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 
 export default async function ({
   params: { locale },
@@ -32,7 +32,7 @@ export default async function ({
     limit: pageLimit,
   };
 
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: paymentRequestsData, error } =
     await paymentsApi.getPaymentRequests(pagination);
 
