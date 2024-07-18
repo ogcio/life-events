@@ -7,6 +7,8 @@ import {
   MessageEvent,
   MessageEventType,
   MessageEventTypeObject,
+  PaginationParams,
+  PaginationParamsSchema,
   ReadMessageSchema,
   ReadMessagesSchema,
 } from "../../types/schemaDefinitions";
@@ -22,7 +24,7 @@ import {
   ProfileSdkFacade,
 } from "../../services/users/shared-users";
 import { Profile } from "building-blocks-sdk";
-import { NotFoundError, ServerError } from "shared-errors";
+import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
 import {
   MessageEventData,
   MessagingEventType,
@@ -46,13 +48,13 @@ interface GetMessage {
 }
 
 export default async function messages(app: FastifyInstance) {
-  // Didn't add permissions here because
-  // we need to manage the scheduler permissions
-  // TODO Add a M2M application user to make scheduler able to authenticate
-  app.post<{ Params: { id: string } }>(
+  app.post<{ Params: { id: string }; Body: { token: string } }>(
     "/jobs/:id",
     {
       schema: {
+        body: Type.Object({
+          token: Type.String(),
+        }),
         response: {
           202: Type.Null(),
           "5xx": HttpError,
@@ -66,7 +68,7 @@ export default async function messages(app: FastifyInstance) {
         logger: request.log,
         jobId: request.params!.id,
         userId: request.userData?.userId || "",
-        organizationId: request.userData!.organizationId!,
+        token: request.body.token,
       });
 
       reply.statusCode = 202;
@@ -201,6 +203,13 @@ export default async function messages(app: FastifyInstance) {
         throw new ServerError(errorKey, "no user id on request");
       }
 
+      if (!req.userData?.organizationId) {
+        throw new AuthorizationError(
+          errorKey,
+          "no organisation id associated to request user",
+        );
+      }
+
       const eventLogger = newMessagingEventLogger(app.pg.pool, app.log);
 
       // Get users
@@ -300,7 +309,7 @@ export default async function messages(app: FastifyInstance) {
         const jobs = await messageService.scheduleMessages(
           createdTemplateMessages,
           req.body.scheduledAt,
-          req.headers.authorization || "",
+          req.userData?.organizationId,
         );
 
         eventLogger.log(
@@ -327,16 +336,21 @@ export default async function messages(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Querystring: { search?: string } }>(
+  app.get<{
+    Querystring: { search?: string } & PaginationParams;
+  }>(
     "/events",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Event.Read]),
       schema: {
         querystring: Type.Optional(
-          Type.Object({
-            search: Type.Optional(Type.String()),
-          }),
+          Type.Composite([
+            Type.Object({
+              search: Type.Optional(Type.String()),
+            }),
+            PaginationParamsSchema,
+          ]),
         ),
         response: {
           200: getGenericResponseSchema(Type.Array(MessageEventTypeObject)),
@@ -360,7 +374,7 @@ export default async function messages(app: FastifyInstance) {
           where organisation_id = $1
           and subject ilike $2
           order by created_at
-          limit 20
+          limit $3 offset $4
           ) select
               l.message_id as "messageId",
               (l.data ->> 'subject') as subject,
@@ -372,7 +386,12 @@ export default async function messages(app: FastifyInstance) {
             join messaging_event_logs l on m.id = l.message_id
             order by l.created_at;
         `,
-        [request.userData?.organizationId, textSearchILikeClause],
+        [
+          request.userData?.organizationId,
+          textSearchILikeClause,
+          request.query.limit,
+          request.query.offset,
+        ],
       );
 
       const aggregations = eventQueryResult.rows.reduce<
@@ -407,7 +426,7 @@ export default async function messages(app: FastifyInstance) {
       messageId: string;
     };
   }>(
-    "/events/:messageId",
+    "/:messageId/events",
     {
       schema: {
         response: {

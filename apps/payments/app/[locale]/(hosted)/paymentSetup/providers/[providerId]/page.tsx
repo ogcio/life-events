@@ -12,7 +12,7 @@ import {
   WorldpayProvider,
 } from "../types";
 import { errorHandler } from "../../../../../utils";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 type Props = {
   params: {
@@ -22,7 +22,7 @@ type Props = {
 };
 
 export default async ({ params: { providerId, locale } }: Props) => {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: provider, error } =
     await paymentsApi.getProviderById(providerId);
 

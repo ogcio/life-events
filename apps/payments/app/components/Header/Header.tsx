@@ -4,21 +4,20 @@ import Hamburger from "../HamburgerMenu";
 import HeaderSvg from "./HeaderSvg";
 import LanguageSwitch from "./LanguageSwitch";
 import UserIcon from "./UserIcon";
-import { getPaymentsCitizenContext } from "../../../libraries/auth";
 import { BuildingBlockSelector } from "shared-components";
 
 import styles from "./Header.module.scss";
+import { AuthenticationFactory } from "../../../libraries/authentication-factory";
 
 type HeaderProps = {
   locale: string;
 };
 
 export default async ({ locale }: HeaderProps) => {
-  const user = await getPaymentsCitizenContext();
+  const { user, isPublicServant } =
+    await AuthenticationFactory.getInstance().getContext();
 
-  const [firstName, lastName] = user.user?.name
-    ? user.user.name.split(" ")
-    : ["", ""];
+  const [firstName, lastName] = user.name ? user.name.split(" ") : ["", ""];
   const initials = firstName.charAt(0) + lastName.charAt(0);
 
   return (
@@ -39,7 +38,7 @@ export default async ({ locale }: HeaderProps) => {
           <div className={styles.leftSideContainer}>
             <Hamburger
               userName={`${firstName} ${lastName}`}
-              publicServant={user.isPublicServant}
+              publicServant={isPublicServant}
               locale={locale}
             />
             <a

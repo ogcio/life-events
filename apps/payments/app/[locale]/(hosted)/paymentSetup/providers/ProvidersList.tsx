@@ -3,11 +3,11 @@ import { useTranslations } from "next-intl";
 import ProviderStatusTag from "./ProviderStatusTag";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import { errorHandler } from "../../../../utils";
-import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 
 export default async () => {
   const t = useTranslations("PaymentSetup.Providers");
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
   const { data: providers, error } = await paymentsApi.getProviders();
 
