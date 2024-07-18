@@ -21,6 +21,13 @@ export interface paths {
           id: string;
         };
       };
+      requestBody: {
+        content: {
+          "application/json": {
+            token: string;
+          };
+        };
+      };
       responses: {
         /** @description Default Response */
         202: {
@@ -342,14 +349,17 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                messageId: string;
-                subject: string;
-                receiverFullName: string;
-                eventType: string;
-                eventStatus: string;
-                scheduledAt: string;
-              }[];
+                count: number;
+                events: {
+                  /** Format: uuid */
+                  messageId: string;
+                  subject: string;
+                  receiverFullName: string;
+                  eventType: string;
+                  eventStatus: string;
+                  scheduledAt: string;
+                }[];
+              };
               metadata?: {
                 links?: {
                   self: {
