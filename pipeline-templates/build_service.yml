@@ -7,8 +7,6 @@ parameters:
 jobs:
   - job: Build
     displayName: Build job - ${{ parameters.serviceName }}
-    pool:
-      vmImage: 'ubuntu-latest'
     steps:
     - download: current
       artifact: 'docker-base-$(Build.BuildId)'

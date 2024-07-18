@@ -23,6 +23,10 @@ parameters:
     displayName: List of valid environments to deploy (do not change)
     default: ['dev','sta', 'uat', 'prd']
 
+  - name: vmImage
+    type: string
+    default: "ubuntu-22.04"
+
 variables:
   - name: pushArtefacts
     value: ${{ containsValue(parameters.buildBranches, variables['Build.SourceBranchName']) }}
@@ -34,10 +38,10 @@ variables:
 stages:
   - stage: securityScan
     displayName: Security Scans
+    pool:
+      vmImage: ${{ parameters.vmImage }}
     jobs:
       - job: gitLeaksScan
-        pool:
-          vmImage: "ubuntu-latest"
         displayName: GitLeaks Scan
         steps:
           - task: DockerInstaller@0
@@ -52,8 +56,6 @@ stages:
         - job: bearerScan
           displayName: Bearer
           continueOnError: true
-          pool:
-            vmImage: "ubuntu-latest"
           steps:
             - task: DockerInstaller@0
               displayName: Docker Installer
@@ -65,11 +67,15 @@ stages:
               displayName: Code Scan
   - stage: BuildDeps
     displayName: Build service dependencies
+    pool:
+      vmImage: ${{ parameters.vmImage }}
     jobs:
       - template: pipeline-templates/build_dependencies.yml
   - ${{ each serviceName in parameters.services }}:
     - stage: Build_${{ replace(serviceName, '-', '_') }}
       displayName: Build ${{ serviceName }}
+      pool:
+        vmImage: ${{ parameters.vmImage }}
       dependsOn: 
         - securityScan
         - BuildDeps
@@ -98,6 +104,8 @@ stages:
   - ${{ each serviceName in parameters.services }}:        
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
+      pool:
+        vmImage: ${{ parameters.vmImage }}
       dependsOn: 
         - EnvApproval
       condition: and(${{ variables.pushArtefacts }}, succeeded())
@@ -109,6 +117,8 @@ stages:
           serviceName: ${{ serviceName }}
     - stage: Deploy_${{ replace(serviceName, '-', '_') }}
       displayName: Deploy to ECS - ${{ serviceName }}
+      pool:
+        vmImage: ${{ parameters.vmImage }}
       dependsOn: Push_${{ replace(serviceName, '-', '_') }}
       jobs:
       - template: pipeline-templates/deploy_ecs.yml

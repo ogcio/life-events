@@ -1,8 +1,6 @@
 jobs:
   - job: BuildBaseContainer
     displayName: Build base container
-    pool:
-      vmImage: 'ubuntu-latest'
     steps:
     - task: Docker@2
       displayName:  Build base image
