@@ -6,6 +6,8 @@ prepare:
 	(command -v husky && husky) || true
 install-concurrently:
 	npm i -g concurrently
+npm-install:
+	npm i
 
 ## env files ##
 update-env:
@@ -29,24 +31,14 @@ build-api-auth:
 	npm run build --workspace=api-auth
 build-error-handler: 
 	npm run build --workspace=error-handler
-build-packages: 
-	$(MAKE) build-shared-errors
-	$(MAKE) build-logging-wrapper
-	$(MAKE) build-error-handler
-	$(MAKE) build-api-auth
-init-packages: 
-	npm i
-	$(MAKE) build-packages
+build-packages: build-shared-errors build-logging-wrapper build-error-handler build-api-auth
+init-packages: npm-install build-packages
 
 ## Docker ##
 build-docker:
 	docker build -t base-deps:latest  --file Dockerfile . 
 	docker build -t design-system-container:latest --file packages/design-system/Dockerfile .
-init:
-	$(MAKE) init-packages
-	$(MAKE) init-env
-	$(MAKE) init-ds
-	$(MAKE) build-docker
+init: init-packages init-env init-ds build-docker
 start-docker: 
 	docker compose down && \
 	DOCKER_BUILDKIT=1 docker compose up --build --remove-orphans -d --wait
@@ -78,9 +70,8 @@ start-docs:
 	cd documentation && \
 	npm run start && \
 	cd ..
-start-services:
-	$(MAKE) install-concurrently && \
-	concurrently --kill-others \
+run-services:
+	concurrently --kill-others-on-fail \
 	"npm run dev --workspace=auth-service" \
 	"npm run dev --workspace=mock-api" \
 	"npm run dev --workspace=web" \
@@ -93,9 +84,14 @@ start-services:
 	"npm run dev --workspace=timeline-api" \
 	"npm run dev --workspace=home" \
 	"npm run dev --workspace=forms"
+start-services: install-concurrently run-services
+	
 kill-services:
-	sudo lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006,3301,3302 | xargs sudo kill -9
-start-migrate:
+	sleep 2 && lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006 | xargs sudo kill -9
+kill-logto:
+	sleep 2 && lsof -ti:3301,3302 | xargs sudo kill -9
+kill-all: install-concurrently concurrently kill-services kill-logto
+start-migrate: 
 	$(MAKE) install-concurrently && \
 	concurrently \
 	"$(MAKE) start-services" \
@@ -106,23 +102,7 @@ start-migrate-logto:
 	"$(MAKE) start-services" \
 	"$(MAKE) init-logto" \
 	"sleep 5 && $(MAKE) migrate"
-start:
-	$(MAKE) init && \
-	$(MAKE) start-docker && \
-	$(MAKE) start-migrate && \
-	$(MAKE) kill-services
-start-no-scheduler:
-	$(MAKE) init && \
-	$(MAKE) start-docker-no-scheduler && \
-	$(MAKE) start-migrate && \
-	$(MAKE) kill-services
-start-full:
-	$(MAKE) init && \
-	$(MAKE) start-docker && \
-	$(MAKE) start-migrate-logto && \
-	$(MAKE) kill-services
-start-logto:
-	$(MAKE) init && \
-	$(MAKE) start-docker-no-scheduler && \
-	$(MAKE) start-migrate-logto && \
-	$(MAKE) kill-services
+start: init start-docker start-migrate
+start-no-scheduler: init start-docker-no-scheduler start-migrate kill-services
+start-full: init start-docker start-migrate-logto
+start-logto: init start-docker-no-scheduler start-migrate-logto
