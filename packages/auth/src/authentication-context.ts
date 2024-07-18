@@ -16,35 +16,7 @@ export const organizationScopes = [
   AuthUserScope.OrganizationRoles,
 ];
 
-export const getCitizenContext = (params: {
-  resourceUrl: string;
-  citizenScopes: string[];
-  loginUrl: string;
-  publicServantExpectedRole: string;
-  baseUrl: string;
-  appId: string;
-  appSecret: string;
-}): Promise<PartialAuthSessionContext> =>
-  AuthSession.get(
-    {
-      ...getBaseLogtoConfig(),
-      baseUrl: params.baseUrl,
-      appId: params.appId,
-      appSecret: params.appSecret,
-      resources: [params.resourceUrl],
-      scopes: [...params.citizenScopes],
-    },
-    {
-      getAccessToken: true,
-      resource: params.resourceUrl,
-      fetchUserInfo: true,
-      publicServantExpectedRole: params.publicServantExpectedRole,
-      userType: "citizen",
-      loginUrl: params.loginUrl,
-    },
-  );
-
-export const getPublicServantContext = (params: {
+interface PublicServantParameters {
   resourceUrl: string;
   publicServantScopes: string[];
   organizationId: string;
@@ -53,22 +25,80 @@ export const getPublicServantContext = (params: {
   baseUrl: string;
   appId: string;
   appSecret: string;
-}): Promise<PartialAuthSessionContext> =>
+}
+
+interface CitizenParameters {
+  resourceUrl: string;
+  citizenScopes: string[];
+  loginUrl: string;
+  publicServantExpectedRole: string;
+  baseUrl: string;
+  appId: string;
+  appSecret: string;
+}
+
+export const getCitizenContext = (
+  params: CitizenParameters,
+): Promise<PartialAuthSessionContext> =>
   AuthSession.get(
-    {
-      ...getBaseLogtoConfig(),
-      baseUrl: params.baseUrl,
-      appId: params.appId,
-      appSecret: params.appSecret,
-      scopes: [...organizationScopes, ...params.publicServantScopes],
-      resources: [params.resourceUrl],
-    },
-    {
-      getOrganizationToken: true,
-      fetchUserInfo: true,
-      publicServantExpectedRole: params.publicServantExpectedRole,
-      organizationId: params.organizationId,
-      userType: "publicServant",
-      loginUrl: params.loginUrl,
-    },
+    buildCitizenAuthConfig(params),
+    buildCitizenContextParameters(params),
   );
+
+export const getPublicServantContext = (
+  params: PublicServantParameters,
+): Promise<PartialAuthSessionContext> =>
+  AuthSession.get(
+    buildPublicServantAuthConfig(params),
+    buildPublicServantContextParameters(params),
+  );
+
+export const isPublicServantAuthenticated = (params: PublicServantParameters) =>
+  AuthSession.isAuthenticated(
+    buildPublicServantAuthConfig(params),
+    buildPublicServantContextParameters(params),
+  );
+
+export const isCitizenAuthenticated = (params: CitizenParameters) =>
+  AuthSession.isAuthenticated(
+    buildCitizenAuthConfig(params),
+    buildCitizenContextParameters(params),
+  );
+
+const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
+  ...getBaseLogtoConfig(),
+  baseUrl: params.baseUrl,
+  appId: params.appId,
+  appSecret: params.appSecret,
+  scopes: [...organizationScopes, ...params.publicServantScopes],
+  resources: [params.resourceUrl],
+});
+
+const buildPublicServantContextParameters = (
+  params: PublicServantParameters,
+) => ({
+  getOrganizationToken: true,
+  fetchUserInfo: true,
+  publicServantExpectedRole: params.publicServantExpectedRole,
+  organizationId: params.organizationId,
+  userType: "publicServant" as "publicServant",
+  loginUrl: params.loginUrl,
+});
+
+const buildCitizenAuthConfig = (params: CitizenParameters) => ({
+  ...getBaseLogtoConfig(),
+  baseUrl: params.baseUrl,
+  appId: params.appId,
+  appSecret: params.appSecret,
+  resources: [params.resourceUrl],
+  scopes: [...params.citizenScopes],
+});
+
+const buildCitizenContextParameters = (params: CitizenParameters) => ({
+  getAccessToken: true,
+  resource: params.resourceUrl,
+  fetchUserInfo: true,
+  publicServantExpectedRole: params.publicServantExpectedRole,
+  userType: "citizen" as "citizen",
+  loginUrl: params.loginUrl,
+});

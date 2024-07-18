@@ -7,7 +7,7 @@ import {
   getCitizenContext,
   getPublicServantContext,
 } from "./authentication-context";
-import { AuthenticationError, BadRequestError } from "shared-errors";
+import { AuthenticationError } from "shared-errors";
 import { notFound } from "next/navigation";
 import { getCommonLogger } from "nextjs-logging-wrapper";
 
