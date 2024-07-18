@@ -41,7 +41,9 @@
     "migrate:scheduler-api": "npm run migrate --workspace=scheduler",
     "start:docs": "cd documentation && npm run start",
     "kill-services": "sudo lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006 | xargs sudo kill -9",
-    "build:docker": "docker build -t base-deps:latest  --file Dockerfile . && docker build -t design-system-container:latest --file packages/design-system/Dockerfile ."
+    "build:docker": "docker build -t base-deps:latest --file Dockerfile . && docker build -t design-system-container:latest --file packages/design-system/Dockerfile .",
+    "security:scan": "docker run --rm -v $(pwd):/tmp/scan bearer/bearer:latest scan -f html /tmp/scan > bearer-scan-report.html",
+    "security:privacy-report": "docker run --rm -v $(pwd):/tmp/scan bearer/bearer:latest scan --report privacy -f html /tmp/scan > bearer-privacy-report.html"
   },
   "author": "",
   "license": "MIT",
