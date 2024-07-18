@@ -29,6 +29,8 @@ services:
     build: ./clamav
     image: clamav
     entrypoint: ./init-unprivileged
+    volumes:
+      - clamav:/tmp/clamav/lib
     ports:
       - 3310:3310
 
@@ -77,6 +79,7 @@ services:
 volumes:
   db:
     driver: local
+  clamav:
 
 # custom network to be able to reach Logto running on same network with another Docker Compose file
 networks:
