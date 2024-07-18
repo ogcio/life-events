@@ -30,7 +30,7 @@ services:
     image: clamav
     entrypoint: ./init-unprivileged
     volumes:
-      - clamav:/tmp/clamav/lib
+      - clamav:/tmp/
     ports:
       - 3310:3310
 

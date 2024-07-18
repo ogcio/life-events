@@ -23,6 +23,10 @@ const __dirname = dirname(__filename);
 
 export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
+  // const app = fastify({
+  //   ...opts,
+  //   logger: false,
+  // }).withTypeProvider<TypeBoxTypeProvider>();
   initializeLoggingHooks(app);
   initializeErrorHandler(app);
 

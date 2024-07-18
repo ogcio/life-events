@@ -7,11 +7,13 @@ import {
   ListObjectsCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { PassThrough } from "stream";
+import { PassThrough, Readable, Transform } from "stream";
 import { EventEmitter } from "node:events";
 import { pipeline } from "stream";
 import { Upload } from "@aws-sdk/lib-storage";
 import { Object } from "../../types/schemaDefinitions.js";
+
+import { httpErrors } from "@fastify/sensible";
 
 const permissions = {
   citizen: {
@@ -147,16 +149,11 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
       return;
     });
 
-  pipeline(
-    stream,
-    // antivirusPassthrough,
-    s3uploadPassthrough,
-    (err) => {
-      if (err) {
-        eventEmitter.emit("error", err);
-      }
-    },
-  );
+  pipeline(stream, antivirusPassthrough, s3uploadPassthrough, (err) => {
+    if (err) {
+      eventEmitter.emit("error", err);
+    }
+  });
 
   return promise;
 };
@@ -209,7 +206,6 @@ export default async function routes(app: FastifyInstance) {
             size: item.Size,
           })) || [];
       } catch (err) {
-        app.log.error(err);
         throw app.httpErrors.internalServerError();
       }
 
@@ -241,7 +237,6 @@ export default async function routes(app: FastifyInstance) {
           }),
         );
       } catch (err) {
-        app.log.error(err);
         throw app.httpErrors.internalServerError();
       }
 
@@ -295,29 +290,77 @@ export default async function routes(app: FastifyInstance) {
 
       antivirusPassthrough.once("error", (err) => {
         app.log.error(err);
-        downloadPassthrough.destroy();
       });
 
       reply.send(downloadPassthrough);
 
-      antivirusPassthrough.once("scan-complete", (result) => {
-        const { isInfected } = result;
-        if (isInfected) {
-          downloadPassthrough.destroy();
-          throw app.httpErrors.badRequest("File is infected");
-        } else {
-          downloadPassthrough.destroy();
-        }
+      const thePromise = new Promise<void>((resolve, reject) => {
+        antivirusPassthrough.once("scan-complete", (result) => {
+          const { isInfected } = result;
+          if (isInfected) {
+            reject("File is infected");
+          }
+          resolve();
+        });
       });
+      const monitorPassThrough = new PromiseTransform(thePromise);
 
-      pipeline(stream, antivirusPassthrough, downloadPassthrough, (err) => {
-        if (err) {
-          downloadPassthrough.destroy();
-          app.log.error(err);
-        }
-      });
+      pipeline(
+        stream,
+        antivirusPassthrough,
+        monitorPassThrough,
+        downloadPassthrough,
+        (err) => {
+          if (err) {
+            downloadPassthrough.destroy();
+            app.log.error(err);
+          }
+        },
+      );
 
       return reply;
     },
   );
+}
+class PromiseTransform extends Transform {
+  private aPromise;
+  // private lastChunk;
+  private processedBytes: number;
+
+  constructor(aPromise: Promise<void>, options = {}) {
+    super(options);
+    this.aPromise = aPromise;
+    this.lastChunk = null;
+  }
+
+  _transform(chunk, encoding, callback) {
+    this.push(chunk);
+    callback();
+    // if (this.lastChunk) {
+    //   console.log("last chunk true");
+    //   if (!this.push(this.lastChunk)) {
+    //     console.log("push negative, draining");
+    //     this.once("drain", callback);
+    //   } else {
+    //     console.log("push positive callback");
+    //     callback();
+    //   }
+    // } else {
+    //   callback();
+    // }
+    // this.lastChunk = chunk;
+  }
+
+  _flush(callback) {
+    this.aPromise
+      .then(() => {
+        if (this.lastChunk) {
+          this.push(this.lastChunk);
+        } else {
+          this.push();
+        }
+        callback();
+      })
+      .catch(callback);
+  }
 }
