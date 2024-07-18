@@ -20,6 +20,8 @@ import styles from "./layout.module.scss";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import AnalyticsTracker from "analytics/components/AnalyticsTracker";
 import favicon from "../../../public/favicon.ico";
+import { AuthSession } from "auth/auth-session";
+import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export const metadata: Metadata = {
   title: "Life events",
@@ -41,15 +43,19 @@ export default async function RootLayout({
   const path = headers().get("x-pathname")?.toString();
   const queryString = headers().get("x-searchParams")?.toString();
 
-  const redirectUrl = `${path}${queryString ? `?${queryString}` : ""}`;
+  const authFactory = AuthenticationFactory.getInstance();
 
-  const { userId, firstName, lastName, publicServant, verificationLevel } =
-    await PgSessions.get(redirectUrl);
+  const isAuthenticatedWithLogto =
+    await authFactory.isPublicServantAuthenticated();
 
-  // if the requested path is not under the admin routes and the user is a publc servant, redirect to the admin page
-  if (publicServant && !path?.startsWith(`/${locale}/admin`)) {
+  if (isAuthenticatedWithLogto) {
     redirect(`/${locale}/admin`, RedirectType.replace);
   }
+
+  const redirectUrl = `${path}${queryString ? `?${queryString}` : ""}`;
+
+  const { userId, firstName, lastName, verificationLevel } =
+    await PgSessions.get(redirectUrl);
 
   const userName = [firstName, lastName].join(" ");
 
@@ -67,8 +73,7 @@ export default async function RootLayout({
     redirect(url.href, RedirectType.replace);
   }
 
-  const showHamburgerMenu =
-    (await isFeatureFlagEnabled("eventsMenu")) && !publicServant;
+  const showHamburgerMenu = await isFeatureFlagEnabled("eventsMenu");
 
   const enabledEntries = await getAllEnabledFlags(
     menuOptions.map((o) => o.key),
@@ -109,7 +114,11 @@ export default async function RootLayout({
             />
           </NextIntlClientProvider>
         )}
-        <Header showHamburgerButton={showHamburgerMenu} locale={locale} />
+        <Header
+          signoutUrl={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
+          showHamburgerButton={showHamburgerMenu}
+          locale={locale}
+        />
         {/* All designs are made for 1440 px  */}
         <main className={styles.mainContainer}>
           <FeedbackBanner locale={locale} />

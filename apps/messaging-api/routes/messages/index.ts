@@ -353,7 +353,7 @@ export default async function messages(app: FastifyInstance) {
           ]),
         ),
         response: {
-          200: getGenericResponseSchema(Type.Array(MessageEventTypeObject)),
+          200: getGenericResponseSchema(MessageEventTypeObject),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -363,12 +363,18 @@ export default async function messages(app: FastifyInstance) {
       const textSearchILikeClause = request.query?.search
         ? `%${request.query.search}%`
         : "%%";
-      const eventQueryResult = await app.pg.pool.query<MessageEventType>(
+      const eventQueryResult = await app.pg.pool.query<
+        MessageEventType["events"][number] & { count: number }
+      >(
         `
-        with message_selections as (
+        with message_count as(
+          select count (*) from
+          messages where organisation_id = $1
+        ), message_selections as (
           select 
             id,
             subject,
+            (select * from message_count) as "count",
             scheduled_at
           from messages
           where organisation_id = $1
@@ -377,6 +383,7 @@ export default async function messages(app: FastifyInstance) {
           limit $3 offset $4
           ) select
               l.message_id as "messageId",
+              m.count::int,
               (l.data ->> 'subject') as subject,
               (l.data ->> 'receiverFullName') as "receiverFullName",
               event_status as "eventStatus",
@@ -394,28 +401,29 @@ export default async function messages(app: FastifyInstance) {
         ],
       );
 
+      console.log(eventQueryResult.rows);
       const aggregations = eventQueryResult.rows.reduce<
-        Record<string, MessageEventType>
+        Record<string, MessageEventType["events"][number]>
       >((acc, cur) => {
         if (!acc[cur.messageId]) {
           acc[cur.messageId] = cur;
           return acc;
         }
 
-        for (const key of Object.keys(cur)) {
-          const typeKey = key as keyof typeof cur;
-          if (cur[typeKey]) {
-            acc[cur.messageId][typeKey] = cur[typeKey];
-          }
-        }
+        acc[cur.messageId].eventStatus = cur.eventStatus;
+        acc[cur.messageId].eventType = cur.eventType;
 
         return acc;
       }, {});
 
-      const data: MessageEventType[] = Object.values(aggregations).sort(
+      const events: MessageEventType["events"] = Object.values(
+        aggregations,
+      ).sort(
         (a, b) =>
           new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
       );
+
+      const data = { events, count: eventQueryResult.rows.at(0)?.count || 0 };
 
       return { data };
     },
