@@ -26,7 +26,11 @@ In order to run the setup you must:
 - Clone the repo
 - if you have nvm installed run `nvm use`, otherwise ensure you're running Node LTS
 - ensure that `docker` is running
-- run `npm start` to start the supporting docker services and run our services in 'dev' mode. If the docker services are already running you can just run `npm run start:services`
+- you can run the project in multiple ways:
+    - `npm run start` or `npm start`, to start the database and all the building blocks
+    - `npm run start:full`, to achieve the same result as the previous one but also starting `Logto` for authentication
+    - `npm run start:no-scheduler`, to start the database and all the building blocks except for the scheduler
+    - `npm run start:logto`, it starts everything except for the scheduler
 
 Service URLs
 
