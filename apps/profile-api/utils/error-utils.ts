@@ -14,6 +14,9 @@ export const getErrorMessage = (e: unknown): string => {
     case "boolean":
       return String(e);
     case "object":
+      if (e && "message" in e && typeof e.message === "string") {
+        return e.message;
+      }
       return e ? e.toString() : "";
     default:
       return "";
