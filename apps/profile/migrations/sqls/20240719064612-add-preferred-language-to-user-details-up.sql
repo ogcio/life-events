@@ -1,2 +1,2 @@
 ALTER TABLE user_details
-ADD COLUMN preferred_language varchar(2) DEFAULT 'en'
+ADD COLUMN preferred_language varchar(5) DEFAULT 'en'

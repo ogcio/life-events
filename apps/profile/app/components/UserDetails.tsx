@@ -1,5 +1,5 @@
 import { PgSessions } from "auth/sessions";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import dayjs from "dayjs";
 import ds from "design-system";
 import { form } from "../utils";
@@ -54,6 +54,7 @@ async function submitAction(formData: FormData) {
     gender: "",
     phone: "",
     email: "",
+    preferredLanguage: await getLocale(),
   };
 
   const formIterator = formData.entries();
@@ -71,6 +72,7 @@ async function submitAction(formData: FormData) {
         "gender",
         "phone",
         "email",
+        "preferredLanguage",
       ].includes(key)
     ) {
       data[key] = value;
@@ -130,6 +132,7 @@ export default async () => {
     gender: "male",
     phone: "01234567891",
     consenttToPrefillData: false,
+    preferredLanguage: "en",
   };
 
   //Temporarily use default data if user is not found or no data is returned
@@ -145,6 +148,7 @@ export default async () => {
     ppsnVisible,
     gender,
     phone,
+    preferredLanguage,
   } = userData;
 
   async function togglePPSN() {
@@ -174,6 +178,7 @@ export default async () => {
         firstname: firstName,
         lastname: lastName,
         email,
+        preferredLanguage,
       });
 
       if (error) {

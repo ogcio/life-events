@@ -363,6 +363,8 @@ export interface paths {
               phone?: null | string;
               /** @default false */
               consentToPrefillData?: null | boolean;
+              /** @default en */
+              preferredLanguage: string;
             };
           };
         };
@@ -408,7 +410,7 @@ export interface paths {
             gender: string;
             phone: string;
             consentToPrefillData?: boolean;
-            preferredLanguage?: string;
+            preferredLanguage: string;
           };
         };
       };
@@ -463,6 +465,8 @@ export interface paths {
             gender?: string;
             phone?: string;
             consentToPrefillData?: boolean;
+            /** @default en */
+            preferredLanguage: string;
           };
         };
       };
