@@ -15,6 +15,7 @@ import { redirect } from "next/navigation";
 import { LogtoNextConfig, UserScope } from "@logto/next";
 import { BadRequestError } from "shared-errors";
 import { decodeJwt } from "jose";
+import { getCommonLogger } from "nextjs-logging-wrapper";
 
 const PROCESS_ERROR = "PARSE_LOGTO_CONTEXT";
 
@@ -46,16 +47,25 @@ export const AuthSession: IAuthSession = {
         "Organization id is mandatory when logging in as public servant",
       );
     }
-
     addInactivePublicServantScope(config);
-
-    const context = await getLogtoContext(config, getContextParameters);
+    let context;
+    try {
+      context = await getLogtoContext(config, getContextParameters);
+    } catch (err) {
+      getCommonLogger().error(err);
+      redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
+    }
 
     if (!context.isAuthenticated) {
       redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
     }
 
-    return parseContext(context, getContextParameters);
+    try {
+      return parseContext(context, getContextParameters);
+    } catch (err) {
+      getCommonLogger().error(err);
+      redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
+    }
   },
   async isAuthenticated(config, getContextParameters) {
     addInactivePublicServantScope(config);

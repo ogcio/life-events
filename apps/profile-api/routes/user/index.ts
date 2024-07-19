@@ -3,6 +3,7 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreateUser,
   CreateUserSchema,
+  DEFAULT_LANGUAGE,
   FindUserParams,
   FindUserParamsSchema,
   FoundUser,
@@ -17,8 +18,11 @@ import {
 import { Type } from "@sinclair/typebox";
 import { findUser, getUser } from "../../services/users/find-user";
 import { createUser } from "../../services/users/create-user";
+import { NotFoundError, ServerError } from "shared-errors";
+import { getErrorMessage } from "../../utils/error-utils";
 
 const USER_TAGS = ["user"];
+const ERROR_PROCESS = "USER_PROFILE_DETAILS";
 
 export default async function user(app: FastifyInstance) {
   app.get<{ Reply: UserDetails | Error }>(
@@ -49,6 +53,7 @@ export default async function user(app: FastifyInstance) {
         gender: "male",
         phone: "01234567891",
         consent_to_prefill_data: false,
+        preferred_language: DEFAULT_LANGUAGE,
       };
 
       const data = await getUser({ pool: app.pg.pool, id: userId });
@@ -68,6 +73,8 @@ export default async function user(app: FastifyInstance) {
         phone: data.phone || defaultData.phone,
         consentToPrefillData:
           data.consentToPrefillData || defaultData.consent_to_prefill_data,
+        preferredLanguage:
+          data.preferredLanguage || defaultData.preferred_language,
       };
 
       reply.send(dataWithDefaults);
@@ -103,7 +110,7 @@ export default async function user(app: FastifyInstance) {
           }),
         );
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
     },
   );
@@ -139,6 +146,7 @@ export default async function user(app: FastifyInstance) {
         gender: "gender",
         phone: "phone",
         consentToPrefillData: "consent_to_prefill_data",
+        preferredLanguage: "preferred_language",
       };
 
       const values = [userId, ...Object.values(request.body)];
@@ -160,15 +168,11 @@ export default async function user(app: FastifyInstance) {
           values,
         );
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
 
       if (!result?.rows.length) {
-        const error = app.httpErrors.notFound("User not found");
-        error.statusCode = 404;
-        error.code = "USER_NOT_FOUND";
-
-        throw error;
+        throw new NotFoundError(ERROR_PROCESS, "User not found");
       }
 
       reply.send({ id: result.rows[0].id });
@@ -198,6 +202,7 @@ export default async function user(app: FastifyInstance) {
       const columnsMapping: Record<keyof PatchUser, string> = {
         ppsnVisible: "ppsn_visible",
         consentToPrefillData: "consent_to_prefill_data",
+        preferredLanguage: "preferred_language",
       };
 
       const values = [userId, ...Object.values(request.body)];
@@ -219,15 +224,11 @@ export default async function user(app: FastifyInstance) {
           values,
         );
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
 
       if (!result?.rows.length) {
-        const error = app.httpErrors.notFound("User not found");
-        error.statusCode = 404;
-        error.code = "USER_NOT_FOUND";
-
-        throw error;
+        throw new NotFoundError(ERROR_PROCESS, "User not found");
       }
 
       reply.send({ id: result.rows[0].id });
@@ -259,7 +260,7 @@ export default async function user(app: FastifyInstance) {
         return;
       }
 
-      reply.code(404);
+      throw new NotFoundError(ERROR_PROCESS, "User not found");
     },
   );
 
@@ -272,7 +273,7 @@ export default async function user(app: FastifyInstance) {
     "/select",
     {
       schema: {
-        tags: ["users"],
+        tags: USER_TAGS,
         body: Type.Object({
           ids: Type.Array(Type.String()),
         }),
@@ -294,7 +295,7 @@ export default async function user(app: FastifyInstance) {
         },
       },
     },
-    async function handler(request, reply) {
+    async function handler(request) {
       try {
         const ids = request.body.ids;
         const usersQueryResult = await app.pg.pool.query<{
@@ -312,7 +313,7 @@ export default async function user(app: FastifyInstance) {
           firstname as "firstName", 
           lastname as "lastName", 
           ppsn,
-          'en' as "lang",
+          preferred_language as "lang",
           phone,
           email
         from user_details
@@ -324,8 +325,7 @@ export default async function user(app: FastifyInstance) {
         const users = usersQueryResult.rows;
 
         if (!users.length) {
-          reply.code(404);
-          return;
+          throw new NotFoundError(ERROR_PROCESS, "User not found");
         }
 
         return { data: users };
