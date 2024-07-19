@@ -1,5 +1,7 @@
 import { Static, Type } from "@sinclair/typebox";
 
+export const DEFAULT_LANGUAGE = "en";
+
 const OptionalString = Type.Optional(Type.String());
 const OptionalNullableString = Type.Optional(
   Type.Union([Type.Null(), Type.String()], { default: null }),
@@ -100,6 +102,7 @@ export const UserDetailsSchema = Type.Object({
   consentToPrefillData: Type.Optional(
     Type.Union([Type.Null(), Type.Boolean()], { default: false }),
   ),
+  preferredLanguage: Type.String({ default: DEFAULT_LANGUAGE }),
 });
 export type UserDetails = Static<typeof UserDetailsSchema>;
 
@@ -118,6 +121,7 @@ export const CreateUserSchema = Type.Object({
   gender: OptionalString,
   phone: OptionalString,
   consentToPrefillData: Type.Optional(Type.Boolean()),
+  preferredLanguage: Type.String({ default: DEFAULT_LANGUAGE }),
 });
 export type CreateUser = Static<typeof CreateUserSchema>;
 
@@ -132,7 +136,7 @@ export const UpdateUserSchema = Type.Object({
   gender: Type.String(),
   phone: Type.String(),
   consentToPrefillData: Type.Optional(Type.Boolean()),
-  preferredLanguage: Type.Optional(Type.String()),
+  preferredLanguage: Type.String(),
 });
 export type UpdateUser = Static<typeof UpdateUserSchema>;
 

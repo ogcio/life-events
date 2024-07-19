@@ -3,6 +3,7 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreateUser,
   CreateUserSchema,
+  DEFAULT_LANGUAGE,
   FindUserParams,
   FindUserParamsSchema,
   FoundUser,
@@ -49,6 +50,7 @@ export default async function user(app: FastifyInstance) {
         gender: "male",
         phone: "01234567891",
         consent_to_prefill_data: false,
+        preferred_language: DEFAULT_LANGUAGE,
       };
 
       const data = await getUser({ pool: app.pg.pool, id: userId });
@@ -68,6 +70,8 @@ export default async function user(app: FastifyInstance) {
         phone: data.phone || defaultData.phone,
         consentToPrefillData:
           data.consentToPrefillData || defaultData.consent_to_prefill_data,
+        preferredLanguage:
+          data.preferredLanguage || defaultData.preferred_language,
       };
 
       reply.send(dataWithDefaults);
@@ -314,7 +318,7 @@ export default async function user(app: FastifyInstance) {
           firstname as "firstName", 
           lastname as "lastName", 
           ppsn,
-          'en' as "lang",
+          preferred_language as "lang",
           phone,
           email
         from user_details
