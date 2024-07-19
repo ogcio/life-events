@@ -46,6 +46,9 @@ export const postSignoutRedirect =
 
 export const getSignInConfiguration = () => ({
   ...getBaseLogtoConfig(),
+  baseUrl: process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
+  appId: process.env.LOGTO_MESSAGING_APP_ID as string,
+  appSecret: process.env.LOGTO_MESSAGING_APP_SECRET as string,
   // All the available resources to the app
   resources: [messagingApiResource],
   scopes: [...organizationScopes, ...citizenScopes, ...publicServantScopes],
