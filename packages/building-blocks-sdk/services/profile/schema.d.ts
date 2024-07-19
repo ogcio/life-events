@@ -408,7 +408,6 @@ export interface paths {
             gender: string;
             phone: string;
             consentToPrefillData?: boolean;
-            /** @default en */
             preferredLanguage?: string;
           };
         };
@@ -497,7 +496,6 @@ export interface paths {
           "application/json": {
             ppsnVisible?: boolean;
             consentToPrefillData?: boolean;
-            /** @default en */
             preferredLanguage?: string;
           };
         };
