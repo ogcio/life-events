@@ -736,7 +736,6 @@ paths:
                 consentToPrefillData:
                   type: boolean
                 preferredLanguage:
-                  default: en
                   type: string
               required:
                 - firstname
@@ -820,7 +819,6 @@ paths:
                 consentToPrefillData:
                   type: boolean
                 preferredLanguage:
-                  default: en
                   type: string
       responses:
         "200":
