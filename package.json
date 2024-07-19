@@ -15,7 +15,6 @@
     "start:no-scheduler": "make start-no-scheduler",
     "start:logto": "make start-logto",
     "test": "echo \"Error: no test specified\" && exit 1"
-
   },
   "author": "",
   "license": "MIT",
