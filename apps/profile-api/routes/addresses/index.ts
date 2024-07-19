@@ -16,6 +16,7 @@ import {
   PatchAddress,
   PatchAddressSchema,
 } from "../../types/schemaDefinitions";
+import { getErrorMessage } from "../../utils/error-utils";
 
 const ADDRESSES_TAGS = ["Addresses"];
 const ERROR_PROCESS = "USER_PROFILE_ADDRESSES";
@@ -53,7 +54,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send(result.rows);
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, (error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
     },
   );
@@ -106,7 +107,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, (error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
     },
   );
@@ -145,7 +146,7 @@ export default async function addresses(app: FastifyInstance) {
           [userId, addressId],
         );
       } catch (err) {
-        app.log.error((err as Error).message);
+        app.log.error({ error: err });
       }
 
       if (!result?.rows.length) {
@@ -213,7 +214,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, (error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
     },
   );
@@ -267,7 +268,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, (error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
     },
   );
@@ -301,7 +302,7 @@ export default async function addresses(app: FastifyInstance) {
           [userId, addressId],
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, (error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
 
       if (!result?.rows.length) {

@@ -18,6 +18,7 @@ import { Type } from "@sinclair/typebox";
 import { findUser, getUser } from "../../services/users/find-user";
 import { createUser } from "../../services/users/create-user";
 import { NotFoundError, ServerError } from "shared-errors";
+import { getErrorMessage } from "../../utils/error-utils";
 
 const USER_TAGS = ["user"];
 const ERROR_PROCESS = "USER_PROFILE_DETAILS";
@@ -105,7 +106,7 @@ export default async function user(app: FastifyInstance) {
           }),
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, (error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
     },
   );
@@ -163,7 +164,7 @@ export default async function user(app: FastifyInstance) {
           values,
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, (error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
 
       if (!result?.rows.length) {
@@ -219,7 +220,7 @@ export default async function user(app: FastifyInstance) {
           values,
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, (error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
 
       if (!result?.rows.length) {

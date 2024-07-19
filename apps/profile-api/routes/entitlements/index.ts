@@ -5,6 +5,7 @@ import {
   EntitlementsListSchema,
 } from "../../types/schemaDefinitions";
 import { ServerError } from "shared-errors";
+import { getErrorMessage } from "../../utils/error-utils";
 
 const ENTITLEMENTS_TAGS = ["Entitlements"];
 const ERROR_PROCESS = "USER_PROFILE_ENTITLEMENTS";
@@ -57,7 +58,7 @@ export default async function entitlements(app: FastifyInstance) {
           },
         ];
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, (error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
     },
   );
