@@ -12,7 +12,7 @@ export default async function tasks(app: FastifyInstance) {
   app.post<{ Body: RequestBody }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) => app.checkPermissions(req, res, []),
       schema: {
         body: Type.Array(
           Type.Object({

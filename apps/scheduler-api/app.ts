@@ -18,6 +18,7 @@ import {
   getLoggingConfiguration,
 } from "logging-wrapper";
 import { initializeErrorHandler } from "error-handler";
+import apiAuthPlugin from "api-auth";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -66,6 +67,13 @@ export async function build(opts?: FastifyServerOptions) {
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB_NAME,
+  });
+
+  app.register(apiAuthPlugin, {
+    jwkEndpoint: process.env.LOGTO_JWK_ENDPOINT as string,
+    oidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT as string,
+    currentApiResourceIndicator: process.env
+      .LOGTO_API_RESOURCE_INDICATOR as string,
   });
 
   app.register(healthCheck);
