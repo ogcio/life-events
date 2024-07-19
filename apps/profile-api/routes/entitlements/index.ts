@@ -4,8 +4,10 @@ import {
   EntitlementsList,
   EntitlementsListSchema,
 } from "../../types/schemaDefinitions";
+import { ServerError } from "shared-errors";
 
 const ENTITLEMENTS_TAGS = ["Entitlements"];
+const ERROR_PROCESS = "USER_PROFILE_ENTITLEMENTS";
 
 export default async function entitlements(app: FastifyInstance) {
   app.get<{ Reply: EntitlementsList }>(
@@ -55,7 +57,7 @@ export default async function entitlements(app: FastifyInstance) {
           },
         ];
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, (error as Error).message);
       }
     },
   );
