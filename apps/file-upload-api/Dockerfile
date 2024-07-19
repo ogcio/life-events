@@ -7,6 +7,8 @@ COPY ./apps/file-upload-api/ /app/apps/file-upload-api/
 COPY ./packages/shared-errors/ /app/packages/shared-errors/
 COPY ./packages/logging-wrapper/ /app/packages/logging-wrapper/
 COPY ./packages/error-handler/ /app/packages/error-handler/
+COPY ./packages/api-auth/ /app/packages/api-auth/
+
 RUN npm ci
 
 FROM deps AS builder
@@ -20,8 +22,12 @@ RUN npm run build
 WORKDIR /app/packages/error-handler/
 RUN npm run build
 
+WORKDIR /app/packages/api-auth/
+RUN npm run build
+
 WORKDIR /app/apps/file-upload-api/
 RUN npm run build
+
 
 FROM base-deps AS runner
 WORKDIR /app
@@ -44,6 +50,10 @@ COPY --from=builder /app/packages/logging-wrapper/package.json /app/packages/log
 COPY --from=builder /app/packages/error-handler/dist /app/packages/error-handler/dist
 COPY --from=builder /app/packages/error-handler/node_modules /app/packages/error-handler/node_modules
 COPY --from=builder /app/packages/error-handler/package.json /app/packages/error-handler/
+
+COPY --from=builder /app/packages/api-auth/dist /app/packages/api-auth/dist
+COPY --from=builder /app/packages/api-auth/node_modules /app/packages/api-auth/node_modules
+COPY --from=builder /app/packages/api-auth/package.json /app/packages/api-auth/
 
 
 ENV NODE_ENV=production
