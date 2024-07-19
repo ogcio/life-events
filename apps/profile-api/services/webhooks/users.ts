@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { UserDetails } from "../../types/schemaDefinitions";
+import { DEFAULT_LANGUAGE, UserDetails } from "../../types/schemaDefinitions";
 import {
   BadRequestError,
   NotImplementedError,
@@ -117,6 +117,7 @@ const webhookBodyDataToUser = (bodyData: any): UserDetails & { id: string } => {
     consentToPrefillData: false,
     gender: null,
     title: null,
+    preferredLanguage: DEFAULT_LANGUAGE,
   };
 };
 
