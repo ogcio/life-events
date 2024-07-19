@@ -1,6 +1,11 @@
 import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
-import { CreateTransactionBodyDO, TransactionDetailsDO } from "./types";
+import {
+  CreateTransactionBodyDO,
+  FullTransactionDO,
+  TransactionDetailsDO,
+  TransactionEntry,
+} from "./types";
 import { TransactionStatusesEnum } from ".";
 import { PaginationParams } from "../../../types/pagination";
 
@@ -175,6 +180,28 @@ export class TransactionsRepo {
           FROM payment_transactions
         )`,
       [length],
+    );
+  }
+
+  getTransactionByExtPaymentId(
+    extPaymentId: string,
+  ): Promise<QueryResult<TransactionEntry>> {
+    return this.pg.query(
+      `SELECT
+        transaction_id as "transactionId",
+        payment_request_id as "paymentRequestId",
+        ext_payment_id as "extPaymentId",
+        status,
+        integration_reference as "integrationReference",
+        created_at as "createdAt",
+        updated_at as "updatedAt',
+        amount,
+        payment_provider_id as "paymentProviderId",
+        user_data as "userData",
+        user_id as "userId"
+      FROM payment_transactions 
+      WHERE ext_payment_id = $1`,
+      [extPaymentId],
     );
   }
 }

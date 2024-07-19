@@ -43,9 +43,9 @@ export class PaymentRequestRepo {
           ELSE '[]'::json
           END as providers
       from payment_requests pr
-      left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id 
-      left join payment_providers pp on ppr.provider_id = pp.provider_id
-      where pr.organization_id = $1
+      left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
+      left join payment_providers pp on ppr.provider_id = pp.provider_id AND ppr.enabled IS TRUE
+      where pr.organization_id = $1 and ppr.enabled
       group by pr.payment_request_id
       ORDER BY pr.created_at DESC
       LIMIT $2 OFFSET $3`,
@@ -234,6 +234,31 @@ export class PaymentRequestRepo {
       `insert into payment_requests_providers (provider_id, payment_request_id, enabled)
       values ${queryValues} RETURNING payment_request_id`,
       sqlData,
+    );
+  }
+
+  deletePaymentRequestProviderLinkage(
+    paymentRequestId: string,
+    client: PoolClient,
+  ) {
+    return client.query(
+      `delete from payment_requests_providers
+      where payment_request_id = $1`,
+      [paymentRequestId],
+    );
+  }
+
+  deletePaymentRequest(
+    paymentRequestId: string,
+    organizationId: string,
+    client: PoolClient,
+  ) {
+    return client.query(
+      `delete from payment_requests
+      where payment_request_id = $1
+        and organization_id = $2
+      returning payment_request_id`,
+      [paymentRequestId, organizationId],
     );
   }
 }

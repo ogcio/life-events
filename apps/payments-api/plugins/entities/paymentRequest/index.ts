@@ -180,6 +180,31 @@ const buildUpdatePaymentRequest =
     }
   };
 
+const buildDeletePaymentRequest =
+  (repo: PaymentRequestRepo, httpErrors: HttpErrors) =>
+  async (paymentRequestId: string, organizationId: string) => {
+    const transaction = repo.getTransaction();
+    try {
+      await transaction(async (client) => {
+        await repo.deletePaymentRequestProviderLinkage(
+          paymentRequestId,
+          client,
+        );
+        const deleted = await repo.deletePaymentRequest(
+          paymentRequestId,
+          organizationId,
+          client,
+        );
+
+        if (deleted.rowCount === 0) {
+          throw httpErrors.notFound("Payment request was not found");
+        }
+      });
+    } catch (error) {
+      throw httpErrors.internalServerError((error as Error).message);
+    }
+  };
+
 const buildPlugin = (
   repo: PaymentRequestRepo,
   log: FastifyBaseLogger,
@@ -200,6 +225,7 @@ const buildPlugin = (
     ),
     createPaymentRequest: buildCreatePaymentRequest(repo, httpErrors),
     updatePaymentRequest: buildUpdatePaymentRequest(repo, httpErrors),
+    deletePaymentRequest: buildDeletePaymentRequest(repo, httpErrors),
   };
 };
 

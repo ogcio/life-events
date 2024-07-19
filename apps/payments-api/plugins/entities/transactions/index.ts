@@ -10,7 +10,7 @@ import { PaginationParams } from "../../../types/pagination";
 import {
   CreateTransactionBodyDO,
   TransactionDetailsDO,
-  TransactionDO,
+  TransactionEntry,
 } from "./types";
 
 export type TransactionsPlugin = Awaited<ReturnType<typeof buildPlugin>>;
@@ -199,6 +199,22 @@ const buildGetPaymentRequestTransactionsTotalCount =
     return totalCount;
   };
 
+const buildGetTransactionByExtPaymentId =
+  (repo: TransactionsRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (extPaymentId: string): Promise<TransactionEntry> => {
+    let result;
+
+    try {
+      result = await repo.getTransactionByExtPaymentId(extPaymentId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rowCount) throw httpErrors.notFound("Transaction not found");
+
+    return result.rows[0];
+  };
+
 const buildPlugin = (
   repo: TransactionsRepo,
   log: FastifyBaseLogger,
@@ -229,6 +245,11 @@ const buildPlugin = (
     ),
     getPaymentRequestTransactionsTotalCount:
       buildGetPaymentRequestTransactionsTotalCount(repo, log, httpErrors),
+    getTransactionByExtPaymentId: buildGetTransactionByExtPaymentId(
+      repo,
+      log,
+      httpErrors,
+    ),
   };
 };
 

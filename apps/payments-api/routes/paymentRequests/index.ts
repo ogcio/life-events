@@ -65,6 +65,7 @@ export default async function paymentRequests(app: FastifyInstance) {
           limit,
         },
       );
+      console.log(JSON.stringify(result, undefined, 2));
       const totalCount =
         await app.paymentRequest.getPaymentRequestsTotalCount(organizationId);
       const url = request.url.split("?")[0];
@@ -222,49 +223,19 @@ export default async function paymentRequests(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      let transactions;
-      try {
-        transactions = await app.pg.query(
-          `select transaction_id from payment_transactions where payment_request_id = $1`,
-          [requestId],
+      const transactionsCount =
+        await app.transactions.getPaymentRequestTransactionsTotalCount(
+          requestId,
+          organizationId,
         );
-      } catch (err) {
-        app.log.error((err as Error).message);
-      }
 
-      if (transactions?.rowCount) {
+      if (transactionsCount > 0) {
         throw app.httpErrors.internalServerError(
           "Payment request with existing transactions cannot be deleted",
         );
       }
 
-      try {
-        await app.pg.transact(async (client) => {
-          await client.query(
-            `delete from payment_requests_providers
-            where payment_request_id = $1`,
-            [requestId],
-          );
-
-          const deleted = await client.query(
-            `delete from payment_requests
-            where payment_request_id = $1
-              and organization_id = $2
-            returning payment_request_id`,
-            [requestId, organizationId],
-          );
-
-          if (deleted.rowCount === 0) {
-            throw app.httpErrors.notFound("Payment request was not found");
-          }
-        });
-      } catch (error) {
-        if (error instanceof Error && error.name !== "error") {
-          throw error;
-        }
-
-        throw app.httpErrors.internalServerError((error as Error).message);
-      }
+      await app.paymentRequest.deletePaymentRequest(requestId, organizationId);
 
       reply.send();
     },
