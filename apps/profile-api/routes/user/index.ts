@@ -17,8 +17,10 @@ import {
 import { Type } from "@sinclair/typebox";
 import { findUser, getUser } from "../../services/users/find-user";
 import { createUser } from "../../services/users/create-user";
+import { NotFoundError, ServerError } from "shared-errors";
 
 const USER_TAGS = ["user"];
+const ERROR_PROCESS = "USER_PROFILE_DETAILS";
 
 export default async function user(app: FastifyInstance) {
   app.get<{ Reply: UserDetails | Error }>(
@@ -103,7 +105,7 @@ export default async function user(app: FastifyInstance) {
           }),
         );
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, (error as Error).message);
       }
     },
   );
@@ -161,15 +163,11 @@ export default async function user(app: FastifyInstance) {
           values,
         );
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, (error as Error).message);
       }
 
       if (!result?.rows.length) {
-        const error = app.httpErrors.notFound("User not found");
-        error.statusCode = 404;
-        error.code = "USER_NOT_FOUND";
-
-        throw error;
+        throw new NotFoundError(ERROR_PROCESS, "User not found");
       }
 
       reply.send({ id: result.rows[0].id });
@@ -221,15 +219,11 @@ export default async function user(app: FastifyInstance) {
           values,
         );
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, (error as Error).message);
       }
 
       if (!result?.rows.length) {
-        const error = app.httpErrors.notFound("User not found");
-        error.statusCode = 404;
-        error.code = "USER_NOT_FOUND";
-
-        throw error;
+        throw new NotFoundError(ERROR_PROCESS, "User not found");
       }
 
       reply.send({ id: result.rows[0].id });
@@ -261,7 +255,7 @@ export default async function user(app: FastifyInstance) {
         return;
       }
 
-      reply.code(404);
+      throw new NotFoundError(ERROR_PROCESS, "User not found");
     },
   );
 
@@ -296,7 +290,7 @@ export default async function user(app: FastifyInstance) {
         },
       },
     },
-    async function handler(request, reply) {
+    async function handler(request) {
       try {
         const ids = request.body.ids;
         const usersQueryResult = await app.pg.pool.query<{
@@ -326,8 +320,7 @@ export default async function user(app: FastifyInstance) {
         const users = usersQueryResult.rows;
 
         if (!users.length) {
-          reply.code(404);
-          return;
+          throw new NotFoundError(ERROR_PROCESS, "User not found");
         }
 
         return { data: users };
