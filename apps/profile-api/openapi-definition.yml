@@ -735,6 +735,9 @@ paths:
                   type: string
                 consentToPrefillData:
                   type: boolean
+                preferredLanguage:
+                  default: en
+                  type: string
               required:
                 - firstname
                 - lastname
@@ -816,6 +819,9 @@ paths:
                   type: boolean
                 consentToPrefillData:
                   type: boolean
+                preferredLanguage:
+                  default: en
+                  type: string
       responses:
         "200":
           description: Default Response
@@ -967,8 +973,7 @@ paths:
                   - name
   /api/v1/user/select:
     post:
-      tags:
-        - users
+      tags: *a2
       requestBody:
         content:
           application/json:

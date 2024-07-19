@@ -139,6 +139,7 @@ export default async function user(app: FastifyInstance) {
         gender: "gender",
         phone: "phone",
         consentToPrefillData: "consent_to_prefill_data",
+        preferredLanguage: "preferred_language",
       };
 
       const values = [userId, ...Object.values(request.body)];
@@ -198,6 +199,7 @@ export default async function user(app: FastifyInstance) {
       const columnsMapping: Record<keyof PatchUser, string> = {
         ppsnVisible: "ppsn_visible",
         consentToPrefillData: "consent_to_prefill_data",
+        preferredLanguage: "preferred_language",
       };
 
       const values = [userId, ...Object.values(request.body)];
@@ -272,7 +274,7 @@ export default async function user(app: FastifyInstance) {
     "/select",
     {
       schema: {
-        tags: ["users"],
+        tags: USER_TAGS,
         body: Type.Object({
           ids: Type.Array(Type.String()),
         }),
