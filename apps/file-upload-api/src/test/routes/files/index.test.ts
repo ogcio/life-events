@@ -75,8 +75,10 @@ t.test("files", async (t) => {
         client: {
           send: () =>
             new Promise((resolve, reject) => {
-              s3SendEventEmitter.once("send-error", () => {
-                reject(new Error("Send error"));
+              s3SendEventEmitter.once("send-error", (err) => {
+                if (err) {
+                  reject(err);
+                } else reject(new Error("send-error"));
               });
               s3SendEventEmitter.once("sendComplete", (data) => {
                 resolve(data);
@@ -267,7 +269,7 @@ t.test("files", async (t) => {
       });
   });
 
-  t.test("should return an error when AV scan fails", (t) => {
+  t.test("should return an error when AV scan fails in POST", (t) => {
     decorateRequest(app, { file: passthroughStream, filename: "sample.txt" });
 
     app
@@ -349,6 +351,26 @@ t.test("files", async (t) => {
     });
   });
 
+  t.test("Should return a empty array when no files are available", (t) => {
+    app
+      .inject({
+        method: "GET",
+        url: "/files",
+      })
+      .then((response) => {
+        t.same(response.json(), []);
+
+        t.equal(response.statusCode, 200);
+        t.end();
+      });
+
+    setTimeout(() => {
+      s3SendEventEmitter.emit("sendComplete", {
+        Contents: undefined,
+      });
+    });
+  });
+
   t.test("Should throw an errror when list files throws", (t) => {
     app
       .inject({
@@ -406,6 +428,152 @@ t.test("files", async (t) => {
 
     setTimeout(() => {
       s3SendEventEmitter.emit("send-error");
+    });
+  });
+
+  t.test("should return a 404 when a file is not found on s3", (t) => {
+    app
+      .inject({
+        method: "GET",
+        url: "/files/dummyfile.txt",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 404);
+        t.end();
+      });
+
+    setTimeout(() => {
+      s3SendEventEmitter.emit("send-error", {
+        $metadata: { httpStatusCode: 404 },
+      });
+    });
+  });
+
+  t.test("should return a 500 when an error happens in s3", (t) => {
+    app
+      .inject({
+        method: "GET",
+        url: "/files/dummyfile.txt",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 500);
+        t.end();
+      });
+
+    setTimeout(() => {
+      s3SendEventEmitter.emit("send-error", {
+        $metadata: { httpStatusCode: 500 },
+      });
+    });
+  });
+
+  t.test(
+    "should return a 500 when body is not present in the response",
+    (t) => {
+      app
+        .inject({
+          method: "GET",
+          url: "/files/dummyfile.txt",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 500);
+          t.end();
+        });
+
+      setTimeout(() => {
+        s3SendEventEmitter.emit("sendComplete", {});
+      });
+    },
+  );
+
+  t.test(
+    "should return a 500 when body is not present in the response",
+    (t) => {
+      app
+        .inject({
+          method: "GET",
+          url: "/files/dummyfile.txt",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 500);
+          t.end();
+        });
+
+      setTimeout(() => {
+        s3SendEventEmitter.emit("sendComplete", {});
+      });
+    },
+  );
+
+  t.test("should return a stream when file downloads correctly", (t) => {
+    app
+      .inject({
+        method: "GET",
+        url: "/files/file.txt",
+      })
+      .then((response) => {
+        t.equal(response.statusCode, 200);
+        t.end();
+      });
+
+    setTimeout(() => {
+      const stream = new PassThrough();
+      s3SendEventEmitter.emit("sendComplete", {
+        Body: { transformToWebStream: () => stream },
+      });
+      stream.push(Buffer.alloc(1));
+      stream.end();
+      setTimeout(() => {
+        antivirusPassthrough.emit("scan-complete", { isInfected: false });
+      });
+    });
+  });
+
+  t.test("should return an error when AV scan fails in GET", (t) => {
+    app
+      .inject({
+        method: "GET",
+        url: "/files/file.txt",
+      })
+      .catch((err) => {
+        t.equal(err, undefined);
+        t.end();
+      });
+
+    setTimeout(() => {
+      const stream = new PassThrough();
+      s3SendEventEmitter.emit("sendComplete", {
+        Body: { transformToWebStream: () => stream },
+      });
+      stream.end(Buffer.alloc(1));
+
+      setTimeout(() => {
+        antivirusPassthrough.emit("error", new Error("scan error"));
+      });
+    });
+  });
+
+  t.test("should return an error when an infected file is downloaded", (t) => {
+    app
+      .inject({
+        method: "GET",
+        url: "/files/file.txt",
+      })
+      .catch((err) => {
+        t.equal(err, undefined);
+        t.end();
+      });
+
+    setTimeout(() => {
+      const stream = new PassThrough();
+      s3SendEventEmitter.emit("sendComplete", {
+        Body: { transformToWebStream: () => stream },
+      });
+      stream.end(Buffer.alloc(1));
+
+      setTimeout(() => {
+        antivirusPassthrough.emit("scan-complete", { isInfected: true });
+      });
     });
   });
 });

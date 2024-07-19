@@ -257,10 +257,6 @@ export default async function routes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      if (!request.params.key) {
-        throw app.httpErrors.badRequest("Key not provided");
-      }
-
       let response;
       try {
         response = await app.s3Client.client.send(
@@ -288,17 +284,14 @@ export default async function routes(app: FastifyInstance) {
       const antivirusPassthrough = app.avClient.passthrough();
       const downloadPassthrough = new PassThrough();
 
-      antivirusPassthrough.once("error", (err) => {
-        app.log.error(err);
-      });
-
-      reply.send(downloadPassthrough);
-
       const thePromise = new Promise<void>((resolve, reject) => {
+        antivirusPassthrough.once("error", (err) => {
+          return reject(err);
+        });
         antivirusPassthrough.once("scan-complete", (result) => {
           const { isInfected } = result;
           if (isInfected) {
-            reject("File is infected");
+            return reject("File is infected");
           }
           resolve();
         });
@@ -312,28 +305,31 @@ export default async function routes(app: FastifyInstance) {
         downloadPassthrough,
         (err) => {
           if (err) {
-            downloadPassthrough.destroy();
+            // reply.app.log // downloadPassthrough.destroy();
+            // .error(er);
+            // console.log(err);
             app.log.error(err);
+            // throw err;
+            // reply.hijack();
+            // reply.raw.end(app.httpErrors.internalServerError());
           }
         },
       );
-
-      return reply;
+      return reply.send(downloadPassthrough);
     },
   );
 }
+
 class PromiseTransform extends Transform {
   private aPromise;
   // private lastChunk;
-  private processedBytes: number;
 
   constructor(aPromise: Promise<void>, options = {}) {
     super(options);
     this.aPromise = aPromise;
-    this.lastChunk = null;
   }
 
-  _transform(chunk, encoding, callback) {
+  _transform(chunk: Buffer, encoding: string, callback: () => void) {
     this.push(chunk);
     callback();
     // if (this.lastChunk) {
@@ -351,14 +347,14 @@ class PromiseTransform extends Transform {
     // this.lastChunk = chunk;
   }
 
-  _flush(callback) {
+  _flush(callback: () => void) {
     this.aPromise
       .then(() => {
-        if (this.lastChunk) {
-          this.push(this.lastChunk);
-        } else {
-          this.push();
-        }
+        // if (this.lastChunk) {
+        //   this.push(this.lastChunk);
+        // } else {
+        //   this.push();
+        // }
         callback();
       })
       .catch(callback);
