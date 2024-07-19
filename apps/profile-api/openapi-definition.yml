@@ -589,10 +589,14 @@ paths:
                     anyOf:
                       - type: "null"
                       - type: boolean
+                  preferredLanguage:
+                    default: en
+                    type: string
                 required:
                   - firstName
                   - lastName
                   - email
+                  - preferredLanguage
         "404":
           description: Default Response
           content:
@@ -667,10 +671,14 @@ paths:
                   type: string
                 consentToPrefillData:
                   type: boolean
+                preferredLanguage:
+                  default: en
+                  type: string
               required:
                 - firstname
                 - lastname
                 - email
+                - preferredLanguage
         required: true
       responses:
         "200":
@@ -735,6 +743,8 @@ paths:
                   type: string
                 consentToPrefillData:
                   type: boolean
+                preferredLanguage:
+                  type: string
               required:
                 - firstname
                 - lastname
@@ -745,6 +755,7 @@ paths:
                 - ppsnVisible
                 - gender
                 - phone
+                - preferredLanguage
         required: true
       responses:
         "200":
@@ -816,6 +827,8 @@ paths:
                   type: boolean
                 consentToPrefillData:
                   type: boolean
+                preferredLanguage:
+                  type: string
       responses:
         "200":
           description: Default Response
@@ -967,8 +980,7 @@ paths:
                   - name
   /api/v1/user/select:
     post:
-      tags:
-        - users
+      tags: *a2
       requestBody:
         content:
           application/json:
