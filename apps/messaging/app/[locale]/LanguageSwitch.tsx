@@ -30,12 +30,11 @@ export default async ({ theme }: { theme: Theme }) => {
     if (url.search) {
       path += url.search;
     }
-    console.log({ patchingUser: handleLang });
+
     const userProfile = await AuthenticationFactory.getProfileClient();
     const result = await userProfile.patchUser({
       preferredLanguage: handleLang,
     });
-    console.log({ patched: result });
 
     return redirect(`/${handleLang}/${path}`, RedirectType.replace);
   };

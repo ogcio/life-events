@@ -401,7 +401,6 @@ export default async function messages(app: FastifyInstance) {
         ],
       );
 
-      console.log(eventQueryResult.rows);
       const aggregations = eventQueryResult.rows.reduce<
         Record<string, MessageEventType["events"][number]>
       >((acc, cur) => {

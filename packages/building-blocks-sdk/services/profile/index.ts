@@ -127,7 +127,6 @@ export class Profile {
     if (!data || Object.keys(data).length === 0) {
       return;
     }
-    console.log({ dataHere: data });
     return formatQueryResult(
       this.client.PATCH("/api/v1/user/", {
         body: data,
