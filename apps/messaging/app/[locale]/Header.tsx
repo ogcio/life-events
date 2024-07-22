@@ -67,9 +67,6 @@ export default async ({ locale }: HeaderProps) => {
             </Link>
             <BuildingBlockSelector locale={locale} />
           </div>
-          <div className={styles.buildingBlocksSelector}>
-            <BuildingBlockSelector locale={locale} />
-          </div>
         </div>
       </div>
     </header>

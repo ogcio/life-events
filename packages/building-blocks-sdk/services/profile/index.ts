@@ -21,7 +21,7 @@ export class Profile {
         req.headers.set("x-user-id", authToken);
 
         // Once the logto integration is complete, we will send the real auth token
-        //req.headers.set("Authorization", `Bearer ${authToken}`);
+        req.headers.set("Authorization", `Bearer ${authToken}`);
         return req;
       },
     };
@@ -127,7 +127,7 @@ export class Profile {
     if (!data || Object.keys(data).length === 0) {
       return;
     }
-
+    console.log({ dataHere: data });
     return formatQueryResult(
       this.client.PATCH("/api/v1/user/", {
         body: data,
