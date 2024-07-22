@@ -1,5 +1,5 @@
 import ds from "design-system";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import styles from "./Header.module.scss";
 import { redirect, RedirectType } from "next/navigation";
 import { AuthenticationFactory } from "../utils/authentication-factory";
@@ -35,6 +35,7 @@ export default async ({ theme }: { theme: Theme }) => {
     await userProfile.patchUser({
       preferredLanguage: handleLang,
     });
+    cookies().delete("NEXT_LOCALE");
 
     return redirect(`/${handleLang}/${path}`, RedirectType.replace);
   };
