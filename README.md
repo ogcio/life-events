@@ -39,11 +39,11 @@ The following npm commands are available for running Bearer reports locally:
 - **Run Bearer Scan**: This command runs the Bearer audit and generates an report `bearer-scan-report.html`.
 
   ```sh
-  npm run security:scan
+  make security-scan
   ```
 
 - **Generate privacy report**: This command generates an HTML privacy report `bearer-privacy-report.html`.
 
   ```sh
-  npm run security:privacy-report
+  make security-privacy-report
   ```
