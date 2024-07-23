@@ -36,7 +36,7 @@ RUN npm run build --workspace=packages/shared-errors
 RUN npm run build --workspace=packages/nextjs-logging-wrapper
 RUN npm run build --workspace=apps/profile
 
-FROM base-deps as runner
+FROM base-deps AS runner
 
 WORKDIR /app
 
@@ -53,6 +53,6 @@ COPY --from=deps /app/apps/profile/migrations /app/apps/profile/migrations
 
 EXPOSE 3003
 
-ENV PORT 3003
+ENV PORT=3003
 
 CMD [ "node", "apps/profile/server.js" ]
