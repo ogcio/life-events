@@ -16,12 +16,17 @@ import { LogtoNextConfig, UserScope } from "@logto/next";
 import { BadRequestError } from "shared-errors";
 import { decodeJwt } from "jose";
 import { getCommonLogger } from "nextjs-logging-wrapper";
+import { cookies } from "next/headers";
 
 const PROCESS_ERROR = "PARSE_LOGTO_CONTEXT";
 
 const INACTIVE_PUBLIC_SERVANT_ORG_ROLE =
   "inactive-ps-org:Inactive Public Servant";
-export const INACTIVE_PUBLIC_SERVANT_SCOPE = "bb:public-servant.inactive:*";
+const INACTIVE_PUBLIC_SERVANT_SCOPE = "bb:public-servant.inactive:*";
+
+const DEFAULT_ORGANIZATION_ID = "ogcio";
+
+const DEFAULT_ORG_COOKIE = "bb-default-org-id";
 
 export const AuthUserScope = UserScope;
 
@@ -73,6 +78,23 @@ export const AuthSession: IAuthSession = {
 
     return context.isAuthenticated;
   },
+  getDefaultOrganization(
+    storageGetFn: (name: string) =>
+      | {
+          name: string;
+          value: string;
+        }
+      | undefined,
+  ): string | undefined {
+    return storageGetFn(DEFAULT_ORG_COOKIE)?.value;
+  },
+  setDefaultOrganization(
+    organizationId: string,
+    storageSetFn: (name, value) => void,
+  ): string {
+    storageSetFn(DEFAULT_ORG_COOKIE, organizationId);
+    return organizationId;
+  },
 };
 
 const addInactivePublicServantScope = (config) => {
@@ -107,7 +129,29 @@ const getUserInfo = (
     return undefined;
   }
 
-  return { name, username, id, email };
+  const organizationData = (context.userInfo?.organization_data ?? []).sort(
+    (orgA, orgB) => {
+      if (orgA.id === DEFAULT_ORGANIZATION_ID) {
+        return -1;
+      }
+
+      if (orgB.id === DEFAULT_ORGANIZATION_ID) {
+        return 1;
+      }
+
+      return orgA.name.localeCompare(orgB.name);
+    },
+  );
+
+  return {
+    name,
+    username,
+    id,
+    email,
+    organizationRoles: context.userInfo?.organization_roles,
+    organizations: context.userInfo?.organizations,
+    organizationData,
+  };
 };
 // waiting for https://github.com/logto-io/js/issues/758
 // to be resolved
@@ -188,10 +232,16 @@ const getOrganizationRoles = (context: LogtoContext): string[] | null => {
 const checkIfPublicServant = (
   orgRoles: string[] | null,
   getContextParameters: GetSessionContextParameters,
-): boolean =>
-  !checkIfInactivePublicServant(orgRoles) &&
-  orgRoles !== null &&
-  orgRoles?.includes(getContextParameters.publicServantExpectedRole);
+): boolean => {
+  if (checkIfInactivePublicServant(orgRoles) || orgRoles === null) {
+    return false;
+  }
+
+  return orgRoles.some((orgRole) => {
+    const [_, role] = orgRole.split(":");
+    return role === getContextParameters.publicServantExpectedRole;
+  });
+};
 
 const checkIfInactivePublicServant = (orgRoles: string[] | null): boolean =>
   orgRoles !== null && orgRoles?.includes(INACTIVE_PUBLIC_SERVANT_ORG_ROLE);

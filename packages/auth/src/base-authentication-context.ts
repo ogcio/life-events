@@ -1,12 +1,15 @@
 import {
   AuthSessionContext,
   AuthSessionUserInfo,
+  OrganizationData,
   PartialAuthSessionContext,
 } from "./types";
 import {
   getCitizenContext,
+  getDefaultOrganization,
   getPublicServantContext,
   isPublicServantAuthenticated,
+  setDefaultOrganization,
 } from "./authentication-context";
 import { AuthenticationError } from "shared-errors";
 import { notFound } from "next/navigation";
@@ -18,9 +21,9 @@ export interface AuthenticationContextConfig {
   resourceUrl: string;
   citizenScopes: string[];
   publicServantScopes: string[];
-  organizationId: string;
+  organizationId?: string;
   loginUrl: string;
-  publicServantExpectedRole: string;
+  publicServantExpectedRole?: string;
   baseUrl: string;
   appId: string;
   appSecret: string;
@@ -114,6 +117,36 @@ export class BaseAuthenticationContext {
 
   async isAuthenticated(): Promise<boolean> {
     return this.isCitizenAuthenticated() || this.isPublicServantAuthenticated();
+  }
+
+  async getOrganizations(): Promise<OrganizationData[]> {
+    return (await this.getContext()).user.organizationData ?? [];
+  }
+
+  async getDefaultOrganization(
+    storageGetFn: (name: string) =>
+      | {
+          name: string;
+          value: string;
+        }
+      | undefined,
+  ): Promise<string> {
+    const storedOrgId = getDefaultOrganization(storageGetFn);
+
+    if (!storedOrgId) {
+      const orgs = await this.getOrganizations();
+      return orgs[0].id;
+    }
+
+    return storedOrgId;
+  }
+
+  setDefaultOrganization(
+    organizationId: string,
+    storageSetFn: (name, value) => void,
+  ): string {
+    setDefaultOrganization(organizationId, storageSetFn);
+    return organizationId;
   }
 
   private getPartialContext = (): Promise<PartialAuthSessionContext> => {

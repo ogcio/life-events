@@ -9,7 +9,7 @@ export const orgScopes = [
   AuthUserScope.OrganizationRoles,
 ];
 
-export const publicServantExpectedRole = "ogcio:Payments Public Servant";
+export const publicServantExpectedRole = "Payments Public Servant";
 export const organizationId = "ogcio";
 
 export const baseConfig = {
@@ -23,7 +23,11 @@ export const baseConfig = {
 };
 
 // All the permissions of a normal citizen
-export const commonScopes = [AuthUserScope.Email];
+export const commonScopes = [
+  AuthUserScope.Email,
+  AuthUserScope.Organizations,
+  AuthUserScope.OrganizationRoles,
+];
 
 export const citizenScopes = [
   "payments:provider.public:read",

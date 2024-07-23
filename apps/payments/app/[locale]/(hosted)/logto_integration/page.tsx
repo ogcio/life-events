@@ -34,7 +34,7 @@ export default async function () {
 
   return (
     <>
-      <h1>CONTEXT PAYLOAD</h1>
+      <h1>CITIZEN CONTEXT PAYLOAD</h1>
       <pre>{JSON.stringify(context, null, 2)}</pre>
       <form action={actionCitizen}>
         <button>API CALL - Citizen</button>

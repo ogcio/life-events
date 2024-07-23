@@ -1,0 +1,64 @@
+.tilesContainer {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  right: 0;
+  padding: 20px;
+  position: absolute;
+  top: 70px;
+  z-index: 100;
+  max-width: 450px;
+}
+
+.tileIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.tile {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  text-decoration: none;
+}
+
+.triangle {
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid white;
+  height: 0;
+  left: 50%;
+  margin-top: 12px;
+  position: absolute;
+  transform: translateX(-50%);
+  top: 100%;
+  width: 0;
+}
+
+.backdrop {
+  bottom: 0;
+  height: 100%;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .tilesContainer {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .tile {
+    padding: 15px;
+  }
+}

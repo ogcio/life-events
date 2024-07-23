@@ -15,9 +15,9 @@ export const organizationScopes = [
 interface PublicServantParameters {
   resourceUrl: string;
   publicServantScopes: string[];
-  organizationId: string;
+  organizationId?: string;
   loginUrl: string;
-  publicServantExpectedRole: string;
+  publicServantExpectedRole?: string;
   baseUrl: string;
   appId: string;
   appSecret: string;
@@ -27,7 +27,7 @@ interface CitizenParameters {
   resourceUrl: string;
   citizenScopes: string[];
   loginUrl: string;
-  publicServantExpectedRole: string;
+  publicServantExpectedRole?: string;
   baseUrl: string;
   appId: string;
   appSecret: string;
@@ -61,6 +61,12 @@ export const isCitizenAuthenticated = (params: CitizenParameters) =>
     buildCitizenContextParameters(params),
   );
 
+export const getDefaultOrganization = (storageGetFn) =>
+  AuthSession.getDefaultOrganization(storageGetFn);
+
+export const setDefaultOrganization = (organizationId, storageSetFn) =>
+  AuthSession.setDefaultOrganization(organizationId, storageSetFn);
+
 const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
   ...getBaseLogtoConfig(),
   baseUrl: params.baseUrl,
@@ -75,7 +81,7 @@ const buildPublicServantContextParameters = (
 ) => ({
   getOrganizationToken: true,
   fetchUserInfo: true,
-  publicServantExpectedRole: params.publicServantExpectedRole,
+  publicServantExpectedRole: params.publicServantExpectedRole ?? "",
   organizationId: params.organizationId,
   userType: "publicServant" as "publicServant",
   loginUrl: params.loginUrl,
@@ -94,7 +100,7 @@ const buildCitizenContextParameters = (params: CitizenParameters) => ({
   getAccessToken: true,
   resource: params.resourceUrl,
   fetchUserInfo: true,
-  publicServantExpectedRole: params.publicServantExpectedRole,
+  publicServantExpectedRole: params.publicServantExpectedRole ?? "",
   userType: "citizen" as "citizen",
   loginUrl: params.loginUrl,
 });

@@ -1,4 +1,4 @@
-import { LogtoContext, LogtoNextConfig, UserScope } from "@logto/next";
+import { LogtoContext, LogtoNextConfig } from "@logto/next";
 
 export type GovIdJwtPayload = {
   surname: string;
@@ -25,11 +25,19 @@ export type Session = {
 
 export type AuthConfig = LogtoNextConfig;
 
+export type OrganizationData = {
+  id: string;
+  name: string;
+  description: string;
+};
 export type AuthSessionUserInfo = {
   name: string | null;
   username: string | null;
   id: string;
   email: string | null;
+  organizations?: string[];
+  organizationRoles?: string[];
+  organizationData?: OrganizationData[];
 };
 
 export type AuthSessionOrganizationInfo = {
@@ -88,4 +96,16 @@ export type IAuthSession = {
     config: AuthConfig,
     getContextParameters?: GetSessionContextParameters,
   ): Promise<boolean>;
+  getDefaultOrganization(
+    storageGetFn: (name: string) =>
+      | {
+          name: string;
+          value: string;
+        }
+      | undefined,
+  ): string | undefined;
+  setDefaultOrganization(
+    organizationId: string,
+    storageSetFn: (name: string, value: string) => void,
+  ): string;
 };
