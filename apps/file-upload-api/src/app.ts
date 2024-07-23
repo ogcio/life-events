@@ -48,7 +48,7 @@ export async function build(opts?: FastifyServerOptions) {
     openapi: {
       info: {
         title: "OGCIO File Upload API",
-        description: "API for OGCIO file upload servce",
+        description: "API for OGCIO file upload service",
         version: "0.1.0",
       },
       tags: [

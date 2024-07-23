@@ -7,13 +7,23 @@ import {
   ListObjectsCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { PassThrough, Readable, Transform } from "stream";
+import { PassThrough, Transform } from "stream";
 import { EventEmitter } from "node:events";
 import { pipeline } from "stream";
 import { Upload } from "@aws-sdk/lib-storage";
 import { Object } from "../../types/schemaDefinitions.js";
 
-import { httpErrors } from "@fastify/sensible";
+import {
+  BadRequestError,
+  CustomError,
+  NotFoundError,
+  ServerError,
+} from "shared-errors";
+
+const FILE_UPLOAD = "FILE_UPLOAD";
+const FILE_INDEX = "FILE_INDEX";
+const FILE_DELETE = "FILE_DELETE";
+const FILE_DOWNLOAD = "FILE_DOWNLOAD";
 
 const permissions = {
   citizen: {
@@ -43,21 +53,21 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
   const data = await request.file();
 
   if (!data) {
-    throw app.httpErrors.badRequest("Request is not multipart");
+    throw new BadRequestError(FILE_UPLOAD, "Request is not multipart");
   }
 
   const stream = data.file;
   const filename = data.filename;
 
   if (!filename) {
-    throw app.httpErrors.badRequest("Filename not provided");
+    throw new BadRequestError(FILE_UPLOAD, "Filename is not provided");
   }
 
   const eventEmitter = new EventEmitter();
 
   const promise = new Promise<void>((resolve, reject) => {
     eventEmitter.once("infectedFileDetected", () => {
-      reject(app.httpErrors.badRequest("File is infected"));
+      reject(new CustomError(FILE_UPLOAD, "File is infected", 400));
     });
 
     eventEmitter.once("fileUploaded", () => {
@@ -65,13 +75,14 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
     });
 
     eventEmitter.once("fileTooLarge", () => {
-      reject(app.httpErrors.badRequest("File too large"));
+      reject(new CustomError(FILE_UPLOAD, "File is too large", 400));
     });
 
     eventEmitter.once("error", (err) => {
       app.log.error(err);
-      reject(app.httpErrors.badRequest(err.message));
+      reject(new BadRequestError("badRequest", err.message));
     });
+
     eventEmitter.on("error", () => {
       //noop to prevent unhandled promise rejection and double error logging
     });
@@ -206,7 +217,8 @@ export default async function routes(app: FastifyInstance) {
             size: item.Size,
           })) || [];
       } catch (err) {
-        throw app.httpErrors.internalServerError();
+        app.log.error(err);
+        throw new ServerError(FILE_INDEX, "S3 ListObjectsCommand error");
       }
 
       reply.send(response);
@@ -227,7 +239,7 @@ export default async function routes(app: FastifyInstance) {
     },
     async (request, reply) => {
       if (!request.params.key) {
-        throw app.httpErrors.badRequest("Key not provided");
+        throw new BadRequestError(FILE_DELETE, "File key not provided");
       }
       try {
         await app.s3Client.client.send(
@@ -237,7 +249,8 @@ export default async function routes(app: FastifyInstance) {
           }),
         );
       } catch (err) {
-        throw app.httpErrors.internalServerError();
+        app.log.error(err);
+        throw new ServerError(FILE_DELETE, "S3 DeleteObjectCommand error");
       }
 
       reply.send({ message: "File deleted succesfully" });
@@ -268,15 +281,16 @@ export default async function routes(app: FastifyInstance) {
       } catch (err) {
         const err_ = err as { $metadata: { httpStatusCode: number } };
         if (err_.$metadata.httpStatusCode === 404) {
-          throw app.httpErrors.notFound();
+          throw new NotFoundError(FILE_DOWNLOAD, "File not found");
         } else {
-          throw app.httpErrors.internalServerError();
+          app.log.error(err);
+          throw new ServerError(FILE_DOWNLOAD, "S3 GetObjectCommand error");
         }
       }
 
       const body = response.Body;
       if (!body) {
-        throw app.httpErrors.internalServerError();
+        throw new ServerError(FILE_DOWNLOAD, "Body not found");
       }
 
       const stream = body.transformToWebStream();
@@ -311,7 +325,6 @@ export default async function routes(app: FastifyInstance) {
             app.log.error(err);
             // throw err;
             // reply.hijack();
-            // reply.raw.end(app.httpErrors.internalServerError());
           }
         },
       );

@@ -145,7 +145,7 @@ t.test("files", async (t) => {
       })
       .then((response) => {
         t.equal(response.statusCode, 400);
-        t.equal(response.json().detail, "File too large");
+        t.equal(response.json().detail, "File is too large");
         t.end();
       });
 
@@ -264,7 +264,7 @@ t.test("files", async (t) => {
       })
       .then((response) => {
         t.equal(response.statusCode, 400);
-        t.equal(response.json().detail, "Filename not provided");
+        t.equal(response.json().detail, "Filename is not provided");
         t.end();
       });
   });

@@ -10,7 +10,7 @@ app.listen({ host: "0.0.0.0", port: 8006 }, (err, address) => {
     console.error(err);
     process.exit(1);
   }
-  console.log(`app listening at ${address}`);
+  app.log.info(`app listening at ${address}`);
 });
 
 await app.ready();
