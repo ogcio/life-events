@@ -19,6 +19,7 @@
       "../../packages/messages/src/**/*",
       "../../packages/logging-wrapper/src/**/*",
       "../../packages/error-handler/src/**/*",
+      "../../packages/api-auth/src/**/*",
       "./**/*"
     ],
     "ext": "ts,json",
