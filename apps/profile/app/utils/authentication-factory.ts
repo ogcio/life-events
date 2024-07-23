@@ -1,6 +1,6 @@
 import { BaseAuthenticationContext } from "auth/base-authentication-context";
 import { getAuthenticationContextConfig } from "./logto-config";
-import { Messaging, Profile } from "building-blocks-sdk";
+import { Profile } from "building-blocks-sdk";
 
 export class AuthenticationFactory {
   static getInstance(): BaseAuthenticationContext {

@@ -1,26 +1,105 @@
-import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 import { form, routes } from "../../../../utils";
 import { NextPageProps } from "../../../../../types";
 import { revalidatePath } from "next/cache";
 import dayjs from "dayjs";
-import { Profile } from "building-blocks-sdk";
 import Link from "next/link";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 export default async (props: NextPageProps) => {
-  const { userId } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
-  const errors = await form.getErrorsQuery(
-    userId,
-    routes.addresses.editAddress.slug,
-  );
   const { id: addressId, locale } = props.params;
 
   if (!addressId) {
     throw notFound();
   }
+
+  const { accessToken: mainToken, user: mainUser } =
+    await AuthenticationFactory.getInstance().getContext();
+  const mainProfile = await AuthenticationFactory.getProfileClient({
+    token: mainToken,
+  });
+  const errors = await form.getErrorsQuery(
+    mainUser.id,
+    routes.addresses.editAddress.slug,
+  );
+
+  const { data: address, error } = await mainProfile.getAddress(addressId);
+
+  if (!address || error) {
+    //handle other errors
+    throw notFound();
+  }
+
+  const addressLine1Error = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.address_first_line,
+  );
+
+  const townError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.town,
+  );
+  const countyError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.county,
+  );
+  const eireError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.eirecode,
+  );
+
+  const moveInDayError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveInDay,
+  );
+  const moveInMonthError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveInMonth,
+  );
+  const moveInYearError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveInYear,
+  );
+
+  const moveInDateErrors: form.Error[] = [];
+  moveInYearError && moveInDateErrors.push(moveInYearError);
+  moveInMonthError && moveInDateErrors.push(moveInMonthError);
+  moveInDayError && moveInDateErrors.push(moveInDayError);
+
+  const moveOutDayError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveOutDay,
+  );
+  const moveOutMonthError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveOutMonth,
+  );
+  const moveOutYearError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveOutYear,
+  );
+
+  const moveOutDateErrors: form.Error[] = [];
+  moveOutYearError && moveOutDateErrors.push(moveOutYearError);
+  moveOutMonthError && moveOutDateErrors.push(moveOutMonthError);
+  moveOutDayError && moveOutDateErrors.push(moveOutDayError);
+
+  const moveInDay = address.moveInDate ? dayjs(address.moveInDate).date() : "";
+  const moveInMonth = address.moveInDate
+    ? dayjs(address.moveInDate).month() + 1
+    : "";
+  const moveInYear = address.moveInDate ? dayjs(address.moveInDate).year() : "";
+
+  const moveOutDay = address.moveOutDate
+    ? dayjs(address.moveOutDate).date()
+    : "";
+  const moveOutMonth = address.moveOutDate
+    ? dayjs(address.moveOutDate).month() + 1
+    : "";
+  const moveOutYear = address.moveOutDate
+    ? dayjs(address.moveOutDate).year()
+    : "";
+
+  const isOwnerError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.isOwner,
+  );
+
+  const isPrimaryAddressError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.isPrimaryAddress,
+  );
 
   async function editAddress(formData: FormData) {
     "use server";
@@ -174,7 +253,8 @@ export default async (props: NextPageProps) => {
       isOwner &&
       isPrimaryAddress
     ) {
-      const result = await new Profile(userId).updateAddress(addressId, {
+      const editProfile = await AuthenticationFactory.getProfileClient();
+      const result = await editProfile.updateAddress(addressId, {
         addressLine1,
         addressLine2,
         town,
@@ -199,89 +279,12 @@ export default async (props: NextPageProps) => {
     redirect(`/${locale}`);
   }
 
-  const { data: address, error } = await new Profile(userId).getAddress(
-    addressId,
-  );
-
-  if (!address || error) {
-    //handle other errors
-    throw notFound();
-  }
-
-  const addressLine1Error = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.address_first_line,
-  );
-
-  const townError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.town,
-  );
-  const countyError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.county,
-  );
-  const eireError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.eirecode,
-  );
-
-  const moveInDayError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveInDay,
-  );
-  const moveInMonthError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveInMonth,
-  );
-  const moveInYearError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveInYear,
-  );
-
-  const moveInDateErrors: form.Error[] = [];
-  moveInYearError && moveInDateErrors.push(moveInYearError);
-  moveInMonthError && moveInDateErrors.push(moveInMonthError);
-  moveInDayError && moveInDateErrors.push(moveInDayError);
-
-  const moveOutDayError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveOutDay,
-  );
-  const moveOutMonthError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveOutMonth,
-  );
-  const moveOutYearError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveOutYear,
-  );
-
-  const moveOutDateErrors: form.Error[] = [];
-  moveOutYearError && moveOutDateErrors.push(moveOutYearError);
-  moveOutMonthError && moveOutDateErrors.push(moveOutMonthError);
-  moveOutDayError && moveOutDateErrors.push(moveOutDayError);
-
-  const moveInDay = address.moveInDate ? dayjs(address.moveInDate).date() : "";
-  const moveInMonth = address.moveInDate
-    ? dayjs(address.moveInDate).month() + 1
-    : "";
-  const moveInYear = address.moveInDate ? dayjs(address.moveInDate).year() : "";
-
-  const moveOutDay = address.moveOutDate
-    ? dayjs(address.moveOutDate).date()
-    : "";
-  const moveOutMonth = address.moveOutDate
-    ? dayjs(address.moveOutDate).month() + 1
-    : "";
-  const moveOutYear = address.moveOutDate
-    ? dayjs(address.moveOutDate).year()
-    : "";
-
-  const isOwnerError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.isOwner,
-  );
-
-  const isPrimaryAddressError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.isPrimaryAddress,
-  );
-
   return (
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds">
         <form action={editAddress}>
           <input type="hidden" name="addressId" defaultValue={addressId} />
-          <input type="hidden" name="userId" defaultValue={userId} />
+          <input type="hidden" name="userId" defaultValue={mainUser.id} />
           <h1 className="govie-heading-l">{t("editAddress")}</h1>
           <fieldset className="govie-fieldset">
             <div

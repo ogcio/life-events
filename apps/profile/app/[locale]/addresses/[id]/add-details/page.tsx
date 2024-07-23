@@ -1,14 +1,12 @@
-import { PgSessions } from "auth/sessions";
-import { Profile } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 import { NextPageProps } from "../../../../../types";
 import ds from "design-system";
 import { form, routes } from "../../../../utils";
 import { revalidatePath } from "next/cache";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 export default async (props: NextPageProps) => {
-  const { userId } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
   const { id: addressId, locale } = props.params;
@@ -17,16 +15,20 @@ export default async (props: NextPageProps) => {
     throw notFound();
   }
 
-  const { data: address, error } = await new Profile(userId).getAddress(
-    addressId,
-  );
+  const { accessToken, user } =
+    await AuthenticationFactory.getInstance().getContext();
+  const profileClient = await AuthenticationFactory.getProfileClient({
+    token: accessToken,
+  });
+
+  const { data: address, error } = await profileClient.getAddress(addressId);
 
   if (!address || error) {
     //handle other errors
     throw notFound();
   }
   const errors = await form.getErrorsQuery(
-    userId,
+    user.id,
     routes.addresses.addDetails.slug,
   );
 
@@ -42,9 +44,14 @@ export default async (props: NextPageProps) => {
     "use server";
 
     if (!addressId) {
-      throw Error("Address id not found");
+      throw notFound();
     }
 
+    const { accessToken: addressDetailsToken, user: addressDetailsUser } =
+      await AuthenticationFactory.getInstance().getContext();
+    const addressDetailsProfile = await AuthenticationFactory.getProfileClient({
+      token: accessToken,
+    });
     const errors: form.Error[] = [];
     const isOwner = formData.get("isOwner")?.toString();
     const isPrimaryAddress = formData.get("isPrimaryAddress")?.toString();
@@ -66,12 +73,16 @@ export default async (props: NextPageProps) => {
     }
 
     if (errors.length) {
-      await form.insertErrors(errors, userId, routes.addresses.addDetails.slug);
+      await form.insertErrors(
+        errors,
+        user.id,
+        routes.addresses.addDetails.slug,
+      );
       return revalidatePath("/");
     }
 
     if (isOwner !== undefined && isPrimaryAddress !== undefined) {
-      const result = await new Profile(userId).patchAddress(addressId, {
+      const result = await addressDetailsProfile.patchAddress(addressId, {
         ownershipStatus: isOwner === "true" ? "owner" : "renting",
         isPrimary: isPrimaryAddress === "true" ? true : false,
       });
@@ -87,9 +98,14 @@ export default async (props: NextPageProps) => {
     "use server";
 
     if (!addressId) {
-      throw Error("Address id not found");
+      throw notFound();
     }
-    const { error } = await new Profile(userId).deleteAddress(addressId);
+    const cancelAccessToken =
+      await AuthenticationFactory.getInstance().getAccessToken();
+    const profileClient = await AuthenticationFactory.getProfileClient({
+      token: cancelAccessToken,
+    });
+    const { error } = await profileClient.deleteAddress(addressId);
 
     if (error) {
       //handle error
