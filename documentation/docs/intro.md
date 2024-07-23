@@ -27,10 +27,10 @@ In order to run the setup you must:
 - if you have nvm installed run `nvm use`, otherwise ensure you're running Node LTS
 - ensure that `docker` is running
 - you can run the project in multiple ways:
-    - `npm run start` or `npm start`, to start the database and all the building blocks
-    - `npm run start:full`, to achieve the same result as the previous one but also starting `Logto` for authentication
-    - `npm run start:no-scheduler`, to start the database and all the building blocks except for the scheduler
-    - `npm run start:logto`, it starts everything except for the scheduler
+  - `npm run start` or `npm start`, to start the database and all the building blocks
+  - `npm run start:full`, to achieve the same result as the previous one but also starting `Logto` for authentication
+  - `npm run start:no-scheduler`, to start the database and all the building blocks except for the scheduler
+  - `npm run start:logto`, it starts everything except for the scheduler
 
 Service URLs
 
@@ -46,15 +46,15 @@ Service URLs
 
 APIs
 
-| API Name        | URL                     |
-| --------------- | ----------------------- |
-| mock-api        | `http://localhost:8000` |
-| payments-api    | `http://localhost:8001` |
-| messages-api    | `http://localhost:8002` |
-| profile-api     | `http://localhost:8003` |
-| timeline-api    | `http://localhost:8004` |
-| scheduler-api   | `http://localhost:8005` |
-| file-upload-api | `http://localhost:8006` |
+| API Name      | URL                     |
+| ------------- | ----------------------- |
+| mock-api      | `http://localhost:8000` |
+| payments-api  | `http://localhost:8001` |
+| messages-api  | `http://localhost:8002` |
+| profile-api   | `http://localhost:8003` |
+| timeline-api  | `http://localhost:8004` |
+| scheduler-api | `http://localhost:8005` |
+| upload-api    | `http://localhost:8006` |
 
 ## Localisation
 

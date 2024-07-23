@@ -3,7 +3,7 @@ FROM base-deps as deps
 WORKDIR /app
 
 COPY ./package*.json /app/
-COPY ./apps/file-upload-api/ /app/apps/file-upload-api/
+COPY ./apps/upload-api/ /app/apps/upload-api/
 COPY ./packages/shared-errors/ /app/packages/shared-errors/
 COPY ./packages/logging-wrapper/ /app/packages/logging-wrapper/
 COPY ./packages/error-handler/ /app/packages/error-handler/
@@ -25,7 +25,7 @@ RUN npm run build
 WORKDIR /app/packages/api-auth/
 RUN npm run build
 
-WORKDIR /app/apps/file-upload-api/
+WORKDIR /app/apps/upload-api/
 RUN npm run build
 
 
@@ -35,9 +35,9 @@ WORKDIR /app
 
 COPY --from=builder /app/package*.json /app/
 
-COPY --from=builder /app/apps/file-upload-api/dist /app/apps/file-upload-api/dist
-COPY --from=builder /app/apps/file-upload-api/node_modules /app/apps/file-upload-api/node_modules
-COPY --from=builder /app/apps/file-upload-api/package*.json /app/apps/file-upload-api/
+COPY --from=builder /app/apps/upload-api/dist /app/apps/upload-api/dist
+COPY --from=builder /app/apps/upload-api/node_modules /app/apps/upload-api/node_modules
+COPY --from=builder /app/apps/upload-api/package*.json /app/apps/upload-api/
 
 COPY --from=builder /app/packages/shared-errors/dist /app/packages/shared-errors/dist
 COPY --from=builder /app/packages/shared-errors/node_modules /app/packages/shared-errors/node_modules
@@ -64,6 +64,6 @@ RUN npm prune --omit=dev
 
 EXPOSE 8006
 
-WORKDIR /app/apps/file-upload-api
+WORKDIR /app/apps/upload-api
 
 CMD [ "node", "dist/", "index.js" ]
