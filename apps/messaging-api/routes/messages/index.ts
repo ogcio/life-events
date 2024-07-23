@@ -234,13 +234,6 @@ export default async function messages(app: FastifyInstance) {
           request.body.scheduleAt,
           organisationId,
         );
-
-        await eventLogger.log(MessagingEventType.scheduleMessage, [
-          {
-            jobId: job.jobId,
-            messageId,
-          },
-        ]);
       } catch (err) {
         await eventLogger.log(MessagingEventType.scheduleMessageError, [
           {
