@@ -75,7 +75,7 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
     });
 
     eventEmitter.once("fileTooLarge", () => {
-      reject(new CustomError(FILE_UPLOAD, "File is too large", 400));
+      reject(new BadRequestError(FILE_UPLOAD, "File is too large"));
     });
 
     eventEmitter.once("error", (err) => {
