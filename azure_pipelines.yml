@@ -50,7 +50,7 @@ stages:
     displayName: Build service dependencies
     jobs:
       - template: pipeline-templates/build_dependencies.yml
-  - ${{ each serviceName in variables.services }}:
+  - ${{ each serviceName in split(variables.services, ',') }}:
     - stage: Build_${{ replace(serviceName, '-', '_') }}
       displayName: Build ${{ serviceName }}
       dependsOn: 
@@ -64,7 +64,7 @@ stages:
   - stage: EnvApproval
     displayName: Approvals for deployments - ${{ upper(variables.environment) }}
     dependsOn:
-      - ${{ each serviceName in variables.services }}:
+      - ${{ each serviceName in split(variables.services, ',') }}:
         - Build_${{ replace(serviceName, '-', '_') }}
     condition: ${{ variables.pushArtefacts }}
     jobs:
@@ -78,7 +78,7 @@ stages:
             - script: |
                 date
               displayName: Show current date
-  - ${{ each serviceName in variables.services }}:        
+  - ${{ each serviceName in split(variables.services, ',') }}:        
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: 
