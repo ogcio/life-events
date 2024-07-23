@@ -9,6 +9,8 @@ pr:
     include:
       - "*"
 
+# Services object is now defined per environment. 
+# Check the variables file for the desired environment!
 parameters:
   - name: buildBranches
     type: object
