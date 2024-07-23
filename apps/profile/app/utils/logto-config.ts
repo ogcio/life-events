@@ -13,10 +13,18 @@ const appId = process.env.LOGTO_PROFILE_APP_ID as string;
 const appSecret = process.env.LOGTO_PROFILE_APP_SECRET as string;
 const organizationId = "ogcio";
 const citizenScopes = [
-  "profile:profile.self:read",
-  "profile:profile.self:write",
+  "profile:user.self:read",
+  "profile:user.self:write",
+  "profile:address.self:read",
+  "profile:address.self:write",
+  "profile:entitlement.self:read",
+  "profile:entitlement.self:write",
 ];
-const publicServantScopes = ["profile:profile:*"];
+const publicServantScopes = [
+  "profile:user:*",
+  "profile:address:*",
+  "profile:entitlement:*",
+];
 const publicServantExpectedRole = "ogcio:Profile Public Servant";
 
 export const getAuthenticationContextConfig =
