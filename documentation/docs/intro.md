@@ -27,10 +27,10 @@ In order to run the setup you must:
 - if you have nvm installed run `nvm use`, otherwise ensure you're running Node LTS
 - ensure that `docker` is running
 - you can run the project in multiple ways:
-    - `npm run start` or `npm start`, to start the database and all the building blocks
-    - `npm run start:full`, to achieve the same result as the previous one but also starting `Logto` for authentication
-    - `npm run start:no-scheduler`, to start the database and all the building blocks except for the scheduler
-    - `npm run start:logto`, it starts everything except for the scheduler
+  - `npm run start` or `npm start`, to start the database and all the building blocks
+  - `npm run start:full`, to achieve the same result as the previous one but also starting `Logto` for authentication
+  - `npm run start:no-scheduler`, to start the database and all the building blocks except for the scheduler
+  - `npm run start:logto`, it starts everything except for the scheduler
 
 Service URLs
 
@@ -38,7 +38,7 @@ Service URLs
 | ------------------------ | ----------------------- |
 | web (Life events portal) | `http://localhost:3000` |
 | payments                 | `http://localhost:3001` |
-| messages                 | `http://localhost:3002` | 
+| messages                 | `http://localhost:3002` |
 | profile                  | `http://localhost:3003` |
 | auth-service             | `http://localhost:3005` |
 | logto admin console      | `http://localhost:3302` |
@@ -54,6 +54,7 @@ APIs
 | profile-api   | `http://localhost:8003` |
 | timeline-api  | `http://localhost:8004` |
 | scheduler-api | `http://localhost:8005` |
+| upload-api    | `http://localhost:8006` |
 
 ## Localisation
 
