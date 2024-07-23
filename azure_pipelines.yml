@@ -10,10 +10,6 @@ pr:
       - "*"
 
 parameters:
-  - name: services
-    type: object
-    default: ["web", "mock-api", "payments", "messaging", "messaging-api", "payments-api", "profile", "profile-api", "timeline-api", "auth-service", "scheduler-api", "home", "forms", "file-upload-api"]
-
   - name: buildBranches
     type: object
     default: ["dev", "sta", "uat"]
@@ -54,7 +50,7 @@ stages:
     displayName: Build service dependencies
     jobs:
       - template: pipeline-templates/build_dependencies.yml
-  - ${{ each serviceName in parameters.services }}:
+  - ${{ each serviceName in variables.services }}:
     - stage: Build_${{ replace(serviceName, '-', '_') }}
       displayName: Build ${{ serviceName }}
       dependsOn: 
@@ -68,7 +64,7 @@ stages:
   - stage: EnvApproval
     displayName: Approvals for deployments - ${{ upper(variables.environment) }}
     dependsOn:
-      - ${{ each serviceName in parameters.services }}:
+      - ${{ each serviceName in variables.services }}:
         - Build_${{ replace(serviceName, '-', '_') }}
     condition: ${{ variables.pushArtefacts }}
     jobs:
@@ -82,7 +78,7 @@ stages:
             - script: |
                 date
               displayName: Show current date
-  - ${{ each serviceName in parameters.services }}:        
+  - ${{ each serviceName in variables.services }}:        
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
       dependsOn: 
