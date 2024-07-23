@@ -21,6 +21,7 @@ const TAGS_SEPARATOR = ";";
 interface RequestUser {
   userId: string;
   organizationId?: string;
+  accessToken: string;
 }
 
 export const importCsvFileFromRequest = async (params: {

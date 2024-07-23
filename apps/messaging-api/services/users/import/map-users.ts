@@ -37,6 +37,7 @@ interface FoundUser {
 interface RequestUser {
   userId: string;
   organizationId?: string;
+  accessToken: string;
 }
 
 export const mapUsers = async (params: {
@@ -72,7 +73,7 @@ const mapUsersSync = async (params: {
   requestUser: RequestUser;
 }): Promise<UsersImport> => {
   const usersImport = await getUsersImport(params);
-  const profile = new Profile(params.requestUser.userId);
+  const profile = new Profile(params.requestUser.accessToken);
 
   const processingUsers = usersImport.usersData.map(
     async (toImportUser: ToImportUser) =>

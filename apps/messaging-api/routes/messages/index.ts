@@ -213,7 +213,7 @@ export default async function messages(app: FastifyInstance) {
       const eventLogger = newMessagingEventLogger(app.pg.pool, app.log);
 
       // Get users
-      const profileSdk = new Profile(req.userData!.userId);
+      const profileSdk = new Profile(req.userData!.accessToken);
       const messageSdk = {
         selectUsers(ids: string[]) {
           return getUserProfiles(ids, app.pg.pool);
