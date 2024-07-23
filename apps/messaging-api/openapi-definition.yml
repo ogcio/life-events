@@ -247,13 +247,23 @@ paths:
                 preferredTransports:
                   type: array
                   items:
-                    type: string
-                userIds:
-                  type: array
-                  items:
-                    type: string
+                    anyOf:
+                      - type: string
+                        enum:
+                          - email
+                      - type: string
+                        enum:
+                          - sms
+                      - type: string
+                        enum:
+                          - lifeEvent
+                userId:
+                  type: string
                 security:
                   type: string
+                bypassConsent:
+                  default: false
+                  type: boolean
                 scheduleAt:
                   format: date-time
                   type: string
@@ -275,30 +285,20 @@ paths:
                     lang:
                       type: string
                   required:
+                    - threadName
                     - messageName
                     - subject
                     - excerpt
                     - richText
                     - plainText
                     - lang
-                template:
-                  type: object
-                  properties:
-                    id:
-                      format: uuid
-                      type: string
-                    interpolations:
-                      type: object
-                      additionalProperties:
-                        type: string
-                  required:
-                    - id
-                    - interpolations
               required:
                 - preferredTransports
-                - userIds
+                - userId
                 - security
+                - bypassConsent
                 - scheduleAt
+                - message
         required: true
       responses:
         4XX:
@@ -450,117 +450,6 @@ paths:
                         type: number
                 required:
                   - data
-        4XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-  /api/v1/messages/template:
-    post:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                templateMetaId:
-                  format: uuid
-                  type: string
-                userIds:
-                  type: array
-                  items:
-                    type: string
-                transportations:
-                  type: array
-                  items:
-                    anyOf:
-                      - type: string
-                        enum:
-                          - email
-                      - type: string
-                        enum:
-                          - sms
-                      - type: string
-                        enum:
-                          - lifeEvent
-                security:
-                  type: string
-                scheduledAt:
-                  format: date-time
-                  type: string
-              required:
-                - templateMetaId
-                - userIds
-                - transportations
-                - security
-                - scheduledAt
-        required: true
-      responses:
-        "200":
-          description: Default Response
         4XX:
           description: Default Response
           content:
@@ -5366,7 +5255,7 @@ paths:
                   - name
   /api/v1/users/recipients/:
     get:
-      tags:
+      tags: &a7
         - Users
         - Recipients
       parameters:
@@ -5448,7 +5337,26 @@ paths:
                         preferredTransports:
                           type: array
                           items:
-                            type: string
+                            anyOf:
+                              - type: string
+                                enum:
+                                  - email
+                              - type: string
+                                enum:
+                                  - sms
+                              - type: string
+                                enum:
+                                  - lifeEvent
+                        lang:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        ppsn:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
                       required:
                         - id
                         - userProfileId
@@ -5458,6 +5366,210 @@ paths:
                         - emailAddress
                         - birthDate
                         - preferredTransports
+                        - lang
+                        - ppsn
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/recipients/{userId}:
+    get:
+      tags: *a7
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: userId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        format: uuid
+                        type: string
+                      userProfileId:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      firstName:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      lastName:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      phoneNumber:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      emailAddress:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      birthDate:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      preferredTransports:
+                        type: array
+                        items:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - email
+                            - type: string
+                              enum:
+                                - sms
+                            - type: string
+                              enum:
+                                - lifeEvent
+                      lang:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      ppsn:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                    required:
+                      - id
+                      - userProfileId
+                      - firstName
+                      - lastName
+                      - phoneNumber
+                      - emailAddress
+                      - birthDate
+                      - preferredTransports
+                      - lang
+                      - ppsn
                   metadata:
                     type: object
                     properties:

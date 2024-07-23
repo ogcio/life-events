@@ -154,3 +154,28 @@ export const MessageEvent = Type.Array(
     createdAt: Type.String({ format: "date-time" }),
   }),
 );
+
+export const MessageCreate = Type.Object({
+  preferredTransports: Type.Array(
+    Type.Union([
+      Type.Literal("email"),
+      Type.Literal("sms"),
+      Type.Literal("lifeEvent"),
+    ]),
+  ),
+  userId: Type.String(),
+  security: Type.String(), // what do we wana roll.. string?
+  bypassConsent: Type.Boolean({ default: false }),
+  scheduleAt: Type.String({ format: "date-time" }),
+  message: Type.Object({
+    threadName: Type.String(),
+    messageName: Type.String(),
+    subject: Type.String(),
+    excerpt: Type.String(),
+    richText: Type.String(),
+    plainText: Type.String(),
+    lang: Type.String(),
+  }),
+});
+
+export type MessageCreateType = Static<typeof MessageCreate>;

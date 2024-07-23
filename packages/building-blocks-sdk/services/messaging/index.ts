@@ -1,6 +1,12 @@
 import createClient, { type Middleware } from "openapi-fetch";
 import type { paths } from "./schema";
 
+function newInterpolator(interpolations: Record<string, string>) {
+  return function replacor(acc: string, key: string) {
+    return acc.replaceAll(`{{${key}}}`, interpolations[key]);
+  };
+}
+
 export class Messaging {
   private client: ReturnType<typeof createClient<paths>>;
   constructor(authToken: string) {
@@ -46,7 +52,7 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async createMessage(
+  async send(
     body: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"],
   ) {
     const { error } = await this.client.POST("/api/v1/messages/", {
@@ -78,6 +84,40 @@ export class Messaging {
       },
     );
     return { data: data?.data, error };
+  }
+
+  async buildMessage(
+    messages: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"]["message"][],
+    user: {
+      firstName: string;
+      lastName: string;
+      ppsn: string;
+      lang: string;
+      email: string;
+      phone: string;
+    },
+  ) {
+    const interpolator = newInterpolator(user);
+    const keys = Object.keys(user);
+
+    console.log(messages);
+    const message =
+      messages.find((m) => m.lang === user.lang) || messages.at(0);
+
+    // Throw which exception?
+    if (!message) {
+      throw new Error();
+    }
+
+    return {
+      threadName: message.threadName,
+      messageName: message.messageName,
+      subject: keys.reduce(interpolator, message.subject),
+      excerpt: keys.reduce(interpolator, message.excerpt),
+      richText: keys.reduce(interpolator, message.richText),
+      plainText: keys.reduce(interpolator, message.plainText),
+      lang: message.lang,
+    };
   }
 
   async createTemplate(
@@ -346,17 +386,6 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async createTemplateMessages(
-    body: paths["/api/v1/messages/template"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    const { data, error } = await this.client.POST(
-      "/api/v1/messages/template",
-      { body },
-    );
-
-    return { data, error };
-  }
-
   async getMessageEvents({
     query,
   }: paths["/api/v1/messages/events"]["get"]["parameters"]) {
@@ -386,6 +415,23 @@ export class Messaging {
         query,
       },
     });
+    return { error, data: data?.data, metadata: data?.metadata };
+  }
+
+  async getRecipient(
+    userId: paths["/api/v1/users/recipients/{userId}"]["get"]["parameters"]["path"]["userId"],
+  ) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/recipients/{userId}",
+      {
+        params: {
+          path: {
+            userId,
+          },
+        },
+      },
+    );
+
     return { error, data: data?.data, metadata: data?.metadata };
   }
 }

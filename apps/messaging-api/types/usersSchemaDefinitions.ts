@@ -212,6 +212,14 @@ export const RecipientSchema = Type.Object({
   phoneNumber: NullableStringType,
   emailAddress: NullableStringType,
   birthDate: NullableStringType,
-  preferredTransports: Type.Array(Type.String()),
+  preferredTransports: Type.Array(
+    Type.Union([
+      Type.Literal("email"),
+      Type.Literal("sms"),
+      Type.Literal("lifeEvent"),
+    ]),
+  ),
+  lang: NullableStringType,
+  ppsn: NullableStringType,
 });
 export type Recipient = Static<typeof RecipientSchema>;

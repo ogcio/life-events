@@ -138,26 +138,21 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            preferredTransports: string[];
-            userIds: string[];
+            preferredTransports: ("email" | "sms" | "lifeEvent")[];
+            userId: string;
             security: string;
+            /** @default false */
+            bypassConsent: boolean;
             /** Format: date-time */
             scheduleAt: string;
-            message?: {
-              threadName?: string;
+            message: {
+              threadName: string;
               messageName: string;
               subject: string;
               excerpt: string;
               richText: string;
               plainText: string;
               lang: string;
-            };
-            template?: {
-              /** Format: uuid */
-              id: string;
-              interpolations: {
-                [key: string]: string;
-              };
             };
           };
         };
@@ -243,61 +238,6 @@ export interface paths {
               };
             };
           };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/messages/template": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            /** Format: uuid */
-            templateMetaId: string;
-            userIds: string[];
-            transportations: ("email" | "sms" | "lifeEvent")[];
-            security: string;
-            /** Format: date-time */
-            scheduledAt: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
         };
         /** @description Default Response */
         "4XX": {
@@ -2637,8 +2577,108 @@ export interface paths {
                 emailAddress: null | string;
                 /** @default null */
                 birthDate: null | string;
-                preferredTransports: string[];
+                preferredTransports: ("email" | "sms" | "lifeEvent")[];
+                /** @default null */
+                lang: null | string;
+                /** @default null */
+                ppsn: null | string;
               }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/recipients/{userId}": {
+    get: {
+      parameters: {
+        path: {
+          userId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+                /** @default null */
+                userProfileId: null | string;
+                /** @default null */
+                firstName: null | string;
+                /** @default null */
+                lastName: null | string;
+                /** @default null */
+                phoneNumber: null | string;
+                /** @default null */
+                emailAddress: null | string;
+                /** @default null */
+                birthDate: null | string;
+                preferredTransports: ("email" | "sms" | "lifeEvent")[];
+                /** @default null */
+                lang: null | string;
+                /** @default null */
+                ppsn: null | string;
+              };
               metadata?: {
                 links?: {
                   self: {
