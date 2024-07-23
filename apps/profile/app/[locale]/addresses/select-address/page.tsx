@@ -118,6 +118,7 @@ export default async (props: NextPageProps) => {
         firstname: firstName,
         lastname: lastName,
         email,
+        preferredLanguage: props.params.locale,
       });
 
       if (error) {

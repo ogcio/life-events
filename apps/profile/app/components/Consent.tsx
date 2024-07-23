@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { PgSessions } from "auth/sessions";
 import { Profile } from "building-blocks-sdk";
 
@@ -30,6 +30,7 @@ async function submitAction(formData: FormData) {
       firstname: firstName,
       lastname: lastName,
       email,
+      preferredLanguage: await getLocale(),
     });
 
     if (error) {

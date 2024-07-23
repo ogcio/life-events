@@ -27,7 +27,8 @@ export const getUser = async (params: {
       gender as "gender",
       email as "email",
       phone as "phone",
-      consent_to_prefill_data as "consentToPrefillData"
+      consent_to_prefill_data as "consentToPrefillData",
+      preferred_language as "preferredLanguage"
     FROM user_details WHERE user_id = $1 LIMIT 1`,
     [params.id],
   );

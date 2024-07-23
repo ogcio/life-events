@@ -41,6 +41,7 @@
     "auth": "*",
     "dotenv": "^16.4.5",
     "error-handler": "*",
+    "shared-errors": "*",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
     "fastify-raw-body": "^4.3.0",

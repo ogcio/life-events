@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
+import { NotFoundError, ServerError } from "shared-errors";
 import {
   AddressesList,
   AddressesListSchema,
@@ -15,8 +16,10 @@ import {
   PatchAddress,
   PatchAddressSchema,
 } from "../../types/schemaDefinitions";
+import { getErrorMessage } from "../../utils/error-utils";
 
 const ADDRESSES_TAGS = ["Addresses"];
+const ERROR_PROCESS = "USER_PROFILE_ADDRESSES";
 
 export default async function addresses(app: FastifyInstance) {
   app.get<{ Reply: AddressesList }>(
@@ -51,7 +54,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send(result.rows);
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
     },
   );
@@ -104,7 +107,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
     },
   );
@@ -143,15 +146,11 @@ export default async function addresses(app: FastifyInstance) {
           [userId, addressId],
         );
       } catch (err) {
-        app.log.error((err as Error).message);
+        app.log.error({ error: err });
       }
 
       if (!result?.rows.length) {
-        const error = app.httpErrors.notFound("Address not found");
-        error.statusCode = 404;
-        error.code = "NOT_FOUND";
-
-        throw error;
+        throw new NotFoundError(ERROR_PROCESS, "Address not found");
       }
 
       reply.send(result.rows[0]);
@@ -210,16 +209,12 @@ export default async function addresses(app: FastifyInstance) {
         );
 
         if (!result?.rows.length) {
-          const error = app.httpErrors.notFound("Address not found");
-          error.statusCode = 404;
-          error.code = "NOT_FOUND";
-
-          throw error;
+          throw new NotFoundError(ERROR_PROCESS, "Address not found");
         }
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
     },
   );
@@ -268,16 +263,12 @@ export default async function addresses(app: FastifyInstance) {
         );
 
         if (!result?.rows.length) {
-          const error = app.httpErrors.notFound("Address not found");
-          error.statusCode = 404;
-          error.code = "NOT_FOUND";
-
-          throw error;
+          throw new NotFoundError(ERROR_PROCESS, "Address not found");
         }
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
     },
   );
@@ -311,15 +302,11 @@ export default async function addresses(app: FastifyInstance) {
           [userId, addressId],
         );
       } catch (error) {
-        throw app.httpErrors.internalServerError((error as Error).message);
+        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
       }
 
       if (!result?.rows.length) {
-        const error = app.httpErrors.notFound("Address not found");
-        error.statusCode = 404;
-        error.code = "NOT_FOUND";
-
-        throw error;
+        throw new NotFoundError(ERROR_PROCESS, "Address not found");
       }
 
       reply.send({ id: result.rows[0].id });

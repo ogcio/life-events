@@ -49,7 +49,7 @@ services:
       - POSTGRES_HOST=postgresql
       - POSTGRES_PORT=5432
       - POSTGRES_DB_NAME=scheduler
-    command: [ "npm", "run", "migrate:scheduler-api" ]
+    command: [ "npm","run", "migrate", "--workspace=scheduler" ]
     depends_on:
       postgresql:
         condition: service_healthy

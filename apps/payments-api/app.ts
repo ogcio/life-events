@@ -20,6 +20,7 @@ import { initializeLoggingHooks } from "logging-wrapper";
 import providers from "./plugins/entities/providers";
 import citizen from "./plugins/entities/citizen";
 import transactions from "./plugins/entities/transactions";
+import paymentRequest from "./plugins/entities/paymentRequest";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -92,6 +93,7 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(providers);
   app.register(citizen);
   app.register(transactions);
+  app.register(paymentRequest);
 
   return app;
 }
