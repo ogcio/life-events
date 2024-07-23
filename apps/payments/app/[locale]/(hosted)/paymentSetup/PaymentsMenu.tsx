@@ -5,7 +5,6 @@ import styles from "./PaymentsMenu.module.scss";
 import { OrganizationSelector } from "shared-components";
 import { OrganizationData } from "auth/types";
 import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
-import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 
 const Icon = ds.Icon;
@@ -29,7 +28,7 @@ export default ({
     "use server";
     const context = AuthenticationFactory.getInstance();
     const selectedOrganization = formData.get("organization") as string;
-    context.setDefaultOrganization(selectedOrganization, cookies().set);
+    context.setSelectedOrganization(selectedOrganization);
     redirect("/", RedirectType.replace);
   }
 

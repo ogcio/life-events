@@ -1,5 +1,6 @@
 import { AuthSession, AuthUserScope } from "auth/auth-session";
 import { PartialAuthSessionContext } from "auth/types";
+import { cookies } from "next/headers";
 
 export const getBaseLogtoConfig = () => ({
   cookieSecure: process.env.NODE_ENV === "production",
@@ -17,7 +18,7 @@ interface PublicServantParameters {
   publicServantScopes: string[];
   organizationId?: string;
   loginUrl: string;
-  publicServantExpectedRole?: string;
+  publicServantExpectedRole: string;
   baseUrl: string;
   appId: string;
   appSecret: string;
@@ -27,7 +28,7 @@ interface CitizenParameters {
   resourceUrl: string;
   citizenScopes: string[];
   loginUrl: string;
-  publicServantExpectedRole?: string;
+  publicServantExpectedRole: string;
   baseUrl: string;
   appId: string;
   appSecret: string;
@@ -61,11 +62,11 @@ export const isCitizenAuthenticated = (params: CitizenParameters) =>
     buildCitizenContextParameters(params),
   );
 
-export const getDefaultOrganization = (storageGetFn) =>
-  AuthSession.getDefaultOrganization(storageGetFn);
+export const getSelectedOrganization = () =>
+  AuthSession.getSelectedOrganization();
 
-export const setDefaultOrganization = (organizationId, storageSetFn) =>
-  AuthSession.setDefaultOrganization(organizationId, storageSetFn);
+export const setSelectedOrganization = (organizationId) =>
+  AuthSession.setSelectedOrganization(organizationId);
 
 const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
   ...getBaseLogtoConfig(),

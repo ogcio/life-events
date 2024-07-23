@@ -9,7 +9,7 @@ export default async ({ children }) => {
   if (!isPublicServant) return notFound();
 
   const organizations = await context.getOrganizations();
-  const defaultOrgId = await context.getDefaultOrganization(cookies().get);
+  const defaultOrgId = await context.getSelectedOrganization();
 
   const locale = headers().get("x-next-intl-locale") || "";
   const referer = headers().get("referer") || "";
