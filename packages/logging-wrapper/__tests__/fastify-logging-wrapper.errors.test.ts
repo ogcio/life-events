@@ -116,6 +116,8 @@ t.test("Life events error logs expected values", async () => {
   });
   const parsed = parseLogEntry(loggedRecords[1]);
   t.equal(parsed.error.process, "TESTING");
+  t.equal(parsed.error.parent.message, "I am the parent");
+  t.type(parsed.error.parent.stack, "string");
 
   checkExpectedResponseEntry({
     responseLogEntry: loggedRecords[2],
