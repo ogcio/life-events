@@ -2,7 +2,7 @@ import createClient, { type Middleware } from "openapi-fetch";
 import type { paths } from "./schema";
 
 function newInterpolator(interpolations: Record<string, string>) {
-  return function replacor(acc: string, key: string) {
+  return function replacer(acc: string, key: string) {
     return acc.replaceAll(`{{${key}}}`, interpolations[key]);
   };
 }
@@ -88,25 +88,48 @@ export class Messaging {
 
   async buildMessage(
     messages: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"]["message"][],
-    user: {
-      firstName: string;
-      lastName: string;
-      ppsn: string;
-      lang: string;
-      email: string;
-      phone: string;
-    },
+    lang: string,
+    vars: Record<string, string>,
   ) {
-    const interpolator = newInterpolator(user);
-    const keys = Object.keys(user);
+    if (!lang) {
+      throw new Error("no language provided");
+    }
 
-    console.log(messages);
-    const message =
-      messages.find((m) => m.lang === user.lang) || messages.at(0);
+    const message = messages.find((m) => m.lang === lang);
 
-    // Throw which exception?
     if (!message) {
-      throw new Error();
+      throw new Error(`template not found for language ${lang}`);
+    }
+
+    const interpolator = newInterpolator(vars);
+    const keys = Object.keys(vars);
+
+    // All
+    const textVariables = new Set<string>();
+    for (const text of [
+      message.subject,
+      message.excerpt,
+      message.richText,
+      message.plainText,
+    ]) {
+      (text.match(/[^{{]+(?=}})/g) || []).forEach(
+        textVariables.add,
+        textVariables,
+      );
+    }
+
+    // Check all content if there's any unhandled vars.
+    const illegalVariables: string[] = [];
+    textVariables.forEach((val) => {
+      if (!keys.some((key) => key === val)) {
+        illegalVariables.push(val);
+      }
+    });
+
+    if (illegalVariables.length) {
+      throw new Error(
+        `illegal template variables ${illegalVariables.join(", ")}`,
+      );
     }
 
     return {
