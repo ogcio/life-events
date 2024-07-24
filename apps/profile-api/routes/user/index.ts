@@ -298,7 +298,6 @@ export default async function user(app: FastifyInstance) {
     },
     async function handler(request) {
       const ids = request.body.ids;
-      console.log("asking for ", ids);
       type User = {
         id: string;
         firstName: string;
@@ -326,7 +325,6 @@ export default async function user(app: FastifyInstance) {
 
         users.push(...usersQueryResult.rows);
       } catch (err) {
-        console.log("Krashar vi direkt haer eller? ", err);
         throw new ServerError(
           ERROR_PROCESS,
           isNativeError(err) ? err.message : "failed to select users",
