@@ -28,7 +28,7 @@ export default async function ({
   if (!isPublicServant) return notFound();
 
   const organizations = await context.getOrganizations();
-  const defaultOrgId = await context.getDefaultOrganization(cookies().get);
+  const defaultOrgId = await context.getSelectedOrganization();
 
   const t = await getTranslations("PaymentSetup.Payments");
   const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
