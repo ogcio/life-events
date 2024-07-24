@@ -1,6 +1,5 @@
 import t from "tap";
 import { Messaging } from "../../services/messaging/index.js";
-import { AssertionError, fail } from "assert";
 
 t.test("Messaging.buildMessage", async (t) => {
   const service = new Messaging("");
