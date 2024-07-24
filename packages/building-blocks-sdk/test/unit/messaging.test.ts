@@ -88,6 +88,30 @@ t.test("Messaging.buildMessage", async (t) => {
     },
   );
 
+  t.test("should throw error if any variable field is empty", async () => {
+    try {
+      await service.buildMessage(
+        [
+          {
+            excerpt: "text",
+            lang: "en",
+            messageName: "text",
+            plainText: "text",
+            richText: "text",
+            subject: "text",
+            threadName: "text",
+          },
+        ],
+        "en",
+        { a: "", b: "" },
+      );
+      t.fail();
+    } catch (err) {
+      t.match(err.message, "illegal empty variables a, b");
+    }
+    t.end();
+  });
+
   t.test(
     "should throw error when language variable is missing from messages",
     async () => {

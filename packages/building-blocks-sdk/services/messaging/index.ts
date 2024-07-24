@@ -104,7 +104,7 @@ export class Messaging {
     const illegalValueKeys: string[] = [];
     const keys = Object.keys(vars);
     for (const key of keys) {
-      if (keys[key] === "") {
+      if (vars[key] === "") {
         illegalValueKeys.push(key);
       }
     }
