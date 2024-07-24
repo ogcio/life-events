@@ -5,3 +5,4 @@ dist
 **/.localstack/*
 .yalc
 yalc.*
+.tap
