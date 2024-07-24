@@ -164,7 +164,7 @@ export const MessageCreate = Type.Object({
     ]),
   ),
   userId: Type.String(),
-  security: Type.String(), // what do we wana roll.. string?
+  security: Type.String(), 
   bypassConsent: Type.Boolean({ default: false }),
   scheduleAt: Type.String({ format: "date-time" }),
   message: Type.Object({
