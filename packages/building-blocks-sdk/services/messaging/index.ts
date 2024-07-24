@@ -55,11 +55,11 @@ export class Messaging {
   async send(
     body: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"],
   ) {
-    const { error } = await this.client.POST("/api/v1/messages/", {
+    const { error, data } = await this.client.POST("/api/v1/messages/", {
       body,
     });
 
-    return { error };
+    return { error, data: data?.data };
   }
 
   async getTemplates(lang?: string) {
