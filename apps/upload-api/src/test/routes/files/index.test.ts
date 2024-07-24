@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
+import { equal } from "node:assert";
 import { EventEmitter } from "node:events";
 import { PassThrough } from "stream";
 import t from "tap";
@@ -522,6 +523,7 @@ t.test("files", async (t) => {
         Body: { transformToWebStream: () => stream },
       });
       stream.push(Buffer.alloc(1));
+      stream.push(Buffer.alloc(1));
       stream.end();
       setTimeout(() => {
         antivirusPassthrough.emit("scan-complete", { isInfected: false });
@@ -535,8 +537,8 @@ t.test("files", async (t) => {
         method: "GET",
         url: "/files/file.txt",
       })
-      .catch((err) => {
-        t.equal(err, undefined);
+      .then((r) => {
+        t.equal(r.statusCode, 500);
         t.end();
       });
 
@@ -558,6 +560,11 @@ t.test("files", async (t) => {
       .inject({
         method: "GET",
         url: "/files/file.txt",
+      })
+      .then((r) => {
+        t.equal(r.statusCode, 400);
+        t.equal(r.json().detail, "File is infected");
+        t.end();
       })
       .catch((err) => {
         t.equal(err, undefined);

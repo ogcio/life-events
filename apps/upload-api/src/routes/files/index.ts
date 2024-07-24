@@ -319,12 +319,7 @@ export default async function routes(app: FastifyInstance) {
         downloadPassthrough,
         (err) => {
           if (err) {
-            // reply.app.log // downloadPassthrough.destroy();
-            // .error(er);
-            // console.log(err);
             app.log.error(err);
-            // throw err;
-            // reply.hijack();
           }
         },
       );
@@ -335,7 +330,7 @@ export default async function routes(app: FastifyInstance) {
 
 class PromiseTransform extends Transform {
   private aPromise;
-  // private lastChunk;
+  private lastChunk: Buffer | undefined;
 
   constructor(aPromise: Promise<void>, options = {}) {
     super(options);
@@ -343,33 +338,22 @@ class PromiseTransform extends Transform {
   }
 
   _transform(chunk: Buffer, encoding: string, callback: () => void) {
-    this.push(chunk);
+    if (this.lastChunk) {
+      this.push(this.lastChunk);
+    }
+    this.lastChunk = chunk;
     callback();
-    // if (this.lastChunk) {
-    //   console.log("last chunk true");
-    //   if (!this.push(this.lastChunk)) {
-    //     console.log("push negative, draining");
-    //     this.once("drain", callback);
-    //   } else {
-    //     console.log("push positive callback");
-    //     callback();
-    //   }
-    // } else {
-    //   callback();
-    // }
-    // this.lastChunk = chunk;
   }
 
   _flush(callback: () => void) {
     this.aPromise
       .then(() => {
-        // if (this.lastChunk) {
-        //   this.push(this.lastChunk);
-        // } else {
-        //   this.push();
-        // }
+        this.push(this.lastChunk);
         callback();
       })
-      .catch(callback);
+      .catch((err) => {
+        this.emit("error", new CustomError(FILE_DOWNLOAD, err, 400));
+        callback();
+      });
   }
 }
