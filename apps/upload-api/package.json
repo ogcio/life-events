@@ -1,5 +1,5 @@
 {
-  "name": "file-upload-api",
+  "name": "upload-api",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
