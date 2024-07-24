@@ -5,7 +5,6 @@ import ds from "design-system";
 import styles from "./PaymentsMenu.module.scss";
 import { OrganizationData } from "auth/types";
 import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
-import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 import { Suspense } from "react";
 
@@ -31,7 +30,7 @@ export default ({ locale, organizations, defaultOrganization }: Props) => {
     "use server";
     const context = AuthenticationFactory.getInstance();
     const selectedOrganization = formData.get("organization") as string;
-    context.setDefaultOrganization(selectedOrganization, cookies().set);
+    context.setSelectedOrganization(selectedOrganization);
     redirect("/", RedirectType.replace);
   }
 

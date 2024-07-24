@@ -96,16 +96,6 @@ export type IAuthSession = {
     config: AuthConfig,
     getContextParameters?: GetSessionContextParameters,
   ): Promise<boolean>;
-  getDefaultOrganization(
-    storageGetFn: (name: string) =>
-      | {
-          name: string;
-          value: string;
-        }
-      | undefined,
-  ): string | undefined;
-  setDefaultOrganization(
-    organizationId: string,
-    storageSetFn: (name: string, value: string) => void,
-  ): string;
+  getSelectedOrganization(): string | undefined;
+  setSelectedOrganization(organizationId: string): string;
 };

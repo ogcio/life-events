@@ -1,16 +1,11 @@
 import { AuthenticationContextConfig } from "auth/base-authentication-context";
 import { AuthUserScope } from "auth/index";
 import { routeDefinitions } from "../app/routeDefinitions";
+import { organizationScopes } from "auth/authentication-context";
 
 export const paymentsApiResource = process.env.PAYMENTS_BACKEND_URL + "/";
 
-export const orgScopes = [
-  AuthUserScope.Organizations,
-  AuthUserScope.OrganizationRoles,
-];
-
 export const publicServantExpectedRole = "Payments Public Servant";
-export const organizationId = "ogcio";
 
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
@@ -23,11 +18,7 @@ export const baseConfig = {
 };
 
 // All the permissions of a normal citizen
-export const commonScopes = [
-  AuthUserScope.Email,
-  AuthUserScope.Organizations,
-  AuthUserScope.OrganizationRoles,
-];
+export const commonScopes = [AuthUserScope.Email];
 
 export const citizenScopes = [
   "payments:provider.public:read",
@@ -47,7 +38,6 @@ export const getAuthenticationContextConfig =
     baseUrl: baseConfig.baseUrl,
     appId: baseConfig.appId,
     appSecret: baseConfig.appSecret,
-    organizationId,
     citizenScopes,
     publicServantExpectedRole,
     publicServantScopes: paymentsPublicServantScopes,
@@ -61,7 +51,7 @@ export default {
   resources: [paymentsApiResource],
   scopes: [
     ...commonScopes,
-    ...orgScopes,
+    ...organizationScopes,
     ...citizenScopes,
     ...paymentsPublicServantScopes,
   ],

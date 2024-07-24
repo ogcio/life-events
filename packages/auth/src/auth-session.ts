@@ -26,7 +26,7 @@ const INACTIVE_PUBLIC_SERVANT_SCOPE = "bb:public-servant.inactive:*";
 
 const DEFAULT_ORGANIZATION_ID = "ogcio";
 
-const DEFAULT_ORG_COOKIE = "bb-default-org-id";
+const SELECTED_ORG_COOKIE = "bb-selected-org-id";
 
 export const AuthUserScope = UserScope;
 
@@ -37,6 +37,7 @@ export const AuthSession: IAuthSession = {
   },
   async logout(config, redirectUri) {
     addInactivePublicServantScope(config);
+    cookies().delete(SELECTED_ORG_COOKIE);
     return signOut(config, redirectUri);
   },
   async get(
@@ -78,21 +79,11 @@ export const AuthSession: IAuthSession = {
 
     return context.isAuthenticated;
   },
-  getDefaultOrganization(
-    storageGetFn: (name: string) =>
-      | {
-          name: string;
-          value: string;
-        }
-      | undefined,
-  ): string | undefined {
-    return storageGetFn(DEFAULT_ORG_COOKIE)?.value;
+  getSelectedOrganization(): string | undefined {
+    return cookies().get(SELECTED_ORG_COOKIE)?.value;
   },
-  setDefaultOrganization(
-    organizationId: string,
-    storageSetFn: (name, value) => void,
-  ): string {
-    storageSetFn(DEFAULT_ORG_COOKIE, organizationId);
+  setSelectedOrganization(organizationId: string): string {
+    cookies().set(SELECTED_ORG_COOKIE, organizationId);
     return organizationId;
   },
 };
@@ -129,6 +120,19 @@ const getUserInfo = (
     return undefined;
   }
 
+  const organizations = (context.userInfo?.organizations ?? []).sort(
+    (orgA, orgB) => {
+      if (orgA === DEFAULT_ORGANIZATION_ID) {
+        return -1;
+      }
+
+      if (orgB === DEFAULT_ORGANIZATION_ID) {
+        return 1;
+      }
+
+      return orgA.localeCompare(orgB);
+    },
+  );
   const organizationData = (context.userInfo?.organization_data ?? []).sort(
     (orgA, orgB) => {
       if (orgA.id === DEFAULT_ORGANIZATION_ID) {
@@ -149,7 +153,7 @@ const getUserInfo = (
     id,
     email,
     organizationRoles: context.userInfo?.organization_roles,
-    organizations: context.userInfo?.organizations,
+    organizations,
     organizationData,
   };
 };

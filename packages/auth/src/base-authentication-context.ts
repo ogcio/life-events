@@ -6,10 +6,10 @@ import {
 } from "./types";
 import {
   getCitizenContext,
-  getDefaultOrganization,
+  getSelectedOrganization,
   getPublicServantContext,
   isPublicServantAuthenticated,
-  setDefaultOrganization,
+  setSelectedOrganization,
 } from "./authentication-context";
 import { AuthenticationError } from "shared-errors";
 import { notFound } from "next/navigation";
@@ -23,7 +23,7 @@ export interface AuthenticationContextConfig {
   publicServantScopes: string[];
   organizationId?: string;
   loginUrl: string;
-  publicServantExpectedRole?: string;
+  publicServantExpectedRole: string;
   baseUrl: string;
   appId: string;
   appSecret: string;
@@ -67,7 +67,10 @@ export class BaseAuthenticationContext {
       this.publicServantContext =
         this.sharedContext && this.sharedContext.isPublicServant
           ? this.publicServantContext
-          : await getPublicServantContext(this.config);
+          : await getPublicServantContext({
+              ...this.config,
+              organizationId: await this.getSelectedOrganization(),
+            });
     }
     return this.publicServantContext as PartialAuthSessionContext;
   }
@@ -120,32 +123,25 @@ export class BaseAuthenticationContext {
   }
 
   async getOrganizations(): Promise<OrganizationData[]> {
-    return (await this.getContext()).user.organizationData ?? [];
+    return (await this.getCitizen()).user?.organizationData ?? [];
   }
 
-  async getDefaultOrganization(
-    storageGetFn: (name: string) =>
-      | {
-          name: string;
-          value: string;
-        }
-      | undefined,
-  ): Promise<string> {
-    const storedOrgId = getDefaultOrganization(storageGetFn);
+  async getSelectedOrganization(): Promise<string> {
+    const storedOrgId = getSelectedOrganization();
 
-    if (!storedOrgId) {
-      const orgs = await this.getOrganizations();
-      return orgs[0].id;
+    if (storedOrgId) {
+      const userOrganizations = (await this.getCitizen()).user?.organizations;
+      if (userOrganizations?.includes(storedOrgId)) {
+        return storedOrgId;
+      }
     }
 
-    return storedOrgId;
+    const orgs = await this.getOrganizations();
+    return orgs[0].id;
   }
 
-  setDefaultOrganization(
-    organizationId: string,
-    storageSetFn: (name, value) => void,
-  ): string {
-    setDefaultOrganization(organizationId, storageSetFn);
+  setSelectedOrganization(organizationId: string): string {
+    setSelectedOrganization(organizationId);
     return organizationId;
   }
 
