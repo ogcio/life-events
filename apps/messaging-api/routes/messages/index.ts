@@ -1,8 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { Recursive, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import {
-  CreateMessage,
-  CreateMessageSchema,
   getGenericResponseSchema,
   MessageCreate,
   MessageCreateType,
@@ -15,18 +13,14 @@ import {
   ReadMessagesSchema,
 } from "../../types/schemaDefinitions";
 import {
-  createMessage,
   executeJob,
   getMessage,
   getMessages,
 } from "../../services/messages/messages";
 import { newMessagingService } from "../../services/messages/messaging";
-import {
-  getUserProfiles,
-  ProfileSdkFacade,
-} from "../../services/users/shared-users";
+import { getUserProfiles } from "../../services/users/shared-users";
 import { Profile } from "building-blocks-sdk";
-import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
+import { AuthorizationError, ServerError } from "shared-errors";
 import {
   MessageEventData,
   MessagingEventType,
@@ -34,7 +28,6 @@ import {
 } from "../../services/messages/eventLogger";
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
-import { Recipient } from "../../types/usersSchemaDefinitions";
 
 const MESSAGES_TAGS = ["Messages"];
 

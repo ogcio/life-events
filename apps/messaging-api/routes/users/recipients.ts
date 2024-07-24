@@ -29,7 +29,7 @@ export default async function recipients(app: FastifyInstance) {
     Response: GenericResponse<Recipient>;
   }
 
-  interface GetRecipientShema {
+  interface GetRecipientSchema {
     Params: {
       userId: string;
     };
@@ -90,7 +90,7 @@ export default async function recipients(app: FastifyInstance) {
     },
   );
 
-  app.get<GetRecipientShema>(
+  app.get<GetRecipientSchema>(
     "/:userId",
     {
       preValidation: (req, res) =>
