@@ -540,7 +540,7 @@
   "MyLifeEvents": {
     "lifeEvents": "Life Events",
     "openEvents": "Open Events",
-    "noActions": "There are no available actions on Life Events",
+    "noActionsHeader": "There are no available actions on Life Events",
     "noActionsSubtitle": "Newly available actions will be displayed here",
     "renewDriversLicence": {
       "title": {
