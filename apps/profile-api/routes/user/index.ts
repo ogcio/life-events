@@ -325,7 +325,6 @@ export default async function user(app: FastifyInstance) {
 
         users.push(...usersQueryResult.rows);
       } catch (err) {
-        console.log("Krashar vi direkt haer eller? ", err);
         throw new ServerError(
           ERROR_PROCESS,
           isNativeError(err) ? err.message : "failed to select users",
