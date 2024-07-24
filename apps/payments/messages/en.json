@@ -64,7 +64,8 @@
     "payments": "Payments",
     "paymentRequests": "Payment requests",
     "providers": "Providers",
-    "logout": "Logout"
+    "logout": "Logout",
+    "loading": "Loading..."
   },
   "PaymentSetup": {
     "details": "Payment request details",

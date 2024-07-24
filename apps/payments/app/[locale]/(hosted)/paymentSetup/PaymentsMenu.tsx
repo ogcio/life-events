@@ -1,27 +1,29 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import ds from "design-system";
 import styles from "./PaymentsMenu.module.scss";
-import { OrganizationSelector } from "shared-components";
 import { OrganizationData } from "auth/types";
 import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
 import { redirect, RedirectType } from "next/navigation";
+import { Suspense } from "react";
 
 const Icon = ds.Icon;
 
 type Props = {
   locale: string;
-  organizations: OrganizationData[];
-  defaultOrganization: string;
-  currentPage: string;
+  organizations?: OrganizationData[];
+  defaultOrganization?: string;
 };
 
-export default ({
-  locale,
-  organizations,
-  defaultOrganization,
-  currentPage,
-}: Props) => {
+const OrganizationSelector = dynamic(
+  () => import("shared-components").then((mod) => mod.OrganizationSelector),
+  {
+    ssr: true,
+  },
+);
+
+export default ({ locale, organizations, defaultOrganization }: Props) => {
   const t = useTranslations("Menu");
 
   async function handleSubmit(formData: FormData) {
@@ -35,18 +37,20 @@ export default ({
   return (
     <>
       <div>
-        {organizations.length > 1 && (
-          <OrganizationSelector
-            title="Department"
-            actionTitle="Change department"
-            organizations={organizations.map((org) => ({
-              name: org.name,
-              id: org.id,
-            }))}
-            defaultOrganization={defaultOrganization}
-            handleSubmit={handleSubmit}
-          ></OrganizationSelector>
-        )}
+        <Suspense fallback={<h3>{t("loading")}</h3>}>
+          {organizations && organizations.length > 1 && (
+            <OrganizationSelector
+              title="Department"
+              actionTitle="Change department"
+              organizations={organizations.map((org) => ({
+                name: org.name,
+                id: org.id,
+              }))}
+              defaultOrganization={defaultOrganization}
+              handleSubmit={handleSubmit}
+            ></OrganizationSelector>
+          )}
+        </Suspense>
         <div>
           <ol className={`govie-list govie-list--spaced ${styles.container}`}>
             <li tabIndex={0}>
@@ -115,5 +119,3 @@ export default ({
     </>
   );
 };
-
-export const dynamic = "force-dynamic";
