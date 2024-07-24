@@ -44,6 +44,10 @@ enum EventPermissions {
   Read = "messaging:event:read",
 }
 
+enum SchedulerPermissions {
+  Write = "scheduler:jobs:write",
+}
+
 export const Permissions = {
   Message: MessagePermissions,
   MessageSelf: MessageSelfPermissions,
@@ -54,4 +58,5 @@ export const Permissions = {
   Provider: ProviderPermissions,
   Template: TemplatePermissions,
   Event: EventPermissions,
+  Scheduler: SchedulerPermissions,
 };
