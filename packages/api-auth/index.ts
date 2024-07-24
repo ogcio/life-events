@@ -7,6 +7,7 @@ import { AuthenticationError, AuthorizationError } from "shared-errors";
 type ExtractedUserData = {
   userId: string;
   organizationId?: string;
+  accessToken: string;
 };
 
 type MatchConfig = { method: "AND" | "OR" };
@@ -80,6 +81,7 @@ export const checkPermissions = async (
   return {
     userId: sub,
     organizationId: organizationId,
+    accessToken: token,
   };
 };
 
