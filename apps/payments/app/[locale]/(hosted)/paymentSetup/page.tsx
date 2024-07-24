@@ -16,11 +16,12 @@ import { routeDefinitions } from "../../../routeDefinitions";
 import { notFound, redirect, RedirectType } from "next/navigation";
 import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
 import PaymentsMenu from "./PaymentsMenu";
-import { headers } from "next/headers";
 
 export default async function ({
+  params: { locale },
   searchParams: { page, limit },
 }: {
+  params: { locale: string };
   searchParams: { page?: string; limit?: string };
 }) {
   const context = AuthenticationFactory.getInstance();
@@ -48,8 +49,6 @@ export default async function ({
   if (errors?.limit || errors?.offset) {
     return redirect("/error", RedirectType.replace);
   }
-
-  const locale = headers().get("x-next-intl-locale") || "";
 
   const url = `/${locale}/${routeDefinitions.paymentSetup.path()}`;
   const links = buildPaginationLinks(

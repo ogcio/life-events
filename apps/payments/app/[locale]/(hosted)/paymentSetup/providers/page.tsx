@@ -3,12 +3,9 @@ import { useTranslations } from "next-intl";
 import ProvidersList from "./ProvidersList";
 import styles from "./Providers.module.scss";
 import PaymentsMenu from "../PaymentsMenu";
-import { headers } from "next/headers";
 
-export default () => {
+export default ({ params: { locale } }) => {
   const t = useTranslations("PaymentSetup.Providers");
-
-  const locale = headers().get("x-next-intl-locale") || "";
 
   return (
     <div
