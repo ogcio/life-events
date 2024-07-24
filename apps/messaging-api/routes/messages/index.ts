@@ -146,10 +146,17 @@ export default async function messages(app: FastifyInstance) {
         response: {
           "4xx": HttpError,
           "5xx": HttpError,
+          // We want to add self link, count=1 eg. in the metadata field?
+          // 201: getGenericResponseSchema(Type.String({ format: "uuid" })),
+          201: Type.Object({
+            data: Type.Object({
+              messageId: Type.String({ format: "uuid" }),
+            }),
+          }),
         },
       },
     },
-    async function createMessageHandler(request) {
+    async function createMessageHandler(request, reply) {
       const errorKey = "FAILED_TO_CREATE_MESSAGE";
 
       const senderUserId = request.userData?.userId;
@@ -248,6 +255,9 @@ export default async function messages(app: FastifyInstance) {
           },
         ]);
       }
+
+      reply.statusCode = 201;
+      return { data: messageId };
     },
   );
 

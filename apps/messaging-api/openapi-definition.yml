@@ -301,6 +301,23 @@ paths:
                 - message
         required: true
       responses:
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      messageId:
+                        format: uuid
+                        type: string
+                    required:
+                      - messageId
+                required:
+                  - data
         4XX:
           description: Default Response
           content:

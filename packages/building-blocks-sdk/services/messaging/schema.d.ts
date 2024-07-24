@@ -159,6 +159,17 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
+        201: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                messageId: string;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
         "4XX": {
           content: {
             "application/json": {
