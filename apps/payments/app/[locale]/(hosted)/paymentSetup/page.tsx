@@ -16,7 +16,7 @@ import { routeDefinitions } from "../../../routeDefinitions";
 import { notFound, redirect, RedirectType } from "next/navigation";
 import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
 import PaymentsMenu from "./PaymentsMenu";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 
 export default async function ({
   searchParams: { page, limit },
