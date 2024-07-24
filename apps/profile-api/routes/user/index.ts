@@ -298,7 +298,6 @@ export default async function user(app: FastifyInstance) {
     },
     async function handler(request) {
       const ids = request.body.ids;
-      console.log("asking for ", ids);
       type User = {
         id: string;
         firstName: string;
