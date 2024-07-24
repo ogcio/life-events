@@ -96,6 +96,7 @@ const addInactivePublicServantScope = (config) => {
 
 const getUserInfo = (
   context: LogtoContext,
+  getContextParameters: GetSessionContextParameters,
 ): AuthSessionUserInfo | undefined => {
   let name: string | null = null;
   let username: string | null = null;
@@ -120,21 +121,8 @@ const getUserInfo = (
     return undefined;
   }
 
-  const organizations = (context.userInfo?.organizations ?? []).sort(
-    (orgA, orgB) => {
-      if (orgA === DEFAULT_ORGANIZATION_ID) {
-        return -1;
-      }
-
-      if (orgB === DEFAULT_ORGANIZATION_ID) {
-        return 1;
-      }
-
-      return orgA.localeCompare(orgB);
-    },
-  );
-  const organizationData = (context.userInfo?.organization_data ?? []).sort(
-    (orgA, orgB) => {
+  const organizationData = (context.userInfo?.organization_data ?? [])
+    .sort((orgA, orgB) => {
       if (orgA.id === DEFAULT_ORGANIZATION_ID) {
         return -1;
       }
@@ -144,6 +132,17 @@ const getUserInfo = (
       }
 
       return orgA.name.localeCompare(orgB.name);
+    })
+    .filter((org) => {
+      const orgPSRole = `${org.id}:${getContextParameters.publicServantExpectedRole}`;
+      return context.userInfo?.organization_roles?.includes(orgPSRole);
+    });
+
+  const organizations = organizationData.map((org) => org.id);
+  const organizationRoles = context.userInfo?.organization_roles?.filter(
+    (role) => {
+      const [orgId, _] = role.split(":");
+      return organizations.includes(orgId);
     },
   );
 
@@ -152,7 +151,7 @@ const getUserInfo = (
     username,
     id,
     email,
-    organizationRoles: context.userInfo?.organization_roles,
+    organizationRoles,
     organizations,
     organizationData,
   };
@@ -296,7 +295,7 @@ const parseContext = (
   context: LogtoContext,
   getContextParameters: GetSessionContextParameters,
 ): PartialAuthSessionContext => {
-  const userInfo = getUserInfo(context);
+  const userInfo = getUserInfo(context, getContextParameters);
   const orgRoles = getOrganizationRoles(context);
   const orgInfo = getOrganizationInfo(context, getContextParameters, orgRoles);
   const isPublicServant = checkIfPublicServant(orgRoles, getContextParameters);
