@@ -23,7 +23,7 @@ export default function ({
   return (
     <div>
       <form action={handleSubmit}>
-        <div className="govie-form-group" style={{ marginBottom: "12px;" }}>
+        <div className="govie-form-group" style={{ marginBottom: "12px" }}>
           <label
             htmlFor="organization"
             className="govie-!-font-weight-regular govie-label--s govie-!-font-size-16"
