@@ -101,8 +101,19 @@ export class Messaging {
       throw new Error(`template not found for language ${lang}`);
     }
 
-    const interpolator = newInterpolator(vars);
+    const illegalValueKeys: string[] = [];
     const keys = Object.keys(vars);
+    for (const key of keys) {
+      if (keys[key] === "") {
+        illegalValueKeys.push(key);
+      }
+    }
+
+    if (illegalValueKeys.length) {
+      throw new Error(`illegal empty variables ${illegalValueKeys.join(", ")}`);
+    }
+
+    const interpolator = newInterpolator(vars);
 
     // All
     const textVariables = new Set<string>();

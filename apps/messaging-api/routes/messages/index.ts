@@ -20,7 +20,7 @@ import {
 import { newMessagingService } from "../../services/messages/messaging";
 import { getUserProfiles } from "../../services/users/shared-users";
 import { Profile } from "building-blocks-sdk";
-import { AuthorizationError, ServerError } from "shared-errors";
+import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
 import {
   MessageEventData,
   MessagingEventType,
@@ -136,7 +136,10 @@ export default async function messages(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [Permissions.Message.Write]),
+        app.checkPermissions(req, res, [
+          Permissions.Message.Write,
+          Permissions.Scheduler.Write,
+        ]),
       schema: {
         tags: MESSAGES_TAGS,
         body: MessageCreate,
@@ -165,6 +168,13 @@ export default async function messages(app: FastifyInstance) {
         app.pg.pool,
       );
 
+      if (!receiverUser) {
+        throw new NotFoundError(
+          errorKey,
+          "failed to get receiver user profile",
+        );
+      }
+
       const profileSdk = new Profile(senderUserId);
       const { data, error } = await profileSdk.selectUsers([senderUserId]);
       if (error) {
@@ -176,15 +186,12 @@ export default async function messages(app: FastifyInstance) {
 
       const senderUser = data?.at(0);
       if (!senderUser) {
-        throw new ServerError(
+        throw new NotFoundError(
           errorKey,
           "sender user from profile sdk was undefined",
         );
       }
 
-      if (!receiverUser) {
-        throw new ServerError(errorKey, "failed to get reciever user profile");
-      }
       const senderFullName =
         `${senderUser.firstName} ${senderUser.lastName}`.trim();
       const receiverFullName =
@@ -201,12 +208,12 @@ export default async function messages(app: FastifyInstance) {
           ...request.body.message,
           organisationId,
         });
-      } catch (err) {
-        app.log.error(err);
+      } catch (error) {
+        app.log.error({ error });
         throw new ServerError(errorKey, "failed to create message");
       }
 
-      await eventLogger.log(MessagingEventType.scheduleMessage, [
+      await eventLogger.log(MessagingEventType.createRawMessage, [
         {
           messageId,
           ...request.body,
@@ -220,17 +227,24 @@ export default async function messages(app: FastifyInstance) {
         },
       ]);
 
+      await eventLogger.log(MessagingEventType.scheduleMessage, [
+        { messageId },
+      ]);
+
       // Schedule
+      let jobId = "";
       try {
         const [job] = await messageService.scheduleMessages(
           [{ messageId, userId: receiverUserId }],
           request.body.scheduleAt,
           organisationId,
         );
+        jobId = job.jobId;
       } catch (err) {
         await eventLogger.log(MessagingEventType.scheduleMessageError, [
           {
             messageId,
+            jobId,
           },
         ]);
       }
@@ -455,7 +469,7 @@ export default async function messages(app: FastifyInstance) {
           from messages
           where organisation_id = $1
           and subject ilike $2
-          order by created_at
+          order by scheduled_at desc
           limit $3 offset $4
           ) select
               l.message_id as "messageId",

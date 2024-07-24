@@ -83,12 +83,12 @@ export default async (props: MessageCreateProps) => {
             threadName: c.subject,
             messageName: c.subject,
           })),
+          user.lang || "",
           {
-            email: user.emailAddress || "",
             firstName: user.firstName || "",
-            lang: user.lang || "en",
             lastName: user.lastName || "",
             phone: user.phoneNumber || "",
+            email: user.emailAddress || "",
             ppsn: user.ppsn || "",
           },
         );
