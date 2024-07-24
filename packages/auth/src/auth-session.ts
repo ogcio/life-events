@@ -121,7 +121,7 @@ const getUserInfo = (
     return undefined;
   }
 
-  const organizationData = (context.userInfo?.organization_data ?? [])
+  const organizations = (context.userInfo?.organization_data ?? [])
     .sort((orgA, orgB) => {
       if (orgA.id === DEFAULT_ORGANIZATION_ID) {
         return -1;
@@ -138,21 +138,16 @@ const getUserInfo = (
       return context.userInfo?.organization_roles?.includes(orgPSRole);
     });
 
-  const organizations = organizationData.map((org) => org.id);
-  const organizationRoles = context.userInfo?.organization_roles?.filter(
-    (role) => {
-      const [orgId, _] = role.split(":");
-      return organizations.includes(orgId);
-    },
-  );
+  const organizationData = organizations.reduce((acc, current) => {
+    acc[current.id] = current;
+    return acc;
+  }, {});
 
   return {
     name,
     username,
     id,
     email,
-    organizationRoles,
-    organizations,
     organizationData,
   };
 };

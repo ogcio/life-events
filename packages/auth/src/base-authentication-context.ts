@@ -122,22 +122,25 @@ export class BaseAuthenticationContext {
     return this.isCitizenAuthenticated() || this.isPublicServantAuthenticated();
   }
 
-  async getOrganizations(): Promise<OrganizationData[]> {
-    return (await this.getCitizen()).user?.organizationData ?? [];
+  async getOrganizations(): Promise<Record<string, OrganizationData>> {
+    return (await this.getCitizen()).user?.organizationData ?? {};
   }
 
   async getSelectedOrganization(): Promise<string> {
     const storedOrgId = getSelectedOrganization();
 
     if (storedOrgId) {
-      const userOrganizations = (await this.getCitizen()).user?.organizations;
+      const context = await this.getCitizen();
+      const userOrganizations = Object.keys(
+        context.user?.organizationData ?? {},
+      );
       if (userOrganizations?.includes(storedOrgId)) {
         return storedOrgId;
       }
     }
 
     const orgs = await this.getOrganizations();
-    return orgs[0].id;
+    return Object.values(orgs)[0].id;
   }
 
   setSelectedOrganization(organizationId: string): string {

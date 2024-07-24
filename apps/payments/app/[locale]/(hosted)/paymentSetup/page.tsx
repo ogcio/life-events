@@ -28,7 +28,7 @@ export default async function ({
   const isPublicServant = await context.isPublicServant();
   if (!isPublicServant) return notFound();
 
-  const organizations = await context.getOrganizations();
+  const organizations = Object.values(await context.getOrganizations());
   const defaultOrgId = await context.getSelectedOrganization();
 
   const t = await getTranslations("PaymentSetup.Payments");

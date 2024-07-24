@@ -35,9 +35,7 @@ export type AuthSessionUserInfo = {
   username: string | null;
   id: string;
   email: string | null;
-  organizations?: string[];
-  organizationRoles?: string[];
-  organizationData?: OrganizationData[];
+  organizationData?: Record<string, OrganizationData>;
 };
 
 export type AuthSessionOrganizationInfo = {
