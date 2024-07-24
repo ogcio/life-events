@@ -164,7 +164,7 @@
       "title": "Your message has been sent",
       "body": "A copy of this message will appear in your sent messages.",
       "submitText": "Send another message",
-      "partialSuccessError": "Sorry, we were unable to send your message to a number of recipients"
+      "partialSuccessError": "Sorry, some messages could not be delivered"
     }
   },
   "formErrors": {

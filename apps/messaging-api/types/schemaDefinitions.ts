@@ -155,14 +155,16 @@ export const MessageEvent = Type.Array(
   }),
 );
 
+export const PreferredTransports = Type.Array(
+  Type.Union([
+    Type.Literal("email"),
+    Type.Literal("sms"),
+    Type.Literal("lifeEvent"),
+  ]),
+);
+
 export const MessageCreate = Type.Object({
-  preferredTransports: Type.Array(
-    Type.Union([
-      Type.Literal("email"),
-      Type.Literal("sms"),
-      Type.Literal("lifeEvent"),
-    ]),
-  ),
+  preferredTransports: PreferredTransports,
   userId: Type.String(),
   security: Type.String(), // what do we wana roll.. string?
   bypassConsent: Type.Boolean({ default: false }),

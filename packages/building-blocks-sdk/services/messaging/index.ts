@@ -89,7 +89,7 @@ export class Messaging {
   async buildMessage(
     messages: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"]["message"][],
     lang: string,
-    vars: Record<string, string>,
+    vars: Record<string, string | null | undefined>,
   ) {
     if (!lang) {
       throw new Error("no language provided");
@@ -104,7 +104,7 @@ export class Messaging {
     const illegalValueKeys: string[] = [];
     const keys = Object.keys(vars);
     for (const key of keys) {
-      if (vars[key] === "") {
+      if (vars[key] === null || vars[key] === undefined) {
         illegalValueKeys.push(key);
       }
     }
@@ -113,9 +113,9 @@ export class Messaging {
       throw new Error(`illegal empty variables ${illegalValueKeys.join(", ")}`);
     }
 
-    const interpolator = newInterpolator(vars);
+    // No null | undefined at this point
+    const interpolator = newInterpolator(vars as Record<string, string>);
 
-    // All
     const textVariables = new Set<string>();
     for (const text of [
       message.subject,

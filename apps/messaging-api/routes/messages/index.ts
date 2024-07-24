@@ -182,6 +182,7 @@ export default async function messages(app: FastifyInstance) {
         );
       }
 
+      // Need to change to token once that PR is merged
       const profileSdk = new Profile(senderUserId);
       const { data, error } = await profileSdk.selectUsers([senderUserId]);
       if (error) {
@@ -257,7 +258,7 @@ export default async function messages(app: FastifyInstance) {
       }
 
       reply.statusCode = 201;
-      return { data: messageId };
+      return { data: { messageId } };
     },
   );
 

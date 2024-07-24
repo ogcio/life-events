@@ -12,6 +12,7 @@ import { getRecipients } from "../../services/users/recipients/recipients";
 import { PaginationDetails, formatAPIResponse } from "../../utils/pagination";
 import { Permissions } from "../../types/permissions";
 import { NotFoundError, ServerError } from "shared-errors";
+import { Profile } from "building-blocks-sdk";
 
 const tags = ["Users", "Recipients"];
 
@@ -146,39 +147,27 @@ export default async function recipients(app: FastifyInstance) {
         throw new NotFoundError(errorProcess, "user not found");
       }
 
-      // There's no import field for lang?
       user.lang = "en";
 
       if (user.userProfileId) {
-        const profileApiUrl = new URL(
-          "/api/v1/user/select",
-          process.env.PROFILE_BACKEND_URL,
-        );
+        const profileSdk = new Profile(request.userData!.userId);
+        const { data, error } = await profileSdk.selectUsers([
+          user.userProfileId,
+        ]);
 
-        try {
-          // TODO: Replace this with the profile GET Users/id which should have preferrenses by org sorted out
-          const profileResponse = await fetch(profileApiUrl, {
-            method: "POST",
-            body: JSON.stringify({ ids: [user.userProfileId] }),
-            headers: { "Content-Type": "application/json" },
-          });
-          const profile: {
-            firstName: string;
-            lastName: string;
-            ppsn: string;
-            lang: string;
-            email: string;
-            phone: string;
-          } = await profileResponse.json();
-          user.firstName = profile.firstName;
-          user.lastName = profile.lastName;
-          user.emailAddress = profile.email;
-          user.phoneNumber = profile.phone;
-          user.lang = profile.lang;
-        } catch (err) {
-          // We don't necessarily need to throw, we can use the messages.user data
-          app.log.warn(errorProcess, "failed to get profile user");
+        if (error) {
+          throw error;
         }
+
+        const profile = data?.at(0);
+        if (!profile) {
+          throw new NotFoundError(errorProcess, "profile user not found");
+        }
+
+        user.firstName = profile.firstName;
+        user.lastName = profile.lastName;
+        user.emailAddress = profile.email || null;
+        user.phoneNumber = profile.phone || null;
       }
 
       return { data: user };

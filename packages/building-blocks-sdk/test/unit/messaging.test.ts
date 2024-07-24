@@ -46,7 +46,7 @@ t.test("Messaging.buildMessage", async (t) => {
   );
 
   t.test(
-    "should replace variables correctly on all relevant fields",
+    "should replace variables correctly on all relevant fields, even when empty",
     async () => {
       const expected = {
         excerpt: "text 1",
@@ -64,7 +64,7 @@ t.test("Messaging.buildMessage", async (t) => {
             excerpt: "text {{a}}",
             lang: "en",
             messageName: "text",
-            plainText: "text {{b}}",
+            plainText: "text {{b}} {{e}}",
             richText: "text {{c}}",
             subject: "text {{d}}",
             threadName: "text",
@@ -80,36 +80,39 @@ t.test("Messaging.buildMessage", async (t) => {
           },
         ],
         "en",
-        { a: "1", b: "2", c: "3", d: "4" },
+        { a: "1", b: "2", c: "3", d: "4", e: "" },
       );
 
       t.matchOnly(actual, expected);
     },
   );
 
-  t.test("should throw error if any variable field is empty", async () => {
-    try {
-      await service.buildMessage(
-        [
-          {
-            excerpt: "text",
-            lang: "en",
-            messageName: "text",
-            plainText: "text",
-            richText: "text",
-            subject: "text",
-            threadName: "text",
-          },
-        ],
-        "en",
-        { a: "", b: "" },
-      );
-      t.fail();
-    } catch (err) {
-      t.match(err.message, "illegal empty variables a, b");
-    }
-    t.end();
-  });
+  t.test(
+    "should throw error when any variable has null or undefined values",
+    async () => {
+      try {
+        await service.buildMessage(
+          [
+            {
+              excerpt: "text",
+              lang: "en",
+              messageName: "text",
+              plainText: "text",
+              richText: "text",
+              subject: "text",
+              threadName: "text",
+            },
+          ],
+          "en",
+          { a: null, b: undefined, c: "c" },
+        );
+        t.fail();
+      } catch (err) {
+        t.match(err.message, "illegal empty variables a, b");
+      }
+      t.end();
+    },
+  );
 
   t.test(
     "should throw error when language variable is missing from messages",

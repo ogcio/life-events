@@ -1,4 +1,5 @@
 import { Static, Type } from "@sinclair/typebox";
+import { PreferredTransports } from "./schemaDefinitions";
 
 const NullableStringType = Type.Union([Type.Null(), Type.String()], {
   default: null,
@@ -212,13 +213,7 @@ export const RecipientSchema = Type.Object({
   phoneNumber: NullableStringType,
   emailAddress: NullableStringType,
   birthDate: NullableStringType,
-  preferredTransports: Type.Array(
-    Type.Union([
-      Type.Literal("email"),
-      Type.Literal("sms"),
-      Type.Literal("lifeEvent"),
-    ]),
-  ),
+  preferredTransports: PreferredTransports,
   lang: NullableStringType,
   ppsn: NullableStringType,
 });
