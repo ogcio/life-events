@@ -1,10 +1,9 @@
-import { PgSessions } from "auth/sessions";
 import { getLocale, getTranslations } from "next-intl/server";
 import dayjs from "dayjs";
 import ds from "design-system";
 import { form } from "../utils";
 import { revalidatePath } from "next/cache";
-import { Profile } from "building-blocks-sdk";
+import { AuthenticationFactory } from "../utils/authentication-factory";
 
 async function submitAction(formData: FormData) {
   "use server";
@@ -81,9 +80,8 @@ async function submitAction(formData: FormData) {
     iterResult = formIterator.next();
   }
 
-  const { data: currentDataResults, error } = await new Profile(
-    userId,
-  ).getUser();
+  const submitProfile = await AuthenticationFactory.getProfileClient();
+  const { data: currentDataResults, error } = await submitProfile.getUser();
 
   if (error) {
     //handle error
@@ -91,13 +89,13 @@ async function submitAction(formData: FormData) {
   }
 
   if (currentDataResults) {
-    const result = await new Profile(userId).updateUser(data);
+    const result = await submitProfile.updateUser(data);
 
     if (result?.error) {
       //handle error
     }
   } else {
-    const { error } = await new Profile(userId).createUser(data);
+    const { error } = await submitProfile.createUser(data);
 
     if (error) {
       //handle error
@@ -111,10 +109,11 @@ export default async () => {
   const titles = ["Mr", "Mrs", "Miss", "Ms"];
 
   const red = ds.colours.ogcio.red;
-
-  const { userId } = await PgSessions.get();
-
-  const { data, error } = await new Profile(userId).getUser();
+  const mainAuth = AuthenticationFactory.getInstance();
+  const mainProfile = await AuthenticationFactory.getProfileClient({
+    authenticationContext: mainAuth,
+  });
+  const { data, error } = await mainProfile.getUser();
 
   if (error) {
     // handle error
@@ -154,9 +153,7 @@ export default async () => {
   async function togglePPSN() {
     "use server";
 
-    const { data: userExistsQuery, error } = await new Profile(
-      userId,
-    ).getUser();
+    const { data: userExistsQuery, error } = await mainProfile.getUser();
 
     if (error) {
       //handle error
@@ -166,7 +163,7 @@ export default async () => {
     if (userExistsQuery) {
       const isPPSNVisible = userExistsQuery.ppsnVisible;
 
-      const result = await new Profile(userId).patchUser({
+      const result = await mainProfile.patchUser({
         ppsnVisible: !isPPSNVisible,
       });
 
@@ -174,7 +171,7 @@ export default async () => {
         //handle error
       }
     } else {
-      const { error } = await new Profile(userId).createUser({
+      const { error } = await mainProfile.createUser({
         firstname: firstName,
         lastname: lastName,
         email,
@@ -194,7 +191,8 @@ export default async () => {
   const monthOfBirth = dob.month() + 1;
   const yearOfBirth = dob.year();
 
-  const errors = await form.getErrorsQuery(userId, "user");
+  const mainUser = await mainAuth.getUser();
+  const errors = await form.getErrorsQuery(mainUser.id, "user");
 
   const phoneError = errors.rows.find(
     (row) => row.field === form.fieldTranslationKeys.phone,
@@ -206,7 +204,7 @@ export default async () => {
 
   return (
     <form action={submitAction}>
-      <input type="hidden" name="userId" defaultValue={userId} />
+      <input type="hidden" name="userId" defaultValue={mainUser.id} />
       <h2 className="govie-heading-m">{t("name")}</h2>
       <div
         className="govie-form-group"

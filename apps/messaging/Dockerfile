@@ -1,4 +1,4 @@
-FROM base-deps as deps
+FROM base-deps AS deps
 
 WORKDIR /app
 ENV LOG_LEVEL=trace
@@ -46,7 +46,7 @@ RUN npm run build --workspace=packages/shared-errors
 RUN npm run build --workspace=packages/nextjs-logging-wrapper
 RUN npm run build --workspace=apps/messaging
 
-FROM base-deps as runner
+FROM base-deps AS runner
 
 WORKDIR /app
 
@@ -61,6 +61,6 @@ COPY --from=deps /app/packages/messages/database.json /app/packages/messages/
 COPY --from=deps /app/packages/messages/migrations /app/packages/messages/migrations
 
 EXPOSE 3002
-ENV PORT 3002
+ENV PORT=3002
 
 CMD [ "node", "apps/messaging/server.js" ]

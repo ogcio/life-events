@@ -1,7 +1,8 @@
 import ds from "design-system";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import styles from "./Header.module.scss";
 import { redirect, RedirectType } from "next/navigation";
+import { AuthenticationFactory } from "../utils/authentication-factory";
 
 type Theme = "dark" | "light";
 
@@ -13,7 +14,7 @@ const colors: Record<Theme, string> = {
 export default async ({ theme }: { theme: Theme }) => {
   const lang = headers().get("x-next-intl-locale");
 
-  const handleLanguageChange = async (lang: string) => {
+  const handleLanguageChange = async (handleLang: string) => {
     "use server";
 
     const referer = headers().get("referer");
@@ -30,7 +31,13 @@ export default async ({ theme }: { theme: Theme }) => {
       path += url.search;
     }
 
-    return redirect(`/${lang}/${path}`, RedirectType.replace);
+    const userProfile = await AuthenticationFactory.getProfileClient();
+    await userProfile.patchUser({
+      preferredLanguage: handleLang,
+    });
+    cookies().delete("NEXT_LOCALE");
+
+    return redirect(`/${handleLang}/${path}`, RedirectType.replace);
   };
 
   const englishHandler = async () => {
