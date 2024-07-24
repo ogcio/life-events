@@ -187,7 +187,7 @@ export default async ({ locale }) => {
                 }}
               >
                 <div>
-                  <h3>{t("noActions")}</h3>
+                  <h3>{t("noActionsHeader")}</h3>
                   <p
                     className="govie-body"
                     style={{ margin: "unset", marginTop: "16px" }}
