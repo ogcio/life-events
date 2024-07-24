@@ -1,11 +1,10 @@
-import { PgSessions } from "auth/sessions";
-import { Profile } from "building-blocks-sdk";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 import { NextPageProps } from "../../../../../types";
 import ds from "design-system";
 import { form, routes } from "../../../../utils";
 import { revalidatePath } from "next/cache";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 const AddressLine = ({ value }: { value: string }) => (
   <p className="govie-body" style={{ marginBottom: "5px" }}>
@@ -14,7 +13,6 @@ const AddressLine = ({ value }: { value: string }) => (
 );
 
 export default async (props: NextPageProps) => {
-  const { userId } = await PgSessions.get();
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
   const { id: addressId, locale } = props.params;
@@ -23,16 +21,20 @@ export default async (props: NextPageProps) => {
     throw notFound();
   }
 
-  const { data: address, error } = await new Profile(userId).getAddress(
-    addressId,
-  );
+  const { accessToken, user } =
+    await AuthenticationFactory.getInstance().getContext();
+  const profileClient = await AuthenticationFactory.getProfileClient({
+    token: accessToken,
+  });
+
+  const { data: address, error } = await profileClient.getAddress(addressId);
 
   if (!address || error) {
     //handle other errors
     throw notFound();
   }
   const errors = await form.getErrorsQuery(
-    userId,
+    user.id,
     routes.addresses.addDetails.slug,
   );
 
@@ -48,7 +50,7 @@ export default async (props: NextPageProps) => {
     "use server";
 
     if (!addressId) {
-      throw Error("Address id not found");
+      throw notFound();
     }
 
     const errors: form.Error[] = [];
@@ -70,14 +72,24 @@ export default async (props: NextPageProps) => {
         field: form.fieldTranslationKeys.isPrimaryAddress,
       });
     }
+    const { user: saveDetailsUser, accessToken: saveDetailsToken } =
+      await AuthenticationFactory.getInstance().getContext();
 
     if (errors.length) {
-      await form.insertErrors(errors, userId, routes.addresses.addDetails.slug);
+      await form.insertErrors(
+        errors,
+        saveDetailsUser.id,
+        routes.addresses.addDetails.slug,
+      );
       return revalidatePath("/");
     }
 
+    const saveDetailsProfile = await AuthenticationFactory.getProfileClient({
+      token: saveDetailsToken,
+    });
+
     if (isOwner !== undefined && isPrimaryAddress !== undefined) {
-      const result = await new Profile(userId).patchAddress(addressId, {
+      const result = await saveDetailsProfile.patchAddress(addressId, {
         ownershipStatus: isOwner === "true" ? "owner" : "renting",
         isPrimary: isPrimaryAddress === "true" ? true : false,
       });
@@ -93,9 +105,10 @@ export default async (props: NextPageProps) => {
     "use server";
 
     if (!addressId) {
-      throw Error("Address id not found");
+      throw notFound();
     }
-    const { error } = await new Profile(userId).deleteAddress(addressId);
+    const cancelProfile = await AuthenticationFactory.getProfileClient();
+    const { error } = await cancelProfile.deleteAddress(addressId);
 
     if (error) {
       //handle error

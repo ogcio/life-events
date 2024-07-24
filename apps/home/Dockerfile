@@ -1,4 +1,4 @@
-FROM base-deps as deps
+FROM base-deps AS deps
 
 WORKDIR /app
 ENV LOG_LEVEL=trace
@@ -27,7 +27,7 @@ ENV LOG_LEVEL=trace
 
 RUN npm run build --workspace=apps/home
 
-FROM base-deps as runner
+FROM base-deps AS runner
 
 WORKDIR /app
 
@@ -40,6 +40,6 @@ COPY --from=deps /app/node_modules/ /app/node_modules/
 
 EXPOSE 3004
 
-ENV PORT 3004
+ENV PORT=3004
 
 CMD [ "node", "apps/home/server.js" ]
