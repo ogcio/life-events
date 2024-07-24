@@ -1,14 +1,14 @@
 import { FastifyInstance } from "fastify";
 import { isLifeEventsError, ServerError } from "shared-errors";
 import { getErrorMessage } from "../utils/error-utils";
-
+import { version } from "../package.json";
 const ERROR_PROCESS = "HEALTHCHECK";
 
 export default async function healthCheck(app: FastifyInstance) {
   app.get("/health", async () => {
     await checkDb(app);
 
-    return { status: "ok" };
+    return { "messaging-api": version };
   });
 }
 
