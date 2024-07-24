@@ -61,6 +61,6 @@ COPY --from=deps /app/packages/messages/database.json /app/packages/messages/
 COPY --from=deps /app/packages/messages/migrations /app/packages/messages/migrations
 
 EXPOSE 3002
-ENV PORT 3002
+ENV PORT=3002
 
 CMD [ "node", "apps/messaging/server.js" ]

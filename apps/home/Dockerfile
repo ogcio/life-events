@@ -40,6 +40,6 @@ COPY --from=deps /app/node_modules/ /app/node_modules/
 
 EXPOSE 3004
 
-ENV PORT 3004
+ENV PORT=3004
 
 CMD [ "node", "apps/home/server.js" ]

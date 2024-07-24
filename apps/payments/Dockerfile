@@ -64,6 +64,6 @@ COPY --from=deps /app/apps/payments/migrations /app/apps/payments/migrations
 
 EXPOSE 3001
 
-ENV PORT 3001
+ENV PORT=3001
 
 CMD [ "node", "apps/payments/server.js" ]
