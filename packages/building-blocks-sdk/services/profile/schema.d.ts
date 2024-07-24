@@ -606,7 +606,6 @@ export interface paths {
                 firstName: string;
                 lastName: string;
                 ppsn: string;
-                lang: string;
                 /** Format: email */
                 email?: string;
                 phone?: string;
@@ -615,8 +614,30 @@ export interface paths {
           };
         };
         /** @description Default Response */
-        404: {
-          content: never;
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
         };
       };
     };

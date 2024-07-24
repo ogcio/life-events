@@ -1015,8 +1015,6 @@ paths:
                           type: string
                         ppsn:
                           type: string
-                        lang:
-                          type: string
                         email:
                           format: email
                           type: string
@@ -1027,11 +1025,54 @@ paths:
                         - firstName
                         - lastName
                         - ppsn
-                        - lang
                 required:
                   - data
-        "404":
+        4XX:
           description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
 tags:
   - name: User
   - name: Addresses
