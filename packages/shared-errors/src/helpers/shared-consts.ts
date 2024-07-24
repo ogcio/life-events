@@ -42,6 +42,16 @@ export const parseHttpErrorClass = (
 
 export const REQUEST_ID_HEADER = "x-life-events-request-id";
 
+export const parseErrorForLogging = (
+  e: unknown,
+): { name: string; message: string; stack?: string } => {
+  if (isLifeEventsError(e) || isNativeError(e) || isFastifyError(e)) {
+    return { message: e.message, stack: e.stack, name: e.name };
+  }
+
+  return { message: getErrorMessage(e), name: "UNKNOWN_ERROR" };
+};
+
 export const getErrorMessage = (e: unknown): string => {
   if (isNativeError(e) || isLifeEventsError(e) || isFastifyError(e)) {
     return e.message;
@@ -65,7 +75,13 @@ export const getErrorMessage = (e: unknown): string => {
 
 const isFastifyError = (
   e: unknown,
-): e is { code: string; name: string; statusCode?: number; message: string } =>
+): e is {
+  code: string;
+  name: string;
+  statusCode?: number;
+  message: string;
+  stack?: string;
+} =>
   typeof e === "object" &&
   e !== null &&
   "code" in e &&
