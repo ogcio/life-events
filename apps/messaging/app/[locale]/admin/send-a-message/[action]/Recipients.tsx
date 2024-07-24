@@ -175,6 +175,7 @@ export default async (props: MessageCreateProps) => {
   const users = response.data;
 
   const addedUsers = await getRecipientContacts(props.state.userIds);
+
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">
       <h1>

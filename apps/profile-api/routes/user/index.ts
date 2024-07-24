@@ -20,6 +20,7 @@ import { findUser, getUser } from "../../services/users/find-user";
 import { createUser } from "../../services/users/create-user";
 import { NotFoundError, ServerError } from "shared-errors";
 import { getErrorMessage } from "../../utils/error-utils";
+import { isNativeError } from "util/types";
 
 const USER_TAGS = ["user"];
 const ERROR_PROCESS = "USER_PROFILE_DETAILS";
@@ -285,35 +286,35 @@ export default async function user(app: FastifyInstance) {
                 firstName: Type.String(),
                 lastName: Type.String(),
                 ppsn: Type.String(),
-                lang: Type.String(),
                 email: Type.Optional(Type.String({ format: "email" })),
                 phone: Type.Optional(Type.String()),
               }),
             ),
           }),
-          404: Type.Null(),
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
     async function handler(request) {
+      const ids = request.body.ids;
+      type User = {
+        id: string;
+        firstName: string;
+        lastName: string;
+        ppsn: string;
+        email: string;
+        phone: string;
+      };
+      const users: User[] = [];
       try {
-        const ids = request.body.ids;
-        const usersQueryResult = await app.pg.pool.query<{
-          id: string;
-          firstName: string;
-          lastName: string;
-          ppsn: string;
-          lang: string;
-          email: string;
-          phone: string;
-        }>(
+        const usersQueryResult = await app.pg.pool.query<User>(
           `
         select 
           user_id as "id", 
           firstname as "firstName", 
           lastname as "lastName", 
           ppsn,
-          preferred_language as "lang",
           phone,
           email
         from user_details
@@ -322,16 +323,19 @@ export default async function user(app: FastifyInstance) {
           [ids],
         );
 
-        const users = usersQueryResult.rows;
-
-        if (!users.length) {
-          throw new NotFoundError(ERROR_PROCESS, "User not found");
-        }
-
-        return { data: users };
+        users.push(...usersQueryResult.rows);
       } catch (err) {
-        return { error: err };
+        throw new ServerError(
+          ERROR_PROCESS,
+          isNativeError(err) ? err.message : "failed to select users",
+        );
       }
+
+      if (!users.length) {
+        throw new NotFoundError(ERROR_PROCESS, "User not found");
+      }
+
+      return { data: users };
     },
   );
 }

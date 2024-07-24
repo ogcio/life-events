@@ -178,7 +178,7 @@ export function newMessagingEventLogger(
       } catch (err) {
         stdLogger.error(
           {
-            at: Date.now(),
+            at: new Date().toISOString(),
             type,
             err,
             messageIds: eventData.map((event) => {
