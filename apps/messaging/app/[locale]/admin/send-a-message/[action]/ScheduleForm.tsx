@@ -24,6 +24,16 @@ export default async (props: MessageCreateProps) => {
   async function submit(formData: FormData) {
     "use server";
 
+    if (!props.state.userIds.length) {
+      await temporaryMockUtils.createErrors(
+        [{ errorValue: "", field: "", messageKey: "" }],
+        props.userId,
+        "create_error",
+      );
+
+      return revalidatePath("/");
+    }
+
     const schedule = formData.get("schedule")?.toString();
     const year = formData.get("schedule-date-year")?.toString();
     const month = formData.get("schedule-date-month")?.toString();
@@ -55,14 +65,13 @@ export default async (props: MessageCreateProps) => {
       return revalidatePath("/");
     }
 
-    const sendErrors: { userId: string }[] = [];
+    let successfulMessagesCreated = 0;
 
     for (const userId of props.state.userIds) {
       const { data: user, error } = await messagesClient.getRecipient(userId);
 
       if (error || !user) {
         // Needs redundancy strategy here
-        sendErrors.push({ userId });
         continue;
       }
 
@@ -84,7 +93,6 @@ export default async (props: MessageCreateProps) => {
           },
         );
       } catch (err) {
-        sendErrors.push({ userId });
         // Needs redundancy strategy here
         continue;
       }
@@ -106,19 +114,16 @@ export default async (props: MessageCreateProps) => {
           userId: user.id,
         });
         if (Boolean(error)) {
-          sendErrors.push({ userId });
+          continue;
         }
       } catch (err) {
-        sendErrors.push({ userId });
         // Needs redundancy strategy here
         continue;
       }
+      successfulMessagesCreated += 1;
     }
 
-    if (
-      Boolean(sendErrors.length) &&
-      sendErrors.length === props.state.userIds.length
-    ) {
+    if (!successfulMessagesCreated) {
       await temporaryMockUtils.createErrors(
         [{ errorValue: "", field: "", messageKey: "" }],
         props.userId,
@@ -131,6 +136,7 @@ export default async (props: MessageCreateProps) => {
     await api.upsertMessageState(
       Object.assign({}, props.state, {
         confirmedScheduleAt: dayjs().toISOString(),
+        successfulMessagesCreated,
       }),
       props.userId,
       props.stateId,
