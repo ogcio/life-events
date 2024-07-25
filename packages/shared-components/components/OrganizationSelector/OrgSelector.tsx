@@ -8,7 +8,7 @@ export type OrganizationSelectorItem = {
 export type OrganizationSelectorProps = {
   title: string;
   actionTitle: string;
-  organizations: [OrganizationSelectorItem, ...OrganizationSelectorItem[]];
+  organizations: OrganizationSelectorItem[];
   defaultOrganization?: string;
   handleSubmit: any;
 };
@@ -20,6 +20,10 @@ export default function ({
   defaultOrganization,
   handleSubmit,
 }: OrganizationSelectorProps) {
+  if (organizations.length < 1) {
+    return <></>;
+  }
+
   return (
     <div>
       <form action={handleSubmit}>
