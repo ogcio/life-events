@@ -4,7 +4,7 @@ import messages from "./messages";
 import emails from "./providers/emails";
 import sms from "./providers/sms";
 import templates from "./templates";
-import userSettings from "./users/settings";
+import organisationSettings from "./organisation-settings";
 import usersImports from "./users/imports";
 import recipients from "./users/recipients";
 
@@ -13,7 +13,7 @@ export default async function routes(app: FastifyInstance) {
   app.register(emails, { prefix: "/providers/emails" });
   app.register(sms, { prefix: "/providers/sms" });
   app.register(templates, { prefix: "/templates" });
-  app.register(userSettings, { prefix: "/users/settings" });
+  app.register(organisationSettings, { prefix: "/organisation-settings" });
   app.register(usersImports, { prefix: "/users/imports" });
   app.register(recipients, { prefix: "/users/recipients" });
 }
