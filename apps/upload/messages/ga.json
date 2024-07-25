@@ -1,0 +1,16 @@
+{
+  "Index": {
+    "title": "Homepage"
+  },
+  "EventsMenu": {
+    "events": "Events",
+    "aboutMe": "About me",
+    "birth": "Birth",
+    "health": "Health",
+    "driving": "Driving",
+    "employment": "Employment",
+    "business": "Starting a business",
+    "housing": "Housing",
+    "death": "Death"
+  }
+}

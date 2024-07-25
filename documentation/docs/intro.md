@@ -40,7 +40,10 @@ Service URLs
 | payments                 | `http://localhost:3001` |
 | messages                 | `http://localhost:3002` |
 | profile                  | `http://localhost:3003` |
+| home                     | `http://localhost:3004` |
 | auth-service             | `http://localhost:3005` |
+| forms                    | `http://localhost:3006` |
+| upload                   | `http://localhost:3007` |
 | logto admin console      | `http://localhost:3302` |
 | logto apis               | `http://localhost:3301` |
 
@@ -54,7 +57,7 @@ APIs
 | profile-api   | `http://localhost:8003` |
 | timeline-api  | `http://localhost:8004` |
 | scheduler-api | `http://localhost:8005` |
-| upload-api    | `http://localhost:8006` |
+| upload-api    | `http://localhost:8007` |
 
 ## Localisation
 

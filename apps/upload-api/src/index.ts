@@ -5,7 +5,7 @@ import { getLoggingConfiguration } from "logging-wrapper";
 
 const app = await build(getLoggingConfiguration());
 
-app.listen({ host: "0.0.0.0", port: 8006 }, (err) => {
+app.listen({ host: "0.0.0.0", port: 8007 }, (err) => {
   if (err) {
     console.error(err);
     process.exit(1);

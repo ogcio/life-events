@@ -83,7 +83,9 @@ run-services:
 	"npm run dev --workspace=profile-api"  \
 	"npm run dev --workspace=timeline-api" \
 	"npm run dev --workspace=home" \
-	"npm run dev --workspace=forms"
+	"npm run dev --workspace=forms" \
+	"npm run dev --workspace=upload" \
+	"npm run dev --workspace=upload-api"
 start-services: install-concurrently run-services
 	
 kill-services:
