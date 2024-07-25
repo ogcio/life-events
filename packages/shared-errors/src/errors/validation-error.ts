@@ -15,8 +15,9 @@ export class ValidationError extends LifeEventsError {
     errorProcess: string,
     message: string,
     validationErrors: ValidationErrorData[] = [],
+    parentError?: unknown,
   ) {
-    super(errorProcess, message);
+    super(errorProcess, message, parentError);
     this.name = "VALIDATION_ERROR";
     this.validationErrors = validationErrors;
   }
