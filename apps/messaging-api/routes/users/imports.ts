@@ -53,14 +53,14 @@ export default async function usersImports(app: FastifyInstance) {
     },
   );
 
-  app.post(
+  app.post<{ Body: CsvRecord[] | undefined }>(
     "/",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Citizen.Write]),
       schema: {
         tags,
-        body: Type.Union([Type.Array(CsvRecordSchema), Type.Any()]),
+        body: Type.Union([Type.Array(CsvRecordSchema), Type.Unknown()]),
         response: {
           202: Type.Null(),
           "5xx": HttpError,
