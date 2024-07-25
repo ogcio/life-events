@@ -5,7 +5,6 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   ListObjectsCommand,
-  S3Client,
 } from "@aws-sdk/client-s3";
 import { PassThrough } from "stream";
 import { EventEmitter } from "node:events";
@@ -17,6 +16,7 @@ import PromiseTransform from "./PromiseTransform.js";
 import {
   BadRequestError,
   CustomError,
+  getErrorMessage,
   NotFoundError,
   ServerError,
 } from "shared-errors";
@@ -37,18 +37,18 @@ const permissions = {
   },
 };
 
-const deleteObject = (
-  s3Client: S3Client,
-  bucketName: string,
-  filename: string,
-) => {
-  return s3Client.send(
-    new DeleteObjectCommand({
-      Bucket: bucketName,
-      Key: filename,
-    }),
-  );
-};
+// const deleteObject = (
+//   s3Client: S3Client,
+//   bucketName: string,
+//   filename: string,
+// ) => {
+//   return s3Client.send(
+//     new DeleteObjectCommand({
+//       Bucket: bucketName,
+//       Key: filename,
+//     }),
+//   );
+// };
 
 /**
  * @deprecated This method is used as a reference
@@ -56,128 +56,127 @@ const deleteObject = (
  * @param scanAndUpload
  * @returns
  */
-const scanAndUpload_ = async (
-  app: FastifyInstance,
-  request: FastifyRequest,
-) => {
-  const data = await request.file();
+// const scanAndUpload_ = async (
+//   app: FastifyInstance,
+//   request: FastifyRequest,
+// ) => {
+//   const data = await request.file();
 
-  if (!data) {
-    throw new BadRequestError(FILE_UPLOAD, "Request is not multipart");
-  }
+//   if (!data) {
+//     throw new BadRequestError(FILE_UPLOAD, "Request is not multipart");
+//   }
 
-  const stream = data.file;
-  const filename = data.filename;
+//   const stream = data.file;
+//   const filename = data.filename;
 
-  if (!filename) {
-    throw new BadRequestError(FILE_UPLOAD, "Filename is not provided");
-  }
+//   if (!filename) {
+//     throw new BadRequestError(FILE_UPLOAD, "Filename is not provided");
+//   }
 
-  const eventEmitter = new EventEmitter();
+//   const eventEmitter = new EventEmitter();
 
-  const promise = new Promise<void>((resolve, reject) => {
-    eventEmitter.once("infectedFileDetected", () => {
-      reject(new CustomError(FILE_UPLOAD, "File is infected", 400));
-    });
+//   const promise = new Promise<void>((resolve, reject) => {
+//     eventEmitter.once("infectedFileDetected", () => {
+//       reject(new CustomError(FILE_UPLOAD, "File is infected", 400));
+//     });
 
-    eventEmitter.once("fileUploaded", () => {
-      resolve();
-    });
+//     eventEmitter.once("fileUploaded", () => {
+//       resolve();
+//     });
 
-    eventEmitter.once("fileTooLarge", () => {
-      reject(new BadRequestError(FILE_UPLOAD, "File is too large"));
-    });
+//     eventEmitter.once("fileTooLarge", () => {
+//       reject(new BadRequestError(FILE_UPLOAD, "File is too large"));
+//     });
 
-    eventEmitter.once("error", (err) => {
-      app.log.error(err);
-      reject(new BadRequestError("badRequest", err.message));
-    });
+//     eventEmitter.once("error", (err) => {
+//       reject(new BadRequestError("badRequest", getErrorMessage(err), err));
+//     });
 
-    eventEmitter.on("error", () => {
-      //noop to prevent unhandled promise rejection and double error logging
-    });
-  });
+//     eventEmitter.on("error", () => {
+//       //noop to prevent unhandled promise rejection and double error logging
+//     });
+//   });
 
-  const s3Config = app.s3Client;
-  let scanComplete = false;
-  let outputFinished = false;
-  let fileInfected = false;
-  const checkCompletion = () => {
-    if (!scanComplete || !outputFinished) {
-      return;
-    }
+//   const s3Config = app.s3Client;
+//   let scanComplete = false;
+//   let outputFinished = false;
+//   let fileInfected = false;
+//   const checkCompletion = () => {
+//     if (!scanComplete || !outputFinished) {
+//       return;
+//     }
 
-    if (data.file.truncated) {
-      deleteObject(s3Config.client, s3Config.bucketName, filename)
-        .then(() => eventEmitter.emit("fileTooLarge"))
-        .catch((err) => {
-          eventEmitter.emit("error", err);
-        });
-    } else if (fileInfected) {
-      deleteObject(s3Config.client, s3Config.bucketName, filename)
-        .then(() => eventEmitter.emit("infectedFileDetected"))
-        .catch((err) => {
-          eventEmitter.emit("error", err);
-        });
-    } else {
-      eventEmitter.emit("fileUploaded");
-    }
-  };
+//     if (data.file.truncated) {
+//       deleteObject(s3Config.client, s3Config.bucketName, filename)
+//         .then(() => eventEmitter.emit("fileTooLarge"))
+//         .catch((err) => {
+//           eventEmitter.emit("error", err);
+//         });
+//     } else if (fileInfected) {
+//       deleteObject(s3Config.client, s3Config.bucketName, filename)
+//         .then(() => eventEmitter.emit("infectedFileDetected"))
+//         .catch((err) => {
+//           eventEmitter.emit("error", err);
+//         });
+//     } else {
+//       eventEmitter.emit("fileUploaded");
+//     }
+//   };
 
-  stream.on("limit", () => {
-    if (data.file.truncated) {
-      eventEmitter.emit("fileTooLarge");
-    }
-  });
+//   stream.on("limit", () => {
+//     if (data.file.truncated) {
+//       eventEmitter.emit("fileTooLarge");
+//     }
+//   });
 
-  const antivirusPassthrough = app.avClient.passthrough();
+//   const antivirusPassthrough = app.avClient.passthrough();
 
-  antivirusPassthrough.once("error", (err) => {
-    eventEmitter.emit("error", err);
-  });
+//   antivirusPassthrough.once("error", (err) => {
+//     eventEmitter.emit("error", err);
+//   });
 
-  antivirusPassthrough.once("scan-complete", (result) => {
-    const { isInfected } = result;
-    if (isInfected) {
-      fileInfected = true;
-    }
-    scanComplete = true;
-    checkCompletion();
-  });
+//   antivirusPassthrough.once("scan-complete", (result) => {
+//     const { isInfected } = result;
+//     if (isInfected) {
+//       fileInfected = true;
+//     }
+//     scanComplete = true;
+//     checkCompletion();
+//   });
 
-  const s3uploadPassthrough = new PassThrough();
+//   const s3uploadPassthrough = new PassThrough();
 
-  const upload = new Upload({
-    client: s3Config.client,
-    queueSize: 4, // optional concurrency configuration
-    leavePartsOnError: false, // optional manually handle dropped parts
-    params: {
-      Bucket: s3Config.bucketName,
-      Key: filename,
-      Body: s3uploadPassthrough,
-    },
-  });
+//   const upload = new Upload({
+//     client: s3Config.client,
+//     queueSize: 4, // optional concurrency configuration
+//     leavePartsOnError: false, // optional manually handle dropped parts
+//     params: {
+//       Bucket: s3Config.bucketName,
+//       Key: filename,
+//       Body: s3uploadPassthrough,
+//     },
+//   });
 
-  upload
-    .done()
-    .then(() => {
-      outputFinished = true;
+//   upload
+//     .done()
+//     .then(() => {
+//       outputFinished = true;
 
-      checkCompletion();
-    })
-    .catch((err) => {
-      eventEmitter.emit("error", err);
-      return;
-    });
+//       checkCompletion();
+//     })
+//     .catch((err) => {
+//       eventEmitter.emit("error", err);
+//       return;
+//     });
 
-  pipeline(stream, antivirusPassthrough, s3uploadPassthrough, (err) => {
-    if (err) {
-      eventEmitter.emit("error", err);
-    }
-  });
+//   pipeline(stream, antivirusPassthrough, s3uploadPassthrough, (err) => {
+//     if (err) {
+//       eventEmitter.emit("error", err);
+//     }
+//   });
 
-  return promise;
-};
+//   return promise;
+// };
 
 const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
   const data = await request.file();
@@ -207,8 +206,15 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
 
   const antiVirusPromise = new Promise<void>((resolve, reject) => {
     antivirusPassthrough.once("error", (err) => {
-      app.log.error(err);
-      return reject(new CustomError(FILE_UPLOAD, "Internal server error", 500));
+      return reject(
+        new CustomError(
+          FILE_UPLOAD,
+          "Internal server error",
+          500,
+          "ANTIVIRUS_SCAN_ERROR",
+          err,
+        ),
+      );
     });
 
     antivirusPassthrough.once("scan-complete", (result) => {
@@ -253,10 +259,6 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
   );
 
   return new Promise<void>((resolve, reject) => {
-    eventEmitter.once("infectedFileDetected", () => {
-      reject(new CustomError(FILE_UPLOAD, "File is infected", 400));
-    });
-
     eventEmitter.once("fileUploaded", () => {
       resolve();
     });
@@ -266,8 +268,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     });
 
     eventEmitter.once("error", (err) => {
-      app.log.error(err);
-      reject(new BadRequestError("badRequest", err.message));
+      reject(new BadRequestError("badRequest", getErrorMessage(err), err));
     });
 
     eventEmitter.on("error", () => {
@@ -324,8 +325,7 @@ export default async function routes(app: FastifyInstance) {
             size: item.Size,
           })) || [];
       } catch (err) {
-        app.log.error(err);
-        throw new ServerError(FILE_INDEX, "S3 ListObjectsCommand error");
+        throw new ServerError(FILE_INDEX, "Internal server error", err);
       }
 
       reply.send(response);
@@ -356,8 +356,7 @@ export default async function routes(app: FastifyInstance) {
           }),
         );
       } catch (err) {
-        app.log.error(err);
-        throw new ServerError(FILE_DELETE, "S3 DeleteObjectCommand error");
+        throw new ServerError(FILE_DELETE, "Internal server error", err);
       }
 
       reply.send({ message: "File deleted succesfully" });
@@ -371,7 +370,7 @@ export default async function routes(app: FastifyInstance) {
         tags: ["Files"],
         params: Type.Object({ key: Type.String() }),
         response: {
-          // 200: Type.Object({ message: Type.String() }),
+          200: Type.Object({ message: Type.String() }),
           500: HttpError,
         },
       },
@@ -390,8 +389,7 @@ export default async function routes(app: FastifyInstance) {
         if (err_.$metadata.httpStatusCode === 404) {
           throw new NotFoundError(FILE_DOWNLOAD, "File not found");
         } else {
-          app.log.error(err);
-          throw new ServerError(FILE_DOWNLOAD, "S3 GetObjectCommand error");
+          throw new ServerError(FILE_DOWNLOAD, "Internal server error", err);
         }
       }
 
@@ -407,9 +405,8 @@ export default async function routes(app: FastifyInstance) {
 
       const thePromise = new Promise<void>((resolve, reject) => {
         antivirusPassthrough.once("error", (err) => {
-          app.log.error(err);
           return reject(
-            new CustomError(FILE_DOWNLOAD, "Internal server error", 400),
+            new ServerError(FILE_DOWNLOAD, "Internal server error", err),
           );
         });
         antivirusPassthrough.once("scan-complete", (result) => {
