@@ -1,4 +1,4 @@
-FROM base-deps as deps
+FROM base-deps AS deps
 WORKDIR /app
 
 COPY ./package*.json /app/
