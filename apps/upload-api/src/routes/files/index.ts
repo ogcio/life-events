@@ -7,11 +7,12 @@ import {
   ListObjectsCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { PassThrough, Transform } from "stream";
+import { PassThrough } from "stream";
 import { EventEmitter } from "node:events";
 import { pipeline } from "stream";
 import { Upload } from "@aws-sdk/lib-storage";
 import { Object } from "../../types/schemaDefinitions.js";
+import PromiseTransform from "./PromiseTransform.js";
 
 import {
   BadRequestError,
@@ -49,7 +50,16 @@ const deleteObject = (
   );
 };
 
-const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
+/**
+ * @deprecated This method is used as a reference
+ * @param
+ * @param scanAndUpload
+ * @returns
+ */
+const scanAndUpload_ = async (
+  app: FastifyInstance,
+  request: FastifyRequest,
+) => {
   const data = await request.file();
 
   if (!data) {
@@ -169,6 +179,103 @@ const scanAndUplad = async (app: FastifyInstance, request: FastifyRequest) => {
   return promise;
 };
 
+const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
+  const data = await request.file();
+
+  if (!data) {
+    throw new BadRequestError(FILE_UPLOAD, "Request is not multipart");
+  }
+
+  const stream = data.file;
+  const filename = data.filename;
+
+  if (!filename) {
+    throw new BadRequestError(FILE_UPLOAD, "Filename is not provided");
+  }
+
+  const eventEmitter = new EventEmitter();
+
+  const s3Config = app.s3Client;
+
+  stream.on("limit", () => {
+    if (data.file.truncated) {
+      eventEmitter.emit("fileTooLarge");
+    }
+  });
+
+  const antivirusPassthrough = app.avClient.passthrough();
+
+  const antiVirusPromise = new Promise<void>((resolve, reject) => {
+    antivirusPassthrough.once("error", (err) => {
+      app.log.error(err);
+      return reject(new CustomError(FILE_UPLOAD, "Internal server error", 500));
+    });
+
+    antivirusPassthrough.once("scan-complete", (result) => {
+      const { isInfected } = result;
+      if (isInfected) {
+        return reject(new CustomError(FILE_UPLOAD, "File is infected", 400));
+      }
+      resolve();
+    });
+  });
+
+  const promisePassthrough = new PromiseTransform(antiVirusPromise);
+  const s3uploadPassthrough = new PassThrough();
+
+  const upload = new Upload({
+    client: s3Config.client,
+    queueSize: 4, // optional concurrency configuration
+    leavePartsOnError: false, // optional manually handle dropped parts
+    params: {
+      Bucket: s3Config.bucketName,
+      Key: filename,
+      Body: s3uploadPassthrough,
+    },
+  });
+
+  upload.done().catch((err) => {
+    eventEmitter.emit("error", err);
+    return;
+  });
+
+  pipeline(
+    stream,
+    antivirusPassthrough,
+    promisePassthrough,
+    s3uploadPassthrough,
+    (err) => {
+      if (err) {
+        eventEmitter.emit("error", err);
+      }
+      eventEmitter.emit("fileUploaded");
+    },
+  );
+
+  return new Promise<void>((resolve, reject) => {
+    eventEmitter.once("infectedFileDetected", () => {
+      reject(new CustomError(FILE_UPLOAD, "File is infected", 400));
+    });
+
+    eventEmitter.once("fileUploaded", () => {
+      resolve();
+    });
+
+    eventEmitter.once("fileTooLarge", () => {
+      reject(new BadRequestError(FILE_UPLOAD, "File is too large"));
+    });
+
+    eventEmitter.once("error", (err) => {
+      app.log.error(err);
+      reject(new BadRequestError("badRequest", err.message));
+    });
+
+    eventEmitter.on("error", () => {
+      //noop to prevent unhandled promise rejection and double error logging
+    });
+  });
+};
+
 export default async function routes(app: FastifyInstance) {
   // app.addHook("preValidation", async (request, reply) => {
   //   await app.checkPermissions(request, reply, [permissions.citizen.test]);
@@ -187,7 +294,7 @@ export default async function routes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      await scanAndUplad(app, request);
+      await scanAndUpload(app, request);
 
       reply.send({ message: "File uploaded successfully" });
     },
@@ -300,16 +407,22 @@ export default async function routes(app: FastifyInstance) {
 
       const thePromise = new Promise<void>((resolve, reject) => {
         antivirusPassthrough.once("error", (err) => {
-          return reject(err);
+          app.log.error(err);
+          return reject(
+            new CustomError(FILE_DOWNLOAD, "Internal server error", 400),
+          );
         });
         antivirusPassthrough.once("scan-complete", (result) => {
           const { isInfected } = result;
           if (isInfected) {
-            return reject("File is infected");
+            return reject(
+              new CustomError(FILE_DOWNLOAD, "File is infected", 400),
+            );
           }
           resolve();
         });
       });
+
       const monitorPassThrough = new PromiseTransform(thePromise);
 
       pipeline(
@@ -326,34 +439,4 @@ export default async function routes(app: FastifyInstance) {
       return reply.send(downloadPassthrough);
     },
   );
-}
-
-class PromiseTransform extends Transform {
-  private aPromise;
-  private lastChunk: Buffer | undefined;
-
-  constructor(aPromise: Promise<void>, options = {}) {
-    super(options);
-    this.aPromise = aPromise;
-  }
-
-  _transform(chunk: Buffer, encoding: string, callback: () => void) {
-    if (this.lastChunk) {
-      this.push(this.lastChunk);
-    }
-    this.lastChunk = chunk;
-    callback();
-  }
-
-  _flush(callback: () => void) {
-    this.aPromise
-      .then(() => {
-        this.push(this.lastChunk);
-        callback();
-      })
-      .catch((err) => {
-        this.emit("error", new CustomError(FILE_DOWNLOAD, err, 400));
-        callback();
-      });
-  }
 }
