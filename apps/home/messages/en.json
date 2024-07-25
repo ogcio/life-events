@@ -74,5 +74,8 @@
         "cta": "Sign up to learn more"
       }
     }
+  },
+  "Footer": {
+    "license": "All content is available under the <link>Open Government Licence v3.0</link>, except where otherwise stated"
   }
 }
