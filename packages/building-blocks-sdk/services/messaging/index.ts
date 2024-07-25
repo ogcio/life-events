@@ -423,24 +423,23 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getMessageEvents({
-    query,
-  }: paths["/api/v1/messages/events"]["get"]["parameters"]) {
-    const { data, error } = await this.client.GET("/api/v1/messages/events", {
-      params: { query },
+  async getMessageEvents(
+    params: paths["/api/v1/message-events/"]["get"]["parameters"]["query"],
+  ) {
+    const { data, error } = await this.client.GET("/api/v1/message-events/", {
+      params: { query: params },
     });
 
-    return { data: data?.data, error };
+    return { data: data?.data, error, metadata: data?.metadata };
   }
 
-  async getMessageEvent(
-    messageId: paths["/api/v1/messages/{messageId}/events"]["get"]["parameters"]["path"]["messageId"],
-  ) {
+  async getMessageEvent(eventId: string) {
     const { error, data } = await this.client.GET(
-      "/api/v1/messages/{messageId}/events",
-      { params: { path: { messageId } } },
+      "/api/v1/message-events/{eventId}",
+      { params: { path: { eventId } } },
     );
 
+    console.log(data?.data);
     return { data: data?.data, error };
   }
 

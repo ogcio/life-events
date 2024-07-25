@@ -107,6 +107,8 @@ type MessageUpsertEvent = {
   templateId?: string;
   organisationName: string;
   scheduledAt: string;
+  bypassConsent: boolean;
+  security: string;
 };
 
 type MessageScheduleEvent = {

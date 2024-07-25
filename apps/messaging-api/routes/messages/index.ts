@@ -223,8 +223,12 @@ export default async function messages(app: FastifyInstance) {
 
       await eventLogger.log(MessagingEventType.createRawMessage, [
         {
+          organisationName: organisationId,
+          bypassConsent: request.body.bypassConsent,
+          security: request.body.security,
+          transports: request.body.preferredTransports,
+          scheduledAt: request.body.scheduleAt,
           messageId,
-          ...request.body,
           ...request.body.message,
           senderFullName,
           senderPPSN: senderUser.ppsn,
@@ -436,138 +440,4 @@ export default async function messages(app: FastifyInstance) {
   //     }
   //   },
   // );
-
-  app.get<{
-    Querystring: { search?: string } & PaginationParams;
-  }>(
-    "/events",
-    {
-      preValidation: (req, res) =>
-        app.checkPermissions(req, res, [Permissions.Event.Read]),
-      schema: {
-        querystring: Type.Optional(
-          Type.Composite([
-            Type.Object({
-              search: Type.Optional(Type.String()),
-            }),
-            PaginationParamsSchema,
-          ]),
-        ),
-        response: {
-          200: getGenericResponseSchema(MessageEventTypeObject),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async function getEventsHandler(request, _reply) {
-      const textSearchILikeClause = request.query?.search
-        ? `%${request.query.search}%`
-        : "%%";
-      const eventQueryResult = await app.pg.pool.query<
-        MessageEventType["events"][number] & { count: number }
-      >(
-        `
-        with message_count as(
-          select count (*) from
-          messages where organisation_id = $1
-        ), message_selections as (
-          select 
-            id,
-            subject,
-            (select * from message_count) as "count",
-            scheduled_at
-          from messages
-          where organisation_id = $1
-          and subject ilike $2
-          order by scheduled_at desc
-          limit $3 offset $4
-          ) select
-              l.message_id as "messageId",
-              m.count::int,
-              (l.data ->> 'subject') as subject,
-              (l.data ->> 'receiverFullName') as "receiverFullName",
-              event_status as "eventStatus",
-              event_type as "eventType",
-              m.scheduled_at as "scheduledAt"
-            from message_selections m
-            join messaging_event_logs l on m.id = l.message_id
-            order by l.created_at;
-        `,
-        [
-          request.userData?.organizationId,
-          textSearchILikeClause,
-          request.query.limit,
-          request.query.offset,
-        ],
-      );
-
-      const aggregations = eventQueryResult.rows.reduce<
-        Record<string, MessageEventType["events"][number]>
-      >((acc, cur) => {
-        if (!acc[cur.messageId]) {
-          acc[cur.messageId] = cur;
-          return acc;
-        }
-
-        acc[cur.messageId].eventStatus = cur.eventStatus;
-        acc[cur.messageId].eventType = cur.eventType;
-
-        return acc;
-      }, {});
-
-      const events: MessageEventType["events"] = Object.values(
-        aggregations,
-      ).sort(
-        (a, b) =>
-          new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
-      );
-
-      const data = { events, count: eventQueryResult.rows.at(0)?.count || 0 };
-
-      return { data };
-    },
-  );
-
-  app.get<{
-    Params: {
-      messageId: string;
-    };
-  }>(
-    "/:messageId/events",
-    {
-      schema: {
-        response: {
-          200: Type.Object({
-            data: MessageEvent,
-          }),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async function getEventHandler(request, _reply) {
-      const messageId = request.params.messageId;
-      const queryResult = await app.pg.pool.query<{
-        eventStatus: string;
-        eventType: string;
-        data: MessageEventData;
-        createdAt: string;
-      }>(
-        `
-      select 
-        event_status as "eventStatus",
-        event_type as "eventType",
-        data,
-        created_at as "createdAt"
-      from messaging_event_logs
-      where message_id = $1
-      order by created_at desc
-    `,
-        [messageId],
-      );
-
-      return { data: queryResult.rows };
-    },
-  );
 }
