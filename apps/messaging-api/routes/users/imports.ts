@@ -26,38 +26,14 @@ import { Permissions } from "../../types/permissions";
 import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 
 const tags = ["Users", "UserImports"];
-
+enum MimeTypes {
+  Json = "application/json",
+  FormData = "multipart/form-data",
+}
 /*
  * The routes in this file are meant to be used on the "organisation" side
  */
 export default async function usersImports(app: FastifyInstance) {
-  app.post(
-    "/csv",
-    {
-      preValidation: (req, res) =>
-        app.checkPermissions(req, res, [Permissions.Citizen.Write]),
-      schema: {
-        tags,
-        response: {
-          202: Type.Null(),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-        consumes: ["multipart/form-data"],
-      },
-    },
-    async (request: FastifyRequest, _reply: FastifyReply) => {
-      // exclamation mark used here because we have
-      // verifyUser preValidation
-      await importCsvFileFromRequest({
-        filepath: await saveRequestFile(request),
-        user: request.userData!,
-        pg: app.pg,
-        logger: request.log,
-      });
-    },
-  );
-
   app.get(
     "/csv/template",
     {
@@ -77,22 +53,36 @@ export default async function usersImports(app: FastifyInstance) {
     },
   );
 
-  app.post<{ Body: CsvRecord[] }>(
+  app.post<{ Body: CsvRecord[] | undefined }>(
     "/",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Citizen.Write]),
       schema: {
         tags,
-        body: Type.Array(CsvRecordSchema),
+        body: Type.Union([Type.Array(CsvRecordSchema), Type.Unknown()]),
         response: {
           202: Type.Null(),
           "5xx": HttpError,
           "4xx": HttpError,
         },
+        consumes: [MimeTypes.FormData, MimeTypes.Json],
       },
     },
     async (request: FastifyRequest, _reply: FastifyReply) => {
+      if (
+        request.headers["content-type"] &&
+        request.headers["content-type"].startsWith(MimeTypes.FormData)
+      ) {
+        await importCsvFileFromRequest({
+          filepath: await saveRequestFile(request),
+          user: request.userData!,
+          pg: app.pg,
+          logger: request.log,
+        });
+        return;
+      }
+
       await importCsvRecords({
         pg: app.pg,
         logger: request.log,

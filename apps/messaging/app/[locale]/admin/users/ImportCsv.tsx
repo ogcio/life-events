@@ -29,7 +29,7 @@ export default async () => {
       const uploadClient = await AuthenticationFactory.getMessagingClient({
         token: uploadToken,
       });
-      await uploadClient.importUsersCsv(file as File);
+      await uploadClient.importUsers({ file: file as File });
 
       const url = new URL(usersRoute.url, process.env.HOST_URL);
       url.searchParams.append(searchKeyListType, searchValueImports);
