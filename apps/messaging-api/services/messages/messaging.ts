@@ -43,6 +43,21 @@ type CreatedTemplateMessage = {
 };
 
 export interface MessagingService {
+  createMessage(params: {
+    receiverUserId: string;
+    excerpt: string;
+    lang: string;
+    plainText: string;
+    richText: string;
+    subject: string;
+    threadName: string;
+    scheduleAt: string;
+    bypassConsent: boolean;
+    security: string; // Which levels do we have?
+    preferredTransports: Array<"email" | "sms" | "lifeEvent">;
+    organisationId: string;
+  }): Promise<string>;
+
   /**
    * Composes and insert one message from a template for each recipient, using their preferred language
    * or chosing first avaliable.
@@ -85,6 +100,58 @@ export interface MessagingService {
 
 export function newMessagingService(pool: Pool): Readonly<MessagingService> {
   return Object.freeze<MessagingService>({
+    async createMessage(params) {
+      const valueArray = [
+        false,
+        params.receiverUserId,
+        params.subject,
+        params.excerpt,
+        params.plainText,
+        params.richText,
+        params.security,
+        params.lang,
+        params.preferredTransports.length
+          ? utils.postgresArrayify(params.preferredTransports)
+          : null,
+        params.subject, // message name
+        params.threadName,
+        params.organisationId,
+        params.scheduleAt,
+      ];
+
+      const values = valueArray.map((_, i) => `$${i + 1}`).join(", ");
+
+      const insertQueryResult = await pool.query<{ id: string }>(
+        `
+        insert into messages(
+            is_delivered,
+            user_id,
+            subject,
+            excerpt,
+            plain_text,
+            rich_text,
+            lang,
+            security_level,
+            preferred_transports,
+            message_name,
+            thread_name,
+            organisation_id,
+            scheduled_at
+        ) values (${values})
+        returning 
+          id
+      `,
+        valueArray,
+      );
+
+      const messageId = insertQueryResult.rows.at(0)?.id;
+
+      if (!messageId) {
+        throw new Error("no message id generated");
+      }
+
+      return messageId;
+    },
     async createTemplateMessages(
       templateContents: TemplateContent[],
       recipients: User[],
@@ -253,7 +320,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
         token: string;
       }[] = [];
       try {
- 
         const jobInsertResult = await pool.query<{
           jobId: string;
           userId: string;

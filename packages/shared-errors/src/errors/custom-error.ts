@@ -9,8 +9,9 @@ export class CustomError extends LifeEventsError {
     message: string,
     errorCode: number,
     errorName: string = "CUSTOM_ERROR",
+    parentError?: unknown,
   ) {
-    super(errorProcess, message);
+    super(errorProcess, message, parentError);
     this.name = errorName;
     this.errorCode = errorCode;
   }

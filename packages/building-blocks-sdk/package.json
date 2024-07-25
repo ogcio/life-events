@@ -2,11 +2,15 @@
   "name": "building-blocks-sdk",
   "version": "0.0.1",
   "private": true,
+  "scripts": {
+    "test": "TAP_RCFILE=tap.yml tap"
+  },
   "dependencies": {
     "openapi-fetch": "^0.9.7"
   },
   "devDependencies": {
     "@types/node": "20.12.13",
+    "tap": "^21.0.0",
     "typescript": "5.4.5"
   },
   "type": "module",

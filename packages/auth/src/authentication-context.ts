@@ -1,5 +1,6 @@
 import { AuthSession, AuthUserScope } from "auth/auth-session";
 import { PartialAuthSessionContext } from "auth/types";
+import { cookies } from "next/headers";
 
 export const getBaseLogtoConfig = () => ({
   cookieSecure: process.env.NODE_ENV === "production",
@@ -15,7 +16,7 @@ export const organizationScopes = [
 interface PublicServantParameters {
   resourceUrl: string;
   publicServantScopes: string[];
-  organizationId: string;
+  organizationId?: string;
   loginUrl: string;
   publicServantExpectedRole: string;
   baseUrl: string;
@@ -61,6 +62,12 @@ export const isCitizenAuthenticated = (params: CitizenParameters) =>
     buildCitizenContextParameters(params),
   );
 
+export const getSelectedOrganization = () =>
+  AuthSession.getSelectedOrganization();
+
+export const setSelectedOrganization = (organizationId) =>
+  AuthSession.setSelectedOrganization(organizationId);
+
 const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
   ...getBaseLogtoConfig(),
   baseUrl: params.baseUrl,
@@ -75,7 +82,7 @@ const buildPublicServantContextParameters = (
 ) => ({
   getOrganizationToken: true,
   fetchUserInfo: true,
-  publicServantExpectedRole: params.publicServantExpectedRole,
+  publicServantExpectedRole: params.publicServantExpectedRole ?? "",
   organizationId: params.organizationId,
   userType: "publicServant" as "publicServant",
   loginUrl: params.loginUrl,
@@ -94,7 +101,7 @@ const buildCitizenContextParameters = (params: CitizenParameters) => ({
   getAccessToken: true,
   resource: params.resourceUrl,
   fetchUserInfo: true,
-  publicServantExpectedRole: params.publicServantExpectedRole,
+  publicServantExpectedRole: params.publicServantExpectedRole ?? "",
   userType: "citizen" as "citizen",
   loginUrl: params.loginUrl,
 });
