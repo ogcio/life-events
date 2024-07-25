@@ -1,4 +1,4 @@
-import { api, temporaryMockUtils } from "messages";
+import { api, temporaryMockUtils, utils } from "messages";
 import {
   isAvailableTransport,
   MessageCreateProps,
@@ -24,6 +24,16 @@ export default async (props: MessageCreateProps) => {
   async function submit(formData: FormData) {
     "use server";
 
+    if (!props.state.userIds.length) {
+      await temporaryMockUtils.createErrors(
+        [{ errorValue: "", field: "", messageKey: "" }],
+        props.userId,
+        "create_error",
+      );
+
+      return revalidatePath("/");
+    }
+
     const schedule = formData.get("schedule")?.toString();
     const year = formData.get("schedule-date-year")?.toString();
     const month = formData.get("schedule-date-month")?.toString();
@@ -31,82 +41,108 @@ export default async (props: MessageCreateProps) => {
     const hour = formData.get("schedule-date-hour")?.toString();
     const minute = formData.get("schedule-date-minute")?.toString();
 
-    let scheduledAt = "";
+    let scheduleAt = "";
     if (schedule === "future" && year && month && day && hour && minute) {
-      scheduledAt = dayjs
+      scheduleAt = dayjs
         .tz(`${year}-${month}-${day} ${hour}:${minute}`, DUBLIN_TIMEZONE)
         .format();
     } else {
-      scheduledAt = dayjs().format();
+      scheduleAt = dayjs().format();
     }
 
     const messagesClient = await AuthenticationFactory.getMessagingClient();
-    let message: Parameters<typeof messagesClient.createMessage>[0]["message"];
-    let template: Parameters<
-      typeof messagesClient.createMessage
-    >[0]["template"];
+    const { data: template, error } = await messagesClient.getTemplate(
+      props.state.templateMetaId,
+    );
 
-    if (props.state.templateMetaId) {
-      template = {
-        id: props.state.templateMetaId,
-        interpolations: props.state.templateInterpolations,
-      };
-    } else {
-      message = {
-        excerpt: props.state.excerpt,
-        messageName: "",
-        plainText: props.state.plainText,
-        richText: props.state.richText,
-        subject: props.state.subject,
-        threadName: props.state.threadName,
-        lang: props.state.lang,
-      };
-    }
-
-    let creationError: Awaited<
-      ReturnType<typeof messagesClient.createTemplateMessages>
-    >["error"] = undefined;
-
-    if (template) {
-      const transportations: Parameters<
-        typeof messagesClient.createTemplateMessages
-      >[0]["transportations"] = [];
-
-      for (const transportation of props.state.transportations) {
-        if (isAvailableTransport(transportation)) {
-          transportations.push(transportation);
-        }
-      }
-
-      const { error } = await messagesClient.createTemplateMessages({
-        security: "low",
-        templateMetaId: template?.id,
-        transportations,
-        userIds: props.state.userIds,
-        scheduledAt,
-      });
-
-      if (error) {
-        creationError = error;
-        await temporaryMockUtils.createErrors(
-          [{ errorValue: error.name, field: "", messageKey: "" }],
-          props.userId,
-          "create_error",
-        );
-      }
-    }
-
-    if (!creationError) {
-      await api.upsertMessageState(
-        Object.assign({}, props.state, {
-          confirmedScheduleAt: dayjs().toISOString(),
-        }),
+    if (error || !template) {
+      await temporaryMockUtils.createErrors(
+        [{ errorValue: error?.name || "", field: "", messageKey: "" }],
         props.userId,
-        props.stateId,
+        "create_error",
       );
+
+      return revalidatePath("/");
     }
 
-    revalidatePath("/");
+    let successfulMessagesCreated = 0;
+
+    for (const userId of props.state.userIds) {
+      const { data: user, error } = await messagesClient.getRecipient(userId);
+
+      if (error || !user) {
+        // Needs redundancy strategy here
+        continue;
+      }
+
+      let message: Awaited<ReturnType<typeof messagesClient.buildMessage>>;
+      try {
+        message = await messagesClient.buildMessage(
+          template.contents.map((c) => ({
+            ...c,
+            threadName: c.subject,
+            messageName: c.subject,
+          })),
+          user.lang || "",
+          {
+            firstName: user.firstName || "",
+            lastName: user.lastName || "",
+            phone: user.phoneNumber || "",
+            email: user.emailAddress || "",
+            ppsn: user.ppsn || "",
+          },
+        );
+      } catch (err) {
+        // Needs redundancy strategy here
+        continue;
+      }
+
+      try {
+        const preferredTransports: ("sms" | "email" | "lifeEvent")[] = [];
+        for (const transport of props.state.transportations) {
+          if (isAvailableTransport(transport)) {
+            preferredTransports.push(transport);
+          }
+        }
+
+        const { error } = await messagesClient.send({
+          bypassConsent: false,
+          message,
+          preferredTransports,
+          scheduleAt,
+          security: "",
+          userId: user.id,
+        });
+        if (Boolean(error)) {
+          continue;
+        }
+      } catch (err) {
+        // Needs redundancy strategy here
+        continue;
+      }
+      successfulMessagesCreated += 1;
+    }
+
+    if (!successfulMessagesCreated) {
+      await temporaryMockUtils.createErrors(
+        [{ errorValue: "", field: "", messageKey: "" }],
+        props.userId,
+        "create_error",
+      );
+
+      return revalidatePath("/");
+    }
+
+    await api.upsertMessageState(
+      Object.assign({}, props.state, {
+        confirmedScheduleAt: dayjs().toISOString(),
+        successfulMessagesCreated,
+      }),
+      props.userId,
+      props.stateId,
+    );
+
+    return revalidatePath("/");
   }
 
   async function goBack() {
