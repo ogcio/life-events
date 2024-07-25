@@ -150,7 +150,7 @@ export default async function recipients(app: FastifyInstance) {
       user.lang = "en";
 
       if (user.userProfileId) {
-        const profileSdk = new Profile(request.userData!.userId);
+        const profileSdk = new Profile(request.userData!.accessToken);
         const { data, error } = await profileSdk.selectUsers([
           user.userProfileId,
         ]);

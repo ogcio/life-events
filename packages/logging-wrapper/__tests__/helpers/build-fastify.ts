@@ -35,7 +35,7 @@ export const buildFastify = (loggerDestination?: DestinationStream) => {
   });
 
   server.get("/life-events-error", async (_request, _reply) => {
-    throw new LifeEventsError("TESTING", "mock");
+    throw new LifeEventsError("TESTING", "mock", new Error("I am the parent"));
   });
 
   server.post("/logs", async (request, _reply) => {

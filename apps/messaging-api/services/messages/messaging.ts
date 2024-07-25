@@ -366,8 +366,8 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
         throw new ThirdPartyError(
           "failed to post messages",
           isNativeError(err)
-            ? err.cause?.toString() ?? ""
-            : err?.toString() ?? "",
+            ? (err.cause?.toString() ?? "")
+            : (err?.toString() ?? ""),
         );
       }
       return jobs;
