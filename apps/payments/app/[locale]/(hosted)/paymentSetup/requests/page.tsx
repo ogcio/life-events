@@ -14,6 +14,7 @@ import Pagination from "../../../../components/pagination";
 import styles from "./PaymentRequests.module.scss";
 import { redirect, RedirectType } from "next/navigation";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import PaymentsMenu from "../PaymentsMenu";
 
 export default async function ({
   params: { locale },
@@ -48,91 +49,100 @@ export default async function ({
   const paymentRequests = paymentRequestsData?.data ?? [];
 
   return (
-    <div className="table-container">
-      <section
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <div className={styles.headingButtonWrapper}>
-          <h1 className="govie-heading-m">{t("paymentRequests")}</h1>
-          <Link href={`/${locale}/paymentSetup/create`}>
-            <button
-              id="button"
-              data-module="govie-button"
-              className="govie-button"
-            >
-              {t("createPayment")}
-            </button>
-          </Link>
-        </div>
-
-        {paymentRequests.length === 0 ? (
-          <EmptyStatus
-            title={t("empty.title")}
-            description={t("empty.description")}
-          />
-        ) : (
-          <div>
-            <table className="govie-table scrollable-table">
-              <thead className="govie-table__head">
-                <tr className="govie-table__row">
-                  <th scope="col" className="govie-table__header">
-                    {t("table.title")}
-                  </th>
-                  <th scope="col" className="govie-table__header">
-                    {t("table.beneficiaryAccount")}
-                  </th>
-                  <th scope="col" className="govie-table__header">
-                    {t("table.status")}
-                  </th>
-                  <th scope="col" className="govie-table__header">
-                    {t("table.reference")}
-                  </th>
-                  <th scope="col" className="govie-table__header">
-                    {t("table.amount")}
-                  </th>
-                  <th scope="col" className="govie-table__header">
-                    {t("table.actions")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="govie-table__body">
-                {paymentRequests.map((req) => (
-                  <tr className="govie-table__row" key={req.paymentRequestId}>
-                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      {req.title}
-                    </td>
-                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      {req.providers.map(({ name }) => name).join(", ")}
-                    </td>
-                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      {req.status}
-                    </td>
-                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      {req.reference}
-                    </td>
-                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      {formatCurrency(req.amount)}
-                    </td>
-                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      <Link
-                        className="govie-link"
-                        href={`/${locale}/paymentSetup/requests/${req.paymentRequestId}`}
-                      >
-                        {t("table.details")}
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <Pagination links={links} currentPage={currentPage}></Pagination>
+    <div
+      style={{
+        display: "flex",
+        marginTop: "1.3rem",
+        gap: "2rem",
+      }}
+    >
+      <PaymentsMenu locale={locale} />
+      <div className="table-container">
+        <section
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div className={styles.headingButtonWrapper}>
+            <h1 className="govie-heading-m">{t("paymentRequests")}</h1>
+            <Link href={`/${locale}/paymentSetup/create`}>
+              <button
+                id="button"
+                data-module="govie-button"
+                className="govie-button"
+              >
+                {t("createPayment")}
+              </button>
+            </Link>
           </div>
-        )}
-      </section>
+
+          {paymentRequests.length === 0 ? (
+            <EmptyStatus
+              title={t("empty.title")}
+              description={t("empty.description")}
+            />
+          ) : (
+            <div>
+              <table className="govie-table scrollable-table">
+                <thead className="govie-table__head">
+                  <tr className="govie-table__row">
+                    <th scope="col" className="govie-table__header">
+                      {t("table.title")}
+                    </th>
+                    <th scope="col" className="govie-table__header">
+                      {t("table.beneficiaryAccount")}
+                    </th>
+                    <th scope="col" className="govie-table__header">
+                      {t("table.status")}
+                    </th>
+                    <th scope="col" className="govie-table__header">
+                      {t("table.reference")}
+                    </th>
+                    <th scope="col" className="govie-table__header">
+                      {t("table.amount")}
+                    </th>
+                    <th scope="col" className="govie-table__header">
+                      {t("table.actions")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="govie-table__body">
+                  {paymentRequests.map((req) => (
+                    <tr className="govie-table__row" key={req.paymentRequestId}>
+                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                        {req.title}
+                      </td>
+                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                        {req.providers.map(({ name }) => name).join(", ")}
+                      </td>
+                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                        {req.status}
+                      </td>
+                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                        {req.reference}
+                      </td>
+                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                        {formatCurrency(req.amount)}
+                      </td>
+                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                        <Link
+                          className="govie-link"
+                          href={`/${locale}/paymentSetup/requests/${req.paymentRequestId}`}
+                        >
+                          {t("table.details")}
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <Pagination links={links} currentPage={currentPage}></Pagination>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
