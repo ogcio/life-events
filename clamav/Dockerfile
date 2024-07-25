@@ -5,3 +5,4 @@ COPY freshclam.conf /etc/clamav/freshclam.conf
 USER clamav
 RUN mkdir -p "/tmp/clamav/lib" && mkdir -p "/tmp/clamav/log"
 VOLUME ["/tmp"]
+ENTRYPOINT [ "./init-unprivileged" ]

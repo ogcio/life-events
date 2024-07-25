@@ -2,7 +2,11 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import fp from "fastify-plugin";
 import { getMapFromScope, validatePermission } from "./utils.js";
-import { AuthenticationError, AuthorizationError } from "shared-errors";
+import {
+  AuthenticationError,
+  AuthorizationError,
+  getErrorMessage,
+} from "shared-errors";
 
 type ExtractedUserData = {
   userId: string;
@@ -116,7 +120,7 @@ export const checkPermissionsPlugin = async (
         );
         req.userData = userData;
       } catch (e) {
-        throw new AuthorizationError(ERROR_PROCESS, (e as Error).message);
+        throw new AuthorizationError(ERROR_PROCESS, getErrorMessage(e), e);
       }
     },
   );
