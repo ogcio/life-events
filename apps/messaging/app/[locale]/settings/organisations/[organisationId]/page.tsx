@@ -80,8 +80,7 @@ export default async (props: { params: { organisationId: string } }) => {
       authenticationContext,
     });
 
-    await submitClient.updateInvitation({ userStatusFeedback: "active" });
-    await submitClient.updateOrganisationInvitation(orgId, {
+    await submitClient.updateOrganisationSettings(orgId, {
       invitationStatusFeedback: status as "accepted" | "declined",
       preferredTransports,
     });
@@ -99,7 +98,7 @@ export default async (props: { params: { organisationId: string } }) => {
   const messagingClient = await AuthenticationFactory.getMessagingClient({
     token: accessToken,
   });
-  const configurations = await messagingClient.getOrganisationInvitation(
+  const configurations = await messagingClient.getOrganisationSettings(
     props.params.organisationId,
   );
   if (configurations.error) {

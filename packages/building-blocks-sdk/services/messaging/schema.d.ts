@@ -1381,7 +1381,7 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/settings/organisations": {
+  "/api/v1/organisation-settings/": {
     get: {
       responses: {
         /** @description Default Response */
@@ -1515,7 +1515,7 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/settings/organisations/{organisationId}": {
+  "/api/v1/organisation-settings/{organisationId}": {
     get: {
       parameters: {
         path: {
@@ -1720,204 +1720,6 @@ export interface paths {
                   /** @default false */
                   collectedConsent: boolean;
                 };
-              };
-            };
-          };
-        };
-        /** @description Default Response */
-        400: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/users/settings/invitations/me": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              data: {
-                /** @default pending */
-                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
-              };
-              metadata?: {
-                links?: {
-                  self: {
-                    href?: string;
-                  };
-                  next?: {
-                    href?: string;
-                  };
-                  prev?: {
-                    href?: string;
-                  };
-                  first: {
-                    href?: string;
-                  };
-                  last: {
-                    href?: string;
-                  };
-                  pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
-                  };
-                };
-                totalCount?: number;
-              };
-            };
-          };
-        };
-        /** @description Default Response */
-        400: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    patch: {
-      requestBody: {
-        content: {
-          "application/json": {
-            /** @default active */
-            userStatusFeedback: "disabled" | "active";
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        202: {
-          content: {
-            "application/json": {
-              data: {
-                /** Format: uuid */
-                id?: string;
-                /** @default null */
-                userProfileId: null | string;
-                importerOrganisationId: string;
-                /** @default pending */
-                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
-                correlationQuality: "full" | "partial" | "not_related";
-                /** @default null */
-                phone: null | string;
-                /** @default null */
-                email: null | string;
-                details?: {
-                  /** @default null */
-                  publicIdentityId: null | string;
-                  /** @default null */
-                  firstName: null | string;
-                  /** @default null */
-                  lastName: null | string;
-                  /** @default null */
-                  birthDate: null | string;
-                  /** @default null */
-                  address: {
-                    /** @default null */
-                    city: null | string;
-                    /** @default null */
-                    zipCode: null | string;
-                    /** @default null */
-                    street: null | string;
-                    /** @default null */
-                    country: null | string;
-                    /** @default null */
-                    region: null | string;
-                  } | null;
-                  /** @default false */
-                  collectedConsent: boolean;
-                };
-                /** @default null */
-                usersImportId: null | string;
               };
             };
           };

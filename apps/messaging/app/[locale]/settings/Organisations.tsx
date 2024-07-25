@@ -7,7 +7,7 @@ export default async () => {
   const t = await getTranslations("userSettings.Organisations");
   const { data } = await (
     await AuthenticationFactory.getMessagingClient()
-  ).getOrganisationInvitations();
+  ).getOrganisationsSettings();
 
   return (
     <table className="govie-table">

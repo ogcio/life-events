@@ -371,16 +371,16 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getOrganisationInvitations() {
+  async getOrganisationsSettings() {
     const { error, data } = await this.client.GET(
-      "/api/v1/users/settings/organisations",
+      "/api/v1/organisation-settings/",
     );
     return { error, data: data?.data };
   }
 
-  async getOrganisationInvitation(organisationId: string) {
+  async getOrganisationSettings(organisationId: string) {
     const { error, data } = await this.client.GET(
-      "/api/v1/users/settings/organisations/{organisationId}",
+      "/api/v1/organisation-settings/{organisationId}",
       {
         params: { path: { organisationId } },
       },
@@ -388,35 +388,15 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async updateOrganisationInvitation(
+  async updateOrganisationSettings(
     organisationId: string,
-    body: paths["/api/v1/users/settings/organisations/{organisationId}"]["patch"]["requestBody"]["content"]["application/json"],
+    body: paths["/api/v1/organisation-settings/{organisationId}"]["patch"]["requestBody"]["content"]["application/json"],
   ) {
     const { error, data } = await this.client.PATCH(
-      "/api/v1/users/settings/organisations/{organisationId}",
+      "/api/v1/organisation-settings/{organisationId}",
       {
         body,
         params: { path: { organisationId } },
-      },
-    );
-
-    return { error, data: data?.data };
-  }
-
-  async getInvitation() {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/settings/invitations/me",
-    );
-    return { error, data: data?.data };
-  }
-
-  async updateInvitation(
-    body: paths["/api/v1/users/settings/invitations/me"]["patch"]["requestBody"]["content"]["application/json"],
-  ) {
-    const { error, data } = await this.client.PATCH(
-      "/api/v1/users/settings/invitations/me",
-      {
-        body,
       },
     );
 
