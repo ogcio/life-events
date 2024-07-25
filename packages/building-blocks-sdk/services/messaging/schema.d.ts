@@ -285,178 +285,6 @@ export interface paths {
       };
     };
   };
-  "/api/v1/messages/events": {
-    get: {
-      parameters: {
-        query?: {
-          search?: string;
-          offset?: number;
-          limit?: number;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              data: {
-                count: number;
-                events: {
-                  /** Format: uuid */
-                  messageId: string;
-                  subject: string;
-                  receiverFullName: string;
-                  eventType: string;
-                  eventStatus: string;
-                  scheduledAt: string;
-                }[];
-              };
-              metadata?: {
-                links?: {
-                  self: {
-                    href?: string;
-                  };
-                  next?: {
-                    href?: string;
-                  };
-                  prev?: {
-                    href?: string;
-                  };
-                  first: {
-                    href?: string;
-                  };
-                  last: {
-                    href?: string;
-                  };
-                  pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
-                  };
-                };
-                totalCount?: number;
-              };
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/messages/{messageId}/events": {
-    get: {
-      parameters: {
-        path: {
-          messageId: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              data: {
-                eventStatus: string;
-                eventType: string;
-                data:
-                  | {
-                      messageId: string;
-                      receiverFullName: string;
-                      receiverPPSN: string;
-                      subject: string;
-                      lang: string;
-                      excerpt: string;
-                      richText: string;
-                      plainText: string;
-                      threadName: string;
-                      transports: string[];
-                      messageName: string;
-                      /** Format: date-time */
-                      scheduledAt: string;
-                      senderUserId: string;
-                      senderFullName: string;
-                      senderPPSN: string;
-                      organisationName: string;
-                    }
-                  | {
-                      messageId: string;
-                      jobId: string;
-                    }
-                  | {
-                      messageId: string;
-                    };
-                /** Format: date-time */
-                createdAt: string;
-              }[];
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
   "/api/v1/providers/emails/": {
     get: {
       responses: {
@@ -2646,6 +2474,179 @@ export interface paths {
                 };
                 totalCount?: number;
               };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/message-events/": {
+    get: {
+      parameters: {
+        query?: {
+          search?: string;
+          offset?: number;
+          limit?: number;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                eventId: string;
+                /** Format: uuid */
+                messageId: string;
+                subject: string;
+                receiverFullName: string;
+                eventType: string;
+                eventStatus: string;
+                scheduledAt: string;
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/message-events/{eventId}": {
+    get: {
+      parameters: {
+        path: {
+          eventId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                eventStatus: string;
+                eventType: string;
+                data:
+                  | {
+                      messageId: string;
+                      receiverFullName: string;
+                      receiverPPSN: string;
+                      subject: string;
+                      lang: string;
+                      excerpt: string;
+                      richText: string;
+                      plainText: string;
+                      threadName: string;
+                      transports: string[];
+                      messageName: string;
+                      /** Format: date-time */
+                      scheduledAt: string;
+                      senderUserId: string;
+                      senderFullName: string;
+                      senderPPSN: string;
+                      organisationName: string;
+                      security: string;
+                      bypassConsent: boolean;
+                    }
+                  | {
+                      messageId: string;
+                      jobId: string;
+                    }
+                  | {
+                      messageId: string;
+                    };
+                /** Format: date-time */
+                createdAt: string;
+              }[];
             };
           };
         };
