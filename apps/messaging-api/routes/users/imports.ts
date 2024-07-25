@@ -60,7 +60,7 @@ export default async function usersImports(app: FastifyInstance) {
         app.checkPermissions(req, res, [Permissions.Citizen.Write]),
       schema: {
         tags,
-        body: Type.Array(CsvRecordSchema),
+        body: Type.Union([Type.Array(CsvRecordSchema), Type.Any()]),
         response: {
           202: Type.Null(),
           "5xx": HttpError,
@@ -70,7 +70,10 @@ export default async function usersImports(app: FastifyInstance) {
       },
     },
     async (request: FastifyRequest, _reply: FastifyReply) => {
-      if (request.headers["content-type"] === MimeTypes.FormData) {
+      if (
+        request.headers["content-type"] &&
+        request.headers["content-type"].startsWith(MimeTypes.FormData)
+      ) {
         await importCsvFileFromRequest({
           filepath: await saveRequestFile(request),
           user: request.userData!,

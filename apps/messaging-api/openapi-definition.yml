@@ -4025,79 +4025,81 @@ paths:
         content:
           multipart/form-data: &a7
             schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  importIndex:
-                    type: integer
-                  publicIdentityId:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  firstName:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  lastName:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  phoneNumber:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  birthDate:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  emailAddress:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressCity:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressZipCode:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressStreet:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressCountry:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressRegion:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  tags:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  collectedConsent:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                required:
-                  - importIndex
+              anyOf:
+                - type: array
+                  items:
+                    type: object
+                    properties:
+                      importIndex:
+                        type: integer
+                      publicIdentityId:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      firstName:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      lastName:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      phoneNumber:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      birthDate:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      emailAddress:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      addressCity:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      addressZipCode:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      addressStreet:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      addressCountry:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      addressRegion:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      tags:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      collectedConsent:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                    required:
+                      - importIndex
+                - {}
           application/json: *a7
       responses:
         "202":
