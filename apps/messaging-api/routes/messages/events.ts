@@ -13,7 +13,7 @@ import {
 import { MessageEventData } from "../../services/messages/eventLogger";
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
-import { getPaginationLinks } from "../../utils/pagination";
+import { getPaginationLinks, sanitizePagination } from "../../utils/pagination";
 
 const tags = ["Message events"];
 
@@ -46,8 +46,10 @@ export default async function messages(app: FastifyInstance) {
       },
     },
     async function getEventsHandler(request, _reply) {
-      const offset = request.query.offset || 0;
-      const limit = request.query.limit || 20;
+      const { limit, offset } = sanitizePagination({
+        limit: request.query.limit,
+        offset: request.query.offset,
+      });
 
       const textSearchILikeClause = request.query?.search
         ? `%${request.query.search}%`
