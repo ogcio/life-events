@@ -6,6 +6,7 @@ import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import styles from "../(public)/layout.module.scss";
 import { AuthenticationFactory } from "../../utils/authentication-factory";
+import hasAdminPermissions from "./utils/hasAdminPermissions";
 
 export default async ({
   children,
@@ -15,7 +16,12 @@ export default async ({
   params: { locale: string };
 }) => {
   const authFactory = AuthenticationFactory.getInstance();
-  await authFactory.getPublicServant();
+  const context = await authFactory.getPublicServant();
+
+  const hasPermissions = hasAdminPermissions(
+    context.accessToken as string,
+    context.scopes,
+  );
 
   return (
     <html lang={locale}>
@@ -31,15 +37,19 @@ export default async ({
           flexDirection: "column",
         }}
       >
-        <Header
-          signoutUrl="/admin/signout"
-          showHamburgerButton={false}
-          locale={locale}
-        />
+        <Header showHamburgerButton={false} locale={locale} />
         {/* All designs are made for 1440 px  */}
         <main className={styles.mainContainer}>
           <FeedbackBanner locale={locale} />
-          <div style={{ margin: "0 auto", paddingTop: "20px" }}>{children}</div>
+          <div style={{ margin: "0 auto", paddingTop: "20px" }}>
+            {!hasPermissions ? (
+              <h3 className="govie-heading-m">
+                Missing permission to check this page please contact...
+              </h3>
+            ) : (
+              children
+            )}
+          </div>
         </main>
         <Footer />
       </body>

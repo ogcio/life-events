@@ -10,14 +10,9 @@ import { getTranslations } from "next-intl/server";
 type THeaderProps = {
   showHamburgerButton: boolean;
   locale: string;
-  signoutUrl: string;
 };
 
-export default async ({
-  showHamburgerButton,
-  locale,
-  signoutUrl,
-}: THeaderProps) => {
+export default async ({ showHamburgerButton, locale }: THeaderProps) => {
   const t = await getTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
@@ -144,7 +139,7 @@ export default async ({
 
         */}
           <Link
-            href={signoutUrl}
+            href="/signout"
             prefetch={false}
             className={styles.logoutLink}
             aria-label="Logout"

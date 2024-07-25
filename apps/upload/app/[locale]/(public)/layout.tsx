@@ -22,6 +22,7 @@ import AnalyticsTracker from "analytics/components/AnalyticsTracker";
 import favicon from "../../../public/favicon.ico";
 import { AuthSession } from "auth/auth-session";
 import { AuthenticationFactory } from "../../utils/authentication-factory";
+import hasCitizenPermissions from "./utils/hasCitizenPermissions";
 
 export const metadata: Metadata = {
   title: "Life events",
@@ -42,47 +43,25 @@ export default async function RootLayout({
 }) {
   const path = headers().get("x-pathname")?.toString();
   const queryString = headers().get("x-searchParams")?.toString();
-
   const authFactory = AuthenticationFactory.getInstance();
 
-  const isAuthenticatedWithLogto =
-    await authFactory.isPublicServantAuthenticated();
-
-  if (isAuthenticatedWithLogto) {
+  if (await authFactory.isPublicServantAuthenticated()) {
     redirect(`/${locale}/admin`, RedirectType.replace);
   }
 
-  const redirectUrl = `${path}${queryString ? `?${queryString}` : ""}`;
+  const context = await authFactory.getContext();
 
-  const { userId, firstName, lastName, verificationLevel } =
-    await PgSessions.get(redirectUrl);
-
-  const userName = [firstName, lastName].join(" ");
-
-  const result = await pgpool.query<{ is_consenting: boolean }>(
-    `SELECT is_consenting FROM user_consents WHERE user_id = $1 AND agreement = 'storeUserData' LIMIT 1`,
-    [userId],
+  const hasPermissions = hasCitizenPermissions(
+    context.accessToken as string,
+    context.scopes,
   );
 
-  const isConsenting = Boolean(result.rows.at(0)?.is_consenting);
+  const {
+    user: { id: userId },
+  } = context;
 
-  if (!isConsenting && !path?.endsWith("welcome")) {
-    const url = new URL(`${locale}/welcome`, process.env.HOST_URL);
-    url.searchParams.append("redirect_url", redirectUrl);
-
-    redirect(url.href, RedirectType.replace);
-  }
-
-  const showHamburgerMenu = await isFeatureFlagEnabled("eventsMenu");
-
-  const enabledEntries = await getAllEnabledFlags(
-    menuOptions.map((o) => o.key),
-  );
-
-  const messages = await getMessages({ locale });
-  const hamburgerMenuMessages = messages.HamburgerMenu as AbstractIntlMessages;
-  const hamburgerMenuT = await getTranslations("HamburgerMenu");
-  const options = getEnabledOptions(locale, enabledEntries, hamburgerMenuT);
+  //TODO: IMPLEMENT ACTUAL VERIFICATION LEVEL FROM PROFILE API
+  const verificationLevel = 2;
 
   return (
     <html lang={locale}>
@@ -103,26 +82,19 @@ export default async function RootLayout({
           customDimensions={{ dimension1: verificationLevel }}
         />
 
-        {showHamburgerMenu && (
-          <NextIntlClientProvider messages={hamburgerMenuMessages}>
-            <HamburgerMenuWrapper
-              userName={userName}
-              selected={path || ""}
-              options={options}
-              locale={locale}
-              path={path}
-            />
-          </NextIntlClientProvider>
-        )}
-        <Header
-          signoutUrl={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
-          showHamburgerButton={showHamburgerMenu}
-          locale={locale}
-        />
+        <Header showHamburgerButton={false} locale={locale} />
         {/* All designs are made for 1440 px  */}
         <main className={styles.mainContainer}>
           <FeedbackBanner locale={locale} />
-          <div style={{ margin: "0 auto", paddingTop: "20px" }}>{children}</div>
+          <div style={{ margin: "0 auto", paddingTop: "20px" }}>
+            {!hasPermissions ? (
+              <h3 className="govie-heading-m">
+                MISSING PERMISSIONS FOR THIS APP
+              </h3>
+            ) : (
+              children
+            )}
+          </div>
         </main>
         <Footer />
       </body>
