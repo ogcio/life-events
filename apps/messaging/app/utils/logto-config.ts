@@ -26,7 +26,7 @@ const publicServantScopes = [
   "messaging:citizen:*",
   "messaging:event:read",
 ];
-const publicServantExpectedRole = "ogcio:Messaging Public Servant";
+const publicServantExpectedRole = "Messaging Public Servant";
 
 export const getAuthenticationContextConfig =
   (): AuthenticationContextConfig => ({
