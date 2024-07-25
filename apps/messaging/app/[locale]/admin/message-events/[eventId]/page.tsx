@@ -7,18 +7,20 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
-export default async (props: { params: { messageId: string } }) => {
+export default async (props: { params: { eventId: string } }) => {
   const t = await getTranslations("MessageEvents");
   const messagingClient = await AuthenticationFactory.getMessagingClient();
   const messageEvents = await messagingClient.getMessageEvent(
-    props.params.messageId,
+    props.params.eventId,
   );
 
   let recipient: string = "";
   let subject: string = "";
   let excerpt = "";
   let plainText = "";
+
   for (const event of messageEvents.data || []) {
+    console.log({ event });
     if ("receiverFullName" in event.data) {
       recipient = event.data.receiverFullName;
       subject = event.data.subject;
@@ -39,8 +41,8 @@ export default async (props: { params: { messageId: string } }) => {
         {t("recipientSubHeader")} - {recipient}
       </h2>
 
-      <p>{excerpt}</p>
-      <p>{plainText}</p>
+      <p className="govie-body">{excerpt}</p>
+      <p className="govie-body">{plainText}</p>
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">

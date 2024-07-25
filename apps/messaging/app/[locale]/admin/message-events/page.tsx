@@ -128,8 +128,11 @@ export default async (props: {
   const size = Number(props.searchParams.size) || 20;
 
   const client = await AuthenticationFactory.getMessagingClient();
-  const { data, error } = await client.getMessageEvents({
-    query: { search: freeSearch, limit: size, offset: (page - 1) * size },
+
+  const { data, error, metadata } = await client.getMessageEvents({
+    search: freeSearch,
+    limit: size,
+    offset: (page - 1) * size,
   });
 
   if (error) {
@@ -144,7 +147,7 @@ export default async (props: {
       </FlexMenuWrapper>
     );
   }
-  const paging = pagingMeta(data?.count || 0, page, size);
+  const paging = pagingMeta(metadata?.totalCount || 0, page, size);
 
   return (
     <FlexMenuWrapper>
@@ -190,11 +193,12 @@ export default async (props: {
           </tr>
         </thead>
         <tbody className="govie-table__body">
-          {data?.events?.map(
+          {data?.map(
             ({
               eventStatus,
               eventType,
               messageId,
+              eventId,
               scheduledAt,
               receiverFullName,
               subject,
@@ -215,7 +219,7 @@ export default async (props: {
                     <Link
                       href={
                         new URL(
-                          `/en/admin/message-events/${messageId}`,
+                          `/en/admin/message-events/${eventId}`,
                           process.env.HOST_URL,
                         ).href
                       }
