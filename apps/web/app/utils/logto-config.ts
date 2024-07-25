@@ -19,7 +19,7 @@ const organizationId = "ogcio";
 // TODO: TBD
 const citizenScopes = [];
 const publicServantScopes = ["life-events:digital-wallet-flow:*"];
-const publicServantExpectedRole = "ogcio:Life Events Public Servant";
+const publicServantExpectedRole = "Life Events Public Servant";
 
 export const getAuthenticationContextConfig =
   (): AuthenticationContextConfig => ({

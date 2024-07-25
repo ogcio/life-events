@@ -1,6 +1,8 @@
 $breakpoint-phone: 767px;
 $breakpoint-tablet: 991px;
 $breakpoint-desktop: 1199px;
+$breakpoint-sm: 576px;
+$breakpoint-xxl: 1400px;
 
 @mixin phone {
   @media (max-width: ($breakpoint-phone)) {

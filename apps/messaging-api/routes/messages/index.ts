@@ -63,7 +63,7 @@ export default async function messages(app: FastifyInstance) {
         pg: app.pg,
         logger: request.log,
         jobId: request.params!.id,
-        userId: request.userData?.userId || "",
+        accessToken: request.userData?.accessToken || "",
         token: request.body.token,
       });
 
@@ -183,7 +183,7 @@ export default async function messages(app: FastifyInstance) {
       }
 
       // Need to change to token once that PR is merged
-      const profileSdk = new Profile(senderUserId);
+      const profileSdk = new Profile(request.userData!.accessToken);
       const { data, error } = await profileSdk.selectUsers([senderUserId]);
       if (error) {
         throw new ServerError(

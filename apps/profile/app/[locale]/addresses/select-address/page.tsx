@@ -2,25 +2,90 @@ import { getTranslations } from "next-intl/server";
 // import { FormProps } from "./page";
 import { form, routes } from "../../../utils";
 import { revalidatePath } from "next/cache";
-import { Profile } from "building-blocks-sdk";
 import dayjs from "dayjs";
-import { PgSessions } from "auth/sessions";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { NextPageProps } from "../../../../types";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async (props: NextPageProps) => {
   const {
     searchParams,
     params: { locale },
   } = props;
-  const { userId, firstName, lastName, email } = await PgSessions.get();
+  const mainAuthContext =
+    await AuthenticationFactory.getInstance().getContext();
+  const mainProfile = await AuthenticationFactory.getProfileClient({
+    token: mainAuthContext.accessToken,
+  });
+  const mainUser = await mainProfile.getUser();
+  if (!mainUser.data) {
+    return notFound();
+  }
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
 
+  const urlParams = new URLSearchParams({ q: searchParams?.adr || "" });
+
+  const addressResponse = await fetch(
+    `${process.env.API_ENDPOINT}/static/addresses/api?${urlParams}`,
+  );
+  const addresses = await addressResponse.json();
+
+  const options = addresses.map((addr: string) => (
+    <option key={addr}>{addr}</option>
+  ));
+
+  const errors = await form.getErrorsQuery(
+    mainAuthContext.user.id,
+    routes.addresses.selectAddress.slug,
+  );
+
+  const addressError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.address,
+  );
+
+  const moveInDayError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveInDay,
+  );
+  const moveInMonthError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveInMonth,
+  );
+  const moveInYearError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveInYear,
+  );
+
+  const moveInDateErrors: form.Error[] = [];
+  moveInYearError && moveInDateErrors.push(moveInYearError);
+  moveInMonthError && moveInDateErrors.push(moveInMonthError);
+  moveInDayError && moveInDateErrors.push(moveInDayError);
+
+  const moveOutDayError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveOutDay,
+  );
+  const moveOutMonthError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveOutMonth,
+  );
+  const moveOutYearError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveOutYear,
+  );
+
+  const moveOutDateErrors: form.Error[] = [];
+  moveOutYearError && moveOutDateErrors.push(moveOutYearError);
+  moveOutMonthError && moveOutDateErrors.push(moveOutMonthError);
+  moveOutDayError && moveOutDateErrors.push(moveOutDayError);
+
   async function submitAction(formData: FormData) {
     "use server";
-
+    const submitAuthContext =
+      await AuthenticationFactory.getInstance().getContext();
+    const submitProfile = await AuthenticationFactory.getProfileClient({
+      token: submitAuthContext.accessToken,
+    });
+    const submitUser = await submitProfile.getUser();
+    if (!submitUser.data) {
+      return notFound();
+    }
     const errors: form.Error[] = [];
     const selectedAddress = formData.get("address");
     const moveInDay = formData.get("moveInDay");
@@ -79,7 +144,7 @@ export default async (props: NextPageProps) => {
     if (errors.length) {
       await form.insertErrors(
         errors,
-        userId,
+        submitAuthContext.user.id,
         routes.addresses.selectAddress.slug,
       );
       return revalidatePath("/");
@@ -105,19 +170,17 @@ export default async (props: NextPageProps) => {
         .toISOString();
     }
 
-    const { data: userExistsQuery, error } = await new Profile(
-      userId,
-    ).getUser();
+    const { data: userExistsQuery, error } = await submitProfile.getUser();
 
     if (error) {
       //handle error
     }
 
     if (!userExistsQuery) {
-      const { error } = await new Profile(userId).createUser({
-        firstname: firstName,
-        lastname: lastName,
-        email,
+      const { error } = await submitProfile.createUser({
+        firstname: submitUser.data.firstName,
+        lastname: submitUser.data.lastName,
+        email: submitUser.data.email,
         preferredLanguage: props.params.locale,
       });
 
@@ -131,7 +194,7 @@ export default async (props: NextPageProps) => {
         .toString()
         .split(",");
 
-      const { data, error } = await new Profile(userId).createAddress({
+      const { data, error } = await submitProfile.createAddress({
         addressLine1: addressLine1.trim(),
         town: town.trim(),
         county: county.trim(),
@@ -151,56 +214,6 @@ export default async (props: NextPageProps) => {
 
     redirect(`/${locale}`);
   }
-
-  const urlParams = new URLSearchParams({ q: searchParams?.adr || "" });
-
-  const addressResponse = await fetch(
-    `${process.env.API_ENDPOINT}/static/addresses/api?${urlParams}`,
-  );
-  const addresses = await addressResponse.json();
-
-  const options = addresses.map((addr: string) => (
-    <option key={addr}>{addr}</option>
-  ));
-
-  const errors = await form.getErrorsQuery(
-    userId,
-    routes.addresses.selectAddress.slug,
-  );
-
-  const addressError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.address,
-  );
-
-  const moveInDayError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveInDay,
-  );
-  const moveInMonthError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveInMonth,
-  );
-  const moveInYearError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveInYear,
-  );
-
-  const moveInDateErrors: form.Error[] = [];
-  moveInYearError && moveInDateErrors.push(moveInYearError);
-  moveInMonthError && moveInDateErrors.push(moveInMonthError);
-  moveInDayError && moveInDateErrors.push(moveInDayError);
-
-  const moveOutDayError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveOutDay,
-  );
-  const moveOutMonthError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveOutMonth,
-  );
-  const moveOutYearError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveOutYear,
-  );
-
-  const moveOutDateErrors: form.Error[] = [];
-  moveOutYearError && moveOutDateErrors.push(moveOutYearError);
-  moveOutMonthError && moveOutDateErrors.push(moveOutMonthError);
-  moveOutDayError && moveOutDateErrors.push(moveOutDayError);
 
   return (
     <div className="govie-grid-row">

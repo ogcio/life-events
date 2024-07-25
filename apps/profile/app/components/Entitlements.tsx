@@ -1,16 +1,14 @@
-import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { routes } from "../utils";
 import ds from "design-system";
-import { Profile } from "building-blocks-sdk";
 import Link from "next/link";
+import { AuthenticationFactory } from "../utils/authentication-factory";
 
 export default async ({ locale }: { locale: string }) => {
   const t = await getTranslations("Entitlements");
-  const { userId } = await PgSessions.get();
-  const { data: entitlements = [], error } = await new Profile(
-    userId,
-  ).getEntitlements();
+  const mainProfile = await AuthenticationFactory.getProfileClient();
+  const { data: entitlements = [], error } =
+    await mainProfile.getEntitlements();
 
   if (error) {
     //handle error

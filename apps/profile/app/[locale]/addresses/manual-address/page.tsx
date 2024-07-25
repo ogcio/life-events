@@ -1,18 +1,75 @@
 import { getTranslations } from "next-intl/server";
 import { form, routes } from "../../../utils";
 import { revalidatePath } from "next/cache";
-import { Profile } from "building-blocks-sdk";
 import dayjs from "dayjs";
-import { redirect } from "next/navigation";
-import { PgSessions } from "auth/sessions";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { NextPageProps } from "../../../../types";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async (props: NextPageProps) => {
-  const { userId, firstName, lastName, email } = await PgSessions.get();
+  const mainAuthContext =
+    await AuthenticationFactory.getInstance().getContext();
+  const mainProfile = await AuthenticationFactory.getProfileClient({
+    token: mainAuthContext.accessToken,
+  });
+  const mainUser = await mainProfile.getUser();
+  if (!mainUser.data) {
+    return notFound();
+  }
   const t = await getTranslations("AddressForm");
   const errorT = await getTranslations("FormErrors");
   const { locale } = props.params;
+
+  const errors = await form.getErrorsQuery(
+    mainAuthContext.user.id,
+    routes.addresses.manualAddress.slug,
+  );
+
+  const addressLine1Error = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.address_first_line,
+  );
+
+  const townError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.town,
+  );
+
+  const countyError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.county,
+  );
+  const eireError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.eirecode,
+  );
+
+  const moveInDayError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveInDay,
+  );
+  const moveInMonthError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveInMonth,
+  );
+  const moveInYearError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveInYear,
+  );
+
+  const moveInDateErrors: form.Error[] = [];
+  moveInYearError && moveInDateErrors.push(moveInYearError);
+  moveInMonthError && moveInDateErrors.push(moveInMonthError);
+  moveInDayError && moveInDateErrors.push(moveInDayError);
+
+  const moveOutDayError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveOutDay,
+  );
+  const moveOutMonthError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveOutMonth,
+  );
+  const moveOutYearError = errors.rows.find(
+    (row) => row.field === form.fieldTranslationKeys.moveOutYear,
+  );
+
+  const moveOutDateErrors: form.Error[] = [];
+  moveOutYearError && moveOutDateErrors.push(moveOutYearError);
+  moveOutMonthError && moveOutDateErrors.push(moveOutMonthError);
+  moveOutDayError && moveOutDateErrors.push(moveOutDayError);
 
   async function createAddress(formData: FormData) {
     "use server";
@@ -138,16 +195,16 @@ export default async (props: NextPageProps) => {
         .toISOString();
     }
 
-    const { data: userExistsQuery, error } = await new Profile(
-      userId,
-    ).getUser();
+    const createProfile = await AuthenticationFactory.getProfileClient();
+
+    const { data: userExistsQuery, error } = await createProfile.getUser();
 
     if (error) {
       //handle error
     }
 
     if (!userExistsQuery) {
-      const { error } = await new Profile(userId).createUser({
+      const { error } = await createProfile.createUser({
         firstname,
         lastname,
         email,
@@ -160,7 +217,7 @@ export default async (props: NextPageProps) => {
     }
 
     if (addressLine1 && town && county && eirecode) {
-      const { data, error } = await new Profile(userId).createAddress({
+      const { data, error } = await createProfile.createAddress({
         addressLine1,
         addressLine2,
         town,
@@ -187,65 +244,31 @@ export default async (props: NextPageProps) => {
     redirect(`/${locale}`);
   }
 
-  const errors = await form.getErrorsQuery(
-    userId,
-    routes.addresses.manualAddress.slug,
-  );
-
-  const addressLine1Error = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.address_first_line,
-  );
-
-  const townError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.town,
-  );
-
-  const countyError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.county,
-  );
-  const eireError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.eirecode,
-  );
-
-  const moveInDayError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveInDay,
-  );
-  const moveInMonthError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveInMonth,
-  );
-  const moveInYearError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveInYear,
-  );
-
-  const moveInDateErrors: form.Error[] = [];
-  moveInYearError && moveInDateErrors.push(moveInYearError);
-  moveInMonthError && moveInDateErrors.push(moveInMonthError);
-  moveInDayError && moveInDateErrors.push(moveInDayError);
-
-  const moveOutDayError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveOutDay,
-  );
-  const moveOutMonthError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveOutMonth,
-  );
-  const moveOutYearError = errors.rows.find(
-    (row) => row.field === form.fieldTranslationKeys.moveOutYear,
-  );
-
-  const moveOutDateErrors: form.Error[] = [];
-  moveOutYearError && moveOutDateErrors.push(moveOutYearError);
-  moveOutMonthError && moveOutDateErrors.push(moveOutMonthError);
-  moveOutDayError && moveOutDateErrors.push(moveOutDayError);
-
   return (
     <div className="govie-grid-row">
       <div className="govie-grid-column-two-thirds">
         <h1 className="govie-heading-l">{t("newAddress")}</h1>
         <form action={createAddress}>
-          <input type="hidden" name="userId" defaultValue={userId} />
-          <input type="hidden" name="firstname" defaultValue={firstName} />
-          <input type="hidden" name="lastname" defaultValue={lastName} />
-          <input type="hidden" name="email" defaultValue={email} />
+          <input
+            type="hidden"
+            name="userId"
+            defaultValue={mainAuthContext.user.id}
+          />
+          <input
+            type="hidden"
+            name="firstname"
+            defaultValue={mainUser.data.firstName}
+          />
+          <input
+            type="hidden"
+            name="lastname"
+            defaultValue={mainUser.data.lastName}
+          />
+          <input
+            type="hidden"
+            name="email"
+            defaultValue={mainUser.data.email}
+          />
           <div
             className={`govie-form-group ${
               addressLine1Error ? "govie-form-group--error" : ""

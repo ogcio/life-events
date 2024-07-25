@@ -12,9 +12,6 @@ export class Messaging {
   constructor(authToken: string) {
     const authMiddleware: Middleware = {
       async onRequest(req) {
-        // Send temporarly the user id as auth token
-        req.headers.set("x-user-id", authToken);
-
         req.headers.set("Authorization", `Bearer ${authToken}`);
         return req;
       },
