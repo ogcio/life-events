@@ -8,7 +8,7 @@ export type OrganizationSelectorItem = {
 export type OrganizationSelectorProps = {
   title: string;
   actionTitle: string;
-  organizations: OrganizationSelectorItem[];
+  organizations: [OrganizationSelectorItem, ...OrganizationSelectorItem[]];
   defaultOrganization?: string;
   handleSubmit: any;
 };
