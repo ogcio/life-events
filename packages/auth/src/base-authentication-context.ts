@@ -1,12 +1,15 @@
 import {
   AuthSessionContext,
   AuthSessionUserInfo,
+  OrganizationData,
   PartialAuthSessionContext,
 } from "./types";
 import {
   getCitizenContext,
+  getSelectedOrganization,
   getPublicServantContext,
   isPublicServantAuthenticated,
+  setSelectedOrganization,
 } from "./authentication-context";
 import { AuthenticationError } from "shared-errors";
 import { notFound } from "next/navigation";
@@ -18,7 +21,7 @@ export interface AuthenticationContextConfig {
   resourceUrl: string;
   citizenScopes: string[];
   publicServantScopes: string[];
-  organizationId: string;
+  organizationId?: string;
   loginUrl: string;
   publicServantExpectedRole: string;
   baseUrl: string;
@@ -64,7 +67,10 @@ export class BaseAuthenticationContext {
       this.publicServantContext =
         this.sharedContext && this.sharedContext.isPublicServant
           ? this.publicServantContext
-          : await getPublicServantContext(this.config);
+          : await getPublicServantContext({
+              ...this.config,
+              organizationId: await this.getSelectedOrganization(),
+            });
     }
     return this.publicServantContext as PartialAuthSessionContext;
   }
@@ -114,6 +120,32 @@ export class BaseAuthenticationContext {
 
   async isAuthenticated(): Promise<boolean> {
     return this.isCitizenAuthenticated() || this.isPublicServantAuthenticated();
+  }
+
+  async getOrganizations(): Promise<Record<string, OrganizationData>> {
+    return (await this.getCitizen()).user?.organizationData ?? {};
+  }
+
+  async getSelectedOrganization(): Promise<string> {
+    const storedOrgId = getSelectedOrganization();
+
+    if (storedOrgId) {
+      const context = await this.getCitizen();
+      const userOrganizations = Object.keys(
+        context.user?.organizationData ?? {},
+      );
+      if (userOrganizations?.includes(storedOrgId)) {
+        return storedOrgId;
+      }
+    }
+
+    const orgs = await this.getOrganizations();
+    return Object.values(orgs)[0].id;
+  }
+
+  setSelectedOrganization(organizationId: string): string {
+    setSelectedOrganization(organizationId);
+    return organizationId;
   }
 
   private getPartialContext = (): Promise<PartialAuthSessionContext> => {
