@@ -16,6 +16,7 @@ type Props = {
   defaultOrganization?: string;
 };
 
+// load component asynchronously, only when it is needed
 const OrganizationSelector = dynamic(
   () => import("shared-components").then((mod) => mod.OrganizationSelector),
   {
