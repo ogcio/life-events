@@ -4006,85 +4006,11 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/users/imports/csv:
-    post:
+  /api/v1/users/imports/csv/template:
+    get:
       tags: &a6
         - Users
         - UserImports
-      responses:
-        "202":
-          description: Default Response
-        5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        4XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-  /api/v1/users/imports/csv/template:
-    get:
-      tags: *a6
       responses:
         "200":
           description: Default Response
@@ -4097,81 +4023,84 @@ paths:
       tags: *a6
       requestBody:
         content:
-          application/json:
+          multipart/form-data: &a7
             schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  importIndex:
-                    type: integer
-                  publicIdentityId:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  firstName:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  lastName:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  phoneNumber:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  birthDate:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  emailAddress:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressCity:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressZipCode:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressStreet:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressCountry:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  addressRegion:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  tags:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  collectedConsent:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                required:
-                  - importIndex
+              anyOf:
+                - type: array
+                  items:
+                    type: object
+                    properties:
+                      importIndex:
+                        type: integer
+                      publicIdentityId:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      firstName:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      lastName:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      phoneNumber:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      birthDate:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      emailAddress:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      addressCity:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      addressZipCode:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      addressStreet:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      addressCountry:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      addressRegion:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      tags:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      collectedConsent:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                    required:
+                      - importIndex
+                - {}
+          application/json: *a7
       responses:
         "202":
           description: Default Response
@@ -5272,7 +5201,7 @@ paths:
                   - name
   /api/v1/users/recipients/:
     get:
-      tags: &a7
+      tags: &a8
         - Users
         - Recipients
       parameters:
@@ -5502,7 +5431,7 @@ paths:
                   - name
   /api/v1/users/recipients/{userId}:
     get:
-      tags: *a7
+      tags: *a8
       parameters:
         - schema:
             type: string

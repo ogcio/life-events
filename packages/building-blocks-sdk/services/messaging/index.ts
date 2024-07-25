@@ -291,18 +291,24 @@ export class Messaging {
     return { error };
   }
 
-  async importUsersCsv(file: File) {
-    const { error } = await this.client.POST("/api/v1/users/imports/csv", {
-      body: {
-        file,
-      } as any,
-      bodySerializer: (body: any) => {
-        const formData = new FormData();
-        formData.set("file", body.file);
-        return formData;
-      },
-    });
+  async importUsers(toImport: { file?: File; records?: object[] }) {
+    if (toImport.file) {
+      const { error } = await this.client.POST("/api/v1/users/imports/", {
+        body: {
+          file: toImport.file,
+        } as any,
+        bodySerializer: (body: any) => {
+          const formData = new FormData();
+          formData.set("file", body.file);
+          return formData;
+        },
+      });
+      return { error };
+    }
 
+    const { error } = await this.client.POST("/api/v1/users/imports/", {
+      body: toImport.records,
+    });
     return { error };
   }
 
