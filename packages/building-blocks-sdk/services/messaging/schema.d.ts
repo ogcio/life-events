@@ -1973,48 +1973,6 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/imports/csv": {
-    post: {
-      responses: {
-        /** @description Default Response */
-        202: {
-          content: never;
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
   "/api/v1/users/imports/csv/template": {
     get: {
       responses: {
@@ -2111,35 +2069,8 @@ export interface paths {
     post: {
       requestBody?: {
         content: {
-          "application/json": {
-            importIndex: number;
-            /** @default null */
-            publicIdentityId?: null | string;
-            /** @default null */
-            firstName?: null | string;
-            /** @default null */
-            lastName?: null | string;
-            /** @default null */
-            phoneNumber?: null | string;
-            /** @default null */
-            birthDate?: null | string;
-            /** @default null */
-            emailAddress?: null | string;
-            /** @default null */
-            addressCity?: null | string;
-            /** @default null */
-            addressZipCode?: null | string;
-            /** @default null */
-            addressStreet?: null | string;
-            /** @default null */
-            addressCountry?: null | string;
-            /** @default null */
-            addressRegion?: null | string;
-            /** @default null */
-            tags?: null | string;
-            /** @default null */
-            collectedConsent?: null | string;
-          }[];
+          "multipart/form-data": unknown;
+          "application/json": unknown;
         };
       };
       responses: {

@@ -17,11 +17,7 @@ export class Profile {
   constructor(authToken: string) {
     const authMiddleware: Middleware = {
       async onRequest(req) {
-        // Send temporarly the user id as auth token
-        req.headers.set("x-user-id", authToken);
-
-        // Once the logto integration is complete, we will send the real auth token
-        //req.headers.set("Authorization", `Bearer ${authToken}`);
+        req.headers.set("Authorization", `Bearer ${authToken}`);
         return req;
       },
     };
@@ -127,7 +123,6 @@ export class Profile {
     if (!data || Object.keys(data).length === 0) {
       return;
     }
-
     return formatQueryResult(
       this.client.PATCH("/api/v1/user/", {
         body: data,
