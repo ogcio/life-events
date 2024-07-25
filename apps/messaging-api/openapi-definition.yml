@@ -535,358 +535,6 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/messages/events:
-    get:
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: search
-          required: false
-        - schema:
-            default: 0
-            minimum: 0
-            type: integer
-          in: query
-          name: offset
-          required: false
-        - schema:
-            default: 20
-            minimum: 1
-            type: integer
-          in: query
-          name: limit
-          required: false
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      count:
-                        type: number
-                      events:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            messageId:
-                              format: uuid
-                              type: string
-                            subject:
-                              type: string
-                            receiverFullName:
-                              type: string
-                            eventType:
-                              type: string
-                            eventStatus:
-                              type: string
-                            scheduledAt:
-                              type: string
-                          required:
-                            - messageId
-                            - subject
-                            - receiverFullName
-                            - eventType
-                            - eventStatus
-                            - scheduledAt
-                    required:
-                      - count
-                      - events
-                  metadata:
-                    type: object
-                    properties:
-                      links:
-                        type: object
-                        properties:
-                          self:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          next:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          prev:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          first:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          last:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          pages:
-                            type: object
-                            additionalProperties:
-                              type: object
-                              properties:
-                                href:
-                                  type: string
-                        required:
-                          - self
-                          - first
-                          - last
-                          - pages
-                      totalCount:
-                        type: number
-                required:
-                  - data
-        5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        4XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-  /api/v1/messages/{messageId}/events:
-    get:
-      parameters:
-        - schema:
-            type: string
-          in: path
-          name: messageId
-          required: true
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        eventStatus:
-                          type: string
-                        eventType:
-                          type: string
-                        data:
-                          anyOf:
-                            - type: object
-                              properties:
-                                messageId:
-                                  type: string
-                                receiverFullName:
-                                  type: string
-                                receiverPPSN:
-                                  type: string
-                                subject:
-                                  type: string
-                                lang:
-                                  type: string
-                                excerpt:
-                                  type: string
-                                richText:
-                                  type: string
-                                plainText:
-                                  type: string
-                                threadName:
-                                  type: string
-                                transports:
-                                  type: array
-                                  items:
-                                    type: string
-                                messageName:
-                                  type: string
-                                scheduledAt:
-                                  format: date-time
-                                  type: string
-                                senderUserId:
-                                  type: string
-                                senderFullName:
-                                  type: string
-                                senderPPSN:
-                                  type: string
-                                organisationName:
-                                  type: string
-                              required:
-                                - messageId
-                                - receiverFullName
-                                - receiverPPSN
-                                - subject
-                                - lang
-                                - excerpt
-                                - richText
-                                - plainText
-                                - threadName
-                                - transports
-                                - messageName
-                                - scheduledAt
-                                - senderUserId
-                                - senderFullName
-                                - senderPPSN
-                                - organisationName
-                            - type: object
-                              properties:
-                                messageId:
-                                  type: string
-                                jobId:
-                                  type: string
-                              required:
-                                - messageId
-                                - jobId
-                            - type: object
-                              properties:
-                                messageId:
-                                  type: string
-                              required:
-                                - messageId
-                        createdAt:
-                          format: date-time
-                          type: string
-                      required:
-                        - eventStatus
-                        - eventType
-                        - data
-                        - createdAt
-                required:
-                  - data
-        5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        4XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
   /api/v1/providers/emails/:
     get:
       tags: &a2
@@ -5117,6 +4765,363 @@ paths:
                           - pages
                       totalCount:
                         type: number
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/message-events/:
+    get:
+      tags: &a9
+        - Message events
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: search
+          required: false
+        - schema:
+            default: 0
+            minimum: 0
+            type: integer
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 20
+            minimum: 1
+            type: integer
+          in: query
+          name: limit
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        eventId:
+                          format: uuid
+                          type: string
+                        messageId:
+                          format: uuid
+                          type: string
+                        subject:
+                          type: string
+                        receiverFullName:
+                          type: string
+                        eventType:
+                          type: string
+                        eventStatus:
+                          type: string
+                        scheduledAt:
+                          type: string
+                      required:
+                        - eventId
+                        - messageId
+                        - subject
+                        - receiverFullName
+                        - eventType
+                        - eventStatus
+                        - scheduledAt
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/message-events/{eventId}:
+    get:
+      tags: *a9
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: eventId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        eventStatus:
+                          type: string
+                        eventType:
+                          type: string
+                        data:
+                          anyOf:
+                            - type: object
+                              properties:
+                                messageId:
+                                  type: string
+                                receiverFullName:
+                                  type: string
+                                receiverPPSN:
+                                  type: string
+                                subject:
+                                  type: string
+                                lang:
+                                  type: string
+                                excerpt:
+                                  type: string
+                                richText:
+                                  type: string
+                                plainText:
+                                  type: string
+                                threadName:
+                                  type: string
+                                transports:
+                                  type: array
+                                  items:
+                                    type: string
+                                messageName:
+                                  type: string
+                                scheduledAt:
+                                  format: date-time
+                                  type: string
+                                senderUserId:
+                                  type: string
+                                senderFullName:
+                                  type: string
+                                senderPPSN:
+                                  type: string
+                                organisationName:
+                                  type: string
+                                security:
+                                  type: string
+                                bypassConsent:
+                                  type: boolean
+                              required:
+                                - messageId
+                                - receiverFullName
+                                - receiverPPSN
+                                - subject
+                                - lang
+                                - excerpt
+                                - richText
+                                - plainText
+                                - threadName
+                                - transports
+                                - messageName
+                                - scheduledAt
+                                - senderUserId
+                                - senderFullName
+                                - senderPPSN
+                                - organisationName
+                                - security
+                                - bypassConsent
+                            - type: object
+                              properties:
+                                messageId:
+                                  type: string
+                                jobId:
+                                  type: string
+                              required:
+                                - messageId
+                                - jobId
+                            - type: object
+                              properties:
+                                messageId:
+                                  type: string
+                              required:
+                                - messageId
+                        createdAt:
+                          format: date-time
+                          type: string
+                      required:
+                        - eventStatus
+                        - eventType
+                        - data
+                        - createdAt
                 required:
                   - data
         5XX:
