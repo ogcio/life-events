@@ -1,12 +1,12 @@
-import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { formatDate } from "../../../../utils";
 import Link from "next/link";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
 async function getDrivingLicenceDetails(_id: string) {
-  const { firstName, lastName } = await PgSessions.get();
+  const { name } = await AuthenticationFactory.getInstance().getUser();
   return {
-    name: `${firstName} ${lastName}`,
+    name,
     dateOfBirth: new Date("1990-01-01T00:00:00Z"),
     placeOfBirth: "Ireland",
     issueDate: "15/11/2022",

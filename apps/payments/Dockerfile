@@ -1,4 +1,4 @@
-FROM base-deps as deps
+FROM base-deps AS deps
 
 WORKDIR /app
 ENV LOG_LEVEL=trace
@@ -48,7 +48,7 @@ RUN npm run build --workspace=packages/shared-errors
 RUN npm run build --workspace=packages/nextjs-logging-wrapper
 RUN npm run build --workspace=apps/payments
 
-FROM base-deps as runner
+FROM base-deps AS runner
 
 WORKDIR /app
 
@@ -64,6 +64,6 @@ COPY --from=deps /app/apps/payments/migrations /app/apps/payments/migrations
 
 EXPOSE 3001
 
-ENV PORT 3001
+ENV PORT=3001
 
 CMD [ "node", "apps/payments/server.js" ]
