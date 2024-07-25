@@ -8,6 +8,11 @@ services:
     extends:
       file: docker-compose.yaml
       service: maildev
+  
+  clamav:
+    extends:
+      file: docker-compose.yaml
+      service: clamav
 
   localstack:
     extends:
@@ -16,6 +21,7 @@ services:
 volumes:
   db:
     driver: local
+  clamav:
 
 # custom network to be able to reach Logto running on same network with another Docker Compose file
 networks:
