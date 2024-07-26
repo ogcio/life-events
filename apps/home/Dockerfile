@@ -6,12 +6,14 @@ ENV LOG_LEVEL=trace
 COPY ./package*.json /app/
 COPY ./apps/home/package*.json /app/apps/home/
 COPY ./packages/analytics/package*.json /app/packages/analytics/
+COPY ./packages/auth/package*.json /app/packages/auth/
 
 RUN npm ci
 
 COPY ./apps/home/ /app/apps/home/
 COPY --from=design-system-container /app/packages/design-system/ /app/packages/design-system/
 COPY ./packages/analytics/ /app/packages/analytics/
+COPY ./packages/auth/ /app/packages/auth/
 
 FROM deps AS builder
 WORKDIR /app

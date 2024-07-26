@@ -14,7 +14,6 @@ import {
   envStaging,
   envUAT,
 } from "../../../../constants";
-import Banner from "../Banner";
 
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";

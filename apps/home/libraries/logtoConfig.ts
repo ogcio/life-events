@@ -6,6 +6,7 @@ export const publicServantExpectedRoles = [
   "Messaging Public Servant",
   "Life Events Public Servant",
   "Analytics Public Servant",
+  "Profile Public Servant",
 ];
 
 export const baseConfig = {
