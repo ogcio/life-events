@@ -12,6 +12,7 @@ variables:
   nextPublicPaymentsServiceEntryPoint: https://payments.sta.blocks.gov.ie
   nextPublicLifeEventsServiceEntryPoint: https://sta.life.gov.ie
   nextPublicBuildingBlocksLandingPage: https://blocks.gov.ie
+  nextPublicProfileServiceEntryPoint: https://profile.sta.blocks.gov.ie
   nextPublicFormsUrl: https://www.forms.uat.gov.ie/
   nextPublicMatomoUrl: //analytics.ogcio.gov.ie
   nextPublicMatomoProtocol: https
