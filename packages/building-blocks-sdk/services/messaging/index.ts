@@ -320,13 +320,17 @@ export class Messaging {
     return data;
   }
 
-  async getUsersImports(organisationId?: string) {
-    const { error, data } = await this.client.GET("/api/v1/user-imports/", {
-      params: {
-        query: { organisationId },
-      },
-    });
-    return { error, data: data ?? "" };
+  async getUsersImports() {
+    const { error, data } = await this.client.GET("/api/v1/user-imports/");
+    if (!data) {
+      return { error, data: null };
+    }
+
+    if ((data as { data: any[] }).data) {
+      return { error, data: (data as { data: any[] }).data };
+    }
+
+    return { error: "wrong request", data: null };
   }
 
   async getUsersImport(importId: string, includeUsersData?: boolean) {

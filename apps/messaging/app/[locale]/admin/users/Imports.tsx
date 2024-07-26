@@ -16,9 +16,7 @@ export default async () => {
   const messagingClient = await AuthenticationFactory.getMessagingClient({
     token: accessToken,
   });
-  const { data: imports } = await messagingClient.getUsersImports(
-    organization.id,
-  );
+  const { data: imports } = await messagingClient.getUsersImports();
 
   return (
     <>
@@ -37,7 +35,7 @@ export default async () => {
           </tr>
         </thead>
         <tbody className="govie-table__body">
-          {imports["application/json"]?.map((record) => (
+          {imports?.map((record) => (
             <tr key={record.importId} className="govie-table__row">
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
