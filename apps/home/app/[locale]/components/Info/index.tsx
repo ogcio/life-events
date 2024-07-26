@@ -1,6 +1,6 @@
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
-import "./Info.module.scss";
+import "./Info.scss";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import hero from "../../../../public/landingPage/hero.png";
