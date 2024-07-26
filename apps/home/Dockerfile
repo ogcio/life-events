@@ -31,6 +31,8 @@ ENV NEXT_PUBLIC_MATOMO_PROTOCOL=$NEXT_PUBLIC_MATOMO_PROTOCOL
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
+RUN npm run build --workspace=packages/shared-errors
+RUN npm run build --workspace=packages/nextjs-logging-wrapper
 RUN npm run build --workspace=apps/home
 
 FROM base-deps AS runner
