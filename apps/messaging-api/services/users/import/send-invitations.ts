@@ -57,7 +57,7 @@ export const sendInvitationsForUsersImport = async (params: {
   const client = await pg.pool.connect();
   try {
     await client.query("BEGIN");
-    const userInvitations = await getSettings({
+    const userInvitations = await getSettingsPerUserIds({
       userIds,
       organisationId: toImportUsers.organisationId,
       client,
@@ -91,7 +91,7 @@ export const sendInvitationsForUsersImport = async (params: {
   }
 };
 
-const getSettings = async (params: {
+const getSettingsPerUserIds = async (params: {
   userIds: string[];
   organisationId: string;
   client: PoolClient;
