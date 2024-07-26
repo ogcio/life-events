@@ -7,6 +7,7 @@ import Header from "../../components/Header";
 import styles from "../(public)/layout.module.scss";
 import { AuthenticationFactory } from "../../utils/authentication-factory";
 import hasAdminPermissions from "./utils/hasAdminPermissions";
+import { redirect, RedirectType } from "next/navigation";
 
 export default async ({
   children,
@@ -16,12 +17,20 @@ export default async ({
   params: { locale: string };
 }) => {
   const authFactory = AuthenticationFactory.getInstance();
-  const context = await authFactory.getPublicServant();
+  const context = await authFactory.getContext();
+
+  if (!context.isPublicServant) {
+    return redirect(`/${locale}/`, RedirectType.replace);
+  }
+
+  const publicServancContext = await authFactory.getPublicServant();
 
   const hasPermissions = hasAdminPermissions(
     context.accessToken as string,
     context.scopes,
   );
+
+  console.log({ publicServancContext, hasPermissions });
 
   return (
     <html lang={locale}>

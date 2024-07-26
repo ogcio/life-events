@@ -1,7 +1,3 @@
-import { redirect, RedirectType } from "next/navigation";
-import { routes } from "../../utils";
-import { PgSessions } from "auth/sessions";
-
 type Props = {
   params: {
     locale: string;
@@ -9,12 +5,11 @@ type Props = {
 };
 
 export default async (props: Props) => {
-  const path = `${props.params.locale}/${routes.events.slug}`;
+  const path = `${props.params.locale}/`;
 
-  const { publicServant } = await PgSessions.get();
-  if (publicServant) {
-    redirect(`${props.params.locale}/admin`, RedirectType.replace);
-  }
-
-  redirect(path, RedirectType.replace);
+  return (
+    <section>
+      <h3 className="govie-heading-l">welcome to upload app</h3>
+    </section>
+  );
 };

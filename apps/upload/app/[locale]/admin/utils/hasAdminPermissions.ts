@@ -1,6 +1,5 @@
 import { hasPermissions } from "auth/check-permissions";
+import { publicServantScopes } from "../../../utils/logto-config";
 
 export default (accessToken: string, scopes: string[]) =>
-  hasPermissions(accessToken as string, scopes, [
-    "life-events:digital-wallet-flow:*",
-  ]);
+  hasPermissions(accessToken as string, scopes, publicServantScopes);

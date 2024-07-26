@@ -3,24 +3,13 @@ import "design-system/dist/esm/index.css";
 import "../../styles/globals.scss";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import { PgSessions } from "auth/sessions";
 import { Metadata } from "next";
 import { RedirectType, redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { pgpool } from "../../utils/postgres";
 import FeedbackBanner from "../../components/FeedbackBanner";
-import { getAllEnabledFlags, isFeatureFlagEnabled } from "feature-flags/utils";
-import {
-  getEnabledOptions,
-  menuOptions,
-} from "../../components/HamburgerMenu/options";
-import HamburgerMenuWrapper from "../../components/HamburgerMenu/HamburgerMenuWrapper";
-import { getMessages, getTranslations } from "next-intl/server";
 import styles from "./layout.module.scss";
-import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import AnalyticsTracker from "analytics/components/AnalyticsTracker";
 import favicon from "../../../public/favicon.ico";
-import { AuthSession } from "auth/auth-session";
 import { AuthenticationFactory } from "../../utils/authentication-factory";
 import hasCitizenPermissions from "./utils/hasCitizenPermissions";
 
@@ -44,15 +33,14 @@ export default async function RootLayout({
   const path = headers().get("x-pathname")?.toString();
   const queryString = headers().get("x-searchParams")?.toString();
   const authFactory = AuthenticationFactory.getInstance();
+  const context = await authFactory.getContext();
 
   if (await authFactory.isPublicServantAuthenticated()) {
     redirect(`/${locale}/admin`, RedirectType.replace);
   }
 
-  const context = await authFactory.getContext();
-
   const hasPermissions = hasCitizenPermissions(
-    context.accessToken as string,
+    "THIS FIELD IS UNUSED",
     context.scopes,
   );
 
@@ -77,10 +65,10 @@ export default async function RootLayout({
           flexDirection: "column",
         }}
       >
-        <AnalyticsTracker
+        {/* <AnalyticsTracker
           userId={userId}
           customDimensions={{ dimension1: verificationLevel }}
-        />
+        /> */}
 
         <Header showHamburgerButton={false} locale={locale} />
         {/* All designs are made for 1440 px  */}
