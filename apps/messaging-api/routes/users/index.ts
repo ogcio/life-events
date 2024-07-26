@@ -11,14 +11,14 @@ import {
   PaginationParamsSchema,
   getGenericResponseSchema,
 } from "../../types/schemaDefinitions";
-import { getUsers } from "../../services/users/users";
+import { getUser, getUsers } from "../../services/users/users";
 import {
   PaginationDetails,
   formatAPIResponse,
   sanitizePagination,
 } from "../../utils/pagination";
 import { Permissions } from "../../types/permissions";
-import { NotFoundError, ServerError } from "shared-errors";
+import { AuthorizationError, NotFoundError } from "shared-errors";
 import { Profile } from "building-blocks-sdk";
 
 const tags = ["Users"];
@@ -113,43 +113,18 @@ export default async function users(app: FastifyInstance) {
     async function (request) {
       const errorProcess = "GET_USER";
       const userId = request.params.userId;
-      //TODO IMPLEMENT THIS
-      let user: User | undefined;
-      try {
-        const userQueryResult = await app.pg.pool.query<User>(
-          `
-              select 
-                id,
-                user_profile_id as "userProfileId",
-                (details ->> 'firstName') as "firstName",  
-                (details ->> 'lastName') as "lastName",
-                phone as "phoneNumber",
-                email as "emailAddress",
-                conf.preferred_transports as "preferredTransports",
-                (details ->> 'publicIdentityId') as "ppsn"
-              from users u
-              join organisation_user_configurations conf on conf.user_id = u.id
-              where
-              invitation_status = 'accepted' 
-              and id = $1
-              `,
-          [userId],
-        );
-
-        user = userQueryResult.rows.at(0);
-      } catch (err) {
-        app.log.error(err);
-        throw new ServerError(
+      if (!request.userData?.organizationId) {
+        throw new AuthorizationError(
           errorProcess,
-          "failed to query user from messages.users",
+          "You have to be part of an organisation to invoke this endpoint",
         );
       }
-
-      if (!user) {
-        throw new NotFoundError(errorProcess, "user not found");
-      }
-
-      user.lang = "en";
+      //TODO IMPLEMENT THIS
+      const user = await getUser({
+        pool: app.pg.pool,
+        organisationId: request.userData!.organizationId,
+        userId,
+      });
 
       if (user.userProfileId) {
         const profileSdk = new Profile(request.userData!.accessToken);

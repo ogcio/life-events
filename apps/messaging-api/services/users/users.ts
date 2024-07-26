@@ -1,10 +1,12 @@
 import { Pool } from "pg";
 import { PaginationParams } from "../../types/schemaDefinitions";
 import { utils } from "../../utils";
-import { ServerError } from "shared-errors";
+import { NotFoundError, ServerError } from "shared-errors";
 import { sanitizePagination } from "../../utils/pagination";
 import { SELECTABLE_TRANSPORTS } from "./shared-users";
 import { UserPerOrganisation } from "../../types/usersSchemaDefinitions";
+
+const ERROR_PROCESS = "GET_USERS";
 
 export const getUsers = async (params: {
   pool: Pool;
@@ -31,7 +33,7 @@ export const getUsers = async (params: {
       total: (await countResponse).rows[0].count,
     };
   } catch (error) {
-    throw new ServerError("GET_RECIPIENTS", `error fetching recipients`, error);
+    throw new ServerError(ERROR_PROCESS, `error fetching recipients`, error);
   } finally {
     client.release();
   }
@@ -86,22 +88,7 @@ const buildGetRecipientsQueries = (params: {
     `;
 
   const dataSelect = `SELECT 
-        u.id as "userId",
-        u.user_profile_id as "userProfileId",
-        u.phone as "phoneNumber",
-        u.email as "emailAddress",
-        u.details->>'firstName' as "firstName",
-        u.details->>'lastName' as "lastName",
-        u.details->>'birthDate' as "birthDate",
-        u.details->>'publicIdentityId' as "ppsn",
-        ouc.preferred_transports as "organisationPreferredTransports",
-        ouc.organisation_id as "organisationId",
-        ouc.invitation_status as "organisationInvitationStatus",
-        ouc.invitation_sent_at  as "organisationInvitationSentAt",
-        ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
-        users.correlation_quality as "correlationQuality",
-        users.user_status as "userStatus",
-        'en' as lang
+        ${getFieldsToSelect()}
         ${basicQuery}
         ORDER BY u.id DESC
         LIMIT $${paginationIndex++} OFFSET $${paginationIndex}
@@ -122,3 +109,58 @@ const buildGetRecipientsQueries = (params: {
     },
   };
 };
+
+export const getUser = async (params: {
+  pool: Pool;
+  organisationId: string;
+  userId: string;
+}): Promise<UserPerOrganisation> => {
+  const client = await params.pool.connect();
+  try {
+    const response = await client.query<UserPerOrganisation>(
+      `
+      SELECT
+      ${getFieldsToSelect()}
+      FROM users u
+      JOIN organisation_user_configurations ouc ON 
+          ouc.organisation_id = $1 AND
+          ouc.user_id = u.id AND
+          ouc.invitation_status = 'accepted'
+      WHERE u.user_status = 'active' and u.id = $2
+      LIMIT 1  
+      `,
+      [params.organisationId, params.userId],
+    );
+    if (response.rowCount === 0) {
+      throw new NotFoundError(
+        ERROR_PROCESS,
+        `User with id ${params.userId} not found or inactive`,
+      );
+    }
+
+    return response.rows[0];
+  } catch (error) {
+    throw new ServerError(ERROR_PROCESS, `error fetching recipients`, error);
+  } finally {
+    client.release();
+  }
+};
+
+const getFieldsToSelect = () => `
+  u.id as "userId",
+  u.user_profile_id as "userProfileId",
+  u.phone as "phoneNumber",
+  u.email as "emailAddress",
+  u.details->>'firstName' as "firstName",
+  u.details->>'lastName' as "lastName",
+  u.details->>'birthDate' as "birthDate",
+  u.details->>'publicIdentityId' as "ppsn",
+  ouc.preferred_transports as "organisationPreferredTransports",
+  ouc.organisation_id as "organisationId",
+  ouc.invitation_status as "organisationInvitationStatus",
+  ouc.invitation_sent_at  as "organisationInvitationSentAt",
+  ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
+  users.correlation_quality as "correlationQuality",
+  users.user_status as "userStatus",
+  'en' as lang
+`;
