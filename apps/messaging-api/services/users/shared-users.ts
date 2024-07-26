@@ -152,63 +152,6 @@ export const getSettingsPerOrganisation = async (params: {
   limit?: number;
   joinUsersImports?: boolean;
   includeUserDetails?: boolean;
-}): Promise<OrganisationSetting[]> =>
-  getSettings({
-    ...params,
-    toJoinFieldName: "organisation_id",
-    toJoinValue: params.organisationId,
-  });
-
-export const getSettingsPerUser = async (params: {
-  client: PoolClient;
-  userId: string;
-  whereClauses?: string[];
-  whereValues?: string[];
-  errorCode: string;
-  logicalWhereOperator?: string;
-  limit?: number;
-  joinUsersImports?: boolean;
-  includeUserDetails?: boolean;
-}): Promise<OrganisationSetting[]> =>
-  getSettings({
-    ...params,
-    toJoinFieldName: "user_id",
-    toJoinValue: params.userId,
-  });
-
-export const getSettingsPerUserProfile = async (params: {
-  client: PoolClient;
-  userProfileId: string;
-  errorCode: string;
-}): Promise<OrganisationSetting[]> => {
-  const { client, userProfileId, errorCode } = params;
-  try {
-    const userByProfile = await getUserByUserProfileId({
-      client,
-      userProfileId,
-      errorCode: errorCode,
-    });
-    return await getSettingsPerUser({
-      client,
-      userId: userByProfile.id,
-      errorCode: errorCode,
-    });
-  } finally {
-    client.release();
-  }
-};
-
-const getSettings = async (params: {
-  client: PoolClient;
-  toJoinValue: string;
-  toJoinFieldName: string;
-  whereClauses?: string[];
-  whereValues?: string[];
-  errorCode: string;
-  logicalWhereOperator?: string;
-  limit?: number;
-  joinUsersImports?: boolean;
-  includeUserDetails?: boolean;
 }): Promise<OrganisationSetting[]> => {
   try {
     const usersImportJoin =
@@ -218,7 +161,6 @@ const getSettings = async (params: {
     const inputWhereValues = params.whereValues ?? [];
     const inputWhereClauses = params.whereClauses ?? [];
     const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
-    const toJoinIndex = `$${inputWhereValues.length + 1}`;
     const operator = params.logicalWhereOperator
       ? ` ${params.logicalWhereOperator} `
       : " AND ";
@@ -228,26 +170,26 @@ const getSettings = async (params: {
         : "";
     const result = await params.client.query<OrganisationSetting>(
       `
-        SELECT 
-            ouc.user_id as "userId",
-            users.user_profile_id as "userProfileId",
-            users.email as "emailAddress",
-            users.phone as "phoneNumber",
-            ${(params.includeUserDetails ?? true) ? 'users.details as "details"' : ""},
-            ouc.organisation_id as "organisationId",
-            ouc.invitation_status as "organisationInvitationStatus",
-            ouc.invitation_sent_at  as "organisationInvitationSentAt",
-            ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
-            ouc.preferred_transports as "organisationPreferredTransports",
-            users.correlation_quality as "correlationQuality",
-            users.user_status as "userStatus"
-          from users
-          left join organisation_user_configurations ouc on ouc.user_id = users.id 
-            and ouc.${params.toJoinFieldName} = ${toJoinIndex}
-          ${usersImportJoin}
-          ${whereClauses} ${limitClause}
-      `,
-      [...inputWhereValues, params.toJoinValue],
+          SELECT 
+              ouc.user_id as "userId",
+              users.user_profile_id as "userProfileId",
+              users.email as "emailAddress",
+              users.phone as "phoneNumber",
+              ${(params.includeUserDetails ?? true) ? 'users.details as "details"' : ""},
+              ouc.organisation_id as "organisationId",
+              ouc.invitation_status as "organisationInvitationStatus",
+              ouc.invitation_sent_at  as "organisationInvitationSentAt",
+              ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
+              ouc.preferred_transports as "organisationPreferredTransports",
+              users.correlation_quality as "correlationQuality",
+              users.user_status as "userStatus"
+            from users
+            left join organisation_user_configurations ouc on ouc.user_id = users.id 
+              and ouc.organisation_id = $1
+            ${usersImportJoin}
+            ${whereClauses} ${limitClause}
+        `,
+      [params.organisationId, ...inputWhereValues],
     );
 
     return result.rows;
@@ -258,6 +200,79 @@ const getSettings = async (params: {
       error,
     );
   }
+};
+
+export const getSettingsPerUser = async (params: {
+  client: PoolClient;
+  userId: string;
+  whereClauses?: string[];
+  whereValues?: string[];
+  errorCode: string;
+  logicalWhereOperator?: string;
+  limit?: number;
+  includeUserDetails?: boolean;
+}): Promise<OrganisationSetting[]> => {
+  try {
+    const inputWhereValues = [...(params.whereValues ?? []), params.userId];
+    const inputWhereClauses = params.whereClauses ?? [];
+    inputWhereClauses.push(`users.id = $${inputWhereClauses.length + 1}`);
+    const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
+    const operator = params.logicalWhereOperator
+      ? ` ${params.logicalWhereOperator} `
+      : " AND ";
+
+    const whereClauses =
+      inputWhereClauses.length > 0
+        ? `WHERE ${inputWhereClauses.join(operator)} `
+        : "";
+    const result = await params.client.query<OrganisationSetting>(
+      `
+          SELECT 
+              ouc.user_id as "userId",
+              users.user_profile_id as "userProfileId",
+              users.email as "emailAddress",
+              users.phone as "phoneNumber",
+              ${(params.includeUserDetails ?? true) ? 'users.details as "details"' : ""},
+              ouc.organisation_id as "organisationId",
+              ouc.invitation_status as "organisationInvitationStatus",
+              ouc.invitation_sent_at  as "organisationInvitationSentAt",
+              ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
+              ouc.preferred_transports as "organisationPreferredTransports",
+              users.correlation_quality as "correlationQuality",
+              users.user_status as "userStatus"
+            from users
+            left join organisation_user_configurations ouc on ouc.user_id = users.id
+            ${whereClauses} ${limitClause}
+        `,
+      inputWhereValues,
+    );
+
+    return result.rows;
+  } catch (error) {
+    throw new ServerError(
+      params.errorCode,
+      `Error retrieving organisation settings`,
+      error,
+    );
+  }
+};
+
+export const getSettingsPerUserProfile = async (params: {
+  client: PoolClient;
+  userProfileId: string;
+  errorCode: string;
+}): Promise<OrganisationSetting[]> => {
+  const { client, userProfileId, errorCode } = params;
+  const userByProfile = await getUserByUserProfileId({
+    client,
+    userProfileId,
+    errorCode: errorCode,
+  });
+  return await getSettingsPerUser({
+    client,
+    userId: userByProfile.id,
+    errorCode: errorCode,
+  });
 };
 
 export const getUserProfiles = async (ids: string[], pool: Pool) => {
