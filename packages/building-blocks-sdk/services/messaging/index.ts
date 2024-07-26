@@ -293,7 +293,7 @@ export class Messaging {
 
   async importUsers(toImport: { file?: File; records?: object[] }) {
     if (toImport.file) {
-      const { error } = await this.client.POST("/api/v1/users/imports/", {
+      const { error } = await this.client.POST("/api/v1/user-imports/", {
         body: {
           file: toImport.file,
         } as any,
@@ -306,44 +306,37 @@ export class Messaging {
       return { error };
     }
 
-    const { error } = await this.client.POST("/api/v1/users/imports/", {
+    const { error } = await this.client.POST("/api/v1/user-imports/", {
       body: toImport.records,
     });
     return { error };
   }
 
   async downloadUsersCsvTemplate() {
-    const { data } = await this.client.GET(
-      "/api/v1/users/imports/csv/template",
-      {
-        parseAs: "blob",
-      },
-    );
+    const { data } = await this.client.GET("/api/v1/user-imports/", {
+      headers: { Accept: "text/csv" },
+      parseAs: "blob",
+    });
     return data;
   }
 
   async getUsersImports(organisationId?: string) {
-    const { error, data } = await this.client.GET("/api/v1/users/imports/", {
+    const { error, data } = await this.client.GET("/api/v1/user-imports/", {
       params: {
         query: { organisationId },
       },
     });
-    return { error, data: data?.data };
+    return { error, data: data ?? "" };
   }
 
-  async getUsersImport(
-    importId: string,
-    organisationId?: string,
-    includeUsersData?: boolean,
-  ) {
+  async getUsersImport(importId: string, includeUsersData?: boolean) {
     const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/{importId}",
+      "/api/v1/user-imports/{importId}",
       {
         params: {
           path: { importId },
           query: {
-            organisationId,
-            includeUsersData: Boolean(includeUsersData),
+            includeImportedData: Boolean(includeUsersData),
           },
         },
       },
@@ -351,23 +344,10 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getUsersForImport(importId: string, organisationId?: string) {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/{importId}/users",
-      {
-        params: { path: { importId }, query: { organisationId } },
-      },
-    );
-    return { error, data: data?.data };
-  }
-
-  async getUsers(organisationId?: string) {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/users",
-      {
-        params: { query: { organisationId } },
-      },
-    );
+  async getUsersForImport(importId: string) {
+    const { error, data } = await this.client.GET("/api/v1/users/", {
+      params: { query: { importId } },
+    });
     return { error, data: data?.data };
   }
 
@@ -423,10 +403,8 @@ export class Messaging {
     return { data: data?.data, error };
   }
 
-  async getRecipients(
-    query: paths["/api/v1/users/recipients/"]["get"]["parameters"]["query"],
-  ) {
-    const { error, data } = await this.client.GET("/api/v1/users/recipients/", {
+  async getUsers(query: paths["/api/v1/users/"]["get"]["parameters"]["query"]) {
+    const { error, data } = await this.client.GET("/api/v1/users/", {
       params: {
         query,
       },
@@ -434,19 +412,16 @@ export class Messaging {
     return { error, data: data?.data, metadata: data?.metadata };
   }
 
-  async getRecipient(
-    userId: paths["/api/v1/users/recipients/{userId}"]["get"]["parameters"]["path"]["userId"],
+  async getUser(
+    userId: paths["/api/v1/users/{userId}"]["get"]["parameters"]["path"]["userId"],
   ) {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/recipients/{userId}",
-      {
-        params: {
-          path: {
-            userId,
-          },
+    const { error, data } = await this.client.GET("/api/v1/users/{userId}", {
+      params: {
+        path: {
+          userId,
         },
       },
-    );
+    });
 
     return { error, data: data?.data, metadata: data?.metadata };
   }
