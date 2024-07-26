@@ -107,6 +107,8 @@ type MessageUpsertEvent = {
   templateId?: string;
   organisationName: string;
   scheduledAt: string;
+  bypassConsent: boolean;
+  security: string;
 };
 
 type MessageScheduleEvent = {
@@ -178,7 +180,7 @@ export function newMessagingEventLogger(
       } catch (err) {
         stdLogger.error(
           {
-            at: Date.now(),
+            at: new Date().toISOString(),
             type,
             err,
             messageIds: eventData.map((event) => {

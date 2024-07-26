@@ -1,14 +1,17 @@
 import createClient, { type Middleware } from "openapi-fetch";
 import type { paths } from "./schema";
 
+function newInterpolator(interpolations: Record<string, string>) {
+  return function replacer(acc: string, key: string) {
+    return acc.replaceAll(`{{${key}}}`, interpolations[key]);
+  };
+}
+
 export class Messaging {
   private client: ReturnType<typeof createClient<paths>>;
   constructor(authToken: string) {
     const authMiddleware: Middleware = {
       async onRequest(req) {
-        // Send temporarly the user id as auth token
-        req.headers.set("x-user-id", authToken);
-
         req.headers.set("Authorization", `Bearer ${authToken}`);
         return req;
       },
@@ -46,14 +49,14 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async createMessage(
+  async send(
     body: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"],
   ) {
-    const { error } = await this.client.POST("/api/v1/messages/", {
+    const { error, data } = await this.client.POST("/api/v1/messages/", {
       body,
     });
 
-    return { error };
+    return { error, data: data?.data };
   }
 
   async getTemplates(lang?: string) {
@@ -78,6 +81,74 @@ export class Messaging {
       },
     );
     return { data: data?.data, error };
+  }
+
+  async buildMessage(
+    messages: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"]["message"][],
+    lang: string,
+    vars: Record<string, string | null | undefined>,
+  ) {
+    if (!lang) {
+      throw new Error("no language provided");
+    }
+
+    const message = messages.find((m) => m.lang === lang);
+
+    if (!message) {
+      throw new Error(`template not found for language ${lang}`);
+    }
+
+    const illegalValueKeys: string[] = [];
+    const keys = Object.keys(vars);
+    for (const key of keys) {
+      if (vars[key] === null || vars[key] === undefined) {
+        illegalValueKeys.push(key);
+      }
+    }
+
+    if (illegalValueKeys.length) {
+      throw new Error(`illegal empty variables ${illegalValueKeys.join(", ")}`);
+    }
+
+    // No null | undefined at this point
+    const interpolator = newInterpolator(vars as Record<string, string>);
+
+    const textVariables = new Set<string>();
+    for (const text of [
+      message.subject,
+      message.excerpt,
+      message.richText,
+      message.plainText,
+    ]) {
+      (text.match(/[^{{]+(?=}})/g) || []).forEach(
+        textVariables.add,
+        textVariables,
+      );
+    }
+
+    // Check all content if there's any unhandled vars.
+    const illegalVariables: string[] = [];
+    textVariables.forEach((val) => {
+      if (!keys.some((key) => key === val)) {
+        illegalVariables.push(val);
+      }
+    });
+
+    if (illegalVariables.length) {
+      throw new Error(
+        `illegal template variables ${illegalVariables.join(", ")}`,
+      );
+    }
+
+    return {
+      threadName: message.threadName,
+      messageName: message.messageName,
+      subject: keys.reduce(interpolator, message.subject),
+      excerpt: keys.reduce(interpolator, message.excerpt),
+      richText: keys.reduce(interpolator, message.richText),
+      plainText: keys.reduce(interpolator, message.plainText),
+      lang: message.lang,
+    };
   }
 
   async createTemplate(
@@ -220,18 +291,24 @@ export class Messaging {
     return { error };
   }
 
-  async importUsersCsv(file: File) {
-    const { error } = await this.client.POST("/api/v1/users/imports/csv", {
-      body: {
-        file,
-      } as any,
-      bodySerializer: (body: any) => {
-        const formData = new FormData();
-        formData.set("file", body.file);
-        return formData;
-      },
-    });
+  async importUsers(toImport: { file?: File; records?: object[] }) {
+    if (toImport.file) {
+      const { error } = await this.client.POST("/api/v1/users/imports/", {
+        body: {
+          file: toImport.file,
+        } as any,
+        bodySerializer: (body: any) => {
+          const formData = new FormData();
+          formData.set("file", body.file);
+          return formData;
+        },
+      });
+      return { error };
+    }
 
+    const { error } = await this.client.POST("/api/v1/users/imports/", {
+      body: toImport.records,
+    });
     return { error };
   }
 
@@ -346,35 +423,23 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async createTemplateMessages(
-    body: paths["/api/v1/messages/template"]["post"]["requestBody"]["content"]["application/json"],
+  async getMessageEvents(
+    params: paths["/api/v1/message-events/"]["get"]["parameters"]["query"],
   ) {
-    const { data, error } = await this.client.POST(
-      "/api/v1/messages/template",
-      { body },
-    );
-
-    return { data, error };
-  }
-
-  async getMessageEvents({
-    query,
-  }: paths["/api/v1/messages/events"]["get"]["parameters"]) {
-    const { data, error } = await this.client.GET("/api/v1/messages/events", {
-      params: { query },
+    const { data, error } = await this.client.GET("/api/v1/message-events/", {
+      params: { query: params },
     });
 
-    return { data: data?.data, error };
+    return { data: data?.data, error, metadata: data?.metadata };
   }
 
-  async getMessageEvent(
-    messageId: paths["/api/v1/messages/{messageId}/events"]["get"]["parameters"]["path"]["messageId"],
-  ) {
+  async getMessageEvent(eventId: string) {
     const { error, data } = await this.client.GET(
-      "/api/v1/messages/{messageId}/events",
-      { params: { path: { messageId } } },
+      "/api/v1/message-events/{eventId}",
+      { params: { path: { eventId } } },
     );
 
+    console.log(data?.data);
     return { data: data?.data, error };
   }
 
@@ -386,6 +451,23 @@ export class Messaging {
         query,
       },
     });
+    return { error, data: data?.data, metadata: data?.metadata };
+  }
+
+  async getRecipient(
+    userId: paths["/api/v1/users/recipients/{userId}"]["get"]["parameters"]["path"]["userId"],
+  ) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/users/recipients/{userId}",
+      {
+        params: {
+          path: {
+            userId,
+          },
+        },
+      },
+    );
+
     return { error, data: data?.data, metadata: data?.metadata };
   }
 }

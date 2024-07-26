@@ -1,4 +1,4 @@
-FROM base-deps as deps
+FROM base-deps AS deps
 
 WORKDIR /app
 ENV LOG_LEVEL=trace
@@ -8,6 +8,9 @@ COPY ./apps/profile/package*.json /app/apps/profile/
 COPY ./packages/feature-flags/package*.json /app/packages/feature-flags/
 COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
+COPY ./packages/shared-components/package*.json /app/packages/shared-components/
+COPY ./packages/shared-errors/package*.json /app/packages/shared-errors/
+COPY ./packages/nextjs-logging-wrapper/package*.json /app/packages/nextjs-logging-wrapper/
 
 RUN npm ci
 
@@ -16,15 +19,24 @@ COPY --from=design-system-container /app/packages/design-system/ /app/packages/d
 COPY ./packages/feature-flags/ /app/packages/feature-flags/
 COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
+COPY ./packages/shared-components/ /app/packages/shared-components/
+COPY ./packages/shared-errors/ /app/packages/shared-errors/
+COPY ./packages/nextjs-logging-wrapper/ /app/packages/nextjs-logging-wrapper/
 
 FROM deps AS builder
 WORKDIR /app
 
+ARG NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT
+
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
+ENV NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT
+
+RUN npm run build --workspace=packages/shared-errors
+RUN npm run build --workspace=packages/nextjs-logging-wrapper
 RUN npm run build --workspace=apps/profile
 
-FROM base-deps as runner
+FROM base-deps AS runner
 
 WORKDIR /app
 
@@ -41,6 +53,6 @@ COPY --from=deps /app/apps/profile/migrations /app/apps/profile/migrations
 
 EXPOSE 3003
 
-ENV PORT 3003
+ENV PORT=3003
 
 CMD [ "node", "apps/profile/server.js" ]

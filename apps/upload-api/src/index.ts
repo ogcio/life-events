@@ -5,12 +5,11 @@ import { getLoggingConfiguration } from "logging-wrapper";
 
 const app = await build(getLoggingConfiguration());
 
-app.listen({ host: "0.0.0.0", port: 8006 }, (err, address) => {
+app.listen({ host: "0.0.0.0", port: 8006 }, (err) => {
   if (err) {
     console.error(err);
     process.exit(1);
   }
-  app.log.info(`app listening at ${address}`);
 });
 
 await app.ready();

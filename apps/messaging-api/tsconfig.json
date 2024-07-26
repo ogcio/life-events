@@ -9,7 +9,8 @@
     "skipLibCheck": true,
     "typeRoots": [
       "types"
-    ]
+    ],
+    "resolveJsonModule": true
   },
   "ts-node": {
     "esm": true,

@@ -1,10 +1,9 @@
-import { PgSessions } from "auth/sessions";
 import ds from "design-system";
 import styles from "./SideMenu.module.scss";
+import { AuthenticationFactory } from "../utils/authentication-factory";
 
 export default async () => {
-  const { firstName, lastName } = await PgSessions.get();
-  const userName = [firstName, lastName].join(" ");
+  const user = await AuthenticationFactory.getInstance().getUser();
   const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
   return (
     <>
@@ -20,7 +19,7 @@ export default async () => {
           }}
         >
           <label className="govie-label--s govie-!-font-size-16">
-            {userName}
+            {user.name}
           </label>
         </li>
       </ol>

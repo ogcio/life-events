@@ -8,11 +8,13 @@ export class LifeEventsError extends Error {
   // exceeds the maximum one. We will raise
   // new LifeEventsError("IMPORT_FILE", "File size exceeded")
   errorProcess: string;
+  parentError?: unknown;
 
-  constructor(errorProcess: string, message: string) {
+  constructor(errorProcess: string, message: string, parentError?: unknown) {
     super(message);
     this.errorProcess = errorProcess;
     this.name = "LIFE_EVENTS_ERROR";
+    this.parentError = parentError;
   }
 }
 

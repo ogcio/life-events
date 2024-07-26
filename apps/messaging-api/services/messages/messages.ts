@@ -322,8 +322,8 @@ export const executeJob = async (params: {
   pg: PostgresDb;
   logger: FastifyBaseLogger;
   jobId: string;
-  userId: string;
   token: string;
+  accessToken: string;
 }) => {
   const statusWorking: scheduledMessageByTemplateStatus = "working";
   const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
@@ -432,6 +432,7 @@ export const executeJob = async (params: {
         job.userId,
         eventLogger,
         organizationId,
+        params.accessToken,
       );
 
       for (const err of serviceErrors) {
@@ -497,6 +498,7 @@ const scheduleMessage = async (
   userId: string,
   eventLogger: MessagingEventLogger,
   organizationId: string,
+  accessToken: string,
 ): Promise<ServiceError[]> => {
   const client = await pool.connect();
   const errors: ServiceError[] = [];
@@ -561,7 +563,7 @@ const scheduleMessage = async (
     client.release();
   }
 
-  const profileSdk = new Profile(userId);
+  const profileSdk = new Profile(accessToken);
   const messageSdk = {
     selectUsers(ids: string[]) {
       return getUserProfiles(ids, pool);

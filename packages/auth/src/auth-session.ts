@@ -16,12 +16,17 @@ import { LogtoNextConfig, UserScope } from "@logto/next";
 import { BadRequestError } from "shared-errors";
 import { decodeJwt } from "jose";
 import { getCommonLogger } from "nextjs-logging-wrapper";
+import { cookies } from "next/headers";
 
 const PROCESS_ERROR = "PARSE_LOGTO_CONTEXT";
 
 const INACTIVE_PUBLIC_SERVANT_ORG_ROLE =
   "inactive-ps-org:Inactive Public Servant";
-export const INACTIVE_PUBLIC_SERVANT_SCOPE = "bb:public-servant.inactive:*";
+const INACTIVE_PUBLIC_SERVANT_SCOPE = "bb:public-servant.inactive:*";
+
+const DEFAULT_ORGANIZATION_ID = "ogcio";
+
+const SELECTED_ORG_COOKIE = "bb-selected-org-id";
 
 export const AuthUserScope = UserScope;
 
@@ -32,6 +37,7 @@ export const AuthSession: IAuthSession = {
   },
   async logout(config, redirectUri) {
     addInactivePublicServantScope(config);
+    cookies().delete(SELECTED_ORG_COOKIE);
     return signOut(config, redirectUri);
   },
   async get(
@@ -73,6 +79,13 @@ export const AuthSession: IAuthSession = {
 
     return context.isAuthenticated;
   },
+  getSelectedOrganization(): string | undefined {
+    return cookies().get(SELECTED_ORG_COOKIE)?.value;
+  },
+  setSelectedOrganization(organizationId: string): string {
+    cookies().set(SELECTED_ORG_COOKIE, organizationId);
+    return organizationId;
+  },
 };
 
 const addInactivePublicServantScope = (config) => {
@@ -83,6 +96,7 @@ const addInactivePublicServantScope = (config) => {
 
 const getUserInfo = (
   context: LogtoContext,
+  getContextParameters: GetSessionContextParameters,
 ): AuthSessionUserInfo | undefined => {
   let name: string | null = null;
   let username: string | null = null;
@@ -107,7 +121,35 @@ const getUserInfo = (
     return undefined;
   }
 
-  return { name, username, id, email };
+  const organizations = (context.userInfo?.organization_data ?? [])
+    .sort((orgA, orgB) => {
+      if (orgA.id === DEFAULT_ORGANIZATION_ID) {
+        return -1;
+      }
+
+      if (orgB.id === DEFAULT_ORGANIZATION_ID) {
+        return 1;
+      }
+
+      return orgA.name.localeCompare(orgB.name);
+    })
+    .filter((org) => {
+      const orgPSRole = `${org.id}:${getContextParameters.publicServantExpectedRole}`;
+      return context.userInfo?.organization_roles?.includes(orgPSRole);
+    });
+
+  const organizationData = organizations.reduce((acc, current) => {
+    acc[current.id] = current;
+    return acc;
+  }, {});
+
+  return {
+    name,
+    username,
+    id,
+    email,
+    organizationData,
+  };
 };
 // waiting for https://github.com/logto-io/js/issues/758
 // to be resolved
@@ -188,10 +230,16 @@ const getOrganizationRoles = (context: LogtoContext): string[] | null => {
 const checkIfPublicServant = (
   orgRoles: string[] | null,
   getContextParameters: GetSessionContextParameters,
-): boolean =>
-  !checkIfInactivePublicServant(orgRoles) &&
-  orgRoles !== null &&
-  orgRoles?.includes(getContextParameters.publicServantExpectedRole);
+): boolean => {
+  if (checkIfInactivePublicServant(orgRoles) || orgRoles === null) {
+    return false;
+  }
+
+  return orgRoles.some((orgRole) => {
+    const [_, role] = orgRole.split(":");
+    return role === getContextParameters.publicServantExpectedRole;
+  });
+};
 
 const checkIfInactivePublicServant = (orgRoles: string[] | null): boolean =>
   orgRoles !== null && orgRoles?.includes(INACTIVE_PUBLIC_SERVANT_ORG_ROLE);
@@ -242,7 +290,7 @@ const parseContext = (
   context: LogtoContext,
   getContextParameters: GetSessionContextParameters,
 ): PartialAuthSessionContext => {
-  const userInfo = getUserInfo(context);
+  const userInfo = getUserInfo(context, getContextParameters);
   const orgRoles = getOrganizationRoles(context);
   const orgInfo = getOrganizationInfo(context, getContextParameters, orgRoles);
   const isPublicServant = checkIfPublicServant(orgRoles, getContextParameters);

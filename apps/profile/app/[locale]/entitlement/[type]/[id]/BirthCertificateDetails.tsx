@@ -1,12 +1,12 @@
-import { PgSessions } from "auth/sessions";
 import { getTranslations } from "next-intl/server";
 import { formatDate } from "../../../../utils";
 import Link from "next/link";
+import { AuthenticationFactory } from "../../../../utils/authentication-factory";
 
-async function getBirthCertificateeDetails(_id: string) {
-  const { firstName, lastName } = await PgSessions.get();
+async function getBirthCertificateDetails(_id: string) {
+  const { name } = await AuthenticationFactory.getInstance().getUser();
   return {
-    name: `${firstName} ${lastName}`,
+    name,
     dateOfBirth: new Date("1990-01-01T00:00:00Z"),
     gender: "male",
     placeOfBirth: "Ireland",
@@ -18,7 +18,7 @@ async function getBirthCertificateeDetails(_id: string) {
 
 export default async ({ id, locale }: { id: string; locale: string }) => {
   const t = await getTranslations("BirthCertificateDetails");
-  const data = await getBirthCertificateeDetails(id);
+  const data = await getBirthCertificateDetails(id);
 
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">
