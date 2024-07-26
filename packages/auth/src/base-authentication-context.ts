@@ -140,7 +140,7 @@ export class BaseAuthenticationContext {
     }
 
     const orgs = await this.getOrganizations();
-    return Object.values(orgs)[0].id;
+    return Object.values(orgs)?.[0]?.id;
   }
 
   setSelectedOrganization(organizationId: string): string {

@@ -281,9 +281,12 @@ const getScopes = (
     return [];
   }
 
-  const decoded = decodeJwt<{ scope: string }>(token);
-
-  return decoded.scope.split(" ").filter((s) => s != "");
+  try {
+    const decoded = decodeJwt<{ scope: string }>(token);
+    return decoded.scope.split(" ").filter((s) => s != "");
+  } catch (err) {
+    return [];
+  }
 };
 
 const parseContext = (
