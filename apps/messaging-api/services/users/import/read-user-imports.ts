@@ -1,11 +1,8 @@
 import { FastifyBaseLogger } from "fastify";
 import { Pool } from "pg";
+import { getSettingsPerOrganisation, getUserImports } from "../shared-users";
 import {
-  getUserImports,
-  getUserInvitationsForOrganisation,
-} from "../shared-users";
-import {
-  UserInvitation,
+  OrganisationSetting,
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
 import { NotFoundError } from "shared-errors";
@@ -62,15 +59,15 @@ export const getUserImportForOrganisation = async (params: {
   }
 };
 
-export const getUserInvitationsForImport = async (params: {
+export const getOrganisationSettingsForImport = async (params: {
   logger: FastifyBaseLogger;
   organisationId: string;
   importId: string;
   pool: Pool;
-}): Promise<UserInvitation[]> => {
+}): Promise<OrganisationSetting[]> => {
   const client = await params.pool.connect();
   try {
-    return await getUserInvitationsForOrganisation({
+    return await getSettingsPerOrganisation({
       client,
       whereClauses: ["users_imports.import_id = $1"],
       whereValues: [params.importId],
@@ -82,14 +79,14 @@ export const getUserInvitationsForImport = async (params: {
   }
 };
 
-export const getAllUserInvitationsForOrganisation = async (params: {
+export const getAllUserSettingsForOrganisation = async (params: {
   logger: FastifyBaseLogger;
   organisationId: string;
   pool: Pool;
-}): Promise<UserInvitation[]> => {
+}): Promise<OrganisationSetting[]> => {
   const client = await params.pool.connect();
   try {
-    return await getUserInvitationsForOrganisation({
+    return await getSettingsPerOrganisation({
       client,
       whereClauses: [],
       whereValues: [],

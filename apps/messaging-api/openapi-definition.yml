@@ -2302,6 +2302,14 @@ paths:
                     items:
                       type: object
                       properties:
+                        userId:
+                          format: uuid
+                          type: string
+                        userProfileId:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
                         phoneNumber:
                           default: null
                           anyOf:
@@ -2333,6 +2341,19 @@ paths:
                           type: string
                         organisationInvitationFeedbackAt:
                           type: string
+                        organisationPreferredTransports:
+                          type: array
+                          items:
+                            anyOf:
+                              - type: string
+                                enum:
+                                  - email
+                              - type: string
+                                enum:
+                                  - sms
+                              - type: string
+                                enum:
+                                  - lifeEvent
                         correlationQuality:
                           anyOf:
                             - type: string
@@ -2430,10 +2451,13 @@ paths:
                             - address
                             - collectedConsent
                       required:
+                        - userId
+                        - userProfileId
                         - phoneNumber
                         - emailAddress
                         - organisationId
                         - organisationInvitationStatus
+                        - organisationPreferredTransports
                         - correlationQuality
                         - userStatus
                   metadata:
@@ -2605,6 +2629,14 @@ paths:
                   data:
                     type: object
                     properties:
+                      userId:
+                        format: uuid
+                        type: string
+                      userProfileId:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
                       phoneNumber:
                         default: null
                         anyOf:
@@ -2636,6 +2668,19 @@ paths:
                         type: string
                       organisationInvitationFeedbackAt:
                         type: string
+                      organisationPreferredTransports:
+                        type: array
+                        items:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - email
+                            - type: string
+                              enum:
+                                - sms
+                            - type: string
+                              enum:
+                                - lifeEvent
                       correlationQuality:
                         anyOf:
                           - type: string
@@ -2733,10 +2778,13 @@ paths:
                           - address
                           - collectedConsent
                     required:
+                      - userId
+                      - userProfileId
                       - phoneNumber
                       - emailAddress
                       - organisationId
                       - organisationInvitationStatus
+                      - organisationPreferredTransports
                       - correlationQuality
                       - userStatus
                   metadata:
@@ -2930,6 +2978,14 @@ paths:
                   data:
                     type: object
                     properties:
+                      userId:
+                        format: uuid
+                        type: string
+                      userProfileId:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
                       phoneNumber:
                         default: null
                         anyOf:
@@ -2961,6 +3017,19 @@ paths:
                         type: string
                       organisationInvitationFeedbackAt:
                         type: string
+                      organisationPreferredTransports:
+                        type: array
+                        items:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - email
+                            - type: string
+                              enum:
+                                - sms
+                            - type: string
+                              enum:
+                                - lifeEvent
                       correlationQuality:
                         anyOf:
                           - type: string
@@ -3058,10 +3127,13 @@ paths:
                           - address
                           - collectedConsent
                     required:
+                      - userId
+                      - userProfileId
                       - phoneNumber
                       - emailAddress
                       - organisationId
                       - organisationInvitationStatus
+                      - organisationPreferredTransports
                       - correlationQuality
                       - userStatus
                 required:
@@ -3776,14 +3848,6 @@ paths:
                     items:
                       type: object
                       properties:
-                        id:
-                          format: uuid
-                          type: string
-                        userProfileId:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
                         firstName:
                           default: null
                           anyOf:
@@ -3795,39 +3859,44 @@ paths:
                             - type: "null"
                             - type: string
                         phoneNumber:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
+                          allOf:
+                            - default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            - default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
                         emailAddress:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
+                          allOf:
+                            - default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
+                            - default: null
+                              anyOf:
+                                - type: "null"
+                                - type: string
                         birthDate:
                           default: null
                           anyOf:
                             - type: "null"
                             - type: string
-                        organisationPreferredTransports:
-                          type: array
-                          items:
-                            anyOf:
-                              - type: string
-                                enum:
-                                  - email
-                              - type: string
-                                enum:
-                                  - sms
-                              - type: string
-                                enum:
-                                  - lifeEvent
                         lang:
                           default: null
                           anyOf:
                             - type: "null"
                             - type: string
                         ppsn:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        userId:
+                          format: uuid
+                          type: string
+                        userProfileId:
                           default: null
                           anyOf:
                             - type: "null"
@@ -3853,6 +3922,19 @@ paths:
                           type: string
                         organisationInvitationFeedbackAt:
                           type: string
+                        organisationPreferredTransports:
+                          type: array
+                          items:
+                            anyOf:
+                              - type: string
+                                enum:
+                                  - email
+                              - type: string
+                                enum:
+                                  - sms
+                              - type: string
+                                enum:
+                                  - lifeEvent
                         correlationQuality:
                           anyOf:
                             - type: string
@@ -3950,18 +4032,18 @@ paths:
                             - address
                             - collectedConsent
                       required:
-                        - id
-                        - userProfileId
                         - firstName
                         - lastName
                         - phoneNumber
                         - emailAddress
                         - birthDate
-                        - organisationPreferredTransports
                         - lang
                         - ppsn
+                        - userId
+                        - userProfileId
                         - organisationId
                         - organisationInvitationStatus
+                        - organisationPreferredTransports
                         - correlationQuality
                         - userStatus
                   metadata:
@@ -4099,14 +4181,6 @@ paths:
                   data:
                     type: object
                     properties:
-                      id:
-                        format: uuid
-                        type: string
-                      userProfileId:
-                        default: null
-                        anyOf:
-                          - type: "null"
-                          - type: string
                       firstName:
                         default: null
                         anyOf:
@@ -4118,39 +4192,44 @@ paths:
                           - type: "null"
                           - type: string
                       phoneNumber:
-                        default: null
-                        anyOf:
-                          - type: "null"
-                          - type: string
+                        allOf:
+                          - default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          - default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
                       emailAddress:
-                        default: null
-                        anyOf:
-                          - type: "null"
-                          - type: string
+                        allOf:
+                          - default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
+                          - default: null
+                            anyOf:
+                              - type: "null"
+                              - type: string
                       birthDate:
                         default: null
                         anyOf:
                           - type: "null"
                           - type: string
-                      organisationPreferredTransports:
-                        type: array
-                        items:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - email
-                            - type: string
-                              enum:
-                                - sms
-                            - type: string
-                              enum:
-                                - lifeEvent
                       lang:
                         default: null
                         anyOf:
                           - type: "null"
                           - type: string
                       ppsn:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      userId:
+                        format: uuid
+                        type: string
+                      userProfileId:
                         default: null
                         anyOf:
                           - type: "null"
@@ -4176,6 +4255,19 @@ paths:
                         type: string
                       organisationInvitationFeedbackAt:
                         type: string
+                      organisationPreferredTransports:
+                        type: array
+                        items:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - email
+                            - type: string
+                              enum:
+                                - sms
+                            - type: string
+                              enum:
+                                - lifeEvent
                       correlationQuality:
                         anyOf:
                           - type: string
@@ -4273,18 +4365,18 @@ paths:
                           - address
                           - collectedConsent
                     required:
-                      - id
-                      - userProfileId
                       - firstName
                       - lastName
                       - phoneNumber
                       - emailAddress
                       - birthDate
-                      - organisationPreferredTransports
                       - lang
                       - ppsn
+                      - userId
+                      - userProfileId
                       - organisationId
                       - organisationInvitationStatus
+                      - organisationPreferredTransports
                       - correlationQuality
                       - userStatus
                   metadata:

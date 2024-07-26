@@ -316,7 +316,7 @@ const processToImportUser = async (params: {
 };
 
 const insertNewUser = async (params: {
-  toInsert: User;
+  toInsert: Omit<User, "id">;
   client: PoolClient;
 }): Promise<User> => {
   try {
@@ -347,9 +347,7 @@ const insertNewUser = async (params: {
         toInsert.details ? JSON.stringify(toInsert.details) : "{}",
       ],
     );
-    toInsert.id = result.rows[0].id;
-
-    return toInsert;
+    return { ...toInsert, id: result.rows[0].id };
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
     throw new ServerError(
@@ -484,7 +482,7 @@ const fillUser = (params: {
   correlationQuality?: CorrelationQuality;
   toImportUser: ToImportUser;
   usersImportId: string;
-}): User => ({
+}): Omit<User, "id"> & { id?: string } => ({
   id: params.userId,
   importerOrganisationId: params.organisationId,
   userProfileId: params.userProfileId,

@@ -1,7 +1,7 @@
 import { FastifyBaseLogger } from "fastify";
 import { PoolClient } from "pg";
 import {
-  UserInvitation,
+  OrganisationSetting,
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
 import {
@@ -10,10 +10,7 @@ import {
 } from "../../../types/schemaDefinitions";
 import { createMessage } from "../../messages/messages";
 import { PostgresDb } from "@fastify/postgres";
-import {
-  ALL_TRANSPORTS,
-  getUserInvitationsForOrganisation,
-} from "../shared-users";
+import { ALL_TRANSPORTS, getSettingsPerOrganisation } from "../shared-users";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
 
@@ -60,7 +57,7 @@ export const sendInvitationsForUsersImport = async (params: {
   const client = await pg.pool.connect();
   try {
     await client.query("BEGIN");
-    const userInvitations = await getUserInvitations({
+    const userInvitations = await getSettings({
       userIds,
       organisationId: toImportUsers.organisationId,
       client,
@@ -94,16 +91,16 @@ export const sendInvitationsForUsersImport = async (params: {
   }
 };
 
-const getUserInvitations = async (params: {
+const getSettings = async (params: {
   userIds: string[];
   organisationId: string;
   client: PoolClient;
   importId: string;
-}): Promise<UserInvitation[]> => {
+}): Promise<OrganisationSetting[]> => {
   let userIndex = 1;
   const idsIndexes = params.userIds.map(() => `$${userIndex++}`);
 
-  return await getUserInvitationsForOrganisation({
+  return await getSettingsPerOrganisation({
     client: params.client,
     whereClauses: [
       `users.id in (${idsIndexes.join(", ")})`,
@@ -117,7 +114,7 @@ const getUserInvitations = async (params: {
 
 interface InvitationsPerLanguage {
   [x: string]: {
-    invitations: UserInvitation[];
+    invitations: OrganisationSetting[];
     toSendIds: string[];
     userIds: string[];
   };
@@ -130,7 +127,7 @@ interface ToSendInvitations {
 }
 
 const prepareInvitations = (params: {
-  userInvitations: UserInvitation[];
+  userInvitations: OrganisationSetting[];
   perIdLanguage: { [x: string]: string };
 }): ToSendInvitations => {
   const toSend: ToSendInvitations = {
@@ -139,10 +136,10 @@ const prepareInvitations = (params: {
     welcome: {},
   };
   for (const toInvite of params.userInvitations) {
-    const language = params.perIdLanguage[toInvite.id];
+    const language = params.perIdLanguage[toInvite.userId];
     // User profile id has higher priority, if exists, because in this
     // way we know that we have to use contacts from the user profile
-    const toUseId = toInvite.userProfileId ?? toInvite.id;
+    const toUseId = toInvite.userProfileId ?? toInvite.userId;
     if (toInvite.userStatus === "to_be_invited") {
       // send invitation to messaging
       //if we send invitation to platform we don't send another email for organisation
@@ -153,7 +150,7 @@ const prepareInvitations = (params: {
           userIds: [],
         };
       }
-      toSend.joinMessaging[language].userIds.push(toInvite.id);
+      toSend.joinMessaging[language].userIds.push(toInvite.userId);
       toSend.joinMessaging[language].toSendIds.push(toUseId);
       toSend.joinMessaging[language].invitations.push(toInvite);
       continue;
@@ -168,7 +165,7 @@ const prepareInvitations = (params: {
           userIds: [],
         };
       }
-      toSend.joinOrganisation[language].userIds.push(toInvite.id);
+      toSend.joinOrganisation[language].userIds.push(toInvite.userId);
       toSend.joinOrganisation[language].toSendIds.push(toUseId);
       toSend.joinOrganisation[language].invitations.push(toInvite);
       continue;
@@ -183,7 +180,7 @@ const prepareInvitations = (params: {
           userIds: [],
         };
       }
-      toSend.welcome[language].userIds.push(toInvite.id);
+      toSend.welcome[language].userIds.push(toInvite.userId);
       toSend.welcome[language].toSendIds.push(toUseId);
       toSend.welcome[language].invitations.push(toInvite);
     }

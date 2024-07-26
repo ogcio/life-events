@@ -8,7 +8,7 @@ import {
   OrganisationSettingSchema,
 } from "../../types/usersSchemaDefinitions";
 import {
-  getInvitationForUser,
+  getOrganisationSettingsForUser,
   getInvitationsForUser,
   updateInvitationStatus,
   updateOrganisationFeedback,
@@ -73,7 +73,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       }>,
       _reply: FastifyReply,
     ) => ({
-      data: await getInvitationForUser({
+      data: await getOrganisationSettingsForUser({
         userProfileId: request.userData!.userId,
         organisationId: request.params.organisationId,
         pg: app.pg,

@@ -161,6 +161,19 @@ export const TagForUserSchema = Type.Object({
 
 export type TagForUser = Static<typeof TagForUserSchema>;
 
+export const UserSchema = Type.Object({
+  id: Type.String({ format: "uuid" }),
+  userProfileId: NullableStringType,
+  importerOrganisationId: Type.String(),
+  userStatus: UserStatusUnionType,
+  correlationQuality: CorrelationQualityUnionType,
+  phone: NullableStringType,
+  email: NullableStringType,
+  details: Type.Optional(UserDetailsSchema),
+  usersImportId: NullableStringType,
+});
+export type User = Static<typeof UserSchema>;
+
 export const OrganisationInvitationFeedbackSchema = Type.Object({
   invitationStatusFeedback: OrgInvitationFeedbackStatusUnionType,
   preferredTransports: Type.Array(Type.String()),
@@ -174,39 +187,34 @@ export const InvitationFeedbackSchema = Type.Object({
 });
 export type InvitationFeedback = Static<typeof InvitationFeedbackSchema>;
 
-export const UserSchema = Type.Object({
-  id: Type.String({ format: "uuid" }),
+export const OrganisationSettingSchema = Type.Object({
+  userId: Type.String({ format: "uuid" }),
   userProfileId: Type.Union([Type.Null(), Type.String()], {
     default: null,
   }),
-  firstName: NullableStringType,
-  lastName: NullableStringType,
   phoneNumber: NullableStringType,
   emailAddress: NullableStringType,
-  birthDate: NullableStringType,
+  organisationId: Type.String(),
+  organisationInvitationStatus: InvitationStatusUnionType,
+  organisationInvitationSentAt: Type.Optional(Type.String()),
+  organisationInvitationFeedbackAt: Type.Optional(Type.String()),
   organisationPreferredTransports: PreferredTransports,
-  lang: NullableStringType,
-  ppsn: NullableStringType,
-  organisationId: Type.String(),
-  organisationInvitationStatus: InvitationStatusUnionType,
-  organisationInvitationSentAt: Type.Optional(Type.String()),
-  organisationInvitationFeedbackAt: Type.Optional(Type.String()),
   correlationQuality: CorrelationQualityUnionType,
   userStatus: UserStatusUnionType,
   details: Type.Optional(UserDetailsSchema),
 });
-export type User = Static<typeof UserSchema>;
-
-export const OrganisationSettingSchema = Type.Object({
-  phoneNumber: NullableStringType,
-  emailAddress: NullableStringType,
-  organisationId: Type.String(),
-  organisationInvitationStatus: InvitationStatusUnionType,
-  organisationInvitationSentAt: Type.Optional(Type.String()),
-  organisationInvitationFeedbackAt: Type.Optional(Type.String()),
-  correlationQuality: CorrelationQualityUnionType,
-  userStatus: UserStatusUnionType,
-  details: Type.Optional(UserDetailsSchema),
-});
-
 export type OrganisationSetting = Static<typeof OrganisationSettingSchema>;
+
+export const UserPerOrganisationSchema = Type.Composite([
+  Type.Object({
+    firstName: NullableStringType,
+    lastName: NullableStringType,
+    phoneNumber: NullableStringType,
+    emailAddress: NullableStringType,
+    birthDate: NullableStringType,
+    lang: NullableStringType,
+    ppsn: NullableStringType,
+  }),
+  OrganisationSettingSchema,
+]);
+export type UserPerOrganisation = Static<typeof UserPerOrganisationSchema>;

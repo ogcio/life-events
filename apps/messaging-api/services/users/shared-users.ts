@@ -1,8 +1,8 @@
 import { Pool, PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
 import {
+  OrganisationSetting,
   User,
-  UserInvitation,
   UsersImport,
 } from "../../types/usersSchemaDefinitions";
 import { Profile } from "building-blocks-sdk";
@@ -142,60 +142,98 @@ export const getUserImports = async (params: {
   }
 };
 
-export const getUserInvitationsForOrganisation = async (params: {
+export const getSettingsPerOrganisation = async (params: {
   client: PoolClient;
   organisationId: string;
-  whereClauses: string[];
-  whereValues: string[];
+  whereClauses?: string[];
+  whereValues?: string[];
   errorCode: string;
   logicalWhereOperator?: string;
   limit?: number;
   joinUsersImports?: boolean;
-}): Promise<UserInvitation[]> => {
+  includeUserDetails?: boolean;
+}): Promise<OrganisationSetting[]> =>
+  getSettings({
+    ...params,
+    toJoinFieldName: "organisation_id",
+    toJoinValue: params.organisationId,
+  });
+
+export const getSettingsPerUser = async (params: {
+  client: PoolClient;
+  userId: string;
+  whereClauses?: string[];
+  whereValues?: string[];
+  errorCode: string;
+  logicalWhereOperator?: string;
+  limit?: number;
+  joinUsersImports?: boolean;
+  includeUserDetails?: boolean;
+}): Promise<OrganisationSetting[]> =>
+  getSettings({
+    ...params,
+    toJoinFieldName: "user_id",
+    toJoinValue: params.userId,
+  });
+
+const getSettings = async (params: {
+  client: PoolClient;
+  toJoinValue: string;
+  toJoinFieldName: string;
+  whereClauses?: string[];
+  whereValues?: string[];
+  errorCode: string;
+  logicalWhereOperator?: string;
+  limit?: number;
+  joinUsersImports?: boolean;
+  includeUserDetails?: boolean;
+}): Promise<OrganisationSetting[]> => {
   try {
     const usersImportJoin =
-      params.joinUsersImports ?? true
+      (params.joinUsersImports ?? true)
         ? " left join users_imports on users_imports.organisation_id = ouc.organisation_id "
         : "";
+    const inputWhereValues = params.whereValues ?? [];
+    const inputWhereClauses = params.whereClauses ?? [];
     const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
-    const organisationIndex = `$${params.whereValues.length + 1}`;
+    const toJoinIndex = `$${inputWhereValues.length + 1}`;
     const operator = params.logicalWhereOperator
       ? ` ${params.logicalWhereOperator} `
       : " AND ";
     const whereClauses =
-      params.whereClauses.length > 0
-        ? `WHERE ${params.whereClauses.join(operator)} `
+      inputWhereClauses.length > 0
+        ? `WHERE ${inputWhereClauses.join(operator)} `
         : "";
-    const result = await params.client.query<UserInvitation>(
+    const result = await params.client.query<OrganisationSetting>(
       `
         SELECT 
-            ouc.user_id as "id",
-                users.user_profile_id as "userProfileId",
-                users.email as "email",
-                users.phone as "phone",
-                users.details as "details",
-                ouc.organisation_id as "organisationId",
-                ouc.invitation_status as "organisationInvitationStatus",
-                ouc.invitation_sent_at  as "organisationInvitationSentAt",
-                ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
-                ouc.preferred_transports as "organisationPreferredTransports",
-                users.correlation_quality as "correlationQuality",
-                users.user_status as "userStatus"
+            ouc.user_id as "userId",
+            users.user_profile_id as "userProfileId",
+            users.email as "emailAddress",
+            users.phone as "phoneNumber",
+            ${(params.includeUserDetails ?? true) ? 'users.details as "details"' : ""},
+            ouc.organisation_id as "organisationId",
+            ouc.invitation_status as "organisationInvitationStatus",
+            ouc.invitation_sent_at  as "organisationInvitationSentAt",
+            ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
+            ouc.preferred_transports as "organisationPreferredTransports",
+            users.correlation_quality as "correlationQuality",
+            users.user_status as "userStatus"
           from users
           left join organisation_user_configurations ouc on ouc.user_id = users.id 
-            and ouc.organisation_id = ${organisationIndex}
+            and ouc.${params.toJoinFieldName} = ${toJoinIndex}
           ${usersImportJoin}
           ${whereClauses} ${limitClause}
       `,
-      [...params.whereValues, params.organisationId],
+      [...inputWhereValues, params.toJoinValue],
     );
 
     return result.rows;
   } catch (error) {
-    const message = isNativeError(error) ? error.message : "unknown error";
     throw new ServerError(
       params.errorCode,
-      `Error retrieving user invitations: ${message}`,
+      `Error retrieving organisation settings`,
+      error,
     );
   }
 };

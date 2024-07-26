@@ -1,7 +1,10 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
-import { User, UserSchema } from "../../types/usersSchemaDefinitions";
+import {
+  User,
+  UserPerOrganisationSchema,
+} from "../../types/usersSchemaDefinitions";
 import {
   GenericResponse,
   PaginationParams,
@@ -57,7 +60,7 @@ export default async function users(app: FastifyInstance) {
           ]),
         ),
         response: {
-          200: getGenericResponseSchema(Type.Array(UserSchema)),
+          200: getGenericResponseSchema(Type.Array(UserPerOrganisationSchema)),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -101,7 +104,7 @@ export default async function users(app: FastifyInstance) {
           userId: Type.String(),
         },
         response: {
-          200: getGenericResponseSchema(UserSchema),
+          200: getGenericResponseSchema(UserPerOrganisationSchema),
           "5xx": HttpError,
           "4xx": HttpError,
         },
