@@ -26,7 +26,7 @@ const publicServantScopes = [
   "messaging:citizen:*",
   "messaging:event:read",
 ];
-const publicServantExpectedRole = "Messaging Public Servant";
+const publicServantExpectedRoles = ["Messaging Public Servant"];
 
 export const getAuthenticationContextConfig =
   (): AuthenticationContextConfig => ({
@@ -35,7 +35,7 @@ export const getAuthenticationContextConfig =
     appSecret,
     organizationId,
     citizenScopes,
-    publicServantExpectedRole,
+    publicServantExpectedRoles,
     publicServantScopes,
     loginUrl: logtoLogin.url,
     resourceUrl: messagingApiResource,

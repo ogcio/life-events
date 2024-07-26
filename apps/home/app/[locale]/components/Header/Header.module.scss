@@ -1,31 +1,5 @@
 @import "app/styles/globals.scss";
 
-.govieHeader {
-  & > .innerWrapper {
-    padding-top: 15px;
-
-    &:after {
-      display: none;
-    }
-  }
-
-  & .title {
-    display: none;
-  }
-}
-
-.innerWrapper {
-  max-width: 1440px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-sizing: border-box;
-  padding: 15px;
-  margin: 0 auto;
-  justify-content: space-between;
-}
-
 .leftSideContainer {
   display: flex;
   align-items: center;
@@ -102,9 +76,10 @@
 }
 
 .loginLink {
+  color: #fff;
   font-family: "Lato", arial, sans-serif;
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 800;
   line-height: 20px;
   padding: 0;
   cursor: pointer;

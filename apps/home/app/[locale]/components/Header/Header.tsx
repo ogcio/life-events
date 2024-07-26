@@ -4,11 +4,11 @@ import Hamburger from "../HamburgerMenu";
 import HeaderSvg from "./HeaderSvg";
 import LanguageSwitch from "./LanguageSwitch";
 import UserIcon from "./UserIcon";
-import { BuildingBlockSelector } from "shared-components";
 import { envProduction } from "../../../../constants";
 
 import styles from "./Header.module.scss";
-// import { AuthenticationFactory } from "../../../libraries/authentication-factory";
+import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
+import { getTranslations } from "next-intl/server";
 
 type HeaderProps = {
   locale: string;
@@ -20,28 +20,40 @@ const showLogin = () => {
 };
 
 export default async ({ locale }: HeaderProps) => {
-  // const { user, isPublicServant } =
-  //   await AuthenticationFactory.getInstance().getContext();
+  const t = await getTranslations("Menu");
 
-  const isLoggedIn = false;
+  const instance = AuthenticationFactory.getInstance();
+  const isLoggedIn = await instance.isAuthenticated();
 
-  const user = {
-    name: "John Doe",
-  };
-  const isPublicServant = true;
+  let isPublicServant = true;
+  let initials = "";
+  let userName = "";
 
-  const [firstName, lastName] = user.name ? user.name.split(" ") : ["", ""];
-  const initials = firstName.charAt(0) + lastName.charAt(0);
+  if (isLoggedIn) {
+    const context = await instance.getContext();
+    isPublicServant = context.isPublicServant;
+    userName = context.user.name || "";
+    const [firstName, lastName] = userName.split(" ");
+    initials = firstName.charAt(0) + lastName.charAt(0);
+  }
 
   return (
-    <header
-      role="banner"
-      data-module="govie-header"
-      className={`govie-header ${styles.govieHeader}`}
-    >
-      <div className={`govie-header__container ${styles.innerWrapper}`}>
+    <header role="banner" data-module="govie-header" className="govie-header">
+      <div
+        className={`govie-width-container govie-header__container`}
+        style={{
+          maxWidth: "1280px",
+          display: "flex",
+          alignItems: "center",
+          paddingBottom: "10px",
+          height: "80px",
+          boxSizing: "border-box",
+        }}
+      >
         <div
           style={{
+            paddingLeft: "15px",
+            paddingRight: "15px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -51,7 +63,7 @@ export default async ({ locale }: HeaderProps) => {
           <div className={styles.leftSideContainer}>
             {isLoggedIn && (
               <Hamburger
-                userName={`${firstName} ${lastName}`}
+                userName={`${userName}`}
                 publicServant={isPublicServant}
                 locale={locale}
               />
@@ -64,9 +76,6 @@ export default async ({ locale }: HeaderProps) => {
               <HeaderSvg />
               <span className="govie-visually-hidden">gov.ie</span>
             </a>
-            <div className={styles.title}>
-              <strong>Building Blocks</strong>
-            </div>
           </div>
           <div className={styles.rightsideContainer}>
             {isLoggedIn && (
@@ -75,7 +84,7 @@ export default async ({ locale }: HeaderProps) => {
                 <UserIcon initials={initials} />
 
                 <Link
-                  href={"/signout"}
+                  href={`/${locale}/signout`}
                   prefetch={false}
                   style={{ display: "flex" }}
                 >
@@ -85,24 +94,19 @@ export default async ({ locale }: HeaderProps) => {
                     size={22}
                   />
                 </Link>
-
-                <BuildingBlockSelector locale={locale} />
               </>
             )}
 
             {!isLoggedIn && showLogin() && (
               <Link
-                href={"/login"}
+                href={`/${locale}/login`}
                 prefetch={false}
                 style={{ display: "flex" }}
-                className="loginLink"
+                className={styles.loginLink}
               >
-                Login
+                {t("login")}
               </Link>
             )}
-          </div>
-          <div className={styles.buildingBlocksSelector}>
-            <BuildingBlockSelector locale={locale} />
           </div>
         </div>
       </div>

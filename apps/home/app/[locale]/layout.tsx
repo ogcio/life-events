@@ -56,7 +56,7 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const t = await getTranslations("LandingPage.AlphaBanner");
+  const t = await getTranslations("LandingPage");
 
   const environment = String(process.env.ENVIRONMENT);
   const links = getLinks(environment, locale);
@@ -64,10 +64,11 @@ export default async function RootLayout({
   return (
     <>
       <Header locale={locale} />
-      <div className="width-container">
+
+      <div className="govie-width-container" style={{ width: "100%" }}>
         <Banner
-          tag={t("tag")}
-          text={t.rich("bannerText", {
+          tag={t("AlphaBanner.tag")}
+          text={t.rich("AlphaBanner.bannerText", {
             url: (chunks) => (
               <a className="govie-link" href={links.feedbackLink.href}>
                 {chunks}
@@ -75,8 +76,10 @@ export default async function RootLayout({
             ),
           })}
         />
-        <div className="page-container">{children}</div>
       </div>
+
+      {children}
+
       <Footer />
     </>
   );

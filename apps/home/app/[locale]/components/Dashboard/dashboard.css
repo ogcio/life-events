@@ -1,0 +1,35 @@
+.tilesLabel {
+  font-weight: 800;
+}
+
+.tilesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: left;
+  margin-bottom: 24px;
+  margin-top: 14px;
+}
+
+.tileIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.tile {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  text-decoration: none;
+  width: 100px;
+}
+
+@media (max-width: 767px) {
+  .tile {
+    padding: 15px;
+  }
+}

@@ -14,6 +14,7 @@ import {
   envStaging,
   envUAT,
 } from "../../../../constants";
+import Banner from "../Banner";
 
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";
@@ -122,6 +123,8 @@ export default async ({ locale }: Props) => {
   return (
     <>
       <div className="govie-width-container">
+        <hr className="govie-section-break  govie-section-break--m" />
+
         <div className="two-columns-layout">
           <div className="column">
             <h1 className="govie-heading-l">{t("sections.main.title")}</h1>

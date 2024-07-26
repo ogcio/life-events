@@ -1,115 +1,126 @@
 import { getTranslations } from "next-intl/server";
-import favicon from "../../../../public/favicon.ico";
-import type { Metadata } from "next";
+import ds from "design-system/";
+import { ComponentProps } from "react";
 
-export const metadata: Metadata = {
-  title: "Building Blocks",
-  icons: [{ rel: "icon", url: favicon.src }],
-};
-
-// const getLinks = (environment: string, locale: string) => {
-//   locale = locale || "en";
-//   switch (environment) {
-//     case envDevelopment:
-//       return {
-//         learnMoreForm: new URL(
-//           `${locale}/664b6de45f7c9800231daf22`,
-//           "https://www.forms.uat.gov.ie/",
-//         ),
-//         paymentsUrl: new URL(
-//           `${locale}/info`,
-//           "https://payments.dev.blocks.gov.ie/",
-//         ),
-//         formsUrl: new URL(locale, "https://forms.dev.blocks.gov.ie/"),
-//         messagingUrl: new URL(
-//           `${locale}/info`,
-//           "https://messaging.dev.blocks.gov.ie",
-//         ),
-//         designSystemUrl: new URL("/", "https://ds.dev.blocks.gov.ie"),
-//         feedbackLink: new URL(
-//           `${locale}/664c61ba5f7c9800231db294`,
-//           "https://www.forms.uat.gov.ie",
-//         ),
-//       };
-
-//     case envStaging:
-//       return {
-//         learnMoreForm: new URL(
-//           `${locale}/664b6de45f7c9800231daf22`,
-//           "https://www.forms.uat.gov.ie/",
-//         ),
-//         paymentsUrl: new URL(
-//           `${locale}/info`,
-//           "https://payments.sta.blocks.gov.ie",
-//         ),
-//         formsUrl: new URL(locale, "https://forms.sta.blocks.gov.ie"),
-//         messagingUrl: new URL(
-//           `${locale}/info`,
-//           "https://messaging.sta.blocks.gov.ie",
-//         ),
-//         designSystemUrl: new URL("/", "https://ds.sta.blocks.gov.ie"),
-//         feedbackLink: new URL(
-//           `${locale}/664c61ba5f7c9800231db294`,
-//           "https://www.forms.uat.gov.ie",
-//         ),
-//       };
-
-//     case envUAT:
-//       return {
-//         learnMoreForm: new URL(
-//           `${locale}/664b6de45f7c9800231daf22`,
-//           "https://www.forms.uat.gov.ie/",
-//         ),
-//         paymentsUrl: new URL(
-//           `${locale}/info`,
-//           "https://payments.uat.blocks.gov.ie",
-//         ),
-//         formsUrl: new URL(locale, "https://forms.uat.blocks.gov.ie"),
-//         messagingUrl: new URL(
-//           `${locale}/info`,
-//           "https://messaging.uat.blocks.gov.ie",
-//         ),
-//         designSystemUrl: new URL("/", "https://ds.uat.blocks.gov.ie"),
-//         feedbackLink: new URL(
-//           `${locale}/664c61ba5f7c9800231db294`,
-//           "https://www.forms.uat.gov.ie",
-//         ),
-//       };
-
-//     case envProduction:
-//     default:
-//       return {
-//         learnMoreForm: new URL(
-//           `${locale}/664ccbf2b644d000246cfd78`,
-//           "https://www.forms.gov.ie",
-//         ),
-//         paymentsUrl: new URL(
-//           `${locale}/info`,
-//           "https://payments.blocks.gov.ie",
-//         ),
-//         formsUrl: new URL(locale, "https://forms.blocks.gov.ie"),
-//         messagingUrl: new URL(
-//           `${locale}/info`,
-//           "https://messaging.blocks.gov.ie",
-//         ),
-//         designSystemUrl: new URL("/", "https://ds.blocks.gov.ie"),
-//         feedbackLink: new URL(
-//           `${locale}/664ccbdb0700c50024c53899`,
-//           "https://www.forms.gov.ie",
-//         ),
-//       };
-//   }
-// };
+import "./dashboard.css";
 
 type Props = {
   locale: string;
+  userRoles: string[];
 };
 
-export default async function ({ locale }: Props) {
-  const t = await getTranslations("LandingPage");
+const services: {
+  url: string;
+  labelKey: "forms" | "payments" | "messaging" | "lifeEvents" | "designSystem";
+  icon: ComponentProps<typeof ds.Icon>["icon"];
+  role: string;
+}[] = [
+  {
+    url: process.env.NEXT_PUBLIC_FORMS_SERVICE_ENTRY_POINT ?? "#",
+    labelKey: "forms",
+    icon: "tiles",
+    role: "*",
+  },
+  {
+    url: process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT ?? "#",
+    labelKey: "payments",
+    icon: "payments-service",
+    role: "Payments Public Servant",
+  },
+  {
+    url: process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT ?? "#",
+    labelKey: "messaging",
+    icon: "messaging-service",
+    role: "Messaging Public Servant",
+  },
+  {
+    url: process.env.NEXT_PUBLIC_DESIGN_SYSTEM_SERVICE_ENTRY_POINT ?? "#",
+    labelKey: "designSystem",
+    icon: "tiles",
+    role: "*",
+  },
+  {
+    url: process.env.NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT ?? "#",
+    labelKey: "lifeEvents",
+    icon: "events",
+    role: "Life Events Public Servant",
+  },
+];
 
-  // const environment = String(process.env.ENVIRONMENT);
-  // const links = getLinks(environment, props.params.locale);
+const translations = {
+  en: {
+    forms: "Forms",
+    payments: "Payments",
+    messaging: "Messaging",
+    lifeEvents: "Life Events",
+    designSystem: "Design System",
+  },
+  ga: {
+    forms: "Forms",
+    payments: "Payments",
+    messaging: "Messaging",
+    lifeEvents: "Life Events",
+    designSystem: "Design System",
+  },
+};
 
-  return <>Dashboard</>;
+type TileProps = {
+  url: string;
+  label: string;
+  icon: ComponentProps<typeof ds.Icon>["icon"];
+};
+
+const Tile = ({ url, label, icon }: TileProps) => {
+  const tintGold = ds.hexToRgba(ds.colours.ogcio.gold, 15);
+
+  return (
+    <a href={url} className="tile" style={{ backgroundColor: tintGold }}>
+      <ds.Icon icon={icon} color={ds.colours.ogcio.green} size={42} />
+      <p
+        className="govie-heading-s"
+        style={{
+          marginBottom: 0,
+          marginTop: "10px",
+          textAlign: "center",
+          fontWeight: "400",
+        }}
+      >
+        {label}
+      </p>
+    </a>
+  );
+};
+
+export default async function ({ locale, userRoles }: Props) {
+  const t = await getTranslations("Dashboard");
+
+  const availableServices = services.filter((service) => {
+    return (
+      service.url !== "#" &&
+      (userRoles.includes(service.role) || service.role === "*")
+    );
+  });
+
+  return (
+    <>
+      <div className="govie-width-container" style={{ width: "100%" }}>
+        <h1 className="govie-heading-l">{t("title")}</h1>
+        <p className="govie-body">{t("description")}</p>
+        <div className="govie-body tilesLabel">{t("tilesLabel")}</div>
+        <div
+          className="tilesContainer"
+          style={{ backgroundColor: ds.colours.ogcio.white }}
+        >
+          {availableServices.map(({ url, labelKey, icon }, index) => (
+            <Tile
+              key={index}
+              url={url}
+              label={translations[locale][labelKey]}
+              icon={icon}
+            />
+          ))}
+        </div>
+      </div>
+    </>
+  );
 }

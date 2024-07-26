@@ -7,7 +7,7 @@ type BannerProps = {
 
 export default ({ tag, text }: BannerProps) => {
   return (
-    <div className={`${styles.container} govie-phase-banner`}>
+    <div className={`govie-phase-banner`}>
       <p className="govie-phase-banner__content">
         <strong className="govie-tag govie-phase-banner__content__tag">
           {tag}
