@@ -16,6 +16,10 @@ type Props = {
 };
 
 export default async (props: Props) => {
+  if (String(process.env.ALLOW_LOGIN) !== "true") {
+    return <InfoPage locale={props.params.locale}></InfoPage>;
+  }
+
   const instance = AuthenticationFactory.getInstance();
   const isLoggedIn = await instance.isAuthenticated();
 

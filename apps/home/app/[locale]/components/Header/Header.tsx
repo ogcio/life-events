@@ -4,7 +4,6 @@ import Hamburger from "../HamburgerMenu";
 import HeaderSvg from "./HeaderSvg";
 import LanguageSwitch from "./LanguageSwitch";
 import UserIcon from "./UserIcon";
-import { envProduction } from "../../../../constants";
 
 import styles from "./Header.module.scss";
 import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
@@ -15,26 +14,28 @@ type HeaderProps = {
 };
 
 const showLogin = () => {
-  const environment = String(process.env.ENVIRONMENT);
-  return environment !== envProduction;
+  return String(process.env.ALLOW_LOGIN) === "true";
 };
 
 export default async ({ locale }: HeaderProps) => {
   const t = await getTranslations("Menu");
 
-  const instance = AuthenticationFactory.getInstance();
-  const isLoggedIn = await instance.isAuthenticated();
-
   let isPublicServant = true;
   let initials = "";
   let userName = "";
+  let isLoggedIn = false;
 
-  if (isLoggedIn) {
-    const context = await instance.getContext();
-    isPublicServant = context.isPublicServant;
-    userName = context.user.name || "";
-    const [firstName, lastName] = userName.split(" ");
-    initials = firstName.charAt(0) + lastName.charAt(0);
+  if (showLogin()) {
+    const instance = AuthenticationFactory.getInstance();
+    isLoggedIn = await instance.isAuthenticated();
+
+    if (isLoggedIn) {
+      const context = await instance.getContext();
+      isPublicServant = context.isPublicServant;
+      userName = context.user.name || "";
+      const [firstName, lastName] = userName.split(" ");
+      initials = firstName.charAt(0) + lastName.charAt(0);
+    }
   }
 
   return (
