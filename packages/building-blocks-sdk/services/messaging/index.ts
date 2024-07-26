@@ -403,7 +403,9 @@ export class Messaging {
     return { data: data?.data, error };
   }
 
-  async getUsers(query: paths["/api/v1/users/"]["get"]["parameters"]["query"]) {
+  async getUsers(
+    query?: paths["/api/v1/users/"]["get"]["parameters"]["query"],
+  ) {
     const { error, data } = await this.client.GET("/api/v1/users/", {
       params: {
         query,

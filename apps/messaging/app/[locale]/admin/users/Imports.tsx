@@ -37,7 +37,7 @@ export default async () => {
           </tr>
         </thead>
         <tbody className="govie-table__body">
-          {imports?.map((record) => (
+          {imports["application/json"]?.map((record) => (
             <tr key={record.importId} className="govie-table__row">
               <th
                 className="govie-table__cell govie-!-font-weight-regular"

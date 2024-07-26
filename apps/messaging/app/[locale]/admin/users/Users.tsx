@@ -40,12 +40,12 @@ export default async (params: { users: UiUserInvitation[] | undefined }) => {
         </thead>
         <tbody className="govie-table__body">
           {params.users?.map((record) => (
-            <tr key={record.id} className="govie-table__row">
+            <tr key={record.userId} className="govie-table__row">
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.email}
+                {record.emailAddress}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"

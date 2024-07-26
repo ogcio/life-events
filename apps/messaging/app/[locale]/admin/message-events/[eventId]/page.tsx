@@ -1,6 +1,4 @@
-import { PgSessions } from "auth/sessions";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
-import { Messaging } from "building-blocks-sdk";
 import { messageStatus } from "../page";
 import { getTranslations } from "next-intl/server";
 import dayjs from "dayjs";

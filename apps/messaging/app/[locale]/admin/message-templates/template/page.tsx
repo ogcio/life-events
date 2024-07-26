@@ -207,7 +207,7 @@ const ContentForm = async (props: {
         await temporaryMockUtils.createErrors(
           [
             {
-              errorValue: error.message || "update_error",
+              errorValue: error.detail || "update_error",
               field: "update_error",
               messageKey: "update_error",
             },
@@ -228,7 +228,7 @@ const ContentForm = async (props: {
         await temporaryMockUtils.createErrors(
           [
             {
-              errorValue: error.message || "create_error",
+              errorValue: error.detail || "create_error",
               field: "create_error",
               messageKey: "create_error",
             },

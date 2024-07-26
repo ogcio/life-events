@@ -111,7 +111,7 @@ export default async (props: MessageCreateProps) => {
           preferredTransports,
           scheduleAt,
           security: "",
-          userId: user.id,
+          userId: user.userId,
         });
         if (Boolean(error)) {
           continue;
