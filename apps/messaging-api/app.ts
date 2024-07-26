@@ -81,21 +81,21 @@ export async function build(opts?: FastifyServerOptions) {
     sharedSchemaId: "HttpError",
   });
 
-  // app.register(fastifyUnderPressure, {
-  //   maxEventLoopDelay: 1,
-  //   maxHeapUsedBytes: v8.getHeapStatistics().heap_size_limit,
-  //   maxRssBytes: v8.getHeapStatistics().total_available_size,
-  //   maxEventLoopUtilization: 0.98,
-  //   pressureHandler: (_req, _rep, type, value) => {
-  //     const pressureError = "UNDER_PRESSURE_ERROR";
-  //     throw new CustomError(
-  //       pressureError,
-  //       `System is under pressure. Pressure type: ${type}. Pressure value: ${value}`,
-  //       503,
-  //       pressureError,
-  //     );
-  //   },
-  // });
+  app.register(fastifyUnderPressure, {
+    maxEventLoopDelay: 1,
+    maxHeapUsedBytes: v8.getHeapStatistics().heap_size_limit,
+    maxRssBytes: v8.getHeapStatistics().total_available_size,
+    maxEventLoopUtilization: 0.98,
+    pressureHandler: (_req, _rep, type, value) => {
+      const pressureError = "UNDER_PRESSURE_ERROR";
+      throw new CustomError(
+        pressureError,
+        `System is under pressure. Pressure type: ${type}. Pressure value: ${value}`,
+        503,
+        pressureError,
+      );
+    },
+  });
 
   return app;
 }
