@@ -10,6 +10,8 @@ import {
   getPublicServantContext,
   isPublicServantAuthenticated,
   setSelectedOrganization,
+  getCitizenToken,
+  getOrgToken,
 } from "./authentication-context";
 import { AuthenticationError } from "shared-errors";
 import { notFound } from "next/navigation";
@@ -159,4 +161,14 @@ export class BaseAuthenticationContext {
 
     return this.getPublicServant();
   };
+
+  async getToken(resource?: string) {
+    if (await this.isPublicServant()) {
+      return await getOrgToken(
+        this.config,
+        await this.getSelectedOrganization(),
+      );
+    }
+    return await getCitizenToken(this.config, resource);
+  }
 }

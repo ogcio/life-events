@@ -1,6 +1,8 @@
 import {
   LogtoContext,
+  getAccessToken as getAccessTokenLogto,
   getLogtoContext,
+  getOrganizationToken,
   signIn,
   signOut,
 } from "@logto/next/server-actions";
@@ -85,6 +87,18 @@ export const AuthSession: IAuthSession = {
   setSelectedOrganization(organizationId: string): string {
     cookies().set(SELECTED_ORG_COOKIE, organizationId);
     return organizationId;
+  },
+  async getCitizenToken(
+    config: LogtoNextConfig,
+    resource?: string,
+  ): Promise<string> {
+    return await getAccessTokenLogto(config, resource);
+  },
+  async getOrgToken(
+    config: LogtoNextConfig,
+    organizationId?: string,
+  ): Promise<string> {
+    return await getOrganizationToken(config, organizationId);
   },
 };
 
