@@ -103,21 +103,21 @@ export default async (props: {
       const providerId = props.searchParams?.id;
       let error: any = undefined;
       if (providerId) {
-        const { error: updateError } = await sdk.updateSmsProvider(providerId, {
+        const { error: updateError } = await sdk.updateSmsProvider({
           id: providerId,
-          name,
+          providerName: name,
           config: {
-            accessKey,
-            secretAccessKey,
-            region,
             type: "AWS",
+            accessKey,
+            region,
+            secretAccessKey,
           },
           isPrimary,
         });
         error = updateError;
       } else {
         const { error: createError } = await sdk.createSmsProvider({
-          name,
+          providerName: name,
           config: {
             accessKey,
             secretAccessKey,
@@ -246,7 +246,7 @@ export default async (props: {
                 type="text"
                 name="name"
                 className="govie-input"
-                defaultValue={state?.name || data?.name}
+                defaultValue={state?.name || data?.providerName}
               />
             </FormElement>
             <FormElement

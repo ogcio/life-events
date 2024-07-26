@@ -21,9 +21,7 @@ export default async () => {
           <th scope="col" className="govie-table__header">
             {t("nameTableHeader")}
           </th>
-          <th scope="col" className="govie-table__header">
-            {t("hostTableHeader")}
-          </th>
+
           <th scope="col" className="govie-table__header">
             {t("primaryHeader")}
           </th>
@@ -36,11 +34,9 @@ export default async () => {
         {data?.map((provider) => (
           <tr className="govie-table__row" key={provider.id}>
             <th className="govie-table__header govie-table__header--vertical-centralized govie-body-s">
-              {provider.name}
+              {provider.providerName}
             </th>
-            <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-              {provider.host}
-            </td>
+
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               {provider.isPrimary && t("primaryCellValue")}
             </td>

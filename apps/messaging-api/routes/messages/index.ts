@@ -217,8 +217,7 @@ export default async function messages(app: FastifyInstance) {
           organisationId,
         });
       } catch (error) {
-        app.log.error({ error });
-        throw new ServerError(errorKey, "failed to create message");
+        throw new ServerError(errorKey, "failed to create message", error);
       }
 
       await eventLogger.log(MessagingEventType.createRawMessage, [

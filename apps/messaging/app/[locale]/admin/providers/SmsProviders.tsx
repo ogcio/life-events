@@ -14,15 +14,13 @@ export default async () => {
 
   const { data: providers } = await sdk.getSmsProviders();
 
+  console.log(providers);
   return (
     <table className="govie-table">
       <thead className="govie-table__head">
         <tr className="govie-table__row">
           <th scope="col" className="govie-table__header">
             {t("nameTableHeader")}
-          </th>
-          <th scope="col" className="govie-table__header">
-            {t("typeTableHeader")}
           </th>
           <th scope="col" className="govie-table__header">
             {t("primaryHeader")}
@@ -34,13 +32,10 @@ export default async () => {
       </thead>
       <tbody className="govie-table__body">
         {providers?.map((provider) => (
-          <tr className="govie-table__row">
+          <tr className="govie-table__row" key={provider.id}>
             <th className="govie-table__header govie-table__header--vertical-centralized govie-body-s">
-              {provider.name}
+              {provider.providerName}
             </th>
-            <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-              {provider.type}
-            </td>
 
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               {provider.isPrimary && t("primaryCellValue")}
