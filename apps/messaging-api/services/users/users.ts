@@ -1,18 +1,18 @@
 import { Pool } from "pg";
-import { PaginationParams } from "../../../types/schemaDefinitions";
-import { Recipient } from "../../../types/usersSchemaDefinitions";
-import { utils } from "../../../utils";
+import { PaginationParams } from "../../types/schemaDefinitions";
+import { utils } from "../../utils";
 import { ServerError } from "shared-errors";
-import { sanitizePagination } from "../../../utils/pagination";
-import { SELECTABLE_TRANSPORTS } from "../shared-users";
+import { sanitizePagination } from "../../utils/pagination";
+import { SELECTABLE_TRANSPORTS } from "./shared-users";
+import { UserPerOrganisation } from "../../types/usersSchemaDefinitions";
 
-export const getRecipients = async (params: {
+export const getUsers = async (params: {
   pool: Pool;
   organisationId: string;
   pagination: PaginationParams;
   search?: string | undefined;
-  transports: string[];
-}): Promise<{ recipients: Recipient[]; total: number }> => {
+  transports?: string[];
+}): Promise<{ recipients: UserPerOrganisation[]; total: number }> => {
   const client = await params.pool.connect();
   const pagination = sanitizePagination(params.pagination);
   try {
@@ -21,7 +21,7 @@ export const getRecipients = async (params: {
       queries.count.query,
       queries.count.values,
     );
-    const response = client.query<Recipient>(
+    const response = client.query<UserPerOrganisation>(
       queries.data.query,
       queries.data.values,
     );
@@ -31,7 +31,7 @@ export const getRecipients = async (params: {
       total: (await countResponse).rows[0].count,
     };
   } catch (error) {
-    throw new ServerError("GET_RECIPIENTS", `error fetching recipients`);
+    throw new ServerError("GET_RECIPIENTS", `error fetching recipients`, error);
   } finally {
     client.release();
   }
@@ -41,7 +41,7 @@ const buildGetRecipientsQueries = (params: {
   organisationId: string;
   pagination: { limit: number; offset: number };
   search?: string;
-  transports: string[];
+  transports?: string[];
 }): {
   count: { query: string; values: (string | number)[] };
   data: { query: string; values: (string | number)[] };
@@ -61,18 +61,19 @@ const buildGetRecipientsQueries = (params: {
     paginationIndex = 3;
   }
 
+  const transports = params.transports ?? [];
   // Search only across optional tranports
   // given that lifeEvents is always set as accepted
   const chosenTransports =
-    params.transports.length === 0
+    transports.length === 0
       ? []
-      : SELECTABLE_TRANSPORTS.filter((x) => params.transports.includes(x));
+      : SELECTABLE_TRANSPORTS.filter((x) => transports.includes(x));
 
   if (chosenTransports.length > 0) {
     // at least one of the needed transports
     // is set as valid for the user
     transportsWhereClause = ` AND ouc.preferred_transports && $${paginationIndex++}`;
-    queryValues.push(utils.postgresArrayify(params.transports));
+    queryValues.push(utils.postgresArrayify(transports));
   }
 
   const basicQuery = `
@@ -85,14 +86,22 @@ const buildGetRecipientsQueries = (params: {
     `;
 
   const dataSelect = `SELECT 
-        u.id as "id",
+        u.id as "userId",
         u.user_profile_id as "userProfileId",
         u.phone as "phoneNumber",
         u.email as "emailAddress",
         u.details->>'firstName' as "firstName",
         u.details->>'lastName' as "lastName",
         u.details->>'birthDate' as "birthDate",
-        ouc.preferred_transports as "preferredTransports"
+        u.details->>'publicIdentityId' as "ppsn",
+        ouc.preferred_transports as "organisationPreferredTransports",
+        ouc.organisation_id as "organisationId",
+        ouc.invitation_status as "organisationInvitationStatus",
+        ouc.invitation_sent_at  as "organisationInvitationSentAt",
+        ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
+        users.correlation_quality as "correlationQuality",
+        users.user_status as "userStatus",
+        'en' as lang
         ${basicQuery}
         ORDER BY u.id DESC
         LIMIT $${paginationIndex++} OFFSET $${paginationIndex}

@@ -3504,7 +3504,7 @@ paths:
             default: true
             type: boolean
           in: query
-          name: includeUsersData
+          name: includeImportedData
           required: true
         - schema:
             format: uuid
@@ -3858,26 +3858,6 @@ paths:
                           anyOf:
                             - type: "null"
                             - type: string
-                        phoneNumber:
-                          allOf:
-                            - default: null
-                              anyOf:
-                                - type: "null"
-                                - type: string
-                            - default: null
-                              anyOf:
-                                - type: "null"
-                                - type: string
-                        emailAddress:
-                          allOf:
-                            - default: null
-                              anyOf:
-                                - type: "null"
-                                - type: string
-                            - default: null
-                              anyOf:
-                                - type: "null"
-                                - type: string
                         birthDate:
                           default: null
                           anyOf:
@@ -3897,6 +3877,16 @@ paths:
                           format: uuid
                           type: string
                         userProfileId:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        phoneNumber:
+                          default: null
+                          anyOf:
+                            - type: "null"
+                            - type: string
+                        emailAddress:
                           default: null
                           anyOf:
                             - type: "null"
@@ -4034,13 +4024,13 @@ paths:
                       required:
                         - firstName
                         - lastName
-                        - phoneNumber
-                        - emailAddress
                         - birthDate
                         - lang
                         - ppsn
                         - userId
                         - userProfileId
+                        - phoneNumber
+                        - emailAddress
                         - organisationId
                         - organisationInvitationStatus
                         - organisationPreferredTransports
@@ -4191,26 +4181,6 @@ paths:
                         anyOf:
                           - type: "null"
                           - type: string
-                      phoneNumber:
-                        allOf:
-                          - default: null
-                            anyOf:
-                              - type: "null"
-                              - type: string
-                          - default: null
-                            anyOf:
-                              - type: "null"
-                              - type: string
-                      emailAddress:
-                        allOf:
-                          - default: null
-                            anyOf:
-                              - type: "null"
-                              - type: string
-                          - default: null
-                            anyOf:
-                              - type: "null"
-                              - type: string
                       birthDate:
                         default: null
                         anyOf:
@@ -4230,6 +4200,16 @@ paths:
                         format: uuid
                         type: string
                       userProfileId:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      phoneNumber:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      emailAddress:
                         default: null
                         anyOf:
                           - type: "null"
@@ -4367,13 +4347,13 @@ paths:
                     required:
                       - firstName
                       - lastName
-                      - phoneNumber
-                      - emailAddress
                       - birthDate
                       - lang
                       - ppsn
                       - userId
                       - userProfileId
+                      - phoneNumber
+                      - emailAddress
                       - organisationId
                       - organisationInvitationStatus
                       - organisationPreferredTransports

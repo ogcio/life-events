@@ -209,8 +209,6 @@ export const UserPerOrganisationSchema = Type.Composite([
   Type.Object({
     firstName: NullableStringType,
     lastName: NullableStringType,
-    phoneNumber: NullableStringType,
-    emailAddress: NullableStringType,
     birthDate: NullableStringType,
     lang: NullableStringType,
     ppsn: NullableStringType,
