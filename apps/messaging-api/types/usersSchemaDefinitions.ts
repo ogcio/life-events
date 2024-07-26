@@ -196,3 +196,17 @@ export const UserSchema = Type.Object({
   details: Type.Optional(UserDetailsSchema),
 });
 export type User = Static<typeof UserSchema>;
+
+export const OrganisationSettingSchema = Type.Object({
+  phoneNumber: NullableStringType,
+  emailAddress: NullableStringType,
+  organisationId: Type.String(),
+  organisationInvitationStatus: InvitationStatusUnionType,
+  organisationInvitationSentAt: Type.Optional(Type.String()),
+  organisationInvitationFeedbackAt: Type.Optional(Type.String()),
+  correlationQuality: CorrelationQualityUnionType,
+  userStatus: UserStatusUnionType,
+  details: Type.Optional(UserDetailsSchema),
+});
+
+export type OrganisationSetting = Static<typeof OrganisationSettingSchema>;

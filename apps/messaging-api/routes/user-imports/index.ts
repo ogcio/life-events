@@ -1,5 +1,3 @@
-// Remove users/imports/users and replace "recipients" with just "users" combining data from users/imports/users
-
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Permissions } from "../../types/permissions";
 import { Type } from "@sinclair/typebox";
@@ -12,8 +10,6 @@ import {
 import {
   CsvRecord,
   CsvRecordSchema,
-  User,
-  UserSchema,
   UsersImport,
   UsersImportSchema,
 } from "../../types/usersSchemaDefinitions";
@@ -21,7 +17,6 @@ import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 import {
   getUserImportForOrganisation,
   getUserImportsForOrganisation,
-  getUserInvitationsForImport,
 } from "../../services/users/import/read-user-imports";
 import { HttpError } from "../../types/httpErrors";
 import { BadRequestError } from "shared-errors";
@@ -155,37 +150,6 @@ export default async function userImports(app: FastifyInstance) {
         organisationId: request.userData!.organizationId!,
         importId: request.params.importId,
         includeUsersData: request.query.includeUsersData ?? true,
-      }),
-    }),
-  );
-
-  interface GetUsersSchema {
-    Response: { data: User[] };
-    Params: { importId: string };
-    Querystring: unknown;
-  }
-
-  app.get<GetUsersSchema>(
-    "/:importId/users",
-    {
-      preValidation: (req, res) =>
-        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
-      schema: {
-        tags,
-        params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
-        response: {
-          200: getGenericResponseSchema(Type.Array(UserSchema)),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async (request: FastifyRequest<GetUsersSchema>, _reply: FastifyReply) => ({
-      data: await getUserInvitationsForImport({
-        logger: request.log,
-        pool: app.pg.pool,
-        organisationId: request.userData!.organizationId!,
-        importId: request.params.importId,
       }),
     }),
   );

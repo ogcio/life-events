@@ -1217,10 +1217,10 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                id: string;
                 /** @default null */
-                userProfileId: string | null;
+                phoneNumber: null | string;
+                /** @default null */
+                emailAddress: null | string;
                 organisationId: string;
                 /** @default pending */
                 organisationInvitationStatus:
@@ -1230,14 +1230,9 @@ export interface paths {
                   | "declined";
                 organisationInvitationSentAt?: string;
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports?: string[];
                 correlationQuality: "full" | "partial" | "not_related";
                 /** @default pending */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
-                /** @default null */
-                phone: null | string;
-                /** @default null */
-                email: null | string;
                 details?: {
                   /** @default null */
                   publicIdentityId: null | string;
@@ -1356,10 +1351,10 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                id: string;
                 /** @default null */
-                userProfileId: string | null;
+                phoneNumber: null | string;
+                /** @default null */
+                emailAddress: null | string;
                 organisationId: string;
                 /** @default pending */
                 organisationInvitationStatus:
@@ -1369,14 +1364,9 @@ export interface paths {
                   | "declined";
                 organisationInvitationSentAt?: string;
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports?: string[];
                 correlationQuality: "full" | "partial" | "not_related";
                 /** @default pending */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
-                /** @default null */
-                phone: null | string;
-                /** @default null */
-                email: null | string;
                 details?: {
                   /** @default null */
                   publicIdentityId: null | string;
@@ -1502,10 +1492,10 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                id: string;
                 /** @default null */
-                userProfileId: string | null;
+                phoneNumber: null | string;
+                /** @default null */
+                emailAddress: null | string;
                 organisationId: string;
                 /** @default pending */
                 organisationInvitationStatus:
@@ -1515,14 +1505,9 @@ export interface paths {
                   | "declined";
                 organisationInvitationSentAt?: string;
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports?: string[];
                 correlationQuality: "full" | "partial" | "not_related";
                 /** @default pending */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
-                /** @default null */
-                phone: null | string;
-                /** @default null */
-                email: null | string;
                 details?: {
                   /** @default null */
                   publicIdentityId: null | string;
@@ -1696,16 +1681,193 @@ export interface paths {
         };
       };
     };
+    /** @description If 'Content-Type' header contains 'multipart/form-data' it accepts a CSV file, otherwise an array of users to import */
+    post: {
+      requestBody?: {
+        content: {
+          "multipart/form-data": unknown;
+          "application/json": unknown;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: never;
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
   };
-  "/api/v1/users/recipients/": {
+  "/api/v1/user-imports/{importId}": {
     get: {
       parameters: {
-        query?: {
-          organisationId?: string;
-          search?: string;
-          transports?: string;
-          offset?: number;
-          limit?: number;
+        query: {
+          includeUsersData: boolean;
+        };
+        path: {
+          importId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                organisationId: string;
+                /** Format: date-time */
+                importedAt: string;
+                usersData: {
+                  importIndex: number;
+                  /** @default null */
+                  phoneNumber: null | string;
+                  /** @default null */
+                  emailAddress: null | string;
+                  /** @default pending */
+                  importStatus:
+                    | "pending"
+                    | "imported"
+                    | "not_found"
+                    | "error"
+                    | "missing_contacts";
+                  /** @default null */
+                  importError?: null | string;
+                  /** @default null */
+                  relatedUserProfileId?: null | string;
+                  /** @default null */
+                  relatedUserId?: null | string;
+                  tags?: string[];
+                  /** @default null */
+                  publicIdentityId: null | string;
+                  /** @default null */
+                  firstName: null | string;
+                  /** @default null */
+                  lastName: null | string;
+                  /** @default null */
+                  birthDate: null | string;
+                  /** @default null */
+                  address: {
+                    /** @default null */
+                    city: null | string;
+                    /** @default null */
+                    zipCode: null | string;
+                    /** @default null */
+                    street: null | string;
+                    /** @default null */
+                    country: null | string;
+                    /** @default null */
+                    region: null | string;
+                  } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
+                }[];
+                /** @default api */
+                importChannel: "api" | "csv";
+                /** @default 0 */
+                retryCount: number;
+                /** @default null */
+                lastRetryAt: string | null;
+                importId: string;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/user-imports/{importId}/users": {
+    get: {
+      parameters: {
+        path: {
+          importId: string;
         };
       };
       responses: {
@@ -1728,11 +1890,52 @@ export interface paths {
                 emailAddress: null | string;
                 /** @default null */
                 birthDate: null | string;
-                preferredTransports: ("email" | "sms" | "lifeEvent")[];
+                organisationPreferredTransports: (
+                  | "email"
+                  | "sms"
+                  | "lifeEvent"
+                )[];
                 /** @default null */
                 lang: null | string;
                 /** @default null */
                 ppsn: null | string;
+                organisationId: string;
+                /** @default pending */
+                organisationInvitationStatus:
+                  | "to_be_invited"
+                  | "pending"
+                  | "accepted"
+                  | "declined";
+                organisationInvitationSentAt?: string;
+                organisationInvitationFeedbackAt?: string;
+                correlationQuality: "full" | "partial" | "not_related";
+                /** @default pending */
+                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+                details?: {
+                  /** @default null */
+                  publicIdentityId: null | string;
+                  /** @default null */
+                  firstName: null | string;
+                  /** @default null */
+                  lastName: null | string;
+                  /** @default null */
+                  birthDate: null | string;
+                  /** @default null */
+                  address: {
+                    /** @default null */
+                    city: null | string;
+                    /** @default null */
+                    zipCode: null | string;
+                    /** @default null */
+                    street: null | string;
+                    /** @default null */
+                    country: null | string;
+                    /** @default null */
+                    region: null | string;
+                  } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
+                };
               }[];
               metadata?: {
                 links?: {
@@ -1797,7 +2000,149 @@ export interface paths {
       };
     };
   };
-  "/api/v1/users/recipients/{userId}": {
+  "/api/v1/users/": {
+    get: {
+      parameters: {
+        query?: {
+          organisationId?: string;
+          search?: string;
+          transports?: string;
+          importId?: string;
+          offset?: number;
+          limit?: number;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+                /** @default null */
+                userProfileId: null | string;
+                /** @default null */
+                firstName: null | string;
+                /** @default null */
+                lastName: null | string;
+                /** @default null */
+                phoneNumber: null | string;
+                /** @default null */
+                emailAddress: null | string;
+                /** @default null */
+                birthDate: null | string;
+                organisationPreferredTransports: (
+                  | "email"
+                  | "sms"
+                  | "lifeEvent"
+                )[];
+                /** @default null */
+                lang: null | string;
+                /** @default null */
+                ppsn: null | string;
+                organisationId: string;
+                /** @default pending */
+                organisationInvitationStatus:
+                  | "to_be_invited"
+                  | "pending"
+                  | "accepted"
+                  | "declined";
+                organisationInvitationSentAt?: string;
+                organisationInvitationFeedbackAt?: string;
+                correlationQuality: "full" | "partial" | "not_related";
+                /** @default pending */
+                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+                details?: {
+                  /** @default null */
+                  publicIdentityId: null | string;
+                  /** @default null */
+                  firstName: null | string;
+                  /** @default null */
+                  lastName: null | string;
+                  /** @default null */
+                  birthDate: null | string;
+                  /** @default null */
+                  address: {
+                    /** @default null */
+                    city: null | string;
+                    /** @default null */
+                    zipCode: null | string;
+                    /** @default null */
+                    street: null | string;
+                    /** @default null */
+                    country: null | string;
+                    /** @default null */
+                    region: null | string;
+                  } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
+                };
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/{userId}": {
     get: {
       parameters: {
         path: {
@@ -1824,11 +2169,52 @@ export interface paths {
                 emailAddress: null | string;
                 /** @default null */
                 birthDate: null | string;
-                preferredTransports: ("email" | "sms" | "lifeEvent")[];
+                organisationPreferredTransports: (
+                  | "email"
+                  | "sms"
+                  | "lifeEvent"
+                )[];
                 /** @default null */
                 lang: null | string;
                 /** @default null */
                 ppsn: null | string;
+                organisationId: string;
+                /** @default pending */
+                organisationInvitationStatus:
+                  | "to_be_invited"
+                  | "pending"
+                  | "accepted"
+                  | "declined";
+                organisationInvitationSentAt?: string;
+                organisationInvitationFeedbackAt?: string;
+                correlationQuality: "full" | "partial" | "not_related";
+                /** @default pending */
+                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+                details?: {
+                  /** @default null */
+                  publicIdentityId: null | string;
+                  /** @default null */
+                  firstName: null | string;
+                  /** @default null */
+                  lastName: null | string;
+                  /** @default null */
+                  birthDate: null | string;
+                  /** @default null */
+                  address: {
+                    /** @default null */
+                    city: null | string;
+                    /** @default null */
+                    zipCode: null | string;
+                    /** @default null */
+                    street: null | string;
+                    /** @default null */
+                    country: null | string;
+                    /** @default null */
+                    region: null | string;
+                  } | null;
+                  /** @default false */
+                  collectedConsent: boolean;
+                };
               };
               metadata?: {
                 links?: {

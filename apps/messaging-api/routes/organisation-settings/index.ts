@@ -4,8 +4,8 @@ import { HttpError } from "../../types/httpErrors";
 import {
   OrganisationInvitationFeedbackSchema,
   OrganisationInvitationFeedback,
-  UserInvitation,
-  UserInvitationSchema,
+  OrganisationSetting,
+  OrganisationSettingSchema,
 } from "../../types/usersSchemaDefinitions";
 import {
   getInvitationForUser,
@@ -30,7 +30,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: getGenericResponseSchema(Type.Array(UserInvitationSchema)),
+          200: getGenericResponseSchema(Type.Array(OrganisationSettingSchema)),
           400: HttpError,
           404: HttpError,
           500: HttpError,
@@ -47,7 +47,7 @@ export default async function organisationSettings(app: FastifyInstance) {
 
   app.get<{
     Params: { organisationId: string };
-    Response: { data: UserInvitation };
+    Response: { data: OrganisationSetting };
   }>(
     "/:organisationId",
     {
@@ -59,7 +59,7 @@ export default async function organisationSettings(app: FastifyInstance) {
           organisationId: Type.String(),
         }),
         response: {
-          200: getGenericResponseSchema(UserInvitationSchema),
+          200: getGenericResponseSchema(OrganisationSettingSchema),
           400: HttpError,
           404: HttpError,
           500: HttpError,
@@ -69,7 +69,7 @@ export default async function organisationSettings(app: FastifyInstance) {
     async (
       request: FastifyRequest<{
         Params: { organisationId: string };
-        Response: { data: UserInvitation };
+        Response: { data: OrganisationSetting };
       }>,
       _reply: FastifyReply,
     ) => ({
@@ -84,7 +84,7 @@ export default async function organisationSettings(app: FastifyInstance) {
   interface PatchOrgInvitationSchema {
     Params: { organisationId: string };
     Body: OrganisationInvitationFeedback;
-    Response: { data: UserInvitation };
+    Response: { data: OrganisationSetting };
   }
 
   app.patch<PatchOrgInvitationSchema>(
@@ -99,7 +99,7 @@ export default async function organisationSettings(app: FastifyInstance) {
           organisationId: Type.String(),
         }),
         response: {
-          202: Type.Object({ data: UserInvitationSchema }),
+          202: Type.Object({ data: OrganisationSettingSchema }),
           400: HttpError,
           404: HttpError,
           500: HttpError,

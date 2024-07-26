@@ -9,7 +9,11 @@ import {
   getGenericResponseSchema,
 } from "../../types/schemaDefinitions";
 import { getRecipients } from "../../services/users/recipients/recipients";
-import { PaginationDetails, formatAPIResponse } from "../../utils/pagination";
+import {
+  PaginationDetails,
+  formatAPIResponse,
+  sanitizePagination,
+} from "../../utils/pagination";
 import { Permissions } from "../../types/permissions";
 import { NotFoundError, ServerError } from "shared-errors";
 import { Profile } from "building-blocks-sdk";
@@ -22,6 +26,7 @@ export default async function users(app: FastifyInstance) {
       organisationId?: string;
       search?: string;
       transports?: string;
+      importId?: string;
     } & PaginationParams;
     Response: GenericResponse<User>;
   }
@@ -46,6 +51,7 @@ export default async function users(app: FastifyInstance) {
               organisationId: Type.Optional(Type.String()),
               search: Type.Optional(Type.String()),
               transports: Type.Optional(Type.String()),
+              importId: Type.Optional(Type.String()),
             }),
             PaginationParamsSchema,
           ]),
@@ -67,12 +73,12 @@ export default async function users(app: FastifyInstance) {
           limit: query.limit,
           offset: query.offset,
         },
+        //TODO Here manage filter per importId
         transports: query.transports ? query.transports.trim().split(",") : [],
       });
 
       const paginationDetails: PaginationDetails = {
-        offset: query.offset,
-        limit: query.limit,
+        ...sanitizePagination(query),
         totalCount: recipientsResponse.total,
         url: request.url,
       };
