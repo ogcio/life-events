@@ -4,19 +4,7 @@ info:
   description: API for OGCIO Messaging Service
   version: 0.1.0
 components:
-  schemas:
-    def-0:
-      type: object
-      properties:
-        statusCode:
-          type: number
-        code:
-          type: string
-        error:
-          type: string
-        message:
-          type: string
-      title: HttpError
+  schemas: {}
 paths:
   /health:
     get:
@@ -2012,13 +2000,69 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
         4XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
   /api/v1/templates/{templateId}:
     get:
       tags: *a4
@@ -2257,13 +2301,69 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
         5XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
     delete:
       tags: *a4
       parameters:
@@ -2278,13 +2378,69 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
         5XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
   /api/v1/organisation-settings/:
     get:
       tags: &a5
