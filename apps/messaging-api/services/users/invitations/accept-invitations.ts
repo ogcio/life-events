@@ -13,7 +13,7 @@ import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 
 const ACCEPT_INVITATIONS_ERROR = "ACCEPT_INVITATIONS_ERROR";
 
-export const getOrganisationSettingsForUser = async (params: {
+export const getOrganisationSettingsForProfile = async (params: {
   pg: PostgresDb;
   userProfileId: string;
   organisationId: string;
@@ -25,28 +25,6 @@ export const getOrganisationSettingsForUser = async (params: {
       client,
       userProfileId,
       organisationId,
-    });
-  } finally {
-    client.release();
-  }
-};
-
-export const getInvitationsForUser = async (params: {
-  pg: PostgresDb;
-  userProfileId: string;
-}): Promise<OrganisationSetting[]> => {
-  const { pg, userProfileId } = params;
-  const client = await pg.connect();
-  try {
-    const userByProfile = await getUserByUserProfileId({
-      client,
-      userProfileId,
-      errorCode: ACCEPT_INVITATIONS_ERROR,
-    });
-    return await getSettingsPerUser({
-      client,
-      userId: userByProfile.id,
-      errorCode: ACCEPT_INVITATIONS_ERROR,
     });
   } finally {
     client.release();

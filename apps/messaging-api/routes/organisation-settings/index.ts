@@ -8,13 +8,13 @@ import {
   OrganisationSettingSchema,
 } from "../../types/usersSchemaDefinitions";
 import {
-  getOrganisationSettingsForUser,
-  getInvitationsForUser,
+  getOrganisationSettingsForProfile,
   updateInvitationStatus,
   updateOrganisationFeedback,
 } from "../../services/users/invitations/accept-invitations";
 import { Permissions } from "../../types/permissions";
 import { getGenericResponseSchema } from "../../types/schemaDefinitions";
+import { getSettingsPerUserProfile } from "../../services/users/shared-users";
 
 const tags = ["Organisation Settings"];
 
@@ -37,12 +37,20 @@ export default async function organisationSettings(app: FastifyInstance) {
         },
       },
     },
-    async (request: FastifyRequest, _reply: FastifyReply) => ({
-      data: await getInvitationsForUser({
-        userProfileId: request.userData!.userId,
-        pg: app.pg,
-      }),
-    }),
+    async (request: FastifyRequest, _reply: FastifyReply) => {
+      const client = await app.pg.pool.connect();
+      try {
+        return {
+          data: await getSettingsPerUserProfile({
+            userProfileId: request.userData!.userId,
+            client,
+            errorCode: "GET_ORGANISATION_SETTINGS",
+          }),
+        };
+      } finally {
+        client.release();
+      }
+    },
   );
 
   app.get<{
@@ -73,7 +81,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       }>,
       _reply: FastifyReply,
     ) => ({
-      data: await getOrganisationSettingsForUser({
+      data: await getOrganisationSettingsForProfile({
         userProfileId: request.userData!.userId,
         organisationId: request.params.organisationId,
         pg: app.pg,

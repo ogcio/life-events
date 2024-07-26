@@ -176,6 +176,28 @@ export const getSettingsPerUser = async (params: {
     toJoinValue: params.userId,
   });
 
+export const getSettingsPerUserProfile = async (params: {
+  client: PoolClient;
+  userProfileId: string;
+  errorCode: string;
+}): Promise<OrganisationSetting[]> => {
+  const { client, userProfileId, errorCode } = params;
+  try {
+    const userByProfile = await getUserByUserProfileId({
+      client,
+      userProfileId,
+      errorCode: errorCode,
+    });
+    return await getSettingsPerUser({
+      client,
+      userId: userByProfile.id,
+      errorCode: errorCode,
+    });
+  } finally {
+    client.release();
+  }
+};
+
 const getSettings = async (params: {
   client: PoolClient;
   toJoinValue: string;
