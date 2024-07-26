@@ -4800,7 +4800,7 @@ paths:
                   - name
   /api/v1/message-events/:
     get:
-      tags: &a8
+      tags: &a9
         - Message events
       parameters:
         - schema:
@@ -4976,7 +4976,7 @@ paths:
                   - name
   /api/v1/message-events/{eventId}:
     get:
-      tags: *a8
+      tags: *a9
       parameters:
         - schema:
             type: string
