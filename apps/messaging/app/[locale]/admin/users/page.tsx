@@ -32,6 +32,11 @@ export interface UiUserInvitation {
   userStatus: string;
   phoneNumber: string | null;
   emailAddress: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  birthDate: string | null;
+  lang: string | null;
+  ppsn: string | null;
   details?: {
     publicIdentityId: string | null;
     firstName: string | null;

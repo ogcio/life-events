@@ -2,11 +2,12 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
 import {
-  User,
+  UserPerOrganisation,
   UserPerOrganisationSchema,
 } from "../../types/usersSchemaDefinitions";
 import {
   GenericResponse,
+  GenericResponseSingle,
   PaginationParams,
   PaginationParamsSchema,
   getGenericResponseSchema,
@@ -31,14 +32,14 @@ export default async function users(app: FastifyInstance) {
       transports?: string;
       importId?: string;
     } & PaginationParams;
-    Response: GenericResponse<User>;
+    Response: GenericResponse<UserPerOrganisation>;
   }
 
   interface GetUserSchema {
     Params: {
       userId: string;
     };
-    Response: GenericResponse<User>;
+    Response: GenericResponseSingle<UserPerOrganisation>;
   }
 
   app.get<GetUsersSchema>(

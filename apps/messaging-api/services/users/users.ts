@@ -67,9 +67,9 @@ const buildGetRecipientsQueries = (params: {
   }
   if (search.length > 0) {
     searchWhereClause = ` AND (${[
-      `u.email ILIKE $${whereClauseIndex}`,
-      `u.details->>'firstName' ILIKE $${whereClauseIndex}`,
-      `u.details->>'lastName' ILIKE $${whereClauseIndex}`,
+      `users.email ILIKE $${whereClauseIndex}`,
+      `users.details->>'firstName' ILIKE $${whereClauseIndex}`,
+      `users.details->>'lastName' ILIKE $${whereClauseIndex}`,
     ].join(" OR ")}) `;
     queryValues.push(`%${search}%`);
     paginationIndex++;
@@ -91,19 +91,19 @@ const buildGetRecipientsQueries = (params: {
   }
 
   const basicQuery = `
-        FROM users u
+        FROM users
         JOIN organisation_user_configurations ouc ON 
             ouc.organisation_id = $1 AND
-            ouc.user_id = u.id AND
+            ouc.user_id = users.id AND
             ouc.invitation_status = 'accepted'
         ${joinUsersImports}
-        WHERE u.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
+        WHERE users.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
     `;
 
   const dataSelect = `SELECT 
         ${getFieldsToSelect()}
         ${basicQuery}
-        ORDER BY u.id DESC
+        ORDER BY users.id DESC
         LIMIT $${paginationIndex++} OFFSET $${paginationIndex}
     `;
 
@@ -134,12 +134,12 @@ export const getUser = async (params: {
       `
       SELECT
       ${getFieldsToSelect()}
-      FROM users u
+      FROM users
       JOIN organisation_user_configurations ouc ON 
           ouc.organisation_id = $1 AND
-          ouc.user_id = u.id AND
+          ouc.user_id = users.id AND
           ouc.invitation_status = 'accepted'
-      WHERE u.user_status = 'active' and u.id = $2
+      WHERE users.user_status = 'active' and users.id = $2
       LIMIT 1  
       `,
       [params.organisationId, params.userId],
@@ -160,14 +160,14 @@ export const getUser = async (params: {
 };
 
 const getFieldsToSelect = () => `
-  u.id as "userId",
-  u.user_profile_id as "userProfileId",
-  u.phone as "phoneNumber",
-  u.email as "emailAddress",
-  u.details->>'firstName' as "firstName",
-  u.details->>'lastName' as "lastName",
-  u.details->>'birthDate' as "birthDate",
-  u.details->>'publicIdentityId' as "ppsn",
+  users.id as "userId",
+  users.user_profile_id as "userProfileId",
+  users.phone as "phoneNumber",
+  users.email as "emailAddress",
+  users.details->>'firstName' as "firstName",
+  users.details->>'lastName' as "lastName",
+  users.details->>'birthDate' as "birthDate",
+  users.details->>'publicIdentityId' as "ppsn",
   ouc.preferred_transports as "organisationPreferredTransports",
   ouc.organisation_id as "organisationId",
   ouc.invitation_status as "organisationInvitationStatus",
