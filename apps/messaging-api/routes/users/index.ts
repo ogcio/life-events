@@ -113,7 +113,7 @@ export default async function users(app: FastifyInstance) {
     async function (request) {
       const errorProcess = "GET_USER";
       const userId = request.params.userId;
-
+      //TODO IMPLEMENT THIS
       let user: User | undefined;
       try {
         const userQueryResult = await app.pg.pool.query<User>(
