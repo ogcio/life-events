@@ -119,7 +119,7 @@ export default async function users(app: FastifyInstance) {
           "You have to be part of an organisation to invoke this endpoint",
         );
       }
-      //TODO IMPLEMENT THIS
+
       const user = await getUser({
         pool: app.pg.pool,
         organisationId: request.userData!.organizationId,

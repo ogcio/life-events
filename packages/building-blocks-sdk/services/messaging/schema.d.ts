@@ -1046,13 +1046,33 @@ export interface paths {
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -1176,13 +1196,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -1197,13 +1237,33 @@ export interface paths {
         /** @description Default Response */
         "4XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
         /** @description Default Response */
         "5XX": {
           content: {
-            "application/json": components["schemas"]["def-0"];
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
           };
         };
       };
@@ -1622,90 +1682,88 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "text/csv": {
-              "application/json"?: {
-                data: {
-                  organisationId: string;
-                  /** Format: date-time */
-                  importedAt: string;
-                  /** @default api */
-                  importChannel: "api" | "csv";
-                  /** @default 0 */
-                  retryCount: number;
-                  /** @default null */
-                  lastRetryAt: string | null;
-                  importId: string;
-                }[];
-                metadata?: {
-                  links?: {
-                    self: {
-                      href?: string;
-                    };
-                    next?: {
-                      href?: string;
-                    };
-                    prev?: {
-                      href?: string;
-                    };
-                    first: {
-                      href?: string;
-                    };
-                    last: {
-                      href?: string;
-                    };
-                    pages: {
-                      [key: string]: {
+            "text/csv":
+              | {
+                  data: {
+                    organisationId: string;
+                    /** Format: date-time */
+                    importedAt: string;
+                    /** @default api */
+                    importChannel: "api" | "csv";
+                    /** @default 0 */
+                    retryCount: number;
+                    /** @default null */
+                    lastRetryAt: string | null;
+                    importId: string;
+                  }[];
+                  metadata?: {
+                    links?: {
+                      self: {
                         href?: string;
                       };
-                    };
-                  };
-                  totalCount?: number;
-                };
-              };
-              "text/csv"?: string;
-            };
-            "application/json": {
-              "application/json"?: {
-                data: {
-                  organisationId: string;
-                  /** Format: date-time */
-                  importedAt: string;
-                  /** @default api */
-                  importChannel: "api" | "csv";
-                  /** @default 0 */
-                  retryCount: number;
-                  /** @default null */
-                  lastRetryAt: string | null;
-                  importId: string;
-                }[];
-                metadata?: {
-                  links?: {
-                    self: {
-                      href?: string;
-                    };
-                    next?: {
-                      href?: string;
-                    };
-                    prev?: {
-                      href?: string;
-                    };
-                    first: {
-                      href?: string;
-                    };
-                    last: {
-                      href?: string;
-                    };
-                    pages: {
-                      [key: string]: {
+                      next?: {
                         href?: string;
                       };
+                      prev?: {
+                        href?: string;
+                      };
+                      first: {
+                        href?: string;
+                      };
+                      last: {
+                        href?: string;
+                      };
+                      pages: {
+                        [key: string]: {
+                          href?: string;
+                        };
+                      };
                     };
+                    totalCount?: number;
                   };
-                  totalCount?: number;
-                };
-              };
-              "text/csv"?: string;
-            };
+                }
+              | string;
+            "application/json":
+              | {
+                  data: {
+                    organisationId: string;
+                    /** Format: date-time */
+                    importedAt: string;
+                    /** @default api */
+                    importChannel: "api" | "csv";
+                    /** @default 0 */
+                    retryCount: number;
+                    /** @default null */
+                    lastRetryAt: string | null;
+                    importId: string;
+                  }[];
+                  metadata?: {
+                    links?: {
+                      self: {
+                        href?: string;
+                      };
+                      next?: {
+                        href?: string;
+                      };
+                      prev?: {
+                        href?: string;
+                      };
+                      first: {
+                        href?: string;
+                      };
+                      last: {
+                        href?: string;
+                      };
+                      pages: {
+                        [key: string]: {
+                          href?: string;
+                        };
+                      };
+                    };
+                    totalCount?: number;
+                  };
+                }
+              | string;
           };
         };
       };
@@ -2349,15 +2407,7 @@ export interface paths {
 export type webhooks = Record<string, never>;
 
 export interface components {
-  schemas: {
-    /** HttpError */
-    "def-0": {
-      statusCode?: number;
-      code?: string;
-      error?: string;
-      message?: string;
-    };
-  };
+  schemas: {};
   responses: never;
   parameters: never;
   requestBodies: never;
