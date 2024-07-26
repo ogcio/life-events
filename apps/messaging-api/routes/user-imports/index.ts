@@ -12,8 +12,8 @@ import {
 import {
   CsvRecord,
   CsvRecordSchema,
-  UserInvitation,
-  UserInvitationSchema,
+  User,
+  UserSchema,
   UsersImport,
   UsersImportSchema,
 } from "../../types/usersSchemaDefinitions";
@@ -159,13 +159,13 @@ export default async function userImports(app: FastifyInstance) {
     }),
   );
 
-  interface GetUserInvitationsSchema {
-    Response: { data: UserInvitation[] };
+  interface GetUsersSchema {
+    Response: { data: User[] };
     Params: { importId: string };
     Querystring: unknown;
   }
 
-  app.get<GetUserInvitationsSchema>(
+  app.get<GetUsersSchema>(
     "/:importId/users",
     {
       preValidation: (req, res) =>
@@ -174,16 +174,13 @@ export default async function userImports(app: FastifyInstance) {
         tags,
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
         response: {
-          200: getGenericResponseSchema(Type.Array(UserInvitationSchema)),
+          200: getGenericResponseSchema(Type.Array(UserSchema)),
           "5xx": HttpError,
           "4xx": HttpError,
         },
       },
     },
-    async (
-      request: FastifyRequest<GetUserInvitationsSchema>,
-      _reply: FastifyReply,
-    ) => ({
+    async (request: FastifyRequest<GetUsersSchema>, _reply: FastifyReply) => ({
       data: await getUserInvitationsForImport({
         logger: request.log,
         pool: app.pg.pool,

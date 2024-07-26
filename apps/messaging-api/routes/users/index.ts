@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
-import { Recipient, RecipientSchema } from "../../types/usersSchemaDefinitions";
+import { User, UserSchema } from "../../types/usersSchemaDefinitions";
 import {
   GenericResponse,
   PaginationParams,
@@ -14,30 +14,26 @@ import { Permissions } from "../../types/permissions";
 import { NotFoundError, ServerError } from "shared-errors";
 import { Profile } from "building-blocks-sdk";
 
-const tags = ["Users", "Recipients"];
+const tags = ["Users"];
 
-/*
- * The routes in this file are meant to be used when managing the users
- * as recipients
- */
-export default async function recipients(app: FastifyInstance) {
-  interface GetRecipientsSchema {
+export default async function users(app: FastifyInstance) {
+  interface GetUsersSchema {
     Querystring: {
       organisationId?: string;
       search?: string;
       transports?: string;
     } & PaginationParams;
-    Response: GenericResponse<Recipient>;
+    Response: GenericResponse<User>;
   }
 
-  interface GetRecipientSchema {
+  interface GetUserSchema {
     Params: {
       userId: string;
     };
-    Response: GenericResponse<Recipient>;
+    Response: GenericResponse<User>;
   }
 
-  app.get<GetRecipientsSchema>(
+  app.get<GetUsersSchema>(
     "/",
     {
       preValidation: (req, res) =>
@@ -55,16 +51,13 @@ export default async function recipients(app: FastifyInstance) {
           ]),
         ),
         response: {
-          200: getGenericResponseSchema(Type.Array(RecipientSchema)),
+          200: getGenericResponseSchema(Type.Array(UserSchema)),
           "5xx": HttpError,
           "4xx": HttpError,
         },
       },
     },
-    async (
-      request: FastifyRequest<GetRecipientsSchema>,
-      _reply: FastifyReply,
-    ) => {
+    async (request: FastifyRequest<GetUsersSchema>, _reply: FastifyReply) => {
       const query = request.query;
       const recipientsResponse = await getRecipients({
         pool: app.pg.pool,
@@ -91,7 +84,7 @@ export default async function recipients(app: FastifyInstance) {
     },
   );
 
-  app.get<GetRecipientSchema>(
+  app.get<GetUserSchema>(
     "/:userId",
     {
       preValidation: (req, res) =>
@@ -102,7 +95,7 @@ export default async function recipients(app: FastifyInstance) {
           userId: Type.String(),
         },
         response: {
-          200: getGenericResponseSchema(RecipientSchema),
+          200: getGenericResponseSchema(UserSchema),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -112,9 +105,9 @@ export default async function recipients(app: FastifyInstance) {
       const errorProcess = "GET_USER";
       const userId = request.params.userId;
 
-      let user: Recipient | undefined;
+      let user: User | undefined;
       try {
-        const userQueryResult = await app.pg.pool.query<Recipient>(
+        const userQueryResult = await app.pg.pool.query<User>(
           `
               select 
                 id,

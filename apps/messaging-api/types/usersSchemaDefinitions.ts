@@ -89,19 +89,6 @@ export const UserDetailsSchema = Type.Object({
 });
 export type UserDetails = Static<typeof UserDetailsSchema>;
 
-export const UserSchema = Type.Object({
-  id: Type.Optional(Type.String({ format: "uuid" })),
-  userProfileId: NullableStringType,
-  importerOrganisationId: Type.String(),
-  userStatus: UserStatusUnionType,
-  correlationQuality: CorrelationQualityUnionType,
-  phone: NullableStringType,
-  email: NullableStringType,
-  details: Type.Optional(UserDetailsSchema),
-  usersImportId: NullableStringType,
-});
-export type User = Static<typeof UserSchema>;
-
 export const OrganisationUserConfigSchema = Type.Object({
   organisationId: Type.String(),
   userId: Type.String({ format: "uuid" }),
@@ -174,22 +161,6 @@ export const TagForUserSchema = Type.Object({
 
 export type TagForUser = Static<typeof TagForUserSchema>;
 
-export const UserInvitationSchema = Type.Object({
-  id: Type.String({ format: "uuid" }),
-  userProfileId: Type.Union([Type.String(), Type.Null()], { default: null }),
-  organisationId: Type.String(),
-  organisationInvitationStatus: InvitationStatusUnionType,
-  organisationInvitationSentAt: Type.Optional(Type.String()),
-  organisationInvitationFeedbackAt: Type.Optional(Type.String()),
-  organisationPreferredTransports: Type.Optional(Type.Array(Type.String())),
-  correlationQuality: CorrelationQualityUnionType,
-  userStatus: UserStatusUnionType,
-  phone: NullableStringType,
-  email: NullableStringType,
-  details: Type.Optional(UserDetailsSchema),
-});
-export type UserInvitation = Static<typeof UserInvitationSchema>;
-
 export const OrganisationInvitationFeedbackSchema = Type.Object({
   invitationStatusFeedback: OrgInvitationFeedbackStatusUnionType,
   preferredTransports: Type.Array(Type.String()),
@@ -203,7 +174,7 @@ export const InvitationFeedbackSchema = Type.Object({
 });
 export type InvitationFeedback = Static<typeof InvitationFeedbackSchema>;
 
-export const RecipientSchema = Type.Object({
+export const UserSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
   userProfileId: Type.Union([Type.Null(), Type.String()], {
     default: null,
@@ -213,8 +184,15 @@ export const RecipientSchema = Type.Object({
   phoneNumber: NullableStringType,
   emailAddress: NullableStringType,
   birthDate: NullableStringType,
-  preferredTransports: PreferredTransports,
+  organisationPreferredTransports: PreferredTransports,
   lang: NullableStringType,
   ppsn: NullableStringType,
+  organisationId: Type.String(),
+  organisationInvitationStatus: InvitationStatusUnionType,
+  organisationInvitationSentAt: Type.Optional(Type.String()),
+  organisationInvitationFeedbackAt: Type.Optional(Type.String()),
+  correlationQuality: CorrelationQualityUnionType,
+  userStatus: UserStatusUnionType,
+  details: Type.Optional(UserDetailsSchema),
 });
-export type Recipient = Static<typeof RecipientSchema>;
+export type User = Static<typeof UserSchema>;
