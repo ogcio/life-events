@@ -14,6 +14,7 @@ export const getUsers = async (params: {
   pagination: PaginationParams;
   search?: string | undefined;
   transports?: string[];
+  importId?: string;
 }): Promise<{ recipients: UserPerOrganisation[]; total: number }> => {
   const client = await params.pool.connect();
   const pagination = sanitizePagination(params.pagination);
@@ -44,23 +45,34 @@ const buildGetRecipientsQueries = (params: {
   pagination: { limit: number; offset: number };
   search?: string;
   transports?: string[];
+  importId?: string;
 }): {
   count: { query: string; values: (string | number)[] };
   data: { query: string; values: (string | number)[] };
 } => {
   let searchWhereClause = "";
   let transportsWhereClause = "";
+  let joinUsersImports = "";
   let paginationIndex = 2;
+  let whereClauseIndex = 2;
   const queryValues = [params.organisationId];
   const search = params.search ? params.search.trim() : "";
+  if (params.importId) {
+    joinUsersImports = `
+      JOIN users_imports on import_id = $2
+    `;
+    whereClauseIndex++;
+    paginationIndex++;
+    queryValues.push(params.importId);
+  }
   if (search.length > 0) {
     searchWhereClause = ` AND (${[
-      `u.email ILIKE $2`,
-      `u.details->>'firstName' ILIKE $2`,
-      `u.details->>'lastName' ILIKE $2`,
+      `u.email ILIKE $${whereClauseIndex}`,
+      `u.details->>'firstName' ILIKE $${whereClauseIndex}`,
+      `u.details->>'lastName' ILIKE $${whereClauseIndex}`,
     ].join(" OR ")}) `;
     queryValues.push(`%${search}%`);
-    paginationIndex = 3;
+    paginationIndex++;
   }
 
   const transports = params.transports ?? [];
@@ -84,6 +96,7 @@ const buildGetRecipientsQueries = (params: {
             ouc.organisation_id = $1 AND
             ouc.user_id = u.id AND
             ouc.invitation_status = 'accepted'
+        ${joinUsersImports}
         WHERE u.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
     `;
 

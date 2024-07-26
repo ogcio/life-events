@@ -76,7 +76,7 @@ export default async function users(app: FastifyInstance) {
           limit: query.limit,
           offset: query.offset,
         },
-        //TODO Here manage filter per importId
+        importId: query.importId,
         transports: query.transports ? query.transports.trim().split(",") : [],
       });
 
