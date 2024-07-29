@@ -30,8 +30,6 @@ export default async ({
     context.scopes,
   );
 
-  console.log({ publicServancContext, hasPermissions });
-
   return (
     <html lang={locale}>
       <head>
