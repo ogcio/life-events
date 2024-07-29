@@ -18,7 +18,6 @@ export default async (props: { params: { eventId: string } }) => {
   let plainText = "";
 
   for (const event of messageEvents.data || []) {
-    console.log({ event });
     if ("receiverFullName" in event.data) {
       recipient = event.data.receiverFullName;
       subject = event.data.subject;

@@ -3997,6 +3997,11 @@ paths:
           name: importId
           required: false
         - schema:
+            type: boolean
+          in: query
+          name: activeOnly
+          required: false
+        - schema:
             default: 0
             minimum: 0
             type: integer

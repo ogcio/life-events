@@ -34,7 +34,7 @@ export default async (props: {
   );
 
   const { data: users, error: usersError } =
-    await messagingClient.getUsersForImport(props.params.importId);
+    await messagingClient.getUsersForImport(props.params.importId, false);
 
   if (error || !userImport || usersError || !users) {
     throw notFound();

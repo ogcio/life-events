@@ -14,10 +14,12 @@ export const getUsers = async (params: {
   search?: string | undefined;
   transports?: string[];
   importId?: string;
+  activeOnly?: boolean;
 }): Promise<{ recipients: UserPerOrganisation[]; total: number }> => {
   const client = await params.pool.connect();
   try {
     const queries = buildGetRecipientsQueries(params);
+    console.log(JSON.stringify({ queries }));
     const countResponse = client.query<{ count: number }>(
       queries.count.query,
       queries.count.values,
@@ -44,12 +46,14 @@ const buildGetRecipientsQueries = (params: {
   search?: string;
   transports?: string[];
   importId?: string;
+  activeOnly?: boolean;
 }): {
   count: { query: string; values: (string | number)[] };
   data: { query: string; values: (string | number)[] };
 } => {
-  let searchWhereClause = "";
-  let transportsWhereClause = "";
+  const whereClauses = params.activeOnly
+    ? ["users.user_status = 'active'"]
+    : [];
   let joinUsersImports = "";
   let paginationIndex = 2;
   let whereClauseIndex = 2;
@@ -64,11 +68,13 @@ const buildGetRecipientsQueries = (params: {
     queryValues.push(params.importId);
   }
   if (search.length > 0) {
-    searchWhereClause = ` AND (${[
-      `users.email ILIKE $${whereClauseIndex}`,
-      `users.details->>'firstName' ILIKE $${whereClauseIndex}`,
-      `users.details->>'lastName' ILIKE $${whereClauseIndex}`,
-    ].join(" OR ")}) `;
+    whereClauses.push(
+      `(${[
+        `users.email ILIKE $${whereClauseIndex}`,
+        `users.details->>'firstName' ILIKE $${whereClauseIndex}`,
+        `users.details->>'lastName' ILIKE $${whereClauseIndex}`,
+      ].join(" OR ")})`,
+    );
     queryValues.push(`%${search}%`);
     paginationIndex++;
   }
@@ -84,19 +90,23 @@ const buildGetRecipientsQueries = (params: {
   if (chosenTransports.length > 0) {
     // at least one of the needed transports
     // is set as valid for the user
-    transportsWhereClause = ` AND ouc.preferred_transports && $${paginationIndex++}`;
+    whereClauses.push(`ouc.preferred_transports && $${paginationIndex++}`);
     queryValues.push(utils.postgresArrayify(transports));
   }
+
+  const whereClause = whereClauses.length
+    ? ` WHERE ${whereClauses.join(" AND ")} `
+    : " ";
 
   const dataSelect = `SELECT 
         ${getUserFieldsToSelect()}
         FROM users
         JOIN organisation_user_configurations ouc ON 
             ouc.organisation_id = $1 AND
-            ouc.user_id = users.id AND
-            ouc.invitation_status = 'accepted'
+            ouc.user_id = users.id
+            ${params.activeOnly ? "AND ouc.invitation_status = 'accepted'" : ""}
         ${joinUsersImports}
-        WHERE users.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
+        ${whereClause}
         ORDER BY users.id DESC
         LIMIT $${paginationIndex++} OFFSET $${paginationIndex}
     `;
@@ -108,10 +118,10 @@ const buildGetRecipientsQueries = (params: {
         FROM users
         JOIN organisation_user_configurations ouc ON 
             ouc.organisation_id = $1 AND
-            ouc.user_id = users.id AND
-            ouc.invitation_status = 'accepted'
+            ouc.user_id = users.id
+            ${params.activeOnly ? "AND ouc.invitation_status = 'accepted'" : ""}
         ${joinUsersImports}
-        WHERE users.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
+        ${whereClause}
       `,
       values: queryValues,
     },

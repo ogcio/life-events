@@ -1278,7 +1278,7 @@ export interface paths {
             "application/json": {
               data: {
                 /** Format: uuid */
-                id: string;
+                organisationSettingId: string;
                 /** Format: uuid */
                 userId: string;
                 /** @default null */
@@ -1423,7 +1423,7 @@ export interface paths {
             "application/json": {
               data: {
                 /** Format: uuid */
-                id: string;
+                organisationSettingId: string;
                 /** Format: uuid */
                 userId: string;
                 /** @default null */
@@ -1575,7 +1575,7 @@ export interface paths {
             "application/json": {
               data: {
                 /** Format: uuid */
-                id: string;
+                organisationSettingId: string;
                 /** Format: uuid */
                 userId: string;
                 /** @default null */
@@ -1933,6 +1933,7 @@ export interface paths {
           search?: string;
           transports?: string;
           importId?: string;
+          activeOnly?: boolean;
           offset?: number;
           limit?: number;
         };
@@ -1954,7 +1955,7 @@ export interface paths {
                 /** @default null */
                 ppsn: null | string;
                 /** Format: uuid */
-                id: string;
+                organisationSettingId: string;
                 /** Format: uuid */
                 userId: string;
                 /** @default null */
@@ -2093,7 +2094,7 @@ export interface paths {
                 /** @default null */
                 ppsn: null | string;
                 /** Format: uuid */
-                id: string;
+                organisationSettingId: string;
                 /** Format: uuid */
                 userId: string;
                 /** @default null */

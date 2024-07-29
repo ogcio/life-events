@@ -167,6 +167,7 @@ export default async (props: MessageCreateProps) => {
     ...queryParams,
     organisationId: organization.id,
     transports: props.state.transportations.join(","),
+    activeOnly: true,
   });
 
   if (response.error || !response.data) {

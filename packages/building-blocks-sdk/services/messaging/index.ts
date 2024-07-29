@@ -342,9 +342,9 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getUsersForImport(importId: string) {
+  async getUsersForImport(importId: string, activeOnly: boolean) {
     const { error, data } = await this.client.GET("/api/v1/users/", {
-      params: { query: { importId } },
+      params: { query: { importId, activeOnly } },
     });
     return { error, data: data?.data };
   }
