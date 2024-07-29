@@ -101,7 +101,7 @@ const buildGetRecipientsQueries = (params: {
     `;
 
   const dataSelect = `SELECT 
-        ${getFieldsToSelect()}
+        ${getUserFieldsToSelect()}
         ${basicQuery}
         ORDER BY users.id DESC
         LIMIT $${paginationIndex++} OFFSET $${paginationIndex}
@@ -133,7 +133,7 @@ export const getUser = async (params: {
     const response = await client.query<UserPerOrganisation>(
       `
       SELECT
-      ${getFieldsToSelect()}
+      ${getUserFieldsToSelect()}
       FROM users
       JOIN organisation_user_configurations ouc ON 
           ouc.organisation_id = $1 AND
@@ -159,7 +159,7 @@ export const getUser = async (params: {
   }
 };
 
-const getFieldsToSelect = () => `
+const getUserFieldsToSelect = () => `
   users.id as "userId",
   users.user_profile_id as "userProfileId",
   users.phone as "phoneNumber",
