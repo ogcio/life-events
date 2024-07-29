@@ -13,8 +13,6 @@ export default async () => {
   const sdk = await AuthenticationFactory.getMessagingClient();
 
   const { data: providers } = await sdk.getSmsProviders();
-
-  console.log(providers);
   return (
     <table className="govie-table">
       <thead className="govie-table__head">
