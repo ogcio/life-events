@@ -11,7 +11,7 @@ export const publicServantExpectedRoles = [
 
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
-  baseUrl: process.env.NEXT_PUBLIC_HOME_SERVICE_ENTRY_POINT as string,
+  baseUrl: process.env.NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE as string,
   endpoint: process.env.LOGTO_ENDPOINT as string,
   cookieSecret: process.env.LOGTO_COOKIE_SECRET as string,
 
@@ -38,4 +38,4 @@ export default {
 };
 
 export const postSignoutRedirect =
-  process.env.NEXT_PUBLIC_HOME_SERVICE_ENTRY_POINT;
+  process.env.NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE;
