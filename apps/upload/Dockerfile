@@ -52,9 +52,6 @@ COPY --from=builder /app/apps/upload/.next/standalone ./
 COPY --from=builder /app/apps/upload/.next/static ./apps/upload/.next/static
 # TODO: Filter and remove whatever is not necessary for db-migrate and db-migrate-pg
 COPY --from=deps /app/node_modules/ /app/node_modules/
-COPY --from=deps /app/apps/upload/database.json /app/apps/upload/
-COPY --from=deps /app/apps/upload/migrations /app/apps/upload/migrations
-
 EXPOSE 3007
 
 ENV PORT=3007
