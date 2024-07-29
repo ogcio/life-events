@@ -1,4 +1,4 @@
-import { Static, Type } from "@sinclair/typebox";
+import { Static, TSchema, Type } from "@sinclair/typebox";
 
 export const Token = Type.Object({
   id_token: Type.String(),
@@ -16,3 +16,8 @@ export const Object = Type.Object({
   key: Type.String(),
   size: Type.Number(),
 });
+
+export const getGenericResponseSchema = <T extends TSchema>(dataType: T) =>
+  Type.Object({
+    data: dataType,
+  });

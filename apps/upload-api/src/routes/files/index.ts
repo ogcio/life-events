@@ -10,7 +10,10 @@ import { PassThrough } from "stream";
 import { EventEmitter } from "node:events";
 import { pipeline } from "stream";
 import { Upload } from "@aws-sdk/lib-storage";
-import { Object } from "../../types/schemaDefinitions.js";
+import {
+  getGenericResponseSchema,
+  Object,
+} from "../../types/schemaDefinitions.js";
 import PromiseTransform from "./PromiseTransform.js";
 
 import {
@@ -289,15 +292,18 @@ export default async function routes(app: FastifyInstance) {
         consumes: ["multipart/form-data"],
         tags: ["Files"],
         response: {
-          200: Type.Object({ message: Type.String() }),
-          500: HttpError,
+          200: getGenericResponseSchema(
+            Type.Object({ message: Type.String() }),
+          ),
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
     async (request, reply) => {
       await scanAndUpload(app, request);
 
-      reply.send({ message: "File uploaded successfully" });
+      reply.send({ data: { message: "File uploaded successfully" } });
     },
   );
 
@@ -307,8 +313,9 @@ export default async function routes(app: FastifyInstance) {
       schema: {
         tags: ["Files"],
         response: {
-          200: Type.Array(Object),
-          500: HttpError,
+          200: getGenericResponseSchema(Type.Array(Object)),
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -328,7 +335,7 @@ export default async function routes(app: FastifyInstance) {
         throw new ServerError(FILE_INDEX, "Internal server error", err);
       }
 
-      reply.send(response);
+      reply.send({ data: response });
     },
   );
 
@@ -339,8 +346,11 @@ export default async function routes(app: FastifyInstance) {
         tags: ["Files"],
         params: Type.Object({ key: Type.String() }),
         response: {
-          200: Type.Object({ message: Type.String() }),
-          500: HttpError,
+          200: getGenericResponseSchema(
+            Type.Object({ message: Type.String() }),
+          ),
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -359,7 +369,7 @@ export default async function routes(app: FastifyInstance) {
         throw new ServerError(FILE_DELETE, "Internal server error", err);
       }
 
-      reply.send({ message: "File deleted succesfully" });
+      reply.send({ data: { message: "File deleted succesfully" } });
     },
   );
 
@@ -370,7 +380,9 @@ export default async function routes(app: FastifyInstance) {
         tags: ["Files"],
         params: Type.Object({ key: Type.String() }),
         response: {
-          200: Type.Object({ message: Type.String() }),
+          200: Type.Any(),
+          "4xx": HttpError,
+          "5xx": HttpError,
           500: HttpError,
         },
       },
