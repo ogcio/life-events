@@ -19,8 +19,9 @@ import {
   sanitizePagination,
 } from "../../utils/pagination";
 import { Permissions } from "../../types/permissions";
-import { AuthorizationError, NotFoundError } from "shared-errors";
+import { NotFoundError } from "shared-errors";
 import { Profile } from "building-blocks-sdk";
+import { ensureUserIsOrganisationMember } from "../../utils/error-utils";
 
 const tags = ["Users"];
 
@@ -111,17 +112,15 @@ export default async function users(app: FastifyInstance) {
     },
     async function (request) {
       const errorProcess = "GET_USER";
+      const organisationId = ensureUserIsOrganisationMember(
+        request.userData,
+        errorProcess,
+      );
       const userId = request.params.userId;
-      if (!request.userData?.organizationId) {
-        throw new AuthorizationError(
-          errorProcess,
-          "You have to be part of an organisation to invoke this endpoint",
-        );
-      }
 
       const user = await getUser({
         pool: app.pg.pool,
-        organisationId: request.userData!.organizationId,
+        organisationId,
         userId,
       });
 
