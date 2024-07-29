@@ -90,6 +90,7 @@ export const UserDetailsSchema = Type.Object({
 export type UserDetails = Static<typeof UserDetailsSchema>;
 
 export const OrganisationUserConfigSchema = Type.Object({
+  id: Type.Optional(Type.String({ format: "uuid" })),
   organisationId: Type.String(),
   userId: Type.String({ format: "uuid" }),
   invitationStatus: InvitationStatusUnionType,

@@ -145,7 +145,7 @@ export const getUserImports = async (params: {
 export const getSettingsPerUser = async (params: {
   client: PoolClient;
   userId: string;
-  organisationId?: string;
+  organisationSettingId?: string;
   errorCode: string;
   limit?: number;
   includeUserDetails?: boolean;
@@ -153,9 +153,9 @@ export const getSettingsPerUser = async (params: {
   try {
     const inputWhereValues = [params.userId];
     const inputWhereClauses = ["users.id = $1"];
-    if (params.organisationId) {
-      inputWhereClauses.push("ouc.organisation_id = $2");
-      inputWhereValues.push(params.organisationId);
+    if (params.organisationSettingId) {
+      inputWhereClauses.push("ouc.id = $2");
+      inputWhereValues.push(params.organisationSettingId);
     }
     const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
     const operator = " AND ";
@@ -166,7 +166,8 @@ export const getSettingsPerUser = async (params: {
         : "";
     const result = await params.client.query<OrganisationSetting>(
       `
-          SELECT 
+          SELECT
+              oud.id as "id",
               ouc.user_id as "userId",
               users.user_profile_id as "userProfileId",
               users.email as "emailAddress",
