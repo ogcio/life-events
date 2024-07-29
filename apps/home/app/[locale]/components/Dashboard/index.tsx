@@ -47,23 +47,6 @@ const services: {
   },
 ];
 
-const translations = {
-  en: {
-    forms: "Forms",
-    payments: "Payments",
-    messaging: "Messaging",
-    lifeEvents: "Life Events",
-    designSystem: "Design System",
-  },
-  ga: {
-    forms: "Forms",
-    payments: "Payments",
-    messaging: "Messaging",
-    lifeEvents: "Life Events",
-    designSystem: "Design System",
-  },
-};
-
 type TileProps = {
   url: string;
   label: string;
@@ -115,7 +98,7 @@ export default async function ({ locale, userRoles }: Props) {
             <Tile
               key={index}
               url={url}
-              label={translations[locale][labelKey]}
+              label={t(`services.${labelKey}`)}
               icon={icon}
             />
           ))}

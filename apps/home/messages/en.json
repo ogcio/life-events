@@ -2,7 +2,14 @@
   "Dashboard": {
     "title": "Welcome",
     "description": "This is where you can seamlessly access and configure building blocks to enhance your public sector department’s efficiency and functionality.",
-    "tilesLabel": "Click on one of the icons below to begin."
+    "tilesLabel": "Click on one of the icons below to begin.",
+    "services": {
+      "forms": "Forms",
+      "payments": "Payments",
+      "messaging": "Messaging",
+      "lifeEvents": "Life Events",
+      "designSystem": "Design System"
+    }
   },
   "LandingPage": {
     "AlphaBanner": {
