@@ -4,17 +4,17 @@ import { HttpError } from "../../types/httpErrors";
 import {
   OrganisationInvitationFeedbackSchema,
   OrganisationInvitationFeedback,
-  UserInvitation,
-  UserInvitationSchema,
+  OrganisationSetting,
+  OrganisationSettingSchema,
 } from "../../types/usersSchemaDefinitions";
 import {
-  getInvitationForUser,
-  getInvitationsForUser,
+  getOrganisationSettingsForProfile,
   updateInvitationStatus,
   updateOrganisationFeedback,
 } from "../../services/users/invitations/accept-invitations";
 import { Permissions } from "../../types/permissions";
 import { getGenericResponseSchema } from "../../types/schemaDefinitions";
+import { getSettingsPerUserProfile } from "../../services/users/shared-users";
 
 const tags = ["Organisation Settings"];
 
@@ -30,36 +30,44 @@ export default async function organisationSettings(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: getGenericResponseSchema(Type.Array(UserInvitationSchema)),
+          200: getGenericResponseSchema(Type.Array(OrganisationSettingSchema)),
           400: HttpError,
           404: HttpError,
           500: HttpError,
         },
       },
     },
-    async (request: FastifyRequest, _reply: FastifyReply) => ({
-      data: await getInvitationsForUser({
-        userProfileId: request.userData!.userId,
-        pg: app.pg,
-      }),
-    }),
+    async (request: FastifyRequest, _reply: FastifyReply) => {
+      const client = await app.pg.pool.connect();
+      try {
+        return {
+          data: await getSettingsPerUserProfile({
+            userProfileId: request.userData!.userId,
+            client,
+            errorCode: "GET_ORGANISATION_SETTINGS",
+          }),
+        };
+      } finally {
+        client.release();
+      }
+    },
   );
 
   app.get<{
-    Params: { organisationId: string };
-    Response: { data: UserInvitation };
+    Params: { organisationSettingId: string };
+    Response: { data: OrganisationSetting };
   }>(
-    "/:organisationId",
+    "/:organisationSettingId",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
         tags,
         params: Type.Object({
-          organisationId: Type.String(),
+          organisationSettingId: Type.String(),
         }),
         response: {
-          200: getGenericResponseSchema(UserInvitationSchema),
+          200: getGenericResponseSchema(OrganisationSettingSchema),
           400: HttpError,
           404: HttpError,
           500: HttpError,
@@ -68,27 +76,27 @@ export default async function organisationSettings(app: FastifyInstance) {
     },
     async (
       request: FastifyRequest<{
-        Params: { organisationId: string };
-        Response: { data: UserInvitation };
+        Params: { organisationSettingId: string };
+        Response: { data: OrganisationSetting };
       }>,
       _reply: FastifyReply,
     ) => ({
-      data: await getInvitationForUser({
+      data: await getOrganisationSettingsForProfile({
         userProfileId: request.userData!.userId,
-        organisationId: request.params.organisationId,
+        organisationSettingId: request.params.organisationSettingId,
         pg: app.pg,
       }),
     }),
   );
 
   interface PatchOrgInvitationSchema {
-    Params: { organisationId: string };
+    Params: { organisationSettingId: string };
     Body: OrganisationInvitationFeedback;
-    Response: { data: UserInvitation };
+    Response: { data: OrganisationSetting };
   }
 
   app.patch<PatchOrgInvitationSchema>(
-    "/:organisationId",
+    "/:organisationSettingId",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.CitizenSelf.Write]),
@@ -96,10 +104,10 @@ export default async function organisationSettings(app: FastifyInstance) {
         tags,
         body: OrganisationInvitationFeedbackSchema,
         params: Type.Object({
-          organisationId: Type.String(),
+          organisationSettingId: Type.String(),
         }),
         response: {
-          202: Type.Object({ data: UserInvitationSchema }),
+          202: Type.Object({ data: OrganisationSettingSchema }),
           400: HttpError,
           404: HttpError,
           500: HttpError,
@@ -119,7 +127,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       return {
         data: await updateOrganisationFeedback({
           userProfileId: request.userData!.userId,
-          organisationId: request.params.organisationId,
+          organisationSettingId: request.params.organisationSettingId,
           pg: app.pg,
           feedback: request.body,
         }),
