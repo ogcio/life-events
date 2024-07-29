@@ -45,27 +45,13 @@ export default async function userImports(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: Type.Union([
-            getGenericResponseSchema(
-              Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
-            ),
-            Type.String(),
-          ]),
+          200: getGenericResponseSchema(
+            Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
+          ),
         },
-        produces: [MimeTypes.Csv, MimeTypes.Json],
-        description:
-          "If 'Accept' headers is set as 'text/csv' it will return a string containing the template with the csv that will be used to import users",
       },
     },
-    async (request: FastifyRequest, reply: FastifyReply) => {
-      if (request.headers.accept === "text/csv") {
-        const buffer = await getCsvExample();
-
-        reply.type("text/csv").send(buffer);
-
-        return;
-      }
-
+    async (request: FastifyRequest, _reply: FastifyReply) => {
       return {
         data: await getUserImportsForOrganisation({
           logger: request.log,
@@ -152,6 +138,28 @@ export default async function userImports(app: FastifyInstance) {
         includeUsersData: request.query.includeImportedData ?? true,
       }),
     }),
+  );
+
+  app.get(
+    "/template-download",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
+      schema: {
+        tags,
+        response: {
+          200: Type.String(),
+        },
+        produces: [MimeTypes.Csv],
+        description:
+          "it will return a string containing the template with the csv that will be used to import users",
+      },
+    },
+    async (_request: FastifyRequest, reply: FastifyReply) => {
+      const buffer = await getCsvExample();
+
+      reply.type("text/csv").send(buffer);
+    },
   );
 
   const saveRequestFile = async (request: FastifyRequest): Promise<string> => {

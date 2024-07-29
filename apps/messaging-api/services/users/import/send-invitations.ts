@@ -10,7 +10,8 @@ import {
 } from "../../../types/schemaDefinitions";
 import { createMessage } from "../../messages/messages";
 import { PostgresDb } from "@fastify/postgres";
-import { ALL_TRANSPORTS, getSettingsPerOrganisation } from "../shared-users";
+import { ALL_TRANSPORTS } from "../shared-users";
+import { ServerError } from "shared-errors";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
 
@@ -100,16 +101,39 @@ const getSettingsPerUserIds = async (params: {
   let userIndex = 1;
   const idsIndexes = params.userIds.map(() => `$${userIndex++}`);
 
-  return await getSettingsPerOrganisation({
-    client: params.client,
-    whereClauses: [
-      `users.id in (${idsIndexes.join(", ")})`,
-      `users_imports.import_id = $${userIndex}`,
-    ],
-    whereValues: [...params.userIds, params.importId],
-    organisationId: params.organisationId,
-    errorCode: SEND_INVITATIONS_ERROR,
-  });
+  try {
+    const result = await params.client.query<OrganisationSetting>(
+      `
+        SELECT 
+          ouc.user_id as "userId",
+          users.user_profile_id as "userProfileId",
+          users.email as "emailAddress",
+          users.phone as "phoneNumber",
+          users.details as "details",
+          ouc.organisation_id as "organisationId",
+          ouc.invitation_status as "organisationInvitationStatus",
+          ouc.invitation_sent_at  as "organisationInvitationSentAt",
+          ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
+          ouc.preferred_transports as "organisationPreferredTransports",
+          users.correlation_quality as "correlationQuality",
+          users.user_status as "userStatus"
+        FROM users
+        LEFT JOIN organisation_user_configurations ouc on ouc.user_id = users.id 
+          AND ouc.organisation_id = $1
+        LEFT JOIN users_imports on users_imports.organisation_id = ouc.organisation_id
+        WHERE users.id in (${idsIndexes.join(", ")}) AND users_imports.import_id = $${userIndex}
+      `,
+      [params.organisationId, ...params.userIds, params.importId],
+    );
+
+    return result.rows;
+  } catch (error) {
+    throw new ServerError(
+      SEND_INVITATIONS_ERROR,
+      `Error retrieving organisation settings`,
+      error,
+    );
+  }
 };
 
 interface InvitationsPerLanguage {

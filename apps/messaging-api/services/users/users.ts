@@ -2,7 +2,6 @@ import { Pool } from "pg";
 import { PaginationParams } from "../../types/schemaDefinitions";
 import { utils } from "../../utils";
 import { NotFoundError, ServerError } from "shared-errors";
-import { sanitizePagination } from "../../utils/pagination";
 import { SELECTABLE_TRANSPORTS } from "./shared-users";
 import { UserPerOrganisation } from "../../types/usersSchemaDefinitions";
 
@@ -11,15 +10,14 @@ const ERROR_PROCESS = "GET_USERS";
 export const getUsers = async (params: {
   pool: Pool;
   organisationId: string;
-  pagination: PaginationParams;
+  pagination: Required<PaginationParams>;
   search?: string | undefined;
   transports?: string[];
   importId?: string;
 }): Promise<{ recipients: UserPerOrganisation[]; total: number }> => {
   const client = await params.pool.connect();
-  const pagination = sanitizePagination(params.pagination);
   try {
-    const queries = buildGetRecipientsQueries({ ...params, pagination });
+    const queries = buildGetRecipientsQueries(params);
     const countResponse = client.query<{ count: number }>(
       queries.count.query,
       queries.count.values,
@@ -90,7 +88,8 @@ const buildGetRecipientsQueries = (params: {
     queryValues.push(utils.postgresArrayify(transports));
   }
 
-  const basicQuery = `
+  const dataSelect = `SELECT 
+        ${getUserFieldsToSelect()}
         FROM users
         JOIN organisation_user_configurations ouc ON 
             ouc.organisation_id = $1 AND
@@ -98,18 +97,22 @@ const buildGetRecipientsQueries = (params: {
             ouc.invitation_status = 'accepted'
         ${joinUsersImports}
         WHERE users.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
-    `;
-
-  const dataSelect = `SELECT 
-        ${getFieldsToSelect()}
-        ${basicQuery}
         ORDER BY users.id DESC
         LIMIT $${paginationIndex++} OFFSET $${paginationIndex}
     `;
 
   return {
     count: {
-      query: `SELECT COUNT(*) as count ${basicQuery}`,
+      query: `
+        SELECT COUNT(*) as count 
+        FROM users
+        JOIN organisation_user_configurations ouc ON 
+            ouc.organisation_id = $1 AND
+            ouc.user_id = users.id AND
+            ouc.invitation_status = 'accepted'
+        ${joinUsersImports}
+        WHERE users.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
+      `,
       values: queryValues,
     },
     data: {
@@ -133,7 +136,7 @@ export const getUser = async (params: {
     const response = await client.query<UserPerOrganisation>(
       `
       SELECT
-      ${getFieldsToSelect()}
+      ${getUserFieldsToSelect()}
       FROM users
       JOIN organisation_user_configurations ouc ON 
           ouc.organisation_id = $1 AND
@@ -159,7 +162,7 @@ export const getUser = async (params: {
   }
 };
 
-const getFieldsToSelect = () => `
+const getUserFieldsToSelect = () => `
   users.id as "userId",
   users.user_profile_id as "userProfileId",
   users.phone as "phoneNumber",

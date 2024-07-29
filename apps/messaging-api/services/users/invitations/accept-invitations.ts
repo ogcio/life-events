@@ -52,8 +52,7 @@ const getSettingPerProfileId = async (params: {
     userId: user.id,
     client,
     errorCode: ACCEPT_INVITATIONS_ERROR,
-    whereClauses: ["ouc.organisation_id = $1"],
-    whereValues: [organisationId],
+    organisationId,
   });
 
   if (invitations.length === 0) {

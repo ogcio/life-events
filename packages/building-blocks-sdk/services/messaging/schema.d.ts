@@ -1676,94 +1676,50 @@ export interface paths {
     };
   };
   "/api/v1/user-imports/": {
-    /** @description If 'Accept' headers is set as 'text/csv' it will return a string containing the template with the csv that will be used to import users */
     get: {
       responses: {
         /** @description Default Response */
         200: {
           content: {
-            "text/csv":
-              | {
-                  data: {
-                    organisationId: string;
-                    /** Format: date-time */
-                    importedAt: string;
-                    /** @default api */
-                    importChannel: "api" | "csv";
-                    /** @default 0 */
-                    retryCount: number;
-                    /** @default null */
-                    lastRetryAt: string | null;
-                    importId: string;
-                  }[];
-                  metadata?: {
-                    links?: {
-                      self: {
-                        href?: string;
-                      };
-                      next?: {
-                        href?: string;
-                      };
-                      prev?: {
-                        href?: string;
-                      };
-                      first: {
-                        href?: string;
-                      };
-                      last: {
-                        href?: string;
-                      };
-                      pages: {
-                        [key: string]: {
-                          href?: string;
-                        };
-                      };
-                    };
-                    totalCount?: number;
+            "application/json": {
+              data: {
+                organisationId: string;
+                /** Format: date-time */
+                importedAt: string;
+                /** @default api */
+                importChannel: "api" | "csv";
+                /** @default 0 */
+                retryCount: number;
+                /** @default null */
+                lastRetryAt: string | null;
+                importId: string;
+              }[];
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
                   };
-                }
-              | string;
-            "application/json":
-              | {
-                  data: {
-                    organisationId: string;
-                    /** Format: date-time */
-                    importedAt: string;
-                    /** @default api */
-                    importChannel: "api" | "csv";
-                    /** @default 0 */
-                    retryCount: number;
-                    /** @default null */
-                    lastRetryAt: string | null;
-                    importId: string;
-                  }[];
-                  metadata?: {
-                    links?: {
-                      self: {
-                        href?: string;
-                      };
-                      next?: {
-                        href?: string;
-                      };
-                      prev?: {
-                        href?: string;
-                      };
-                      first: {
-                        href?: string;
-                      };
-                      last: {
-                        href?: string;
-                      };
-                      pages: {
-                        [key: string]: {
-                          href?: string;
-                        };
-                      };
-                    };
-                    totalCount?: number;
+                  next?: {
+                    href?: string;
                   };
-                }
-              | string;
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
           };
         };
       };
@@ -1945,6 +1901,19 @@ export interface paths {
               }[];
               validationContext?: string;
             };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/user-imports/template-download": {
+    /** @description it will return a string containing the template with the csv that will be used to import users */
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "text/csv": string;
           };
         };
       };
