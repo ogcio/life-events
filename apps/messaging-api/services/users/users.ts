@@ -88,7 +88,8 @@ const buildGetRecipientsQueries = (params: {
     queryValues.push(utils.postgresArrayify(transports));
   }
 
-  const basicQuery = `
+  const dataSelect = `SELECT 
+        ${getUserFieldsToSelect()}
         FROM users
         JOIN organisation_user_configurations ouc ON 
             ouc.organisation_id = $1 AND
@@ -96,18 +97,22 @@ const buildGetRecipientsQueries = (params: {
             ouc.invitation_status = 'accepted'
         ${joinUsersImports}
         WHERE users.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
-    `;
-
-  const dataSelect = `SELECT 
-        ${getUserFieldsToSelect()}
-        ${basicQuery}
         ORDER BY users.id DESC
         LIMIT $${paginationIndex++} OFFSET $${paginationIndex}
     `;
 
   return {
     count: {
-      query: `SELECT COUNT(*) as count ${basicQuery}`,
+      query: `
+        SELECT COUNT(*) as count 
+        FROM users
+        JOIN organisation_user_configurations ouc ON 
+            ouc.organisation_id = $1 AND
+            ouc.user_id = users.id AND
+            ouc.invitation_status = 'accepted'
+        ${joinUsersImports}
+        WHERE users.user_status = 'active' ${searchWhereClause} ${transportsWhereClause}
+      `,
       values: queryValues,
     },
     data: {
