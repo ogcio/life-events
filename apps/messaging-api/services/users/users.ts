@@ -2,7 +2,6 @@ import { Pool } from "pg";
 import { PaginationParams } from "../../types/schemaDefinitions";
 import { utils } from "../../utils";
 import { NotFoundError, ServerError } from "shared-errors";
-import { sanitizePagination } from "../../utils/pagination";
 import { SELECTABLE_TRANSPORTS } from "./shared-users";
 import { UserPerOrganisation } from "../../types/usersSchemaDefinitions";
 
@@ -11,15 +10,14 @@ const ERROR_PROCESS = "GET_USERS";
 export const getUsers = async (params: {
   pool: Pool;
   organisationId: string;
-  pagination: PaginationParams;
+  pagination: Required<PaginationParams>;
   search?: string | undefined;
   transports?: string[];
   importId?: string;
 }): Promise<{ recipients: UserPerOrganisation[]; total: number }> => {
   const client = await params.pool.connect();
-  const pagination = sanitizePagination(params.pagination);
   try {
-    const queries = buildGetRecipientsQueries({ ...params, pagination });
+    const queries = buildGetRecipientsQueries(params);
     const countResponse = client.query<{ count: number }>(
       queries.count.query,
       queries.count.values,

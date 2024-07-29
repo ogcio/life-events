@@ -69,20 +69,18 @@ export default async function users(app: FastifyInstance) {
     },
     async (request: FastifyRequest<GetUsersSchema>, _reply: FastifyReply) => {
       const query = request.query;
+      const pagination = sanitizePagination(query);
       const recipientsResponse = await getUsers({
         pool: app.pg.pool,
         organisationId: request.userData!.organizationId!,
         search: query.search,
-        pagination: {
-          limit: query.limit,
-          offset: query.offset,
-        },
+        pagination,
         importId: query.importId,
         transports: query.transports ? query.transports.trim().split(",") : [],
       });
 
       const paginationDetails: PaginationDetails = {
-        ...sanitizePagination(query),
+        ...pagination,
         totalCount: recipientsResponse.total,
         url: request.url,
       };
