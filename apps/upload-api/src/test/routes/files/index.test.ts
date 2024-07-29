@@ -361,13 +361,15 @@ t.test("files", async (t) => {
           url: "/files",
         })
         .then((response) => {
-          t.same(response.json(), [
-            {
-              url: "http://localhost:4566//file1.txt",
-              key: "file1.txt",
-              size: 100,
-            },
-          ]);
+          t.same(response.json(), {
+            data: [
+              {
+                url: "http://localhost:4566//file1.txt",
+                key: "file1.txt",
+                size: 100,
+              },
+            ],
+          });
 
           t.equal(response.statusCode, 200);
           t.end();
@@ -387,7 +389,7 @@ t.test("files", async (t) => {
           url: "/files",
         })
         .then((response) => {
-          t.same(response.json(), []);
+          t.same(response.json(), { data: [] });
 
           t.equal(response.statusCode, 200);
           t.end();
