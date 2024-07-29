@@ -148,6 +148,7 @@ export default async function messages(app: FastifyInstance) {
       // Need to change to token once that PR is merged
       const profileSdk = new Profile(request.userData!.accessToken);
       const { data, error } = await profileSdk.getUser();
+      console.log({ userData: request.userData, error });
       if (error) {
         throw new ServerError(
           errorKey,
