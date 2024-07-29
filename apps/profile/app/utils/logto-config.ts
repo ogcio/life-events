@@ -25,7 +25,7 @@ const publicServantScopes = [
   "profile:address:*",
   "profile:entitlement:*",
 ];
-const publicServantExpectedRole = "ogcio:Profile Public Servant";
+const publicServantExpectedRoles = ["Profile Public Servant"];
 
 export const getAuthenticationContextConfig =
   (): AuthenticationContextConfig => ({
@@ -34,7 +34,7 @@ export const getAuthenticationContextConfig =
     appSecret,
     organizationId,
     citizenScopes,
-    publicServantExpectedRole,
+    publicServantExpectedRoles,
     publicServantScopes,
     loginUrl: logto.login.path(),
     resourceUrl: profileApiResource,

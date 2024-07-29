@@ -5,7 +5,7 @@ import { organizationScopes } from "auth/authentication-context";
 
 export const paymentsApiResource = process.env.PAYMENTS_BACKEND_URL + "/";
 
-export const publicServantExpectedRole = "Payments Public Servant";
+export const publicServantExpectedRoles = ["Payments Public Servant"];
 
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
@@ -39,7 +39,7 @@ export const getAuthenticationContextConfig =
     appId: baseConfig.appId,
     appSecret: baseConfig.appSecret,
     citizenScopes,
-    publicServantExpectedRole,
+    publicServantExpectedRoles,
     publicServantScopes: paymentsPublicServantScopes,
     loginUrl: routeDefinitions.login.path(),
     resourceUrl: paymentsApiResource,
