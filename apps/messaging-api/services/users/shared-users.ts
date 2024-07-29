@@ -142,66 +142,6 @@ export const getUserImports = async (params: {
   }
 };
 
-export const getSettingsPerOrganisation = async (params: {
-  client: PoolClient;
-  organisationId: string;
-  whereClauses?: string[];
-  whereValues?: string[];
-  errorCode: string;
-  logicalWhereOperator?: string;
-  limit?: number;
-  joinUsersImports?: boolean;
-  includeUserDetails?: boolean;
-}): Promise<OrganisationSetting[]> => {
-  try {
-    const usersImportJoin =
-      (params.joinUsersImports ?? true)
-        ? " left join users_imports on users_imports.organisation_id = ouc.organisation_id "
-        : "";
-    const inputWhereValues = params.whereValues ?? [];
-    const inputWhereClauses = params.whereClauses ?? [];
-    const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
-    const operator = params.logicalWhereOperator
-      ? ` ${params.logicalWhereOperator} `
-      : " AND ";
-    const whereClauses =
-      inputWhereClauses.length > 0
-        ? `WHERE ${inputWhereClauses.join(operator)} `
-        : "";
-    const result = await params.client.query<OrganisationSetting>(
-      `
-          SELECT 
-              ouc.user_id as "userId",
-              users.user_profile_id as "userProfileId",
-              users.email as "emailAddress",
-              users.phone as "phoneNumber",
-              ${(params.includeUserDetails ?? true) ? 'users.details as "details"' : ""},
-              ouc.organisation_id as "organisationId",
-              ouc.invitation_status as "organisationInvitationStatus",
-              ouc.invitation_sent_at  as "organisationInvitationSentAt",
-              ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
-              ouc.preferred_transports as "organisationPreferredTransports",
-              users.correlation_quality as "correlationQuality",
-              users.user_status as "userStatus"
-            from users
-            left join organisation_user_configurations ouc on ouc.user_id = users.id 
-              and ouc.organisation_id = $1
-            ${usersImportJoin}
-            ${whereClauses} ${limitClause}
-        `,
-      [params.organisationId, ...inputWhereValues],
-    );
-
-    return result.rows;
-  } catch (error) {
-    throw new ServerError(
-      params.errorCode,
-      `Error retrieving organisation settings`,
-      error,
-    );
-  }
-};
-
 export const getSettingsPerUser = async (params: {
   client: PoolClient;
   userId: string;
