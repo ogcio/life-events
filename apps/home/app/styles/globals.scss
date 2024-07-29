@@ -68,7 +68,7 @@ $breakpoint-xxl: 1400px;
 }
 
 @mixin desktop {
-  @media (min-width: ($breakpoint-lg + 1)) and (max-width: ($breakpoint-xl)) {
+  @media (min-width: ($breakpoint-lg)) and (max-width: ($breakpoint-xl)) {
     @content;
   }
 }
