@@ -1,11 +1,20 @@
 import Link from "next/link";
-import { useTranslations } from "next-intl";
 import ProvidersList from "./ProvidersList";
 import styles from "./Providers.module.scss";
 import PaymentsMenu from "../PaymentsMenu";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
-export default ({ params: { locale } }) => {
-  const t = useTranslations("PaymentSetup.Providers");
+export default async ({ params: { locale } }) => {
+  const t = await getTranslations("PaymentSetup.Providers");
+
+  const context = AuthenticationFactory.getInstance();
+  const isPublicServant = await context.isPublicServant();
+  if (!isPublicServant) return notFound();
+
+  const organizations = Object.values(await context.getOrganizations());
+  const defaultOrgId = await context.getSelectedOrganization();
 
   return (
     <div
@@ -15,7 +24,12 @@ export default ({ params: { locale } }) => {
         gap: "2rem",
       }}
     >
-      <PaymentsMenu locale={locale} />
+      <PaymentsMenu
+        locale={locale}
+        organizations={organizations}
+        defaultOrganization={defaultOrgId}
+        disableOrgSelector={true}
+      />
       <div className="table-container">
         <section
           style={{

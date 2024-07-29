@@ -1,7 +1,7 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
-export default (props: { status?: string }) => {
-  const t = useTranslations("PaymentSetup.Providers.status");
+export default async (props: { status?: string }) => {
+  const t = await getTranslations("PaymentSetup.Providers.status");
   const { status } = props;
 
   switch (status) {

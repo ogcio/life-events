@@ -12,6 +12,7 @@ import { paymentRequestValidationMap } from "../../../../../validationMaps";
 import { ProviderType } from "../../providers/types";
 import { PaymentRequestFormState } from "../../create/page";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
+import PaymentsMenu from "../../PaymentsMenu";
 
 type Props = {
   params: {
@@ -35,6 +36,13 @@ export default async function ({ params: { request_id, locale } }: Props) {
   if (!details) {
     notFound();
   }
+
+  const context = AuthenticationFactory.getInstance();
+  const isPublicServant = await context.isPublicServant();
+  if (!isPublicServant) return notFound();
+
+  const organizations = Object.values(await context.getOrganizations());
+  const defaultOrgId = await context.getSelectedOrganization();
 
   async function handleSubmit(
     details: any,
@@ -168,10 +176,34 @@ export default async function ({ params: { request_id, locale } }: Props) {
   const handleSubmitClb = handleSubmit.bind(this, details);
 
   return (
-    <PaymentSetupFormPage
-      locale={locale}
-      action={handleSubmitClb}
-      details={details}
-    />
+    <div
+      style={{
+        display: "flex",
+        marginTop: "1.3rem",
+        gap: "2rem",
+      }}
+    >
+      <PaymentsMenu
+        locale={locale}
+        organizations={organizations}
+        defaultOrganization={defaultOrgId}
+        disableOrgSelector={true}
+      />
+      <div>
+        <section
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <PaymentSetupFormPage
+            locale={locale}
+            action={handleSubmitClb}
+            details={details}
+          />
+        </section>
+      </div>
+    </div>
   );
 }

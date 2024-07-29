@@ -12,7 +12,7 @@ import {
 import { routeDefinitions } from "../../../../routeDefinitions";
 import Pagination from "../../../../components/pagination";
 import styles from "./PaymentRequests.module.scss";
-import { redirect, RedirectType } from "next/navigation";
+import { notFound, redirect, RedirectType } from "next/navigation";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 import PaymentsMenu from "../PaymentsMenu";
 
@@ -48,6 +48,13 @@ export default async function ({
 
   const paymentRequests = paymentRequestsData?.data ?? [];
 
+  const context = AuthenticationFactory.getInstance();
+  const isPublicServant = await context.isPublicServant();
+  if (!isPublicServant) return notFound();
+
+  const organizations = Object.values(await context.getOrganizations());
+  const defaultOrgId = await context.getSelectedOrganization();
+
   return (
     <div
       style={{
@@ -56,7 +63,12 @@ export default async function ({
         gap: "2rem",
       }}
     >
-      <PaymentsMenu locale={locale} />
+      <PaymentsMenu
+        locale={locale}
+        organizations={organizations}
+        defaultOrganization={defaultOrgId}
+        disableOrgSelector={true}
+      />
       <div className="table-container">
         <section
           style={{

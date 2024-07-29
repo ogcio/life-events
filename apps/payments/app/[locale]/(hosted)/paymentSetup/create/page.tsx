@@ -1,4 +1,4 @@
-import { RedirectType, redirect } from "next/navigation";
+import { RedirectType, notFound, redirect } from "next/navigation";
 import PaymentSetupFormPage, { ProvidersMap } from "../PaymentSetupFormPage";
 import {
   errorHandler,
@@ -11,6 +11,7 @@ import { ProviderType } from "../providers/types";
 import { paymentRequestValidationMap } from "../../../../validationMaps";
 import { getTranslations } from "next-intl/server";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import PaymentsMenu from "../PaymentsMenu";
 
 type Props = {
   params: {
@@ -31,6 +32,13 @@ export type PaymentRequestFormState = {
 export default async function Page({ params: { locale } }: Props) {
   const t = await getTranslations("PaymentSetup.CreatePayment.form");
   const validationMap = paymentRequestValidationMap(t);
+
+  const context = AuthenticationFactory.getInstance();
+  const isPublicServant = await context.isPublicServant();
+  if (!isPublicServant) return notFound();
+
+  const organizations = Object.values(await context.getOrganizations());
+  const defaultOrgId = await context.getSelectedOrganization();
 
   async function handleSubmit(
     prevState: FormData,
@@ -123,5 +131,31 @@ export default async function Page({ params: { locale } }: Props) {
     return formResult;
   }
 
-  return <PaymentSetupFormPage locale={locale} action={handleSubmit} />;
+  return (
+    <div
+      style={{
+        display: "flex",
+        marginTop: "1.3rem",
+        gap: "2rem",
+      }}
+    >
+      <PaymentsMenu
+        locale={locale}
+        organizations={organizations}
+        defaultOrganization={defaultOrgId}
+        disableOrgSelector={true}
+      />
+      <div>
+        <section
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <PaymentSetupFormPage locale={locale} action={handleSubmit} />
+        </section>
+      </div>
+    </div>
+  );
 }

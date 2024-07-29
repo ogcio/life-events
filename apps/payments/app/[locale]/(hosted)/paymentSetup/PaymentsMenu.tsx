@@ -14,6 +14,7 @@ type Props = {
   locale: string;
   organizations?: OrganizationData[];
   defaultOrganization?: string;
+  disableOrgSelector?: boolean;
 };
 
 // load component asynchronously, only when it is needed
@@ -24,7 +25,12 @@ const OrganizationSelector = dynamic(
   },
 );
 
-export default ({ locale, organizations, defaultOrganization }: Props) => {
+export default ({
+  locale,
+  organizations,
+  defaultOrganization,
+  disableOrgSelector,
+}: Props) => {
   const t = useTranslations("Menu");
 
   async function handleSubmit(formData: FormData) {
@@ -49,6 +55,7 @@ export default ({ locale, organizations, defaultOrganization }: Props) => {
               }))}
               defaultOrganization={defaultOrganization}
               handleSubmit={handleSubmit}
+              disabled={disableOrgSelector}
             ></OrganizationSelector>
           )}
         </Suspense>

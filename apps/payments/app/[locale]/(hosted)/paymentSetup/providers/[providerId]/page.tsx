@@ -13,6 +13,7 @@ import {
 } from "../types";
 import { errorHandler } from "../../../../../utils";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
+import PaymentsMenu from "../../PaymentsMenu";
 
 type Props = {
   params: {
@@ -34,8 +35,16 @@ export default async ({ params: { providerId, locale } }: Props) => {
     notFound();
   }
 
+  const context = AuthenticationFactory.getInstance();
+  const isPublicServant = await context.isPublicServant();
+  if (!isPublicServant) return notFound();
+
+  const organizations = Object.values(await context.getOrganizations());
+  const defaultOrgId = await context.getSelectedOrganization();
+  let content;
+
   if (provider.type === "openbanking") {
-    return (
+    content = (
       <EditOpenBankingForm
         provider={provider as OpenBankingProvider}
         locale={locale}
@@ -44,7 +53,7 @@ export default async ({ params: { providerId, locale } }: Props) => {
   }
 
   if (provider.type === "banktransfer") {
-    return (
+    content = (
       <EditBankTransferForm
         provider={provider as BankTransferProvider}
         locale={locale}
@@ -53,13 +62,13 @@ export default async ({ params: { providerId, locale } }: Props) => {
   }
 
   if (provider.type === "stripe") {
-    return (
+    content = (
       <EditStripeForm provider={provider as StripeProvider} locale={locale} />
     );
   }
 
   if (provider.type === "worldpay") {
-    return (
+    content = (
       <EditWorldpayForm
         provider={provider as WorldpayProvider}
         locale={locale}
@@ -68,8 +77,38 @@ export default async ({ params: { providerId, locale } }: Props) => {
   }
 
   if (provider.type === "realex") {
-    return (
+    content = (
       <EditRealexForm provider={provider as RealexProvider} locale={locale} />
+    );
+  }
+
+  if (content) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          marginTop: "1.3rem",
+          gap: "2rem",
+        }}
+      >
+        <PaymentsMenu
+          locale={locale}
+          organizations={organizations}
+          defaultOrganization={defaultOrgId}
+          disableOrgSelector={true}
+        />
+        <div>
+          <section
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {content}
+          </section>
+        </div>
+      </div>
     );
   }
 
