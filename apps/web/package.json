@@ -8,8 +8,8 @@
     "test:headed:e2e": "playwright test --headed",
     "test:headless:e2e": "playwright test",
     "test:debug:e2e": "playwright test --ui",
-    "test:smoke:e2e": "playwright test @smoke",
-    "test:regression:e2e": "playwright test @regression",
+    "test:smoke:e2e": "playwright test --grep @smoke",
+    "test:regression:e2e": "playwright test --grep @regression",
     "test:generate:report": "npx allure serve allure-results",
     "migrate": "db-migrate up"
   },

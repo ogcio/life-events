@@ -11,6 +11,11 @@ test.describe("Login Tests", () => {
     await loginPage.navigateTo();
   });
 
+  // cleaning up test data
+  //test.afterAll(async () => {
+  //api ...
+  //} );
+
   test("should validate the password is required for and end user @smoke @normal", async () => {
     await allure.description(
       "This test attempts to log into the website using a login and an empty password.",
