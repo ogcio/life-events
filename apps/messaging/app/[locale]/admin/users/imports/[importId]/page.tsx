@@ -40,14 +40,6 @@ export default async (props: {
     throw notFound();
   }
 
-  const foundUserProfile = t("table.userProfileStatuses.found");
-  const notFoundUserProfile = t("table.userProfileStatuses.notFound");
-  const statuses = {
-    pending: t("table.invitationStatuses.pending"),
-    accepted: t("table.invitationStatuses.accepted"),
-    declined: t("table.invitationStatuses.declined"),
-  };
-
   return (
     <FlexMenuWrapper>
       <h1 className="govie-heading-l">{`${t("title")} - ${dayjs(userImport.importedAt).format("DD/MM/YYYY HH:mm:ss")}`}</h1>
