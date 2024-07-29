@@ -14,60 +14,6 @@ export interface paths {
       };
     };
   };
-  "/api/v1/messages/jobs/{id}": {
-    post: {
-      parameters: {
-        path: {
-          id: string;
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            token: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        202: {
-          content: never;
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
   "/api/v1/messages/": {
     get: {
       parameters: {
@@ -2075,6 +2021,60 @@ export interface paths {
               }[];
             };
           };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/jobs/{id}": {
+    post: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            token: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        202: {
+          content: never;
         };
         /** @description Default Response */
         "5XX": {

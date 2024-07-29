@@ -7,11 +7,7 @@ import {
   ReadMessageSchema,
   ReadMessagesSchema,
 } from "../../types/schemaDefinitions";
-import {
-  executeJob,
-  getMessage,
-  getMessages,
-} from "../../services/messages/messages";
+import { getMessage, getMessages } from "../../services/messages/messages";
 import { newMessagingService } from "../../services/messages/messaging";
 import { getUserProfiles } from "../../services/users/shared-users";
 import { Profile } from "building-blocks-sdk";
@@ -38,33 +34,6 @@ interface GetMessage {
 }
 
 export default async function messages(app: FastifyInstance) {
-  app.post<{ Params: { id: string }; Body: { token: string } }>(
-    "/jobs/:id",
-    {
-      schema: {
-        body: Type.Object({
-          token: Type.String(),
-        }),
-        response: {
-          202: Type.Null(),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async function jobHandler(request, reply) {
-      await executeJob({
-        pg: app.pg,
-        logger: request.log,
-        jobId: request.params!.id,
-        accessToken: request.userData?.accessToken || "",
-        token: request.body.token,
-      });
-
-      reply.statusCode = 202;
-    },
-  );
-
   // All messages
   app.get<GetAllMessages>(
     "/",
