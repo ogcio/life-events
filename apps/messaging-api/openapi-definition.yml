@@ -3398,112 +3398,107 @@ paths:
                   - name
   /api/v1/user-imports/:
     get:
-      tags: &a7
+      tags: &a6
         - User Imports
-      description: If 'Accept' headers is set as 'text/csv' it will return a string
-        containing the template with the csv that will be used to import users
       responses:
         "200":
           description: Default Response
           content:
-            text/csv: &a6
+            application/json:
               schema:
-                anyOf:
-                  - type: object
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        organisationId:
+                          type: string
+                        importedAt:
+                          format: date-time
+                          type: string
+                        importChannel:
+                          default: api
+                          anyOf:
+                            - type: string
+                              enum:
+                                - api
+                            - type: string
+                              enum:
+                                - csv
+                        retryCount:
+                          default: 0
+                          type: integer
+                        lastRetryAt:
+                          default: null
+                          anyOf:
+                            - format: date-time
+                              type: string
+                            - type: "null"
+                        importId:
+                          type: string
+                      required:
+                        - organisationId
+                        - importedAt
+                        - importChannel
+                        - retryCount
+                        - lastRetryAt
+                        - importId
+                  metadata:
+                    type: object
                     properties:
-                      data:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            organisationId:
-                              type: string
-                            importedAt:
-                              format: date-time
-                              type: string
-                            importChannel:
-                              default: api
-                              anyOf:
-                                - type: string
-                                  enum:
-                                    - api
-                                - type: string
-                                  enum:
-                                    - csv
-                            retryCount:
-                              default: 0
-                              type: integer
-                            lastRetryAt:
-                              default: null
-                              anyOf:
-                                - format: date-time
-                                  type: string
-                                - type: "null"
-                            importId:
-                              type: string
-                          required:
-                            - organisationId
-                            - importedAt
-                            - importChannel
-                            - retryCount
-                            - lastRetryAt
-                            - importId
-                      metadata:
+                      links:
                         type: object
                         properties:
-                          links:
+                          self:
                             type: object
                             properties:
-                              self:
-                                type: object
-                                properties:
-                                  href:
-                                    type: string
-                              next:
-                                type: object
-                                properties:
-                                  href:
-                                    type: string
-                              prev:
-                                type: object
-                                properties:
-                                  href:
-                                    type: string
-                              first:
-                                type: object
-                                properties:
-                                  href:
-                                    type: string
-                              last:
-                                type: object
-                                properties:
-                                  href:
-                                    type: string
-                              pages:
-                                type: object
-                                additionalProperties:
-                                  type: object
-                                  properties:
-                                    href:
-                                      type: string
-                            required:
-                              - self
-                              - first
-                              - last
-                              - pages
-                          totalCount:
-                            type: number
-                    required:
-                      - data
-                  - type: string
-            application/json: *a6
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
     post:
-      tags: *a7
+      tags: *a6
       description: If 'Content-Type' header contains 'multipart/form-data' it accepts
         a CSV file, otherwise an array of users to import
       requestBody:
         content:
-          multipart/form-data: &a8
+          multipart/form-data: &a7
             schema:
               anyOf:
                 - type: array
@@ -3580,7 +3575,7 @@ paths:
                     required:
                       - importIndex
                 - {}
-          application/json: *a8
+          application/json: *a7
       responses:
         "202":
           description: Default Response
@@ -3654,7 +3649,7 @@ paths:
                   - name
   /api/v1/user-imports/{importId}:
     get:
-      tags: *a7
+      tags: *a6
       parameters:
         - schema:
             default: true
@@ -3952,9 +3947,21 @@ paths:
                   - detail
                   - request_id
                   - name
+  /api/v1/user-imports/template-download:
+    get:
+      tags: *a6
+      description: it will return a string containing the template with the csv that
+        will be used to import users
+      responses:
+        "200":
+          description: Default Response
+          content:
+            text/csv:
+              schema:
+                type: string
   /api/v1/users/:
     get:
-      tags: &a9
+      tags: &a8
         - Users
       parameters:
         - schema:
@@ -4309,7 +4316,7 @@ paths:
                   - name
   /api/v1/users/{userId}:
     get:
-      tags: *a9
+      tags: *a8
       parameters:
         - schema:
             type: string
@@ -4632,7 +4639,7 @@ paths:
                   - name
   /api/v1/message-events/:
     get:
-      tags: &a10
+      tags: &a9
         - Message events
       parameters:
         - schema:
@@ -4808,7 +4815,7 @@ paths:
                   - name
   /api/v1/message-events/{eventId}:
     get:
-      tags: *a10
+      tags: *a9
       parameters:
         - schema:
             type: string

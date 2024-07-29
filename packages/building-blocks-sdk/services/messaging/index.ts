@@ -313,24 +313,18 @@ export class Messaging {
   }
 
   async downloadUsersCsvTemplate() {
-    const { data } = await this.client.GET("/api/v1/user-imports/", {
-      headers: { Accept: "text/csv" },
-      parseAs: "blob",
-    });
+    const { data } = await this.client.GET(
+      "/api/v1/user-imports/template-download",
+      {
+        parseAs: "blob",
+      },
+    );
     return data;
   }
 
   async getUsersImports() {
     const { error, data } = await this.client.GET("/api/v1/user-imports/");
-    if (!data) {
-      return { error, data: null };
-    }
-
-    if ((data as { data: any[] }).data) {
-      return { error, data: (data as { data: any[] }).data };
-    }
-
-    return { error: "wrong request", data: null };
+    return { error, data: data?.data };
   }
 
   async getUsersImport(importId: string, includeUsersData?: boolean) {
