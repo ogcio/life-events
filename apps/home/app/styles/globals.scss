@@ -62,7 +62,7 @@ $breakpoint-xxl: 1400px;
 }
 
 @mixin tablet {
-  @media (min-width: ($breakpoint-md + 1)) and (max-width: ($breakpoint-lg)) {
+  @media (min-width: ($breakpoint-md)) and (max-width: ($breakpoint-lg)) {
     @content;
   }
 }
