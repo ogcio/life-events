@@ -91,7 +91,7 @@ const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
 const buildPublicServantContextParameters = (
   params: PublicServantParameters,
 ) => ({
-  getOrganizationToken: true,
+  getOrganizationToken: false,
   fetchUserInfo: true,
   publicServantExpectedRole: params.publicServantExpectedRole ?? "",
   organizationId: params.organizationId,
@@ -109,7 +109,7 @@ const buildCitizenAuthConfig = (params: CitizenParameters) => ({
 });
 
 const buildCitizenContextParameters = (params: CitizenParameters) => ({
-  getAccessToken: true,
+  getAccessToken: false,
   resource: params.resourceUrl,
   fetchUserInfo: true,
   publicServantExpectedRole: params.publicServantExpectedRole ?? "",

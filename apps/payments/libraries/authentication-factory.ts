@@ -12,16 +12,11 @@ export class AuthenticationFactory {
     token?: string;
     authenticationContext?: BaseAuthenticationContext;
   }): Promise<Payments> {
-    if (params?.token) {
-      return new Payments(params.token);
-    }
-    if (params?.authenticationContext) {
-      return new Payments(await params.authenticationContext.getAccessToken());
-    }
+    const cookieHeader = headers().get("cookie") as string;
 
     const res = await fetch(
       new URL("/api/token", process.env.NEXT_PUBLIC_HOST_URL as string),
-      { headers: headers() },
+      { headers: { cookie: cookieHeader } },
     );
     const { token } = await res.json();
 

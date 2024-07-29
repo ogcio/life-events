@@ -50,18 +50,14 @@ export type PartialAuthSessionContext = {
   isInactivePublicServant: boolean;
   organization?: AuthSessionOrganizationInfo;
   originalContext?: LogtoContext;
-  scopes: string[];
-  accessToken?: string;
 };
 
-export type AuthSessionContext = Omit<
-  PartialAuthSessionContext,
-  "user" | "accessToken"
-> & { user: AuthSessionUserInfo; accessToken: string };
+export type AuthSessionContext = Omit<PartialAuthSessionContext, "user"> & {
+  user: AuthSessionUserInfo;
+};
 
 export type GetSessionContextParameters = {
   fetchUserInfo?: boolean;
-  getAccessToken?: boolean;
   organizationId?: string;
   resource?: string;
   getOrganizationToken?: boolean;

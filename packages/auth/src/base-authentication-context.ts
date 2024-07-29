@@ -80,12 +80,6 @@ export class BaseAuthenticationContext {
   private ensureIsFullContext(
     context: PartialAuthSessionContext,
   ): AuthSessionContext {
-    if (!context.accessToken) {
-      getCommonLogger().error({
-        error: new AuthenticationError(ERROR_PROCESS, "Missing access token"),
-      });
-      throw notFound();
-    }
     if (!context.user) {
       getCommonLogger().error({
         error: new AuthenticationError(ERROR_PROCESS, "Missing user"),
@@ -106,10 +100,6 @@ export class BaseAuthenticationContext {
 
   async getUser(): Promise<AuthSessionUserInfo> {
     return (await this.getContext()).user;
-  }
-
-  async getAccessToken(): Promise<string> {
-    return (await this.getContext()).accessToken;
   }
 
   async isPublicServantAuthenticated(): Promise<boolean> {
