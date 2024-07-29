@@ -1,7 +1,5 @@
 // General global utils for the web app
 
-import dayjs from "dayjs";
-
 export type NextPageProps = {
   params: { event: string; action: string[]; locale: string };
   searchParams?: {
@@ -14,10 +12,6 @@ export function formatCurrency(amount: number) {
     style: "currency",
     currency: "EUR",
   }).format(amount / 100);
-}
-
-export function formatDate(date: string | Date) {
-  return dayjs(date).format("DD/MM/YYYY");
 }
 
 export const languages = {

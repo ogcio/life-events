@@ -36,7 +36,7 @@ export const getAuthenticationContextConfig =
     appSecret: baseConfig.appSecret,
     organizationId,
     citizenScopes,
-    publicServantExpectedRole,
+    publicServantExpectedRoles: [publicServantExpectedRole],
     publicServantScopes,
     loginUrl: logtoLogin.url,
     resourceUrl: uploadApiResource,
