@@ -189,7 +189,7 @@ export const InvitationFeedbackSchema = Type.Object({
 export type InvitationFeedback = Static<typeof InvitationFeedbackSchema>;
 
 export const OrganisationSettingSchema = Type.Object({
-  id: Type.String({ format: "uuid" }),
+  organisationSettingId: Type.String({ format: "uuid" }),
   userId: Type.String({ format: "uuid" }),
   userProfileId: Type.Union([Type.Null(), Type.String()], {
     default: null,
