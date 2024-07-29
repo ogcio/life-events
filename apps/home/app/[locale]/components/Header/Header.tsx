@@ -13,9 +13,7 @@ type HeaderProps = {
   locale: string;
 };
 
-const showLogin = () => {
-  return String(process.env.ALLOW_LOGIN) === "true";
-};
+const showLogin = String(process.env.ALLOW_LOGIN) === "true";
 
 export default async ({ locale }: HeaderProps) => {
   const t = await getTranslations("Menu");
@@ -25,7 +23,7 @@ export default async ({ locale }: HeaderProps) => {
   let userName = "";
   let isLoggedIn = false;
 
-  if (showLogin()) {
+  if (showLogin) {
     const instance = AuthenticationFactory.getInstance();
     isLoggedIn = await instance.isAuthenticated();
 
@@ -98,7 +96,7 @@ export default async ({ locale }: HeaderProps) => {
               </>
             )}
 
-            {!isLoggedIn && showLogin() && (
+            {!isLoggedIn && showLogin && (
               <Link
                 href={`/${locale}/login`}
                 prefetch={false}
