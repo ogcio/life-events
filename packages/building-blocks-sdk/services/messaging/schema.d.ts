@@ -1748,6 +1748,9 @@ export interface paths {
   "/api/v1/users/{userId}": {
     get: {
       parameters: {
+        query?: {
+          activeOnly?: boolean;
+        };
         path: {
           userId: string;
         };

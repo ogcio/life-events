@@ -3771,6 +3771,11 @@ paths:
       tags: *a7
       parameters:
         - schema:
+            type: boolean
+          in: query
+          name: activeOnly
+          required: false
+        - schema:
             type: string
           in: path
           name: userId

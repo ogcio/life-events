@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { PaginationParams } from "../../types/schemaDefinitions";
 import { utils } from "../../utils";
-import { NotFoundError, ServerError } from "shared-errors";
+import { isLifeEventsError, NotFoundError, ServerError } from "shared-errors";
 import { SELECTABLE_TRANSPORTS } from "./shared-users";
 import { UserPerOrganisation } from "../../types/usersSchemaDefinitions";
 
@@ -140,6 +140,7 @@ export const getUser = async (params: {
   pool: Pool;
   organisationId: string;
   userId: string;
+  activeOnly: boolean;
 }): Promise<UserPerOrganisation> => {
   const client = await params.pool.connect();
   try {
@@ -150,13 +151,14 @@ export const getUser = async (params: {
       FROM users
       JOIN organisation_user_configurations ouc ON 
           ouc.organisation_id = $1 AND
-          ouc.user_id = users.id AND
-          ouc.invitation_status = 'accepted'
-      WHERE users.user_status = 'active' and users.id = $2
+          ouc.user_id = users.id
+          ${params.activeOnly ? " AND ouc.invitation_status = 'accepted' " : ""}
+      WHERE users.id = $2 ${params.activeOnly ? " AND users.user_status = 'active'" : ""}
       LIMIT 1  
       `,
       [params.organisationId, params.userId],
     );
+
     if (response.rowCount === 0) {
       throw new NotFoundError(
         ERROR_PROCESS,
@@ -166,6 +168,9 @@ export const getUser = async (params: {
 
     return response.rows[0];
   } catch (error) {
+    if (isLifeEventsError(error)) {
+      throw error;
+    }
     throw new ServerError(ERROR_PROCESS, `error fetching recipients`, error);
   } finally {
     client.release();
