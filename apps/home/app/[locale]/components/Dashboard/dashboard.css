@@ -28,7 +28,7 @@
   width: 100px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: $breakpoint-md) {
   .tile {
     padding: 15px;
   }
