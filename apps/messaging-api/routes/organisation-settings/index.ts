@@ -54,17 +54,17 @@ export default async function organisationSettings(app: FastifyInstance) {
   );
 
   app.get<{
-    Params: { organisationId: string };
+    Params: { organisationSettingId: string };
     Response: { data: OrganisationSetting };
   }>(
-    "/:organisationId",
+    "/:organisationSettingId",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
         tags,
         params: Type.Object({
-          organisationId: Type.String(),
+          organisationSettingId: Type.String(),
         }),
         response: {
           200: getGenericResponseSchema(OrganisationSettingSchema),
@@ -76,27 +76,27 @@ export default async function organisationSettings(app: FastifyInstance) {
     },
     async (
       request: FastifyRequest<{
-        Params: { organisationId: string };
+        Params: { organisationSettingId: string };
         Response: { data: OrganisationSetting };
       }>,
       _reply: FastifyReply,
     ) => ({
       data: await getOrganisationSettingsForProfile({
         userProfileId: request.userData!.userId,
-        organisationId: request.params.organisationId,
+        organisationSettingId: request.params.organisationSettingId,
         pg: app.pg,
       }),
     }),
   );
 
   interface PatchOrgInvitationSchema {
-    Params: { organisationId: string };
+    Params: { organisationSettingId: string };
     Body: OrganisationInvitationFeedback;
     Response: { data: OrganisationSetting };
   }
 
   app.patch<PatchOrgInvitationSchema>(
-    "/:organisationId",
+    "/:organisationSettingId",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.CitizenSelf.Write]),
@@ -104,7 +104,7 @@ export default async function organisationSettings(app: FastifyInstance) {
         tags,
         body: OrganisationInvitationFeedbackSchema,
         params: Type.Object({
-          organisationId: Type.String(),
+          organisationSettingId: Type.String(),
         }),
         response: {
           202: Type.Object({ data: OrganisationSettingSchema }),
@@ -127,7 +127,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       return {
         data: await updateOrganisationFeedback({
           userProfileId: request.userData!.userId,
-          organisationId: request.params.organisationId,
+          organisationSettingId: request.params.organisationSettingId,
           pg: app.pg,
           feedback: request.body,
         }),

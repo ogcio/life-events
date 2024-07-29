@@ -16,15 +16,15 @@ const ACCEPT_INVITATIONS_ERROR = "ACCEPT_INVITATIONS_ERROR";
 export const getOrganisationSettingsForProfile = async (params: {
   pg: PostgresDb;
   userProfileId: string;
-  organisationId: string;
+  organisationSettingId: string;
 }): Promise<OrganisationSetting> => {
-  const { pg, userProfileId, organisationId } = params;
+  const { pg, userProfileId, organisationSettingId } = params;
   const client = await pg.connect();
   try {
     return await getSettingPerProfileId({
       client,
       userProfileId,
-      organisationId,
+      organisationSettingId,
     });
   } finally {
     client.release();
@@ -34,9 +34,9 @@ export const getOrganisationSettingsForProfile = async (params: {
 const getSettingPerProfileId = async (params: {
   client: PoolClient;
   userProfileId: string;
-  organisationId: string;
+  organisationSettingId: string;
 }): Promise<OrganisationSetting> => {
-  const { client, userProfileId, organisationId } = params;
+  const { client, userProfileId, organisationSettingId } = params;
   const user = await getUserByUserProfileId({
     client,
     userProfileId,
@@ -52,7 +52,7 @@ const getSettingPerProfileId = async (params: {
     userId: user.id,
     client,
     errorCode: ACCEPT_INVITATIONS_ERROR,
-    organisationId,
+    organisationSettingId,
   });
 
   if (invitations.length === 0) {
@@ -77,7 +77,7 @@ const ensureUserIsActive = (userInvitation: OrganisationSetting): void => {
 export const updateOrganisationFeedback = async (params: {
   pg: PostgresDb;
   feedback: OrganisationInvitationFeedback;
-  organisationId: string;
+  organisationSettingId: string;
   userProfileId: string;
 }): Promise<OrganisationSetting> => {
   const client = await params.pg.connect();

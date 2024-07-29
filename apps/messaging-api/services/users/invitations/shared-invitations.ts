@@ -7,23 +7,23 @@ import { ServerError } from "shared-errors";
 export const executeUpdateOrganisationFeedback = async (params: {
   client: PoolClient;
   feedback: OrganisationInvitationFeedback;
-  organisationId: string;
+  organisationSettingId: string;
   userId: string;
   errorCode: string;
 }): Promise<void> => {
   try {
-    const { feedback } = params;
+    const { feedback, organisationSettingId } = params;
     await params.client.query(
       `
         UPDATE organisation_user_configurations
         SET invitation_status=$1::text, invitation_feedback_at = $2, preferred_transports = $3
-        WHERE organisation_id = $4 and user_id = $5
+        WHERE id = $4 and user_id = $5
       `,
       [
         feedback.invitationStatusFeedback,
         new Date().toISOString(),
         utils.postgresArrayify(feedback.preferredTransports),
-        params.organisationId,
+        organisationSettingId,
         params.userId,
       ],
     );

@@ -34,19 +34,11 @@ export default async (props: {
   );
 
   const { data: users, error: usersError } =
-    await messagingClient.getUsersForImport(props.params.importId);
+    await messagingClient.getUsersForImport(props.params.importId, false);
 
   if (error || !userImport || usersError || !users) {
     throw notFound();
   }
-
-  const foundUserProfile = t("table.userProfileStatuses.found");
-  const notFoundUserProfile = t("table.userProfileStatuses.notFound");
-  const statuses = {
-    pending: t("table.invitationStatuses.pending"),
-    accepted: t("table.invitationStatuses.accepted"),
-    declined: t("table.invitationStatuses.declined"),
-  };
 
   return (
     <FlexMenuWrapper>

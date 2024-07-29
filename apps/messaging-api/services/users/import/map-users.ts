@@ -233,7 +233,7 @@ const processOrganizationUserRelation = async (params: {
           preferredTransports: toSetTransports,
           invitationStatusFeedback: toSetStatus,
         },
-        organisationId: params.organisationId,
+        organisationSettingId: orgUserRelation.id,
         userId: params.userId,
         errorCode: IMPORT_USERS_ERROR,
       });
@@ -364,11 +364,14 @@ const getUserOrganisationRelation = async (params: {
   userId: string;
   organisationId: string;
   client: PoolClient;
-}): Promise<OrganisationUserConfig> => {
+}): Promise<Omit<OrganisationUserConfig, "id"> & { id: string }> => {
   try {
-    const result = await params.client.query<OrganisationUserConfig>(
+    const result = await params.client.query<
+      Omit<OrganisationUserConfig, "id"> & { id: string }
+    >(
       `
-          select 
+          select
+              id as "id", 
               user_id as "userId",
               organisation_id as "organisationId",
               invitation_status as "invitationStatus",

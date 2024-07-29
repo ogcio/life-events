@@ -71,7 +71,7 @@ export default async (props: {
     const messagingClient = await AuthenticationFactory.getMessagingClient({
       token: accessToken,
     });
-    const { data } = await messagingClient.getUsers();
+    const { data } = await messagingClient.getUsers({ activeOnly: false });
     users = data;
   }
   return (

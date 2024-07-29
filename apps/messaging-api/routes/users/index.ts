@@ -32,6 +32,7 @@ export default async function users(app: FastifyInstance) {
       search?: string;
       transports?: string;
       importId?: string;
+      activeOnly?: boolean;
     } & PaginationParams;
     Response: GenericResponse<UserPerOrganisation>;
   }
@@ -57,6 +58,7 @@ export default async function users(app: FastifyInstance) {
               search: Type.Optional(Type.String()),
               transports: Type.Optional(Type.String()),
               importId: Type.Optional(Type.String()),
+              activeOnly: Type.Optional(Type.Boolean()),
             }),
             PaginationParamsSchema,
           ]),

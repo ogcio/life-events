@@ -342,9 +342,9 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getUsersForImport(importId: string) {
+  async getUsersForImport(importId: string, activeOnly: boolean) {
     const { error, data } = await this.client.GET("/api/v1/users/", {
-      params: { query: { importId } },
+      params: { query: { importId, activeOnly } },
     });
     return { error, data: data?.data };
   }
@@ -356,25 +356,25 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getOrganisationSettings(organisationId: string) {
+  async getOrganisationSettings(organisationSettingId: string) {
     const { error, data } = await this.client.GET(
-      "/api/v1/organisation-settings/{organisationId}",
+      "/api/v1/organisation-settings/{organisationSettingId}",
       {
-        params: { path: { organisationId } },
+        params: { path: { organisationSettingId } },
       },
     );
     return { error, data: data?.data };
   }
 
   async updateOrganisationSettings(
-    organisationId: string,
-    body: paths["/api/v1/organisation-settings/{organisationId}"]["patch"]["requestBody"]["content"]["application/json"],
+    organisationSettingId: string,
+    body: paths["/api/v1/organisation-settings/{organisationSettingId}"]["patch"]["requestBody"]["content"]["application/json"],
   ) {
     const { error, data } = await this.client.PATCH(
-      "/api/v1/organisation-settings/{organisationId}",
+      "/api/v1/organisation-settings/{organisationSettingId}",
       {
         body,
-        params: { path: { organisationId } },
+        params: { path: { organisationSettingId } },
       },
     );
 

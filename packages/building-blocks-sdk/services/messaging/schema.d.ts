@@ -1278,6 +1278,8 @@ export interface paths {
             "application/json": {
               data: {
                 /** Format: uuid */
+                organisationSettingId: string;
+                /** Format: uuid */
                 userId: string;
                 /** @default null */
                 userProfileId: null | string;
@@ -1407,11 +1409,11 @@ export interface paths {
       };
     };
   };
-  "/api/v1/organisation-settings/{organisationId}": {
+  "/api/v1/organisation-settings/{organisationSettingId}": {
     get: {
       parameters: {
         path: {
-          organisationId: string;
+          organisationSettingId: string;
         };
       };
       responses: {
@@ -1420,6 +1422,8 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
+                organisationSettingId: string;
                 /** Format: uuid */
                 userId: string;
                 /** @default null */
@@ -1552,7 +1556,7 @@ export interface paths {
     patch: {
       parameters: {
         path: {
-          organisationId: string;
+          organisationSettingId: string;
         };
       };
       requestBody: {
@@ -1570,6 +1574,8 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** Format: uuid */
+                organisationSettingId: string;
                 /** Format: uuid */
                 userId: string;
                 /** @default null */
@@ -1927,6 +1933,7 @@ export interface paths {
           search?: string;
           transports?: string;
           importId?: string;
+          activeOnly?: boolean;
           offset?: number;
           limit?: number;
         };
@@ -1947,6 +1954,8 @@ export interface paths {
                 lang: null | string;
                 /** @default null */
                 ppsn: null | string;
+                /** Format: uuid */
+                organisationSettingId: string;
                 /** Format: uuid */
                 userId: string;
                 /** @default null */
@@ -2084,6 +2093,8 @@ export interface paths {
                 lang: null | string;
                 /** @default null */
                 ppsn: null | string;
+                /** Format: uuid */
+                organisationSettingId: string;
                 /** Format: uuid */
                 userId: string;
                 /** @default null */

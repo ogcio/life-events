@@ -90,6 +90,7 @@ export const UserDetailsSchema = Type.Object({
 export type UserDetails = Static<typeof UserDetailsSchema>;
 
 export const OrganisationUserConfigSchema = Type.Object({
+  id: Type.Optional(Type.String({ format: "uuid" })),
   organisationId: Type.String(),
   userId: Type.String({ format: "uuid" }),
   invitationStatus: InvitationStatusUnionType,
@@ -188,6 +189,7 @@ export const InvitationFeedbackSchema = Type.Object({
 export type InvitationFeedback = Static<typeof InvitationFeedbackSchema>;
 
 export const OrganisationSettingSchema = Type.Object({
+  organisationSettingId: Type.String({ format: "uuid" }),
   userId: Type.String({ format: "uuid" }),
   userProfileId: Type.Union([Type.Null(), Type.String()], {
     default: null,
