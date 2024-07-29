@@ -1,5 +1,5 @@
 import { FastifyError } from "fastify";
-import { isLifeEventsError } from "shared-errors";
+import { AuthorizationError, isLifeEventsError } from "shared-errors";
 import { isNativeError } from "util/types";
 
 export const getErrorMessage = (e: unknown): string => {
@@ -29,3 +29,17 @@ const isFastifyError = (e: unknown): e is FastifyError =>
   "code" in e &&
   "name" in e &&
   "message" in e;
+
+export const ensureUserIsOrganisationMember = (
+  user: { organizationId?: string } | undefined,
+  errorProcess: string,
+): string => {
+  if (!user?.organizationId) {
+    throw new AuthorizationError(
+      errorProcess,
+      "You have to be part of an organisation to invoke this endpoint",
+    );
+  }
+
+  return user.organizationId;
+};

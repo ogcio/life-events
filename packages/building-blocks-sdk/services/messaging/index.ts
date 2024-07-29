@@ -384,7 +384,7 @@ export class Messaging {
 
   async importUsers(toImport: { file?: File; records?: object[] }) {
     if (toImport.file) {
-      const { error } = await this.client.POST("/api/v1/users/imports/", {
+      const { error } = await this.client.POST("/api/v1/user-imports/", {
         body: {
           file: toImport.file,
         } as any,
@@ -397,7 +397,7 @@ export class Messaging {
       return { error };
     }
 
-    const { error } = await this.client.POST("/api/v1/users/imports/", {
+    const { error } = await this.client.POST("/api/v1/user-imports/", {
       body: toImport.records,
     });
     return { error };
@@ -405,7 +405,7 @@ export class Messaging {
 
   async downloadUsersCsvTemplate() {
     const { data } = await this.client.GET(
-      "/api/v1/users/imports/csv/template",
+      "/api/v1/user-imports/template-download",
       {
         parseAs: "blob",
       },
@@ -413,28 +413,19 @@ export class Messaging {
     return data;
   }
 
-  async getUsersImports(organisationId?: string) {
-    const { error, data } = await this.client.GET("/api/v1/users/imports/", {
-      params: {
-        query: { organisationId },
-      },
-    });
+  async getUsersImports() {
+    const { error, data } = await this.client.GET("/api/v1/user-imports/");
     return { error, data: data?.data };
   }
 
-  async getUsersImport(
-    importId: string,
-    organisationId?: string,
-    includeUsersData?: boolean,
-  ) {
+  async getUsersImport(importId: string, includeUsersData?: boolean) {
     const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/{importId}",
+      "/api/v1/user-imports/{importId}",
       {
         params: {
           path: { importId },
           query: {
-            organisationId,
-            includeUsersData: Boolean(includeUsersData),
+            includeImportedData: Boolean(includeUsersData),
           },
         },
       },
@@ -442,72 +433,39 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getUsersForImport(importId: string, organisationId?: string) {
+  async getUsersForImport(importId: string, activeOnly: boolean) {
+    const { error, data } = await this.client.GET("/api/v1/users/", {
+      params: { query: { importId, activeOnly } },
+    });
+    return { error, data: data?.data };
+  }
+
+  async getOrganisationsSettings() {
     const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/{importId}/users",
+      "/api/v1/organisation-settings/",
+    );
+    return { error, data: data?.data };
+  }
+
+  async getOrganisationSettings(organisationSettingId: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/organisation-settings/{organisationSettingId}",
       {
-        params: { path: { importId }, query: { organisationId } },
+        params: { path: { organisationSettingId } },
       },
     );
     return { error, data: data?.data };
   }
 
-  async getUsers(organisationId?: string) {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/users",
-      {
-        params: { query: { organisationId } },
-      },
-    );
-    return { error, data: data?.data };
-  }
-
-  async getOrganisationInvitations() {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/settings/organisations",
-    );
-    return { error, data: data?.data };
-  }
-
-  async getOrganisationInvitation(organisationId: string) {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/settings/organisations/{organisationId}",
-      {
-        params: { path: { organisationId } },
-      },
-    );
-    return { error, data: data?.data };
-  }
-
-  async updateOrganisationInvitation(
-    organisationId: string,
-    body: paths["/api/v1/users/settings/organisations/{organisationId}"]["patch"]["requestBody"]["content"]["application/json"],
+  async updateOrganisationSettings(
+    organisationSettingId: string,
+    body: paths["/api/v1/organisation-settings/{organisationSettingId}"]["patch"]["requestBody"]["content"]["application/json"],
   ) {
     const { error, data } = await this.client.PATCH(
-      "/api/v1/users/settings/organisations/{organisationId}",
+      "/api/v1/organisation-settings/{organisationSettingId}",
       {
         body,
-        params: { path: { organisationId } },
-      },
-    );
-
-    return { error, data: data?.data };
-  }
-
-  async getInvitation() {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/settings/invitations/me",
-    );
-    return { error, data: data?.data };
-  }
-
-  async updateInvitation(
-    body: paths["/api/v1/users/settings/invitations/me"]["patch"]["requestBody"]["content"]["application/json"],
-  ) {
-    const { error, data } = await this.client.PATCH(
-      "/api/v1/users/settings/invitations/me",
-      {
-        body,
+        params: { path: { organisationSettingId } },
       },
     );
 
@@ -534,10 +492,10 @@ export class Messaging {
     return { data: data?.data, error };
   }
 
-  async getRecipients(
-    query: paths["/api/v1/users/recipients/"]["get"]["parameters"]["query"],
+  async getUsers(
+    query?: paths["/api/v1/users/"]["get"]["parameters"]["query"],
   ) {
-    const { error, data } = await this.client.GET("/api/v1/users/recipients/", {
+    const { error, data } = await this.client.GET("/api/v1/users/", {
       params: {
         query,
       },
@@ -545,19 +503,16 @@ export class Messaging {
     return { error, data: data?.data, metadata: data?.metadata };
   }
 
-  async getRecipient(
-    userId: paths["/api/v1/users/recipients/{userId}"]["get"]["parameters"]["path"]["userId"],
+  async getUser(
+    userId: paths["/api/v1/users/{userId}"]["get"]["parameters"]["path"]["userId"],
   ) {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/recipients/{userId}",
-      {
-        params: {
-          path: {
-            userId,
-          },
+    const { error, data } = await this.client.GET("/api/v1/users/{userId}", {
+      params: {
+        path: {
+          userId,
         },
       },
-    );
+    });
 
     return { error, data: data?.data, metadata: data?.metadata };
   }

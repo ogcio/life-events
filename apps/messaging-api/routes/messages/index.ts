@@ -4,11 +4,6 @@ import {
   getGenericResponseSchema,
   MessageCreate,
   MessageCreateType,
-  MessageEvent,
-  MessageEventType,
-  MessageEventTypeObject,
-  PaginationParams,
-  PaginationParamsSchema,
   ReadMessageSchema,
   ReadMessagesSchema,
 } from "../../types/schemaDefinitions";
@@ -22,7 +17,6 @@ import { getUserProfiles } from "../../services/users/shared-users";
 import { Profile } from "building-blocks-sdk";
 import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
 import {
-  MessageEventData,
   MessagingEventType,
   newMessagingEventLogger,
 } from "../../services/messages/eventLogger";
