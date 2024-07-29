@@ -186,3 +186,58 @@ export const MessageCreate = Type.Object({
 });
 
 export type MessageCreateType = Static<typeof MessageCreate>;
+
+export const ProviderType = Type.Union([
+  Type.Literal("sms"),
+  Type.Literal("email"),
+]);
+
+export const ProviderListItem = Type.Object({
+  id: Type.String({ format: "uuid" }),
+  providerName: Type.String(),
+  isPrimary: Type.Boolean(),
+  type: ProviderType,
+});
+
+export const ProviderList = Type.Array(ProviderListItem);
+
+export const EmailCreate = Type.Object({
+  providerName: Type.String(),
+  isPrimary: Type.Boolean(),
+  type: Type.Literal("email"),
+  smtpHost: Type.String(),
+  smtpPort: Type.Number(),
+  username: Type.String(),
+  password: Type.String(),
+  throttle: Type.Optional(Type.Number()),
+  fromAddress: Type.String(),
+  ssl: Type.Boolean(),
+});
+
+export const SmsCreate = Type.Object({
+  providerName: Type.String(),
+  isPrimary: Type.Boolean(),
+  type: Type.Literal("sms"),
+  config: Type.Union([
+    Type.Object({
+      type: Type.Literal("AWS"),
+      accessKey: Type.String(),
+      secretAccessKey: Type.String(),
+      region: Type.String(),
+    }),
+  ]),
+});
+
+export const ProviderCreate = Type.Union([EmailCreate, SmsCreate]);
+
+export const EmailProvider = Type.Composite([
+  Type.Object({ id: Type.String({ format: "uuid" }) }),
+  EmailCreate,
+]);
+
+export const SmsProvider = Type.Composite([
+  Type.Object({ id: Type.String({ format: "uuid" }) }),
+  SmsCreate,
+]);
+
+export const ProviderUpdate = Type.Union([EmailProvider, SmsProvider]);

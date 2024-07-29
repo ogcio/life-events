@@ -285,8 +285,17 @@ export interface paths {
       };
     };
   };
-  "/api/v1/providers/emails/": {
+  "/api/v1/providers/": {
     get: {
+      parameters: {
+        query: {
+          search?: string;
+          primary?: boolean;
+          type: "sms" | "email";
+          offset?: number;
+          limit?: number;
+        };
+      };
       responses: {
         /** @description Default Response */
         200: {
@@ -295,15 +304,9 @@ export interface paths {
               data: {
                 /** Format: uuid */
                 id: string;
-                name: string;
-                host: string;
-                port: number;
-                username: string;
-                password: string;
-                throttle?: number;
-                fromAddress: string;
-                ssl: boolean;
+                providerName: string;
                 isPrimary: boolean;
+                type: "sms" | "email";
               }[];
               metadata?: {
                 links?: {
@@ -334,7 +337,7 @@ export interface paths {
           };
         };
         /** @description Default Response */
-        "4XX": {
+        "5XX": {
           content: {
             "application/json": {
               code: string;
@@ -350,7 +353,7 @@ export interface paths {
           };
         };
         /** @description Default Response */
-        "5XX": {
+        "4XX": {
           content: {
             "application/json": {
               code: string;
@@ -368,431 +371,62 @@ export interface paths {
       };
     };
     post: {
-      requestBody: {
+      requestBody?: {
         content: {
-          "application/json": {
-            name: string;
-            host: string;
-            port: number;
-            username: string;
-            password: string;
-            throttle?: number;
-            fromAddress: string;
-            ssl: boolean;
-            isPrimary: boolean;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        201: {
-          content: {
-            "application/json": {
-              data: {
-                /** Format: uuid */
-                id: string;
-              };
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/providers/emails/{providerId}": {
-    get: {
-      parameters: {
-        path: {
-          providerId: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              data: {
-                /** Format: uuid */
-                id: string;
-                name: string;
-                host: string;
-                port: number;
+          "application/json":
+            | {
+                providerName: string;
+                isPrimary: boolean;
+                /** @enum {string} */
+                type: "email";
+                smtpHost: string;
+                smtpPort: number;
                 username: string;
                 password: string;
                 throttle?: number;
                 fromAddress: string;
                 ssl: boolean;
+              }
+            | {
+                providerName: string;
                 isPrimary: boolean;
-              };
-              metadata?: {
-                links?: {
-                  self: {
-                    href?: string;
-                  };
-                  next?: {
-                    href?: string;
-                  };
-                  prev?: {
-                    href?: string;
-                  };
-                  first: {
-                    href?: string;
-                  };
-                  last: {
-                    href?: string;
-                  };
-                  pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
-                  };
-                };
-                totalCount?: number;
-              };
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    put: {
-      parameters: {
-        path: {
-          providerId: string;
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            /** Format: uuid */
-            id: string;
-            name: string;
-            host: string;
-            port: number;
-            username: string;
-            password: string;
-            throttle?: number;
-            fromAddress: string;
-            ssl: boolean;
-            isPrimary: boolean;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    delete: {
-      parameters: {
-        path: {
-          providerId: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/providers/sms/": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              data: {
-                /** Format: uuid */
-                id: string;
-                name: string;
-                type: string;
-                isPrimary: boolean;
-              }[];
-              metadata?: {
-                links?: {
-                  self: {
-                    href?: string;
-                  };
-                  next?: {
-                    href?: string;
-                  };
-                  prev?: {
-                    href?: string;
-                  };
-                  first: {
-                    href?: string;
-                  };
-                  last: {
-                    href?: string;
-                  };
-                  pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
-                  };
-                };
-                totalCount?: number;
-              };
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            config: {
-              type: string;
-              accessKey: string;
-              secretAccessKey: string;
-              region: string;
-            };
-            isPrimary: boolean;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/providers/sms/{providerId}": {
-    get: {
-      parameters: {
-        path: {
-          providerId: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              data: {
-                /** Format: uuid */
-                id: string;
-                name: string;
+                /** @enum {string} */
+                type: "sms";
                 config: {
-                  type: string;
+                  /** @enum {string} */
+                  type: "AWS";
                   accessKey: string;
                   secretAccessKey: string;
                   region: string;
                 };
-                isPrimary: boolean;
               };
-              metadata?: {
-                links?: {
-                  self: {
-                    href?: string;
-                  };
-                  next?: {
-                    href?: string;
-                  };
-                  prev?: {
-                    href?: string;
-                  };
-                  first: {
-                    href?: string;
-                  };
-                  last: {
-                    href?: string;
-                  };
-                  pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
-                  };
-                };
-                totalCount?: number;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                providerId: string;
               };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
             };
           };
         };
@@ -812,8 +446,76 @@ export interface paths {
             };
           };
         };
+      };
+    };
+  };
+  "/api/v1/providers/{providerId}": {
+    get: {
+      parameters: {
+        query: {
+          type: "sms" | "email";
+        };
+        path: {
+          providerId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data:
+                | {
+                    /** Format: uuid */
+                    id: string;
+                    providerName: string;
+                    isPrimary: boolean;
+                    /** @enum {string} */
+                    type: "email";
+                    smtpHost: string;
+                    smtpPort: number;
+                    username: string;
+                    password: string;
+                    throttle?: number;
+                    fromAddress: string;
+                    ssl: boolean;
+                  }
+                | {
+                    /** Format: uuid */
+                    id: string;
+                    providerName: string;
+                    isPrimary: boolean;
+                    /** @enum {string} */
+                    type: "sms";
+                    config: {
+                      /** @enum {string} */
+                      type: "AWS";
+                      accessKey: string;
+                      secretAccessKey: string;
+                      region: string;
+                    };
+                  };
+            };
+          };
+        };
         /** @description Default Response */
         "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
           content: {
             "application/json": {
               code: string;
@@ -836,25 +538,48 @@ export interface paths {
           providerId: string;
         };
       };
-      requestBody: {
+      requestBody?: {
         content: {
-          "application/json": {
-            /** Format: uuid */
-            id: string;
-            name: string;
-            config: {
-              type: string;
-              accessKey: string;
-              secretAccessKey: string;
-              region: string;
-            };
-            isPrimary: boolean;
-          };
+          "application/json":
+            | {
+                /** Format: uuid */
+                id: string;
+                providerName: string;
+                isPrimary: boolean;
+                /** @enum {string} */
+                type: "email";
+                smtpHost: string;
+                smtpPort: number;
+                username: string;
+                password: string;
+                throttle?: number;
+                fromAddress: string;
+                ssl: boolean;
+              }
+            | {
+                /** Format: uuid */
+                id: string;
+                providerName: string;
+                isPrimary: boolean;
+                /** @enum {string} */
+                type: "sms";
+                config: {
+                  /** @enum {string} */
+                  type: "AWS";
+                  accessKey: string;
+                  secretAccessKey: string;
+                  region: string;
+                };
+              };
         };
       };
       responses: {
         /** @description Default Response */
-        "4XX": {
+        200: {
+          content: never;
+        };
+        /** @description Default Response */
+        "5XX": {
           content: {
             "application/json": {
               code: string;
@@ -870,7 +595,7 @@ export interface paths {
           };
         };
         /** @description Default Response */
-        "5XX": {
+        "4XX": {
           content: {
             "application/json": {
               code: string;
@@ -895,7 +620,11 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
-        "4XX": {
+        200: {
+          content: never;
+        };
+        /** @description Default Response */
+        "5XX": {
           content: {
             "application/json": {
               code: string;
@@ -911,7 +640,7 @@ export interface paths {
           };
         };
         /** @description Default Response */
-        "5XX": {
+        "4XX": {
           content: {
             "application/json": {
               code: string;
