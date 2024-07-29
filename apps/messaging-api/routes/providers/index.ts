@@ -1,9 +1,18 @@
 import { FastifyInstance } from "fastify";
 import {
+  EmailCreate,
+  EmailProvider,
   GenericResponseSingle,
   getGenericResponseSchema,
   PaginationParams,
   PaginationParamsSchema,
+  ProviderCreate,
+  ProviderList,
+  ProviderListItem,
+  ProviderType,
+  ProviderUpdate,
+  SmsCreate,
+  SmsProvider,
 } from "../../types/schemaDefinitions";
 import { Static, Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
@@ -20,58 +29,6 @@ import { Permissions } from "../../types/permissions";
 export const prefix = "/providers";
 
 const tags = ["Providers"];
-
-const ProviderType = Type.Union([Type.Literal("sms"), Type.Literal("email")]);
-
-const ProviderListItem = Type.Object({
-  id: Type.String({ format: "uuid" }),
-  providerName: Type.String(),
-  isPrimary: Type.Boolean(),
-  type: ProviderType,
-});
-
-const ProviderList = Type.Array(ProviderListItem);
-
-const EmailCreate = Type.Object({
-  providerName: Type.String(),
-  isPrimary: Type.Boolean(),
-  type: Type.Literal("email"),
-  smtpHost: Type.String(),
-  smtpPort: Type.Number(),
-  username: Type.String(),
-  password: Type.String(),
-  throttle: Type.Optional(Type.Number()),
-  fromAddress: Type.String(),
-  ssl: Type.Boolean(),
-});
-
-const SmsCreate = Type.Object({
-  providerName: Type.String(),
-  isPrimary: Type.Boolean(),
-  type: Type.Literal("sms"),
-  config: Type.Union([
-    Type.Object({
-      type: Type.Literal("AWS"),
-      accessKey: Type.String(),
-      secretAccessKey: Type.String(),
-      region: Type.String(),
-    }),
-  ]),
-});
-
-const ProviderCreate = Type.Union([EmailCreate, SmsCreate]);
-
-const EmailProvider = Type.Composite([
-  Type.Object({ id: Type.String({ format: "uuid" }) }),
-  EmailCreate,
-]);
-
-const SmsProvider = Type.Composite([
-  Type.Object({ id: Type.String({ format: "uuid" }) }),
-  SmsCreate,
-]);
-
-const ProviderUpdate = Type.Union([EmailProvider, SmsProvider]);
 
 function isSmsProvider(
   provider: unknown,
