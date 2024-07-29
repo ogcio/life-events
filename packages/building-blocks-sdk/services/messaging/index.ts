@@ -180,111 +180,202 @@ export class Messaging {
     return { error };
   }
 
-  async getEmailProviders() {
-    const { error, data } = await this.client.GET("/api/v1/providers/emails/");
-
-    return { error, data: data?.data };
-  }
-
-  async getEmailProvider(
-    providerId: paths["/api/v1/providers/emails/{providerId}"]["get"]["parameters"]["path"]["providerId"],
-  ) {
-    const { data, error } = await this.client.GET(
-      "/api/v1/providers/emails/{providerId}",
-      {
-        params: { path: { providerId } },
-      },
-    );
-
-    return { error, data: data?.data };
-  }
-
-  async createEmailProvider(
-    body: paths["/api/v1/providers/emails/"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    const { data, error } = await this.client.POST(
-      "/api/v1/providers/emails/",
-      { body },
-    );
-
-    return { error, data: data?.data };
-  }
-
-  async updateEmailProvider(
-    providerId: paths["/api/v1/providers/emails/{providerId}"]["put"]["parameters"]["path"]["providerId"],
-    body: paths["/api/v1/providers/emails/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
-  ) {
-    const { error } = await this.client.PUT(
-      "/api/v1/providers/emails/{providerId}",
-      {
-        params: { path: { providerId } },
-        body,
-      },
-    );
-
-    return { error };
-  }
-
-  async deleteEmailProvider(
-    providerId: paths["/api/v1/providers/emails/{providerId}"]["delete"]["parameters"]["path"]["providerId"],
-  ) {
-    const { error } = await this.client.DELETE(
-      "/api/v1/providers/emails/{providerId}",
-      {
-        params: { path: { providerId } },
-      },
-    );
-
-    return { error };
-  }
-
-  async getSmsProviders() {
-    const { error, data } = await this.client.GET("/api/v1/providers/sms/");
-    return { error, data: data?.data };
-  }
-
-  async getSmsProvider(
-    providerId: paths["/api/v1/providers/sms/{providerId}"]["get"]["parameters"]["path"]["providerId"],
-  ) {
-    const { error, data } = await this.client.GET(
-      "/api/v1/providers/sms/{providerId}",
-      {
-        params: {
-          path: { providerId },
+  async getEmailProviders(params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    primary?: boolean;
+  }) {
+    const { limit, offset, search, primary } = params || {};
+    const { error, data } = await this.client.GET("/api/v1/providers/", {
+      params: {
+        query: {
+          type: "email",
+          limit,
+          offset,
+          search,
+          primary,
         },
       },
+    });
+
+    return {
+      error,
+      data: data?.data
+        .filter((item) => item.type === "email")
+        .map((item) => ({
+          id: item.id,
+          providerName: item.providerName,
+          isPrimary: item.isPrimary,
+        })),
+    };
+  }
+
+  async getEmailProvider(providerId: string) {
+    const { data, error } = await this.client.GET(
+      "/api/v1/providers/{providerId}",
+      {
+        params: { path: { providerId }, query: { type: "email" } },
+      },
     );
+
+    console.log(data?.data);
+
+    if (data?.data.type === "email") {
+      return { data: data.data };
+    }
+
+    return { error };
+  }
+
+  async createEmailProvider(provider: {
+    providerName: string;
+    isPrimary: boolean;
+    smtpHost: string;
+    smtpPort: number;
+    username: string;
+    password: string;
+    throttle?: number;
+    fromAddress: string;
+    ssl: boolean;
+  }) {
+    const { data, error } = await this.client.POST("/api/v1/providers/", {
+      body: {
+        type: "email",
+        ...provider,
+      },
+    });
 
     return { error, data: data?.data };
   }
 
-  async updateSmsProvider(
-    providerId: paths["/api/v1/providers/sms/{providerId}"]["put"]["parameters"]["path"]["providerId"],
-    body: paths["/api/v1/providers/sms/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
-  ) {
-    const { error } = await this.client.PUT(
-      "/api/v1/providers/sms/{providerId}",
-      { params: { path: { providerId } }, body },
+  async updateEmailProvider(provider: {
+    id: string;
+    providerName: string;
+    isPrimary: boolean;
+    smtpHost: string;
+    smtpPort: number;
+    username: string;
+    password: string;
+    throttle?: number;
+    fromAddress: string;
+    ssl: boolean;
+  }) {
+    const { error } = await this.client.PUT("/api/v1/providers/{providerId}", {
+      params: { path: { providerId: provider.id } },
+      body: {
+        type: "email",
+        ...provider,
+      },
+    });
+    return { error };
+  }
+
+  async deleteEmailProvider(providerId: string) {
+    const { error } = await this.client.DELETE(
+      "/api/v1/providers/{providerId}",
+      {
+        params: { path: { providerId } },
+      },
     );
 
     return { error };
   }
 
-  async createSmsProvider(
-    body: paths["/api/v1/providers/sms/"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    const { error } = await this.client.POST("/api/v1/providers/sms/", {
-      body,
+  async getSmsProviders(params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    primary?: boolean;
+  }) {
+    const { limit, offset, search, primary } = params || {};
+    const { error, data } = await this.client.GET("/api/v1/providers/", {
+      params: {
+        query: {
+          type: "sms",
+          limit,
+          offset,
+          search,
+          primary,
+        },
+      },
     });
 
+    return {
+      error,
+      data: data?.data
+        .filter((item) => item.type === "sms")
+        .map((item) => ({
+          id: item.id,
+          providerName: item.providerName,
+          isPrimary: item.isPrimary,
+        })),
+    };
+  }
+
+  async getSmsProvider(providerId: string) {
+    const { data, error } = await this.client.GET(
+      "/api/v1/providers/{providerId}",
+      {
+        params: { path: { providerId }, query: { type: "sms" } },
+      },
+    );
+
+    // Let's do some type plumbing for the implementor
+    if (data?.data.type === "sms") {
+      return { data: data.data };
+    }
+
+    // Can we throw or return a new NotFoundError here?
     return { error };
   }
 
-  async deleteSmsProvider(
-    providerId: paths["/api/v1/providers/sms/{providerId}"]["delete"]["parameters"]["path"]["providerId"],
-  ) {
+  async updateSmsProvider(provider: {
+    id: string;
+    providerName: string;
+    isPrimary: boolean;
+    // Union other config types
+    config: {
+      type: "AWS";
+      accessKey: string;
+      secretAccessKey: string;
+      region: string;
+    };
+  }) {
+    const { error } = await this.client.PUT("/api/v1/providers/{providerId}", {
+      params: { path: { providerId: provider.id } },
+      body: {
+        type: "sms",
+        ...provider,
+      },
+    });
+    return { error };
+  }
+
+  async createSmsProvider(provider: {
+    providerName: string;
+    isPrimary: boolean;
+    // Union other config types
+    config: {
+      type: "AWS";
+      accessKey: string;
+      secretAccessKey: string;
+      region: string;
+    };
+  }) {
+    const { error, data } = await this.client.POST("/api/v1/providers/", {
+      body: {
+        type: "sms",
+        ...provider,
+      },
+    });
+
+    return { error, data: data?.data };
+  }
+
+  async deleteSmsProvider(providerId: string) {
     const { error } = await this.client.DELETE(
-      "/api/v1/providers/sms/{providerId}",
+      "/api/v1/providers/{providerId}",
       { params: { path: { providerId } } },
     );
 

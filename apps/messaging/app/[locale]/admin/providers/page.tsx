@@ -79,13 +79,13 @@ export default async (props: {
       const { data } = await client.getSmsProvider(
         props.searchParams?.deleteId,
       );
-      toDelete = data?.name;
+      toDelete = data?.providerName;
     } else {
       // make more dynamic if we need to
       const { data } = await client.getEmailProvider(
         props.searchParams?.deleteId,
       );
-      toDelete = data?.name;
+      toDelete = data?.providerName;
     }
   }
 
