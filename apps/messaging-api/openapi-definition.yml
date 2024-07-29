@@ -1137,7 +1137,7 @@ paths:
           name: providerId
           required: true
       responses:
-        "201":
+        "200":
           description: Default Response
         5XX:
           description: Default Response
@@ -1211,9 +1211,10 @@ paths:
       tags: *a2
       parameters:
         - schema:
+            format: uuid
             type: string
           in: path
-          name: templateId
+          name: providerId
           required: true
       responses:
         "200":
@@ -1374,7 +1375,7 @@ paths:
                         type: number
                 required:
                   - data
-        "404":
+        4XX:
           description: Default Response
           content:
             application/json:
@@ -1455,9 +1456,6 @@ paths:
                   items:
                     type: object
                     properties:
-                      id:
-                        format: uuid
-                        type: string
                       templateName:
                         type: string
                       lang:
@@ -1471,7 +1469,6 @@ paths:
                       richText:
                         type: string
                     required:
-                      - id
                       - templateName
                       - lang
                       - subject
@@ -1487,9 +1484,14 @@ paths:
                         type: string
                       type:
                         type: string
+                      languages:
+                        type: array
+                        items:
+                          type: string
                     required:
                       - name
                       - type
+                      - languages
               required:
                 - contents
                 - variables
@@ -1517,13 +1519,69 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
         4XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
   /api/v1/templates/{templateId}:
     get:
       tags: *a3
@@ -1534,7 +1592,103 @@ paths:
           name: templateId
           required: true
       responses:
-        4XX:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      contents:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            templateName:
+                              type: string
+                            subject:
+                              type: string
+                            excerpt:
+                              type: string
+                            plainText:
+                              type: string
+                            richText:
+                              type: string
+                            lang:
+                              type: string
+                          required:
+                            - templateName
+                            - subject
+                            - excerpt
+                            - plainText
+                            - richText
+                            - lang
+                      fields:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            fieldName:
+                              type: string
+                            fieldType:
+                              type: string
+                          required:
+                            - fieldName
+                            - fieldType
+                    required:
+                      - contents
+                      - fields
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "404":
           description: Default Response
           content:
             application/json:
@@ -1569,49 +1723,6 @@ paths:
                   - request_id
                   - name
         5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-    delete:
-      tags: *a3
-      parameters:
-        - schema:
-            type: string
-          in: path
-          name: templateId
-          required: true
-      responses:
-        4XX:
           description: Default Response
           content:
             application/json:
@@ -1709,13 +1820,69 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
         5XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
     delete:
       tags: *a3
       parameters:
@@ -1730,14 +1897,70 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
         5XX:
           description: Default Response
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/def-0"
-  /api/v1/users/settings/organisations:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/organisation-settings/:
     get:
       tags: &a4
         - Organisation Settings
@@ -2704,27 +2927,10 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/users/settings/invitations/me:
-    patch:
-      tags: *a4
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                userStatusFeedback:
-                  default: active
-                  anyOf:
-                    - type: string
-                      enum:
-                        - disabled
-                    - type: string
-                      enum:
-                        - active
-              required:
-                - userStatusFeedback
-        required: true
+  /api/v1/user-imports/:
+    get:
+      tags: &a5
+        - User Imports
       responses:
         "200":
           description: Default Response
@@ -2770,113 +2976,6 @@ paths:
                         - retryCount
                         - lastRetryAt
                         - importId
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        "404":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        "500":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-    get:
-      tags: *a4
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      userStatus:
-                        default: pending
-                        anyOf:
-                          - type: string
-                            enum:
-                              - to_be_invited
-                          - type: string
-                            enum:
-                              - pending
-                          - type: string
-                            enum:
-                              - disabled
-                          - type: string
-                            enum:
-                              - active
-                    required:
-                      - userStatus
                   metadata:
                     type: object
                     properties:
@@ -2924,121 +3023,6 @@ paths:
                         type: number
                 required:
                   - data
-        "400":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        "404":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        "500":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-  /api/v1/users/imports/csv/template:
-    get:
-      tags: &a5
-        - Users
-        - UserImports
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: string
-  /api/v1/users/imports/:
     post:
       tags: *a5
       description: If 'Content-Type' header contains 'multipart/form-data' it accepts
@@ -3195,448 +3179,6 @@ paths:
                   - request_id
                   - name
   /api/v1/user-imports/{importId}:
-    get:
-      tags: *a5
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        organisationId:
-                          type: string
-                        importedAt:
-                          format: date-time
-                          type: string
-                        importChannel:
-                          default: api
-                          anyOf:
-                            - type: string
-                              enum:
-                                - api
-                            - type: string
-                              enum:
-                                - csv
-                        retryCount:
-                          default: 0
-                          type: integer
-                        lastRetryAt:
-                          default: null
-                          anyOf:
-                            - format: date-time
-                              type: string
-                            - type: "null"
-                        importId:
-                          type: string
-                      required:
-                        - organisationId
-                        - importedAt
-                        - importChannel
-                        - retryCount
-                        - lastRetryAt
-                        - importId
-                  metadata:
-                    type: object
-                    properties:
-                      links:
-                        type: object
-                        properties:
-                          self:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          next:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          prev:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          first:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          last:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          pages:
-                            type: object
-                            additionalProperties:
-                              type: object
-                              properties:
-                                href:
-                                  type: string
-                        required:
-                          - self
-                          - first
-                          - last
-                          - pages
-                      totalCount:
-                        type: number
-                required:
-                  - data
-        5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        4XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-  /api/v1/users/imports/users:
-    get:
-      tags: *a5
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          format: uuid
-                          type: string
-                        userProfileId:
-                          default: null
-                          anyOf:
-                            - type: string
-                            - type: "null"
-                        organisationId:
-                          type: string
-                        organisationInvitationStatus:
-                          default: pending
-                          anyOf:
-                            - type: string
-                              enum:
-                                - to_be_invited
-                            - type: string
-                              enum:
-                                - pending
-                            - type: string
-                              enum:
-                                - accepted
-                            - type: string
-                              enum:
-                                - declined
-                        organisationInvitationSentAt:
-                          type: string
-                        organisationInvitationFeedbackAt:
-                          type: string
-                        organisationPreferredTransports:
-                          type: array
-                          items:
-                            type: string
-                        correlationQuality:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - full
-                            - type: string
-                              enum:
-                                - partial
-                            - type: string
-                              enum:
-                                - not_related
-                        userStatus:
-                          default: pending
-                          anyOf:
-                            - type: string
-                              enum:
-                                - to_be_invited
-                            - type: string
-                              enum:
-                                - pending
-                            - type: string
-                              enum:
-                                - disabled
-                            - type: string
-                              enum:
-                                - active
-                        phone:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
-                        email:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
-                        details:
-                          type: object
-                          properties:
-                            publicIdentityId:
-                              default: null
-                              anyOf:
-                                - type: "null"
-                                - type: string
-                            firstName:
-                              default: null
-                              anyOf:
-                                - type: "null"
-                                - type: string
-                            lastName:
-                              default: null
-                              anyOf:
-                                - type: "null"
-                                - type: string
-                            birthDate:
-                              default: null
-                              anyOf:
-                                - type: "null"
-                                - type: string
-                            address:
-                              default: null
-                              anyOf:
-                                - type: object
-                                  properties:
-                                    city:
-                                      default: null
-                                      anyOf:
-                                        - type: "null"
-                                        - type: string
-                                    zipCode:
-                                      default: null
-                                      anyOf:
-                                        - type: "null"
-                                        - type: string
-                                    street:
-                                      default: null
-                                      anyOf:
-                                        - type: "null"
-                                        - type: string
-                                    country:
-                                      default: null
-                                      anyOf:
-                                        - type: "null"
-                                        - type: string
-                                    region:
-                                      default: null
-                                      anyOf:
-                                        - type: "null"
-                                        - type: string
-                                  required:
-                                    - city
-                                    - zipCode
-                                    - street
-                                    - country
-                                    - region
-                                - type: "null"
-                            collectedConsent:
-                              default: false
-                              type: boolean
-                          required:
-                            - publicIdentityId
-                            - firstName
-                            - lastName
-                            - birthDate
-                            - address
-                            - collectedConsent
-                      required:
-                        - id
-                        - userProfileId
-                        - organisationId
-                        - organisationInvitationStatus
-                        - correlationQuality
-                        - userStatus
-                        - phone
-                        - email
-                  metadata:
-                    type: object
-                    properties:
-                      links:
-                        type: object
-                        properties:
-                          self:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          next:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          prev:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          first:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          last:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          pages:
-                            type: object
-                            additionalProperties:
-                              type: object
-                              properties:
-                                href:
-                                  type: string
-                        required:
-                          - self
-                          - first
-                          - last
-                          - pages
-                      totalCount:
-                        type: number
-                required:
-                  - data
-        5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        4XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-  /api/v1/users/imports/{importId}:
     get:
       tags: *a5
       parameters:
@@ -3939,6 +3481,19 @@ paths:
   /api/v1/user-imports/template-download:
     get:
       tags: *a5
+      description: it will return a string containing the template with the csv that
+        will be used to import users
+      responses:
+        "200":
+          description: Default Response
+          content:
+            text/csv:
+              schema:
+                type: string
+  /api/v1/users/:
+    get:
+      tags: &a7
+        - Users
       parameters:
         - schema:
             type: string
@@ -4499,277 +4054,6 @@ paths:
                       - firstName
                       - lastName
                       - birthDate
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          format: uuid
-                          type: string
-                        userProfileId:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
-                        firstName:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
-                        lastName:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
-                        phoneNumber:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
-                        emailAddress:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
-                        birthDate:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
-                        preferredTransports:
-                          type: array
-                          items:
-                            anyOf:
-                              - type: string
-                                enum:
-                                  - email
-                              - type: string
-                                enum:
-                                  - sms
-                              - type: string
-                                enum:
-                                  - lifeEvent
-                        lang:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
-                        ppsn:
-                          default: null
-                          anyOf:
-                            - type: "null"
-                            - type: string
-                      required:
-                        - id
-                        - userProfileId
-                        - firstName
-                        - lastName
-                        - phoneNumber
-                        - emailAddress
-                        - birthDate
-                        - preferredTransports
-                        - lang
-                        - ppsn
-                  metadata:
-                    type: object
-                    properties:
-                      links:
-                        type: object
-                        properties:
-                          self:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          next:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          prev:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          first:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          last:
-                            type: object
-                            properties:
-                              href:
-                                type: string
-                          pages:
-                            type: object
-                            additionalProperties:
-                              type: object
-                              properties:
-                                href:
-                                  type: string
-                        required:
-                          - self
-                          - first
-                          - last
-                          - pages
-                      totalCount:
-                        type: number
-                required:
-                  - data
-        5XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        4XX:
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        fieldName:
-                          type: string
-                        message:
-                          type: string
-                      required:
-                        - fieldName
-                        - message
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-  /api/v1/users/recipients/{userId}:
-    get:
-      tags: *a7
-      parameters:
-        - schema:
-            type: string
-          in: path
-          name: userId
-          required: true
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        format: uuid
-                        type: string
-                      userProfileId:
-                        default: null
-                        anyOf:
-                          - type: "null"
-                          - type: string
-                      firstName:
-                        default: null
-                        anyOf:
-                          - type: "null"
-                          - type: string
-                      lastName:
-                        default: null
-                        anyOf:
-                          - type: "null"
-                          - type: string
-                      phoneNumber:
-                        default: null
-                        anyOf:
-                          - type: "null"
-                          - type: string
-                      emailAddress:
-                        default: null
-                        anyOf:
-                          - type: "null"
-                          - type: string
-                      birthDate:
-                        default: null
-                        anyOf:
-                          - type: "null"
-                          - type: string
-                      preferredTransports:
-                        type: array
-                        items:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - email
-                            - type: string
-                              enum:
-                                - sms
-                            - type: string
-                              enum:
-                                - lifeEvent
-                      lang:
-                        default: null
-                        anyOf:
-                          - type: "null"
-                          - type: string
-                      ppsn:
-                        default: null
-                        anyOf:
-                          - type: "null"
-                          - type: string
-                    required:
-                      - id
-                      - userProfileId
-                      - firstName
-                      - lastName
-                      - phoneNumber
-                      - emailAddress
-                      - birthDate
-                      - preferredTransports
                       - lang
                       - ppsn
                       - organisationSettingId
