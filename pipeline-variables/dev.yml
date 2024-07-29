@@ -18,3 +18,5 @@ variables:
   nextPublicMatomoProtocol: https
   nextPublicLifeEventsMatomoSiteId: 11
   nextPublicBuildingBlocksMatomoSiteId: 14
+  nextPublicFormsServiceEntryPoint: #
+  nextPublicDesignSystemServiceEntryPoint: #

@@ -66,7 +66,7 @@ export type GetSessionContextParameters = {
   resource?: string;
   getOrganizationToken?: boolean;
   loginUrl?: string;
-  publicServantExpectedRole: string;
+  publicServantExpectedRoles: string[];
   userType: "citizen" | "publicServant";
   includeOriginalContext?: boolean;
 };

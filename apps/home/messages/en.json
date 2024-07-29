@@ -1,4 +1,16 @@
 {
+  "Dashboard": {
+    "title": "Welcome",
+    "description": "This is where you can seamlessly access and configure building blocks to enhance your public sector department’s efficiency and functionality.",
+    "tilesLabel": "Click on one of the icons below to begin.",
+    "services": {
+      "forms": "Forms",
+      "payments": "Payments",
+      "messaging": "Messaging",
+      "lifeEvents": "Life Events",
+      "designSystem": "Design System"
+    }
+  },
   "LandingPage": {
     "AlphaBanner": {
       "tag": "Alpha",
@@ -74,5 +86,13 @@
         "cta": "Sign up to learn more"
       }
     }
+  },
+  "Menu": {
+    "login": "Login",
+    "logout": "Logout",
+    "loading": "Loading..."
+  },
+  "Footer": {
+    "license": "All content is available under the <link>Open Government Licence v3.0</link>, except where otherwise stated"
   }
 }
