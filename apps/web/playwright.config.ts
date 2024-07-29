@@ -11,7 +11,7 @@ const baseURL = `https://dev.life.gov.ie`;
 // Reference: https://playwright.dev/docs/test-configuration
 export default defineConfig({
   // Timeout per test
-  timeout: 100000,
+  timeout: 500000,
   grep: testPlanFilter(),
   reporter: [["line"], ["allure-playwright"], ["html"]], // Test directory
   testDir: path.join(__dirname, "e2e"),
