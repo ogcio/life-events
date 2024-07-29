@@ -1,6 +1,4 @@
-import { PgSessions } from "auth/sessions";
 import FlexMenuWrapper from "../../PageWithMenuFlexWrapper";
-import { Messaging } from "building-blocks-sdk";
 import { messageStatus } from "../page";
 import { getTranslations } from "next-intl/server";
 import dayjs from "dayjs";
@@ -20,7 +18,6 @@ export default async (props: { params: { eventId: string } }) => {
   let plainText = "";
 
   for (const event of messageEvents.data || []) {
-    console.log({ event });
     if ("receiverFullName" in event.data) {
       recipient = event.data.receiverFullName;
       subject = event.data.subject;

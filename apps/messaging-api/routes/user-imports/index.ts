@@ -1,55 +1,64 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { Permissions } from "../../types/permissions";
 import { Type } from "@sinclair/typebox";
 import {
-  IMPORT_USERS_ERROR,
   getCsvExample,
+  IMPORT_USERS_ERROR,
   importCsvFileFromRequest,
   importCsvRecords,
 } from "../../services/users/import/import-users";
-import { HttpError } from "../../types/httpErrors";
 import {
   CsvRecord,
   CsvRecordSchema,
-  UserInvitation,
-  UserInvitationSchema,
-  UsersImportSchema,
   UsersImport,
+  UsersImportSchema,
 } from "../../types/usersSchemaDefinitions";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 import {
-  getAllUserInvitationsForOrganisation,
   getUserImportForOrganisation,
   getUserImportsForOrganisation,
-  getUserInvitationsForImport,
 } from "../../services/users/import/read-user-imports";
+import { HttpError } from "../../types/httpErrors";
 import { BadRequestError } from "shared-errors";
-import { Permissions } from "../../types/permissions";
-import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 
-const tags = ["Users", "UserImports"];
+const tags = ["User Imports"];
 enum MimeTypes {
   Json = "application/json",
   FormData = "multipart/form-data",
+  Csv = "text/csv",
 }
+
 /*
  * The routes in this file are meant to be used on the "organisation" side
  */
-export default async function usersImports(app: FastifyInstance) {
-  app.get(
-    "/csv/template",
+export default async function userImports(app: FastifyInstance) {
+  interface GetImportsSchema {
+    Response: { data: Omit<UsersImport, "usersData">[] | string };
+    Querystring: unknown;
+  }
+
+  app.get<GetImportsSchema>(
+    "/",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
         response: {
-          200: Type.String(),
+          200: getGenericResponseSchema(
+            Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
+          ),
         },
       },
     },
-    async (_request: FastifyRequest, reply: FastifyReply) => {
-      const buffer = await getCsvExample();
-
-      reply.type("text/csv").send(buffer);
+    async (request: FastifyRequest, _reply: FastifyReply) => {
+      return {
+        data: await getUserImportsForOrganisation({
+          logger: request.log,
+          pool: app.pg.pool,
+          organisationId: request.userData!.organizationId!,
+        }),
+      };
     },
   );
 
@@ -67,6 +76,8 @@ export default async function usersImports(app: FastifyInstance) {
           "4xx": HttpError,
         },
         consumes: [MimeTypes.FormData, MimeTypes.Json],
+        description:
+          "If 'Content-Type' header contains 'multipart/form-data' it accepts a CSV file, otherwise an array of users to import",
       },
     },
     async (request: FastifyRequest, _reply: FastifyReply) => {
@@ -92,70 +103,12 @@ export default async function usersImports(app: FastifyInstance) {
     },
   );
 
-  interface GetImportsSchema {
-    Response: { data: Omit<UsersImport, "usersData">[] };
-    Querystring: unknown;
-  }
-
-  app.get<GetImportsSchema>(
-    "/",
-    {
-      preValidation: (req, res) =>
-        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
-      schema: {
-        tags,
-        response: {
-          200: getGenericResponseSchema(
-            Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
-          ),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async (
-      request: FastifyRequest<GetImportsSchema>,
-      _reply: FastifyReply,
-    ) => ({
-      data: await getUserImportsForOrganisation({
-        logger: request.log,
-        pool: app.pg.pool,
-        organisationId: request.userData!.organizationId!,
-      }),
-    }),
-  );
-
-  app.get<Omit<GetUserInvitationsSchema, "Params">>(
-    "/users",
-    {
-      preValidation: (req, res) =>
-        app.checkPermissions(req, res, [Permissions.Citizen.Read]),
-      schema: {
-        tags,
-        response: {
-          200: getGenericResponseSchema(Type.Array(UserInvitationSchema)),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async (
-      request: FastifyRequest<Omit<GetUserInvitationsSchema, "Params">>,
-      _reply: FastifyReply,
-    ) => ({
-      data: await getAllUserInvitationsForOrganisation({
-        logger: request.log,
-        pool: app.pg.pool,
-        organisationId: request.userData!.organizationId!,
-      }),
-    }),
-  );
-
   interface GetImportSchema {
-    Querystring: { includeUsersData?: boolean };
+    Querystring: { includeImportedData?: boolean };
     Response: { data: UsersImport };
     Params: { importId: string };
   }
+
   app.get<GetImportSchema>(
     "/:importId",
     {
@@ -165,7 +118,7 @@ export default async function usersImports(app: FastifyInstance) {
         tags,
         querystring: Type.Optional(
           Type.Object({
-            includeUsersData: Type.Boolean({ default: true }),
+            includeImportedData: Type.Boolean({ default: true }),
           }),
         ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
@@ -182,43 +135,31 @@ export default async function usersImports(app: FastifyInstance) {
         pool: app.pg.pool,
         organisationId: request.userData!.organizationId!,
         importId: request.params.importId,
-        includeUsersData: request.query.includeUsersData ?? true,
+        includeUsersData: request.query.includeImportedData ?? true,
       }),
     }),
   );
 
-  interface GetUserInvitationsSchema {
-    Response: { data: UserInvitation[] };
-    Params: { importId: string };
-    Querystring: unknown;
-  }
-
-  app.get<GetUserInvitationsSchema>(
-    "/:importId/users",
+  app.get(
+    "/template-download",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
         tags,
-        params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
         response: {
-          200: getGenericResponseSchema(Type.Array(UserInvitationSchema)),
-          "5xx": HttpError,
-          "4xx": HttpError,
+          200: Type.String(),
         },
+        produces: [MimeTypes.Csv],
+        description:
+          "it will return a string containing the template with the csv that will be used to import users",
       },
     },
-    async (
-      request: FastifyRequest<GetUserInvitationsSchema>,
-      _reply: FastifyReply,
-    ) => ({
-      data: await getUserInvitationsForImport({
-        logger: request.log,
-        pool: app.pg.pool,
-        organisationId: request.userData!.organizationId!,
-        importId: request.params.importId,
-      }),
-    }),
+    async (_request: FastifyRequest, reply: FastifyReply) => {
+      const buffer = await getCsvExample();
+
+      reply.type("text/csv").send(buffer);
+    },
   );
 
   const saveRequestFile = async (request: FastifyRequest): Promise<string> => {

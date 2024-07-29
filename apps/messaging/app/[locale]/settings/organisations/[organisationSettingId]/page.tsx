@@ -27,7 +27,7 @@ enum ACTIVE_STATUSES {
   DECLINED = "declined",
 }
 
-export default async (props: { params: { organisationId: string } }) => {
+export default async (props: { params: { organisationSettingId: string } }) => {
   async function submitAction(formData: FormData) {
     "use server";
     const authenticationContext = await AuthenticationFactory.getInstance();
@@ -35,7 +35,7 @@ export default async (props: { params: { organisationId: string } }) => {
     const submitTrans = await getTranslations("userSettings.Organisation");
     const url = new URL(usersSettingsRoutes.url, process.env.HOST_URL);
     url.searchParams.append(searchKeySettingType, searchValueOrganisation);
-    const orgId = formData.get("organisationId")?.toString();
+    const orgId = formData.get("organisationSettingId")?.toString();
     if (!orgId) {
       return notFound();
     }
@@ -80,8 +80,7 @@ export default async (props: { params: { organisationId: string } }) => {
       authenticationContext,
     });
 
-    await submitClient.updateInvitation({ userStatusFeedback: "active" });
-    await submitClient.updateOrganisationInvitation(orgId, {
+    await submitClient.updateOrganisationSettings(orgId, {
       invitationStatusFeedback: status as "accepted" | "declined",
       preferredTransports,
     });
@@ -99,8 +98,8 @@ export default async (props: { params: { organisationId: string } }) => {
   const messagingClient = await AuthenticationFactory.getMessagingClient({
     token: accessToken,
   });
-  const configurations = await messagingClient.getOrganisationInvitation(
-    props.params.organisationId,
+  const configurations = await messagingClient.getOrganisationSettings(
+    props.params.organisationSettingId,
   );
   if (configurations.error) {
     return notFound();
@@ -108,7 +107,7 @@ export default async (props: { params: { organisationId: string } }) => {
 
   const errors = await temporaryMockUtils.getErrors(
     user.id,
-    props.params.organisationId,
+    props.params.organisationSettingId,
   );
 
   const statusError = errors.find(
@@ -131,8 +130,8 @@ export default async (props: { params: { organisationId: string } }) => {
       </p>
       <form action={submitAction}>
         <input
-          name="organisationId"
-          value={props.params.organisationId}
+          name="organisationSettingId"
+          value={props.params.organisationSettingId}
           type="hidden"
         />
 

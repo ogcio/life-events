@@ -1,15 +1,11 @@
 import { PostgresDb } from "@fastify/postgres";
-import { getUserByUserProfileId } from "../shared-users";
-import {
-  executeUpdateOrganisationFeedback,
-  getUserInvitations,
-  getUsersInvitationsForOrganisation,
-} from "./shared-invitations";
+import { getSettingsPerUser, getUserByUserProfileId } from "../shared-users";
+import { executeUpdateOrganisationFeedback } from "./shared-invitations";
 import {
   InvitationFeedback,
   OrganisationInvitationFeedback,
+  OrganisationSetting,
   User,
-  UserInvitation,
 } from "../../../types/usersSchemaDefinitions";
 import { PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
@@ -17,49 +13,30 @@ import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 
 const ACCEPT_INVITATIONS_ERROR = "ACCEPT_INVITATIONS_ERROR";
 
-export const getInvitationForUser = async (params: {
+export const getOrganisationSettingsForProfile = async (params: {
   pg: PostgresDb;
   userProfileId: string;
-  organisationId: string;
-}): Promise<UserInvitation> => {
-  const { pg, userProfileId, organisationId } = params;
+  organisationSettingId: string;
+}): Promise<OrganisationSetting> => {
+  const { pg, userProfileId, organisationSettingId } = params;
   const client = await pg.connect();
   try {
-    return await getInvitation({ client, userProfileId, organisationId });
-  } finally {
-    client.release();
-  }
-};
-
-export const getInvitationsForUser = async (params: {
-  pg: PostgresDb;
-  userProfileId: string;
-}): Promise<UserInvitation[]> => {
-  const { pg, userProfileId } = params;
-  const client = await pg.connect();
-  try {
-    await getUserByUserProfileId({
+    return await getSettingPerProfileId({
       client,
       userProfileId,
-      errorCode: ACCEPT_INVITATIONS_ERROR,
-    });
-
-    return await getUserInvitations({
-      userProfileId,
-      client,
-      errorCode: ACCEPT_INVITATIONS_ERROR,
+      organisationSettingId,
     });
   } finally {
     client.release();
   }
 };
 
-const getInvitation = async (params: {
+const getSettingPerProfileId = async (params: {
   client: PoolClient;
   userProfileId: string;
-  organisationId: string;
-}): Promise<UserInvitation> => {
-  const { client, userProfileId, organisationId } = params;
+  organisationSettingId: string;
+}): Promise<OrganisationSetting> => {
+  const { client, userProfileId, organisationSettingId } = params;
   const user = await getUserByUserProfileId({
     client,
     userProfileId,
@@ -71,11 +48,11 @@ const getInvitation = async (params: {
       "The current user has no related user profile",
     );
   }
-  const invitations = await getUsersInvitationsForOrganisation({
-    userProfileIds: [user.userProfileId],
-    organisationId,
+  const invitations = await getSettingsPerUser({
+    userId: user.id,
     client,
     errorCode: ACCEPT_INVITATIONS_ERROR,
+    organisationSettingId,
   });
 
   if (invitations.length === 0) {
@@ -88,7 +65,7 @@ const getInvitation = async (params: {
   return invitations[0];
 };
 
-const ensureUserIsActive = (userInvitation: UserInvitation): void => {
+const ensureUserIsActive = (userInvitation: OrganisationSetting): void => {
   if (userInvitation.userStatus !== "active") {
     throw new BadRequestError(
       ACCEPT_INVITATIONS_ERROR,
@@ -100,12 +77,12 @@ const ensureUserIsActive = (userInvitation: UserInvitation): void => {
 export const updateOrganisationFeedback = async (params: {
   pg: PostgresDb;
   feedback: OrganisationInvitationFeedback;
-  organisationId: string;
+  organisationSettingId: string;
   userProfileId: string;
-}): Promise<UserInvitation> => {
+}): Promise<OrganisationSetting> => {
   const client = await params.pg.connect();
   try {
-    const userInvitation = await getInvitation({ client, ...params });
+    const userInvitation = await getSettingPerProfileId({ client, ...params });
     ensureUserIsActive(userInvitation);
 
     if (
@@ -121,11 +98,11 @@ export const updateOrganisationFeedback = async (params: {
     await executeUpdateOrganisationFeedback({
       client,
       ...params,
-      userId: userInvitation.id,
+      userId: userInvitation.userId,
       errorCode: ACCEPT_INVITATIONS_ERROR,
     });
 
-    return await getInvitation({ client, ...params });
+    return await getSettingPerProfileId({ client, ...params });
   } finally {
     client.release();
   }
