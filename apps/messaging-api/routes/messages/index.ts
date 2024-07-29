@@ -147,24 +147,23 @@ export default async function messages(app: FastifyInstance) {
 
       // Need to change to token once that PR is merged
       const profileSdk = new Profile(request.userData!.accessToken);
-      const { data, error } = await profileSdk.selectUsers([senderUserId]);
+      const { data, error } = await profileSdk.getUser();
       if (error) {
         throw new ServerError(
           errorKey,
           "failed to get sender user profile from profile sdk",
+          error,
         );
       }
 
-      const senderUser = data?.at(0);
-      if (!senderUser) {
+      if (!data) {
         throw new NotFoundError(
           errorKey,
           "sender user from profile sdk was undefined",
         );
       }
 
-      const senderFullName =
-        `${senderUser.firstName} ${senderUser.lastName}`.trim();
+      const senderFullName = `${data.firstName} ${data.lastName}`.trim();
       const receiverFullName =
         `${receiverUser.firstName} ${receiverUser.lastName}`.trim();
 
@@ -193,7 +192,7 @@ export default async function messages(app: FastifyInstance) {
           messageId,
           ...request.body.message,
           senderFullName,
-          senderPPSN: senderUser.ppsn,
+          senderPPSN: data.ppsn || "",
           senderUserId,
           receiverFullName,
           receiverPPSN: receiverUser.ppsn,
