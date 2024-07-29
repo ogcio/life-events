@@ -105,18 +105,18 @@ const getSettingsPerUserIds = async (params: {
     const result = await params.client.query<OrganisationSetting>(
       `
         SELECT 
-            ouc.user_id as "userId",
-            users.user_profile_id as "userProfileId",
-            users.email as "emailAddress",
-            users.phone as "phoneNumber",
-            users.details as "details",
-            ouc.organisation_id as "organisationId",
-            ouc.invitation_status as "organisationInvitationStatus",
-            ouc.invitation_sent_at  as "organisationInvitationSentAt",
-            ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
-            ouc.preferred_transports as "organisationPreferredTransports",
-            users.correlation_quality as "correlationQuality",
-            users.user_status as "userStatus"
+          ouc.user_id as "userId",
+          users.user_profile_id as "userProfileId",
+          users.email as "emailAddress",
+          users.phone as "phoneNumber",
+          users.details as "details",
+          ouc.organisation_id as "organisationId",
+          ouc.invitation_status as "organisationInvitationStatus",
+          ouc.invitation_sent_at  as "organisationInvitationSentAt",
+          ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
+          ouc.preferred_transports as "organisationPreferredTransports",
+          users.correlation_quality as "correlationQuality",
+          users.user_status as "userStatus"
         FROM users
         LEFT JOIN organisation_user_configurations ouc on ouc.user_id = users.id 
           AND ouc.organisation_id = $1

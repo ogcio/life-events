@@ -145,21 +145,20 @@ export const getUserImports = async (params: {
 export const getSettingsPerUser = async (params: {
   client: PoolClient;
   userId: string;
-  whereClauses?: string[];
-  whereValues?: string[];
+  organisationId?: string;
   errorCode: string;
-  logicalWhereOperator?: string;
   limit?: number;
   includeUserDetails?: boolean;
 }): Promise<OrganisationSetting[]> => {
   try {
-    const inputWhereValues = [...(params.whereValues ?? []), params.userId];
-    const inputWhereClauses = params.whereClauses ?? [];
-    inputWhereClauses.push(`users.id = $${inputWhereClauses.length + 1}`);
+    const inputWhereValues = [params.userId];
+    const inputWhereClauses = ["users.id = $1"];
+    if (params.organisationId) {
+      inputWhereClauses.push("ouc.organisation_id = $2");
+      inputWhereValues.push(params.organisationId);
+    }
     const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
-    const operator = params.logicalWhereOperator
-      ? ` ${params.logicalWhereOperator} `
-      : " AND ";
+    const operator = " AND ";
 
     const whereClauses =
       inputWhereClauses.length > 0
