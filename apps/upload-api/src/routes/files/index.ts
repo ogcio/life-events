@@ -31,7 +31,7 @@ const FILE_DOWNLOAD = "FILE_DOWNLOAD";
 
 const permissions = {
   citizen: {
-    test: "upload:object.self:read",
+    test: "upload:file.self:read",
     testError: "fake_permission",
   },
   publicServant: {
@@ -281,9 +281,9 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
 };
 
 export default async function routes(app: FastifyInstance) {
-  // app.addHook("preValidation", async (request, reply) => {
-  //   await app.checkPermissions(request, reply, [permissions.citizen.test]);
-  // });
+  app.addHook("preValidation", async (request, reply) => {
+    await app.checkPermissions(request, reply, [permissions.citizen.test]);
+  });
 
   app.post(
     "/",

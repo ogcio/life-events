@@ -4,611 +4,17 @@
  */
 
 export interface paths {
-  "/health": {
+  "/api/v1/files/": {
     get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
-        };
-      };
-    };
-  };
-  "/user-login-wh": {
-    post: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
-        };
-      };
-    };
-  };
-  "/api/v1/addresses/": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              addressId: string;
-              addressLine1: string;
-              addressLine2: string;
-              town: string;
-              county: string;
-              eirecode: string;
-              updatedAt: string;
-              moveInDate?: string;
-              moveOutDate?: string;
-              isPrimary?: boolean;
-              ownershipStatus?: string;
-            }[];
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            addressLine1: string;
-            addressLine2?: string;
-            town: string;
-            county: string;
-            eirecode: string;
-            moveInDate?: string;
-            moveOutDate?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/addresses/{addressId}": {
-    get: {
-      parameters: {
-        path: {
-          addressId: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              addressId: string;
-              addressLine1: string;
-              addressLine2: string;
-              town: string;
-              county: string;
-              eirecode: string;
-              updatedAt: string;
-              moveInDate?: string;
-              moveOutDate?: string;
-              isPrimary?: boolean;
-              ownershipStatus?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    put: {
-      parameters: {
-        path: {
-          addressId: string;
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            addressLine1: string;
-            addressLine2?: string;
-            town: string;
-            county: string;
-            eirecode: string;
-            moveInDate?: string;
-            moveOutDate?: string;
-            isPrimary: boolean;
-            ownershipStatus: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    delete: {
-      parameters: {
-        path: {
-          addressId: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    patch: {
-      parameters: {
-        path: {
-          addressId: string;
-        };
-      };
-      requestBody?: {
-        content: {
-          "application/json": {
-            isPrimary?: boolean;
-            ownershipStatus?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/entitlements/": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              firstname: string;
-              lastname: string;
-              type: string;
-              issueDate: string;
-              expiryDate?: string;
-              documentNumber: string;
-            }[];
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/user/": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              /** @default null */
-              title?: null | string;
-              firstName: string;
-              lastName: string;
-              /** @default null */
-              dateOfBirth?: null | string;
-              /** @default null */
-              ppsn?: null | string;
-              /** @default false */
-              ppsnVisible?: null | boolean;
-              /** @default null */
-              gender?: null | string;
-              /** Format: email */
-              email: string;
-              /** @default null */
-              phone?: null | string;
-              /** @default false */
-              consentToPrefillData?: null | boolean;
-              /** @default en */
-              preferredLanguage: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    put: {
-      requestBody: {
-        content: {
-          "application/json": {
-            firstname: string;
-            lastname: string;
-            email: string;
-            title: string;
-            dateOfBirth: string;
-            ppsn: string;
-            ppsnVisible: boolean;
-            gender: string;
-            phone: string;
-            consentToPrefillData?: boolean;
-            preferredLanguage: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            firstname: string;
-            lastname: string;
-            email: string;
-            title?: string;
-            dateOfBirth?: string;
-            ppsn?: string;
-            ppsnVisible?: boolean;
-            gender?: string;
-            phone?: string;
-            consentToPrefillData?: boolean;
-            /** @default en */
-            preferredLanguage: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    patch: {
-      requestBody?: {
-        content: {
-          "application/json": {
-            ppsnVisible?: boolean;
-            consentToPrefillData?: boolean;
-            preferredLanguage?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/user/find": {
-    get: {
-      parameters: {
-        query?: {
-          firstname?: string;
-          lastname?: string;
-          email?: string;
-          dateOfBirth?: string;
-          ppsn?: string;
-          gender?: string;
-          phone?: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-              firstname: string;
-              lastname: string;
-              matchQuality: "exact" | "approximate";
-            };
-          };
-        };
-        /** @description Default Response */
-        404: {
-          content: never;
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/user/select": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            ids: string[];
-          };
-        };
-      };
       responses: {
         /** @description Default Response */
         200: {
           content: {
             "application/json": {
               data: {
-                id: string;
-                firstName: string;
-                lastName: string;
-                ppsn: string;
-                /** Format: email */
-                email?: string;
-                phone?: string;
+                url: string;
+                key: string;
+                size: number;
               }[];
             };
           };
@@ -638,6 +44,157 @@ export interface paths {
               validationContext?: string;
             };
           };
+        };
+      };
+    };
+    post: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                message: string;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/files/{key}": {
+    get: {
+      parameters: {
+        path: {
+          key: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": Record<string, never>;
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        path: {
+          key: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                message: string;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/health": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
         };
       };
     };
