@@ -29,9 +29,7 @@ const publicServantScopes = [
   "messaging:template:*",
   "messaging:citizen:*",
   "messaging:event:read",
-  "profile:user:*",
-  "profile:address:*",
-  "profile:entitlement:*",
+  "profile:user:read",
 ];
 const publicServantExpectedRoles = ["Messaging Public Servant"];
 

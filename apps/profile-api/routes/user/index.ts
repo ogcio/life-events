@@ -97,12 +97,9 @@ export default async function user(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(
-          req,
-          res,
-          [Permissions.UserSelf.Write, Permissions.User.Write],
-          { method: "OR" },
-        ),
+        app.checkPermissions(req, res, [Permissions.User.Write], {
+          method: "OR",
+        }),
       schema: {
         tags: USER_TAGS,
         body: CreateUserSchema,
@@ -265,12 +262,9 @@ export default async function user(app: FastifyInstance) {
     "/find",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(
-          req,
-          res,
-          [Permissions.UserSelf.Read, Permissions.User.Read],
-          { method: "OR" },
-        ),
+        app.checkPermissions(req, res, [Permissions.User.Read], {
+          method: "OR",
+        }),
       schema: {
         tags: USER_TAGS,
         querystring: FindUserParamsSchema,

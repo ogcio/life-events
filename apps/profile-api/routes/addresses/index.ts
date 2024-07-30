@@ -70,12 +70,9 @@ export default async function addresses(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(
-          req,
-          res,
-          [Permissions.AddressSelf.Write, Permissions.Address.Write],
-          { method: "OR" },
-        ),
+        app.checkPermissions(req, res, [Permissions.Address.Write], {
+          method: "OR",
+        }),
       schema: {
         tags: ADDRESSES_TAGS,
         body: CreateAddressSchema,

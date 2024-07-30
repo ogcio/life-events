@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 enum UserPermissions {
   Read = "profile:user:read",
   Write = "profile:user:write",
