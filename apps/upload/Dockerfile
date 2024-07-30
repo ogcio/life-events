@@ -52,8 +52,8 @@ COPY --from=builder /app/apps/upload/.next/standalone ./
 COPY --from=builder /app/apps/upload/.next/static ./apps/upload/.next/static
 # TODO: Filter and remove whatever is not necessary for db-migrate and db-migrate-pg
 COPY --from=deps /app/node_modules/ /app/node_modules/
-EXPOSE 3007
+EXPOSE 3008
 
-ENV PORT=3007
+ENV PORT=3008
 
 CMD [ "node", "apps/upload/server.js" ]

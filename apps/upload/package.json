@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "next build",
-    "start": "next start -p 3007",
+    "start": "next start -p 3008",
     "test:e2e": "playwright test",
     "test:lighthouse": "node performance-tests/lighthouse/main.mjs",
     "migrate": "db-migrate up"
@@ -14,7 +14,7 @@
       "../../packages/auth/src/**/*"
     ],
     "ext": "ts,tsx,json",
-    "exec": "next dev -p 3007"
+    "exec": "next dev -p 3008"
   },
   "dependencies": {
     "analytics": "*",
