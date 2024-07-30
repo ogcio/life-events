@@ -2,7 +2,7 @@ import { PostgresDb } from "@fastify/postgres";
 import {
   CreateMessage,
   ReadMessage,
-  ReadMessages,
+  MessageList,
 } from "../../types/schemaDefinitions";
 import { ServiceError, utils } from "../../utils";
 import { FastifyBaseLogger } from "fastify";

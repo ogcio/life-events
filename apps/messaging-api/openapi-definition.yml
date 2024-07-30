@@ -140,21 +140,21 @@ paths:
                           type: string
                         subject:
                           type: string
-                        excerpt:
-                          type: string
-                        plainText:
-                          type: string
-                        richText:
-                          type: string
                         createdAt:
+                          type: string
+                        messageName:
+                          type: string
+                        threadName:
+                          type: string
+                        organisationId:
                           type: string
                       required:
                         - id
                         - subject
-                        - excerpt
-                        - plainText
-                        - richText
                         - createdAt
+                        - messageName
+                        - threadName
+                        - organisationId
                   metadata:
                     type: object
                     properties:

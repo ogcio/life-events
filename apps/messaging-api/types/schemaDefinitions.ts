@@ -9,17 +9,16 @@ import {
 export const AVAILABLE_LANGUAGES = ["en", "ga"];
 export const DEFAULT_LANGUAGE = "en";
 
-export const ReadMessagesSchema = Type.Array(
-  Type.Object({
-    id: Type.String(),
-    subject: Type.String(),
-    excerpt: Type.String(),
-    plainText: Type.String(),
-    richText: Type.String(),
-    createdAt: Type.String(),
-  }),
-);
-export type ReadMessages = Static<typeof ReadMessagesSchema>;
+export const MessageListItem = Type.Object({
+  id: Type.String(),
+  subject: Type.String(),
+  createdAt: Type.String(),
+  messageName: Type.String(),
+  threadName: Type.String(),
+  organisationId: Type.String(),
+});
+export const MessageList = Type.Array(MessageListItem);
+export type MessageList = Static<typeof MessageList>;
 
 export const ReadMessageSchema = Type.Object({
   subject: Type.String(),

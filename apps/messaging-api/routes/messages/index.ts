@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { Type } from "@sinclair/typebox";
+import { Static, Type } from "@sinclair/typebox";
 import {
   GenericResponseSingle,
   getGenericResponseSchema,
@@ -8,7 +8,8 @@ import {
   PaginationParams,
   PaginationParamsSchema,
   ReadMessageSchema,
-  ReadMessagesSchema,
+  MessageList,
+  MessageListItem,
 } from "../../types/schemaDefinitions";
 import { executeJob, getMessage } from "../../services/messages/messages";
 import { newMessagingService } from "../../services/messages/messaging";
@@ -75,7 +76,7 @@ export default async function messages(app: FastifyInstance) {
         tags: MESSAGES_TAGS,
         querystring: Type.Optional(Type.Composite([PaginationParamsSchema])),
         response: {
-          200: getGenericResponseSchema(ReadMessagesSchema),
+          200: getGenericResponseSchema(MessageList),
           400: HttpError,
         },
       },
@@ -87,16 +88,14 @@ export default async function messages(app: FastifyInstance) {
         offset: request.query.offset,
       });
 
+      const MessageListItemWithCount = Type.Composite([
+        MessageListItem,
+        Type.Object({ count: Type.Number() }),
+      ]);
+
+      type QueryRow = Static<typeof MessageListItemWithCount>;
       try {
-        const messagesQueryResult = await app.pg.pool.query<{
-          id: string;
-          subject: string;
-          excerpt: string;
-          plainText: string;
-          richText: string;
-          createdAt: string;
-          count: number;
-        }>(
+        const messagesQueryResult = await app.pg.pool.query<QueryRow>(
           `
           with count_selection as (
             select count(*) from messages
@@ -104,10 +103,10 @@ export default async function messages(app: FastifyInstance) {
           ),
         select 
           id,
-          subject, 
-          excerpt, 
-          plain_text as "plainText",
-          rich_text as "richText",
+          subject,
+          message_name as "messageName",
+          thread_name as "threadName",
+          organisation_id as "organisationId",
           created_at as "createdAt",
           (select count from count_selection) as "count"
         from messages
@@ -123,23 +122,23 @@ export default async function messages(app: FastifyInstance) {
         const url = new URL(`/api/v1/${prefix}`, process.env.HOST_URL).href;
         const links = getPaginationLinks({ totalCount, url, limit, offset });
         const response: GenericResponseSingle<
-          {
-            id: string;
-            subject: string;
-            excerpt: string;
-            plainText: string;
-            richText: string;
-            createdAt: string;
-          }[]
+          Static<typeof MessageListItem>[]
         > = {
           data: messagesQueryResult.rows.map(
-            ({ id, createdAt, excerpt, plainText, richText, subject }) => ({
+            ({
+              id,
+              createdAt,
+              subject,
+              messageName,
+              organisationId,
+              threadName,
+            }) => ({
               id,
               subject,
-              excerpt,
-              plainText,
-              richText,
               createdAt,
+              messageName,
+              threadName,
+              organisationId,
             }),
           ),
           metadata: {

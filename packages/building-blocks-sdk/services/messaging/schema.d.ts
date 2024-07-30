@@ -84,10 +84,10 @@ export interface paths {
               data: {
                 id: string;
                 subject: string;
-                excerpt: string;
-                plainText: string;
-                richText: string;
                 createdAt: string;
+                messageName: string;
+                threadName: string;
+                organisationId: string;
               }[];
               metadata?: {
                 links?: {
