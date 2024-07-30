@@ -13,7 +13,7 @@ import {
 } from "../types";
 import { errorHandler } from "../../../../../utils";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
-import PaymentsMenu from "../../PaymentsMenu";
+import { PageWrapper } from "../../../PageWrapper";
 
 type Props = {
   params: {
@@ -35,80 +35,52 @@ export default async ({ params: { providerId, locale } }: Props) => {
     notFound();
   }
 
-  const context = AuthenticationFactory.getInstance();
-  const isPublicServant = await context.isPublicServant();
-  if (!isPublicServant) return notFound();
-
-  const organizations = Object.values(await context.getOrganizations());
-  const defaultOrgId = await context.getSelectedOrganization();
-  let content;
-
   if (provider.type === "openbanking") {
-    content = (
-      <EditOpenBankingForm
-        provider={provider as OpenBankingProvider}
-        locale={locale}
-      />
+    return (
+      <PageWrapper locale={locale} disableOrgSelector={true}>
+        <EditOpenBankingForm
+          provider={provider as OpenBankingProvider}
+          locale={locale}
+        />
+      </PageWrapper>
     );
   }
 
   if (provider.type === "banktransfer") {
-    content = (
-      <EditBankTransferForm
-        provider={provider as BankTransferProvider}
-        locale={locale}
-      />
+    return (
+      <PageWrapper locale={locale} disableOrgSelector={true}>
+        <EditBankTransferForm
+          provider={provider as BankTransferProvider}
+          locale={locale}
+        />
+      </PageWrapper>
     );
   }
 
   if (provider.type === "stripe") {
-    content = (
-      <EditStripeForm provider={provider as StripeProvider} locale={locale} />
+    return (
+      <PageWrapper locale={locale} disableOrgSelector={true}>
+        <EditStripeForm provider={provider as StripeProvider} locale={locale} />
+      </PageWrapper>
     );
   }
 
   if (provider.type === "worldpay") {
-    content = (
-      <EditWorldpayForm
-        provider={provider as WorldpayProvider}
-        locale={locale}
-      />
+    return (
+      <PageWrapper locale={locale} disableOrgSelector={true}>
+        <EditWorldpayForm
+          provider={provider as WorldpayProvider}
+          locale={locale}
+        />
+      </PageWrapper>
     );
   }
 
   if (provider.type === "realex") {
-    content = (
-      <EditRealexForm provider={provider as RealexProvider} locale={locale} />
-    );
-  }
-
-  if (content) {
     return (
-      <div
-        style={{
-          display: "flex",
-          marginTop: "1.3rem",
-          gap: "2rem",
-        }}
-      >
-        <PaymentsMenu
-          locale={locale}
-          organizations={organizations}
-          defaultOrganization={defaultOrgId}
-          disableOrgSelector={true}
-        />
-        <div>
-          <section
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            {content}
-          </section>
-        </div>
-      </div>
+      <PageWrapper locale={locale} disableOrgSelector={true}>
+        <EditRealexForm provider={provider as RealexProvider} locale={locale} />
+      </PageWrapper>
     );
   }
 

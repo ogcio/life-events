@@ -1,12 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import getRequestConfig from "../../../../../../i18n";
 import { errorHandler } from "../../../../../utils";
 import RealexForm from "./RealexForm";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { realexValidationMap } from "../../../../../validationMaps";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
-import PaymentsMenu from "../../PaymentsMenu";
+import { PageWrapper } from "../../../PageWrapper";
 
 type Props = {
   params: {
@@ -28,13 +28,6 @@ export type RealexFormState = {
 export default async (props: Props) => {
   const t = await getTranslations("PaymentSetup.AddRealex");
   const { messages } = await getRequestConfig({ locale: props.params.locale });
-
-  const context = AuthenticationFactory.getInstance();
-  const isPublicServant = await context.isPublicServant();
-  if (!isPublicServant) return notFound();
-
-  const organizations = Object.values(await context.getOrganizations());
-  const defaultOrgId = await context.getSelectedOrganization();
 
   const errorFieldMapping = realexValidationMap(t);
 
@@ -74,34 +67,12 @@ export default async (props: Props) => {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        marginTop: "1.3rem",
-        gap: "2rem",
-      }}
-    >
-      <PaymentsMenu
-        locale={props.params.locale}
-        organizations={organizations}
-        defaultOrganization={defaultOrgId}
-        disableOrgSelector={true}
-      />
-      <div>
-        <section
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <NextIntlClientProvider
-            messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
-          >
-            <RealexForm action={handleSubmit} />
-          </NextIntlClientProvider>
-        </section>
-      </div>
-    </div>
+    <PageWrapper locale={props.params.locale} disableOrgSelector={true}>
+      <NextIntlClientProvider
+        messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
+      >
+        <RealexForm action={handleSubmit} />
+      </NextIntlClientProvider>
+    </PageWrapper>
   );
 };
