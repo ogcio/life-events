@@ -1,4 +1,3 @@
-import { ServerError } from "shared-errors";
 import { utils } from "../../utils.js";
 import t from "tap";
 
