@@ -16,9 +16,7 @@ export default async () => {
   const messagingClient = await AuthenticationFactory.getMessagingClient({
     token: accessToken,
   });
-  const { data: imports } = await messagingClient.getUsersImports(
-    organization.id,
-  );
+  const { data: imports } = await messagingClient.getUsersImports();
 
   return (
     <>

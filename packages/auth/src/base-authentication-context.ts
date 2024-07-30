@@ -18,12 +18,12 @@ import { getCommonLogger } from "nextjs-logging-wrapper";
 const ERROR_PROCESS = "AUTHENTICATION_CONTEXT";
 
 export interface AuthenticationContextConfig {
-  resourceUrl: string;
+  resourceUrl?: string;
   citizenScopes: string[];
   publicServantScopes: string[];
   organizationId?: string;
   loginUrl: string;
-  publicServantExpectedRole: string;
+  publicServantExpectedRoles: string[];
   baseUrl: string;
   appId: string;
   appSecret: string;

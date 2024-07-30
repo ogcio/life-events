@@ -297,8 +297,8 @@ export default async function templates(app: FastifyInstance) {
           ),
         }),
         response: {
-          "5xx": { $ref: "HttpError" },
-          "4xx": { $ref: "HttpError" },
+          "5xx": HttpError,
+          "4xx": HttpError,
           201: Type.Object({
             data: Type.Object({
               id: Type.String({ format: "uuid" }),
@@ -431,8 +431,8 @@ export default async function templates(app: FastifyInstance) {
           ),
         }),
         response: {
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
@@ -523,8 +523,8 @@ export default async function templates(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          "4xx": { $ref: "HttpError" },
-          "5xx": { $ref: "HttpError" },
+          "4xx": HttpError,
+          "5xx": HttpError,
         },
       },
     },
