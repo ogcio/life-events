@@ -3,7 +3,6 @@ import ds from "design-system/";
 import { headers } from "next/headers";
 import styles from "./Header.module.scss";
 import HamburgerButton from "./HamburgerButton";
-import { isFeatureFlagEnabled } from "feature-flags/utils";
 import { getTranslations } from "next-intl/server";
 
 type THeaderProps = {
@@ -15,8 +14,6 @@ export default async ({ showHamburgerButton, locale }: THeaderProps) => {
   const t = await getTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
-
-  const isMessagesEnabled = await isFeatureFlagEnabled("messages");
 
   return (
     <header
