@@ -19,7 +19,7 @@ export const getUsers = async (params: {
   const client = await params.pool.connect();
   try {
     const queries = buildGetRecipientsQueries(params);
-    console.log(JSON.stringify({ queries }));
+
     const countResponse = client.query<{ count: number }>(
       queries.count.query,
       queries.count.values,

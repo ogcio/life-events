@@ -15,6 +15,7 @@ import {
   searchValueSms,
 } from "../../../utils/messaging";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
+import { getServerLogger } from "nextjs-logging-wrapper";
 
 export const linkStyle = (selected: boolean): CSSProperties => {
   const props: CSSProperties = {
@@ -131,7 +132,7 @@ export default async (props: {
     }
 
     if (error) {
-      console.log(error);
+      getServerLogger().error({ error });
       return;
     }
 
