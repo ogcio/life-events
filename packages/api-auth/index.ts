@@ -129,3 +129,5 @@ export const checkPermissionsPlugin = async (
 export default fp(checkPermissionsPlugin, {
   name: "apiAuthPlugin",
 });
+
+export * from "./logto-client/index.js";
