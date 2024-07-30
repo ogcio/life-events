@@ -23,14 +23,11 @@ export class Messaging {
     this.client.use(authMiddleware);
   }
 
-  async getMessages(type?: string) {
-    const params: Record<string, object> = {};
-
-    if (type) {
-      params.query = { type };
-    }
+  async getMessages(filter?: { offset?: number; limit?: number }) {
     const { error, data } = await this.client.GET("/api/v1/messages/", {
-      params,
+      params: {
+        query: filter,
+      },
     });
 
     return { error, data: data?.data };
