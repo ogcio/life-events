@@ -505,11 +505,15 @@ export class Messaging {
 
   async getUser(
     userId: paths["/api/v1/users/{userId}"]["get"]["parameters"]["path"]["userId"],
+    activeOnly: boolean,
   ) {
     const { error, data } = await this.client.GET("/api/v1/users/{userId}", {
       params: {
         path: {
           userId,
+        },
+        query: {
+          activeOnly,
         },
       },
     });

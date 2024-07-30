@@ -1,17 +1,17 @@
 import { FastifyBaseLogger } from "fastify";
 import { PoolClient } from "pg";
 import {
-  UserInvitation,
+  OrganisationSetting,
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
 import {
   DEFAULT_LANGUAGE,
   MessageInput,
 } from "../../../types/schemaDefinitions";
-import { createMessage } from "../../messages/messages";
 import { PostgresDb } from "@fastify/postgres";
-import { getUsersInvitationsForOrganisation } from "./shared-invitations";
 import { ALL_TRANSPORTS } from "../shared-users";
+import { ServerError } from "shared-errors";
+import { newMessagingService } from "../../messages/messaging";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
 
@@ -22,24 +22,47 @@ export const sendInvitationsForUsersImport = async (params: {
   requestUserId: string;
 }): Promise<void> => {
   const { pg, toImportUsers } = params;
-  const importedUserProfileIds = toImportUsers.usersData
-    .filter((ud) => ud.relatedUserProfileId)
-    .map((ud) => ud.relatedUserProfileId) as string[];
+  const importedUserIds: { userProfileId: string; userId: string }[] = [];
+  const userIds: string[] = [];
+  const langForUserId: {
+    [userId: string]: string;
+  } = {};
+  for (const userData of toImportUsers.usersData) {
+    if (!userData.relatedUserId) {
+      // means that the user has no contacts, nor email or phone
+      // TODO Notify to the user whom imported that is not manageable
+      continue;
+    }
+    if (userData.relatedUserProfileId) {
+      importedUserIds.push({
+        userProfileId: userData.relatedUserProfileId,
+        userId: userData.relatedUserId,
+      });
+    } else {
+      langForUserId[userData.relatedUserId] = DEFAULT_LANGUAGE;
+    }
+    userIds.push(userData.relatedUserId);
+  }
 
-  if (importedUserProfileIds.length === 0) {
+  if (importedUserIds.length === 0 && Object.keys(langForUserId).length === 0) {
     return;
   }
-  const languagePerUser = getLanguagePerUser({
-    userIdsToSearchFor: importedUserProfileIds,
-    requestUserId: params.requestUserId,
-  });
+
+  const languagePerUser = {
+    ...langForUserId,
+    ...getLanguagePerUser({
+      userIdsToSearchFor: importedUserIds,
+      requestUserId: params.requestUserId,
+    }),
+  };
   const client = await pg.pool.connect();
   try {
-    const userInvitations = await getUsersInvitationsForOrganisation({
-      userProfileIds: importedUserProfileIds,
+    await client.query("BEGIN");
+    const userInvitations = await getSettingsPerUserIds({
+      userIds,
       organisationId: toImportUsers.organisationId,
       client,
-      errorCode: SEND_INVITATIONS_ERROR,
+      importId: params.toImportUsers.importId,
     });
 
     const toSend = prepareInvitations({
@@ -58,39 +81,101 @@ export const sendInvitationsForUsersImport = async (params: {
       toImportUsers: params.toImportUsers,
       client,
     });
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+
+    throw error;
   } finally {
     client.release();
   }
 };
 
+const getSettingsPerUserIds = async (params: {
+  userIds: string[];
+  organisationId: string;
+  client: PoolClient;
+  importId: string;
+}): Promise<OrganisationSetting[]> => {
+  let userIndex = 1;
+  const idsIndexes = params.userIds.map(() => `$${userIndex++}`);
+
+  try {
+    const result = await params.client.query<OrganisationSetting>(
+      `
+        SELECT 
+          ouc.user_id as "userId",
+          users.user_profile_id as "userProfileId",
+          users.email as "emailAddress",
+          users.phone as "phoneNumber",
+          users.details as "details",
+          ouc.organisation_id as "organisationId",
+          ouc.invitation_status as "organisationInvitationStatus",
+          ouc.invitation_sent_at  as "organisationInvitationSentAt",
+          ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
+          ouc.preferred_transports as "organisationPreferredTransports",
+          users.correlation_quality as "correlationQuality",
+          users.user_status as "userStatus"
+        FROM users
+        LEFT JOIN organisation_user_configurations ouc on ouc.user_id = users.id 
+          AND ouc.organisation_id = $1
+        LEFT JOIN users_imports on users_imports.organisation_id = ouc.organisation_id
+        WHERE users.id in (${idsIndexes.join(", ")}) AND users_imports.import_id = $${userIndex}
+      `,
+      [params.organisationId, ...params.userIds, params.importId],
+    );
+
+    return result.rows;
+  } catch (error) {
+    throw new ServerError(
+      SEND_INVITATIONS_ERROR,
+      `Error retrieving organisation settings`,
+      error,
+    );
+  }
+};
+
 interface InvitationsPerLanguage {
-  [x: string]: { invitations: UserInvitation[]; ids: string[] };
+  [x: string]: {
+    invitations: OrganisationSetting[];
+    toSendIds: string[];
+    userIds: string[];
+  };
 }
 
 interface ToSendInvitations {
   joinMessaging: InvitationsPerLanguage;
   joinOrganisation: InvitationsPerLanguage;
+  welcome: InvitationsPerLanguage;
 }
 
 const prepareInvitations = (params: {
-  userInvitations: (Omit<UserInvitation, "userProfileId"> & {
-    userProfileId: string;
-  })[];
+  userInvitations: OrganisationSetting[];
   perIdLanguage: { [x: string]: string };
 }): ToSendInvitations => {
   const toSend: ToSendInvitations = {
     joinMessaging: {},
     joinOrganisation: {},
+    welcome: {},
   };
   for (const toInvite of params.userInvitations) {
-    const language = params.perIdLanguage[toInvite.userProfileId];
+    const language = params.perIdLanguage[toInvite.userId];
+    // User profile id has higher priority, if exists, because in this
+    // way we know that we have to use contacts from the user profile
+    const toUseId = toInvite.userProfileId ?? toInvite.userId;
     if (toInvite.userStatus === "to_be_invited") {
       // send invitation to messaging
       //if we send invitation to platform we don't send another email for organisation
       if (!toSend.joinMessaging[language]) {
-        toSend.joinMessaging[language] = { invitations: [], ids: [] };
+        toSend.joinMessaging[language] = {
+          invitations: [],
+          toSendIds: [],
+          userIds: [],
+        };
       }
-      toSend.joinMessaging[language].ids.push(toInvite.userProfileId);
+      toSend.joinMessaging[language].userIds.push(toInvite.userId);
+      toSend.joinMessaging[language].toSendIds.push(toUseId);
       toSend.joinMessaging[language].invitations.push(toInvite);
       continue;
     }
@@ -98,10 +183,30 @@ const prepareInvitations = (params: {
     if (toInvite.organisationInvitationStatus === "to_be_invited") {
       // send invitation to accept comunication from org
       if (!toSend.joinOrganisation[language]) {
-        toSend.joinOrganisation[language] = { invitations: [], ids: [] };
+        toSend.joinOrganisation[language] = {
+          invitations: [],
+          toSendIds: [],
+          userIds: [],
+        };
       }
-      toSend.joinOrganisation[language].ids.push(toInvite.userProfileId);
+      toSend.joinOrganisation[language].userIds.push(toInvite.userId);
+      toSend.joinOrganisation[language].toSendIds.push(toUseId);
       toSend.joinOrganisation[language].invitations.push(toInvite);
+      continue;
+    }
+
+    if (toInvite.organisationInvitationStatus === "accepted") {
+      // send invitation to say the have been onboarded
+      if (!toSend.welcome[language]) {
+        toSend.welcome[language] = {
+          invitations: [],
+          toSendIds: [],
+          userIds: [],
+        };
+      }
+      toSend.welcome[language].userIds.push(toInvite.userId);
+      toSend.welcome[language].toSendIds.push(toUseId);
+      toSend.welcome[language].invitations.push(toInvite);
     }
   }
 
@@ -115,57 +220,109 @@ const sendInvitations = async (params: {
 }): Promise<{
   invitedToMessaging: string[];
   invitedToOrganisation: string[];
+  welcomed: string[];
 }> => {
-  const sending: Promise<void>[] = [];
+  const sending: Promise<string>[] = [];
   const output: {
     invitedToMessaging: string[];
     invitedToOrganisation: string[];
-  } = { invitedToMessaging: [], invitedToOrganisation: [] };
+    welcomed: string[];
+  } = { invitedToMessaging: [], invitedToOrganisation: [], welcomed: [] };
+  const messagingService = newMessagingService(params.pg.pool);
   for (const language of Object.keys(params.toSend.joinMessaging)) {
     const messageInput = getJoinMessagingMessageForLanguage(language);
-    const userIds = params.toSend.joinMessaging[language].ids;
-    sending.push(
-      createMessage({
-        payload: {
-          message: messageInput,
+    const userIds = params.toSend.joinMessaging[language].toSendIds;
+    for (const userId of userIds) {
+      sending.push(
+        messagingService.createMessage({
+          bypassConsent: true,
+          excerpt: messageInput.excerpt,
+          lang: messageInput.lang,
+          organisationId: params.organisationId,
+          plainText: messageInput.plainText,
           preferredTransports: ALL_TRANSPORTS,
-          userIds,
+          receiverUserId: userId,
+          richText: messageInput.richText,
           scheduleAt: new Date().toISOString(),
           security: "high",
-        },
-        pg: params.pg,
-        organizationId: params.organisationId,
-      }),
+          subject: messageInput.subject,
+          threadName: messageInput.threadName || messageInput.subject,
+        }),
+      );
+    }
+
+    output.invitedToMessaging.push(
+      ...params.toSend.joinMessaging[language].userIds,
     );
-    output.invitedToMessaging.push(...userIds);
+    // also push to organisation to then update the
+    // invitation on the db
+    output.invitedToOrganisation.push(
+      ...params.toSend.joinMessaging[language].userIds,
+    );
   }
 
   for (const language of Object.keys(params.toSend.joinOrganisation)) {
     const messageInput = getJoinOrgMessageForLanguage(language);
-    const userIds = params.toSend.joinOrganisation[language].ids;
-    sending.push(
-      createMessage({
-        payload: {
-          message: messageInput,
+    const userIds = params.toSend.joinOrganisation[language].toSendIds;
+    for (const userId of userIds) {
+      sending.push(
+        messagingService.createMessage({
+          bypassConsent: true,
+          excerpt: messageInput.excerpt,
+          lang: messageInput.lang,
+          organisationId: params.organisationId,
+          plainText: messageInput.plainText,
           preferredTransports: ALL_TRANSPORTS,
-          userIds,
-          scheduleAt: Date.now().toString(),
+          receiverUserId: userId,
+          richText: messageInput.richText,
+          scheduleAt: new Date().toISOString(),
           security: "high",
-        },
-        pg: params.pg,
-        organizationId: params.organisationId,
-      }),
+          subject: messageInput.subject,
+          threadName: messageInput.threadName || messageInput.subject,
+        }),
+      );
+    }
+
+    output.invitedToOrganisation.push(
+      ...params.toSend.joinOrganisation[language].userIds,
     );
-    output.invitedToOrganisation.push(...userIds);
+  }
+
+  for (const language of Object.keys(params.toSend.welcome)) {
+    const messageInput = getWelcomeMessageForLanguage(language);
+    const userIds = params.toSend.welcome[language].toSendIds;
+    for (const userId of userIds) {
+      sending.push(
+        messagingService.createMessage({
+          bypassConsent: true,
+          excerpt: messageInput.excerpt,
+          lang: messageInput.lang,
+          organisationId: params.organisationId,
+          plainText: messageInput.plainText,
+          preferredTransports: ALL_TRANSPORTS,
+          receiverUserId: userId,
+          richText: messageInput.richText,
+          scheduleAt: new Date().toISOString(),
+          security: "high",
+          subject: messageInput.subject,
+          threadName: messageInput.threadName || messageInput.subject,
+        }),
+      );
+    }
+    output.welcomed.push(...params.toSend.welcome[language].userIds);
   }
 
   await Promise.all(sending);
 
-  return output;
+  return {
+    invitedToMessaging: [...new Set(output.invitedToMessaging)],
+    invitedToOrganisation: [...new Set(output.invitedToOrganisation)],
+    welcomed: [...new Set(output.welcomed)],
+  };
 };
 
 const getLanguagePerUser = (params: {
-  userIdsToSearchFor: string[];
+  userIdsToSearchFor: { userProfileId: string; userId: string }[];
   requestUserId: string;
 }): { [x: string]: string } => {
   if (params.userIdsToSearchFor.length === 0) {
@@ -178,7 +335,7 @@ const getLanguagePerUser = (params: {
   // Temporarily mocked
   const output: { [x: string]: string } = {};
   for (const id of params.userIdsToSearchFor) {
-    output[id] = DEFAULT_LANGUAGE;
+    output[id.userId] = DEFAULT_LANGUAGE;
   }
   return output;
 };
@@ -209,16 +366,35 @@ const getJoinOrgMessageForLanguage = (language: string): MessageInput => {
   };
 };
 
+const getWelcomeMessageForLanguage = (language: string): MessageInput => {
+  // TODO This one will be updated and translated in a next PR
+  return {
+    subject: "Welcome!",
+    excerpt: "An organisation wants to send you messages!",
+    plainText: "Click here to join our platform",
+    richText: "Click here to join our platform",
+    messageName: "Join Organisation",
+    threadName: "JoinOrganisation",
+    lang: language,
+  };
+};
+
 const setImportedAsInvited = async (params: {
   invited: {
     invitedToMessaging: string[];
     invitedToOrganisation: string[];
+    welcomed: string[];
   };
   toImportUsers: UsersImport;
   client: PoolClient;
 }): Promise<void> => {
-  const { invitedToMessaging, invitedToOrganisation } = params.invited;
-  if (invitedToMessaging.length === 0 && invitedToOrganisation.length === 0) {
+  const { invitedToMessaging, invitedToOrganisation, welcomed } =
+    params.invited;
+  if (
+    invitedToMessaging.length === 0 &&
+    invitedToOrganisation.length === 0 &&
+    welcomed.length === 0
+  ) {
     return;
   }
 
@@ -230,8 +406,8 @@ const setImportedAsInvited = async (params: {
       await params.client.query(
         `
           UPDATE users
-          SET user_status=$1::text
-          WHERE user_profile_id in = (${idsIndexes.join(", ")});
+          SET user_status=$1
+          WHERE id in (${idsIndexes.join(", ")});
         `,
         ["pending", ...invitedToMessaging],
       );
@@ -242,16 +418,30 @@ const setImportedAsInvited = async (params: {
       await params.client.query(
         `
           UPDATE organisation_user_configurations
-          SET invitation_status=$1::text, invitation_sent_at = $2
-          WHERE organisation_id = $3 and user_id in (
-            SELECT id from users where user_profile_id in (${idsIndexes.join(", ")})
-          );
+          SET invitation_status=$1, invitation_sent_at = $2
+          WHERE organisation_id = $3 and user_id in (${idsIndexes.join(", ")});
         `,
         [
           "pending",
-          new Date().toISOString(),
+          new Date(new Date().toUTCString()).toISOString(),
           params.toImportUsers.organisationId,
           ...invitedToOrganisation,
+        ],
+      );
+    }
+    if (welcomed.length) {
+      let userIndex = 3;
+      const idsIndexes = welcomed.map(() => `$${userIndex++}`);
+      await params.client.query(
+        `
+          UPDATE organisation_user_configurations
+          SET invitation_sent_at = $1
+          WHERE organisation_id = $2 and user_id in (${idsIndexes.join(", ")});
+        `,
+        [
+          new Date(new Date().toUTCString()).toISOString(),
+          params.toImportUsers.organisationId,
+          ...welcomed,
         ],
       );
     }
