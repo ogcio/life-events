@@ -72,7 +72,8 @@ export interface paths {
     get: {
       parameters: {
         query?: {
-          type?: string;
+          offset?: number;
+          limit?: number;
         };
       };
       responses: {

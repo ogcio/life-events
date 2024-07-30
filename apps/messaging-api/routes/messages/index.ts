@@ -1,17 +1,16 @@
 import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
 import {
+  GenericResponseSingle,
   getGenericResponseSchema,
   MessageCreate,
   MessageCreateType,
+  PaginationParams,
+  PaginationParamsSchema,
   ReadMessageSchema,
   ReadMessagesSchema,
 } from "../../types/schemaDefinitions";
-import {
-  executeJob,
-  getMessage,
-  getMessages,
-} from "../../services/messages/messages";
+import { executeJob, getMessage } from "../../services/messages/messages";
 import { newMessagingService } from "../../services/messages/messaging";
 import { getUserProfiles } from "../../services/users/shared-users";
 import { Profile } from "building-blocks-sdk";
@@ -22,13 +21,12 @@ import {
 } from "../../services/messages/eventLogger";
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
+import { getPaginationLinks, sanitizePagination } from "../../utils/pagination";
 
 const MESSAGES_TAGS = ["Messages"];
 
 interface GetAllMessages {
-  Querystring: {
-    type?: string;
-  };
+  Querystring: PaginationParams;
 }
 
 interface GetMessage {
@@ -36,6 +34,8 @@ interface GetMessage {
     messageId: string;
   };
 }
+
+export const prefix = "/messages";
 
 export default async function messages(app: FastifyInstance) {
   app.post<{ Params: { id: string }; Body: { token: string } }>(
@@ -73,11 +73,7 @@ export default async function messages(app: FastifyInstance) {
         app.checkPermissions(req, res, [Permissions.MessageSelf.Read]),
       schema: {
         tags: MESSAGES_TAGS,
-        querystring: Type.Optional(
-          Type.Object({
-            type: Type.Optional(Type.String()),
-          }),
-        ),
+        querystring: Type.Optional(Type.Composite([PaginationParamsSchema])),
         response: {
           200: getGenericResponseSchema(ReadMessagesSchema),
           400: HttpError,
@@ -85,13 +81,76 @@ export default async function messages(app: FastifyInstance) {
       },
     },
     async function getMessagesHandler(request, _reply) {
-      return {
-        data: await getMessages({
-          pg: app.pg,
-          userId: request.userData!.userId,
-          transportType: request.query?.type,
-        }),
-      };
+      const errorProcess = "GET_MESSAGES";
+      const { limit, offset } = sanitizePagination({
+        limit: request.query.limit,
+        offset: request.query.offset,
+      });
+
+      try {
+        const messagesQueryResult = await app.pg.pool.query<{
+          id: string;
+          subject: string;
+          excerpt: string;
+          plainText: string;
+          richText: string;
+          createdAt: string;
+          count: number;
+        }>(
+          `
+          with count_selection as (
+            select count(*) from messages
+            where user_id = $1
+          ),
+        select 
+          id,
+          subject, 
+          excerpt, 
+          plain_text as "plainText",
+          rich_text as "richText",
+          created_at as "createdAt",
+          (select count from count_selection) as "count"
+        from messages
+        where user_id = $1 and is_delivered = true    
+        order by created_at desc
+        limit $2
+        offset $3
+    `,
+          [request.userData?.userId, limit, offset],
+        );
+
+        const totalCount = messagesQueryResult.rows.at(0)?.count || 0;
+        const url = new URL(`/api/v1/${prefix}`, process.env.HOST_URL).href;
+        const links = getPaginationLinks({ totalCount, url, limit, offset });
+        const response: GenericResponseSingle<
+          {
+            id: string;
+            subject: string;
+            excerpt: string;
+            plainText: string;
+            richText: string;
+            createdAt: string;
+          }[]
+        > = {
+          data: messagesQueryResult.rows.map(
+            ({ id, createdAt, excerpt, plainText, richText, subject }) => ({
+              id,
+              subject,
+              excerpt,
+              plainText,
+              richText,
+              createdAt,
+            }),
+          ),
+          metadata: {
+            totalCount,
+            links,
+          },
+        };
+        return response;
+      } catch (error) {
+        throw new ServerError(errorProcess, "failed to query messages", error);
+      }
     },
   );
 

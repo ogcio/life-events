@@ -109,9 +109,19 @@ paths:
         - Messages
       parameters:
         - schema:
-            type: string
+            default: 0
+            minimum: 0
+            type: integer
           in: query
-          name: type
+          name: offset
+          required: false
+        - schema:
+            default: 20
+            minimum: 1
+            maximum: 100
+            type: integer
+          in: query
+          name: limit
           required: false
       responses:
         "200":
@@ -561,6 +571,7 @@ paths:
         - schema:
             default: 20
             minimum: 1
+            maximum: 100
             type: integer
           in: query
           name: limit
@@ -3532,6 +3543,7 @@ paths:
         - schema:
             default: 20
             minimum: 1
+            maximum: 100
             type: integer
           in: query
           name: limit
@@ -4203,6 +4215,7 @@ paths:
         - schema:
             default: 20
             minimum: 1
+            maximum: 100
             type: integer
           in: query
           name: limit
