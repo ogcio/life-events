@@ -6,7 +6,7 @@ interface GetTokenBaseParams {
   applicationSecret: string;
   scopes: string[];
 }
-export interface GetOrganisationTokenParams extends GetTokenBaseParams {
+export interface GetOrganizationTokenParams extends GetTokenBaseParams {
   organizationId: string;
 }
 
@@ -21,8 +21,8 @@ interface TokenResponseBody {
   scope: string;
 }
 
-export const getOrganisationToken = async (
-  params: GetOrganisationTokenParams,
+export const getOrganizationToken = async (
+  params: GetOrganizationTokenParams,
 ): Promise<string> => {
   const tokenResponse = await fetchToken({
     ...params,
