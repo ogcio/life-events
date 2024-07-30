@@ -435,7 +435,6 @@ export default async function providers(app: FastifyInstance) {
           await client.query("commit");
         } catch (error) {
           await client.query("rollback");
-          console.log(error);
           throw new ServerError(
             errorProcess,
             "failed to insert email provider",

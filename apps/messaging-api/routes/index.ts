@@ -7,6 +7,7 @@ import organisationSettings from "./organisation-settings";
 import userImports from "./user-imports";
 import users from "./users";
 import events, { prefix as eventsPrefix } from "./messages/events";
+import jobs, { prefix as jobsPrefix } from "./jobs";
 
 export default async function routes(app: FastifyInstance) {
   app.register(messages, { prefix: "/messages" });
@@ -16,6 +17,7 @@ export default async function routes(app: FastifyInstance) {
   app.register(userImports, { prefix: "/user-imports" });
   app.register(users, { prefix: "/users" });
   app.register(events, { prefix: eventsPrefix });
+  app.register(jobs, { prefix: jobsPrefix });
 }
 
 export interface SMSService {

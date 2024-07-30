@@ -6,6 +6,7 @@ import {
 } from "../../types/schemaDefinitions";
 import { ServerError } from "shared-errors";
 import { getErrorMessage } from "../../utils/error-utils";
+import { Permissions } from "../../types/permissions";
 
 const ENTITLEMENTS_TAGS = ["Entitlements"];
 const ERROR_PROCESS = "USER_PROFILE_ENTITLEMENTS";
@@ -14,7 +15,13 @@ export default async function entitlements(app: FastifyInstance) {
   app.get<{ Reply: EntitlementsList }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(
+          req,
+          res,
+          [Permissions.Entitlement.Read, Permissions.EntitlementSelf.Read],
+          { method: "OR" },
+        ),
       schema: {
         tags: ENTITLEMENTS_TAGS,
         response: {
@@ -24,7 +31,7 @@ export default async function entitlements(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       try {
         const result = await app.pg.query(

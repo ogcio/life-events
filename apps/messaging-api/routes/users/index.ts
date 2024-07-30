@@ -41,6 +41,9 @@ export default async function users(app: FastifyInstance) {
     Params: {
       userId: string;
     };
+    Querystring: {
+      activeOnly?: boolean;
+    };
     Response: GenericResponseSingle<UserPerOrganisation>;
   }
 
@@ -101,6 +104,11 @@ export default async function users(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
+        querystring: Type.Optional(
+          Type.Object({
+            activeOnly: Type.Optional(Type.Boolean()),
+          }),
+        ),
         tags,
         params: {
           userId: Type.String(),
@@ -119,11 +127,14 @@ export default async function users(app: FastifyInstance) {
         errorProcess,
       );
       const userId = request.params.userId;
-
       const user = await getUser({
         pool: app.pg.pool,
         organisationId,
         userId,
+        activeOnly:
+          typeof request.query.activeOnly === "undefined"
+            ? true
+            : request.query.activeOnly,
       });
 
       if (user.userProfileId) {

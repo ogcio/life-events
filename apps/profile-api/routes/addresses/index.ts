@@ -17,6 +17,7 @@ import {
   PatchAddressSchema,
 } from "../../types/schemaDefinitions";
 import { getErrorMessage } from "../../utils/error-utils";
+import { Permissions } from "../../types/permissions";
 
 const ADDRESSES_TAGS = ["Addresses"];
 const ERROR_PROCESS = "USER_PROFILE_ADDRESSES";
@@ -25,7 +26,13 @@ export default async function addresses(app: FastifyInstance) {
   app.get<{ Reply: AddressesList }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(
+          req,
+          res,
+          [Permissions.AddressSelf.Read, Permissions.Address.Read],
+          { method: "OR" },
+        ),
       schema: {
         tags: ADDRESSES_TAGS,
         response: {
@@ -35,7 +42,7 @@ export default async function addresses(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
 
       try {
         const result = await app.pg.query(
@@ -62,7 +69,10 @@ export default async function addresses(app: FastifyInstance) {
   app.post<{ Body: CreateAddress; Reply: { id: string } }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Address.Write], {
+          method: "OR",
+        }),
       schema: {
         tags: ADDRESSES_TAGS,
         body: CreateAddressSchema,
@@ -75,7 +85,7 @@ export default async function addresses(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const {
         addressLine1,
         addressLine2,
@@ -115,7 +125,13 @@ export default async function addresses(app: FastifyInstance) {
   app.get<{ Reply: Address | Error; Params: ParamsWithAddressId }>(
     "/:addressId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(
+          req,
+          res,
+          [Permissions.AddressSelf.Read, Permissions.Address.Read],
+          { method: "OR" },
+        ),
       schema: {
         tags: ADDRESSES_TAGS,
         params: ParamsWithAddressIdSchema,
@@ -127,7 +143,7 @@ export default async function addresses(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const { addressId } = request.params;
 
       let result;
@@ -160,7 +176,13 @@ export default async function addresses(app: FastifyInstance) {
   app.put<{ Body: UpdateAddress; Params: ParamsWithAddressId }>(
     "/:addressId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(
+          req,
+          res,
+          [Permissions.AddressSelf.Write, Permissions.Address.Write],
+          { method: "OR" },
+        ),
       schema: {
         tags: ADDRESSES_TAGS,
         body: UpdateAddressSchema,
@@ -174,7 +196,7 @@ export default async function addresses(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const { addressId } = request.params;
 
       const columnsMapping: Record<keyof UpdateAddress, string> = {
@@ -222,7 +244,13 @@ export default async function addresses(app: FastifyInstance) {
   app.patch<{ Body: PatchAddress; Params: ParamsWithAddressId }>(
     "/:addressId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(
+          req,
+          res,
+          [Permissions.AddressSelf.Write, Permissions.Address.Write],
+          { method: "OR" },
+        ),
       schema: {
         tags: ADDRESSES_TAGS,
         body: PatchAddressSchema,
@@ -236,7 +264,7 @@ export default async function addresses(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const { addressId } = request.params;
 
       const columnsMapping: Record<keyof PatchAddress, string> = {
@@ -276,7 +304,13 @@ export default async function addresses(app: FastifyInstance) {
   app.delete<{ Reply: { id: string } | Error; Params: ParamsWithAddressId }>(
     "/:addressId",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(
+          req,
+          res,
+          [Permissions.AddressSelf.Read, Permissions.Address.Read],
+          { method: "OR" },
+        ),
       schema: {
         tags: ADDRESSES_TAGS,
         response: {
@@ -289,7 +323,7 @@ export default async function addresses(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       const { addressId } = request.params;
 
       let result;
