@@ -1,9 +1,9 @@
 import { Static, TSchema, Type } from "@sinclair/typebox";
 import {
   PAGINATION_LIMIT_DEFAULT,
-  PAGNIATION_MAX_LIMIT,
-  PAGNIATION_MIN_LIMIT,
-  PAGNIATION_MIN_OFFSET,
+  PAGINATION_MAX_LIMIT,
+  PAGINATION_MIN_LIMIT,
+  PAGINATION_MIN_OFFSET,
 } from "../utils/pagination";
 
 export const AVAILABLE_LANGUAGES = ["en", "ga"];
@@ -16,6 +16,7 @@ export const MessageListItem = Type.Object({
   messageName: Type.String(),
   threadName: Type.String(),
   organisationId: Type.String(),
+  recipientId: Type.String(),
 });
 export const MessageList = Type.Array(MessageListItem);
 export type MessageList = Static<typeof MessageList>;
@@ -65,15 +66,15 @@ export type CreateMessage = Static<typeof CreateMessageSchema>;
 export const PaginationParamsSchema = Type.Object({
   offset: Type.Optional(
     Type.Integer({
-      default: PAGNIATION_MIN_OFFSET,
-      minimum: PAGNIATION_MIN_OFFSET,
+      default: PAGINATION_MIN_OFFSET,
+      minimum: PAGINATION_MIN_OFFSET,
     }),
   ),
   limit: Type.Optional(
     Type.Integer({
       default: PAGINATION_LIMIT_DEFAULT,
-      minimum: PAGNIATION_MIN_LIMIT,
-      maximum: PAGNIATION_MAX_LIMIT,
+      minimum: PAGINATION_MIN_LIMIT,
+      maximum: PAGINATION_MAX_LIMIT,
     }),
   ),
 });

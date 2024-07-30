@@ -148,6 +148,8 @@ paths:
                           type: string
                         organisationId:
                           type: string
+                        recipientId:
+                          type: string
                       required:
                         - id
                         - subject
@@ -155,6 +157,7 @@ paths:
                         - messageName
                         - threadName
                         - organisationId
+                        - recipientId
                   metadata:
                     type: object
                     properties:

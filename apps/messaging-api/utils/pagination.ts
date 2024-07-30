@@ -9,9 +9,9 @@ export type PaginationDetails = {
 
 export const PAGINATION_OFFSET_DEFAULT = 0;
 export const PAGINATION_LIMIT_DEFAULT = 20;
-export const PAGNIATION_MAX_LIMIT = 100;
-export const PAGNIATION_MIN_LIMIT = 1;
-export const PAGNIATION_MIN_OFFSET = 0;
+export const PAGINATION_MAX_LIMIT = 100;
+export const PAGINATION_MIN_LIMIT = 1;
+export const PAGINATION_MIN_OFFSET = 0;
 
 export const formatAPIResponse = <T>(
   data: T[],
@@ -134,15 +134,15 @@ export const sanitizePagination = (
   return {
     limit: Math.max(
       Math.min(
-        PAGNIATION_MAX_LIMIT,
+        PAGINATION_MAX_LIMIT,
         pagination.limit ?? PAGINATION_LIMIT_DEFAULT,
       ),
-      PAGNIATION_MIN_LIMIT,
+      PAGINATION_MIN_LIMIT,
     ),
 
     offset: Math.max(
       pagination.offset ?? PAGINATION_OFFSET_DEFAULT,
-      PAGNIATION_MIN_OFFSET,
+      PAGINATION_MIN_OFFSET,
     ),
   };
 };

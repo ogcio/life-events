@@ -23,6 +23,8 @@ import {
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
 import { getPaginationLinks, sanitizePagination } from "../../utils/pagination";
+import { utils } from "../../utils";
+import { QueryResult } from "pg";
 
 const MESSAGES_TAGS = ["Messages"];
 
@@ -83,6 +85,16 @@ export default async function messages(app: FastifyInstance) {
     },
     async function getMessagesHandler(request, _reply) {
       const errorProcess = "GET_MESSAGES";
+      let url = "";
+      try {
+        url = utils.apiV1Url({
+          resoucePath: prefix,
+          base: process.env.HOST_URL || "",
+        }).href;
+      } catch (error) {
+        throw new ServerError(errorProcess, "failed to build link url", error);
+      }
+
       const { limit, offset } = sanitizePagination({
         limit: request.query.limit,
         offset: request.query.offset,
@@ -94,62 +106,105 @@ export default async function messages(app: FastifyInstance) {
       ]);
 
       type QueryRow = Static<typeof MessageListItemWithCount>;
-      try {
-        const messagesQueryResult = await app.pg.pool.query<QueryRow>(
-          `
-          with count_selection as (
-            select count(*) from messages
-            where user_id = $1
-          ),
-        select 
-          id,
-          subject,
-          message_name as "messageName",
-          thread_name as "threadName",
-          organisation_id as "organisationId",
-          created_at as "createdAt",
-          (select count from count_selection) as "count"
-        from messages
-        where user_id = $1 and is_delivered = true    
-        order by created_at desc
-        limit $2
-        offset $3
-    `,
-          [request.userData?.userId, limit, offset],
-        );
 
-        const totalCount = messagesQueryResult.rows.at(0)?.count || 0;
-        const url = new URL(`/api/v1/${prefix}`, process.env.HOST_URL).href;
-        const links = getPaginationLinks({ totalCount, url, limit, offset });
-        const response: GenericResponseSingle<
-          Static<typeof MessageListItem>[]
-        > = {
-          data: messagesQueryResult.rows.map(
-            ({
-              id,
-              createdAt,
-              subject,
-              messageName,
-              organisationId,
-              threadName,
-            }) => ({
+      let messagesQueryResult: QueryResult<QueryRow> | undefined;
+      if (request.userData?.organizationId) {
+        try {
+          messagesQueryResult = await app.pg.pool.query<QueryRow>(
+            `
+            with count_selection as (
+              select count(*) from messages
+              where organisation_id = $1
+            ),
+            select 
               id,
               subject,
-              createdAt,
-              messageName,
-              threadName,
-              organisationId,
-            }),
-          ),
+              message_name as "messageName",
+              thread_name as "threadName",
+              organisation_id as "organisationId",
+              user_id as "recipientId",
+              created_at as "createdAt",
+              (select count from count_selection) as "count"
+            from messages
+            where organisation_id = $1 and is_delivered = true    
+            order by created_at desc
+            limit $2
+            offset $3
+        `,
+            [request.userData.organizationId],
+          );
+        } catch (error) {
+          throw new ServerError(
+            errorProcess,
+            "failed to query organisation messages",
+            error,
+          );
+        }
+      } else if (request.userData?.userId) {
+        try {
+          messagesQueryResult = await app.pg.pool.query<QueryRow>(
+            `
+            with count_selection as (
+              select count(*) from messages
+              where user_id = $1
+            ),
+          select 
+            id,
+            subject,
+            message_name as "messageName",
+            thread_name as "threadName",
+            organisation_id as "organisationId",
+            user_id as "recipientId",
+            created_at as "createdAt",
+            (select count from count_selection) as "count"
+          from messages
+          where user_id = $1 and is_delivered = true    
+          order by created_at desc
+          limit $2
+          offset $3
+      `,
+            [request.userData?.userId, limit, offset],
+          );
+        } catch (error) {
+          throw new ServerError(
+            errorProcess,
+            "failed to query citizen messages",
+            error,
+          );
+        }
+      }
+
+      const totalCount = messagesQueryResult?.rows.at(0)?.count || 0;
+
+      const links = getPaginationLinks({ totalCount, url, limit, offset });
+      const response: GenericResponseSingle<Static<typeof MessageListItem>[]> =
+        {
+          data:
+            messagesQueryResult?.rows.map(
+              ({
+                id,
+                createdAt,
+                subject,
+                messageName,
+                organisationId,
+                threadName,
+                recipientId,
+              }) => ({
+                id,
+                subject,
+                createdAt,
+                messageName,
+                threadName,
+                organisationId,
+                recipientId,
+              }),
+            ) ?? [],
           metadata: {
             totalCount,
             links,
           },
         };
-        return response;
-      } catch (error) {
-        throw new ServerError(errorProcess, "failed to query messages", error);
-      }
+      return response;
     },
   );
 

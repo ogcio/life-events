@@ -49,4 +49,11 @@ export const utils = {
   isError(error: unknown): error is Error {
     return error instanceof Error;
   },
+  apiV1Url(params: { resoucePath: string; base: string }): URL {
+    if (params.resoucePath.length && params.resoucePath.at(0) !== "/") {
+      params.resoucePath = `/${params.resoucePath}`;
+    }
+
+    return new URL(`/api/v1${params.resoucePath}`, params.base);
+  },
 };
