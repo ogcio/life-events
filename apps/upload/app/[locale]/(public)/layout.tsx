@@ -30,8 +30,6 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const path = headers().get("x-pathname")?.toString();
-  const queryString = headers().get("x-searchParams")?.toString();
   const authFactory = AuthenticationFactory.getInstance();
   const context = await authFactory.getContext();
 

@@ -8,7 +8,6 @@ type Props = {
 };
 
 export default async (props: Props) => {
-  const path = `${props.params.locale}/`;
   const uploadClient = await AuthenticationFactory.getUploadClient();
 
   const { data: files, error } = await uploadClient.getFiles();

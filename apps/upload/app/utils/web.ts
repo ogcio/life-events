@@ -7,23 +7,6 @@ export type NextPageProps = {
   };
 };
 
-export function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency: "EUR",
-  }).format(amount / 100);
-}
-
-export const languages = {
-  EN: "EN",
-  GA: "GA",
-} as const;
-
-export const drivers = {
-  licencePaymentAgeThreshold: 70,
-  licenceMedicalFormAgeThreshold: 75,
-};
-
 export const envUAT = "UAT";
 export const envDevelopment = "DEV";
 export const envStaging = "STA";

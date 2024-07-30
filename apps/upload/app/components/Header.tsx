@@ -1,6 +1,5 @@
 import Link from "next/link";
 import ds from "design-system/";
-// import NotificationsLink from "../[locale]/(public)/notifications/NotificationsLink";
 import { headers } from "next/headers";
 import styles from "./Header.module.scss";
 import HamburgerButton from "./HamburgerButton";
@@ -134,7 +133,6 @@ export default async ({ showHamburgerButton, locale }: THeaderProps) => {
             </Link>
           </div>
 
-          {isMessagesEnabled && <NotificationsLink locale={locale} />}
           <UserIcon />
 
         */}

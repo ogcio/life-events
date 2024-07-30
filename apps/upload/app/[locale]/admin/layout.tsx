@@ -20,7 +20,7 @@ export default async ({
   const context = await authFactory.getContext();
 
   if (!context.isPublicServant) {
-    return redirect(`/${locale}/`, RedirectType.replace);
+    return redirect("/", RedirectType.replace);
   }
 
   const publicServancContext = await authFactory.getPublicServant();
@@ -33,7 +33,7 @@ export default async ({
   return (
     <html lang={locale}>
       <head>
-        <title>Life Events App</title>
+        <title>Upload App</title>
       </head>
       <body
         style={{
