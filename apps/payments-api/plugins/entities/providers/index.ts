@@ -29,7 +29,7 @@ const dbConstraintMap: DbConstraintMap = {
 
 const buildGetProviderById =
   (repo: ProvidersRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
-  async (providerId: string, organizationId: string): Promise<ProviderDO> => {
+  async (providerId: string, organizationId?: string): Promise<ProviderDO> => {
     let result;
 
     try {
