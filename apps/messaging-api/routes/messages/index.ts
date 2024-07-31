@@ -115,16 +115,44 @@ export default async function messages(app: FastifyInstance) {
         );
       }
 
-      // Only allow you to query your own messages
-      if (
-        queryRecipientUserId &&
-        queryRecipientUserId !== request.userData?.userId
-      ) {
-        throw new AuthorizationError(errorProcess, "illegal user id request");
+      const userIdsRepresentingUser: string[] = [];
+      if (queryRecipientUserId) {
+        // we must make sure that we consider a user to have theoretically two ids from two separate tables (or databases if the separation occurs)
+        const hahahahlol = await app.pg.pool.query<{
+          profileId?: string;
+          messageUserId: string;
+        }>(
+          `
+            select id as "messageUserId", user_profile_id as "profileId" from users where id = $1 or user_profile_id = $1
+            limit 1
+        `,
+          [request.userData?.userId],
+        );
+        const asd = hahahahlol.rows.at(0);
+        if (!asd) {
+          // this should never happen?
+          throw new AuthorizationError(errorProcess, "illegal user id request");
+        }
+
+        if (
+          asd.profileId
+            ? asd.profileId !== queryRecipientUserId
+            : true && asd.messageUserId !== queryRecipientUserId
+        ) {
+          throw new AuthorizationError(errorProcess, "illegal user id request");
+        }
+
+        userIdsRepresentingUser.push(asd.messageUserId);
+        if (asd.profileId) {
+          userIdsRepresentingUser.push(asd.profileId);
+        }
       }
 
       // Only delivered query status allowed
-      if (queryRecipientUserId && request.query.status !== "delivered") {
+      if (
+        userIdsRepresentingUser.length &&
+        request.query.status !== "delivered"
+      ) {
         throw new AuthorizationError(
           errorProcess,
           "only delivered messages allowed",
@@ -161,7 +189,9 @@ export default async function messages(app: FastifyInstance) {
           `
             with count_selection as (
               select count(*) from messages
-              where organisation_id = $1
+              where
+              case when $1 is not null then organisation_id = $1 else true end
+              and case when $2 is not null then user_id in ($2) else true end
             ),
             select 
               id,
@@ -175,14 +205,16 @@ export default async function messages(app: FastifyInstance) {
             from messages
             where 
             case when $1 is not null then organisation_id = $1 else true end
-            and case when $2 is not null then user_id = $2 else true end
+            and case when $2 is not null then user_id in ($2) else true end
             order by created_at desc
             limit $3
             offset $4
         `,
           [
             queryOrganisationId || null,
-            queryRecipientUserId || null,
+            userIdsRepresentingUser.length
+              ? userIdsRepresentingUser.join(", ")
+              : null,
             limit,
             offset,
           ],

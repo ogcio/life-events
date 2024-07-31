@@ -23,10 +23,26 @@ export class Messaging {
     this.client.use(authMiddleware);
   }
 
-  async getMessages(filter?: { offset?: number; limit?: number }) {
+  async getMessagesForUser(
+    userId: string,
+    filter?: { offset?: number; limit?: number },
+  ) {
     const { error, data } = await this.client.GET("/api/v1/messages/", {
       params: {
-        query: filter,
+        query: { ...(filter || {}), recipientUserId: userId },
+      },
+    });
+
+    return { error, data: data?.data };
+  }
+
+  async getMessagesForOrganisation(
+    organisationId: string,
+    filter?: { offset?: number; limit?: number },
+  ) {
+    const { error, data } = await this.client.GET("/api/v1/messages/", {
+      params: {
+        query: { ...(filter || {}), organisationId },
       },
     });
 
