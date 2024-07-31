@@ -4,9 +4,12 @@ import { headers } from "next/headers";
 
 const getToken = async () => {
   const cookieHeader = headers().get("cookie") as unknown as string;
-  const res = await fetch(`${process.env.NEXT_PUBLIC_HOST_URL}/api/token`, {
-    headers: { cookie: cookieHeader },
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT}/api/token`,
+    {
+      headers: { cookie: cookieHeader },
+    },
+  );
   return await res.json();
 };
 

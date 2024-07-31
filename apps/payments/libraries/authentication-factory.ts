@@ -12,7 +12,10 @@ export class AuthenticationFactory {
     const cookieHeader = headers().get("cookie") as string;
 
     const res = await fetch(
-      new URL("/api/token", process.env.NEXT_PUBLIC_HOST_URL as string),
+      new URL(
+        "/api/token",
+        process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT as string,
+      ),
       { headers: { cookie: cookieHeader } },
     );
     const { token } = await res.json();

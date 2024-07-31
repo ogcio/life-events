@@ -27,7 +27,7 @@ export default async function RootLayout({
       >
         {/* workaround to allow Logto to cache the access token */}
         <img
-          src={`${process.env.NEXT_PUBLIC_HOST_URL}/api/token?${new Date().getTime()}`}
+          src={`${process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT}/api/token?${new Date().getTime()}`}
           style={{ display: "none" }}
         />
         <Header locale={locale} />
