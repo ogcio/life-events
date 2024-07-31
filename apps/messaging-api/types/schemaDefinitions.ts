@@ -99,7 +99,7 @@ export type GenericResponse<T> = {
   metadata?: Static<typeof ResponseMetadataSchema>;
 };
 
-export const MessageEventTypeObject = Type.Array(
+export const MessageEventList = Type.Array(
   Type.Object({
     eventId: Type.String({ format: "uuid" }),
     messageId: Type.String({ format: "uuid" }),
@@ -111,7 +111,7 @@ export const MessageEventTypeObject = Type.Array(
   }),
 );
 
-export type MessageEventType = Static<typeof MessageEventTypeObject>;
+export type MessageEventListType = Static<typeof MessageEventList>;
 
 export const MessageEvent = Type.Array(
   Type.Object({
