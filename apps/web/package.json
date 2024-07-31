@@ -5,7 +5,12 @@
     "dev": "nodemon",
     "build": "next build",
     "start": "next start -p 3000",
-    "test:e2e": "playwright test",
+    "test:headed:e2e": "playwright test --headed",
+    "test:headless:e2e": "playwright test",
+    "test:debug:e2e": "playwright test --ui",
+    "test:smoke:e2e": "playwright test --grep @smoke",
+    "test:regression:e2e": "playwright test --grep @regression",
+    "test:generate:report": "npx allure serve allure-results",
     "test:lighthouse": "node performance-tests/lighthouse/main.mjs",
     "migrate": "db-migrate up"
   },
