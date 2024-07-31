@@ -68,7 +68,7 @@ export default async (props: MessageCreateProps) => {
     let successfulMessagesCreated = 0;
 
     for (const userId of props.state.userIds) {
-      const { data: user, error } = await messagesClient.getRecipient(userId);
+      const { data: user, error } = await messagesClient.getUser(userId, false);
 
       if (error || !user) {
         // Needs redundancy strategy here
@@ -111,7 +111,7 @@ export default async (props: MessageCreateProps) => {
           preferredTransports,
           scheduleAt,
           security: "",
-          userId: user.id,
+          userId: user.userId,
         });
         if (Boolean(error)) {
           continue;

@@ -18,12 +18,12 @@ import { getCommonLogger } from "nextjs-logging-wrapper";
 const ERROR_PROCESS = "AUTHENTICATION_CONTEXT";
 
 export interface AuthenticationContextConfig {
-  resourceUrl: string;
+  resourceUrl?: string;
   citizenScopes: string[];
   publicServantScopes: string[];
   organizationId?: string;
   loginUrl: string;
-  publicServantExpectedRole: string;
+  publicServantExpectedRoles: string[];
   baseUrl: string;
   appId: string;
   appSecret: string;
@@ -140,7 +140,7 @@ export class BaseAuthenticationContext {
     }
 
     const orgs = await this.getOrganizations();
-    return Object.values(orgs)[0].id;
+    return Object.values(orgs)?.[0]?.id;
   }
 
   setSelectedOrganization(organizationId: string): string {

@@ -7,3 +7,4 @@ dist
 yalc.*
 bearer-*-report.html
 .tap
+.vscode

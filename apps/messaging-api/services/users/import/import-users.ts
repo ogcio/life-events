@@ -11,7 +11,7 @@ import { parseFile, writeToBuffer } from "fast-csv";
 import { Pool, PoolClient } from "pg";
 import { isNativeError } from "util/types";
 import { mapUsers } from "./map-users";
-import { sendInvitationsForUsersImport } from "./send-invitations";
+import { sendInvitationsForUsersImport } from "../invitations/send-invitations";
 import { PostgresDb } from "@fastify/postgres";
 import { BadRequestError, ServerError } from "shared-errors";
 
@@ -21,6 +21,7 @@ const TAGS_SEPARATOR = ";";
 interface RequestUser {
   userId: string;
   organizationId?: string;
+  accessToken: string;
 }
 
 export const importCsvFileFromRequest = async (params: {

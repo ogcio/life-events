@@ -340,7 +340,7 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
 
       const scheduleBody = jobs.map((job) => {
         const callbackUrl = new URL(
-          `/api/v1/messages/jobs/${job.jobId}`,
+          `/api/v1/jobs/${job.jobId}`,
           process.env.WEBHOOK_URL_BASE,
         );
 
@@ -366,8 +366,8 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
         throw new ThirdPartyError(
           "failed to post messages",
           isNativeError(err)
-            ? err.cause?.toString() ?? ""
-            : err?.toString() ?? "",
+            ? (err.cause?.toString() ?? "")
+            : (err?.toString() ?? ""),
         );
       }
       return jobs;

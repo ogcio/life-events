@@ -7,15 +7,17 @@ import dotenv from "dotenv";
 import { envSchema } from "./config";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
+import fastifyUnderPressure from "@fastify/under-pressure";
 import fs from "fs";
 import apiAuthPlugin from "api-auth";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
-import sensible from "@fastify/sensible";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 import fastifyMultipart from "@fastify/multipart";
+import v8 from "v8";
+import { CustomError } from "shared-errors";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -74,8 +76,20 @@ export async function build(opts?: FastifyServerOptions) {
 
   app.register(routes, { prefix: "/api/v1" });
 
-  app.register(sensible, {
-    sharedSchemaId: "HttpError",
+  app.register(fastifyUnderPressure, {
+    maxEventLoopDelay: 1000,
+    maxHeapUsedBytes: v8.getHeapStatistics().heap_size_limit,
+    maxRssBytes: v8.getHeapStatistics().total_available_size,
+    maxEventLoopUtilization: 0.98,
+    pressureHandler: (_req, _rep, type, value) => {
+      const pressureError = "UNDER_PRESSURE_ERROR";
+      throw new CustomError(
+        pressureError,
+        `System is under pressure. Pressure type: ${type}. Pressure value: ${value}`,
+        503,
+        pressureError,
+      );
+    },
   });
 
   return app;

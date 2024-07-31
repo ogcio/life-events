@@ -37,6 +37,7 @@ interface FoundUser {
 interface RequestUser {
   userId: string;
   organizationId?: string;
+  accessToken: string;
 }
 
 export const mapUsers = async (params: {
@@ -72,7 +73,7 @@ const mapUsersSync = async (params: {
   requestUser: RequestUser;
 }): Promise<UsersImport> => {
   const usersImport = await getUsersImport(params);
-  const profile = new Profile(params.requestUser.userId);
+  const profile = new Profile(params.requestUser.accessToken);
 
   const processingUsers = usersImport.usersData.map(
     async (toImportUser: ToImportUser) =>
@@ -232,7 +233,7 @@ const processOrganizationUserRelation = async (params: {
           preferredTransports: toSetTransports,
           invitationStatusFeedback: toSetStatus,
         },
-        organisationId: params.organisationId,
+        organisationSettingId: orgUserRelation.id,
         userId: params.userId,
         errorCode: IMPORT_USERS_ERROR,
       });
@@ -315,7 +316,7 @@ const processToImportUser = async (params: {
 };
 
 const insertNewUser = async (params: {
-  toInsert: User;
+  toInsert: Omit<User, "id">;
   client: PoolClient;
 }): Promise<User> => {
   try {
@@ -346,9 +347,7 @@ const insertNewUser = async (params: {
         toInsert.details ? JSON.stringify(toInsert.details) : "{}",
       ],
     );
-    toInsert.id = result.rows[0].id;
-
-    return toInsert;
+    return { ...toInsert, id: result.rows[0].id };
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
     throw new ServerError(
@@ -365,11 +364,14 @@ const getUserOrganisationRelation = async (params: {
   userId: string;
   organisationId: string;
   client: PoolClient;
-}): Promise<OrganisationUserConfig> => {
+}): Promise<Omit<OrganisationUserConfig, "id"> & { id: string }> => {
   try {
-    const result = await params.client.query<OrganisationUserConfig>(
+    const result = await params.client.query<
+      Omit<OrganisationUserConfig, "id"> & { id: string }
+    >(
       `
-          select 
+          select
+              id as "id", 
               user_id as "userId",
               organisation_id as "organisationId",
               invitation_status as "invitationStatus",
@@ -483,7 +485,7 @@ const fillUser = (params: {
   correlationQuality?: CorrelationQuality;
   toImportUser: ToImportUser;
   usersImportId: string;
-}): User => ({
+}): Omit<User, "id"> & { id?: string } => ({
   id: params.userId,
   importerOrganisationId: params.organisationId,
   userProfileId: params.userProfileId,

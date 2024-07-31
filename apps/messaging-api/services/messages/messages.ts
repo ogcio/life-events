@@ -28,238 +28,6 @@ import {
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
-export const createMessage = async (params: {
-  payload: CreateMessage;
-  pg: PostgresDb;
-  organizationId: string;
-}): Promise<void> => {
-  if (params.payload.message) {
-    return createRawMessage({
-      pg: params.pg,
-      payload: { ...params.payload, message: params.payload.message! },
-      organizationId: params.organizationId,
-    });
-  }
-
-  // Deprecated
-  if (params.payload.template) {
-    return createMessageFromTemplate({
-      pg: params.pg,
-      payload: { ...params.payload, template: params.payload.template! },
-    });
-  }
-
-  throw new BadRequestError(
-    "CREATE_MESSAGE_ERROR",
-    "At least one between 'message' and 'template' must be set",
-  );
-};
-
-const createRawMessage = async (params: {
-  pg: PostgresDb;
-  payload: Omit<Required<CreateMessage>, "template">;
-  organizationId: string;
-}): Promise<void> => {
-  const { message, preferredTransports, security, userIds, scheduleAt } =
-    params.payload;
-  const values: (string | null)[] = [];
-  const args: string[] = [];
-
-  values.push(
-    message.subject,
-    message.excerpt,
-    message.richText,
-    message.plainText,
-    params.organizationId,
-    security,
-    preferredTransports.length
-      ? utils.postgresArrayify(preferredTransports)
-      : null,
-    message.messageName,
-    message.threadName || null,
-    message.lang,
-  );
-  const originalValueSize = values.length;
-
-  let i = originalValueSize + 1;
-  for (const userId of userIds) {
-    args.push(
-      `(${[...new Array(originalValueSize)].map((_, i) => `$${i + 1}`)}, $${i})`,
-    );
-    values.push(userId);
-    i += 1;
-  }
-
-  const insertQuery = `
-              insert into messages(
-                  subject,
-                  excerpt, 
-                  rich_text,
-                  plain_text,
-                  organisation_id,
-                  security_level,
-                  preferred_transports,
-                  message_name,
-                  thread_name,
-                  lang,
-                  user_id
-              )
-              values ${args.join(", ")}
-              returning id, user_id as "userId"
-          `;
-
-  const ids = await params.pg
-    .query<{ id: string; userId: string }>(insertQuery, values)
-    .then((res) => res.rows);
-
-  // Create jobs
-  const jobType = "message";
-  const jobArgs: string[] = [];
-  const jobValues: string[] = [jobType];
-  let argIndex = jobValues.length;
-  for (const id of ids) {
-    jobArgs.push(`($1, $${++argIndex}, $${++argIndex})`);
-    jobValues.push(id.id, id.userId);
-  }
-
-  const jobs = await params.pg.pool
-    .query<{ id: string; userId: string }>(
-      `
-            insert into jobs(job_type, job_id, user_id)
-            values ${jobArgs.join(", ")}
-            returning id as "id", user_id as "userId"
-          `,
-      jobValues,
-    )
-    .then((res) => res.rows);
-
-  const body = jobs.map((job) => {
-    const callbackUrl = new URL(
-      `/api/v1/messages/jobs/${job.id}`,
-      process.env.WEBHOOK_URL_BASE,
-    );
-
-    return {
-      webhookUrl: callbackUrl.toString(),
-      webhookAuth: job.userId, // Update when we're not using x-user-id as auth
-      executeAt: scheduleAt,
-    };
-  });
-
-  const url = new URL("/api/v1/tasks", process.env.SCHEDULER_API_URL);
-
-  await fetch(url.toString(), {
-    method: "POST",
-    body: JSON.stringify(body),
-    headers: { "x-user-id": "tmp", "Content-Type": "application/json" },
-  });
-};
-
-// Deprecated
-const createMessageFromTemplate = async (params: {
-  pg: PostgresDb;
-  payload: Omit<Required<CreateMessage>, "message">;
-}): Promise<void> => {
-  const { template, preferredTransports, userIds, scheduleAt } = params.payload;
-
-  const client = await params.pg.pool.connect();
-
-  try {
-    client.query("begin");
-
-    const scheduleBase = await client
-      .query<{ id: string }>(
-        `
-                insert into scheduled_message_by_templates(template_meta_id, preferred_transports)
-                values($1, $2)
-                returning id 
-          `,
-        [template.id, utils.postgresArrayify(preferredTransports)],
-      )
-      .then((res) => res.rows.at(0));
-
-    if (!scheduleBase?.id) {
-      throw Error(
-        `failed to insert schedule message by template for template id ${template.id}`,
-      );
-    }
-
-    const values: string[] = [scheduleBase.id, "template"];
-    const args: string[] = [];
-
-    let i = values.length;
-    for (const userId of userIds) {
-      args.push(`($1, $2, $${++i})`);
-      values.push(userId);
-    }
-
-    // Create a job for each user.
-    if (args.length) {
-      // NOTE user id is only used for the temporary authentication
-      const jobs = await client
-        .query<{ id: string; userId: string }>(
-          `
-              insert into jobs(job_id, job_type, user_id) 
-              values ${args.join(", ")}
-              returning id, user_id as "userId"
-              `,
-          values,
-        )
-        .then((res) => res.rows);
-
-      const body = jobs.map((job) => {
-        const callback = new URL(
-          `/api/v1/messages/jobs/${job.id}`,
-          process.env.WEBHOOK_URL_BASE,
-        );
-        return {
-          executeAt: scheduleAt,
-          webhookAuth: job.userId,
-          webhookUrl: callback.toString(),
-        };
-      });
-
-      // Store interpolation key/values to base
-      const interpolationKeys = Object.keys(template.interpolations);
-      if (interpolationKeys.length) {
-        const values = [scheduleBase.id];
-        const args = [];
-
-        let i = 1;
-        for (const key of interpolationKeys) {
-          args.push(`($1, $${++i}, $${++i})`);
-          values.push(key, template.interpolations[key]);
-        }
-
-        await client.query(
-          `
-              insert into message_template_interpolations(message_by_template_id, interpolation_key, interpolation_value)
-              values ${args.join(", ")}
-              `,
-          values,
-        );
-      }
-
-      const url = new URL("/api/v1/tasks", process.env.SCHEDULER_API_URL);
-      await fetch(url.toString(), {
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          "x-user-id": "tmp",
-          "Content-Type": "application/json",
-        },
-      });
-    }
-
-    client.query("commit");
-  } catch (err) {
-    client.query("rollback");
-    throw err;
-  } finally {
-    client.release();
-  }
-};
-
 export const getMessage = async (params: {
   pg: PostgresDb;
   userId: string;
@@ -322,8 +90,8 @@ export const executeJob = async (params: {
   pg: PostgresDb;
   logger: FastifyBaseLogger;
   jobId: string;
-  userId: string;
   token: string;
+  accessToken: string;
 }) => {
   const statusWorking: scheduledMessageByTemplateStatus = "working";
   const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
@@ -432,6 +200,7 @@ export const executeJob = async (params: {
         job.userId,
         eventLogger,
         organizationId,
+        params.accessToken,
       );
 
       for (const err of serviceErrors) {
@@ -497,6 +266,7 @@ const scheduleMessage = async (
   userId: string,
   eventLogger: MessagingEventLogger,
   organizationId: string,
+  accessToken: string,
 ): Promise<ServiceError[]> => {
   const client = await pool.connect();
   const errors: ServiceError[] = [];
@@ -561,7 +331,7 @@ const scheduleMessage = async (
     client.release();
   }
 
-  const profileSdk = new Profile(userId);
+  const profileSdk = new Profile(accessToken);
   const messageSdk = {
     selectUsers(ids: string[]) {
       return getUserProfiles(ids, pool);

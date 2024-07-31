@@ -12,9 +12,6 @@ export class Messaging {
   constructor(authToken: string) {
     const authMiddleware: Middleware = {
       async onRequest(req) {
-        // Send temporarly the user id as auth token
-        req.headers.set("x-user-id", authToken);
-
         req.headers.set("Authorization", `Bearer ${authToken}`);
         return req;
       },
@@ -183,135 +180,232 @@ export class Messaging {
     return { error };
   }
 
-  async getEmailProviders() {
-    const { error, data } = await this.client.GET("/api/v1/providers/emails/");
-
-    return { error, data: data?.data };
-  }
-
-  async getEmailProvider(
-    providerId: paths["/api/v1/providers/emails/{providerId}"]["get"]["parameters"]["path"]["providerId"],
-  ) {
-    const { data, error } = await this.client.GET(
-      "/api/v1/providers/emails/{providerId}",
-      {
-        params: { path: { providerId } },
-      },
-    );
-
-    return { error, data: data?.data };
-  }
-
-  async createEmailProvider(
-    body: paths["/api/v1/providers/emails/"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    const { data, error } = await this.client.POST(
-      "/api/v1/providers/emails/",
-      { body },
-    );
-
-    return { error, data: data?.data };
-  }
-
-  async updateEmailProvider(
-    providerId: paths["/api/v1/providers/emails/{providerId}"]["put"]["parameters"]["path"]["providerId"],
-    body: paths["/api/v1/providers/emails/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
-  ) {
-    const { error } = await this.client.PUT(
-      "/api/v1/providers/emails/{providerId}",
-      {
-        params: { path: { providerId } },
-        body,
-      },
-    );
-
-    return { error };
-  }
-
-  async deleteEmailProvider(
-    providerId: paths["/api/v1/providers/emails/{providerId}"]["delete"]["parameters"]["path"]["providerId"],
-  ) {
-    const { error } = await this.client.DELETE(
-      "/api/v1/providers/emails/{providerId}",
-      {
-        params: { path: { providerId } },
-      },
-    );
-
-    return { error };
-  }
-
-  async getSmsProviders() {
-    const { error, data } = await this.client.GET("/api/v1/providers/sms/");
-    return { error, data: data?.data };
-  }
-
-  async getSmsProvider(
-    providerId: paths["/api/v1/providers/sms/{providerId}"]["get"]["parameters"]["path"]["providerId"],
-  ) {
-    const { error, data } = await this.client.GET(
-      "/api/v1/providers/sms/{providerId}",
-      {
-        params: {
-          path: { providerId },
+  async getEmailProviders(params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    primary?: boolean;
+  }) {
+    const { limit, offset, search, primary } = params || {};
+    const { error, data } = await this.client.GET("/api/v1/providers/", {
+      params: {
+        query: {
+          type: "email",
+          limit,
+          offset,
+          search,
+          primary,
         },
       },
+    });
+
+    return {
+      error,
+      data: data?.data
+        .filter((item) => item.type === "email")
+        .map((item) => ({
+          id: item.id,
+          providerName: item.providerName,
+          isPrimary: item.isPrimary,
+        })),
+    };
+  }
+
+  async getEmailProvider(providerId: string) {
+    const { data, error } = await this.client.GET(
+      "/api/v1/providers/{providerId}",
+      {
+        params: { path: { providerId }, query: { type: "email" } },
+      },
     );
+
+    console.log(data?.data);
+
+    if (data?.data.type === "email") {
+      return { data: data.data };
+    }
+
+    return { error };
+  }
+
+  async createEmailProvider(provider: {
+    providerName: string;
+    isPrimary: boolean;
+    smtpHost: string;
+    smtpPort: number;
+    username: string;
+    password: string;
+    throttle?: number;
+    fromAddress: string;
+    ssl: boolean;
+  }) {
+    const { data, error } = await this.client.POST("/api/v1/providers/", {
+      body: {
+        type: "email",
+        ...provider,
+      },
+    });
 
     return { error, data: data?.data };
   }
 
-  async updateSmsProvider(
-    providerId: paths["/api/v1/providers/sms/{providerId}"]["put"]["parameters"]["path"]["providerId"],
-    body: paths["/api/v1/providers/sms/{providerId}"]["put"]["requestBody"]["content"]["application/json"],
-  ) {
-    const { error } = await this.client.PUT(
-      "/api/v1/providers/sms/{providerId}",
-      { params: { path: { providerId } }, body },
+  async updateEmailProvider(provider: {
+    id: string;
+    providerName: string;
+    isPrimary: boolean;
+    smtpHost: string;
+    smtpPort: number;
+    username: string;
+    password: string;
+    throttle?: number;
+    fromAddress: string;
+    ssl: boolean;
+  }) {
+    const { error } = await this.client.PUT("/api/v1/providers/{providerId}", {
+      params: { path: { providerId: provider.id } },
+      body: {
+        type: "email",
+        ...provider,
+      },
+    });
+    return { error };
+  }
+
+  async deleteEmailProvider(providerId: string) {
+    const { error } = await this.client.DELETE(
+      "/api/v1/providers/{providerId}",
+      {
+        params: { path: { providerId } },
+      },
     );
 
     return { error };
   }
 
-  async createSmsProvider(
-    body: paths["/api/v1/providers/sms/"]["post"]["requestBody"]["content"]["application/json"],
-  ) {
-    const { error } = await this.client.POST("/api/v1/providers/sms/", {
-      body,
+  async getSmsProviders(params?: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    primary?: boolean;
+  }) {
+    const { limit, offset, search, primary } = params || {};
+    const { error, data } = await this.client.GET("/api/v1/providers/", {
+      params: {
+        query: {
+          type: "sms",
+          limit,
+          offset,
+          search,
+          primary,
+        },
+      },
     });
 
+    return {
+      error,
+      data: data?.data
+        .filter((item) => item.type === "sms")
+        .map((item) => ({
+          id: item.id,
+          providerName: item.providerName,
+          isPrimary: item.isPrimary,
+        })),
+    };
+  }
+
+  async getSmsProvider(providerId: string) {
+    const { data, error } = await this.client.GET(
+      "/api/v1/providers/{providerId}",
+      {
+        params: { path: { providerId }, query: { type: "sms" } },
+      },
+    );
+
+    // Let's do some type plumbing for the implementor
+    if (data?.data.type === "sms") {
+      return { data: data.data };
+    }
+
+    // Can we throw or return a new NotFoundError here?
     return { error };
   }
 
-  async deleteSmsProvider(
-    providerId: paths["/api/v1/providers/sms/{providerId}"]["delete"]["parameters"]["path"]["providerId"],
-  ) {
+  async updateSmsProvider(provider: {
+    id: string;
+    providerName: string;
+    isPrimary: boolean;
+    // Union other config types
+    config: {
+      type: "AWS";
+      accessKey: string;
+      secretAccessKey: string;
+      region: string;
+    };
+  }) {
+    const { error } = await this.client.PUT("/api/v1/providers/{providerId}", {
+      params: { path: { providerId: provider.id } },
+      body: {
+        type: "sms",
+        ...provider,
+      },
+    });
+    return { error };
+  }
+
+  async createSmsProvider(provider: {
+    providerName: string;
+    isPrimary: boolean;
+    // Union other config types
+    config: {
+      type: "AWS";
+      accessKey: string;
+      secretAccessKey: string;
+      region: string;
+    };
+  }) {
+    const { error, data } = await this.client.POST("/api/v1/providers/", {
+      body: {
+        type: "sms",
+        ...provider,
+      },
+    });
+
+    return { error, data: data?.data };
+  }
+
+  async deleteSmsProvider(providerId: string) {
     const { error } = await this.client.DELETE(
-      "/api/v1/providers/sms/{providerId}",
+      "/api/v1/providers/{providerId}",
       { params: { path: { providerId } } },
     );
 
     return { error };
   }
 
-  async importUsersCsv(file: File) {
-    const { error } = await this.client.POST("/api/v1/users/imports/csv", {
-      body: {
-        file,
-      } as any,
-      bodySerializer: (body: any) => {
-        const formData = new FormData();
-        formData.set("file", body.file);
-        return formData;
-      },
-    });
+  async importUsers(toImport: { file?: File; records?: object[] }) {
+    if (toImport.file) {
+      const { error } = await this.client.POST("/api/v1/user-imports/", {
+        body: {
+          file: toImport.file,
+        } as any,
+        bodySerializer: (body: any) => {
+          const formData = new FormData();
+          formData.set("file", body.file);
+          return formData;
+        },
+      });
+      return { error };
+    }
 
+    const { error } = await this.client.POST("/api/v1/user-imports/", {
+      body: toImport.records,
+    });
     return { error };
   }
 
   async downloadUsersCsvTemplate() {
     const { data } = await this.client.GET(
-      "/api/v1/users/imports/csv/template",
+      "/api/v1/user-imports/template-download",
       {
         parseAs: "blob",
       },
@@ -319,28 +413,19 @@ export class Messaging {
     return data;
   }
 
-  async getUsersImports(organisationId?: string) {
-    const { error, data } = await this.client.GET("/api/v1/users/imports/", {
-      params: {
-        query: { organisationId },
-      },
-    });
+  async getUsersImports() {
+    const { error, data } = await this.client.GET("/api/v1/user-imports/");
     return { error, data: data?.data };
   }
 
-  async getUsersImport(
-    importId: string,
-    organisationId?: string,
-    includeUsersData?: boolean,
-  ) {
+  async getUsersImport(importId: string, includeUsersData?: boolean) {
     const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/{importId}",
+      "/api/v1/user-imports/{importId}",
       {
         params: {
           path: { importId },
           query: {
-            organisationId,
-            includeUsersData: Boolean(includeUsersData),
+            includeImportedData: Boolean(includeUsersData),
           },
         },
       },
@@ -348,103 +433,69 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getUsersForImport(importId: string, organisationId?: string) {
+  async getUsersForImport(importId: string, activeOnly: boolean) {
+    const { error, data } = await this.client.GET("/api/v1/users/", {
+      params: { query: { importId, activeOnly } },
+    });
+    return { error, data: data?.data };
+  }
+
+  async getOrganisationsSettings() {
     const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/{importId}/users",
+      "/api/v1/organisation-settings/",
+    );
+    return { error, data: data?.data };
+  }
+
+  async getOrganisationSettings(organisationSettingId: string) {
+    const { error, data } = await this.client.GET(
+      "/api/v1/organisation-settings/{organisationSettingId}",
       {
-        params: { path: { importId }, query: { organisationId } },
+        params: { path: { organisationSettingId } },
       },
     );
     return { error, data: data?.data };
   }
 
-  async getUsers(organisationId?: string) {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/imports/users",
-      {
-        params: { query: { organisationId } },
-      },
-    );
-    return { error, data: data?.data };
-  }
-
-  async getOrganisationInvitations() {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/settings/organisations",
-    );
-    return { error, data: data?.data };
-  }
-
-  async getOrganisationInvitation(organisationId: string) {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/settings/organisations/{organisationId}",
-      {
-        params: { path: { organisationId } },
-      },
-    );
-    return { error, data: data?.data };
-  }
-
-  async updateOrganisationInvitation(
-    organisationId: string,
-    body: paths["/api/v1/users/settings/organisations/{organisationId}"]["patch"]["requestBody"]["content"]["application/json"],
+  async updateOrganisationSettings(
+    organisationSettingId: string,
+    body: paths["/api/v1/organisation-settings/{organisationSettingId}"]["patch"]["requestBody"]["content"]["application/json"],
   ) {
     const { error, data } = await this.client.PATCH(
-      "/api/v1/users/settings/organisations/{organisationId}",
+      "/api/v1/organisation-settings/{organisationSettingId}",
       {
         body,
-        params: { path: { organisationId } },
+        params: { path: { organisationSettingId } },
       },
     );
 
     return { error, data: data?.data };
   }
 
-  async getInvitation() {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/settings/invitations/me",
-    );
-    return { error, data: data?.data };
-  }
-
-  async updateInvitation(
-    body: paths["/api/v1/users/settings/invitations/me"]["patch"]["requestBody"]["content"]["application/json"],
+  async getMessageEvents(
+    params: paths["/api/v1/message-events/"]["get"]["parameters"]["query"],
   ) {
-    const { error, data } = await this.client.PATCH(
-      "/api/v1/users/settings/invitations/me",
-      {
-        body,
-      },
-    );
-
-    return { error, data: data?.data };
-  }
-
-  async getMessageEvents({
-    query,
-  }: paths["/api/v1/messages/events"]["get"]["parameters"]) {
-    const { data, error } = await this.client.GET("/api/v1/messages/events", {
-      params: { query },
+    const { data, error } = await this.client.GET("/api/v1/message-events/", {
+      params: { query: params },
     });
 
-    return { data: data?.data, error };
+    return { data: data?.data, error, metadata: data?.metadata };
   }
 
-  async getMessageEvent(
-    messageId: paths["/api/v1/messages/{messageId}/events"]["get"]["parameters"]["path"]["messageId"],
-  ) {
+  async getMessageEvent(eventId: string) {
     const { error, data } = await this.client.GET(
-      "/api/v1/messages/{messageId}/events",
-      { params: { path: { messageId } } },
+      "/api/v1/message-events/{eventId}",
+      { params: { path: { eventId } } },
     );
 
+    console.log(data?.data);
     return { data: data?.data, error };
   }
 
-  async getRecipients(
-    query: paths["/api/v1/users/recipients/"]["get"]["parameters"]["query"],
+  async getUsers(
+    query?: paths["/api/v1/users/"]["get"]["parameters"]["query"],
   ) {
-    const { error, data } = await this.client.GET("/api/v1/users/recipients/", {
+    const { error, data } = await this.client.GET("/api/v1/users/", {
       params: {
         query,
       },
@@ -452,19 +503,20 @@ export class Messaging {
     return { error, data: data?.data, metadata: data?.metadata };
   }
 
-  async getRecipient(
-    userId: paths["/api/v1/users/recipients/{userId}"]["get"]["parameters"]["path"]["userId"],
+  async getUser(
+    userId: paths["/api/v1/users/{userId}"]["get"]["parameters"]["path"]["userId"],
+    activeOnly: boolean,
   ) {
-    const { error, data } = await this.client.GET(
-      "/api/v1/users/recipients/{userId}",
-      {
-        params: {
-          path: {
-            userId,
-          },
+    const { error, data } = await this.client.GET("/api/v1/users/{userId}", {
+      params: {
+        path: {
+          userId,
+        },
+        query: {
+          activeOnly,
         },
       },
-    );
+    });
 
     return { error, data: data?.data, metadata: data?.metadata };
   }

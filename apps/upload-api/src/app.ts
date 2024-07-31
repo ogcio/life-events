@@ -88,7 +88,7 @@ export async function build(opts?: FastifyServerOptions) {
   });
   app.register(import("@fastify/formbody"));
 
-  app.register(routes);
+  app.register(routes, { prefix: "/api/v1" });
 
   app.register(sensible);
 

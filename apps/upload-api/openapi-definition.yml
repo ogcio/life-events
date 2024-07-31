@@ -1,12 +1,12 @@
 openapi: 3.0.3
 info:
   title: OGCIO File Upload API
-  description: API for OGCIO file upload servce
+  description: API for OGCIO file upload service
   version: 0.1.0
 components:
   schemas: {}
 paths:
-  /files/:
+  /api/v1/files/:
     post:
       tags:
         - Files
@@ -18,11 +18,39 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                    required:
+                      - message
+                required:
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - message
-        "500":
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        5XX:
           description: Default Response
           content:
             application/json:
@@ -54,21 +82,26 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    url:
-                      type: string
-                    key:
-                      type: string
-                    size:
-                      type: number
-                  required:
-                    - url
-                    - key
-                    - size
-        "500":
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                        key:
+                          type: string
+                        size:
+                          type: number
+                      required:
+                        - url
+                        - key
+                        - size
+                required:
+                  - data
+        4XX:
           description: Default Response
           content:
             application/json:
@@ -91,7 +124,30 @@ paths:
                   - detail
                   - request_id
                   - name
-  /files/{key}:
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/files/{key}:
     delete:
       tags:
         - Files
@@ -109,11 +165,39 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                    required:
+                      - message
+                required:
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
                     type: string
                 required:
-                  - message
-        "500":
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        5XX:
           description: Default Response
           content:
             application/json:
@@ -146,6 +230,13 @@ paths:
           name: key
           required: true
       responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
         "500":
           description: Default Response
           content:
@@ -169,7 +260,53 @@ paths:
                   - detail
                   - request_id
                   - name
-  /health:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/health:
     get:
       responses:
         "200":
