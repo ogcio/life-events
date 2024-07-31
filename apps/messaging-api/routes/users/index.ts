@@ -7,7 +7,6 @@ import {
 } from "../../types/usersSchemaDefinitions";
 import {
   GenericResponse,
-  GenericResponseSingle,
   PaginationParams,
   PaginationParamsSchema,
   getGenericResponseSchema,
@@ -34,7 +33,7 @@ export default async function users(app: FastifyInstance) {
       importId?: string;
       activeOnly?: boolean;
     } & PaginationParams;
-    Response: GenericResponse<UserPerOrganisation>;
+    Response: GenericResponse<UserPerOrganisation[]>;
   }
 
   interface GetUserSchema {
@@ -44,7 +43,7 @@ export default async function users(app: FastifyInstance) {
     Querystring: {
       activeOnly?: boolean;
     };
-    Response: GenericResponseSingle<UserPerOrganisation>;
+    Response: GenericResponse<UserPerOrganisation>;
   }
 
   app.get<GetUsersSchema>(

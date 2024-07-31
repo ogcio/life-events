@@ -13,8 +13,8 @@ export const PAGINATION_LIMIT_DEFAULT = 20;
 export const formatAPIResponse = <T>(
   data: T[],
   pagination?: PaginationDetails,
-): GenericResponse<T> => {
-  const response: GenericResponse<T> = {
+): GenericResponse<T[]> => {
+  const response: GenericResponse<T[]> = {
     data,
   };
 
