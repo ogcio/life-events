@@ -51,6 +51,25 @@ const decodeLogtoToken = async (
   return payload;
 };
 
+export const ensureUserCanAccessUser = (
+  loggedUserData: ExtractedUserData | undefined,
+  requestedUserId: string,
+  errorProcess: string,
+): ExtractedUserData => {
+  if (loggedUserData && requestedUserId === loggedUserData.userId) {
+    return loggedUserData;
+  }
+
+  if (loggedUserData && loggedUserData.organizationId) {
+    return loggedUserData;
+  }
+
+  throw new AuthorizationError(
+    errorProcess,
+    "You can't access this user's data",
+  );
+};
+
 export const checkPermissions = async (
   authHeader: string,
   config: {

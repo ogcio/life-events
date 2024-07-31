@@ -91,50 +91,58 @@ export class Profile {
     return formatQueryResult(this.client.GET("/api/v1/entitlements/"));
   }
 
-  async getUser() {
-    return formatQueryResult(this.client.GET("/api/v1/user/"));
+  async getUser(userId: string) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/users/{userId}", {
+        params: { path: { userId } },
+      }),
+    );
   }
 
   async createUser(
-    data: paths["/api/v1/user/"]["post"]["requestBody"]["content"]["application/json"],
+    data: paths["/api/v1/users/"]["post"]["requestBody"]["content"]["application/json"],
   ) {
     return formatQueryResult(
-      this.client.POST("/api/v1/user/", {
+      this.client.POST("/api/v1/users/", {
         body: data,
       }),
     );
   }
 
   async updateUser(
-    data: paths["/api/v1/user/"]["put"]["requestBody"]["content"]["application/json"],
+    userId: string,
+    data: paths["/api/v1/users/{userId}"]["put"]["requestBody"]["content"]["application/json"],
   ) {
     return formatQueryResult(
-      this.client.PUT("/api/v1/user/", {
+      this.client.PUT("/api/v1/users/{userId}", {
+        params: { path: { userId } },
         body: data,
       }),
     );
   }
 
   async patchUser(
+    userId: string,
     data?: NonNullable<
-      paths["/api/v1/user/"]["patch"]["requestBody"]
+      paths["/api/v1/users/{userId}"]["patch"]["requestBody"]
     >["content"]["application/json"],
   ) {
     if (!data || Object.keys(data).length === 0) {
       return;
     }
     return formatQueryResult(
-      this.client.PATCH("/api/v1/user/", {
+      this.client.PATCH("/api/v1/users/{userId}", {
+        params: { path: { userId } },
         body: data,
       }),
     );
   }
 
   async findUser(
-    query: paths["/api/v1/user/find"]["get"]["parameters"]["query"],
+    query: paths["/api/v1/users/find"]["get"]["parameters"]["query"],
   ) {
     return formatQueryResult(
-      this.client.GET("/api/v1/user/find", {
+      this.client.GET("/api/v1/users/find", {
         params: {
           query,
         },
@@ -143,9 +151,9 @@ export class Profile {
   }
 
   async selectUsers(
-    ids: paths["/api/v1/user/select"]["post"]["requestBody"]["content"]["application/json"]["ids"],
+    ids: paths["/api/v1/users/select"]["post"]["requestBody"]["content"]["application/json"]["ids"],
   ) {
-    const res = await this.client.POST("/api/v1/user/select", {
+    const res = await this.client.POST("/api/v1/users/select", {
       body: { ids },
     });
 
