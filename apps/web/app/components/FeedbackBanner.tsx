@@ -27,7 +27,7 @@ const getLinks = (environment: string, locale: string) => {
       return {
         feedbackLink: new URL(
           `admin/form/6697d983d7001c0023fd87de`,
-          "https://www.forms.gov.ie",
+          "https://forms.preprod.gov.ie",
         ),
         supportLink: new URL(
           `${locale}/6663287aff870300248b6232`,
