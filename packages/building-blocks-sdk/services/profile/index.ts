@@ -139,10 +139,10 @@ export class Profile {
   }
 
   async findUser(
-    query: paths["/api/v1/user/find"]["get"]["parameters"]["query"],
+    query: paths["/api/v1/users/find"]["get"]["parameters"]["query"],
   ) {
     return formatQueryResult(
-      this.client.GET("/api/v1/user/find", {
+      this.client.GET("/api/v1/users/find", {
         params: {
           query,
         },
@@ -151,9 +151,9 @@ export class Profile {
   }
 
   async selectUsers(
-    ids: paths["/api/v1/user/select"]["post"]["requestBody"]["content"]["application/json"]["ids"],
+    ids: paths["/api/v1/users/select"]["post"]["requestBody"]["content"]["application/json"]["ids"],
   ) {
-    const res = await this.client.POST("/api/v1/user/select", {
+    const res = await this.client.POST("/api/v1/users/select", {
       body: { ids },
     });
 
