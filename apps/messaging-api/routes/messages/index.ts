@@ -10,6 +10,7 @@ import {
   ReadMessageSchema,
   MessageList,
   MessageListItem,
+  IdParamsSchema,
 } from "../../types/schemaDefinitions";
 import { executeJob, getMessage } from "../../services/messages/messages";
 import { newMessagingService } from "../../services/messages/messaging";
@@ -29,7 +30,8 @@ import { QueryResult } from "pg";
 const MESSAGES_TAGS = ["Messages"];
 
 interface GetAllMessages {
-  Querystring: PaginationParams;
+  Querystring: PaginationParams &
+    Static<typeof IdParamsSchema> & { status?: "scheduled" | "delivered" };
 }
 
 interface GetMessage {
@@ -76,7 +78,15 @@ export default async function messages(app: FastifyInstance) {
         app.checkPermissions(req, res, [Permissions.MessageSelf.Read]),
       schema: {
         tags: MESSAGES_TAGS,
-        querystring: Type.Optional(Type.Composite([PaginationParamsSchema])),
+        querystring: Type.Optional(
+          Type.Composite([
+            Type.Object({
+              status: Type.Optional(Type.Literal("delivered")),
+            }),
+            IdParamsSchema,
+            PaginationParamsSchema,
+          ]),
+        ),
         response: {
           200: getGenericResponseSchema(MessageList),
           400: HttpError,
@@ -95,6 +105,43 @@ export default async function messages(app: FastifyInstance) {
         throw new ServerError(errorProcess, "failed to build link url", error);
       }
 
+      const queryRecipientUserId = request.query.recipientUserId;
+      const queryOrganisationId = request.query.organisationId;
+
+      if (!queryOrganisationId && !queryRecipientUserId) {
+        throw new AuthorizationError(
+          errorProcess,
+          "not allowed to access messages from all organisations",
+        );
+      }
+
+      // Only allow you to query your own messages
+      if (
+        queryRecipientUserId &&
+        queryRecipientUserId !== request.userData?.userId
+      ) {
+        throw new AuthorizationError(errorProcess, "illegal user id request");
+      }
+
+      // Only delivered query status allowed
+      if (queryRecipientUserId && request.query.status !== "delivered") {
+        throw new AuthorizationError(
+          errorProcess,
+          "only delivered messages allowed",
+        );
+      }
+
+      // Only query organisation you're allowed to see
+      if (
+        queryOrganisationId &&
+        queryOrganisationId !== request.userData?.organizationId
+      ) {
+        throw new AuthorizationError(
+          errorProcess,
+          "illegal organisation request",
+        );
+      }
+
       const { limit, offset } = sanitizePagination({
         limit: request.query.limit,
         offset: request.query.offset,
@@ -108,10 +155,10 @@ export default async function messages(app: FastifyInstance) {
       type QueryRow = Static<typeof MessageListItemWithCount>;
 
       let messagesQueryResult: QueryResult<QueryRow> | undefined;
-      if (request.userData?.organizationId) {
-        try {
-          messagesQueryResult = await app.pg.pool.query<QueryRow>(
-            `
+
+      try {
+        messagesQueryResult = await app.pg.pool.query<QueryRow>(
+          `
             with count_selection as (
               select count(*) from messages
               where organisation_id = $1
@@ -126,52 +173,26 @@ export default async function messages(app: FastifyInstance) {
               created_at as "createdAt",
               (select count from count_selection) as "count"
             from messages
-            where organisation_id = $1 and is_delivered = true    
+            where 
+            case when $1 is not null then organisation_id = $1 else true end
+            and case when $2 is not null then user_id = $2 else true end
             order by created_at desc
-            limit $2
-            offset $3
+            limit $3
+            offset $4
         `,
-            [request.userData.organizationId],
-          );
-        } catch (error) {
-          throw new ServerError(
-            errorProcess,
-            "failed to query organisation messages",
-            error,
-          );
-        }
-      } else if (request.userData?.userId) {
-        try {
-          messagesQueryResult = await app.pg.pool.query<QueryRow>(
-            `
-            with count_selection as (
-              select count(*) from messages
-              where user_id = $1
-            ),
-          select 
-            id,
-            subject,
-            message_name as "messageName",
-            thread_name as "threadName",
-            organisation_id as "organisationId",
-            user_id as "recipientId",
-            created_at as "createdAt",
-            (select count from count_selection) as "count"
-          from messages
-          where user_id = $1 and is_delivered = true    
-          order by created_at desc
-          limit $2
-          offset $3
-      `,
-            [request.userData?.userId, limit, offset],
-          );
-        } catch (error) {
-          throw new ServerError(
-            errorProcess,
-            "failed to query citizen messages",
-            error,
-          );
-        }
+          [
+            queryOrganisationId || null,
+            queryRecipientUserId || null,
+            limit,
+            offset,
+          ],
+        );
+      } catch (error) {
+        throw new ServerError(
+          errorProcess,
+          "failed to query organisation messages",
+          error,
+        );
       }
 
       const totalCount = messagesQueryResult?.rows.at(0)?.count || 0;

@@ -72,6 +72,9 @@ export interface paths {
     get: {
       parameters: {
         query?: {
+          status?: "delivered";
+          recipientUserId?: string;
+          organisationId?: string;
           offset?: number;
           limit?: number;
         };
@@ -88,6 +91,7 @@ export interface paths {
                 messageName: string;
                 threadName: string;
                 organisationId: string;
+                recipientId: string;
               }[];
               metadata?: {
                 links?: {

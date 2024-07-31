@@ -109,6 +109,24 @@ paths:
         - Messages
       parameters:
         - schema:
+            type: string
+            enum:
+              - delivered
+          in: query
+          name: status
+          required: false
+        - schema:
+            format: uuid
+            type: string
+          in: query
+          name: recipientUserId
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: organisationId
+          required: false
+        - schema:
             default: 0
             minimum: 0
             type: integer

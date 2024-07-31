@@ -81,6 +81,15 @@ export const PaginationParamsSchema = Type.Object({
 
 export type PaginationParams = Static<typeof PaginationParamsSchema>;
 
+export const IdParamsSchema = Type.Object({
+  recipientUserId: Type.Optional(
+    Type.String({
+      format: "uuid",
+    }),
+  ),
+  organisationId: Type.Optional(Type.String()),
+});
+
 export const PaginationLinkSchema = Type.Object({
   href: Type.Optional(Type.String()),
 });
