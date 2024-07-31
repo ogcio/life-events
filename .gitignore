@@ -6,3 +6,4 @@ dist
 .yalc
 yalc.*
 .tap
+.vscode

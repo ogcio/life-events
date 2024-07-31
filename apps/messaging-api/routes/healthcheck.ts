@@ -5,7 +5,7 @@ import { version } from "../package.json";
 const ERROR_PROCESS = "HEALTHCHECK";
 
 export default async function healthCheck(app: FastifyInstance) {
-  app.get("/health", async () => {
+  app.get("/health", { schema: { tags: ["Health"] } }, async () => {
     await checkDb(app);
 
     return { "messaging-api": version };

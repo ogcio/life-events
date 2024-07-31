@@ -4,25 +4,15 @@ import {
   getGenericResponseSchema,
   MessageCreate,
   MessageCreateType,
-  MessageEvent,
-  MessageEventType,
-  MessageEventTypeObject,
-  PaginationParams,
-  PaginationParamsSchema,
   ReadMessageSchema,
   ReadMessagesSchema,
 } from "../../types/schemaDefinitions";
-import {
-  executeJob,
-  getMessage,
-  getMessages,
-} from "../../services/messages/messages";
+import { getMessage, getMessages } from "../../services/messages/messages";
 import { newMessagingService } from "../../services/messages/messaging";
 import { getUserProfiles } from "../../services/users/shared-users";
 import { Profile } from "building-blocks-sdk";
 import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
 import {
-  MessageEventData,
   MessagingEventType,
   newMessagingEventLogger,
 } from "../../services/messages/eventLogger";
@@ -44,33 +34,6 @@ interface GetMessage {
 }
 
 export default async function messages(app: FastifyInstance) {
-  app.post<{ Params: { id: string }; Body: { token: string } }>(
-    "/jobs/:id",
-    {
-      schema: {
-        body: Type.Object({
-          token: Type.String(),
-        }),
-        response: {
-          202: Type.Null(),
-          "5xx": HttpError,
-          "4xx": HttpError,
-        },
-      },
-    },
-    async function jobHandler(request, reply) {
-      await executeJob({
-        pg: app.pg,
-        logger: request.log,
-        jobId: request.params!.id,
-        accessToken: request.userData?.accessToken || "",
-        token: request.body.token,
-      });
-
-      reply.statusCode = 202;
-    },
-  );
-
   // All messages
   app.get<GetAllMessages>(
     "/",
@@ -184,24 +147,24 @@ export default async function messages(app: FastifyInstance) {
 
       // Need to change to token once that PR is merged
       const profileSdk = new Profile(request.userData!.accessToken);
-      const { data, error } = await profileSdk.selectUsers([senderUserId]);
+      const { data, error } = await profileSdk.getUser();
+
       if (error) {
         throw new ServerError(
           errorKey,
           "failed to get sender user profile from profile sdk",
+          error,
         );
       }
 
-      const senderUser = data?.at(0);
-      if (!senderUser) {
+      if (!data) {
         throw new NotFoundError(
           errorKey,
           "sender user from profile sdk was undefined",
         );
       }
 
-      const senderFullName =
-        `${senderUser.firstName} ${senderUser.lastName}`.trim();
+      const senderFullName = `${data.firstName} ${data.lastName}`.trim();
       const receiverFullName =
         `${receiverUser.firstName} ${receiverUser.lastName}`.trim();
 
@@ -217,8 +180,7 @@ export default async function messages(app: FastifyInstance) {
           organisationId,
         });
       } catch (error) {
-        app.log.error({ error });
-        throw new ServerError(errorKey, "failed to create message");
+        throw new ServerError(errorKey, "failed to create message", error);
       }
 
       await eventLogger.log(MessagingEventType.createRawMessage, [
@@ -231,7 +193,7 @@ export default async function messages(app: FastifyInstance) {
           messageId,
           ...request.body.message,
           senderFullName,
-          senderPPSN: senderUser.ppsn,
+          senderPPSN: data.ppsn || "",
           senderUserId,
           receiverFullName,
           receiverPPSN: receiverUser.ppsn,

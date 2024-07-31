@@ -74,11 +74,11 @@ export default async (props: {
 
     if (!id) {
       const { error } = await messagesClient.createEmailProvider({
-        name,
-        host,
+        providerName: name,
+        smtpHost: host,
         username,
         password,
-        port,
+        smtpPort: port,
         fromAddress,
         throttle,
         ssl,
@@ -89,11 +89,11 @@ export default async (props: {
         serverError = error;
       }
     } else {
-      const { error } = await messagesClient.updateEmailProvider(id, {
-        host,
-        port,
+      const { error } = await messagesClient.updateEmailProvider({
         id,
-        name,
+        smtpHost: host,
+        smtpPort: port,
+        providerName: name,
         password,
         username,
         fromAddress,
@@ -126,7 +126,7 @@ export default async (props: {
 
       await temporaryMockUtils.createErrors(
         formErrors,
-        user.id,
+        submitUser.id,
         defaultErrorStateId,
       );
 
@@ -198,7 +198,7 @@ export default async (props: {
             type="text"
             name="name"
             className="govie-input"
-            defaultValue={data?.name}
+            defaultValue={data?.providerName}
           />
         </FormElement>
 
@@ -238,7 +238,7 @@ export default async (props: {
             type="text"
             name="host"
             className="govie-input"
-            defaultValue={data?.host}
+            defaultValue={data?.smtpHost}
           />
         </FormElement>
 
@@ -258,7 +258,7 @@ export default async (props: {
             type="text"
             name="port"
             className="govie-input"
-            defaultValue={data?.port}
+            defaultValue={data?.smtpPort}
           />
         </FormElement>
 

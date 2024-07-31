@@ -17,7 +17,7 @@ import { notFound } from "next/navigation";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export interface UiUserInvitation {
-  id: string;
+  userId: string;
   userProfileId: string | null;
   organisationId: string;
   organisationInvitationStatus:
@@ -30,8 +30,13 @@ export interface UiUserInvitation {
   organisationPreferredTransports?: string[];
   correlationQuality: string;
   userStatus: string;
-  phone: string | null;
-  email: string | null;
+  phoneNumber: string | null;
+  emailAddress: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  birthDate: string | null;
+  lang: string | null;
+  ppsn: string | null;
   details?: {
     publicIdentityId: string | null;
     firstName: string | null;
@@ -66,7 +71,7 @@ export default async (props: {
     const messagingClient = await AuthenticationFactory.getMessagingClient({
       token: accessToken,
     });
-    const { data } = await messagingClient.getUsers(organization.id);
+    const { data } = await messagingClient.getUsers({ activeOnly: false });
     users = data;
   }
   return (

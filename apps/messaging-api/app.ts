@@ -13,7 +13,6 @@ import apiAuthPlugin from "api-auth";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
-import sensible from "@fastify/sensible";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 import fastifyMultipart from "@fastify/multipart";
@@ -77,12 +76,8 @@ export async function build(opts?: FastifyServerOptions) {
 
   app.register(routes, { prefix: "/api/v1" });
 
-  app.register(sensible, {
-    sharedSchemaId: "HttpError",
-  });
-
   app.register(fastifyUnderPressure, {
-    maxEventLoopDelay: 1,
+    maxEventLoopDelay: 1000,
     maxHeapUsedBytes: v8.getHeapStatistics().heap_size_limit,
     maxRssBytes: v8.getHeapStatistics().total_available_size,
     maxEventLoopUtilization: 0.98,

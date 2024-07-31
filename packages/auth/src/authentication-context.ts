@@ -13,21 +13,21 @@ export const organizationScopes = [
 ];
 
 interface PublicServantParameters {
-  resourceUrl: string;
+  resourceUrl?: string;
   publicServantScopes: string[];
   organizationId?: string;
   loginUrl: string;
-  publicServantExpectedRole: string;
+  publicServantExpectedRoles: string[];
   baseUrl: string;
   appId: string;
   appSecret: string;
 }
 
 interface CitizenParameters {
-  resourceUrl: string;
+  resourceUrl?: string;
   citizenScopes: string[];
   loginUrl: string;
-  publicServantExpectedRole: string;
+  publicServantExpectedRoles: string[];
   baseUrl: string;
   appId: string;
   appSecret: string;
@@ -85,7 +85,7 @@ const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
   appId: params.appId,
   appSecret: params.appSecret,
   scopes: [...organizationScopes, ...params.publicServantScopes],
-  resources: [params.resourceUrl],
+  resources: params.resourceUrl ? [params.resourceUrl] : [],
 });
 
 const buildPublicServantContextParameters = (
@@ -93,7 +93,7 @@ const buildPublicServantContextParameters = (
 ) => ({
   getOrganizationToken: false,
   fetchUserInfo: true,
-  publicServantExpectedRole: params.publicServantExpectedRole ?? "",
+  publicServantExpectedRoles: params.publicServantExpectedRoles ?? [],
   organizationId: params.organizationId,
   userType: "publicServant" as "publicServant",
   loginUrl: params.loginUrl,
@@ -104,7 +104,7 @@ const buildCitizenAuthConfig = (params: CitizenParameters) => ({
   baseUrl: params.baseUrl,
   appId: params.appId,
   appSecret: params.appSecret,
-  resources: [params.resourceUrl],
+  resources: params.resourceUrl ? [params.resourceUrl] : [],
   scopes: [...params.citizenScopes],
 });
 
@@ -112,7 +112,7 @@ const buildCitizenContextParameters = (params: CitizenParameters) => ({
   getAccessToken: false,
   resource: params.resourceUrl,
   fetchUserInfo: true,
-  publicServantExpectedRole: params.publicServantExpectedRole ?? "",
+  publicServantExpectedRoles: params.publicServantExpectedRoles ?? [],
   userType: "citizen" as "citizen",
   loginUrl: params.loginUrl,
 });

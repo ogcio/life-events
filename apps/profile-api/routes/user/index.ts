@@ -21,6 +21,7 @@ import { createUser } from "../../services/users/create-user";
 import { NotFoundError, ServerError } from "shared-errors";
 import { getErrorMessage } from "../../utils/error-utils";
 import { isNativeError } from "util/types";
+import { Permissions } from "../../types/permissions";
 
 const USER_TAGS = ["user"];
 const ERROR_PROCESS = "USER_PROFILE_DETAILS";
@@ -29,7 +30,13 @@ export default async function user(app: FastifyInstance) {
   app.get<{ Reply: UserDetails | Error }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(
+          req,
+          res,
+          [Permissions.UserSelf.Read, Permissions.User.Read],
+          { method: "OR" },
+        ),
       schema: {
         tags: USER_TAGS,
         response: {
@@ -40,7 +47,7 @@ export default async function user(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user!.id;
+      const userId = request.userData!.userId;
 
       /**  NOTE: the defaults below are for demo purposes only given we don't have access to real user data yet */
       const defaultData = {
@@ -89,7 +96,10 @@ export default async function user(app: FastifyInstance) {
   app.post<{ Body: CreateUser; Reply: { id: string } }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.User.Write], {
+          method: "OR",
+        }),
       schema: {
         tags: USER_TAGS,
         body: CreateUserSchema,
@@ -107,7 +117,7 @@ export default async function user(app: FastifyInstance) {
           await createUser({
             pool: app.pg.pool,
             createUserData: request.body,
-            userId: request.user!.id,
+            userId: request.userData!.userId,
           }),
         );
       } catch (error) {
@@ -119,7 +129,13 @@ export default async function user(app: FastifyInstance) {
   app.put<{ Body: UpdateUser }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(
+          req,
+          res,
+          [Permissions.UserSelf.Write, Permissions.User.Write],
+          { method: "OR" },
+        ),
       schema: {
         tags: USER_TAGS,
         body: UpdateUserSchema,
@@ -133,7 +149,7 @@ export default async function user(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       let result;
 
       const columnsMapping: Record<keyof UpdateUser, string> = {
@@ -183,7 +199,13 @@ export default async function user(app: FastifyInstance) {
   app.patch<{ Body: PatchUser }>(
     "/",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(
+          req,
+          res,
+          [Permissions.UserSelf.Write, Permissions.User.Write],
+          { method: "OR" },
+        ),
       schema: {
         tags: USER_TAGS,
         body: PatchUserSchema,
@@ -197,7 +219,7 @@ export default async function user(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.user?.id;
+      const userId = request.userData?.userId;
       let result;
 
       const columnsMapping: Record<keyof PatchUser, string> = {
@@ -239,7 +261,10 @@ export default async function user(app: FastifyInstance) {
   app.get<{ Reply: FoundUser | null; Querystring: FindUserParams }>(
     "/find",
     {
-      preValidation: app.verifyUser,
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.User.Read], {
+          method: "OR",
+        }),
       schema: {
         tags: USER_TAGS,
         querystring: FindUserParamsSchema,
@@ -273,6 +298,13 @@ export default async function user(app: FastifyInstance) {
   app.post<{ Body: { ids: string[] } }>(
     "/select",
     {
+      preValidation: (req, res) =>
+        app.checkPermissions(
+          req,
+          res,
+          [Permissions.UserSelf.Read, Permissions.User.Read],
+          { method: "OR" },
+        ),
       schema: {
         tags: USER_TAGS,
         body: Type.Object({

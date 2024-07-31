@@ -1,8 +1,8 @@
 import { Pool, PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
 import {
+  OrganisationSetting,
   User,
-  UserInvitation,
   UsersImport,
 } from "../../types/usersSchemaDefinitions";
 import { Profile } from "building-blocks-sdk";
@@ -142,62 +142,77 @@ export const getUserImports = async (params: {
   }
 };
 
-export const getUserInvitationsForOrganisation = async (params: {
+export const getSettingsPerUser = async (params: {
   client: PoolClient;
-  organisationId: string;
-  whereClauses: string[];
-  whereValues: string[];
+  userId: string;
+  organisationSettingId?: string;
   errorCode: string;
-  logicalWhereOperator?: string;
   limit?: number;
-  joinUsersImports?: boolean;
-}): Promise<UserInvitation[]> => {
+  includeUserDetails?: boolean;
+}): Promise<OrganisationSetting[]> => {
   try {
-    const usersImportJoin =
-      params.joinUsersImports ?? true
-        ? " left join users_imports on users_imports.organisation_id = ouc.organisation_id "
-        : "";
+    const inputWhereValues = [params.userId];
+    const inputWhereClauses = ["users.id = $1"];
+    if (params.organisationSettingId) {
+      inputWhereClauses.push("ouc.id = $2");
+      inputWhereValues.push(params.organisationSettingId);
+    }
     const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
-    const organisationIndex = `$${params.whereValues.length + 1}`;
-    const operator = params.logicalWhereOperator
-      ? ` ${params.logicalWhereOperator} `
-      : " AND ";
+    const operator = " AND ";
+
     const whereClauses =
-      params.whereClauses.length > 0
-        ? `WHERE ${params.whereClauses.join(operator)} `
+      inputWhereClauses.length > 0
+        ? `WHERE ${inputWhereClauses.join(operator)} `
         : "";
-    const result = await params.client.query<UserInvitation>(
+    const result = await params.client.query<OrganisationSetting>(
       `
-        SELECT 
-            ouc.user_id as "id",
-                users.user_profile_id as "userProfileId",
-                users.email as "email",
-                users.phone as "phone",
-                users.details as "details",
-                ouc.organisation_id as "organisationId",
-                ouc.invitation_status as "organisationInvitationStatus",
-                ouc.invitation_sent_at  as "organisationInvitationSentAt",
-                ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
-                ouc.preferred_transports as "organisationPreferredTransports",
-                users.correlation_quality as "correlationQuality",
-                users.user_status as "userStatus"
-          from users
-          left join organisation_user_configurations ouc on ouc.user_id = users.id 
-            and ouc.organisation_id = ${organisationIndex}
-          ${usersImportJoin}
-          ${whereClauses} ${limitClause}
-      `,
-      [...params.whereValues, params.organisationId],
+          SELECT
+              oud.id as "id",
+              ouc.user_id as "userId",
+              users.user_profile_id as "userProfileId",
+              users.email as "emailAddress",
+              users.phone as "phoneNumber",
+              ${(params.includeUserDetails ?? true) ? 'users.details as "details"' : ""},
+              ouc.organisation_id as "organisationId",
+              ouc.invitation_status as "organisationInvitationStatus",
+              ouc.invitation_sent_at  as "organisationInvitationSentAt",
+              ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
+              ouc.preferred_transports as "organisationPreferredTransports",
+              users.correlation_quality as "correlationQuality",
+              users.user_status as "userStatus"
+            from users
+            left join organisation_user_configurations ouc on ouc.user_id = users.id
+            ${whereClauses} ${limitClause}
+        `,
+      inputWhereValues,
     );
 
     return result.rows;
   } catch (error) {
-    const message = isNativeError(error) ? error.message : "unknown error";
     throw new ServerError(
       params.errorCode,
-      `Error retrieving user invitations: ${message}`,
+      `Error retrieving organisation settings`,
+      error,
     );
   }
+};
+
+export const getSettingsPerUserProfile = async (params: {
+  client: PoolClient;
+  userProfileId: string;
+  errorCode: string;
+}): Promise<OrganisationSetting[]> => {
+  const { client, userProfileId, errorCode } = params;
+  const userByProfile = await getUserByUserProfileId({
+    client,
+    userProfileId,
+    errorCode: errorCode,
+  });
+  return await getSettingsPerUser({
+    client,
+    userId: userByProfile.id,
+    errorCode: errorCode,
+  });
 };
 
 export const getUserProfiles = async (ids: string[], pool: Pool) => {

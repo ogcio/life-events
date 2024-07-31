@@ -148,8 +148,10 @@ const getUserInfo = (
       return orgA.name.localeCompare(orgB.name);
     })
     .filter((org) => {
-      const orgPSRole = `${org.id}:${getContextParameters.publicServantExpectedRole}`;
-      return context.userInfo?.organization_roles?.includes(orgPSRole);
+      return getContextParameters.publicServantExpectedRoles.some((role) => {
+        const orgPSRole = `${org.id}:${role}`;
+        return context.userInfo?.organization_roles?.includes(orgPSRole);
+      });
     });
 
   const organizationData = organizations.reduce((acc, current) => {
@@ -251,7 +253,7 @@ const checkIfPublicServant = (
 
   return orgRoles.some((orgRole) => {
     const [_, role] = orgRole.split(":");
-    return role === getContextParameters.publicServantExpectedRole;
+    return getContextParameters.publicServantExpectedRoles.includes(role);
   });
 };
 
@@ -271,9 +273,12 @@ const getScopes = (
     return [];
   }
 
-  const decoded = decodeJwt<{ scope: string }>(token);
-
-  return decoded.scope.split(" ").filter((s) => s != "");
+  try {
+    const decoded = decodeJwt<{ scope: string }>(token);
+    return decoded.scope.split(" ").filter((s) => s != "");
+  } catch (err) {
+    return [];
+  }
 };
 
 const parseContext = (
