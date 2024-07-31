@@ -1,24 +1,21 @@
 import { BaseAuthenticationContext } from "auth/base-authentication-context";
 import { getAuthenticationContextConfig } from "./logto-config";
 import { Profile } from "building-blocks-sdk";
+import { headers } from "next/headers";
 
 export class AuthenticationFactory {
   static getInstance(): BaseAuthenticationContext {
     return new BaseAuthenticationContext(getAuthenticationContextConfig());
   }
 
-  static async getProfileClient(params?: {
-    token?: string;
-    authenticationContext?: BaseAuthenticationContext;
-  }): Promise<Profile> {
-    if (params?.token) {
-      return new Profile(params.token);
-    }
-    if (params?.authenticationContext) {
-      return new Profile(await params.authenticationContext.getAccessToken());
-    }
+  static async getProfileClient(): Promise<Profile> {
+    const cookieHeader = headers().get("cookie") as string;
 
-    const token = await this.getInstance().getAccessToken();
+    const res = await fetch(
+      new URL("/api/token", process.env.HOST_URL as string),
+      { headers: { cookie: cookieHeader } },
+    );
+    const { token } = await res.json();
 
     return new Profile(token);
   }

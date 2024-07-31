@@ -110,9 +110,7 @@ export default async () => {
 
   const red = ds.colours.ogcio.red;
   const mainAuth = AuthenticationFactory.getInstance();
-  const mainProfile = await AuthenticationFactory.getProfileClient({
-    authenticationContext: mainAuth,
-  });
+  const mainProfile = await AuthenticationFactory.getProfileClient();
   const { data, error } = await mainProfile.getUser();
 
   if (error) {
