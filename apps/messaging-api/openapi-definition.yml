@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: OGCIO Messaging API
   description: API for OGCIO Messaging Service
-  version: 0.1.0
+  version: 1.0.0
 components:
   schemas: {}
 paths:

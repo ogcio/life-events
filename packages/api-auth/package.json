@@ -8,6 +8,7 @@
     "./*": "./dist/*.js"
   },
   "dependencies": {
+    "@logto/node": "^2.5.5",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
     "jose": "^5.2.4",
