@@ -18,6 +18,7 @@ import { initializeLoggingHooks } from "logging-wrapper";
 import fastifyMultipart from "@fastify/multipart";
 import v8 from "v8";
 import { CustomError } from "shared-errors";
+import { version } from "./package.json";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -39,7 +40,7 @@ export async function build(opts?: FastifyServerOptions) {
       info: {
         title: "OGCIO Messaging API",
         description: "API for OGCIO Messaging Service",
-        version: "0.1.0",
+        version,
       },
     },
   });
