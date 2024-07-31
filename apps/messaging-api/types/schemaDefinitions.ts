@@ -88,25 +88,18 @@ export const ResponseMetadataSchema = Type.Optional(
   }),
 );
 
-export type ResponseMetadata = Static<typeof ResponseMetadataSchema>;
-
 export const getGenericResponseSchema = <T extends TSchema>(dataType: T) =>
   Type.Object({
     data: dataType,
     metadata: ResponseMetadataSchema,
   });
 
-export type GenericResponseSingle<T> = {
+export type GenericResponse<T> = {
   data: T;
   metadata?: Static<typeof ResponseMetadataSchema>;
 };
 
-export type GenericResponse<T> = {
-  data: T[];
-  metadata?: ResponseMetadata;
-};
-
-export const MessageEventTypeObject = Type.Array(
+export const MessageEventList = Type.Array(
   Type.Object({
     eventId: Type.String({ format: "uuid" }),
     messageId: Type.String({ format: "uuid" }),
@@ -118,7 +111,7 @@ export const MessageEventTypeObject = Type.Array(
   }),
 );
 
-export type MessageEventType = Static<typeof MessageEventTypeObject>;
+export type MessageEventListType = Static<typeof MessageEventList>;
 
 export const MessageEvent = Type.Array(
   Type.Object({
