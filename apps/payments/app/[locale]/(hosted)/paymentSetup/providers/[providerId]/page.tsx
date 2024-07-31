@@ -13,6 +13,7 @@ import {
 } from "../types";
 import { errorHandler } from "../../../../../utils";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
+import { PageWrapper } from "../../../PageWrapper";
 
 type Props = {
   params: {
@@ -36,40 +37,50 @@ export default async ({ params: { providerId, locale } }: Props) => {
 
   if (provider.type === "openbanking") {
     return (
-      <EditOpenBankingForm
-        provider={provider as OpenBankingProvider}
-        locale={locale}
-      />
+      <PageWrapper locale={locale} disableOrgSelector={true}>
+        <EditOpenBankingForm
+          provider={provider as OpenBankingProvider}
+          locale={locale}
+        />
+      </PageWrapper>
     );
   }
 
   if (provider.type === "banktransfer") {
     return (
-      <EditBankTransferForm
-        provider={provider as BankTransferProvider}
-        locale={locale}
-      />
+      <PageWrapper locale={locale} disableOrgSelector={true}>
+        <EditBankTransferForm
+          provider={provider as BankTransferProvider}
+          locale={locale}
+        />
+      </PageWrapper>
     );
   }
 
   if (provider.type === "stripe") {
     return (
-      <EditStripeForm provider={provider as StripeProvider} locale={locale} />
+      <PageWrapper locale={locale} disableOrgSelector={true}>
+        <EditStripeForm provider={provider as StripeProvider} locale={locale} />
+      </PageWrapper>
     );
   }
 
   if (provider.type === "worldpay") {
     return (
-      <EditWorldpayForm
-        provider={provider as WorldpayProvider}
-        locale={locale}
-      />
+      <PageWrapper locale={locale} disableOrgSelector={true}>
+        <EditWorldpayForm
+          provider={provider as WorldpayProvider}
+          locale={locale}
+        />
+      </PageWrapper>
     );
   }
 
   if (provider.type === "realex") {
     return (
-      <EditRealexForm provider={provider as RealexProvider} locale={locale} />
+      <PageWrapper locale={locale} disableOrgSelector={true}>
+        <EditRealexForm provider={provider as RealexProvider} locale={locale} />
+      </PageWrapper>
     );
   }
 
