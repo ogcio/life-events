@@ -10,7 +10,6 @@ import {
 import { getMessage, getMessages } from "../../services/messages/messages";
 import { newMessagingService } from "../../services/messages/messaging";
 import { getUserProfiles } from "../../services/users/shared-users";
-import { Profile } from "building-blocks-sdk";
 import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
 import {
   MessagingEventType,
@@ -18,6 +17,7 @@ import {
 } from "../../services/messages/eventLogger";
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
+import { getProfileSdk } from "../../utils/authentication-factory";
 
 const MESSAGES_TAGS = ["Messages"];
 
@@ -145,9 +145,9 @@ export default async function messages(app: FastifyInstance) {
         );
       }
 
-      // Need to change to token once that PR is merged
-      const profileSdk = new Profile(request.userData!.accessToken);
+      const profileSdk = await getProfileSdk(request.userData?.organizationId);
       const { data, error } = await profileSdk.getUser(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
         request.userData?.userId!,
       );
 

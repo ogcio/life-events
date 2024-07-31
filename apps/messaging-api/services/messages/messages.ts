@@ -1,16 +1,11 @@
 import { PostgresDb } from "@fastify/postgres";
-import {
-  CreateMessage,
-  ReadMessage,
-  ReadMessages,
-} from "../../types/schemaDefinitions";
+import { ReadMessage, ReadMessages } from "../../types/schemaDefinitions";
 import { ServiceError, utils } from "../../utils";
 import { FastifyBaseLogger } from "fastify";
 import { JobType } from "aws-sdk/clients/importexport";
 import { Pool } from "pg";
 import { mailService } from "../../routes/providers/services";
 import { awsSnsSmsService } from "../sms/aws";
-import { Profile } from "building-blocks-sdk";
 import { getUserProfiles, ProfileSdkFacade } from "../users/shared-users";
 import { isNativeError } from "util/types";
 import {
@@ -25,6 +20,7 @@ import {
   MessagingEventType,
   newMessagingEventLogger,
 } from "./eventLogger";
+import { getProfileSdk } from "../../utils/authentication-factory";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -91,7 +87,6 @@ export const executeJob = async (params: {
   logger: FastifyBaseLogger;
   jobId: string;
   token: string;
-  accessToken: string;
 }) => {
   const statusWorking: scheduledMessageByTemplateStatus = "working";
   const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
@@ -200,7 +195,6 @@ export const executeJob = async (params: {
         job.userId,
         eventLogger,
         organizationId,
-        params.accessToken,
       );
 
       for (const err of serviceErrors) {
@@ -266,7 +260,6 @@ const scheduleMessage = async (
   userId: string,
   eventLogger: MessagingEventLogger,
   organizationId: string,
-  accessToken: string,
 ): Promise<ServiceError[]> => {
   const client = await pool.connect();
   const errors: ServiceError[] = [];
@@ -331,7 +324,7 @@ const scheduleMessage = async (
     client.release();
   }
 
-  const profileSdk = new Profile(accessToken);
+  const profileSdk = await getProfileSdk(organizationId);
   const messageSdk = {
     selectUsers(ids: string[]) {
       return getUserProfiles(ids, pool);
