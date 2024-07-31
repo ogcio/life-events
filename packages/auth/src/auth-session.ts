@@ -260,27 +260,6 @@ const checkIfPublicServant = (
 const checkIfInactivePublicServant = (orgRoles: string[] | null): boolean =>
   orgRoles !== null && orgRoles?.includes(INACTIVE_PUBLIC_SERVANT_ORG_ROLE);
 
-const getScopes = (
-  context: LogtoContext,
-  isPublicServant: boolean,
-  token: string | undefined,
-): string[] => {
-  if (!isPublicServant) {
-    return (context.scopes ?? []).filter((s) => s != "");
-  }
-
-  if (!token) {
-    return [];
-  }
-
-  try {
-    const decoded = decodeJwt<{ scope: string }>(token);
-    return decoded.scope.split(" ").filter((s) => s != "");
-  } catch (err) {
-    return [];
-  }
-};
-
 const parseContext = (
   context: LogtoContext,
   getContextParameters: GetSessionContextParameters,

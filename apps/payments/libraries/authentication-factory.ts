@@ -8,10 +8,7 @@ export class AuthenticationFactory {
     return new BaseAuthenticationContext(getAuthenticationContextConfig());
   }
 
-  static async getPaymentsClient(params?: {
-    token?: string;
-    authenticationContext?: BaseAuthenticationContext;
-  }): Promise<Payments> {
+  static async getPaymentsClient(): Promise<Payments> {
     const cookieHeader = headers().get("cookie") as string;
 
     const res = await fetch(

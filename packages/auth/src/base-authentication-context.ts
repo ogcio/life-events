@@ -152,13 +152,13 @@ export class BaseAuthenticationContext {
     return this.getPublicServant();
   };
 
-  async getToken(resource?: string) {
+  async getToken() {
     if (await this.isPublicServant()) {
       return await getOrgToken(
         this.config,
         await this.getSelectedOrganization(),
       );
     }
-    return await getCitizenToken(this.config, resource);
+    return await getCitizenToken(this.config, this.config.resourceUrl);
   }
 }
