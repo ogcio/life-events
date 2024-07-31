@@ -25,6 +25,11 @@ export default async function RootLayout({
           flexDirection: "column",
         }}
       >
+        {/* workaround to allow Logto to cache the access token */}
+        <img
+          src={`${process.env.NEXT_PUBLIC_HOST_URL}/api/token`}
+          style={{ display: "none" }}
+        />
         <Header locale={locale} />
         <div className="width-container">
           <Banner
