@@ -6,6 +6,7 @@ import RealexForm from "./RealexForm";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { realexValidationMap } from "../../../../../validationMaps";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
+import { PageWrapper } from "../../../PageWrapper";
 
 type Props = {
   params: {
@@ -66,10 +67,12 @@ export default async (props: Props) => {
   }
 
   return (
-    <NextIntlClientProvider
-      messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
-    >
-      <RealexForm action={handleSubmit} />
-    </NextIntlClientProvider>
+    <PageWrapper locale={props.params.locale} disableOrgSelector={true}>
+      <NextIntlClientProvider
+        messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
+      >
+        <RealexForm action={handleSubmit} />
+      </NextIntlClientProvider>
+    </PageWrapper>
   );
 };
