@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
 import {
-  GenericResponseSingle,
+  GenericResponse,
   getGenericResponseSchema,
   MessageEvent,
   MessageEventType,
@@ -22,7 +22,7 @@ export const prefix = "/message-events";
 export default async function messages(app: FastifyInstance) {
   app.get<{
     Querystring: { search?: string } & PaginationParams;
-    Response: GenericResponseSingle<MessageEventType>;
+    Response: GenericResponse<MessageEventType>;
   }>(
     "/",
     {
@@ -122,7 +122,7 @@ export default async function messages(app: FastifyInstance) {
         offset,
       });
 
-      const response: GenericResponseSingle<MessageEventType> = {
+      const response: GenericResponse<MessageEventType> = {
         data: events,
         metadata: {
           links,
