@@ -8,6 +8,8 @@ import {
   FindUserParamsSchema,
   FoundUser,
   FoundUserSchema,
+  ParamsWithUserId,
+  ParamsWithUserIdSchema,
   PatchUser,
   PatchUserSchema,
   UpdateUser,
@@ -22,13 +24,14 @@ import { NotFoundError, ServerError } from "shared-errors";
 import { getErrorMessage } from "../../utils/error-utils";
 import { isNativeError } from "util/types";
 import { Permissions } from "../../types/permissions";
+import { ensureUserCanAccessUser } from "api-auth";
 
-const USER_TAGS = ["user"];
+const USER_TAGS = ["Users"];
 const ERROR_PROCESS = "USER_PROFILE_DETAILS";
 
-export default async function user(app: FastifyInstance) {
-  app.get<{ Reply: UserDetails | Error }>(
-    "/",
+export default async function users(app: FastifyInstance) {
+  app.get<{ Reply: UserDetails | Error; Params: ParamsWithUserId }>(
+    "/:userId",
     {
       preValidation: (req, res) =>
         app.checkPermissions(
@@ -38,6 +41,7 @@ export default async function user(app: FastifyInstance) {
           { method: "OR" },
         ),
       schema: {
+        params: ParamsWithUserIdSchema,
         tags: USER_TAGS,
         response: {
           200: UserDetailsSchema,
@@ -47,7 +51,11 @@ export default async function user(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.userData!.userId;
+      ensureUserCanAccessUser(
+        request.userData,
+        request.params.userId,
+        ERROR_PROCESS,
+      );
 
       /**  NOTE: the defaults below are for demo purposes only given we don't have access to real user data yet */
       const defaultData = {
@@ -64,7 +72,10 @@ export default async function user(app: FastifyInstance) {
         preferred_language: DEFAULT_LANGUAGE,
       };
 
-      const data = await getUser({ pool: app.pg.pool, id: userId });
+      const data = await getUser({
+        pool: app.pg.pool,
+        id: request.params.userId,
+      });
 
       const dataWithDefaults = {
         firstName: data.firstName || defaultData.firstname,
@@ -126,8 +137,8 @@ export default async function user(app: FastifyInstance) {
     },
   );
 
-  app.put<{ Body: UpdateUser }>(
-    "/",
+  app.put<{ Body: UpdateUser; Params: ParamsWithUserId }>(
+    "/:userId",
     {
       preValidation: (req, res) =>
         app.checkPermissions(
@@ -138,6 +149,7 @@ export default async function user(app: FastifyInstance) {
         ),
       schema: {
         tags: USER_TAGS,
+        params: ParamsWithUserIdSchema,
         body: UpdateUserSchema,
         response: {
           200: Type.Object({
@@ -149,7 +161,11 @@ export default async function user(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.userData?.userId;
+      ensureUserCanAccessUser(
+        request.userData,
+        request.params.userId,
+        ERROR_PROCESS,
+      );
       let result;
 
       const columnsMapping: Record<keyof UpdateUser, string> = {
@@ -166,7 +182,7 @@ export default async function user(app: FastifyInstance) {
         preferredLanguage: "preferred_language",
       };
 
-      const values = [userId, ...Object.values(request.body)];
+      const values = [request.params.userId, ...Object.values(request.body)];
       const setClauses = Object.keys(request.body)
         .map(
           (key, index) =>
@@ -196,8 +212,8 @@ export default async function user(app: FastifyInstance) {
     },
   );
 
-  app.patch<{ Body: PatchUser }>(
-    "/",
+  app.patch<{ Body: PatchUser; Params: ParamsWithUserId }>(
+    "/:userId",
     {
       preValidation: (req, res) =>
         app.checkPermissions(
@@ -219,7 +235,11 @@ export default async function user(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.userData?.userId;
+      ensureUserCanAccessUser(
+        request.userData,
+        request.params.userId,
+        ERROR_PROCESS,
+      );
       let result;
 
       const columnsMapping: Record<keyof PatchUser, string> = {
@@ -228,7 +248,7 @@ export default async function user(app: FastifyInstance) {
         preferredLanguage: "preferred_language",
       };
 
-      const values = [userId, ...Object.values(request.body)];
+      const values = [request.params.userId, ...Object.values(request.body)];
       const setClauses = Object.keys(request.body)
         .map(
           (key, index) =>

@@ -268,7 +268,7 @@ export function ProfileSdkFacade(
       }
 
       const idsNotFound: string[] = [];
-      const set = new Set(fromProfile.map((d) => d.id));
+      const set = new Set(fromProfile.map((d: { id: string }) => d.id));
       for (const id of ids) {
         if (!set.has(id)) {
           idsNotFound.push(id);
