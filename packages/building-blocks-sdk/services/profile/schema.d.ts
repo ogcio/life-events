@@ -338,8 +338,13 @@ export interface paths {
       };
     };
   };
-  "/api/v1/user/": {
+  "/api/v1/users/{userId}": {
     get: {
+      parameters: {
+        path: {
+          userId: string;
+        };
+      };
       responses: {
         /** @description Default Response */
         200: {
@@ -397,6 +402,11 @@ export interface paths {
       };
     };
     put: {
+      parameters: {
+        path: {
+          userId: string;
+        };
+      };
       requestBody: {
         content: {
           "application/json": {
@@ -451,50 +461,12 @@ export interface paths {
         };
       };
     };
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            firstname: string;
-            lastname: string;
-            email: string;
-            title?: string;
-            dateOfBirth?: string;
-            ppsn?: string;
-            ppsnVisible?: boolean;
-            gender?: string;
-            phone?: string;
-            consentToPrefillData?: boolean;
-            /** @default en */
-            preferredLanguage: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
     patch: {
+      parameters: {
+        path: {
+          userId: string;
+        };
+      };
       requestBody?: {
         content: {
           "application/json": {
@@ -542,7 +514,52 @@ export interface paths {
       };
     };
   };
-  "/api/v1/user/find": {
+  "/api/v1/users/": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            firstname: string;
+            lastname: string;
+            email: string;
+            title?: string;
+            dateOfBirth?: string;
+            ppsn?: string;
+            ppsnVisible?: boolean;
+            gender?: string;
+            phone?: string;
+            consentToPrefillData?: boolean;
+            /** @default en */
+            preferredLanguage: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/users/find": {
     get: {
       parameters: {
         query?: {
@@ -587,7 +604,7 @@ export interface paths {
       };
     };
   };
-  "/api/v1/user/select": {
+  "/api/v1/users/select": {
     post: {
       requestBody: {
         content: {
