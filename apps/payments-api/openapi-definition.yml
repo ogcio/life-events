@@ -1,0 +1,2542 @@
+openapi: 3.0.3
+info:
+  title: OGCIO Payment API
+  description: API for OGCIO Payment Service
+  version: 0.1.0
+components:
+  schemas: {}
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/providers/:
+    post:
+      tags: &a1
+        - Providers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  validator: RequiredValidator
+                  type: string
+                type:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - banktransfer
+                    - type: string
+                      enum:
+                        - openbanking
+                    - type: string
+                      enum:
+                        - stripe
+                    - type: string
+                      enum:
+                        - realex
+                    - type: string
+                      enum:
+                        - worldpay
+                data:
+                  validator: ProvidersValidator
+                  type: object
+                  additionalProperties:
+                    type: string
+              required:
+                - name
+                - type
+                - data
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "422":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    get:
+      tags: *a1
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    type:
+                      anyOf:
+                        - type: string
+                          enum:
+                            - banktransfer
+                        - type: string
+                          enum:
+                            - openbanking
+                        - type: string
+                          enum:
+                            - stripe
+                        - type: string
+                          enum:
+                            - realex
+                        - type: string
+                          enum:
+                            - worldpay
+                    data:
+                      anyOf:
+                        - type: object
+                          properties:
+                            iban:
+                              type: string
+                            accountHolderName:
+                              type: string
+                          required:
+                            - iban
+                            - accountHolderName
+                        - type: object
+                          properties:
+                            iban:
+                              type: string
+                            accountHolderName:
+                              type: string
+                          required:
+                            - iban
+                            - accountHolderName
+                        - type: object
+                          properties:
+                            livePublishableKey:
+                              type: string
+                            liveSecretKey:
+                              type: string
+                          required:
+                            - livePublishableKey
+                            - liveSecretKey
+                        - type: object
+                          properties:
+                            merchantCode:
+                              type: string
+                            installationId:
+                              type: string
+                          required:
+                            - merchantCode
+                            - installationId
+                        - type: object
+                          properties:
+                            merchantId:
+                              type: string
+                            sharedSecret:
+                              type: string
+                          required:
+                            - merchantId
+                            - sharedSecret
+                    status:
+                      anyOf:
+                        - type: string
+                          enum:
+                            - connected
+                        - type: string
+                          enum:
+                            - disconnected
+                  required:
+                    - id
+                    - name
+                    - type
+                    - data
+                    - status
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/providers/{providerId}:
+    get:
+      tags: *a1
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  type:
+                    anyOf:
+                      - type: string
+                        enum:
+                          - banktransfer
+                      - type: string
+                        enum:
+                          - openbanking
+                      - type: string
+                        enum:
+                          - stripe
+                      - type: string
+                        enum:
+                          - realex
+                      - type: string
+                        enum:
+                          - worldpay
+                  data:
+                    anyOf:
+                      - type: object
+                        properties:
+                          iban:
+                            type: string
+                          accountHolderName:
+                            type: string
+                        required:
+                          - iban
+                          - accountHolderName
+                      - type: object
+                        properties:
+                          iban:
+                            type: string
+                          accountHolderName:
+                            type: string
+                        required:
+                          - iban
+                          - accountHolderName
+                      - type: object
+                        properties:
+                          livePublishableKey:
+                            type: string
+                          liveSecretKey:
+                            type: string
+                        required:
+                          - livePublishableKey
+                          - liveSecretKey
+                      - type: object
+                        properties:
+                          merchantCode:
+                            type: string
+                          installationId:
+                            type: string
+                        required:
+                          - merchantCode
+                          - installationId
+                      - type: object
+                        properties:
+                          merchantId:
+                            type: string
+                          sharedSecret:
+                            type: string
+                        required:
+                          - merchantId
+                          - sharedSecret
+                  status:
+                    anyOf:
+                      - type: string
+                        enum:
+                          - connected
+                      - type: string
+                        enum:
+                          - disconnected
+                required:
+                  - id
+                  - name
+                  - type
+                  - data
+                  - status
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    put:
+      tags: *a1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  validator: RequiredValidator
+                  type: string
+                type:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - banktransfer
+                    - type: string
+                      enum:
+                        - openbanking
+                    - type: string
+                      enum:
+                        - stripe
+                    - type: string
+                      enum:
+                        - realex
+                    - type: string
+                      enum:
+                        - worldpay
+                data:
+                  validator: ProvidersValidator
+                  type: object
+                  additionalProperties:
+                    type: string
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - connected
+                    - type: string
+                      enum:
+                        - disconnected
+              required:
+                - name
+                - type
+                - data
+                - status
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: providerId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                  - ok
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "422":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/requests/:
+    get:
+      tags: &a2
+        - PaymentRequests
+      parameters:
+        - schema:
+            default: 0
+            minimum: 0
+            type: number
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 10
+            minimum: 5
+            maximum: 50
+            multipleOf: 5
+            type: number
+          in: query
+          name: limit
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        paymentRequestId:
+                          type: string
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        amount:
+                          type: number
+                        reference:
+                          type: string
+                        providers:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              userId:
+                                type: string
+                              id:
+                                type: string
+                              name:
+                                type: string
+                              type:
+                                anyOf:
+                                  - type: string
+                                    enum:
+                                      - banktransfer
+                                  - type: string
+                                    enum:
+                                      - openbanking
+                                  - type: string
+                                    enum:
+                                      - stripe
+                                  - type: string
+                                    enum:
+                                      - realex
+                                  - type: string
+                                    enum:
+                                      - worldpay
+                              status:
+                                anyOf:
+                                  - type: string
+                                    enum:
+                                      - connected
+                                  - type: string
+                                    enum:
+                                      - disconnected
+                              data:
+                                anyOf:
+                                  - type: object
+                                    properties:
+                                      iban:
+                                        type: string
+                                      accountHolderName:
+                                        type: string
+                                    required:
+                                      - iban
+                                      - accountHolderName
+                                  - type: object
+                                    properties:
+                                      iban:
+                                        type: string
+                                      accountHolderName:
+                                        type: string
+                                    required:
+                                      - iban
+                                      - accountHolderName
+                                  - type: object
+                                    properties:
+                                      livePublishableKey:
+                                        type: string
+                                      liveSecretKey:
+                                        type: string
+                                    required:
+                                      - livePublishableKey
+                                      - liveSecretKey
+                                  - type: object
+                                    properties:
+                                      merchantCode:
+                                        type: string
+                                      installationId:
+                                        type: string
+                                    required:
+                                      - merchantCode
+                                      - installationId
+                                  - type: object
+                                    properties:
+                                      merchantId:
+                                        type: string
+                                      sharedSecret:
+                                        type: string
+                                    required:
+                                      - merchantId
+                                      - sharedSecret
+                              createdAt:
+                                type: string
+                            required:
+                              - userId
+                              - id
+                              - name
+                              - type
+                              - status
+                              - data
+                              - createdAt
+                        status:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - active
+                            - type: string
+                              enum:
+                                - inactive
+                      required:
+                        - paymentRequestId
+                        - title
+                        - description
+                        - amount
+                        - reference
+                        - providers
+                        - status
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+    post:
+      tags: *a2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  validator: RequiredValidator
+                  type: string
+                description:
+                  type: string
+                reference:
+                  validator: RequiredValidator
+                  type: string
+                amount:
+                  minimum: 1
+                  maximum: 10000
+                  type: number
+                redirectUrl:
+                  validator: RequiredValidator
+                  type: string
+                allowAmountOverride:
+                  type: boolean
+                allowCustomAmount:
+                  type: boolean
+                providers:
+                  type: array
+                  items:
+                    type: string
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - active
+                    - type: string
+                      enum:
+                        - inactive
+                  validator: PaymentRequestStatusValidator
+              required:
+                - title
+                - description
+                - reference
+                - amount
+                - redirectUrl
+                - allowAmountOverride
+                - allowCustomAmount
+                - providers
+                - status
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+    put:
+      tags: *a2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  validator: RequiredValidator
+                  type: string
+                description:
+                  type: string
+                reference:
+                  validator: RequiredValidator
+                  type: string
+                amount:
+                  minimum: 1
+                  maximum: 10000
+                  type: number
+                redirectUrl:
+                  validator: RequiredValidator
+                  type: string
+                allowAmountOverride:
+                  type: boolean
+                allowCustomAmount:
+                  type: boolean
+                providers:
+                  type: array
+                  items:
+                    type: string
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - active
+                    - type: string
+                      enum:
+                        - inactive
+                  validator: PaymentRequestStatusValidator
+                paymentRequestId:
+                  type: string
+                providersUpdate:
+                  type: object
+                  properties:
+                    toDisable:
+                      type: array
+                      items:
+                        type: string
+                    toCreate:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - toDisable
+                    - toCreate
+              required:
+                - title
+                - description
+                - reference
+                - amount
+                - redirectUrl
+                - allowAmountOverride
+                - allowCustomAmount
+                - providers
+                - status
+                - paymentRequestId
+                - providersUpdate
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+  /api/v1/requests/{requestId}:
+    get:
+      tags: *a2
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: requestId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  paymentRequestId:
+                    type: string
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  amount:
+                    type: number
+                  reference:
+                    type: string
+                  providers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: string
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        type:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - banktransfer
+                            - type: string
+                              enum:
+                                - openbanking
+                            - type: string
+                              enum:
+                                - stripe
+                            - type: string
+                              enum:
+                                - realex
+                            - type: string
+                              enum:
+                                - worldpay
+                        status:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - connected
+                            - type: string
+                              enum:
+                                - disconnected
+                        data:
+                          anyOf:
+                            - type: object
+                              properties:
+                                iban:
+                                  type: string
+                                accountHolderName:
+                                  type: string
+                              required:
+                                - iban
+                                - accountHolderName
+                            - type: object
+                              properties:
+                                iban:
+                                  type: string
+                                accountHolderName:
+                                  type: string
+                              required:
+                                - iban
+                                - accountHolderName
+                            - type: object
+                              properties:
+                                livePublishableKey:
+                                  type: string
+                                liveSecretKey:
+                                  type: string
+                              required:
+                                - livePublishableKey
+                                - liveSecretKey
+                            - type: object
+                              properties:
+                                merchantCode:
+                                  type: string
+                                installationId:
+                                  type: string
+                              required:
+                                - merchantCode
+                                - installationId
+                            - type: object
+                              properties:
+                                merchantId:
+                                  type: string
+                                sharedSecret:
+                                  type: string
+                              required:
+                                - merchantId
+                                - sharedSecret
+                        createdAt:
+                          type: string
+                      required:
+                        - userId
+                        - id
+                        - name
+                        - type
+                        - status
+                        - data
+                        - createdAt
+                  status:
+                    anyOf:
+                      - type: string
+                        enum:
+                          - active
+                      - type: string
+                        enum:
+                          - inactive
+                  redirectUrl:
+                    type: string
+                  allowAmountOverride:
+                    type: boolean
+                  allowCustomAmount:
+                    type: boolean
+                required:
+                  - paymentRequestId
+                  - title
+                  - description
+                  - amount
+                  - reference
+                  - providers
+                  - status
+                  - redirectUrl
+                  - allowAmountOverride
+                  - allowCustomAmount
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    delete:
+      tags: *a2
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: requestId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/requests/{requestId}/public-info:
+    get:
+      tags: *a2
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: requestId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  paymentRequestId:
+                    type: string
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  amount:
+                    type: number
+                  reference:
+                    type: string
+                  providers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: string
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        type:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - banktransfer
+                            - type: string
+                              enum:
+                                - openbanking
+                            - type: string
+                              enum:
+                                - stripe
+                            - type: string
+                              enum:
+                                - realex
+                            - type: string
+                              enum:
+                                - worldpay
+                        status:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - connected
+                            - type: string
+                              enum:
+                                - disconnected
+                        data:
+                          anyOf:
+                            - type: object
+                              properties:
+                                iban:
+                                  type: string
+                                accountHolderName:
+                                  type: string
+                              required:
+                                - iban
+                                - accountHolderName
+                            - type: object
+                              properties:
+                                iban:
+                                  type: string
+                                accountHolderName:
+                                  type: string
+                              required:
+                                - iban
+                                - accountHolderName
+                            - type: object
+                              properties:
+                                livePublishableKey:
+                                  type: string
+                                liveSecretKey:
+                                  type: string
+                              required:
+                                - livePublishableKey
+                                - liveSecretKey
+                            - type: object
+                              properties:
+                                merchantCode:
+                                  type: string
+                                installationId:
+                                  type: string
+                              required:
+                                - merchantCode
+                                - installationId
+                            - type: object
+                              properties:
+                                merchantId:
+                                  type: string
+                                sharedSecret:
+                                  type: string
+                              required:
+                                - merchantId
+                                - sharedSecret
+                        createdAt:
+                          type: string
+                      required:
+                        - userId
+                        - id
+                        - name
+                        - type
+                        - status
+                        - data
+                        - createdAt
+                  status:
+                    anyOf:
+                      - type: string
+                        enum:
+                          - active
+                      - type: string
+                        enum:
+                          - inactive
+                  redirectUrl:
+                    type: string
+                  allowAmountOverride:
+                    type: boolean
+                  allowCustomAmount:
+                    type: boolean
+                required:
+                  - paymentRequestId
+                  - title
+                  - description
+                  - amount
+                  - reference
+                  - providers
+                  - status
+                  - redirectUrl
+                  - allowAmountOverride
+                  - allowCustomAmount
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/requests/{requestId}/transactions:
+    get:
+      tags:
+        - Transactions
+      parameters:
+        - schema:
+            default: 0
+            minimum: 0
+            type: number
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 10
+            minimum: 5
+            maximum: 50
+            multipleOf: 5
+            type: number
+          in: query
+          name: limit
+          required: false
+        - schema:
+            type: string
+          in: path
+          name: requestId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        transactionId:
+                          type: string
+                        status:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - initiated
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - succeeded
+                            - type: string
+                              enum:
+                                - cancelled
+                            - type: string
+                              enum:
+                                - failed
+                        amount:
+                          type: number
+                        updatedAt:
+                          type: string
+                        title:
+                          type: string
+                      required:
+                        - transactionId
+                        - status
+                        - amount
+                        - updatedAt
+                        - title
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+  /api/v1/transactions/{transactionId}:
+    get:
+      tags: &a3
+        - Transactions
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: transactionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      transactionId:
+                        type: string
+                      status:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - initiated
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - succeeded
+                          - type: string
+                            enum:
+                              - cancelled
+                          - type: string
+                            enum:
+                              - failed
+                      amount:
+                        type: number
+                      updatedAt:
+                        type: string
+                      title:
+                        type: string
+                      extPaymentId:
+                        type: string
+                      userId:
+                        type: string
+                      userData:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - name
+                          - email
+                      providerName:
+                        type: string
+                      providerType:
+                        type: string
+                      paymentRequestId:
+                        type: string
+                    required:
+                      - transactionId
+                      - status
+                      - amount
+                      - updatedAt
+                      - title
+                      - extPaymentId
+                      - userId
+                      - userData
+                      - providerName
+                      - providerType
+                      - paymentRequestId
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    patch:
+      tags: *a3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - initiated
+                    - type: string
+                      enum:
+                        - pending
+                    - type: string
+                      enum:
+                        - succeeded
+                    - type: string
+                      enum:
+                        - cancelled
+                    - type: string
+                      enum:
+                        - failed
+              required:
+                - status
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: transactionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/transactions/:
+    get:
+      tags: *a3
+      parameters:
+        - schema:
+            default: 0
+            minimum: 0
+            type: number
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 10
+            minimum: 5
+            maximum: 50
+            multipleOf: 5
+            type: number
+          in: query
+          name: limit
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        transactionId:
+                          type: string
+                        status:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - initiated
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - succeeded
+                            - type: string
+                              enum:
+                                - cancelled
+                            - type: string
+                              enum:
+                                - failed
+                        amount:
+                          type: number
+                        updatedAt:
+                          type: string
+                        title:
+                          type: string
+                        extPaymentId:
+                          type: string
+                        userId:
+                          type: string
+                        userData:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - name
+                            - email
+                        providerName:
+                          type: string
+                        providerType:
+                          type: string
+                        paymentRequestId:
+                          type: string
+                      required:
+                        - transactionId
+                        - status
+                        - amount
+                        - updatedAt
+                        - title
+                        - extPaymentId
+                        - userId
+                        - userData
+                        - providerName
+                        - providerType
+                        - paymentRequestId
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+    post:
+      tags: *a3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentRequestId:
+                  type: string
+                extPaymentId:
+                  type: string
+                integrationReference:
+                  type: string
+                amount:
+                  type: number
+                paymentProviderId:
+                  type: string
+                userData:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    email:
+                      type: string
+                  required:
+                    - name
+                    - email
+              required:
+                - paymentRequestId
+                - extPaymentId
+                - integrationReference
+                - amount
+                - paymentProviderId
+                - userData
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/transactions/generatePaymentIntentId:
+    get:
+      tags: *a3
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      intentId:
+                        type: string
+                    required:
+                      - intentId
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/citizen/transactions:
+    get:
+      tags:
+        - Citizen
+      parameters:
+        - schema:
+            default: 0
+            minimum: 0
+            type: number
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 10
+            minimum: 5
+            maximum: 50
+            multipleOf: 5
+            type: number
+          in: query
+          name: limit
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        transactionId:
+                          type: string
+                        status:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - initiated
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - succeeded
+                            - type: string
+                              enum:
+                                - cancelled
+                            - type: string
+                              enum:
+                                - failed
+                        title:
+                          type: string
+                        updatedAt:
+                          type: string
+                        amount:
+                          type: number
+                      required:
+                        - transactionId
+                        - status
+                        - title
+                        - updatedAt
+                        - amount
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/citizen/transactions/{transactionId}:
+    get:
+      tags:
+        - Transactions
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: transactionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      transactionId:
+                        type: string
+                      status:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - initiated
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - succeeded
+                          - type: string
+                            enum:
+                              - cancelled
+                          - type: string
+                            enum:
+                              - failed
+                      amount:
+                        type: number
+                      updatedAt:
+                        type: string
+                      title:
+                        type: string
+                      extPaymentId:
+                        type: string
+                      userId:
+                        type: string
+                      userData:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - name
+                          - email
+                      providerName:
+                        type: string
+                      providerType:
+                        type: string
+                      paymentRequestId:
+                        type: string
+                    required:
+                      - transactionId
+                      - status
+                      - amount
+                      - updatedAt
+                      - title
+                      - extPaymentId
+                      - userId
+                      - userData
+                      - providerName
+                      - providerType
+                      - paymentRequestId
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/realex/paymentObject:
+    get:
+      tags: &a4
+        - Transactions
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: amount
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: intentId
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: providerId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ACCOUNT:
+                    type: string
+                  AMOUNT:
+                    type: string
+                  CURRENCY:
+                    type: string
+                  MERCHANT_ID:
+                    type: string
+                  ORDER_ID:
+                    type: string
+                  TIMESTAMP:
+                    type: string
+                  URL:
+                    type: string
+                  SHA256HASH:
+                    type: string
+                required:
+                  - ACCOUNT
+                  - AMOUNT
+                  - CURRENCY
+                  - MERCHANT_ID
+                  - ORDER_ID
+                  - TIMESTAMP
+                  - URL
+                  - SHA256HASH
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "422":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/realex/verifyPaymentResponse:
+    post:
+      tags: *a4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+        "422":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/test/citizen:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/test/pub-ser:
+    get:
+      responses:
+        "200":
+          description: Default Response
+tags:
+  - name: Providers
