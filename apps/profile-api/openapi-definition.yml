@@ -534,10 +534,16 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/user/:
+  /api/v1/users/{userId}:
     get:
       tags: &a2
-        - user
+        - Users
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: userId
+          required: true
       responses:
         "200":
           description: Default Response
@@ -643,78 +649,6 @@ paths:
                   - detail
                   - request_id
                   - name
-    post:
-      tags: *a2
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                firstname:
-                  type: string
-                lastname:
-                  type: string
-                email:
-                  type: string
-                title:
-                  type: string
-                dateOfBirth:
-                  type: string
-                ppsn:
-                  type: string
-                ppsnVisible:
-                  type: boolean
-                gender:
-                  type: string
-                phone:
-                  type: string
-                consentToPrefillData:
-                  type: boolean
-                preferredLanguage:
-                  default: en
-                  type: string
-              required:
-                - firstname
-                - lastname
-                - email
-                - preferredLanguage
-        required: true
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                required:
-                  - id
-        "500":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
     put:
       tags: *a2
       requestBody:
@@ -757,6 +691,12 @@ paths:
                 - phone
                 - preferredLanguage
         required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: userId
+          required: true
       responses:
         "200":
           description: Default Response
@@ -829,6 +769,12 @@ paths:
                   type: boolean
                 preferredLanguage:
                   type: string
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: userId
+          required: true
       responses:
         "200":
           description: Default Response
@@ -887,7 +833,80 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/user/find:
+  /api/v1/users/:
+    post:
+      tags: *a2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                email:
+                  type: string
+                title:
+                  type: string
+                dateOfBirth:
+                  type: string
+                ppsn:
+                  type: string
+                ppsnVisible:
+                  type: boolean
+                gender:
+                  type: string
+                phone:
+                  type: string
+                consentToPrefillData:
+                  type: boolean
+                preferredLanguage:
+                  default: en
+                  type: string
+              required:
+                - firstname
+                - lastname
+                - email
+                - preferredLanguage
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  request_id:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - request_id
+                  - name
+  /api/v1/users/find:
     get:
       tags: *a2
       parameters:
@@ -978,7 +997,7 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/user/select:
+  /api/v1/users/select:
     post:
       tags: *a2
       requestBody:
