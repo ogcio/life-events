@@ -44,6 +44,11 @@ export const ParamsWithAddressIdSchema = Type.Object({
 });
 export type ParamsWithAddressId = Static<typeof ParamsWithAddressIdSchema>;
 
+export const ParamsWithUserIdSchema = Type.Object({
+  userId: Type.String(),
+});
+export type ParamsWithUserId = Static<typeof ParamsWithUserIdSchema>;
+
 export const UpdateAddressSchema = Type.Object({
   addressLine1: Type.String(),
   addressLine2: OptionalString,
