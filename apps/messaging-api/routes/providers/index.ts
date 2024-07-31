@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import {
   EmailCreate,
   EmailProvider,
-  GenericResponseSingle,
+  GenericResponse,
   getGenericResponseSchema,
   PaginationParams,
   PaginationParamsSchema,
@@ -50,7 +50,7 @@ export default async function providers(app: FastifyInstance) {
       type: "email" | "sms";
       primary?: boolean;
     } & PaginationParams;
-    Response: GenericResponseSingle<Static<typeof ProviderList>>;
+    Response: GenericResponse<Static<typeof ProviderList>>;
   }>(
     "/",
     {
@@ -174,7 +174,7 @@ export default async function providers(app: FastifyInstance) {
         offset,
       });
 
-      const response: GenericResponseSingle<Static<typeof ProviderList>> = {
+      const response: GenericResponse<Static<typeof ProviderList>> = {
         data: query.rows,
         metadata: {
           totalCount,
