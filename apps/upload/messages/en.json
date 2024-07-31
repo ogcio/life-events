@@ -1,4 +1,9 @@
 {
+  "Upload": {
+    "buttonLabel": "Upload a file",
+    "fileTooBig": "The file must be smaller than 100MB",
+    "uploadButton": "Upload"
+  },
   "NotFound": {
     "title": "Not Found",
     "description": " Sorry, the requested resource could not be found",
