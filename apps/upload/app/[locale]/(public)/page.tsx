@@ -3,6 +3,7 @@ import { AuthenticationFactory } from "../../utils/authentication-factory";
 import FileUpload from "./components/FileUpload";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+import uploadFile from "./actions/uploadFile";
 
 type Props = {
   params: {
@@ -44,7 +45,7 @@ export default async (props: Props) => {
         )}
       </div>
       <NextIntlClientProvider messages={uploadMessages}>
-        <FileUpload />
+        <FileUpload uploadFile={uploadFile} />
       </NextIntlClientProvider>
     </section>
   );

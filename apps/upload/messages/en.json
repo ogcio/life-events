@@ -1,7 +1,8 @@
 {
   "Upload": {
     "buttonLabel": "Upload a file",
-    "fileTooBig": "The file must be smaller than 100MB",
+    "noFile": "The file must be present",
+    "tooBig": "The file must be smaller than 100MB",
     "uploadButton": "Upload"
   },
   "NotFound": {
