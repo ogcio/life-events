@@ -4,6 +4,7 @@ import Footer from "./Footer";
 import Header from "../../components/Header/Header";
 import Banner from "../../components/Banner";
 import { getTranslations } from "next-intl/server";
+import LogtoTokenRefresher from "./LogtoTokenRefresher";
 
 export default async function RootLayout({
   children,
@@ -26,6 +27,7 @@ export default async function RootLayout({
         }}
       >
         {/* workaround to allow Logto to cache the access token */}
+        <LogtoTokenRefresher />
         <img
           src={`${process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT}/api/token?${new Date().getTime()}`}
           style={{ display: "none" }}
