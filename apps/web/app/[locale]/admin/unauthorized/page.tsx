@@ -1,17 +1,11 @@
 import { RedirectType, redirect } from "next/navigation";
-import hasAdminPermissions from "../utils/hasAdminPermissions";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async () => {
   const authFactory = AuthenticationFactory.getInstance();
   const context = await authFactory.getPublicServant();
 
-  const hasPermissions = hasAdminPermissions(
-    context.accessToken as string,
-    context.scopes,
-  );
-
-  if (hasPermissions) {
+  if (context.isPublicServant) {
     return redirect("/admin", RedirectType.replace);
   }
 
