@@ -9,6 +9,8 @@ export class AuthenticationFactory {
   }
 
   static async getToken(): Promise<string> {
+    // call a route handler that retrieves the cached token
+    // we need to forward the cookie header or the request won't be authenticated
     const cookieHeader = headers().get("cookie") as string;
 
     const res = await fetch(
