@@ -11,7 +11,10 @@ import {
 import { PostgresDb } from "@fastify/postgres";
 import { ALL_TRANSPORTS } from "../shared-users";
 import { ServerError } from "shared-errors";
-import { newMessagingService } from "../../messages/messaging";
+import {
+  MessagingService,
+  newMessagingService,
+} from "../../messages/messaging";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
 
@@ -70,11 +73,21 @@ export const sendInvitationsForUsersImport = async (params: {
       perIdLanguage: languagePerUser,
     });
 
+    const messagingService = newMessagingService(params.pg.pool);
     const sent = await sendInvitations({
       toSend,
-      pg: params.pg,
       organisationId: toImportUsers.organisationId,
+      messagingService,
     });
+
+    await messagingService.scheduleMessages(
+      sent.messageForUserMap.map((input) => ({
+        userId: input.user_id,
+        messageId: input.id,
+      })),
+      new Date().toISOString(),
+      toImportUsers.organisationId,
+    );
 
     await setImportedAsInvited({
       invited: sent,
@@ -215,26 +228,26 @@ const prepareInvitations = (params: {
 
 const sendInvitations = async (params: {
   toSend: ToSendInvitations;
-  pg: PostgresDb;
   organisationId: string;
+  messagingService: MessagingService;
 }): Promise<{
   invitedToMessaging: string[];
   invitedToOrganisation: string[];
   welcomed: string[];
+  messageForUserMap: { id: string; user_id: string }[];
 }> => {
-  const sending: Promise<string>[] = [];
+  const sending: Promise<{ id: string; user_id: string }>[] = [];
   const output: {
     invitedToMessaging: string[];
     invitedToOrganisation: string[];
     welcomed: string[];
   } = { invitedToMessaging: [], invitedToOrganisation: [], welcomed: [] };
-  const messagingService = newMessagingService(params.pg.pool);
   for (const language of Object.keys(params.toSend.joinMessaging)) {
     const messageInput = getJoinMessagingMessageForLanguage(language);
     const userIds = params.toSend.joinMessaging[language].toSendIds;
     for (const userId of userIds) {
       sending.push(
-        messagingService.createMessage({
+        params.messagingService.createMessage({
           bypassConsent: true,
           excerpt: messageInput.excerpt,
           lang: messageInput.lang,
@@ -266,7 +279,7 @@ const sendInvitations = async (params: {
     const userIds = params.toSend.joinOrganisation[language].toSendIds;
     for (const userId of userIds) {
       sending.push(
-        messagingService.createMessage({
+        params.messagingService.createMessage({
           bypassConsent: true,
           excerpt: messageInput.excerpt,
           lang: messageInput.lang,
@@ -293,7 +306,7 @@ const sendInvitations = async (params: {
     const userIds = params.toSend.welcome[language].toSendIds;
     for (const userId of userIds) {
       sending.push(
-        messagingService.createMessage({
+        params.messagingService.createMessage({
           bypassConsent: true,
           excerpt: messageInput.excerpt,
           lang: messageInput.lang,
@@ -312,12 +325,13 @@ const sendInvitations = async (params: {
     output.welcomed.push(...params.toSend.welcome[language].userIds);
   }
 
-  await Promise.all(sending);
+  const messagePerUser = await Promise.all(sending);
 
   return {
-    invitedToMessaging: [...new Set(output.invitedToMessaging)],
+    invitedToMessaging: output.invitedToMessaging,
     invitedToOrganisation: [...new Set(output.invitedToOrganisation)],
     welcomed: [...new Set(output.welcomed)],
+    messageForUserMap: messagePerUser,
   };
 };
 

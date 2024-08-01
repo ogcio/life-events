@@ -56,7 +56,7 @@ export interface MessagingService {
     security: string; // Which levels do we have?
     preferredTransports: Array<"email" | "sms" | "lifeEvent">;
     organisationId: string;
-  }): Promise<string>;
+  }): Promise<{ id: string; user_id: string }>;
 
   /**
    * Composes and insert one message from a template for each recipient, using their preferred language
@@ -121,7 +121,10 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
 
       const values = valueArray.map((_, i) => `$${i + 1}`).join(", ");
 
-      const insertQueryResult = await pool.query<{ id: string }>(
+      const insertQueryResult = await pool.query<{
+        id: string;
+        user_id: string;
+      }>(
         `
         insert into messages(
             is_delivered,
@@ -139,18 +142,18 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
             scheduled_at
         ) values (${values})
         returning 
-          id
+          id, user_id
       `,
         valueArray,
       );
 
-      const messageId = insertQueryResult.rows.at(0)?.id;
+      const message = insertQueryResult.rows[0];
 
-      if (!messageId) {
+      if (!message) {
         throw new Error("no message id generated");
       }
 
-      return messageId;
+      return message;
     },
     async createTemplateMessages(
       templateContents: TemplateContent[],

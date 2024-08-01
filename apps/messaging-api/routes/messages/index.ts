@@ -173,9 +173,9 @@ export default async function messages(app: FastifyInstance) {
       // Create
       const messageService = newMessagingService(app.pg.pool);
 
-      let messageId = "";
+      let message = null;
       try {
-        messageId = await messageService.createMessage({
+        message = await messageService.createMessage({
           receiverUserId,
           ...request.body,
           ...request.body.message,
@@ -192,7 +192,7 @@ export default async function messages(app: FastifyInstance) {
           security: request.body.security,
           transports: request.body.preferredTransports,
           scheduledAt: request.body.scheduleAt,
-          messageId,
+          messageId: message.id,
           ...request.body.message,
           senderFullName,
           senderPPSN: data.ppsn || "",
@@ -204,14 +204,14 @@ export default async function messages(app: FastifyInstance) {
       ]);
 
       await eventLogger.log(MessagingEventType.scheduleMessage, [
-        { messageId },
+        { messageId: message.id },
       ]);
 
       // Schedule
       let jobId = "";
       try {
         const [job] = await messageService.scheduleMessages(
-          [{ messageId, userId: receiverUserId }],
+          [{ messageId: message.id, userId: message.user_id }],
           request.body.scheduleAt,
           organisationId,
         );
@@ -219,14 +219,14 @@ export default async function messages(app: FastifyInstance) {
       } catch (err) {
         await eventLogger.log(MessagingEventType.scheduleMessageError, [
           {
-            messageId,
+            messageId: message.id,
             jobId,
           },
         ]);
       }
 
       reply.statusCode = 201;
-      return { data: { messageId } };
+      return { data: { messageId: message.id } };
     },
   );
 
