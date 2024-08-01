@@ -88,48 +88,17 @@ export default async function messages(app: FastifyInstance) {
         );
       }
 
-      const userIdsRepresentingUser: string[] = [];
       if (queryRecipientUserId) {
-        // we must make sure that we consider a user to have theoretically two ids from two separate tables (or databases if the separation occurs)
-        const hahahahlol = await app.pg.pool.query<{
-          profileId?: string;
-          messageUserId: string;
-        }>(
-          `
-            select id as "messageUserId", user_profile_id as "profileId" from users where id = $1 or user_profile_id = $1
-            limit 1
-        `,
-          [request.userData?.userId],
-        );
-        const asd = hahahahlol.rows.at(0);
-        if (!asd) {
-          // this should never happen?
-          throw new AuthorizationError(errorProcess, "illegal user id request");
+        if (queryRecipientUserId !== request.userData?.userId) {
+          throw new AuthorizationError(errorProcess, "illegal user request");
         }
 
-        if (
-          asd.profileId
-            ? asd.profileId !== queryRecipientUserId
-            : true && asd.messageUserId !== queryRecipientUserId
-        ) {
-          throw new AuthorizationError(errorProcess, "illegal user id request");
+        if (request.query.status !== "delivered") {
+          throw new AuthorizationError(
+            errorProcess,
+            "only delivered messages allowed",
+          );
         }
-
-        userIdsRepresentingUser.push(asd.messageUserId);
-        if (asd.profileId) {
-          userIdsRepresentingUser.push(asd.profileId);
-        }
-      }
-
-      // Only delivered query status allowed
-      if (
-        userIdsRepresentingUser.length &&
-        request.query.status !== "delivered"
-      ) {
-        throw new AuthorizationError(
-          errorProcess,
-          "only delivered messages allowed",
-        );
       }
 
       // Only query organisation you're allowed to see
@@ -164,7 +133,7 @@ export default async function messages(app: FastifyInstance) {
               select count(*) from messages
               where
               case when $1 is not null then organisation_id = $1 else true end
-              and case when $2 is not null then user_id in ($2) else true end
+              and case when $2 is not null then user_id = $2 else true end
             ),
             select 
               id,
@@ -178,16 +147,14 @@ export default async function messages(app: FastifyInstance) {
             from messages
             where 
             case when $1 is not null then organisation_id = $1 else true end
-            and case when $2 is not null then user_id in ($2) else true end
+            and case when $2 is not null then user_id = $2 else true end
             order by created_at desc
             limit $3
             offset $4
         `,
           [
             queryOrganisationId || null,
-            userIdsRepresentingUser.length
-              ? userIdsRepresentingUser.join(", ")
-              : null,
+            queryRecipientUserId || null,
             limit,
             offset,
           ],
@@ -317,7 +284,9 @@ export default async function messages(app: FastifyInstance) {
 
       // Need to change to token once that PR is merged
       const profileSdk = new Profile(request.userData!.accessToken);
-      const { data, error } = await profileSdk.getUser();
+      const { data, error } = await profileSdk.getUser(
+        request.userData?.userId!,
+      );
 
       if (error) {
         throw new ServerError(
