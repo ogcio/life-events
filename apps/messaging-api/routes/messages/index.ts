@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
 import {
-  GenericResponseSingle,
   getGenericResponseSchema,
   MessageCreate,
   MessageCreateType,
@@ -11,6 +10,7 @@ import {
   MessageList,
   MessageListItem,
   IdParamsSchema,
+  GenericResponse,
 } from "../../types/schemaDefinitions";
 import { getMessage } from "../../services/messages/messages";
 import { newMessagingService } from "../../services/messages/messaging";
@@ -201,7 +201,7 @@ export default async function messages(app: FastifyInstance) {
       const totalCount = messagesQueryResult?.rows.at(0)?.count || 0;
 
       const links = getPaginationLinks({ totalCount, url, limit, offset });
-      const response: GenericResponseSingle<Static<typeof MessageListItem>[]> =
+      const response: GenericResponse<Static<typeof MessageListItem>[]> =
         {
           data:
             messagesQueryResult?.rows.map(
