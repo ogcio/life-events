@@ -1,13 +1,18 @@
 import { FastifyInstance } from "fastify";
-import { Type } from "@sinclair/typebox";
+import { Static, Type } from "@sinclair/typebox";
 import {
   getGenericResponseSchema,
   MessageCreate,
   MessageCreateType,
+  PaginationParams,
+  PaginationParamsSchema,
   ReadMessageSchema,
-  ReadMessagesSchema,
+  MessageList,
+  MessageListItem,
+  IdParamsSchema,
+  GenericResponse,
 } from "../../types/schemaDefinitions";
-import { getMessage, getMessages } from "../../services/messages/messages";
+import { getMessage } from "../../services/messages/messages";
 import { newMessagingService } from "../../services/messages/messaging";
 import { getUserProfiles } from "../../services/users/shared-users";
 import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
@@ -18,13 +23,15 @@ import {
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
 import { getProfileSdk } from "../../utils/authentication-factory";
+import { getPaginationLinks, sanitizePagination } from "../../utils/pagination";
+import { utils } from "../../utils";
+import { QueryResult } from "pg";
 
 const MESSAGES_TAGS = ["Messages"];
 
 interface GetAllMessages {
-  Querystring: {
-    type?: string;
-  };
+  Querystring: PaginationParams &
+    Static<typeof IdParamsSchema> & { status?: "scheduled" | "delivered" };
 }
 
 interface GetMessage {
@@ -32,6 +39,8 @@ interface GetMessage {
     messageId: string;
   };
 }
+
+export const prefix = "/messages";
 
 export default async function messages(app: FastifyInstance) {
   // All messages
@@ -43,24 +52,182 @@ export default async function messages(app: FastifyInstance) {
       schema: {
         tags: MESSAGES_TAGS,
         querystring: Type.Optional(
-          Type.Object({
-            type: Type.Optional(Type.String()),
-          }),
+          Type.Composite([
+            Type.Object({
+              status: Type.Optional(Type.Literal("delivered")),
+            }),
+            IdParamsSchema,
+            PaginationParamsSchema,
+          ]),
         ),
         response: {
-          200: getGenericResponseSchema(ReadMessagesSchema),
+          200: getGenericResponseSchema(MessageList),
           400: HttpError,
         },
       },
     },
     async function getMessagesHandler(request, _reply) {
-      return {
-        data: await getMessages({
-          pg: app.pg,
-          userId: request.userData!.userId,
-          transportType: request.query?.type,
-        }),
+      const errorProcess = "GET_MESSAGES";
+      let url = "";
+      try {
+        url = utils.apiV1Url({
+          resourcePath: prefix,
+          base: process.env.HOST_URL || "",
+        }).href;
+      } catch (error) {
+        throw new ServerError(errorProcess, "failed to build link url", error);
+      }
+
+      const queryRecipientUserId = request.query.recipientUserId;
+      const queryOrganisationId = request.query.organisationId;
+
+      if (!queryOrganisationId && !queryRecipientUserId) {
+        throw new AuthorizationError(
+          errorProcess,
+          "not allowed to access messages from all organisations",
+        );
+      }
+
+      const userIdsRepresentingUser: string[] = [];
+      if (queryRecipientUserId) {
+        // we must make sure that we consider a user to have theoretically two ids from two separate tables (or databases if the separation occurs)
+        const allUserIdsQueryResult = await app.pg.pool.query<{
+          profileId?: string;
+          messageUserId: string;
+        }>(
+          `
+            select id as "messageUserId", user_profile_id as "profileId" from users where id::text = $1 or user_profile_id = $1
+            limit 1
+        `,
+          [request.userData?.userId],
+        );
+        const allUserIds = allUserIdsQueryResult.rows.at(0);
+        if (!allUserIds) {
+          throw new AuthorizationError(errorProcess, "illegal user id request");
+        }
+
+        if (
+          allUserIds.profileId
+            ? allUserIds.profileId !== queryRecipientUserId
+            : true && allUserIds.messageUserId !== queryRecipientUserId
+        ) {
+          throw new AuthorizationError(errorProcess, "illegal user id request");
+        }
+
+        userIdsRepresentingUser.push(allUserIds.messageUserId);
+        if (allUserIds.profileId) {
+          userIdsRepresentingUser.push(allUserIds.profileId);
+        }
+      }
+
+      // Only delivered query status allowed
+      if (
+        userIdsRepresentingUser.length &&
+        request.query.status !== "delivered"
+      ) {
+        throw new AuthorizationError(
+          errorProcess,
+          "only delivered messages allowed",
+        );
+      }
+
+      // Only query organisation you're allowed to see
+      if (
+        queryOrganisationId &&
+        queryOrganisationId !== request.userData?.organizationId
+      ) {
+        throw new AuthorizationError(
+          errorProcess,
+          "illegal organisation request",
+        );
+      }
+
+      const { limit, offset } = sanitizePagination({
+        limit: request.query.limit,
+        offset: request.query.offset,
+      });
+
+      const MessageListItemWithCount = Type.Composite([
+        MessageListItem,
+        Type.Object({ count: Type.Number() }),
+      ]);
+
+      type QueryRow = Static<typeof MessageListItemWithCount>;
+
+      let messagesQueryResult: QueryResult<QueryRow> | undefined;
+
+      try {
+        messagesQueryResult = await app.pg.pool.query<QueryRow>(
+          `
+            with count_selection as (
+              select count(*) from messages
+              where
+              case when $1::text is not null then organisation_id = $1 else true end
+              and case when $5 > 0 then user_id = any ($2) else true end
+            )
+            select 
+              id,
+              subject,
+              message_name as "messageName",
+              thread_name as "threadName",
+              organisation_id as "organisationId",
+              user_id as "recipientId",
+              created_at as "createdAt",
+              (select count from count_selection) as "count"
+            from messages
+            where 
+            case when $1::text is not null then organisation_id = $1 else true end
+            and case when $5 > 0 then user_id = any ($2) else true end
+            order by created_at desc
+            limit $3
+            offset $4
+        `,
+          [
+            queryOrganisationId || null,
+            userIdsRepresentingUser,
+            limit,
+            offset,
+            userIdsRepresentingUser.length,
+          ],
+        );
+      } catch (error) {
+        throw new ServerError(
+          errorProcess,
+          "failed to query organisation messages",
+          error,
+        );
+      }
+
+      const totalCount = messagesQueryResult?.rows.at(0)?.count || 0;
+
+      const links = getPaginationLinks({ totalCount, url, limit, offset });
+      const response: GenericResponse<Static<typeof MessageListItem>[]> = {
+        data:
+          messagesQueryResult?.rows.map(
+            ({
+              id,
+              createdAt,
+              subject,
+              messageName,
+              organisationId,
+              threadName,
+              recipientId,
+            }) => ({
+              id,
+              subject,
+              createdAt,
+              messageName,
+              threadName,
+              organisationId,
+              recipientId,
+            }),
+          ) ?? [],
+        metadata: {
+          totalCount,
+          links,
+        },
       };
+      return response;
     },
   );
 

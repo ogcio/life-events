@@ -1,19 +1,25 @@
 import { Static, TSchema, Type } from "@sinclair/typebox";
+import {
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_MAX_LIMIT,
+  PAGINATION_MIN_LIMIT,
+  PAGINATION_MIN_OFFSET,
+} from "../utils/pagination";
 
 export const AVAILABLE_LANGUAGES = ["en", "ga"];
 export const DEFAULT_LANGUAGE = "en";
 
-export const ReadMessagesSchema = Type.Array(
-  Type.Object({
-    id: Type.String(),
-    subject: Type.String(),
-    excerpt: Type.String(),
-    plainText: Type.String(),
-    richText: Type.String(),
-    createdAt: Type.String(),
-  }),
-);
-export type ReadMessages = Static<typeof ReadMessagesSchema>;
+export const MessageListItem = Type.Object({
+  id: Type.String(),
+  subject: Type.String(),
+  createdAt: Type.String(),
+  messageName: Type.String(),
+  threadName: Type.String(),
+  organisationId: Type.String(),
+  recipientId: Type.String(),
+});
+export const MessageList = Type.Array(MessageListItem);
+export type MessageList = Static<typeof MessageList>;
 
 export const ReadMessageSchema = Type.Object({
   subject: Type.String(),
@@ -58,11 +64,27 @@ export const CreateMessageSchema = Type.Composite([
 export type CreateMessage = Static<typeof CreateMessageSchema>;
 
 export const PaginationParamsSchema = Type.Object({
-  offset: Type.Optional(Type.Integer({ default: 0, minimum: 0 })),
-  limit: Type.Optional(Type.Integer({ default: 20, minimum: 1 })),
+  offset: Type.Optional(
+    Type.Integer({
+      default: PAGINATION_MIN_OFFSET,
+      minimum: PAGINATION_MIN_OFFSET,
+    }),
+  ),
+  limit: Type.Optional(
+    Type.Integer({
+      default: PAGINATION_LIMIT_DEFAULT,
+      minimum: PAGINATION_MIN_LIMIT,
+      maximum: PAGINATION_MAX_LIMIT,
+    }),
+  ),
 });
 
 export type PaginationParams = Static<typeof PaginationParamsSchema>;
+
+export const IdParamsSchema = Type.Object({
+  recipientUserId: Type.Optional(Type.String()),
+  organisationId: Type.Optional(Type.String()),
+});
 
 export const PaginationLinkSchema = Type.Object({
   href: Type.Optional(Type.String()),
