@@ -1,7 +1,6 @@
 "use client";
 import { useFormState } from "react-dom";
 import { useTranslations } from "next-intl";
-import uploadFile from "../actions/uploadFile";
 
 type FileUploadProps = {
   uploadFile: (formData: FormData) => Promise<{ error: string }>;
@@ -27,7 +26,6 @@ export default ({ uploadFile }: FileUploadProps) => {
             {t(state.error)}
           </p>
         )}
-        <input type="text" name="text" defaultValue={"some-value"} />
         <input
           className="govie-file-upload govie-input--error"
           id="file-upload"

@@ -1,8 +1,13 @@
 {
   "Upload": {
+    "Errors": {
+      "noFile": "The file must be present",
+      "tooBig": "The file must be smaller than 100MB",
+      "uploadError": "There was an error trying to upload the file",
+      "deleteError": "There was an error trying to delete the file",
+      "noKey": "No file specified for deletion"
+    },
     "buttonLabel": "Upload a file",
-    "noFile": "The file must be present",
-    "tooBig": "The file must be smaller than 100MB",
     "uploadButton": "Upload"
   },
   "NotFound": {

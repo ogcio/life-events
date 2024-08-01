@@ -1,16 +1,17 @@
+import { getCommonLogger } from "nextjs-logging-wrapper";
 import authenticatedAction from "../../../utils/authenticatedAction";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
+import { revalidatePath } from "next/cache";
 
 export const ERRORS = {
   NO_FILE: "noFile",
   TOO_BIG: "tooBig",
+  UPLOAD_ERROR: "uploadError",
 };
 
 const uploadFile = async (prevState, formData: FormData) => {
   "use server";
-  const context = await AuthenticationFactory.getInstance().getContext();
   const file_ = formData.get("file-upload");
-  const text = formData.get("text");
 
   if (!file_) {
     return { error: ERRORS.NO_FILE };
@@ -24,9 +25,19 @@ const uploadFile = async (prevState, formData: FormData) => {
     return { error: ERRORS.TOO_BIG };
   }
 
-  // const file = formData.get("file");
-  console.log("file good");
+  const uploadClient = await AuthenticationFactory.getUploadClient();
+  try {
+    const { error } = await uploadClient.uploadFile(file);
+    if (error) {
+      getCommonLogger().error(error);
+      return { error: ERRORS.UPLOAD_ERROR };
+    }
+  } catch (err) {
+    getCommonLogger().error(err);
+    return { error: ERRORS.UPLOAD_ERROR };
+  }
 
+  revalidatePath("/");
   return {};
 };
 

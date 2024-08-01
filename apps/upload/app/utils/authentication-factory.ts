@@ -19,7 +19,6 @@ export class AuthenticationFactory {
     }
 
     const token = await this.getInstance().getAccessToken();
-
     return new Upload(token);
   }
 }
