@@ -33,9 +33,7 @@ const getPreferredLanguage = async (
     return fallbackLanguage;
   }
 
-  const userProfile = await AuthenticationFactory.getProfileClient({
-    authenticationContext,
-  });
+  const userProfile = await AuthenticationFactory.getProfileClient();
   const contextUser = await authenticationContext.getUser();
   const user = await userProfile.getUser(contextUser.id);
 

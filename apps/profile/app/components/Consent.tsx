@@ -7,9 +7,7 @@ async function submitAction(formData: FormData) {
 
   const submitAuthContext =
     await AuthenticationFactory.getInstance().getContext();
-  const submitProfile = await AuthenticationFactory.getProfileClient({
-    token: submitAuthContext.accessToken,
-  });
+  const submitProfile = await AuthenticationFactory.getProfileClient();
   const submitUser = await submitProfile.getUser(submitAuthContext.user.id);
   if (!submitUser.data) {
     return notFound();

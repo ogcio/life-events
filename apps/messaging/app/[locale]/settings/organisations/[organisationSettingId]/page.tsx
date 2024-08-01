@@ -76,9 +76,7 @@ export default async (props: { params: { organisationSettingId: string } }) => {
       preferredTransports = [];
     }
 
-    const submitClient = await AuthenticationFactory.getMessagingClient({
-      authenticationContext,
-    });
+    const submitClient = await AuthenticationFactory.getMessagingClient();
 
     await submitClient.updateOrganisationSettings(orgId, {
       invitationStatusFeedback: status as "accepted" | "declined",
@@ -93,11 +91,8 @@ export default async (props: { params: { organisationSettingId: string } }) => {
     getTranslations("Commons"),
   ]);
 
-  const { user, accessToken } =
-    await AuthenticationFactory.getInstance().getContext();
-  const messagingClient = await AuthenticationFactory.getMessagingClient({
-    token: accessToken,
-  });
+  const { user } = await AuthenticationFactory.getInstance().getContext();
+  const messagingClient = await AuthenticationFactory.getMessagingClient();
   const configurations = await messagingClient.getOrganisationSettings(
     props.params.organisationSettingId,
   );

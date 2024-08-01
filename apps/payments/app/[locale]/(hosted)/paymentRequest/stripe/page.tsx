@@ -52,9 +52,7 @@ export default async function Card(props: {
     return redirect("/not-found", RedirectType.replace);
   }
 
-  const paymentsApi = await AuthenticationFactory.getPaymentsClient({
-    authenticationContext: authContext,
-  });
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const messages = await getMessages({ locale: props.params.locale });
   const stripeMessages =
     (await messages.PayStripe) as unknown as AbstractIntlMessages;
