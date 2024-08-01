@@ -7,3 +7,4 @@ dist
 yalc.*
 .tap
 .vscode
+allure-results
