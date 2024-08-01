@@ -16,8 +16,8 @@ export const PAGINATION_MIN_OFFSET = 0;
 export const formatAPIResponse = <T>(
   data: T[],
   pagination?: PaginationDetails,
-): GenericResponse<T> => {
-  const response: GenericResponse<T> = {
+): GenericResponse<T[]> => {
+  const response: GenericResponse<T[]> = {
     data,
   };
 

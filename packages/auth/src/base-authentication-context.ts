@@ -10,6 +10,8 @@ import {
   getPublicServantContext,
   isPublicServantAuthenticated,
   setSelectedOrganization,
+  getCitizenToken,
+  getOrgToken,
 } from "./authentication-context";
 import { AuthenticationError } from "shared-errors";
 import { notFound } from "next/navigation";
@@ -78,12 +80,6 @@ export class BaseAuthenticationContext {
   private ensureIsFullContext(
     context: PartialAuthSessionContext,
   ): AuthSessionContext {
-    if (!context.accessToken) {
-      getCommonLogger().error({
-        error: new AuthenticationError(ERROR_PROCESS, "Missing access token"),
-      });
-      throw notFound();
-    }
     if (!context.user) {
       getCommonLogger().error({
         error: new AuthenticationError(ERROR_PROCESS, "Missing user"),
@@ -104,10 +100,6 @@ export class BaseAuthenticationContext {
 
   async getUser(): Promise<AuthSessionUserInfo> {
     return (await this.getContext()).user;
-  }
-
-  async getAccessToken(): Promise<string> {
-    return (await this.getContext()).accessToken;
   }
 
   async isPublicServantAuthenticated(): Promise<boolean> {
@@ -159,4 +151,14 @@ export class BaseAuthenticationContext {
 
     return this.getPublicServant();
   };
+
+  async getToken() {
+    if (await this.isPublicServant()) {
+      return await getOrgToken(
+        this.config,
+        await this.getSelectedOrganization(),
+      );
+    }
+    return await getCitizenToken(this.config, this.config.resourceUrl);
+  }
 }

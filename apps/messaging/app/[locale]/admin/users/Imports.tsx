@@ -8,14 +8,12 @@ import { notFound } from "next/navigation";
 
 export default async () => {
   const t = await getTranslations("UsersImports");
-  const { accessToken, organization } =
+  const { organization } =
     await AuthenticationFactory.getInstance().getPublicServant();
-  if (!accessToken || !organization) {
+  if (!organization) {
     throw notFound();
   }
-  const messagingClient = await AuthenticationFactory.getMessagingClient({
-    token: accessToken,
-  });
+  const messagingClient = await AuthenticationFactory.getMessagingClient();
   const { data: imports } = await messagingClient.getUsersImports();
 
   return (

@@ -425,8 +425,7 @@ export default async (props: {
   searchParams: { id?: string };
 }) => {
   const t = await getTranslations("MessageTemplate");
-  const { user, accessToken } =
-    await AuthenticationFactory.getInstance().getContext();
+  const { user } = await AuthenticationFactory.getInstance().getContext();
 
   const state = await pgpool
     .query<{
@@ -442,9 +441,7 @@ export default async (props: {
     )
     .then((res) => res.rows.at(0)?.state);
 
-  const client = await AuthenticationFactory.getMessagingClient({
-    token: accessToken,
-  });
+  const client = await AuthenticationFactory.getMessagingClient();
   const contents: State = { langs: Array<string>() };
 
   let templateFetchError: Awaited<

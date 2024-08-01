@@ -59,7 +59,7 @@ export default async (props: {
 
   async function submitAction(formData: FormData) {
     "use server";
-    const { user: submitUser, accessToken: submitToken } =
+    const { user: submitUser } =
       await AuthenticationFactory.getInstance().getContext();
 
     const name = formData.get("name")?.toString();
@@ -97,9 +97,7 @@ export default async (props: {
         return;
       }
 
-      const sdk = await AuthenticationFactory.getMessagingClient({
-        token: submitToken,
-      });
+      const sdk = await AuthenticationFactory.getMessagingClient();
       const providerId = props.searchParams?.id;
       let error: any = undefined;
       if (providerId) {
@@ -172,11 +170,8 @@ export default async (props: {
     revalidatePath("/");
   }
 
-  const { user, accessToken } =
-    await AuthenticationFactory.getInstance().getContext();
-  const sdkClient = await AuthenticationFactory.getMessagingClient({
-    token: accessToken,
-  });
+  const { user } = await AuthenticationFactory.getInstance().getContext();
+  const sdkClient = await AuthenticationFactory.getMessagingClient();
   const data: Awaited<ReturnType<typeof sdkClient.getSmsProvider>>["data"] =
     props.searchParams?.id
       ? (await sdkClient.getSmsProvider(props.searchParams?.id)).data

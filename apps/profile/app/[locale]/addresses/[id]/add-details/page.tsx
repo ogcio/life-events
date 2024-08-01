@@ -15,11 +15,8 @@ export default async (props: NextPageProps) => {
     throw notFound();
   }
 
-  const { accessToken, user } =
-    await AuthenticationFactory.getInstance().getContext();
-  const profileClient = await AuthenticationFactory.getProfileClient({
-    token: accessToken,
-  });
+  const { user } = await AuthenticationFactory.getInstance().getContext();
+  const profileClient = await AuthenticationFactory.getProfileClient();
 
   const { data: address, error } = await profileClient.getAddress(addressId);
 
@@ -47,11 +44,10 @@ export default async (props: NextPageProps) => {
       throw notFound();
     }
 
-    const { accessToken: addressDetailsToken, user: addressDetailsUser } =
+    const { user: addressDetailsUser } =
       await AuthenticationFactory.getInstance().getContext();
-    const addressDetailsProfile = await AuthenticationFactory.getProfileClient({
-      token: accessToken,
-    });
+    const addressDetailsProfile =
+      await AuthenticationFactory.getProfileClient();
     const errors: form.Error[] = [];
     const isOwner = formData.get("isOwner")?.toString();
     const isPrimaryAddress = formData.get("isPrimaryAddress")?.toString();
@@ -100,11 +96,7 @@ export default async (props: NextPageProps) => {
     if (!addressId) {
       throw notFound();
     }
-    const cancelAccessToken =
-      await AuthenticationFactory.getInstance().getAccessToken();
-    const profileClient = await AuthenticationFactory.getProfileClient({
-      token: cancelAccessToken,
-    });
+    const profileClient = await AuthenticationFactory.getProfileClient();
     const { error } = await profileClient.deleteAddress(addressId);
 
     if (error) {

@@ -32,9 +32,7 @@ export default async ({ theme }: { theme: Theme }) => {
     }
     const authenticationContext = AuthenticationFactory.getInstance();
     const authUser = await authenticationContext.getUser();
-    const userProfile = await AuthenticationFactory.getProfileClient({
-      authenticationContext,
-    });
+    const userProfile = await AuthenticationFactory.getProfileClient();
     await userProfile.patchUser(authUser.id, {
       preferredLanguage: handleLang,
     });

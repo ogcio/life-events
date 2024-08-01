@@ -111,9 +111,7 @@ export default async () => {
 
   const red = ds.colours.ogcio.red;
   const mainAuth = AuthenticationFactory.getInstance();
-  const mainProfile = await AuthenticationFactory.getProfileClient({
-    authenticationContext: mainAuth,
-  });
+  const mainProfile = await AuthenticationFactory.getProfileClient();
   const mainUser = await mainAuth.getUser();
   const { data, error } = await mainProfile.getUser(mainUser.id);
 
@@ -155,9 +153,7 @@ export default async () => {
   async function togglePPSN() {
     "use server";
     const toggleInstance = AuthenticationFactory.getInstance();
-    const toggleProfile = await AuthenticationFactory.getProfileClient({
-      authenticationContext: toggleInstance,
-    });
+    const toggleProfile = await AuthenticationFactory.getProfileClient();
     const toggleUser = await toggleInstance.getUser();
     const { data: userExistsQuery, error } = await toggleProfile.getUser(
       toggleUser.id,
