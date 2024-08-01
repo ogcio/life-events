@@ -98,7 +98,7 @@ const getSettingsPerUserIds = async (params: {
   client: PoolClient;
   importId: string;
 }): Promise<OrganisationSetting[]> => {
-  let userIndex = 1;
+  let userIndex = 2;
   const idsIndexes = params.userIds.map(() => `$${userIndex++}`);
 
   try {
