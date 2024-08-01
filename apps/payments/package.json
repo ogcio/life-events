@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^2.7.1",
-    "@stripe/stripe-js": "^3.4.1",
+    "@stripe/stripe-js": "^4.1.0",
     "auth": "*",
     "axios": "^1.7.2",
     "building-blocks-sdk": "*",
