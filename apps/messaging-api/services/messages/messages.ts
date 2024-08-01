@@ -2,7 +2,7 @@ import { PostgresDb } from "@fastify/postgres";
 import {
   CreateMessage,
   ReadMessage,
-  ReadMessages,
+  MessageList,
 } from "../../types/schemaDefinitions";
 import { ServiceError, utils } from "../../utils";
 import { FastifyBaseLogger } from "fastify";
@@ -55,35 +55,6 @@ export const getMessage = async (params: {
   }
 
   return data.rows[0];
-};
-
-export const getMessages = async (params: {
-  pg: PostgresDb;
-  userId: string;
-  transportType?: string;
-}): Promise<ReadMessages> => {
-  let lifeEventType = "";
-  if (params.transportType === "lifeEvent") {
-    lifeEventType = `and preferred_transports @> '{"lifeEvent"}'`;
-  }
-  return (
-    await params.pg.query(
-      `
-        select 
-            id,
-            subject, 
-            excerpt, 
-            plain_text as "plainText",
-            rich_text as "richText",
-            created_at as "createdAt"
-        from messages
-        where user_id = $1 and is_delivered = true
-        ${lifeEventType}
-        order by created_at desc
-      `,
-      [params.userId],
-    )
-  ).rows;
 };
 
 export const executeJob = async (params: {

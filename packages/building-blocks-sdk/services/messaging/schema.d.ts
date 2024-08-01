@@ -18,7 +18,11 @@ export interface paths {
     get: {
       parameters: {
         query?: {
-          type?: string;
+          status?: "delivered";
+          recipientUserId?: string;
+          organisationId?: string;
+          offset?: number;
+          limit?: number;
         };
       };
       responses: {
@@ -29,10 +33,11 @@ export interface paths {
               data: {
                 id: string;
                 subject: string;
-                excerpt: string;
-                plainText: string;
-                richText: string;
                 createdAt: string;
+                messageName: string;
+                threadName: string;
+                organisationId: string;
+                recipientId: string;
               }[];
               metadata?: {
                 links?: {
