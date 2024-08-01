@@ -7,17 +7,14 @@ import {
   ReadMessageSchema,
   ReadMessagesSchema,
 } from "../../types/schemaDefinitions";
-import { getMessage, getMessages } from "../../services/messages/messages";
-import { newMessagingService } from "../../services/messages/messaging";
-import { getUserProfiles } from "../../services/users/shared-users";
-import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
 import {
-  MessagingEventType,
-  newMessagingEventLogger,
-} from "../../services/messages/eventLogger";
+  getMessage,
+  getMessages,
+  processMessages,
+} from "../../services/messages/messages";
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
-import { getProfileSdk } from "../../utils/authentication-factory";
+import { ensureUserCanAccessUser } from "api-auth";
 
 const MESSAGES_TAGS = ["Messages"];
 
@@ -122,111 +119,37 @@ export default async function messages(app: FastifyInstance) {
     async function createMessageHandler(request, reply) {
       const errorKey = "FAILED_TO_CREATE_MESSAGE";
 
-      const senderUserId = request.userData?.userId;
-      const organisationId = request.userData?.organizationId;
-
-      if (!senderUserId || !organisationId) {
-        throw new AuthorizationError(errorKey, "unauthorized");
-      }
-
-      const eventLogger = newMessagingEventLogger(app.pg.pool, app.log);
-
-      const receiverUserId = request.body.userId;
-
-      const [receiverUser] = await getUserProfiles(
-        [receiverUserId],
-        app.pg.pool,
+      const userData = ensureUserCanAccessUser(
+        request.userData,
+        request.body.userId,
+        errorKey,
       );
 
-      if (!receiverUser) {
-        throw new NotFoundError(
-          errorKey,
-          "failed to get receiver user profile",
-        );
-      }
-
-      const profileSdk = await getProfileSdk(request.userData?.organizationId);
-      const { data, error } = await profileSdk.getUser(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-        request.userData?.userId!,
-      );
-
-      if (error) {
-        throw new ServerError(
-          errorKey,
-          "failed to get sender user profile from profile sdk",
-          error,
-        );
-      }
-
-      if (!data) {
-        throw new NotFoundError(
-          errorKey,
-          "sender user from profile sdk was undefined",
-        );
-      }
-
-      const senderFullName = `${data.firstName} ${data.lastName}`.trim();
-      const receiverFullName =
-        `${receiverUser.firstName} ${receiverUser.lastName}`.trim();
-
-      // Create
-      const messageService = newMessagingService(app.pg.pool);
-
-      let message = null;
-      try {
-        message = await messageService.createMessage({
-          receiverUserId,
-          ...request.body,
-          ...request.body.message,
-          organisationId,
-        });
-      } catch (error) {
-        throw new ServerError(errorKey, "failed to create message", error);
-      }
-
-      await eventLogger.log(MessagingEventType.createRawMessage, [
-        {
-          organisationName: organisationId,
-          bypassConsent: request.body.bypassConsent,
-          security: request.body.security,
-          transports: request.body.preferredTransports,
-          scheduledAt: request.body.scheduleAt,
-          messageId: message.id,
-          ...request.body.message,
-          senderFullName,
-          senderPPSN: data.ppsn || "",
-          senderUserId,
-          receiverFullName,
-          receiverPPSN: receiverUser.ppsn,
-          receiverUserId,
-        },
-      ]);
-
-      await eventLogger.log(MessagingEventType.scheduleMessage, [
-        { messageId: message.id },
-      ]);
-
-      // Schedule
-      let jobId = "";
-      try {
-        const [job] = await messageService.scheduleMessages(
-          [{ messageId: message.id, userId: message.user_id }],
-          request.body.scheduleAt,
-          organisationId,
-        );
-        jobId = job.jobId;
-      } catch (err) {
-        await eventLogger.log(MessagingEventType.scheduleMessageError, [
+      const messages = await processMessages({
+        inputMessages: [
           {
-            messageId: message.id,
-            jobId,
+            receiverUserId: request.body.userId,
+            ...request.body,
+            ...request.body.message,
+            organisationId: userData.organizationId!,
           },
-        ]);
+        ],
+        scheduleAt: request.body.scheduleAt,
+        errorProcess: errorKey,
+        pgPool: app.pg.pool,
+        logger: request.log,
+        senderUser: {
+          profileId: userData.userId,
+          organizationId: userData.organizationId,
+        },
+        allOrNone: true,
+      });
+      if (messages.errors.length > 0) {
+        throw messages.errors[0];
       }
 
       reply.statusCode = 201;
-      return { data: { messageId: message.id } };
+      return { data: { messageId: messages.scheduledMessages[0].entityId } };
     },
   );
 
