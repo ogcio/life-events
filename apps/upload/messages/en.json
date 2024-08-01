@@ -5,6 +5,7 @@
       "tooBig": "The file must be smaller than 100MB",
       "uploadError": "There was an error trying to upload the file",
       "deleteError": "There was an error trying to delete the file",
+      "fileInfected": "The file is infected",
       "noKey": "No file specified for deletion"
     },
     "buttonLabel": "Upload a file",

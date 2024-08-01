@@ -10,6 +10,7 @@ const initialState = {};
 
 export default ({ uploadFile }: FileUploadProps) => {
   const t = useTranslations();
+  const errorT = useTranslations("Errors");
   const [state, formAction] = useFormState(uploadFile, initialState);
 
   return (
@@ -23,7 +24,7 @@ export default ({ uploadFile }: FileUploadProps) => {
         {state.error && (
           <p id="file-upload-error" className="govie-error-message">
             <span className="govie-visually-hidden">Error:</span>
-            {t(state.error)}
+            {errorT(state.error)}
           </p>
         )}
         <input

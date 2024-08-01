@@ -7,6 +7,7 @@ export const ERRORS = {
   NO_FILE: "noFile",
   TOO_BIG: "tooBig",
   UPLOAD_ERROR: "uploadError",
+  FILE_INFECTED: "fileInfected",
 };
 
 const uploadFile = async (prevState, formData: FormData) => {
@@ -30,6 +31,12 @@ const uploadFile = async (prevState, formData: FormData) => {
     const { error } = await uploadClient.uploadFile(file);
     if (error) {
       getCommonLogger().error(error);
+
+      if (error.detail === "File is infected") {
+        return {
+          error: ERRORS.FILE_INFECTED,
+        };
+      }
       return { error: ERRORS.UPLOAD_ERROR };
     }
   } catch (err) {

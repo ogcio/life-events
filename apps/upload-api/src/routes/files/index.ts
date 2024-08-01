@@ -183,6 +183,7 @@ const permissions = {
 
 const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
   const data = await request.file();
+  const userId = request.userData?.userId;
 
   if (!data) {
     throw new BadRequestError(FILE_UPLOAD, "Request is not multipart");
@@ -238,15 +239,19 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     leavePartsOnError: false, // optional manually handle dropped parts
     params: {
       Bucket: s3Config.bucketName,
-      Key: filename,
+      Key: `${userId}/${filename}`,
       Body: s3uploadPassthrough,
     },
   });
 
-  upload.done().catch((err) => {
-    eventEmitter.emit("error", err);
-    return;
-  });
+  upload
+    .done()
+    .catch((err) => {
+      eventEmitter.emit("error", err);
+    })
+    .then(() => {
+      eventEmitter.emit("fileUploaded");
+    });
 
   pipeline(
     stream,
@@ -257,7 +262,6 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
       if (err) {
         eventEmitter.emit("error", err);
       }
-      eventEmitter.emit("fileUploaded");
     },
   );
 
@@ -327,8 +331,8 @@ export default async function routes(app: FastifyInstance) {
         );
         response =
           data.Contents?.map((item) => ({
-            url: `${app.config.S3_ENDPOINT}/${app.s3Client.bucketName}/${item.Key}`,
-            key: item.Key,
+            url: `${app.config.HOST}/api/v1/files/${item.Key?.slice(item.Key.lastIndexOf("/") + 1)}`,
+            key: item.Key?.slice(item.Key.lastIndexOf("/") + 1),
             size: item.Size,
           })) || [];
       } catch (err) {
@@ -362,7 +366,7 @@ export default async function routes(app: FastifyInstance) {
         await app.s3Client.client.send(
           new DeleteObjectCommand({
             Bucket: app.s3Client.bucketName,
-            Key: request.params.key,
+            Key: `${request.userData?.userId}/${request.params.key}`,
           }),
         );
       } catch (err) {
@@ -393,7 +397,7 @@ export default async function routes(app: FastifyInstance) {
         response = await app.s3Client.client.send(
           new GetObjectCommand({
             Bucket: app.s3Client.bucketName,
-            Key: request.params.key,
+            Key: `${request.userData?.userId}/${request.params.key}`,
           }),
         );
       } catch (err) {

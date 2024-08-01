@@ -19,7 +19,7 @@ const deleteFile = async (prevState, formData: FormData) => {
   const uploadClient = await AuthenticationFactory.getUploadClient();
 
   try {
-    const { error } = await uploadClient.deleteFile(key as string);
+    const { error } = await uploadClient.deleteFile(key);
     if (error) {
       getCommonLogger().error(error);
       return { error: ERRORS.DELETE_ERROR };
