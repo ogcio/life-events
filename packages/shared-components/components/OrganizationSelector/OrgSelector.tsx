@@ -11,6 +11,7 @@ export type OrganizationSelectorProps = {
   organizations: OrganizationSelectorItem[];
   defaultOrganization?: string;
   handleSubmit: any;
+  disabled?: boolean;
 };
 
 export default function ({
@@ -19,6 +20,7 @@ export default function ({
   organizations,
   defaultOrganization,
   handleSubmit,
+  disabled = false,
 }: OrganizationSelectorProps) {
   if (organizations.length < 1) {
     return <></>;
@@ -40,6 +42,7 @@ export default function ({
             name="organization"
             className="govie-select"
             defaultValue={defaultOrganization ?? organizations[0].id}
+            disabled={disabled}
           >
             {organizations.map((org) => (
               <option key={org.id} value={org.id}>
@@ -53,7 +56,8 @@ export default function ({
           id="button"
           type="submit"
           data-module="govie-button"
-          className="govie-button govie-button--small "
+          className="govie-button govie-button--small"
+          disabled={disabled}
         >
           {actionTitle}
         </button>

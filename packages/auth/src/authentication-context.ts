@@ -67,6 +67,18 @@ export const getSelectedOrganization = () =>
 export const setSelectedOrganization = (organizationId) =>
   AuthSession.setSelectedOrganization(organizationId);
 
+export const getCitizenToken = (
+  params: CitizenParameters,
+  resource?: string,
+): Promise<string> =>
+  AuthSession.getCitizenToken(buildCitizenAuthConfig(params), resource);
+
+export const getOrgToken = (
+  params: PublicServantParameters,
+  organizationId: string,
+): Promise<string> =>
+  AuthSession.getOrgToken(buildPublicServantAuthConfig(params), organizationId);
+
 const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
   ...getBaseLogtoConfig(),
   baseUrl: params.baseUrl,
@@ -79,7 +91,7 @@ const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
 const buildPublicServantContextParameters = (
   params: PublicServantParameters,
 ) => ({
-  getOrganizationToken: true,
+  getOrganizationToken: false,
   fetchUserInfo: true,
   publicServantExpectedRoles: params.publicServantExpectedRoles ?? [],
   organizationId: params.organizationId,
@@ -97,7 +109,7 @@ const buildCitizenAuthConfig = (params: CitizenParameters) => ({
 });
 
 const buildCitizenContextParameters = (params: CitizenParameters) => ({
-  getAccessToken: true,
+  getAccessToken: false,
   resource: params.resourceUrl,
   fetchUserInfo: true,
   publicServantExpectedRoles: params.publicServantExpectedRoles ?? [],

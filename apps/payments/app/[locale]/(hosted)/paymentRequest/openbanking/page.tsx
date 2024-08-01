@@ -66,9 +66,7 @@ export default async function Bank(props: {
 }) {
   const authContext = AuthenticationFactory.getInstance();
   const { user, isPublicServant } = await authContext.getContext();
-  const paymentsApi = await AuthenticationFactory.getPaymentsClient({
-    authenticationContext: authContext,
-  });
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const t = await getTranslations("Common");
 
   if (isPublicServant || !props.searchParams?.paymentId) {
