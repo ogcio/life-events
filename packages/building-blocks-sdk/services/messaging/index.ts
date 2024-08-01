@@ -29,7 +29,11 @@ export class Messaging {
   ) {
     const { error, data } = await this.client.GET("/api/v1/messages/", {
       params: {
-        query: { ...(filter || {}), recipientUserId: userId },
+        query: {
+          ...(filter || {}),
+          recipientUserId: userId,
+          status: "delivered",
+        },
       },
     });
 
