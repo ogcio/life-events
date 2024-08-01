@@ -6,7 +6,7 @@ t.test("apiV1Url", async (t) => {
   t.test("shuld return correct url with empty path param", (t) => {
     const expected = `${base}/api/v1`;
 
-    const actual = utils.apiV1Url({ base, resoucePath: "" });
+    const actual = utils.apiV1Url({ base, resourcePath: "" });
 
     t.equal(expected, actual.href);
     t.end();
@@ -17,7 +17,7 @@ t.test("apiV1Url", async (t) => {
     (t) => {
       const expected = `${base}/api/v1/something`;
 
-      const actual = utils.apiV1Url({ base, resoucePath: "something" });
+      const actual = utils.apiV1Url({ base, resourcePath: "something" });
 
       t.equal(expected, actual.href);
       t.end();
@@ -29,7 +29,7 @@ t.test("apiV1Url", async (t) => {
     (t) => {
       const expected = `${base}/api/v1/something`;
 
-      const actual = utils.apiV1Url({ base, resoucePath: "/something" });
+      const actual = utils.apiV1Url({ base, resourcePath: "/something" });
 
       t.equal(expected, actual.href);
       t.end();
@@ -37,7 +37,7 @@ t.test("apiV1Url", async (t) => {
   );
 
   t.test("should throw with non url base", (t) => {
-    t.throws(() => utils.apiV1Url({ base: "", resoucePath: "" }), TypeError);
+    t.throws(() => utils.apiV1Url({ base: "", resourcePath: "" }), TypeError);
     t.end();
   });
 });

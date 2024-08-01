@@ -71,7 +71,7 @@ export default async function messages(app: FastifyInstance) {
       let url = "";
       try {
         url = utils.apiV1Url({
-          resoucePath: prefix,
+          resourcePath: prefix,
           base: process.env.HOST_URL || "",
         }).href;
       } catch (error) {
