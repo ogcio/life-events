@@ -80,7 +80,7 @@ export interface paths {
         content: {
           "application/json": {
             preferredTransports: ("email" | "sms" | "lifeEvent")[];
-            userId: string;
+            recipientUserId: string;
             security: string;
             /** @default false */
             bypassConsent: boolean;
