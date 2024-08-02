@@ -178,7 +178,6 @@ t.test("files", async (t) => {
       setTimeout(() => {
         antivirusPassthrough.emit("scan-complete", { isInfected: true });
         s3SendEventEmitter.emit("sendComplete");
-        uploadEventEmitter.emit("fileUploaded");
       });
     });
 
@@ -322,8 +321,8 @@ t.test("files", async (t) => {
         });
 
       setTimeout(() => {
-        uploadEventEmitter.emit("upload-error", new Error("upload error"));
         antivirusPassthrough.emit("scan-complete", { isInfected: false });
+        uploadEventEmitter.emit("upload-error", new Error("upload error"));
       });
     });
 
@@ -364,7 +363,7 @@ t.test("files", async (t) => {
           t.same(response.json(), {
             data: [
               {
-                url: "http://localhost:4566//file1.txt",
+                url: "http://localhost:8008/api/v1/files/file1.txt",
                 key: "file1.txt",
                 size: 100,
               },

@@ -62,7 +62,7 @@ ENV LOG_LEVEL=trace
 RUN npm prune --omit=dev
 
 
-EXPOSE 8006
+EXPOSE 8007
 
 WORKDIR /app/apps/upload-api
 
