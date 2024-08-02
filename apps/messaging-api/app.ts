@@ -47,7 +47,12 @@ export async function build(opts?: FastifyServerOptions) {
 
   app.register(fastifySwaggerUi, {
     routePrefix: "/docs",
+    transformSpecificationClone:true,
     transformSpecification(swaggerObject) {
+      // thanks to this we can avoid to remove endpoints
+      // from the open api definition so to be able to use them
+      // in the SDKs but at the same time hide them
+      // in the Swagger UI
       delete swaggerObject.paths["/api/v1/user-imports/template-download"]
       return swaggerObject
     },
