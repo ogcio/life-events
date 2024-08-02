@@ -2,13 +2,13 @@ import { FastifyInstance } from "fastify";
 import { Static, Type } from "@sinclair/typebox";
 import {
   getGenericResponseSchema,
-  MessageCreate,
+  MessageCreateSchema,
   MessageCreateType,
   PaginationParams,
   PaginationParamsSchema,
   ReadMessageSchema,
-  MessageList,
-  MessageListItem,
+  MessageListSchema,
+  MessageListItemSchema,
   IdParamsSchema,
   GenericResponse,
 } from "../../types/schemaDefinitions";
@@ -61,7 +61,7 @@ export default async function messages(app: FastifyInstance) {
           ]),
         ),
         response: {
-          200: getGenericResponseSchema(MessageList),
+          200: getGenericResponseSchema(MessageListSchema),
           400: HttpError,
         },
       },
@@ -148,7 +148,7 @@ export default async function messages(app: FastifyInstance) {
       });
 
       const MessageListItemWithCount = Type.Composite([
-        MessageListItem,
+        MessageListItemSchema,
         Type.Object({ count: Type.Number() }),
       ]);
 
@@ -200,30 +200,31 @@ export default async function messages(app: FastifyInstance) {
       const totalCount = messagesQueryResult?.rows.at(0)?.count || 0;
 
       const links = getPaginationLinks({ totalCount, url, limit, offset });
-      const response: GenericResponse<Static<typeof MessageListItem>[]> = {
-        data:
-          messagesQueryResult?.rows.map(
-            ({
-              id,
-              createdAt,
-              subject,
-              organisationId,
-              threadName,
-              recipientId,
-            }) => ({
-              id,
-              subject,
-              createdAt,
-              threadName,
-              organisationId,
-              recipientId,
-            }),
-          ) ?? [],
-        metadata: {
-          totalCount,
-          links,
-        },
-      };
+      const response: GenericResponse<Static<typeof MessageListItemSchema>[]> =
+        {
+          data:
+            messagesQueryResult?.rows.map(
+              ({
+                id,
+                createdAt,
+                subject,
+                organisationId,
+                threadName,
+                recipientId,
+              }) => ({
+                id,
+                subject,
+                createdAt,
+                threadName,
+                organisationId,
+                recipientId,
+              }),
+            ) ?? [],
+          metadata: {
+            totalCount,
+            links,
+          },
+        };
       return response;
     },
   );
@@ -269,7 +270,7 @@ export default async function messages(app: FastifyInstance) {
         ]),
       schema: {
         tags: MESSAGES_TAGS,
-        body: MessageCreate,
+        body: MessageCreateSchema,
         response: {
           "4xx": HttpError,
           "5xx": HttpError,

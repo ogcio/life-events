@@ -1,9 +1,13 @@
 import { test as baseTest, expect } from "@playwright/test";
 import fs from "fs";
 import path from "path";
+import { MyGovIdMockLoginPage } from "../objects/MyGovIdMockLoginPage";
+import { password, myGovIdMockSettings } from "../utils/constants";
 
-const baseURL = process.env.HOST_URL ?? "http://localhost:3001";
-const loginUrl = process.env.LOGIN_URL ?? "http://localhost:8000/static/login/";
+const baseURL =
+  process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT ??
+  "http://localhost:3001";
+const loginUrl = process.env.LOGTO_ENDPOINT ?? "http://localhost:3301/";
 
 export * from "@playwright/test";
 export const test = baseTest.extend<{}, { workerStorageState: string }>({
@@ -27,14 +31,23 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
       await page.goto(baseURL);
       expect(page.url()).toEqual(expect.stringContaining(loginUrl));
 
-      const pwInput = await page.getByRole("textbox");
-      await pwInput.fill("123");
-      const loginBtn = await page.getByRole("button");
-      await loginBtn.click();
+      const logtoLoginBtn = await page.getByRole("button", {
+        name: "Continue with MyGovId",
+      });
+      await logtoLoginBtn.click();
 
-      await page.waitForURL(`${baseURL}/en/paymentSetup`);
+      const loginPage = new MyGovIdMockLoginPage(page);
+
+      await loginPage.selectPublicServantUser(
+        myGovIdMockSettings.publicServantUser,
+      );
+      await loginPage.enterPassword(password);
+      await loginPage.submitLogin(myGovIdMockSettings.publicServantUser);
+
+      await loginPage.expectPaymentSetupPage();
 
       await page.context().storageState({ path: fileName });
+
       await page.close();
       await use(fileName);
     },

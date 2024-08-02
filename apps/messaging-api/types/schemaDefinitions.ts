@@ -9,7 +9,27 @@ import {
 export const AVAILABLE_LANGUAGES = ["en", "ga"];
 export const DEFAULT_LANGUAGE = "en";
 
-export const MessageListItem = Type.Object({
+export const TypeboxStringEnum = <T extends string[]>(
+  items: [...T],
+  defaultValue?: string,
+) =>
+  Type.Unsafe<T[number]>({
+    type: "string",
+    enum: items,
+    default: defaultValue,
+  });
+
+export const EditableProvidersSchema = TypeboxStringEnum(["sms", "email"]);
+export type EditableProviders = Static<typeof EditableProvidersSchema>;
+
+export const AllProvidersSchema = TypeboxStringEnum([
+  "sms",
+  "email",
+  "lifeEvent",
+]);
+export type AllProviders = Static<typeof AllProvidersSchema>;
+
+export const MessageListItemSchema = Type.Object({
   id: Type.String(),
   subject: Type.String(),
   createdAt: Type.String(),
@@ -17,8 +37,8 @@ export const MessageListItem = Type.Object({
   organisationId: Type.String(),
   recipientId: Type.String(),
 });
-export const MessageList = Type.Array(MessageListItem);
-export type MessageList = Static<typeof MessageList>;
+export const MessageListSchema = Type.Array(MessageListItemSchema);
+export type MessageList = Static<typeof MessageListSchema>;
 
 export const ReadMessageSchema = Type.Object({
   subject: Type.String(),
@@ -45,7 +65,7 @@ export const TemplateInputSchema = Type.Object({
 export type TemplateInput = Static<typeof TemplateInputSchema>;
 
 export const CreateMessageOptionsSchema = Type.Object({
-  preferredTransports: Type.Array(Type.String()),
+  preferredTransports: Type.Array(AllProvidersSchema),
   userIds: Type.Array(Type.String()),
   security: Type.String(),
   scheduleAt: Type.String({ format: "date-time" }),
@@ -119,7 +139,7 @@ export type GenericResponse<T> = {
   metadata?: Static<typeof ResponseMetadataSchema>;
 };
 
-export const MessageEventList = Type.Array(
+export const MessageEventListSchema = Type.Array(
   Type.Object({
     eventId: Type.String({ format: "uuid" }),
     messageId: Type.String({ format: "uuid" }),
@@ -131,9 +151,9 @@ export const MessageEventList = Type.Array(
   }),
 );
 
-export type MessageEventListType = Static<typeof MessageEventList>;
+export type MessageEventListType = Static<typeof MessageEventListSchema>;
 
-export const MessageEvent = Type.Array(
+export const MessageEventSchema = Type.Array(
   Type.Object({
     eventStatus: Type.String(),
     eventType: Type.String(),
@@ -172,16 +192,8 @@ export const MessageEvent = Type.Array(
   }),
 );
 
-export const PreferredTransports = Type.Array(
-  Type.Union([
-    Type.Literal("email"),
-    Type.Literal("sms"),
-    Type.Literal("lifeEvent"),
-  ]),
-);
-
-export const MessageCreate = Type.Object({
-  preferredTransports: PreferredTransports,
+export const MessageCreateSchema = Type.Object({
+  preferredTransports: Type.Array(AllProvidersSchema),
   recipientUserId: Type.String(),
   security: Type.String(),
   bypassConsent: Type.Boolean({ default: false }),
@@ -196,23 +208,18 @@ export const MessageCreate = Type.Object({
   }),
 });
 
-export type MessageCreateType = Static<typeof MessageCreate>;
+export type MessageCreateType = Static<typeof MessageCreateSchema>;
 
-export const ProviderType = Type.Union([
-  Type.Literal("sms"),
-  Type.Literal("email"),
-]);
-
-export const ProviderListItem = Type.Object({
+export const ProviderListItemSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
   providerName: Type.String(),
   isPrimary: Type.Boolean(),
-  type: ProviderType,
+  type: EditableProvidersSchema,
 });
 
-export const ProviderList = Type.Array(ProviderListItem);
+export const ProviderListSchema = Type.Array(ProviderListItemSchema);
 
-export const EmailCreate = Type.Object({
+export const EmailCreateSchema = Type.Object({
   providerName: Type.String(),
   isPrimary: Type.Boolean(),
   type: Type.Literal("email"),
@@ -225,7 +232,7 @@ export const EmailCreate = Type.Object({
   ssl: Type.Boolean(),
 });
 
-export const SmsCreate = Type.Object({
+export const SmsCreateSchema = Type.Object({
   providerName: Type.String(),
   isPrimary: Type.Boolean(),
   type: Type.Literal("sms"),
@@ -239,16 +246,22 @@ export const SmsCreate = Type.Object({
   ]),
 });
 
-export const ProviderCreate = Type.Union([EmailCreate, SmsCreate]);
-
-export const EmailProvider = Type.Composite([
-  Type.Object({ id: Type.String({ format: "uuid" }) }),
-  EmailCreate,
+export const ProviderCreateSchema = Type.Union([
+  EmailCreateSchema,
+  SmsCreateSchema,
 ]);
 
-export const SmsProvider = Type.Composite([
+export const EmailProviderSchema = Type.Composite([
   Type.Object({ id: Type.String({ format: "uuid" }) }),
-  SmsCreate,
+  EmailCreateSchema,
 ]);
 
-export const ProviderUpdate = Type.Union([EmailProvider, SmsProvider]);
+export const SmsProviderSchema = Type.Composite([
+  Type.Object({ id: Type.String({ format: "uuid" }) }),
+  SmsCreateSchema,
+]);
+
+export const ProviderUpdateSchema = Type.Union([
+  EmailProviderSchema,
+  SmsProviderSchema,
+]);
