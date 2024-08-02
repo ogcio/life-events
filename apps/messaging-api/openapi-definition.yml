@@ -180,7 +180,7 @@ paths:
                       - type: string
                         enum:
                           - lifeEvent
-                userId:
+                recipientUserId:
                   type: string
                 security:
                   type: string
@@ -217,7 +217,7 @@ paths:
                     - lang
               required:
                 - preferredTransports
-                - userId
+                - recipientUserId
                 - security
                 - bypassConsent
                 - scheduleAt
