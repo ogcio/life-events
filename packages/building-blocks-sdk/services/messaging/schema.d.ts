@@ -79,7 +79,7 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            preferredTransports: ("email" | "sms" | "lifeEvent")[];
+            preferredTransports: ("sms" | "email" | "lifeEvent")[];
             recipientUserId: string;
             security: string;
             /** @default false */
@@ -247,6 +247,7 @@ export interface paths {
                 id: string;
                 providerName: string;
                 isPrimary: boolean;
+                /** @enum {string} */
                 type: "sms" | "email";
               }[];
               metadata?: {
@@ -958,7 +959,10 @@ export interface paths {
                 /** @default null */
                 emailAddress: null | string;
                 organisationId: string;
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 organisationInvitationStatus:
                   | "to_be_invited"
                   | "pending"
@@ -967,12 +971,16 @@ export interface paths {
                 organisationInvitationSentAt?: string;
                 organisationInvitationFeedbackAt?: string;
                 organisationPreferredTransports: (
-                  | "email"
                   | "sms"
+                  | "email"
                   | "lifeEvent"
                 )[];
+                /** @enum {string} */
                 correlationQuality: "full" | "partial" | "not_related";
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
                   /** @default null */
@@ -1103,7 +1111,10 @@ export interface paths {
                 /** @default null */
                 emailAddress: null | string;
                 organisationId: string;
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 organisationInvitationStatus:
                   | "to_be_invited"
                   | "pending"
@@ -1112,12 +1123,16 @@ export interface paths {
                 organisationInvitationSentAt?: string;
                 organisationInvitationFeedbackAt?: string;
                 organisationPreferredTransports: (
-                  | "email"
                   | "sms"
+                  | "email"
                   | "lifeEvent"
                 )[];
+                /** @enum {string} */
                 correlationQuality: "full" | "partial" | "not_related";
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
                   /** @default null */
@@ -1232,7 +1247,10 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            /** @default accepted */
+            /**
+             * @default accepted
+             * @enum {string}
+             */
             invitationStatusFeedback: "accepted" | "declined";
             preferredTransports: string[];
           };
@@ -1255,7 +1273,10 @@ export interface paths {
                 /** @default null */
                 emailAddress: null | string;
                 organisationId: string;
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 organisationInvitationStatus:
                   | "to_be_invited"
                   | "pending"
@@ -1264,12 +1285,16 @@ export interface paths {
                 organisationInvitationSentAt?: string;
                 organisationInvitationFeedbackAt?: string;
                 organisationPreferredTransports: (
-                  | "email"
                   | "sms"
+                  | "email"
                   | "lifeEvent"
                 )[];
+                /** @enum {string} */
                 correlationQuality: "full" | "partial" | "not_related";
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
                   /** @default null */
@@ -1362,7 +1387,10 @@ export interface paths {
                 organisationId: string;
                 /** Format: date-time */
                 importedAt: string;
-                /** @default api */
+                /**
+                 * @default api
+                 * @enum {string}
+                 */
                 importChannel: "api" | "csv";
                 /** @default 0 */
                 retryCount: number;
@@ -1473,7 +1501,10 @@ export interface paths {
                   phoneNumber: null | string;
                   /** @default null */
                   emailAddress: null | string;
-                  /** @default pending */
+                  /**
+                   * @default pending
+                   * @enum {string}
+                   */
                   importStatus:
                     | "pending"
                     | "imported"
@@ -1511,7 +1542,10 @@ export interface paths {
                   /** @default false */
                   collectedConsent: boolean;
                 }[];
-                /** @default api */
+                /**
+                 * @default api
+                 * @enum {string}
+                 */
                 importChannel: "api" | "csv";
                 /** @default 0 */
                 retryCount: number;
@@ -1635,7 +1669,10 @@ export interface paths {
                 /** @default null */
                 emailAddress: null | string;
                 organisationId: string;
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 organisationInvitationStatus:
                   | "to_be_invited"
                   | "pending"
@@ -1644,12 +1681,16 @@ export interface paths {
                 organisationInvitationSentAt?: string;
                 organisationInvitationFeedbackAt?: string;
                 organisationPreferredTransports: (
-                  | "email"
                   | "sms"
+                  | "email"
                   | "lifeEvent"
                 )[];
+                /** @enum {string} */
                 correlationQuality: "full" | "partial" | "not_related";
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
                   /** @default null */
@@ -1777,7 +1818,10 @@ export interface paths {
                 /** @default null */
                 emailAddress: null | string;
                 organisationId: string;
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 organisationInvitationStatus:
                   | "to_be_invited"
                   | "pending"
@@ -1786,12 +1830,16 @@ export interface paths {
                 organisationInvitationSentAt?: string;
                 organisationInvitationFeedbackAt?: string;
                 organisationPreferredTransports: (
-                  | "email"
                   | "sms"
+                  | "email"
                   | "lifeEvent"
                 )[];
+                /** @enum {string} */
                 correlationQuality: "full" | "partial" | "not_related";
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
                   /** @default null */
