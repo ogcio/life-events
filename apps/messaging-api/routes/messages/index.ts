@@ -299,7 +299,7 @@ export default async function messages(app: FastifyInstance) {
 
       const eventLogger = newMessagingEventLogger(app.pg.pool, app.log);
 
-      const receiverUserId = request.body.userId;
+      const receiverUserId = request.body.recipientUserId;
 
       const [receiverUser] = await getUserProfiles(
         [receiverUserId],
