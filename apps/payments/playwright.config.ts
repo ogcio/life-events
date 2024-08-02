@@ -18,7 +18,7 @@ export default defineConfig({
   outputDir: "./e2e/test-results/",
 
   // webServer: {
-  //   command: "npm run start:no-scheduler",
+  //   command: "npm run start:logto",
   //   cwd: "../../",
   //   url: baseURL,
   //   timeout: 120 * 1000,
