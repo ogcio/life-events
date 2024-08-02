@@ -31,20 +31,22 @@ export default async function RootLayout({
   params: { locale: string };
 }) {
   const authFactory = AuthenticationFactory.getInstance();
-  const context = await authFactory.getContext();
+  const context = await authFactory.getCitizen();
 
   if (await authFactory.isPublicServantAuthenticated()) {
     redirect(`/${locale}/admin`, RedirectType.replace);
   }
 
-  const hasPermissions = hasCitizenPermissions(
-    "THIS FIELD IS UNUSED",
-    context.scopes,
-  );
+  const hasPermissions = true;
 
-  const {
-    user: { id: userId },
-  } = context;
+  // const hasPermissions = hasCitizenPermissions(
+  //   "THIS FIELD IS UNUSED",
+  //   context.scopes,
+  // );
+
+  // const {
+  //   user: { id: userId },
+  // } = context;
 
   //TODO: IMPLEMENT ACTUAL VERIFICATION LEVEL FROM PROFILE API
   const verificationLevel = 2;

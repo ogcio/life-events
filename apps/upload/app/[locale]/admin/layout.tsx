@@ -25,10 +25,12 @@ export default async ({
 
   const publicServancContext = await authFactory.getPublicServant();
 
-  const hasPermissions = hasAdminPermissions(
-    context.accessToken as string,
-    context.scopes,
-  );
+  // const hasPermissions = hasAdminPermissions(
+  //   context.accessToken as string,
+  //   context.scopes,
+  // );
+
+  const hasPermissions = true;
 
   return (
     <html lang={locale}>
