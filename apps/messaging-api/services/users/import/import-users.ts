@@ -144,6 +144,7 @@ const importUsers = async (params: {
     toImportUsers: importedUsers,
     logger: params.logger,
     requestUserId: params.requestUser.userId,
+    requestOrganizationId: params.requestUser.organizationId!,
   });
 
   return importedUsers;
