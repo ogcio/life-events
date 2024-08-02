@@ -49,17 +49,39 @@ export const getPublicServantContext = (
     buildPublicServantContextParameters(params),
   );
 
-export const isPublicServantAuthenticated = (params: PublicServantParameters) =>
-  AuthSession.isAuthenticated(
-    buildPublicServantAuthConfig(params),
-    buildPublicServantContextParameters(params),
-  );
+export const isPublicServantAuthenticated = async (
+  params: PublicServantParameters,
+): Promise<boolean> => {
+  if (
+    !AuthSession.isAuthenticated(
+      buildPublicServantAuthConfig(params),
+      buildPublicServantContextParameters(params),
+    )
+  ) {
+    return false;
+  }
 
-export const isCitizenAuthenticated = (params: CitizenParameters) =>
-  AuthSession.isAuthenticated(
-    buildCitizenAuthConfig(params),
-    buildCitizenContextParameters(params),
-  );
+  const publicServantContext = await getPublicServantContext(params);
+
+  return publicServantContext.isPublicServant;
+};
+
+export const isCitizenAuthenticated = async (
+  params: CitizenParameters,
+): Promise<boolean> => {
+  if (
+    !AuthSession.isAuthenticated(
+      buildCitizenAuthConfig(params),
+      buildCitizenContextParameters(params),
+    )
+  ) {
+    return false;
+  }
+
+  const citizen = await getCitizenContext(params);
+
+  return !citizen.isPublicServant;
+};
 
 export const getSelectedOrganization = () =>
   AuthSession.getSelectedOrganization();
