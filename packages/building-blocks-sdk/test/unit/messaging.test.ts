@@ -9,7 +9,6 @@ t.test("Messaging.buildMessage", async (t) => {
       const expected = {
         excerpt: "text",
         lang: "en",
-        messageName: "text",
         plainText: "text",
         richText: "text",
         subject: "text",
@@ -21,7 +20,6 @@ t.test("Messaging.buildMessage", async (t) => {
           {
             excerpt: "text",
             lang: "en",
-            messageName: "text",
             plainText: "text",
             richText: "text",
             subject: "text",
@@ -30,7 +28,6 @@ t.test("Messaging.buildMessage", async (t) => {
           {
             excerpt: "text2",
             lang: "ga",
-            messageName: "text2",
             plainText: "text2",
             richText: "text2",
             subject: "text2",
@@ -51,7 +48,6 @@ t.test("Messaging.buildMessage", async (t) => {
       const expected = {
         excerpt: "text 1",
         lang: "en",
-        messageName: "text",
         plainText: "text 2",
         richText: "text 3",
         subject: "text 4",
@@ -63,7 +59,6 @@ t.test("Messaging.buildMessage", async (t) => {
           {
             excerpt: "text {{a}}",
             lang: "en",
-            messageName: "text",
             plainText: "text {{b}} {{e}}",
             richText: "text {{c}}",
             subject: "text {{d}}",
@@ -72,7 +67,6 @@ t.test("Messaging.buildMessage", async (t) => {
           {
             excerpt: "text2",
             lang: "ga",
-            messageName: "text2",
             plainText: "text2",
             richText: "text2",
             subject: "text2",
@@ -96,7 +90,6 @@ t.test("Messaging.buildMessage", async (t) => {
             {
               excerpt: "text",
               lang: "en",
-              messageName: "text",
               plainText: "text",
               richText: "text",
               subject: "text",
@@ -123,7 +116,6 @@ t.test("Messaging.buildMessage", async (t) => {
             {
               excerpt: "text",
               lang: "ga",
-              messageName: "text",
               plainText: "text",
               richText: "text",
               subject: "text",
@@ -162,7 +154,6 @@ t.test("Messaging.buildMessage", async (t) => {
             {
               excerpt: "text",
               lang: "en",
-              messageName: "text",
               plainText: "text {{illegal1}}",
               richText: "text {{illegal2}}",
               subject: "text",
@@ -187,7 +178,6 @@ t.test("Messaging.buildMessage", async (t) => {
           {
             excerpt: "text",
             lang: "en",
-            messageName: "text",
             plainText: "text {{illegal1}}",
             richText: "text {{illegal2}}",
             subject: "text",

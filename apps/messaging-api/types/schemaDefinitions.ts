@@ -13,7 +13,6 @@ export const MessageListItem = Type.Object({
   id: Type.String(),
   subject: Type.String(),
   createdAt: Type.String(),
-  messageName: Type.String(),
   threadName: Type.String(),
   organisationId: Type.String(),
   recipientId: Type.String(),
@@ -31,7 +30,6 @@ export type ReadMessage = Static<typeof ReadMessageSchema>;
 
 export const MessageInputSchema = Type.Object({
   threadName: Type.Optional(Type.String()),
-  messageName: Type.String(),
   subject: Type.String(),
   excerpt: Type.String(),
   richText: Type.String(),
@@ -152,7 +150,6 @@ export const MessageEvent = Type.Array(
         plainText: Type.String(),
         threadName: Type.String(),
         transports: Type.Array(Type.String()),
-        messageName: Type.String(),
         scheduledAt: Type.String({ format: "date-time" }),
         senderUserId: Type.String(),
         senderFullName: Type.String(),
@@ -191,7 +188,6 @@ export const MessageCreate = Type.Object({
   scheduleAt: Type.String({ format: "date-time" }),
   message: Type.Object({
     threadName: Type.String(),
-    messageName: Type.String(),
     subject: Type.String(),
     excerpt: Type.String(),
     richText: Type.String(),

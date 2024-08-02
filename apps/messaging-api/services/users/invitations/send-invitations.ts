@@ -347,7 +347,6 @@ const getJoinMessagingMessageForLanguage = (language: string): MessageInput => {
     excerpt: "Join the messaging platform!",
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
-    messageName: "Join Messaging Platform",
     threadName: "JoinMessaging",
     lang: language,
   };
@@ -360,7 +359,6 @@ const getJoinOrgMessageForLanguage = (language: string): MessageInput => {
     excerpt: "An organisation wants to send you messages!",
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
-    messageName: "Join Organisation",
     threadName: "JoinOrganisation",
     lang: language,
   };
@@ -373,7 +371,6 @@ const getWelcomeMessageForLanguage = (language: string): MessageInput => {
     excerpt: "An organisation wants to send you messages!",
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
-    messageName: "Join Organisation",
     threadName: "JoinOrganisation",
     lang: language,
   };

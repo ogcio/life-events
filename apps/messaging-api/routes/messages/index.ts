@@ -168,7 +168,6 @@ export default async function messages(app: FastifyInstance) {
             select 
               id,
               subject,
-              message_name as "messageName",
               thread_name as "threadName",
               organisation_id as "organisationId",
               user_id as "recipientId",
@@ -208,7 +207,6 @@ export default async function messages(app: FastifyInstance) {
               id,
               createdAt,
               subject,
-              messageName,
               organisationId,
               threadName,
               recipientId,
@@ -216,7 +214,6 @@ export default async function messages(app: FastifyInstance) {
               id,
               subject,
               createdAt,
-              messageName,
               threadName,
               organisationId,
               recipientId,
@@ -276,8 +273,7 @@ export default async function messages(app: FastifyInstance) {
         response: {
           "4xx": HttpError,
           "5xx": HttpError,
-          // We want to add self link, count=1 eg. in the metadata field?
-          // 201: getGenericResponseSchema(Type.String({ format: "uuid" })),
+        
           201: Type.Object({
             data: Type.Object({
               messageId: Type.String({ format: "uuid" }),

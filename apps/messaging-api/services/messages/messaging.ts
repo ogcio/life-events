@@ -208,7 +208,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
          * lang
          * security
          * transports
-         * messageName
          * threadName
          * organisationId
          */
@@ -223,7 +222,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
           security,
           utils.postgresArrayify(transports),
           userKeys.reduce(interpolationReducer, templateContent.subject),
-          undefined,
           organizationId,
           scheduleAt,
         ];
@@ -255,7 +253,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
             lang,
             security_level,
             preferred_transports,
-            message_name,
             thread_name,
             organisation_id,
             scheduled_at
@@ -265,7 +262,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
           id as "messageId",
           excerpt,
           lang,
-          message_name as "messageName",
           plain_text as "plainText",
           rich_text as "richText",
           subject,

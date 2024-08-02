@@ -62,8 +62,6 @@ paths:
                           type: string
                         createdAt:
                           type: string
-                        messageName:
-                          type: string
                         threadName:
                           type: string
                         organisationId:
@@ -74,7 +72,6 @@ paths:
                         - id
                         - subject
                         - createdAt
-                        - messageName
                         - threadName
                         - organisationId
                         - recipientId
@@ -195,8 +192,6 @@ paths:
                   properties:
                     threadName:
                       type: string
-                    messageName:
-                      type: string
                     subject:
                       type: string
                     excerpt:
@@ -209,7 +204,6 @@ paths:
                       type: string
                   required:
                     - threadName
-                    - messageName
                     - subject
                     - excerpt
                     - richText
@@ -4340,8 +4334,6 @@ paths:
                                   type: array
                                   items:
                                     type: string
-                                messageName:
-                                  type: string
                                 scheduledAt:
                                   format: date-time
                                   type: string
@@ -4368,7 +4360,6 @@ paths:
                                 - plainText
                                 - threadName
                                 - transports
-                                - messageName
                                 - scheduledAt
                                 - senderUserId
                                 - senderFullName
