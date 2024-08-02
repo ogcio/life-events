@@ -170,16 +170,11 @@ paths:
                 preferredTransports:
                   type: array
                   items:
-                    anyOf:
-                      - type: string
-                        enum:
-                          - email
-                      - type: string
-                        enum:
-                          - sms
-                      - type: string
-                        enum:
-                          - lifeEvent
+                    type: string
+                    enum:
+                      - sms
+                      - email
+                      - lifeEvent
                 recipientUserId:
                   type: string
                 security:
@@ -474,13 +469,10 @@ paths:
           name: primary
           required: false
         - schema:
-            anyOf:
-              - type: string
-                enum:
-                  - sms
-              - type: string
-                enum:
-                  - email
+            type: string
+            enum:
+              - sms
+              - email
           in: query
           name: type
           required: true
@@ -520,13 +512,10 @@ paths:
                         isPrimary:
                           type: boolean
                         type:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - sms
-                            - type: string
-                              enum:
-                                - email
+                          type: string
+                          enum:
+                            - sms
+                            - email
                       required:
                         - id
                         - providerName
@@ -812,13 +801,10 @@ paths:
       tags: *a2
       parameters:
         - schema:
-            anyOf:
-              - type: string
-                enum:
-                  - sms
-              - type: string
-                enum:
-                  - email
+            type: string
+            enum:
+              - sms
+              - email
           in: query
           name: type
           required: true
@@ -1958,16 +1944,11 @@ paths:
                         organisationPreferredTransports:
                           type: array
                           items:
-                            anyOf:
-                              - type: string
-                                enum:
-                                  - email
-                              - type: string
-                                enum:
-                                  - sms
-                              - type: string
-                                enum:
-                                  - lifeEvent
+                            type: string
+                            enum:
+                              - sms
+                              - email
+                              - lifeEvent
                         correlationQuality:
                           anyOf:
                             - type: string
@@ -2289,16 +2270,11 @@ paths:
                       organisationPreferredTransports:
                         type: array
                         items:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - email
-                            - type: string
-                              enum:
-                                - sms
-                            - type: string
-                              enum:
-                                - lifeEvent
+                          type: string
+                          enum:
+                            - sms
+                            - email
+                            - lifeEvent
                       correlationQuality:
                         anyOf:
                           - type: string
@@ -2642,16 +2618,11 @@ paths:
                       organisationPreferredTransports:
                         type: array
                         items:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - email
-                            - type: string
-                              enum:
-                                - sms
-                            - type: string
-                              enum:
-                                - lifeEvent
+                          type: string
+                          enum:
+                            - sms
+                            - email
+                            - lifeEvent
                       correlationQuality:
                         anyOf:
                           - type: string
@@ -3542,16 +3513,11 @@ paths:
                         organisationPreferredTransports:
                           type: array
                           items:
-                            anyOf:
-                              - type: string
-                                enum:
-                                  - email
-                              - type: string
-                                enum:
-                                  - sms
-                              - type: string
-                                enum:
-                                  - lifeEvent
+                            type: string
+                            enum:
+                              - sms
+                              - email
+                              - lifeEvent
                         correlationQuality:
                           anyOf:
                             - type: string
@@ -3874,16 +3840,11 @@ paths:
                       organisationPreferredTransports:
                         type: array
                         items:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - email
-                            - type: string
-                              enum:
-                                - sms
-                            - type: string
-                              enum:
-                                - lifeEvent
+                          type: string
+                          enum:
+                            - sms
+                            - email
+                            - lifeEvent
                       correlationQuality:
                         anyOf:
                           - type: string

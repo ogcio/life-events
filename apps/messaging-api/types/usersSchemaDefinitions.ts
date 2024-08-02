@@ -1,5 +1,5 @@
 import { Static, Type } from "@sinclair/typebox";
-import { PreferredTransportsSchema } from "./schemaDefinitions";
+import { AllProvidersSchema } from "./schemaDefinitions";
 
 const NullableStringType = Type.Union([Type.Null(), Type.String()], {
   default: null,
@@ -200,7 +200,7 @@ export const OrganisationSettingSchema = Type.Object({
   organisationInvitationStatus: InvitationStatusUnionType,
   organisationInvitationSentAt: Type.Optional(Type.String()),
   organisationInvitationFeedbackAt: Type.Optional(Type.String()),
-  organisationPreferredTransports: PreferredTransportsSchema,
+  organisationPreferredTransports: Type.Array(AllProvidersSchema),
   correlationQuality: CorrelationQualityUnionType,
   userStatus: UserStatusUnionType,
   details: Type.Optional(UserDetailsSchema),
