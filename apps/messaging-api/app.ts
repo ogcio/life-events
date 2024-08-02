@@ -47,6 +47,10 @@ export async function build(opts?: FastifyServerOptions) {
 
   app.register(fastifySwaggerUi, {
     routePrefix: "/docs",
+    transformSpecification(swaggerObject) {
+      delete swaggerObject.paths["/api/v1/user-imports/template-download"]
+      return swaggerObject
+    },
     logo: {
       type: "image/png",
       content: Buffer.from(
