@@ -3,9 +3,9 @@ import { Type } from "@sinclair/typebox";
 import {
   GenericResponse,
   getGenericResponseSchema,
-  MessageEvent,
+  MessageEventSchema,
   MessageEventListType,
-  MessageEventList,
+  MessageEventListSchema,
   PaginationParams,
   PaginationParamsSchema,
 } from "../../types/schemaDefinitions";
@@ -39,7 +39,7 @@ export default async function messages(app: FastifyInstance) {
           ]),
         ),
         response: {
-          200: getGenericResponseSchema(MessageEventList),
+          200: getGenericResponseSchema(MessageEventListSchema),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -144,7 +144,7 @@ export default async function messages(app: FastifyInstance) {
         tags,
         response: {
           200: Type.Object({
-            data: MessageEvent,
+            data: MessageEventSchema,
           }),
           "5xx": HttpError,
           "4xx": HttpError,
