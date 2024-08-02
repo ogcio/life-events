@@ -185,7 +185,7 @@ export const PreferredTransports = Type.Array(
 
 export const MessageCreate = Type.Object({
   preferredTransports: PreferredTransports,
-  userId: Type.String(),
+  recipientUserId: Type.String(),
   security: Type.String(),
   bypassConsent: Type.Boolean({ default: false }),
   scheduleAt: Type.String({ format: "date-time" }),
