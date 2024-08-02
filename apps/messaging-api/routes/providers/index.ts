@@ -6,13 +6,13 @@ import {
   getGenericResponseSchema,
   PaginationParams,
   PaginationParamsSchema,
-  ProviderCreateSchema,
-  ProviderListSchema,
   ProviderListItemSchema,
-  ProviderTypeSchema,
   ProviderUpdateSchema,
-  SmsCreateSchema,
+  EditableProvidersSchema,
+  ProviderListSchema,
   SmsProviderSchema,
+  ProviderCreateSchema,
+  SmsCreateSchema,
 } from "../../types/schemaDefinitions";
 import { Static, Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
@@ -63,7 +63,7 @@ export default async function providers(app: FastifyInstance) {
             Type.Object({
               search: Type.Optional(Type.String()),
               primary: Type.Optional(Type.Boolean()),
-              type: ProviderTypeSchema,
+              type: EditableProvidersSchema,
             }),
             PaginationParamsSchema,
           ]),
@@ -209,7 +209,7 @@ export default async function providers(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Composite([
             Type.Object({
-              type: ProviderTypeSchema,
+              type: EditableProvidersSchema,
             }),
           ]),
         ),
