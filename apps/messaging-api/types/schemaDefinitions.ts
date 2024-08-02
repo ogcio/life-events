@@ -9,6 +9,26 @@ import {
 export const AVAILABLE_LANGUAGES = ["en", "ga"];
 export const DEFAULT_LANGUAGE = "en";
 
+export const TypeboxStringEnum = <T extends string[]>(
+  items: [...T],
+  defaultValue?: string,
+) =>
+  Type.Unsafe<T[number]>({
+    type: "string",
+    enum: items,
+    default: defaultValue,
+  });
+
+export const EditableProvidersSchema = TypeboxStringEnum(["sms", "email"]);
+export type EditableProviders = Static<typeof EditableProvidersSchema>;
+
+export const AllProvidersSchema = TypeboxStringEnum([
+  "sms",
+  "email",
+  "lifeEvent",
+]);
+export type AllProviders = Static<typeof AllProvidersSchema>;
+
 export const MessageListItemSchema = Type.Object({
   id: Type.String(),
   subject: Type.String(),
@@ -47,7 +67,7 @@ export const TemplateInputSchema = Type.Object({
 export type TemplateInput = Static<typeof TemplateInputSchema>;
 
 export const CreateMessageOptionsSchema = Type.Object({
-  preferredTransports: Type.Array(Type.String()),
+  preferredTransports: Type.Array(AllProvidersSchema),
   userIds: Type.Array(Type.String()),
   security: Type.String(),
   scheduleAt: Type.String({ format: "date-time" }),
@@ -175,16 +195,8 @@ export const MessageEventSchema = Type.Array(
   }),
 );
 
-export const PreferredTransportsSchema = Type.Array(
-  Type.Union([
-    Type.Literal("email"),
-    Type.Literal("sms"),
-    Type.Literal("lifeEvent"),
-  ]),
-);
-
 export const MessageCreateSchema = Type.Object({
-  preferredTransports: PreferredTransportsSchema,
+  preferredTransports: Type.Array(AllProvidersSchema),
   recipientUserId: Type.String(),
   security: Type.String(),
   bypassConsent: Type.Boolean({ default: false }),
@@ -202,16 +214,11 @@ export const MessageCreateSchema = Type.Object({
 
 export type MessageCreateType = Static<typeof MessageCreateSchema>;
 
-export const ProviderTypeSchema = Type.Union([
-  Type.Literal("sms"),
-  Type.Literal("email"),
-]);
-
 export const ProviderListItemSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
   providerName: Type.String(),
   isPrimary: Type.Boolean(),
-  type: ProviderTypeSchema,
+  type: EditableProvidersSchema,
 });
 
 export const ProviderListSchema = Type.Array(ProviderListItemSchema);
