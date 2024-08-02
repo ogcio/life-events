@@ -6,13 +6,13 @@ import {
   getGenericResponseSchema,
   PaginationParams,
   PaginationParamsSchema,
-  ProviderCreateSchema,
-  ProviderListSchema,
   ProviderListItemSchema,
   ProviderUpdateSchema,
-  SmsCreateSchema,
-  SmsProviderSchema,
   EditableProvidersSchema,
+  ProviderListSchema,
+  SmsProviderSchema,
+  ProviderCreateSchema,
+  SmsCreateSchema,
 } from "../../types/schemaDefinitions";
 import { Static, Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
