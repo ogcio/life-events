@@ -4,21 +4,15 @@
  */
 
 export interface paths {
-  "/health": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
-        };
-      };
-    };
-  };
   "/api/v1/messages/": {
     get: {
       parameters: {
         query?: {
-          type?: string;
+          status?: "delivered";
+          recipientUserId?: string;
+          organisationId?: string;
+          offset?: number;
+          limit?: number;
         };
       };
       responses: {
@@ -29,10 +23,11 @@ export interface paths {
               data: {
                 id: string;
                 subject: string;
-                excerpt: string;
-                plainText: string;
-                richText: string;
                 createdAt: string;
+                messageName: string;
+                threadName: string;
+                organisationId: string;
+                recipientId: string;
               }[];
               metadata?: {
                 links?: {

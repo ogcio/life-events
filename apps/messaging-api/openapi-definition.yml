@@ -6,13 +6,6 @@ info:
 components:
   schemas: {}
 paths:
-  /health:
-    get:
-      tags:
-        - Health
-      responses:
-        "200":
-          description: Default Response
   /api/v1/messages/:
     get:
       tags: &a1
@@ -20,8 +13,35 @@ paths:
       parameters:
         - schema:
             type: string
+            enum:
+              - delivered
           in: query
-          name: type
+          name: status
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: recipientUserId
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: organisationId
+          required: false
+        - schema:
+            default: 0
+            minimum: 0
+            type: integer
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 20
+            minimum: 1
+            maximum: 100
+            type: integer
+          in: query
+          name: limit
           required: false
       responses:
         "200":
@@ -40,21 +60,24 @@ paths:
                           type: string
                         subject:
                           type: string
-                        excerpt:
-                          type: string
-                        plainText:
-                          type: string
-                        richText:
-                          type: string
                         createdAt:
+                          type: string
+                        messageName:
+                          type: string
+                        threadName:
+                          type: string
+                        organisationId:
+                          type: string
+                        recipientId:
                           type: string
                       required:
                         - id
                         - subject
-                        - excerpt
-                        - plainText
-                        - richText
                         - createdAt
+                        - messageName
+                        - threadName
+                        - organisationId
+                        - recipientId
                   metadata:
                     type: object
                     properties:
@@ -471,6 +494,7 @@ paths:
         - schema:
             default: 20
             minimum: 1
+            maximum: 100
             type: integer
           in: query
           name: limit
@@ -3390,18 +3414,6 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/user-imports/template-download:
-    get:
-      tags: *a5
-      description: it will return a string containing the template with the csv that
-        will be used to import users
-      responses:
-        "200":
-          description: Default Response
-          content:
-            text/csv:
-              schema:
-                type: string
   /api/v1/users/:
     get:
       tags: &a7
@@ -3442,6 +3454,7 @@ paths:
         - schema:
             default: 20
             minimum: 1
+            maximum: 100
             type: integer
           in: query
           name: limit
@@ -4118,6 +4131,7 @@ paths:
         - schema:
             default: 20
             minimum: 1
+            maximum: 100
             type: integer
           in: query
           name: limit
