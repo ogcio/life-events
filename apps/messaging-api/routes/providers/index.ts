@@ -1,18 +1,18 @@
 import { FastifyInstance } from "fastify";
 import {
-  EmailCreate,
-  EmailProvider,
+  EmailCreateSchema,
+  EmailProviderSchema,
   GenericResponse,
   getGenericResponseSchema,
   PaginationParams,
   PaginationParamsSchema,
-  ProviderCreate,
-  ProviderList,
-  ProviderListItem,
-  ProviderType,
-  ProviderUpdate,
-  SmsCreate,
-  SmsProvider,
+  ProviderCreateSchema,
+  ProviderListSchema,
+  ProviderListItemSchema,
+  ProviderTypeSchema,
+  ProviderUpdateSchema,
+  SmsCreateSchema,
+  SmsProviderSchema,
 } from "../../types/schemaDefinitions";
 import { Static, Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
@@ -32,14 +32,14 @@ const tags = ["Providers"];
 
 function isSmsProvider(
   provider: unknown,
-): provider is Static<typeof SmsCreate> {
-  return (provider as Static<typeof SmsCreate>).type === "sms";
+): provider is Static<typeof SmsCreateSchema> {
+  return (provider as Static<typeof SmsCreateSchema>).type === "sms";
 }
 
 function isEmailProvider(
   provider: unknown,
-): provider is Static<typeof EmailCreate> {
-  return (provider as Static<typeof EmailCreate>).type === "email";
+): provider is Static<typeof EmailCreateSchema> {
+  return (provider as Static<typeof EmailCreateSchema>).type === "email";
 }
 
 export default async function providers(app: FastifyInstance) {
@@ -50,7 +50,7 @@ export default async function providers(app: FastifyInstance) {
       type: "email" | "sms";
       primary?: boolean;
     } & PaginationParams;
-    Response: GenericResponse<Static<typeof ProviderList>>;
+    Response: GenericResponse<Static<typeof ProviderListSchema>>;
   }>(
     "/",
     {
@@ -63,13 +63,13 @@ export default async function providers(app: FastifyInstance) {
             Type.Object({
               search: Type.Optional(Type.String()),
               primary: Type.Optional(Type.Boolean()),
-              type: ProviderType,
+              type: ProviderTypeSchema,
             }),
             PaginationParamsSchema,
           ]),
         ),
         response: {
-          200: getGenericResponseSchema(ProviderList),
+          200: getGenericResponseSchema(ProviderListSchema),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -88,7 +88,9 @@ export default async function providers(app: FastifyInstance) {
         ? `%${request.query.search}%`
         : "%%";
 
-      type QueryProvider = Static<typeof ProviderListItem> & { count: number };
+      type QueryProvider = Static<typeof ProviderListItemSchema> & {
+        count: number;
+      };
       let query: QueryResult<QueryProvider> | undefined;
       let primaryFilter = "true";
       if (request.query.primary === true) {
@@ -174,7 +176,7 @@ export default async function providers(app: FastifyInstance) {
         offset,
       });
 
-      const response: GenericResponse<Static<typeof ProviderList>> = {
+      const response: GenericResponse<Static<typeof ProviderListSchema>> = {
         data: query.rows,
         metadata: {
           totalCount,
@@ -207,13 +209,13 @@ export default async function providers(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Composite([
             Type.Object({
-              type: ProviderType,
+              type: ProviderTypeSchema,
             }),
           ]),
         ),
         response: {
           200: Type.Object({
-            data: ProviderUpdate,
+            data: ProviderUpdateSchema,
           }),
           "5xx": HttpError,
           "4xx": HttpError,
@@ -229,14 +231,14 @@ export default async function providers(app: FastifyInstance) {
         throw new BadRequestError(errorProcess, "illegal request type");
       }
       let provider:
-        | Static<typeof EmailProvider>
-        | Static<typeof SmsProvider>
+        | Static<typeof EmailProviderSchema>
+        | Static<typeof SmsProviderSchema>
         | undefined;
 
       if (request.query.type === "email") {
         try {
           const queryResult = await app.pg.pool.query<
-            Static<typeof EmailProvider>
+            Static<typeof EmailProviderSchema>
           >(
             `
                 select 
@@ -276,7 +278,7 @@ export default async function providers(app: FastifyInstance) {
       } else if (request.query.type === "sms") {
         try {
           const queryResult = await app.pg.pool.query<
-            Static<typeof SmsProvider>
+            Static<typeof SmsProviderSchema>
           >(
             `
                 select 
@@ -311,14 +313,16 @@ export default async function providers(app: FastifyInstance) {
   );
 
   // create provider
-  app.post<{ Body: Static<typeof EmailCreate> | Static<typeof SmsCreate> }>(
+  app.post<{
+    Body: Static<typeof EmailCreateSchema> | Static<typeof SmsCreateSchema>;
+  }>(
     "/",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Provider.Write]),
       schema: {
         tags,
-        body: ProviderCreate,
+        body: ProviderCreateSchema,
         response: {
           200: Type.Object({
             data: Type.Object({
@@ -449,7 +453,7 @@ export default async function providers(app: FastifyInstance) {
 
   // update provider
   app.put<{
-    Body: Static<typeof ProviderUpdate>;
+    Body: Static<typeof ProviderUpdateSchema>;
     Params: { providerId: string };
   }>(
     "/:providerId",
@@ -461,7 +465,7 @@ export default async function providers(app: FastifyInstance) {
         params: {
           providerId: Type.String({ format: "uuid" }),
         },
-        body: ProviderUpdate,
+        body: ProviderUpdateSchema,
         response: {
           200: Type.Null(),
           "5xx": HttpError,
