@@ -113,7 +113,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
         params.preferredTransports.length
           ? utils.postgresArrayify(params.preferredTransports)
           : null,
-        params.subject, // message name
         params.threadName,
         params.organisationId,
         params.scheduleAt,
@@ -133,7 +132,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
             lang,
             security_level,
             preferred_transports,
-            message_name,
             thread_name,
             organisation_id,
             scheduled_at
