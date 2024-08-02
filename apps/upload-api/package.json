@@ -9,7 +9,8 @@
     "dev": "FASTIFY_AUTOLOAD_TYPESCRIPT=1 node --watch --import tsx src/index.ts | pino-pretty",
     "lint": "eslint . --ext .ts",
     "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/services/upload/schema.d.ts",
-    "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp src/logo.png dist/"
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp src/logo.png dist/",
+    "migrate": "cd db && db-migrate up"
   },
   "nodemonConfig": {
     "watch": [
@@ -48,7 +49,9 @@
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
     "jose": "^5.2.4",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.1",

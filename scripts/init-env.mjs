@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-import fs from "fs";
+import fs, { readdirSync } from "fs";
 import path from "path";
 
 /**
@@ -36,10 +36,16 @@ function copyEnvFiles(paths) {
 const paths = [
   ...fs
     .readdirSync(path.join(process.cwd(), "apps"))
-    .map((p) => path.join(process.cwd(), "apps", p)),
+    .flatMap((p) => {
+      const subPath = path.join(process.cwd(), "apps", p)
+      if (fs.existsSync(path.join(subPath, 'db'))) {
+        return [path.join(process.cwd(), "apps", p), path.join(subPath, 'db')]
+      }
+      return path.join(process.cwd(), "apps", p)
+    }),
   ...fs
     .readdirSync(path.join(process.cwd(), "packages"))
-    .map((p) => path.join(process.cwd(), "packages", p)),
+    .flatMap((p) => path.join(process.cwd(), "packages", p)),
   process.cwd(),
 ];
 
