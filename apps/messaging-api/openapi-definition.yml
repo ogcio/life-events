@@ -6,13 +6,6 @@ info:
 components:
   schemas: {}
 paths:
-  /health:
-    get:
-      tags:
-        - Health
-      responses:
-        "200":
-          description: Default Response
   /api/v1/messages/:
     get:
       tags: &a1
@@ -26,7 +19,6 @@ paths:
           name: status
           required: false
         - schema:
-            format: uuid
             type: string
           in: query
           name: recipientUserId
