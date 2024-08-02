@@ -146,8 +146,7 @@ export default async function userImports(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
-        hide: true,
-        tags,
+        tags,    
         response: {
           200: Type.String(),
         },
