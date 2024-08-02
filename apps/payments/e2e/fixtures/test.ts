@@ -2,7 +2,7 @@ import { test as baseTest, expect } from "@playwright/test";
 import fs from "fs";
 import path from "path";
 import { MyGovIdMockLoginPage } from "../objects/MyGovIdMockLoginPage";
-import { password, publicServantUser } from "../utils/constants";
+import { password, myGovIdMockSettings } from "../utils/constants";
 
 const baseURL =
   process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT ??
@@ -38,9 +38,11 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
 
       const loginPage = new MyGovIdMockLoginPage(page);
 
-      await loginPage.selectPublicServantUser(publicServantUser);
+      await loginPage.selectPublicServantUser(
+        myGovIdMockSettings.publicServantUser,
+      );
       await loginPage.enterPassword(password);
-      await loginPage.submitLogin(publicServantUser);
+      await loginPage.submitLogin(myGovIdMockSettings.publicServantUser);
 
       await loginPage.expectPaymentSetupPage();
 

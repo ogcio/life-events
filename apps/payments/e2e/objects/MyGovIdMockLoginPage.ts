@@ -1,5 +1,5 @@
 import { Locator, Page, expect } from "@playwright/test";
-import { publicServantEmailDomain } from "../utils/constants";
+import { myGovIdMockSettings } from "../utils/constants";
 
 export class MyGovIdMockLoginPage {
   readonly pwInput: Locator;
@@ -10,7 +10,7 @@ export class MyGovIdMockLoginPage {
 
   async selectPublicServantUser(publicServantUser: string) {
     const [name, surname] = publicServantUser.split(" ");
-    const email = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${publicServantEmailDomain}`;
+    const email = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.publicServantEmailDomain}`;
     await this.page.getByLabel("Select user").selectOption(email);
   }
 
