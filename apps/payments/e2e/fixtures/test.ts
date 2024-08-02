@@ -1,7 +1,7 @@
 import { test as baseTest, expect } from "@playwright/test";
 import fs from "fs";
 import path from "path";
-import { LoginPage } from "../objects/loginPage";
+import { MyGovIdMockLoginPage } from "../objects/MyGovIdMockLoginPage";
 import { password, publicServantUser } from "../utils/constants";
 
 const baseURL =
@@ -36,7 +36,7 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
       });
       await logtoLoginBtn.click();
 
-      const loginPage = new LoginPage(page);
+      const loginPage = new MyGovIdMockLoginPage(page);
 
       await loginPage.selectPublicServantUser(publicServantUser);
       await loginPage.enterPassword(password);

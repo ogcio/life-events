@@ -1,7 +1,7 @@
 import { Locator, Page, expect } from "@playwright/test";
 import { publicServantEmailDomain } from "../utils/constants";
 
-export class LoginPage {
+export class MyGovIdMockLoginPage {
   readonly pwInput: Locator;
 
   constructor(public readonly page: Page) {
