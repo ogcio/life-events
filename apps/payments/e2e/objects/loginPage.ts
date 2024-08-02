@@ -18,7 +18,7 @@ export class LoginPage {
     await this.pwInput.fill(password);
   }
 
-  async login(userName: string) {
+  async submitLogin(userName: string) {
     await this.page.getByRole("button", { name: `Login ${userName}` }).click();
   }
 

@@ -40,7 +40,7 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
 
       await loginPage.selectPublicServantUser(publicServantUser);
       await loginPage.enterPassword(password);
-      await loginPage.login(publicServantUser);
+      await loginPage.submitLogin(publicServantUser);
 
       await loginPage.expectPaymentSetupPage();
 
