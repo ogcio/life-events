@@ -9,8 +9,15 @@ import {
 export const AVAILABLE_LANGUAGES = ["en", "ga"];
 export const DEFAULT_LANGUAGE = "en";
 
-export const TypeboxStringEnum = <T extends string[]>(items: [...T]) =>
-  Type.Unsafe<T[number]>({ type: "string", enum: items });
+export const TypeboxStringEnum = <T extends string[]>(
+  items: [...T],
+  defaultValue?: string,
+) =>
+  Type.Unsafe<T[number]>({
+    type: "string",
+    enum: items,
+    default: defaultValue,
+  });
 
 export const EditableProvidersSchema = TypeboxStringEnum(["sms", "email"]);
 export type EditableProviders = Static<typeof EditableProvidersSchema>;
