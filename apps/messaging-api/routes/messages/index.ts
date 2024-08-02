@@ -201,33 +201,32 @@ export default async function messages(app: FastifyInstance) {
       const totalCount = messagesQueryResult?.rows.at(0)?.count || 0;
 
       const links = getPaginationLinks({ totalCount, url, limit, offset });
-      const response: GenericResponse<Static<typeof MessageListItem>[]> =
-        {
-          data:
-            messagesQueryResult?.rows.map(
-              ({
-                id,
-                createdAt,
-                subject,
-                messageName,
-                organisationId,
-                threadName,
-                recipientId,
-              }) => ({
-                id,
-                subject,
-                createdAt,
-                messageName,
-                threadName,
-                organisationId,
-                recipientId,
-              }),
-            ) ?? [],
-          metadata: {
-            totalCount,
-            links,
-          },
-        };
+      const response: GenericResponse<Static<typeof MessageListItem>[]> = {
+        data:
+          messagesQueryResult?.rows.map(
+            ({
+              id,
+              createdAt,
+              subject,
+              messageName,
+              organisationId,
+              threadName,
+              recipientId,
+            }) => ({
+              id,
+              subject,
+              createdAt,
+              messageName,
+              threadName,
+              organisationId,
+              recipientId,
+            }),
+          ) ?? [],
+        metadata: {
+          totalCount,
+          links,
+        },
+      };
       return response;
     },
   );

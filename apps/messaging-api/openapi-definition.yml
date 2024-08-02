@@ -6,13 +6,6 @@ info:
 components:
   schemas: {}
 paths:
-  /health:
-    get:
-      tags:
-        - Health
-      responses:
-        "200":
-          description: Default Response
   /api/v1/messages/:
     get:
       tags: &a1
@@ -3421,18 +3414,6 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/user-imports/template-download:
-    get:
-      tags: *a5
-      description: it will return a string containing the template with the csv that
-        will be used to import users
-      responses:
-        "200":
-          description: Default Response
-          content:
-            text/csv:
-              schema:
-                type: string
   /api/v1/users/:
     get:
       tags: &a7

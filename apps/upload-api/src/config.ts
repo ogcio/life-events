@@ -9,6 +9,7 @@ export const envSchema = {
     "LOGTO_JWK_ENDPOINT",
     "LOGTO_OIDC_ENDPOINT",
     "LOGTO_API_RESOURCE_INDICATOR",
+    "HOST",
   ],
   properties: {
     CLAMAV_HOST: { type: "string" },
@@ -21,5 +22,6 @@ export const envSchema = {
     LOGTO_JWK_ENDPOINT: { type: "string" },
     LOGTO_OIDC_ENDPOINT: { type: "string" },
     LOGTO_API_RESOURCE_INDICATOR: { type: "string" },
+    HOST: { type: "string" },
   },
 };
