@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .ts",
     "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/services/upload/schema.d.ts",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp src/logo.png dist/",
-    "migrate": "cd db && db-migrate up"
+    "migrate": "db-migrate --migrations-dir db/migrations --config db/database.json up"
   },
   "nodemonConfig": {
     "watch": [
@@ -44,7 +44,7 @@
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.16",
     "api-auth": "*",
-    "auth": "*",
+    "logging-wrapper": "*",
     "clamscan": "^2.2.1",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
