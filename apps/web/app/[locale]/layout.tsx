@@ -19,7 +19,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import styles from "./layout.module.scss";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import AnalyticsTracker from "analytics/components/AnalyticsTracker";
-import favicon from "../../../public/favicon.ico";
+import favicon from "../../public/favicon.ico";
 
 export const metadata: Metadata = {
   title: "Life events",
