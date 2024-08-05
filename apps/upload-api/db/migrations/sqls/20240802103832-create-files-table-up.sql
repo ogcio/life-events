@@ -1,11 +1,11 @@
 CREATE TABLE files (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     key VARCHAR(255) NOT NULL,
-    owner INTEGER NOT NULL,
-    lastScan DATE,
-    createdAt DATE NOT NULL DEFAULT CURRENT_DATE,
+    owner VARCHAR(255) NOT NULL,
+    lastScan TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    createdAt TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     infected BOOLEAN NOT NULL DEFAULT FALSE,
-    infection_description TEXT,
+    infection_description TEXT DEFAULT NULL,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     fileSize INTEGER,
     mimetype VARCHAR(255)
