@@ -17,7 +17,7 @@ import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
 import { ensureUserCanAccessUser } from "api-auth";
 import { QueryResult } from "pg";
-import { ServerError, AuthorizationError } from "shared-errors";
+import { ServerError, AuthorizationError, NotFoundError } from "shared-errors";
 import { utils } from "../../utils";
 import { sanitizePagination, getPaginationLinks } from "../../utils/pagination";
 import { ensureUserIdIsSet } from "../../utils/authentication-factory";
@@ -93,12 +93,12 @@ export default async function messages(app: FastifyInstance) {
           `
             select id as "messageUserId", user_profile_id as "profileId" from users where id::text = $1 or user_profile_id = $1
             limit 1
-        `,
+          `,
           [queryRecipientUserId],
         );
         const allUserIds = allUserIdsQueryResult.rows.at(0);
         if (!allUserIds) {
-          throw new AuthorizationError(errorProcess, "illegal user id request");
+          throw new NotFoundError(errorProcess, "user not found");
         }
 
         if (
