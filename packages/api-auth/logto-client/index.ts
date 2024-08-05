@@ -1,7 +1,7 @@
 import { UserScope } from "@logto/node";
 import { AuthenticationError } from "shared-errors";
 interface GetTokenBaseParams {
-  logtoEndpoint: string;
+  logtoOidcEndpoint: string;
   applicationId: string;
   applicationSecret: string;
   scopes: string[];
@@ -49,7 +49,7 @@ export const getAccessToken = async (
 };
 
 const fetchToken = async (params: {
-  logtoEndpoint: string;
+  logtoOidcEndpoint: string;
   applicationId: string;
   applicationSecret: string;
   scopes: string[];
@@ -60,8 +60,10 @@ const fetchToken = async (params: {
     scope: params.scopes.join(" "),
     grant_type: "client_credentials",
   };
-
-  const response = await fetch(`${params.logtoEndpoint}/oidc/token`, {
+  const logtoOidcEndpoint = params.logtoOidcEndpoint.endsWith("/")
+    ? params.logtoOidcEndpoint
+    : `${params.logtoOidcEndpoint}/`;
+  const response = await fetch(`${logtoOidcEndpoint}token`, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",

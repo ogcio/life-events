@@ -25,7 +25,6 @@ export default async function jobs(app: FastifyInstance) {
         pg: app.pg,
         logger: request.log,
         jobId: request.params!.id,
-        accessToken: request.userData?.accessToken || "",
         token: request.body.token,
       });
 
