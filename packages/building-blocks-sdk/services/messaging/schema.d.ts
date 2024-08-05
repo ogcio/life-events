@@ -157,9 +157,14 @@ export interface paths {
             "application/json": {
               data: {
                 subject: string;
+                createdAt: string;
+                threadName: string;
+                organisationId: string;
+                recipientUserId: string;
                 excerpt: string;
                 plainText: string;
                 richText: string;
+                isSeen: boolean;
               };
               metadata?: {
                 links?: {
