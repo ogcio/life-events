@@ -46,15 +46,6 @@ export const AuthSession: IAuthSession = {
     config: LogtoNextConfig,
     getContextParameters: GetSessionContextParameters,
   ): Promise<PartialAuthSessionContext> {
-    if (
-      getContextParameters.userType === "publicServant" &&
-      !getContextParameters.organizationId
-    ) {
-      throw new BadRequestError(
-        PROCESS_ERROR,
-        "Organization id is mandatory when logging in as public servant",
-      );
-    }
     addInactivePublicServantScope(config);
     let context;
     try {
