@@ -721,11 +721,11 @@ paths:
                   data:
                     type: object
                     properties:
-                      providerId:
+                      id:
                         format: uuid
                         type: string
                     required:
-                      - providerId
+                      - id
                 required:
                   - data
         5XX:

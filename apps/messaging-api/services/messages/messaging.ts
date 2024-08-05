@@ -4,7 +4,7 @@
  * It's to replace the ./messages.ts file completely
  */
 
-import { Pool } from "pg";
+import { PoolClient } from "pg";
 import { utils } from "../../utils";
 import { isNativeError } from "util/types";
 import { BadRequestError, ServerError, ThirdPartyError } from "shared-errors";
@@ -42,21 +42,25 @@ type CreatedTemplateMessage = {
   threadName: string;
 };
 
+export type CreateMessageParams = {
+  receiverUserId: string;
+  excerpt: string;
+  lang: string;
+  plainText: string;
+  richText: string;
+  subject: string;
+  threadName: string;
+  scheduleAt: string;
+  bypassConsent: boolean;
+  security: string; // Which levels do we have?
+  preferredTransports: Array<"email" | "sms" | "lifeEvent">;
+  organisationId: string;
+};
+
 export interface MessagingService {
-  createMessage(params: {
-    receiverUserId: string;
-    excerpt: string;
-    lang: string;
-    plainText: string;
-    richText: string;
-    subject: string;
-    threadName: string;
-    scheduleAt: string;
-    bypassConsent: boolean;
-    security: string; // Which levels do we have?
-    preferredTransports: Array<"email" | "sms" | "lifeEvent">;
-    organisationId: string;
-  }): Promise<string>;
+  createMessage(
+    params: CreateMessageParams,
+  ): Promise<{ id: string; user_id: string }>;
 
   /**
    * Composes and insert one message from a template for each recipient, using their preferred language
@@ -98,9 +102,11 @@ export interface MessagingService {
   ): Promise<{ jobId: string; userId: string; entityId: string }[]>;
 }
 
-export function newMessagingService(pool: Pool): Readonly<MessagingService> {
+export function newMessagingService(
+  pool: PoolClient,
+): Readonly<MessagingService> {
   return Object.freeze<MessagingService>({
-    async createMessage(params) {
+    async createMessage(params: CreateMessageParams) {
       const valueArray = [
         false,
         params.receiverUserId,
@@ -121,7 +127,10 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
 
       const values = valueArray.map((_, i) => `$${i + 1}`).join(", ");
 
-      const insertQueryResult = await pool.query<{ id: string }>(
+      const insertQueryResult = await pool.query<{
+        id: string;
+        user_id: string;
+      }>(
         `
         insert into messages(
             is_delivered,
@@ -139,18 +148,18 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
             scheduled_at
         ) values (${values})
         returning 
-          id
+          id, user_id
       `,
         valueArray,
       );
 
-      const messageId = insertQueryResult.rows.at(0)?.id;
+      const message = insertQueryResult.rows[0];
 
-      if (!messageId) {
+      if (!message) {
         throw new Error("no message id generated");
       }
 
-      return messageId;
+      return message;
     },
     async createTemplateMessages(
       templateContents: TemplateContent[],
@@ -276,7 +285,6 @@ export function newMessagingService(pool: Pool): Readonly<MessagingService> {
 
       return insertQueryResult.rows;
     },
-
     async getTemplateContents(
       templateMetaId: string,
     ): Promise<TemplateContent[]> {
