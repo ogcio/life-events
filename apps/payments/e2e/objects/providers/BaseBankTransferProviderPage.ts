@@ -1,11 +1,10 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import { providersUrl, validationErrorTexts } from "../../utils/constants";
+import {
+  BankTransferValidationError,
+  providersUrl,
+  validationErrorTexts,
+} from "../../utils/constants";
 import { mockAccountHolderName, mockIban } from "../../utils/mocks";
-
-type ValidationErrorTypes =
-  | "accountHolderNameRequired"
-  | "ibanRequired"
-  | "ibanInvalid";
 
 export class BaseBankTransferProviderPage {
   protected readonly nameInput: Locator;
@@ -47,7 +46,7 @@ export class BaseBankTransferProviderPage {
     await this.confirmButton.click();
   }
 
-  async expectValidationError(expectedError: ValidationErrorTypes) {
+  async expectValidationError(expectedError: BankTransferValidationError) {
     const errorMessage = await this.page.getByText(
       validationErrorTexts[expectedError],
     );
