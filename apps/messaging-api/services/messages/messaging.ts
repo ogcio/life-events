@@ -119,7 +119,6 @@ export function newMessagingService(
         params.preferredTransports.length
           ? utils.postgresArrayify(params.preferredTransports)
           : null,
-        params.subject, // message name
         params.threadName,
         params.organisationId,
         params.scheduleAt,
@@ -142,7 +141,6 @@ export function newMessagingService(
             lang,
             security_level,
             preferred_transports,
-            message_name,
             thread_name,
             organisation_id,
             scheduled_at
@@ -217,7 +215,6 @@ export function newMessagingService(
          * lang
          * security
          * transports
-         * messageName
          * threadName
          * organisationId
          */
@@ -232,7 +229,6 @@ export function newMessagingService(
           security,
           utils.postgresArrayify(transports),
           userKeys.reduce(interpolationReducer, templateContent.subject),
-          undefined,
           organizationId,
           scheduleAt,
         ];
@@ -264,7 +260,6 @@ export function newMessagingService(
             lang,
             security_level,
             preferred_transports,
-            message_name,
             thread_name,
             organisation_id,
             scheduled_at
@@ -274,7 +269,6 @@ export function newMessagingService(
           id as "messageId",
           excerpt,
           lang,
-          message_name as "messageName",
           plain_text as "plainText",
           rich_text as "richText",
           subject,

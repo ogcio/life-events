@@ -159,7 +159,6 @@ export class Messaging {
 
     return {
       threadName: message.threadName,
-      messageName: message.messageName,
       subject: keys.reduce(interpolator, message.subject),
       excerpt: keys.reduce(interpolator, message.excerpt),
       richText: keys.reduce(interpolator, message.richText),
