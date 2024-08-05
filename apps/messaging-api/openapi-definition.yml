@@ -453,11 +453,6 @@ paths:
         - Providers
       parameters:
         - schema:
-            type: string
-          in: query
-          name: search
-          required: false
-        - schema:
             type: boolean
           in: query
           name: primary

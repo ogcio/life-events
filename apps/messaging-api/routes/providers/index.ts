@@ -47,7 +47,6 @@ export default async function providers(app: FastifyInstance) {
   // get providers
   app.get<{
     Querystring: {
-      search?: string;
       type: "email" | "sms";
       primary?: boolean;
     } & PaginationParams;
@@ -62,7 +61,6 @@ export default async function providers(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Composite([
             Type.Object({
-              search: Type.Optional(Type.String()),
               primary: Type.Optional(Type.Boolean()),
               type: EditableProvidersSchema,
             }),
@@ -84,10 +82,6 @@ export default async function providers(app: FastifyInstance) {
       });
       const organizationId = ensureOrganizationIdIsSet(request, errorProcess);
       const { type } = request.query;
-
-      const textSearchILikeClause = request.query?.search
-        ? `%${request.query.search}%`
-        : "%%";
 
       type QueryProvider = Static<typeof ProviderListItemSchema> & {
         count: number;
@@ -115,13 +109,12 @@ export default async function providers(app: FastifyInstance) {
                 (select count from count_selection) as "count"
             from email_providers
             where organisation_id = $1
-            and provider_name ilike $2
             and ${primaryFilter}
             order by provider_name
-            limit $3
-            offset $4
+            limit $2
+            offset $3
         `,
-            [organizationId, textSearchILikeClause, limit, offset],
+            [organizationId, limit, offset],
           );
         } catch (error) {
           throw new ServerError(
@@ -146,13 +139,12 @@ export default async function providers(app: FastifyInstance) {
                   (select count from count_selection) as "count"
               from sms_providers
               where organisation_id = $1
-              and provider_name ilike $2
               and ${primaryFilter}
               order by provider_name
-              limit $3
-              offset $4
+              limit $2
+              offset $3
           `,
-            [organizationId, textSearchILikeClause, limit, offset],
+            [organizationId, limit, offset],
           );
         } catch (error) {
           throw new ServerError(
