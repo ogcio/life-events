@@ -25,7 +25,6 @@ test.describe("Open Banking provider", () => {
   });
 
   test("should add an open banking provider @smoke @critical", async () => {
-    console.log("providerName 1", providerName);
     await description(
       "This test checks the successful creation of a new open banking provider.",
     );
@@ -55,7 +54,37 @@ test.describe("Open Banking provider", () => {
     await providersPage.checkProviderVisible(providerName);
   });
 
-  test("should not add an open banking provider if iban in missing @regression @normal", async () => {
+  test("should show error creating open banking provider if name is missing @regression @normal", async () => {
+    await description(
+      "This test checks that a validation error is shown when creating a new open banking provider is not created if name is missing.",
+    );
+    await owner("OGCIO");
+    await tags("Providers", "Open Banking");
+    await severity(Severity.NORMAL);
+
+    await page.goto(paymentSetupUrl);
+
+    const providersMenuLink = await page.getByRole("link", {
+      name: "Providers",
+    });
+    await providersMenuLink.click();
+
+    const providersPage = new ProvidersPage(page);
+    await providersPage.createNewPaymentProvider();
+    await providersPage.selectOpenBankingProvider();
+
+    const addOpenBankingProviderPage = new AddOpenBankingProviderPage(page);
+    await addOpenBankingProviderPage.enterName("");
+    await addOpenBankingProviderPage.enterAccountHolderName(
+      mockAccountHolderName,
+    );
+    await addOpenBankingProviderPage.enterIban(mockIban);
+    await addOpenBankingProviderPage.submitProviderCreation();
+
+    await addOpenBankingProviderPage.expectValidationError("nameRequired");
+  });
+
+  test("should not add an open banking provider if iban is missing @regression @normal", async () => {
     console.log("providerName 2", providerName);
     await description(
       "This test checks that a new open banking provider is not created if iban is missing.",
@@ -90,7 +119,6 @@ test.describe("Open Banking provider", () => {
   });
 
   test("should not add an open banking provider if account holder name is missing @regression @normal", async () => {
-    console.log("providerName 3", providerName);
     await description(
       "This test checks that a new open banking provider is not created if account holder name is missing.",
     );
@@ -123,8 +151,7 @@ test.describe("Open Banking provider", () => {
     await providersPage.checkProviderNotVisible(providerName);
   });
 
-  test("should not add a manual bank transfer provider if iban in invalid @regression @normal", async () => {
-    console.log("providerName 4", providerName);
+  test("should not add a manual bank transfer provider if iban is invalid @regression @normal", async () => {
     await description(
       "This test checks that a new manual bank transfer provider is not created if an invalid iban is provided.",
     );
