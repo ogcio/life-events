@@ -1,7 +1,7 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { providersUrl } from "../../utils/constants";
 import { AddStripeProviderPage } from "../../pages/providers/AddStripeProviderPage";
-import { AddOpenBankingProviderPage } from "../../pages/providers/AddOpenbankingProviderPage";
+import { AddOpenBankingProviderPage } from "./AddOpenBankingProviderPage";
 import { AddManualBankTransferProviderPage } from "./AddManualBankTransferProviderPage";
 import { ProviderType } from "../../../app/[locale]/(hosted)/paymentSetup/providers/types";
 
@@ -49,6 +49,10 @@ export class ProvidersPage {
     await this.page
       .getByRole("button", { name: "Select Manual Bank Transfer" })
       .click();
+  }
+
+  async selectOpenBankingProvider() {
+    await this.page.getByRole("button", { name: "Select OpenBanking" }).click();
   }
 
   async checkProviderVisible(name: string) {

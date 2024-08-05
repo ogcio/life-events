@@ -6,3 +6,9 @@ export const myGovIdMockSettings = {
   publicServantEmailDomain: "gov.ie",
   publicServantUser: "Tony Stark",
 };
+
+export const validationErrorTexts: Record<string, string> = {
+  accountHolderNameRequired: "Bank Account Holder Name is required.",
+  ibanRequired: "IBAN is required.",
+  ibanInvalid: "IBAN is not valid.",
+};
