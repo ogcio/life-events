@@ -165,7 +165,7 @@ export default async function messages(app: FastifyInstance) {
               subject,
               thread_name as "threadName",
               organisation_id as "organisationId",
-              user_id as "recipientId",
+              user_id as "recipientUserId",
               created_at as "createdAt",
               (select count from count_selection) as "count"
             from messages
@@ -205,14 +205,14 @@ export default async function messages(app: FastifyInstance) {
                 subject,
                 organisationId,
                 threadName,
-                recipientId,
+                recipientUserId,
               }) => ({
                 id,
                 subject,
                 createdAt,
                 threadName,
                 organisationId,
-                recipientId,
+                recipientUserId,
               }),
             ) ?? [],
           metadata: {
