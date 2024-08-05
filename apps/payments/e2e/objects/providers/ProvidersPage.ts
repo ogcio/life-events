@@ -1,7 +1,7 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { providersUrl } from "../../utils/constants";
-import { AddStripeProviderPage } from "./AddStripeProviderPage";
-import { AddOpenBankingProviderPage } from "./AddOpenbankingProviderPage";
+import { AddStripeProviderPage } from "../../pages/providers/AddStripeProviderPage";
+import { AddOpenBankingProviderPage } from "../../pages/providers/AddOpenbankingProviderPage";
 import { AddManualBankTransferProviderPage } from "./AddManualBankTransferProviderPage";
 import { ProviderType } from "../../../app/[locale]/(hosted)/paymentSetup/providers/types";
 
@@ -39,6 +39,26 @@ export class ProvidersPage {
       exact: true,
     });
     await expect(accountName).toBeVisible();
+  }
+
+  async createNewPaymentProvider() {
+    await this.createNewAccountBtn.click();
+  }
+
+  async selectManualBankTransferProvider() {
+    await this.page
+      .getByRole("button", { name: "Select Manual Bank Transfer" })
+      .click();
+  }
+
+  async checkProviderVisible(name: string) {
+    const accountName = await this.page.getByRole("cell", { name });
+    await expect(accountName).toBeVisible();
+  }
+
+  async checkProviderNotVisible(name: string) {
+    const accountName = await this.page.getByRole("cell", { name });
+    await expect(accountName).not.toBeVisible();
   }
 
   async createManualBankTransferProvider(name: string) {
