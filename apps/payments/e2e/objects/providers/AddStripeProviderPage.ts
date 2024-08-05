@@ -1,5 +1,9 @@
-import { type Page, type Locator } from "@playwright/test";
-import { providersUrl } from "../../utils/constants";
+import { type Page, type Locator, expect } from "@playwright/test";
+import {
+  providersUrl,
+  StripeValidationError,
+  validationErrorTexts,
+} from "../../utils/constants";
 import {
   mockStripePublishableKey,
   mockStripeSecretKey,
@@ -29,11 +33,34 @@ export class AddStripeProviderPage {
     await this.page.goto(`${providersUrl}/add-stripe`);
   }
 
+  async enterName(name: string) {
+    await this.nameInput.fill(name);
+  }
+
+  async enterPublishableKey(key: string) {
+    await this.publishableKey.fill(key);
+  }
+
+  async enterSecretKey(key: string) {
+    await this.secretKey.fill(key);
+  }
+
+  async submitProviderCreation() {
+    await this.confirmButton.click();
+  }
+
+  async expectValidationError(expectedError: StripeValidationError) {
+    const errorMessage = await this.page.getByText(
+      validationErrorTexts[expectedError],
+    );
+    await expect(errorMessage).toBeVisible();
+  }
+
   async create(name: string) {
     await this.nameInput.fill(name);
-    await this.publishableKey.fill(mockStripePublishableKey);
-    await this.secretKey.fill(mockStripeSecretKey);
-    await this.confirmButton.click();
+    await this.enterPublishableKey(mockStripePublishableKey);
+    await this.enterSecretKey(mockStripeSecretKey);
+    await this.submitProviderCreation();
 
     await this.page.waitForURL(providersUrl);
   }
