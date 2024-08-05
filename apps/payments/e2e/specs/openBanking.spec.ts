@@ -81,7 +81,7 @@ test.describe("Open Banking provider", () => {
     await addOpenBankingProviderPage.enterIban(mockIban);
     await addOpenBankingProviderPage.submitProviderCreation();
 
-    await addOpenBankingProviderPage.expectValidationError("ibanRequired");
+    await addOpenBankingProviderPage.expectValidationError("nameRequired");
   });
 
   test("should not add an open banking provider if iban is missing @regression @normal", async () => {
