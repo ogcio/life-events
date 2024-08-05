@@ -268,7 +268,6 @@ export default async function messages(app: FastifyInstance) {
         response: {
           "4xx": HttpError,
           "5xx": HttpError,
-        
           201: Type.Object({
             data: Type.Object({
               messageId: Type.String({ format: "uuid" }),
@@ -282,14 +281,14 @@ export default async function messages(app: FastifyInstance) {
 
       const userData = ensureUserCanAccessUser(
         request.userData,
-        request.body.userId,
+        request.body.recipientUserId,
         errorKey,
       );
 
       const messages = await processMessages({
         inputMessages: [
           {
-            receiverUserId: request.body.userId,
+            receiverUserId: request.body.recipientUserId,
             ...request.body,
             ...request.body.message,
             organisationId: userData.organizationId!,
