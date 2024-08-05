@@ -57,7 +57,7 @@ export class AddStripeProviderPage {
   }
 
   async create(name: string) {
-    await this.nameInput.fill(name);
+    await this.enterName(name);
     await this.enterPublishableKey(mockStripePublishableKey);
     await this.enterSecretKey(mockStripeSecretKey);
     await this.submitProviderCreation();
