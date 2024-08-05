@@ -18,6 +18,9 @@ test.describe("Manual bank transfer provider", () => {
 
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
+  });
+
+  test.beforeEach(async () => {
     providerName = `Test manual bank transfer ${Date.now()}`;
   });
 
