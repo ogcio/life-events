@@ -348,7 +348,7 @@ export interface paths {
             "application/json": {
               data: {
                 /** Format: uuid */
-                providerId: string;
+                id: string;
               };
             };
           };

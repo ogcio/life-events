@@ -1,6 +1,17 @@
-import { type Page, type Locator } from "@playwright/test";
+import { type Page, type Locator, expect } from "@playwright/test";
 import { providersUrl } from "../../utils/constants";
 import { mockAccountHolderName, mockIban } from "../../utils/mocks";
+
+type ManualBankTransferErrors =
+  | "accountHolderNameRequired"
+  | "ibanRequired"
+  | "ibanInvalid";
+
+const validationErrorTexts: Record<ManualBankTransferErrors, string> = {
+  accountHolderNameRequired: "Bank Account Holder Name is required.",
+  ibanRequired: "IBAN is required.",
+  ibanInvalid: "IBAN is not valid.",
+};
 
 export class AddManualBankTransferProviderPage {
   private readonly nameInput: Locator;
@@ -24,6 +35,28 @@ export class AddManualBankTransferProviderPage {
 
   async goto() {
     await this.page.goto(`${providersUrl}/add-banktransfer`);
+  }
+
+  async enterName(name: string) {
+    await this.nameInput.fill(name);
+  }
+  async enterAccountHolderName(name: string) {
+    await this.accountHolderNameInput.fill(name);
+  }
+
+  async enterIban(iban: string) {
+    await this.ibanInput.fill(iban);
+  }
+
+  async submitProviderCreation() {
+    await this.confirmButton.click();
+  }
+
+  async expectValidationError(expectedError: ManualBankTransferErrors) {
+    const errorMessage = await this.page.getByText(
+      validationErrorTexts[expectedError],
+    );
+    await expect(errorMessage).toBeVisible();
   }
 
   async create(name: string) {

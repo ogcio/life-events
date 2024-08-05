@@ -1,4 +1,4 @@
-import { ProvidersPage } from "../pages/providers/ProvidersPage";
+import { ProvidersPage } from "../objects/providers/ProvidersPage";
 import { test as base } from "./test";
 
 type providersFixtures = {
