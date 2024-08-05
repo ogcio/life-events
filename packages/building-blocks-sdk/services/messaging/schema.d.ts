@@ -1616,6 +1616,19 @@ export interface paths {
       };
     };
   };
+  "/api/v1/user-imports/template-download": {
+    /** @description it will return a string containing the template with the csv that will be used to import users */
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "text/csv": string;
+          };
+        };
+      };
+    };
+  };
   "/api/v1/users/": {
     get: {
       parameters: {
