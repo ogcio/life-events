@@ -2,17 +2,10 @@ openapi: 3.0.3
 info:
   title: OGCIO Messaging API
   description: API for OGCIO Messaging Service
-  version: 0.1.0
+  version: 1.0.0
 components:
   schemas: {}
 paths:
-  /health:
-    get:
-      tags:
-        - Health
-      responses:
-        "200":
-          description: Default Response
   /api/v1/messages/:
     get:
       tags: &a1
@@ -20,8 +13,35 @@ paths:
       parameters:
         - schema:
             type: string
+            enum:
+              - delivered
           in: query
-          name: type
+          name: status
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: recipientUserId
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: organisationId
+          required: false
+        - schema:
+            default: 0
+            minimum: 0
+            type: integer
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 20
+            minimum: 1
+            maximum: 100
+            type: integer
+          in: query
+          name: limit
           required: false
       responses:
         "200":
@@ -40,21 +60,21 @@ paths:
                           type: string
                         subject:
                           type: string
-                        excerpt:
-                          type: string
-                        plainText:
-                          type: string
-                        richText:
-                          type: string
                         createdAt:
+                          type: string
+                        threadName:
+                          type: string
+                        organisationId:
+                          type: string
+                        recipientId:
                           type: string
                       required:
                         - id
                         - subject
-                        - excerpt
-                        - plainText
-                        - richText
                         - createdAt
+                        - threadName
+                        - organisationId
+                        - recipientId
                   metadata:
                     type: object
                     properties:
@@ -147,17 +167,12 @@ paths:
                 preferredTransports:
                   type: array
                   items:
-                    anyOf:
-                      - type: string
-                        enum:
-                          - email
-                      - type: string
-                        enum:
-                          - sms
-                      - type: string
-                        enum:
-                          - lifeEvent
-                userId:
+                    type: string
+                    enum:
+                      - sms
+                      - email
+                      - lifeEvent
+                recipientUserId:
                   type: string
                 security:
                   type: string
@@ -172,8 +187,6 @@ paths:
                   properties:
                     threadName:
                       type: string
-                    messageName:
-                      type: string
                     subject:
                       type: string
                     excerpt:
@@ -186,7 +199,6 @@ paths:
                       type: string
                   required:
                     - threadName
-                    - messageName
                     - subject
                     - excerpt
                     - richText
@@ -194,7 +206,7 @@ paths:
                     - lang
               required:
                 - preferredTransports
-                - userId
+                - recipientUserId
                 - security
                 - bypassConsent
                 - scheduleAt
@@ -451,13 +463,10 @@ paths:
           name: primary
           required: false
         - schema:
-            anyOf:
-              - type: string
-                enum:
-                  - sms
-              - type: string
-                enum:
-                  - email
+            type: string
+            enum:
+              - sms
+              - email
           in: query
           name: type
           required: true
@@ -471,6 +480,7 @@ paths:
         - schema:
             default: 20
             minimum: 1
+            maximum: 100
             type: integer
           in: query
           name: limit
@@ -496,13 +506,10 @@ paths:
                         isPrimary:
                           type: boolean
                         type:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - sms
-                            - type: string
-                              enum:
-                                - email
+                          type: string
+                          enum:
+                            - sms
+                            - email
                       required:
                         - id
                         - providerName
@@ -708,11 +715,11 @@ paths:
                   data:
                     type: object
                     properties:
-                      providerId:
+                      id:
                         format: uuid
                         type: string
                     required:
-                      - providerId
+                      - id
                 required:
                   - data
         5XX:
@@ -788,13 +795,10 @@ paths:
       tags: *a2
       parameters:
         - schema:
-            anyOf:
-              - type: string
-                enum:
-                  - sms
-              - type: string
-                enum:
-                  - email
+            type: string
+            enum:
+              - sms
+              - email
           in: query
           name: type
           required: true
@@ -1913,20 +1917,13 @@ paths:
                         organisationId:
                           type: string
                         organisationInvitationStatus:
+                          type: string
+                          enum:
+                            - to_be_invited
+                            - pending
+                            - accepted
+                            - declined
                           default: pending
-                          anyOf:
-                            - type: string
-                              enum:
-                                - to_be_invited
-                            - type: string
-                              enum:
-                                - pending
-                            - type: string
-                              enum:
-                                - accepted
-                            - type: string
-                              enum:
-                                - declined
                         organisationInvitationSentAt:
                           type: string
                         organisationInvitationFeedbackAt:
@@ -1934,42 +1931,25 @@ paths:
                         organisationPreferredTransports:
                           type: array
                           items:
-                            anyOf:
-                              - type: string
-                                enum:
-                                  - email
-                              - type: string
-                                enum:
-                                  - sms
-                              - type: string
-                                enum:
-                                  - lifeEvent
+                            type: string
+                            enum:
+                              - sms
+                              - email
+                              - lifeEvent
                         correlationQuality:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - full
-                            - type: string
-                              enum:
-                                - partial
-                            - type: string
-                              enum:
-                                - not_related
+                          type: string
+                          enum:
+                            - full
+                            - partial
+                            - not_related
                         userStatus:
+                          type: string
+                          enum:
+                            - to_be_invited
+                            - pending
+                            - disabled
+                            - active
                           default: pending
-                          anyOf:
-                            - type: string
-                              enum:
-                                - to_be_invited
-                            - type: string
-                              enum:
-                                - pending
-                            - type: string
-                              enum:
-                                - disabled
-                            - type: string
-                              enum:
-                                - active
                         details:
                           type: object
                           properties:
@@ -2244,20 +2224,13 @@ paths:
                       organisationId:
                         type: string
                       organisationInvitationStatus:
+                        type: string
+                        enum:
+                          - to_be_invited
+                          - pending
+                          - accepted
+                          - declined
                         default: pending
-                        anyOf:
-                          - type: string
-                            enum:
-                              - to_be_invited
-                          - type: string
-                            enum:
-                              - pending
-                          - type: string
-                            enum:
-                              - accepted
-                          - type: string
-                            enum:
-                              - declined
                       organisationInvitationSentAt:
                         type: string
                       organisationInvitationFeedbackAt:
@@ -2265,42 +2238,25 @@ paths:
                       organisationPreferredTransports:
                         type: array
                         items:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - email
-                            - type: string
-                              enum:
-                                - sms
-                            - type: string
-                              enum:
-                                - lifeEvent
+                          type: string
+                          enum:
+                            - sms
+                            - email
+                            - lifeEvent
                       correlationQuality:
-                        anyOf:
-                          - type: string
-                            enum:
-                              - full
-                          - type: string
-                            enum:
-                              - partial
-                          - type: string
-                            enum:
-                              - not_related
+                        type: string
+                        enum:
+                          - full
+                          - partial
+                          - not_related
                       userStatus:
+                        type: string
+                        enum:
+                          - to_be_invited
+                          - pending
+                          - disabled
+                          - active
                         default: pending
-                        anyOf:
-                          - type: string
-                            enum:
-                              - to_be_invited
-                          - type: string
-                            enum:
-                              - pending
-                          - type: string
-                            enum:
-                              - disabled
-                          - type: string
-                            enum:
-                              - active
                       details:
                         type: object
                         properties:
@@ -2540,14 +2496,11 @@ paths:
               type: object
               properties:
                 invitationStatusFeedback:
+                  type: string
+                  enum:
+                    - accepted
+                    - declined
                   default: accepted
-                  anyOf:
-                    - type: string
-                      enum:
-                        - accepted
-                    - type: string
-                      enum:
-                        - declined
                 preferredTransports:
                   type: array
                   items:
@@ -2597,20 +2550,13 @@ paths:
                       organisationId:
                         type: string
                       organisationInvitationStatus:
+                        type: string
+                        enum:
+                          - to_be_invited
+                          - pending
+                          - accepted
+                          - declined
                         default: pending
-                        anyOf:
-                          - type: string
-                            enum:
-                              - to_be_invited
-                          - type: string
-                            enum:
-                              - pending
-                          - type: string
-                            enum:
-                              - accepted
-                          - type: string
-                            enum:
-                              - declined
                       organisationInvitationSentAt:
                         type: string
                       organisationInvitationFeedbackAt:
@@ -2618,42 +2564,25 @@ paths:
                       organisationPreferredTransports:
                         type: array
                         items:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - email
-                            - type: string
-                              enum:
-                                - sms
-                            - type: string
-                              enum:
-                                - lifeEvent
+                          type: string
+                          enum:
+                            - sms
+                            - email
+                            - lifeEvent
                       correlationQuality:
-                        anyOf:
-                          - type: string
-                            enum:
-                              - full
-                          - type: string
-                            enum:
-                              - partial
-                          - type: string
-                            enum:
-                              - not_related
+                        type: string
+                        enum:
+                          - full
+                          - partial
+                          - not_related
                       userStatus:
+                        type: string
+                        enum:
+                          - to_be_invited
+                          - pending
+                          - disabled
+                          - active
                         default: pending
-                        anyOf:
-                          - type: string
-                            enum:
-                              - to_be_invited
-                          - type: string
-                            enum:
-                              - pending
-                          - type: string
-                            enum:
-                              - disabled
-                          - type: string
-                            enum:
-                              - active
                       details:
                         type: object
                         properties:
@@ -2862,14 +2791,11 @@ paths:
                           format: date-time
                           type: string
                         importChannel:
+                          type: string
+                          enum:
+                            - api
+                            - csv
                           default: api
-                          anyOf:
-                            - type: string
-                              enum:
-                                - api
-                            - type: string
-                              enum:
-                                - csv
                         retryCount:
                           default: 0
                           type: integer
@@ -3140,23 +3066,14 @@ paths:
                                 - type: "null"
                                 - type: string
                             importStatus:
+                              type: string
+                              enum:
+                                - pending
+                                - imported
+                                - not_found
+                                - error
+                                - missing_contacts
                               default: pending
-                              anyOf:
-                                - type: string
-                                  enum:
-                                    - pending
-                                - type: string
-                                  enum:
-                                    - imported
-                                - type: string
-                                  enum:
-                                    - not_found
-                                - type: string
-                                  enum:
-                                    - error
-                                - type: string
-                                  enum:
-                                    - missing_contacts
                             importError:
                               default: null
                               anyOf:
@@ -3248,14 +3165,11 @@ paths:
                             - address
                             - collectedConsent
                       importChannel:
+                        type: string
+                        enum:
+                          - api
+                          - csv
                         default: api
-                        anyOf:
-                          - type: string
-                            enum:
-                              - api
-                          - type: string
-                            enum:
-                              - csv
                       retryCount:
                         default: 0
                         type: integer
@@ -3442,6 +3356,7 @@ paths:
         - schema:
             default: 20
             minimum: 1
+            maximum: 100
             type: integer
           in: query
           name: limit
@@ -3508,20 +3423,13 @@ paths:
                         organisationId:
                           type: string
                         organisationInvitationStatus:
+                          type: string
+                          enum:
+                            - to_be_invited
+                            - pending
+                            - accepted
+                            - declined
                           default: pending
-                          anyOf:
-                            - type: string
-                              enum:
-                                - to_be_invited
-                            - type: string
-                              enum:
-                                - pending
-                            - type: string
-                              enum:
-                                - accepted
-                            - type: string
-                              enum:
-                                - declined
                         organisationInvitationSentAt:
                           type: string
                         organisationInvitationFeedbackAt:
@@ -3529,42 +3437,25 @@ paths:
                         organisationPreferredTransports:
                           type: array
                           items:
-                            anyOf:
-                              - type: string
-                                enum:
-                                  - email
-                              - type: string
-                                enum:
-                                  - sms
-                              - type: string
-                                enum:
-                                  - lifeEvent
+                            type: string
+                            enum:
+                              - sms
+                              - email
+                              - lifeEvent
                         correlationQuality:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - full
-                            - type: string
-                              enum:
-                                - partial
-                            - type: string
-                              enum:
-                                - not_related
+                          type: string
+                          enum:
+                            - full
+                            - partial
+                            - not_related
                         userStatus:
+                          type: string
+                          enum:
+                            - to_be_invited
+                            - pending
+                            - disabled
+                            - active
                           default: pending
-                          anyOf:
-                            - type: string
-                              enum:
-                                - to_be_invited
-                            - type: string
-                              enum:
-                                - pending
-                            - type: string
-                              enum:
-                                - disabled
-                            - type: string
-                              enum:
-                                - active
                         details:
                           type: object
                           properties:
@@ -3840,20 +3731,13 @@ paths:
                       organisationId:
                         type: string
                       organisationInvitationStatus:
+                        type: string
+                        enum:
+                          - to_be_invited
+                          - pending
+                          - accepted
+                          - declined
                         default: pending
-                        anyOf:
-                          - type: string
-                            enum:
-                              - to_be_invited
-                          - type: string
-                            enum:
-                              - pending
-                          - type: string
-                            enum:
-                              - accepted
-                          - type: string
-                            enum:
-                              - declined
                       organisationInvitationSentAt:
                         type: string
                       organisationInvitationFeedbackAt:
@@ -3861,42 +3745,25 @@ paths:
                       organisationPreferredTransports:
                         type: array
                         items:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - email
-                            - type: string
-                              enum:
-                                - sms
-                            - type: string
-                              enum:
-                                - lifeEvent
+                          type: string
+                          enum:
+                            - sms
+                            - email
+                            - lifeEvent
                       correlationQuality:
-                        anyOf:
-                          - type: string
-                            enum:
-                              - full
-                          - type: string
-                            enum:
-                              - partial
-                          - type: string
-                            enum:
-                              - not_related
+                        type: string
+                        enum:
+                          - full
+                          - partial
+                          - not_related
                       userStatus:
+                        type: string
+                        enum:
+                          - to_be_invited
+                          - pending
+                          - disabled
+                          - active
                         default: pending
-                        anyOf:
-                          - type: string
-                            enum:
-                              - to_be_invited
-                          - type: string
-                            enum:
-                              - pending
-                          - type: string
-                            enum:
-                              - disabled
-                          - type: string
-                            enum:
-                              - active
                       details:
                         type: object
                         properties:
@@ -4118,6 +3985,7 @@ paths:
         - schema:
             default: 20
             minimum: 1
+            maximum: 100
             type: integer
           in: query
           name: limit
@@ -4326,8 +4194,6 @@ paths:
                                   type: array
                                   items:
                                     type: string
-                                messageName:
-                                  type: string
                                 scheduledAt:
                                   format: date-time
                                   type: string
@@ -4354,7 +4220,6 @@ paths:
                                 - plainText
                                 - threadName
                                 - transports
-                                - messageName
                                 - scheduledAt
                                 - senderUserId
                                 - senderFullName

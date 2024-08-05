@@ -17,6 +17,7 @@ import apiAuthPlugin from "api-auth";
 
 import routes from "./routes/index.js";
 import { envSchema } from "./config.js";
+import healthCheck from "./routes/healthcheck.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -87,6 +88,8 @@ export async function build(opts?: FastifyServerOptions) {
     dir: join(__dirname, "plugins"),
   });
   app.register(import("@fastify/formbody"));
+
+  app.register(healthCheck);
 
   app.register(routes, { prefix: "/api/v1" });
 

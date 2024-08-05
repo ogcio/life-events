@@ -26,6 +26,7 @@ import {
   ServerError,
   isLifeEventsError,
 } from "shared-errors";
+import { getProfileSdk } from "../../../utils/authentication-factory";
 
 interface FoundUser {
   id: string;
@@ -73,7 +74,7 @@ const mapUsersSync = async (params: {
   requestUser: RequestUser;
 }): Promise<UsersImport> => {
   const usersImport = await getUsersImport(params);
-  const profile = new Profile(params.requestUser.accessToken);
+  const profile = await getProfileSdk(params.requestUser.organizationId);
 
   const processingUsers = usersImport.usersData.map(
     async (toImportUser: ToImportUser) =>

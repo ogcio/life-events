@@ -10,7 +10,7 @@
     "start": "node --import tsx index.ts",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
-    "generate-ts-client": "npx openapi-typescript http://localhost:8002/docs/json -o ../../packages/building-blocks-sdk/services/messaging/schema.d.ts"
+    "generate-ts-client": "npx openapi-typescript openapi-definition.yml -o ../../packages/building-blocks-sdk/services/messaging/schema.d.ts"
   },
   "nodemonConfig": {
     "watch": [

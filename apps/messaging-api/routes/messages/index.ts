@@ -1,30 +1,31 @@
 import { FastifyInstance } from "fastify";
-import { Type } from "@sinclair/typebox";
+import { Static, Type } from "@sinclair/typebox";
 import {
   getGenericResponseSchema,
-  MessageCreate,
+  MessageCreateSchema,
   MessageCreateType,
+  PaginationParams,
+  PaginationParamsSchema,
   ReadMessageSchema,
-  ReadMessagesSchema,
+  MessageListSchema,
+  MessageListItemSchema,
+  IdParamsSchema,
+  GenericResponse,
 } from "../../types/schemaDefinitions";
-import { getMessage, getMessages } from "../../services/messages/messages";
-import { newMessagingService } from "../../services/messages/messaging";
-import { getUserProfiles } from "../../services/users/shared-users";
-import { Profile } from "building-blocks-sdk";
-import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
-import {
-  MessagingEventType,
-  newMessagingEventLogger,
-} from "../../services/messages/eventLogger";
+import { getMessage, processMessages } from "../../services/messages/messages";
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
+import { ensureUserCanAccessUser } from "api-auth";
+import { QueryResult } from "pg";
+import { ServerError, AuthorizationError } from "shared-errors";
+import { utils } from "../../utils";
+import { sanitizePagination, getPaginationLinks } from "../../utils/pagination";
 
 const MESSAGES_TAGS = ["Messages"];
 
 interface GetAllMessages {
-  Querystring: {
-    type?: string;
-  };
+  Querystring: PaginationParams &
+    Static<typeof IdParamsSchema> & { status?: "scheduled" | "delivered" };
 }
 
 interface GetMessage {
@@ -32,6 +33,8 @@ interface GetMessage {
     messageId: string;
   };
 }
+
+export const prefix = "/messages";
 
 export default async function messages(app: FastifyInstance) {
   // All messages
@@ -43,24 +46,180 @@ export default async function messages(app: FastifyInstance) {
       schema: {
         tags: MESSAGES_TAGS,
         querystring: Type.Optional(
-          Type.Object({
-            type: Type.Optional(Type.String()),
-          }),
+          Type.Composite([
+            Type.Object({
+              status: Type.Optional(Type.Literal("delivered")),
+            }),
+            IdParamsSchema,
+            PaginationParamsSchema,
+          ]),
         ),
         response: {
-          200: getGenericResponseSchema(ReadMessagesSchema),
+          200: getGenericResponseSchema(MessageListSchema),
           400: HttpError,
         },
       },
     },
     async function getMessagesHandler(request, _reply) {
-      return {
-        data: await getMessages({
-          pg: app.pg,
-          userId: request.userData!.userId,
-          transportType: request.query?.type,
-        }),
-      };
+      const errorProcess = "GET_MESSAGES";
+      let url = "";
+      try {
+        url = utils.apiV1Url({
+          resourcePath: prefix,
+          base: process.env.HOST_URL || "",
+        }).href;
+      } catch (error) {
+        throw new ServerError(errorProcess, "failed to build link url", error);
+      }
+
+      const queryRecipientUserId = request.query.recipientUserId;
+      const queryOrganisationId = request.query.organisationId;
+
+      if (!queryOrganisationId && !queryRecipientUserId) {
+        throw new AuthorizationError(
+          errorProcess,
+          "not allowed to access messages from all organisations",
+        );
+      }
+
+      const userIdsRepresentingUser: string[] = [];
+      if (queryRecipientUserId) {
+        // we must make sure that we consider a user to have theoretically two ids from two separate tables (or databases if the separation occurs)
+        const allUserIdsQueryResult = await app.pg.pool.query<{
+          profileId?: string;
+          messageUserId: string;
+        }>(
+          `
+            select id as "messageUserId", user_profile_id as "profileId" from users where id::text = $1 or user_profile_id = $1
+            limit 1
+        `,
+          [request.userData?.userId],
+        );
+        const allUserIds = allUserIdsQueryResult.rows.at(0);
+        if (!allUserIds) {
+          throw new AuthorizationError(errorProcess, "illegal user id request");
+        }
+
+        if (
+          allUserIds.profileId
+            ? allUserIds.profileId !== queryRecipientUserId
+            : true && allUserIds.messageUserId !== queryRecipientUserId
+        ) {
+          throw new AuthorizationError(errorProcess, "illegal user id request");
+        }
+
+        userIdsRepresentingUser.push(allUserIds.messageUserId);
+        if (allUserIds.profileId) {
+          userIdsRepresentingUser.push(allUserIds.profileId);
+        }
+      }
+
+      // Only delivered query status allowed
+      if (
+        userIdsRepresentingUser.length &&
+        request.query.status !== "delivered"
+      ) {
+        throw new AuthorizationError(
+          errorProcess,
+          "only delivered messages allowed",
+        );
+      }
+
+      // Only query organisation you're allowed to see
+      if (
+        queryOrganisationId &&
+        queryOrganisationId !== request.userData?.organizationId
+      ) {
+        throw new AuthorizationError(
+          errorProcess,
+          "illegal organisation request",
+        );
+      }
+
+      const { limit, offset } = sanitizePagination({
+        limit: request.query.limit,
+        offset: request.query.offset,
+      });
+
+      const MessageListItemWithCount = Type.Composite([
+        MessageListItemSchema,
+        Type.Object({ count: Type.Number() }),
+      ]);
+
+      type QueryRow = Static<typeof MessageListItemWithCount>;
+
+      let messagesQueryResult: QueryResult<QueryRow> | undefined;
+
+      try {
+        messagesQueryResult = await app.pg.pool.query<QueryRow>(
+          `
+            with count_selection as (
+              select count(*) from messages
+              where
+              case when $1::text is not null then organisation_id = $1 else true end
+              and case when $5 > 0 then user_id = any ($2) else true end
+            )
+            select 
+              id,
+              subject,
+              thread_name as "threadName",
+              organisation_id as "organisationId",
+              user_id as "recipientId",
+              created_at as "createdAt",
+              (select count from count_selection) as "count"
+            from messages
+            where 
+            case when $1::text is not null then organisation_id = $1 else true end
+            and case when $5 > 0 then user_id = any ($2) else true end
+            order by created_at desc
+            limit $3
+            offset $4
+        `,
+          [
+            queryOrganisationId || null,
+            userIdsRepresentingUser,
+            limit,
+            offset,
+            userIdsRepresentingUser.length,
+          ],
+        );
+      } catch (error) {
+        throw new ServerError(
+          errorProcess,
+          "failed to query organisation messages",
+          error,
+        );
+      }
+
+      const totalCount = messagesQueryResult?.rows.at(0)?.count || 0;
+
+      const links = getPaginationLinks({ totalCount, url, limit, offset });
+      const response: GenericResponse<Static<typeof MessageListItemSchema>[]> =
+        {
+          data:
+            messagesQueryResult?.rows.map(
+              ({
+                id,
+                createdAt,
+                subject,
+                organisationId,
+                threadName,
+                recipientId,
+              }) => ({
+                id,
+                subject,
+                createdAt,
+                threadName,
+                organisationId,
+                recipientId,
+              }),
+            ) ?? [],
+          metadata: {
+            totalCount,
+            links,
+          },
+        };
+      return response;
     },
   );
 
@@ -105,12 +264,11 @@ export default async function messages(app: FastifyInstance) {
         ]),
       schema: {
         tags: MESSAGES_TAGS,
-        body: MessageCreate,
+        body: MessageCreateSchema,
         response: {
           "4xx": HttpError,
           "5xx": HttpError,
-          // We want to add self link, count=1 eg. in the metadata field?
-          // 201: getGenericResponseSchema(Type.String({ format: "uuid" })),
+        
           201: Type.Object({
             data: Type.Object({
               messageId: Type.String({ format: "uuid" }),
@@ -122,109 +280,37 @@ export default async function messages(app: FastifyInstance) {
     async function createMessageHandler(request, reply) {
       const errorKey = "FAILED_TO_CREATE_MESSAGE";
 
-      const senderUserId = request.userData?.userId;
-      const organisationId = request.userData?.organizationId;
-
-      if (!senderUserId || !organisationId) {
-        throw new AuthorizationError(errorKey, "unauthorized");
-      }
-
-      const eventLogger = newMessagingEventLogger(app.pg.pool, app.log);
-
-      const receiverUserId = request.body.userId;
-
-      const [receiverUser] = await getUserProfiles(
-        [receiverUserId],
-        app.pg.pool,
+      const userData = ensureUserCanAccessUser(
+        request.userData,
+        request.body.userId,
+        errorKey,
       );
 
-      if (!receiverUser) {
-        throw new NotFoundError(
-          errorKey,
-          "failed to get receiver user profile",
-        );
-      }
-
-      // Need to change to token once that PR is merged
-      const profileSdk = new Profile(request.userData!.accessToken);
-      const { data, error } = await profileSdk.getUser();
-
-      if (error) {
-        throw new ServerError(
-          errorKey,
-          "failed to get sender user profile from profile sdk",
-          error,
-        );
-      }
-
-      if (!data) {
-        throw new NotFoundError(
-          errorKey,
-          "sender user from profile sdk was undefined",
-        );
-      }
-
-      const senderFullName = `${data.firstName} ${data.lastName}`.trim();
-      const receiverFullName =
-        `${receiverUser.firstName} ${receiverUser.lastName}`.trim();
-
-      // Create
-      const messageService = newMessagingService(app.pg.pool);
-
-      let messageId = "";
-      try {
-        messageId = await messageService.createMessage({
-          receiverUserId,
-          ...request.body,
-          ...request.body.message,
-          organisationId,
-        });
-      } catch (error) {
-        throw new ServerError(errorKey, "failed to create message", error);
-      }
-
-      await eventLogger.log(MessagingEventType.createRawMessage, [
-        {
-          organisationName: organisationId,
-          bypassConsent: request.body.bypassConsent,
-          security: request.body.security,
-          transports: request.body.preferredTransports,
-          scheduledAt: request.body.scheduleAt,
-          messageId,
-          ...request.body.message,
-          senderFullName,
-          senderPPSN: data.ppsn || "",
-          senderUserId,
-          receiverFullName,
-          receiverPPSN: receiverUser.ppsn,
-          receiverUserId,
-        },
-      ]);
-
-      await eventLogger.log(MessagingEventType.scheduleMessage, [
-        { messageId },
-      ]);
-
-      // Schedule
-      let jobId = "";
-      try {
-        const [job] = await messageService.scheduleMessages(
-          [{ messageId, userId: receiverUserId }],
-          request.body.scheduleAt,
-          organisationId,
-        );
-        jobId = job.jobId;
-      } catch (err) {
-        await eventLogger.log(MessagingEventType.scheduleMessageError, [
+      const messages = await processMessages({
+        inputMessages: [
           {
-            messageId,
-            jobId,
+            receiverUserId: request.body.userId,
+            ...request.body,
+            ...request.body.message,
+            organisationId: userData.organizationId!,
           },
-        ]);
+        ],
+        scheduleAt: request.body.scheduleAt,
+        errorProcess: errorKey,
+        pgPool: app.pg.pool,
+        logger: request.log,
+        senderUser: {
+          profileId: userData.userId,
+          organizationId: userData.organizationId,
+        },
+        allOrNone: true,
+      });
+      if (messages.errors.length > 0) {
+        throw messages.errors[0];
       }
 
       reply.statusCode = 201;
-      return { data: { messageId } };
+      return { data: { messageId: messages.scheduledMessages[0].entityId } };
     },
   );
 

@@ -1,69 +1,50 @@
 import { Static, Type } from "@sinclair/typebox";
-import { PreferredTransports } from "./schemaDefinitions";
+import { AllProvidersSchema, TypeboxStringEnum } from "./schemaDefinitions";
 
 const NullableStringType = Type.Union([Type.Null(), Type.String()], {
   default: null,
 });
 const NullableOptionalStringType = Type.Optional(NullableStringType);
 
-export const InvitationStatusUnionType = Type.Union(
-  [
-    Type.Literal("to_be_invited"),
-    Type.Literal("pending"),
-    Type.Literal("accepted"),
-    Type.Literal("declined"),
-  ],
-  { default: "pending" },
+export const InvitationStatusUnionType = TypeboxStringEnum(
+  ["to_be_invited", "pending", "accepted", "declined"],
+  "pending",
 );
 export type InvitationStatus = Static<typeof InvitationStatusUnionType>;
 
-export const OrgInvitationFeedbackStatusUnionType = Type.Union(
-  [Type.Literal("accepted"), Type.Literal("declined")],
-  { default: "accepted" },
+export const OrgInvitationFeedbackStatusUnionType = TypeboxStringEnum(
+  ["accepted", "declined"],
+  "accepted",
 );
 export type OrgInvitationFeedbackStatus = Static<
   typeof OrgInvitationFeedbackStatusUnionType
 >;
 
-export const UserStatusUnionType = Type.Union(
-  [
-    Type.Literal("to_be_invited"),
-    Type.Literal("pending"),
-    Type.Literal("disabled"),
-    Type.Literal("active"),
-  ],
-  { default: "pending" },
+export const UserStatusUnionType = TypeboxStringEnum(
+  ["to_be_invited", "pending", "disabled", "active"],
+  "pending",
 );
 export type UserStatus = Static<typeof UserStatusUnionType>;
 
-export const UserStatusFeedbackUnionType = Type.Union(
-  [Type.Literal("disabled"), Type.Literal("active")],
-  { default: "active" },
+export const UserStatusFeedbackUnionType = TypeboxStringEnum(
+  ["disabled", "active"],
+  "active",
 );
 export type UserStatusFeedback = Static<typeof UserStatusFeedbackUnionType>;
 
-export const ImportChannelUnionType = Type.Union(
-  [Type.Literal("api"), Type.Literal("csv")],
-  { default: "api" },
-);
+export const ImportChannelUnionType = TypeboxStringEnum(["api", "csv"], "api");
 export type ImportChannel = Static<typeof ImportChannelUnionType>;
 
-export const ImportStatusUnionType = Type.Union(
-  [
-    Type.Literal("pending"),
-    Type.Literal("imported"),
-    Type.Literal("not_found"),
-    Type.Literal("error"),
-    Type.Literal("missing_contacts"),
-  ],
-  { default: "pending" },
+export const ImportStatusUnionType = TypeboxStringEnum(
+  ["pending", "imported", "not_found", "error", "missing_contacts"],
+  "pending",
 );
 export type ImportStatus = Static<typeof ImportStatusUnionType>;
 
-export const CorrelationQualityUnionType = Type.Union([
-  Type.Literal("full"),
-  Type.Literal("partial"),
-  Type.Literal("not_related"),
+export const CorrelationQualityUnionType = TypeboxStringEnum([
+  "full",
+  "partial",
+  "not_related",
 ]);
 export type CorrelationQuality = Static<typeof CorrelationQualityUnionType>;
 
@@ -200,7 +181,7 @@ export const OrganisationSettingSchema = Type.Object({
   organisationInvitationStatus: InvitationStatusUnionType,
   organisationInvitationSentAt: Type.Optional(Type.String()),
   organisationInvitationFeedbackAt: Type.Optional(Type.String()),
-  organisationPreferredTransports: PreferredTransports,
+  organisationPreferredTransports: Type.Array(AllProvidersSchema),
   correlationQuality: CorrelationQualityUnionType,
   userStatus: UserStatusUnionType,
   details: Type.Optional(UserDetailsSchema),

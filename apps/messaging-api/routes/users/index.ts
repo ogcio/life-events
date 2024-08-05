@@ -7,7 +7,6 @@ import {
 } from "../../types/usersSchemaDefinitions";
 import {
   GenericResponse,
-  GenericResponseSingle,
   PaginationParams,
   PaginationParamsSchema,
   getGenericResponseSchema,
@@ -20,8 +19,8 @@ import {
 } from "../../utils/pagination";
 import { Permissions } from "../../types/permissions";
 import { NotFoundError } from "shared-errors";
-import { Profile } from "building-blocks-sdk";
 import { ensureUserIsOrganisationMember } from "../../utils/error-utils";
+import { getProfileSdk } from "../../utils/authentication-factory";
 
 const tags = ["Users"];
 
@@ -34,7 +33,7 @@ export default async function users(app: FastifyInstance) {
       importId?: string;
       activeOnly?: boolean;
     } & PaginationParams;
-    Response: GenericResponse<UserPerOrganisation>;
+    Response: GenericResponse<UserPerOrganisation[]>;
   }
 
   interface GetUserSchema {
@@ -44,7 +43,7 @@ export default async function users(app: FastifyInstance) {
     Querystring: {
       activeOnly?: boolean;
     };
-    Response: GenericResponseSingle<UserPerOrganisation>;
+    Response: GenericResponse<UserPerOrganisation>;
   }
 
   app.get<GetUsersSchema>(
@@ -138,7 +137,9 @@ export default async function users(app: FastifyInstance) {
       });
 
       if (user.userProfileId) {
-        const profileSdk = new Profile(request.userData!.accessToken);
+        const profileSdk = await getProfileSdk(
+          request.userData?.organizationId,
+        );
         const { data, error } = await profileSdk.selectUsers([
           user.userProfileId,
         ]);

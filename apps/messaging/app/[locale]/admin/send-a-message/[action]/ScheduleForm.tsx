@@ -81,7 +81,6 @@ export default async (props: MessageCreateProps) => {
           template.contents.map((c) => ({
             ...c,
             threadName: c.subject,
-            messageName: c.subject,
           })),
           user.lang || "",
           {
@@ -111,7 +110,7 @@ export default async (props: MessageCreateProps) => {
           preferredTransports,
           scheduleAt,
           security: "",
-          userId: user.userId,
+          recipientUserId: user.userId,
         });
         if (Boolean(error)) {
           continue;

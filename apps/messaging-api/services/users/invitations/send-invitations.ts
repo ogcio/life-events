@@ -11,7 +11,8 @@ import {
 import { PostgresDb } from "@fastify/postgres";
 import { ALL_TRANSPORTS } from "../shared-users";
 import { ServerError } from "shared-errors";
-import { newMessagingService } from "../../messages/messaging";
+import { CreateMessageParams } from "../../messages/messaging";
+import { processMessages } from "../../messages/messages";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
 
@@ -20,6 +21,7 @@ export const sendInvitationsForUsersImport = async (params: {
   logger: FastifyBaseLogger;
   toImportUsers: UsersImport;
   requestUserId: string;
+  requestOrganizationId: string;
 }): Promise<void> => {
   const { pg, toImportUsers } = params;
   const importedUserIds: { userProfileId: string; userId: string }[] = [];
@@ -72,8 +74,20 @@ export const sendInvitationsForUsersImport = async (params: {
 
     const sent = await sendInvitations({
       toSend,
-      pg: params.pg,
       organisationId: toImportUsers.organisationId,
+    });
+
+    await processMessages({
+      inputMessages: sent.toCreateMessages,
+      scheduleAt: new Date().toISOString(),
+      errorProcess: SEND_INVITATIONS_ERROR,
+      pgPool: pg.pool,
+      logger: params.logger,
+      senderUser: {
+        profileId: params.requestUserId,
+        organizationId: params.requestOrganizationId,
+      },
+      allOrNone: true,
     });
 
     await setImportedAsInvited({
@@ -98,7 +112,7 @@ const getSettingsPerUserIds = async (params: {
   client: PoolClient;
   importId: string;
 }): Promise<OrganisationSetting[]> => {
-  let userIndex = 1;
+  let userIndex = 2;
   const idsIndexes = params.userIds.map(() => `$${userIndex++}`);
 
   try {
@@ -215,40 +229,37 @@ const prepareInvitations = (params: {
 
 const sendInvitations = async (params: {
   toSend: ToSendInvitations;
-  pg: PostgresDb;
   organisationId: string;
 }): Promise<{
   invitedToMessaging: string[];
   invitedToOrganisation: string[];
   welcomed: string[];
+  toCreateMessages: CreateMessageParams[];
 }> => {
-  const sending: Promise<string>[] = [];
+  const sending: CreateMessageParams[] = [];
   const output: {
     invitedToMessaging: string[];
     invitedToOrganisation: string[];
     welcomed: string[];
   } = { invitedToMessaging: [], invitedToOrganisation: [], welcomed: [] };
-  const messagingService = newMessagingService(params.pg.pool);
   for (const language of Object.keys(params.toSend.joinMessaging)) {
     const messageInput = getJoinMessagingMessageForLanguage(language);
     const userIds = params.toSend.joinMessaging[language].toSendIds;
     for (const userId of userIds) {
-      sending.push(
-        messagingService.createMessage({
-          bypassConsent: true,
-          excerpt: messageInput.excerpt,
-          lang: messageInput.lang,
-          organisationId: params.organisationId,
-          plainText: messageInput.plainText,
-          preferredTransports: ALL_TRANSPORTS,
-          receiverUserId: userId,
-          richText: messageInput.richText,
-          scheduleAt: new Date().toISOString(),
-          security: "high",
-          subject: messageInput.subject,
-          threadName: messageInput.threadName || messageInput.subject,
-        }),
-      );
+      sending.push({
+        bypassConsent: true,
+        excerpt: messageInput.excerpt,
+        lang: messageInput.lang,
+        organisationId: params.organisationId,
+        plainText: messageInput.plainText,
+        preferredTransports: ALL_TRANSPORTS,
+        receiverUserId: userId,
+        richText: messageInput.richText,
+        scheduleAt: new Date().toISOString(),
+        security: "high",
+        subject: messageInput.subject,
+        threadName: messageInput.threadName || messageInput.subject,
+      });
     }
 
     output.invitedToMessaging.push(
@@ -265,22 +276,20 @@ const sendInvitations = async (params: {
     const messageInput = getJoinOrgMessageForLanguage(language);
     const userIds = params.toSend.joinOrganisation[language].toSendIds;
     for (const userId of userIds) {
-      sending.push(
-        messagingService.createMessage({
-          bypassConsent: true,
-          excerpt: messageInput.excerpt,
-          lang: messageInput.lang,
-          organisationId: params.organisationId,
-          plainText: messageInput.plainText,
-          preferredTransports: ALL_TRANSPORTS,
-          receiverUserId: userId,
-          richText: messageInput.richText,
-          scheduleAt: new Date().toISOString(),
-          security: "high",
-          subject: messageInput.subject,
-          threadName: messageInput.threadName || messageInput.subject,
-        }),
-      );
+      sending.push({
+        bypassConsent: true,
+        excerpt: messageInput.excerpt,
+        lang: messageInput.lang,
+        organisationId: params.organisationId,
+        plainText: messageInput.plainText,
+        preferredTransports: ALL_TRANSPORTS,
+        receiverUserId: userId,
+        richText: messageInput.richText,
+        scheduleAt: new Date().toISOString(),
+        security: "high",
+        subject: messageInput.subject,
+        threadName: messageInput.threadName || messageInput.subject,
+      });
     }
 
     output.invitedToOrganisation.push(
@@ -292,32 +301,29 @@ const sendInvitations = async (params: {
     const messageInput = getWelcomeMessageForLanguage(language);
     const userIds = params.toSend.welcome[language].toSendIds;
     for (const userId of userIds) {
-      sending.push(
-        messagingService.createMessage({
-          bypassConsent: true,
-          excerpt: messageInput.excerpt,
-          lang: messageInput.lang,
-          organisationId: params.organisationId,
-          plainText: messageInput.plainText,
-          preferredTransports: ALL_TRANSPORTS,
-          receiverUserId: userId,
-          richText: messageInput.richText,
-          scheduleAt: new Date().toISOString(),
-          security: "high",
-          subject: messageInput.subject,
-          threadName: messageInput.threadName || messageInput.subject,
-        }),
-      );
+      sending.push({
+        bypassConsent: true,
+        excerpt: messageInput.excerpt,
+        lang: messageInput.lang,
+        organisationId: params.organisationId,
+        plainText: messageInput.plainText,
+        preferredTransports: ALL_TRANSPORTS,
+        receiverUserId: userId,
+        richText: messageInput.richText,
+        scheduleAt: new Date().toISOString(),
+        security: "high",
+        subject: messageInput.subject,
+        threadName: messageInput.threadName || messageInput.subject,
+      });
     }
     output.welcomed.push(...params.toSend.welcome[language].userIds);
   }
 
-  await Promise.all(sending);
-
   return {
-    invitedToMessaging: [...new Set(output.invitedToMessaging)],
+    invitedToMessaging: output.invitedToMessaging,
     invitedToOrganisation: [...new Set(output.invitedToOrganisation)],
     welcomed: [...new Set(output.welcomed)],
+    toCreateMessages: sending,
   };
 };
 
@@ -347,7 +353,6 @@ const getJoinMessagingMessageForLanguage = (language: string): MessageInput => {
     excerpt: "Join the messaging platform!",
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
-    messageName: "Join Messaging Platform",
     threadName: "JoinMessaging",
     lang: language,
   };
@@ -360,7 +365,6 @@ const getJoinOrgMessageForLanguage = (language: string): MessageInput => {
     excerpt: "An organisation wants to send you messages!",
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
-    messageName: "Join Organisation",
     threadName: "JoinOrganisation",
     lang: language,
   };
@@ -373,7 +377,6 @@ const getWelcomeMessageForLanguage = (language: string): MessageInput => {
     excerpt: "An organisation wants to send you messages!",
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
-    messageName: "Join Organisation",
     threadName: "JoinOrganisation",
     lang: language,
   };

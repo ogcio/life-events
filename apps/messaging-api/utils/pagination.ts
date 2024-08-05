@@ -9,12 +9,15 @@ export type PaginationDetails = {
 
 export const PAGINATION_OFFSET_DEFAULT = 0;
 export const PAGINATION_LIMIT_DEFAULT = 20;
+export const PAGINATION_MAX_LIMIT = 100;
+export const PAGINATION_MIN_LIMIT = 1;
+export const PAGINATION_MIN_OFFSET = 0;
 
 export const formatAPIResponse = <T>(
   data: T[],
   pagination?: PaginationDetails,
-): GenericResponse<T> => {
-  const response: GenericResponse<T> = {
+): GenericResponse<T[]> => {
+  const response: GenericResponse<T[]> = {
     data,
   };
 
@@ -128,18 +131,18 @@ const generatePageLinks = (details: Required<PaginationDetails>) => {
 export const sanitizePagination = (
   pagination: PaginationParams,
 ): Required<PaginationParams> => {
-  const maxAvailableLimit = 100;
-  const minAvailableLimit = 1;
-  const minAvailableOffset = 0;
   return {
     limit: Math.max(
-      Math.min(maxAvailableLimit, pagination.limit ?? PAGINATION_LIMIT_DEFAULT),
-      minAvailableLimit,
+      Math.min(
+        PAGINATION_MAX_LIMIT,
+        pagination.limit ?? PAGINATION_LIMIT_DEFAULT,
+      ),
+      PAGINATION_MIN_LIMIT,
     ),
 
     offset: Math.max(
       pagination.offset ?? PAGINATION_OFFSET_DEFAULT,
-      minAvailableOffset,
+      PAGINATION_MIN_OFFSET,
     ),
   };
 };

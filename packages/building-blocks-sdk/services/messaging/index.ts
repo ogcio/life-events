@@ -23,14 +23,31 @@ export class Messaging {
     this.client.use(authMiddleware);
   }
 
-  async getMessages(type?: string) {
-    const params: Record<string, object> = {};
-
-    if (type) {
-      params.query = { type };
-    }
+  async getMessagesForUser(
+    userId: string,
+    filter?: { offset?: number; limit?: number },
+  ) {
     const { error, data } = await this.client.GET("/api/v1/messages/", {
-      params,
+      params: {
+        query: {
+          ...(filter || {}),
+          recipientUserId: userId,
+          status: "delivered",
+        },
+      },
+    });
+
+    return { error, data: data?.data };
+  }
+
+  async getMessagesForOrganisation(
+    organisationId: string,
+    filter?: { offset?: number; limit?: number },
+  ) {
+    const { error, data } = await this.client.GET("/api/v1/messages/", {
+      params: {
+        query: { ...(filter || {}), organisationId },
+      },
     });
 
     return { error, data: data?.data };
@@ -142,7 +159,6 @@ export class Messaging {
 
     return {
       threadName: message.threadName,
-      messageName: message.messageName,
       subject: keys.reduce(interpolator, message.subject),
       excerpt: keys.reduce(interpolator, message.excerpt),
       richText: keys.reduce(interpolator, message.richText),

@@ -1,11 +1,11 @@
 import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
 import {
-  GenericResponseSingle,
+  GenericResponse,
   getGenericResponseSchema,
-  MessageEvent,
-  MessageEventType,
-  MessageEventTypeObject,
+  MessageEventSchema,
+  MessageEventListType,
+  MessageEventListSchema,
   PaginationParams,
   PaginationParamsSchema,
 } from "../../types/schemaDefinitions";
@@ -22,7 +22,7 @@ export const prefix = "/message-events";
 export default async function messages(app: FastifyInstance) {
   app.get<{
     Querystring: { search?: string } & PaginationParams;
-    Response: GenericResponseSingle<MessageEventType>;
+    Response: GenericResponse<MessageEventListType>;
   }>(
     "/",
     {
@@ -39,7 +39,7 @@ export default async function messages(app: FastifyInstance) {
           ]),
         ),
         response: {
-          200: getGenericResponseSchema(MessageEventTypeObject),
+          200: getGenericResponseSchema(MessageEventListSchema),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -55,7 +55,7 @@ export default async function messages(app: FastifyInstance) {
         ? `%${request.query.search}%`
         : "%%";
       const eventQueryResult = await app.pg.pool.query<
-        MessageEventType[number] & { count: number }
+        MessageEventListType[number] & { count: number }
       >(
         `
         with message_count as(
@@ -94,7 +94,7 @@ export default async function messages(app: FastifyInstance) {
       );
 
       const aggregations = eventQueryResult.rows.reduce<
-        Record<string, MessageEventType[number]>
+        Record<string, MessageEventListType[number]>
       >((acc, cur) => {
         if (!acc[cur.messageId]) {
           acc[cur.messageId] = cur;
@@ -107,7 +107,7 @@ export default async function messages(app: FastifyInstance) {
         return acc;
       }, {});
 
-      const events: MessageEventType = Object.values(aggregations).sort(
+      const events: MessageEventListType = Object.values(aggregations).sort(
         (a, b) =>
           new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
       );
@@ -122,7 +122,7 @@ export default async function messages(app: FastifyInstance) {
         offset,
       });
 
-      const response: GenericResponseSingle<MessageEventType> = {
+      const response: GenericResponse<MessageEventListType> = {
         data: events,
         metadata: {
           links,
@@ -144,7 +144,7 @@ export default async function messages(app: FastifyInstance) {
         tags,
         response: {
           200: Type.Object({
-            data: MessageEvent,
+            data: MessageEventSchema,
           }),
           "5xx": HttpError,
           "4xx": HttpError,

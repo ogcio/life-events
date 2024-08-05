@@ -6,6 +6,7 @@ import getRequestConfig from "../../../../../../i18n";
 import { errorHandler } from "../../../../../utils";
 import { bankTransferValidationMap } from "../../../../../validationMaps";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
+import { PageWrapper } from "../../../PageWrapper";
 
 type Props = {
   params: {
@@ -71,10 +72,12 @@ export default async (props: Props) => {
   }
 
   return (
-    <NextIntlClientProvider
-      messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
-    >
-      <BankTransferForm action={handleSubmit} />
-    </NextIntlClientProvider>
+    <PageWrapper locale={props.params.locale} disableOrgSelector={true}>
+      <NextIntlClientProvider
+        messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
+      >
+        <BankTransferForm action={handleSubmit} />
+      </NextIntlClientProvider>
+    </PageWrapper>
   );
 };

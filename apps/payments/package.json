@@ -5,8 +5,12 @@
     "dev": "nodemon",
     "build": "next build",
     "start": "next start -p 3001",
-    "test:e2e": "playwright test e2e",
-    "test:visual": "playwright test --ui",
+    "test:headed:e2e": "playwright test --headed",
+    "test:headless:e2e": "playwright test",
+    "test:debug:e2e": "playwright test --ui",
+    "test:smoke:e2e": "playwright test --grep @smoke",
+    "test:regression:e2e": "playwright test --grep @regression",
+    "test:generate:report": "npx allure serve allure-results",
     "migrate": "db-migrate up",
     "seed": "node --import tsx ./migrations/seeding/index.ts",
     "lint": "next lint"
@@ -21,7 +25,6 @@
     "exec": "next dev -p 3001"
   },
   "dependencies": {
-    "@logto/next": "^3.2.7",
     "@stripe/react-stripe-js": "^2.7.1",
     "@stripe/stripe-js": "^3.4.1",
     "auth": "*",
@@ -51,6 +54,7 @@
     "@types/node": "20.12.13",
     "@types/pg": "^8.11.6",
     "@types/react": "18.3.3",
+    "allure-playwright": "^3.0.0-beta.7",
     "eslint-config-next": "^14.2.3",
     "eslint-config-prettier": "^9.1.0",
     "tsx": "^4.11.0",

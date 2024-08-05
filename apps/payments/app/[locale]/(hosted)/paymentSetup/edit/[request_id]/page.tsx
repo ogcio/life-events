@@ -12,6 +12,7 @@ import { paymentRequestValidationMap } from "../../../../../validationMaps";
 import { ProviderType } from "../../providers/types";
 import { PaymentRequestFormState } from "../../create/page";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
+import { PageWrapper } from "../../../PageWrapper";
 
 type Props = {
   params: {
@@ -168,10 +169,12 @@ export default async function ({ params: { request_id, locale } }: Props) {
   const handleSubmitClb = handleSubmit.bind(this, details);
 
   return (
-    <PaymentSetupFormPage
-      locale={locale}
-      action={handleSubmitClb}
-      details={details}
-    />
+    <PageWrapper locale={locale} disableOrgSelector={true}>
+      <PaymentSetupFormPage
+        locale={locale}
+        action={handleSubmitClb}
+        details={details}
+      />
+    </PageWrapper>
   );
 }

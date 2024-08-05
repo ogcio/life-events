@@ -1,23 +1,24 @@
 import { PostgresDb } from "@fastify/postgres";
-import {
-  CreateMessage,
-  ReadMessage,
-  ReadMessages,
-} from "../../types/schemaDefinitions";
+import { ReadMessage } from "../../types/schemaDefinitions";
 import { ServiceError, utils } from "../../utils";
 import { FastifyBaseLogger } from "fastify";
 import { JobType } from "aws-sdk/clients/importexport";
-import { Pool } from "pg";
+import { Pool, PoolClient } from "pg";
 import { mailService } from "../../routes/providers/services";
 import { awsSnsSmsService } from "../sms/aws";
-import { Profile } from "building-blocks-sdk";
-import { getUserProfiles, ProfileSdkFacade } from "../users/shared-users";
+import {
+  getUserProfiles,
+  MessagingUserProfile,
+  ProfileSdkFacade,
+} from "../users/shared-users";
 import { isNativeError } from "util/types";
 import {
   BadRequestError,
   isLifeEventsError,
+  LifeEventsError,
   NotFoundError,
   ServerError,
+  ThirdPartyError,
 } from "shared-errors";
 import { LoggingError, toLoggingError } from "logging-wrapper";
 import {
@@ -25,6 +26,12 @@ import {
   MessagingEventType,
   newMessagingEventLogger,
 } from "./eventLogger";
+import { getProfileSdk } from "../../utils/authentication-factory";
+import {
+  CreateMessageParams,
+  MessagingService,
+  newMessagingService,
+} from "./messaging";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -57,41 +64,11 @@ export const getMessage = async (params: {
   return data.rows[0];
 };
 
-export const getMessages = async (params: {
-  pg: PostgresDb;
-  userId: string;
-  transportType?: string;
-}): Promise<ReadMessages> => {
-  let lifeEventType = "";
-  if (params.transportType === "lifeEvent") {
-    lifeEventType = `and preferred_transports @> '{"lifeEvent"}'`;
-  }
-  return (
-    await params.pg.query(
-      `
-        select 
-            id,
-            subject, 
-            excerpt, 
-            plain_text as "plainText",
-            rich_text as "richText",
-            created_at as "createdAt"
-        from messages
-        where user_id = $1 and is_delivered = true
-        ${lifeEventType}
-        order by created_at desc
-      `,
-      [params.userId],
-    )
-  ).rows;
-};
-
 export const executeJob = async (params: {
   pg: PostgresDb;
   logger: FastifyBaseLogger;
   jobId: string;
   token: string;
-  accessToken: string;
 }) => {
   const statusWorking: scheduledMessageByTemplateStatus = "working";
   const statusDelivered: scheduledMessageByTemplateStatus = "delivered";
@@ -200,7 +177,6 @@ export const executeJob = async (params: {
         job.userId,
         eventLogger,
         organizationId,
-        params.accessToken,
       );
 
       for (const err of serviceErrors) {
@@ -266,7 +242,6 @@ const scheduleMessage = async (
   userId: string,
   eventLogger: MessagingEventLogger,
   organizationId: string,
-  accessToken: string,
 ): Promise<ServiceError[]> => {
   const client = await pool.connect();
   const errors: ServiceError[] = [];
@@ -331,16 +306,14 @@ const scheduleMessage = async (
     client.release();
   }
 
-  const profileSdk = new Profile(accessToken);
+  const transportsClient = await pool.connect();
+  const profileSdk = await getProfileSdk(organizationId);
   const messageSdk = {
     selectUsers(ids: string[]) {
-      return getUserProfiles(ids, pool);
+      return getUserProfiles(ids, transportsClient);
     },
   };
-
   const profileService = ProfileSdkFacade(profileSdk, messageSdk);
-
-  const transportsClient = await pool.connect();
   try {
     const { data } = await profileService.selectUsers([userId]);
     const user = data?.at(0);
@@ -498,4 +471,237 @@ const scheduleMessage = async (
   }
 
   return errors;
+};
+
+export const processMessages = async (params: {
+  inputMessages: CreateMessageParams[];
+  scheduleAt: string;
+  errorProcess: string;
+  pgPool: Pool;
+  logger: FastifyBaseLogger;
+  senderUser: { profileId: string; organizationId?: string };
+  organizationId?: string;
+  allOrNone: boolean;
+}): Promise<{
+  scheduledMessages: { jobId: string; userId: string; entityId: string }[];
+  errors: LifeEventsError[];
+}> => {
+  const {
+    inputMessages,
+    scheduleAt,
+    errorProcess,
+    pgPool,
+    logger,
+    senderUser,
+    allOrNone,
+  } = params;
+  let { organizationId } = params;
+  if (!organizationId && !senderUser.organizationId) {
+    throw new BadRequestError(
+      errorProcess,
+      "You have to set organization id to send messages",
+    );
+  }
+  if (
+    senderUser.organizationId &&
+    organizationId &&
+    organizationId !== senderUser.organizationId
+  ) {
+    throw new BadRequestError(
+      errorProcess,
+      "You can't send messages to a different organization you are logged in to",
+    );
+  }
+  organizationId = organizationId ?? senderUser.organizationId;
+  const profileSdk = await getProfileSdk(organizationId);
+  const senderUserProfile = await profileSdk.getUser(senderUser.profileId);
+  if (!senderUserProfile.data) {
+    throw new NotFoundError(errorProcess, "Sender user cannot be found");
+  }
+  if (senderUserProfile.error) {
+    throw new ThirdPartyError(
+      errorProcess,
+      senderUserProfile.error.detail,
+      senderUserProfile.error,
+    );
+  }
+
+  const senderFullName =
+    `${senderUserProfile.data.firstName} ${senderUserProfile.data.lastName}`.trim();
+
+  const poolClient = await pgPool.connect();
+  try {
+    const messageService = newMessagingService(poolClient);
+    const eventLogger = newMessagingEventLogger(pgPool, logger);
+    const toScheduleMessages = [];
+    const eventLoggingEntries = [];
+    const outputMessages: {
+      scheduledMessages: { jobId: string; userId: string; entityId: string }[];
+      errors: LifeEventsError[];
+    } = { scheduledMessages: [], errors: [] };
+    try {
+      await poolClient.query("BEGIN");
+      const createPromises = [];
+      for (const toCreate of inputMessages) {
+        createPromises.push(
+          createMessageWithLog({
+            createMessageParams: toCreate,
+            sender: {
+              ...senderUserProfile.data,
+              fullName: senderFullName,
+              userProfileId: senderUser.profileId,
+            },
+            messageService,
+            eventLogger,
+            poolClient,
+            errorProcess,
+          }),
+        );
+      }
+
+      const createdMessages = await Promise.all(createPromises);
+      const errors = [];
+      for (const createdMessage of createdMessages) {
+        const messageData = createdMessage.createdMessage;
+        if (!messageData) {
+          // if all or none is set to true
+          // fails if one creation fails
+          if (allOrNone) {
+            throw createdMessage.error;
+          }
+          errors.push(createdMessage.error!);
+          continue;
+        }
+
+        eventLoggingEntries.push({ messageId: messageData.id });
+
+        toScheduleMessages.push({
+          messageId: messageData.id,
+          userId: messageData.user_id,
+        });
+      }
+      outputMessages.errors = errors;
+      await poolClient.query("COMMIT");
+    } catch (error) {
+      await poolClient.query("ROLLBACK");
+      throw error;
+    }
+
+    if (!toScheduleMessages.length) {
+      return outputMessages;
+    }
+    await eventLogger.log(
+      MessagingEventType.scheduleMessage,
+      eventLoggingEntries,
+    );
+
+    outputMessages.scheduledMessages = await scheduleMessagesWithLog({
+      messageService,
+      eventLogger,
+      toScheduleMessages,
+      organizationId: organizationId!,
+      scheduleAt,
+    });
+
+    return outputMessages;
+  } finally {
+    poolClient.release();
+  }
+};
+
+const scheduleMessagesWithLog = async (params: {
+  messageService: MessagingService;
+  eventLogger: MessagingEventLogger;
+  organizationId: string;
+  scheduleAt: string;
+  toScheduleMessages: { messageId: string; userId: string }[];
+}): Promise<{ jobId: string; userId: string; entityId: string }[]> => {
+  try {
+    return await params.messageService.scheduleMessages(
+      params.toScheduleMessages,
+      params.scheduleAt,
+      params.organizationId,
+    );
+  } catch (error) {
+    await params.eventLogger.log(
+      MessagingEventType.scheduleMessageError,
+      params.toScheduleMessages,
+    );
+    throw error;
+  }
+};
+
+const createMessageWithLog = async (params: {
+  sender: { fullName: string; ppsn?: string | null; userProfileId: string };
+  messageService: MessagingService;
+  eventLogger: MessagingEventLogger;
+  createMessageParams: CreateMessageParams;
+  poolClient: PoolClient;
+  errorProcess: string;
+}): Promise<{
+  createdMessage?: {
+    id: string;
+    user_id: string;
+    profile: MessagingUserProfile & { fullName: string };
+  };
+  error?: LifeEventsError;
+}> => {
+  const createMessage = params.createMessageParams;
+  const receiverUserProfiles = await getUserProfiles(
+    [params.createMessageParams.receiverUserId],
+    params.poolClient,
+  );
+
+  if (receiverUserProfiles.length === 0) {
+    return {
+      error: new NotFoundError(
+        params.errorProcess,
+        `User with profile id ${params.createMessageParams.receiverUserId} not found`,
+      ),
+    };
+  }
+
+  const receiverFullName =
+    `${receiverUserProfiles[0].firstName} ${receiverUserProfiles[0].lastName}`.trim();
+  let message = null;
+  try {
+    message = await params.messageService.createMessage(createMessage);
+  } catch (error) {
+    return {
+      error: new ServerError(
+        params.errorProcess,
+        `failed to create message for recipient id ${createMessage.receiverUserId}`,
+        error,
+      ),
+    };
+  }
+  await params.eventLogger.log(MessagingEventType.createRawMessage, [
+    {
+      organisationName: createMessage.organisationId,
+      bypassConsent: createMessage.bypassConsent,
+      security: createMessage.security,
+      transports: createMessage.preferredTransports,
+      scheduledAt: createMessage.scheduleAt,
+      messageId: message.id,
+      threadName: createMessage.threadName,
+      subject: createMessage.subject,
+      excerpt: createMessage.excerpt,
+      richText: createMessage.richText,
+      plainText: createMessage.plainText,
+      lang: createMessage.lang,
+      senderFullName: params.sender.fullName,
+      senderPPSN: params.sender.ppsn || "",
+      senderUserId: params.sender.userProfileId,
+      receiverFullName: receiverFullName,
+      receiverPPSN: receiverUserProfiles[0].ppsn,
+      receiverUserId: receiverUserProfiles[0].id,
+    },
+  ]);
+
+  return {
+    createdMessage: {
+      ...message,
+      profile: { ...receiverUserProfiles[0], fullName: receiverFullName },
+    },
+  };
 };

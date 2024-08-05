@@ -3,22 +3,17 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
-  "/health": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
-        };
-      };
-    };
-  };
   "/api/v1/messages/": {
     get: {
       parameters: {
         query?: {
-          type?: string;
+          status?: "delivered";
+          recipientUserId?: string;
+          organisationId?: string;
+          offset?: number;
+          limit?: number;
         };
       };
       responses: {
@@ -27,13 +22,13 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                id: string;
-                subject: string;
-                excerpt: string;
-                plainText: string;
-                richText: string;
-                createdAt: string;
-              }[];
+                  id: string;
+                  subject: string;
+                  createdAt: string;
+                  threadName: string;
+                  organisationId: string;
+                  recipientId: string;
+                }[];
               metadata?: {
                 links?: {
                   self: {
@@ -71,9 +66,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -84,8 +79,8 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            preferredTransports: ("email" | "sms" | "lifeEvent")[];
-            userId: string;
+            preferredTransports: ("sms" | "email" | "lifeEvent")[];
+            recipientUserId: string;
             security: string;
             /** @default false */
             bypassConsent: boolean;
@@ -93,7 +88,6 @@ export interface paths {
             scheduleAt: string;
             message: {
               threadName: string;
-              messageName: string;
               subject: string;
               excerpt: string;
               richText: string;
@@ -124,9 +118,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -140,9 +134,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -205,9 +199,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -221,9 +215,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -247,13 +241,14 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data: {
-                /** Format: uuid */
-                id: string;
-                providerName: string;
-                isPrimary: boolean;
-                type: "sms" | "email";
-              }[];
+              data: ({
+                  /** Format: uuid */
+                  id: string;
+                  providerName: string;
+                  isPrimary: boolean;
+                  /** @enum {string} */
+                  type: "sms" | "email";
+                })[];
               metadata?: {
                 links?: {
                   self: {
@@ -291,9 +286,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -307,9 +302,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -319,33 +314,31 @@ export interface paths {
     post: {
       requestBody?: {
         content: {
-          "application/json":
-            | {
-                providerName: string;
-                isPrimary: boolean;
-                /** @enum {string} */
-                type: "email";
-                smtpHost: string;
-                smtpPort: number;
-                username: string;
-                password: string;
-                throttle?: number;
-                fromAddress: string;
-                ssl: boolean;
-              }
-            | {
-                providerName: string;
-                isPrimary: boolean;
-                /** @enum {string} */
-                type: "sms";
-                config: {
-                  /** @enum {string} */
-                  type: "AWS";
-                  accessKey: string;
-                  secretAccessKey: string;
-                  region: string;
-                };
-              };
+          "application/json": {
+            providerName: string;
+            isPrimary: boolean;
+            /** @enum {string} */
+            type: "email";
+            smtpHost: string;
+            smtpPort: number;
+            username: string;
+            password: string;
+            throttle?: number;
+            fromAddress: string;
+            ssl: boolean;
+          } | {
+            providerName: string;
+            isPrimary: boolean;
+            /** @enum {string} */
+            type: "sms";
+            config: {
+              /** @enum {string} */
+              type: "AWS";
+              accessKey: string;
+              secretAccessKey: string;
+              region: string;
+            };
+          };
         };
       };
       responses: {
@@ -355,7 +348,7 @@ export interface paths {
             "application/json": {
               data: {
                 /** Format: uuid */
-                providerId: string;
+                id: string;
               };
             };
           };
@@ -369,9 +362,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -385,9 +378,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -410,84 +403,7 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data:
-                | {
-                    /** Format: uuid */
-                    id: string;
-                    providerName: string;
-                    isPrimary: boolean;
-                    /** @enum {string} */
-                    type: "email";
-                    smtpHost: string;
-                    smtpPort: number;
-                    username: string;
-                    password: string;
-                    throttle?: number;
-                    fromAddress: string;
-                    ssl: boolean;
-                  }
-                | {
-                    /** Format: uuid */
-                    id: string;
-                    providerName: string;
-                    isPrimary: boolean;
-                    /** @enum {string} */
-                    type: "sms";
-                    config: {
-                      /** @enum {string} */
-                      type: "AWS";
-                      accessKey: string;
-                      secretAccessKey: string;
-                      region: string;
-                    };
-                  };
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: {
-                fieldName: string;
-                message: string;
-              }[];
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-    put: {
-      parameters: {
-        path: {
-          providerId: string;
-        };
-      };
-      requestBody?: {
-        content: {
-          "application/json":
-            | {
+              data: {
                 /** Format: uuid */
                 id: string;
                 providerName: string;
@@ -501,8 +417,7 @@ export interface paths {
                 throttle?: number;
                 fromAddress: string;
                 ssl: boolean;
-              }
-            | {
+              } | {
                 /** Format: uuid */
                 id: string;
                 providerName: string;
@@ -517,6 +432,80 @@ export interface paths {
                   region: string;
                 };
               };
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                  fieldName: string;
+                  message: string;
+                }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              request_id: string;
+              name: string;
+              validation?: {
+                  fieldName: string;
+                  message: string;
+                }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        path: {
+          providerId: string;
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": {
+            /** Format: uuid */
+            id: string;
+            providerName: string;
+            isPrimary: boolean;
+            /** @enum {string} */
+            type: "email";
+            smtpHost: string;
+            smtpPort: number;
+            username: string;
+            password: string;
+            throttle?: number;
+            fromAddress: string;
+            ssl: boolean;
+          } | {
+            /** Format: uuid */
+            id: string;
+            providerName: string;
+            isPrimary: boolean;
+            /** @enum {string} */
+            type: "sms";
+            config: {
+              /** @enum {string} */
+              type: "AWS";
+              accessKey: string;
+              secretAccessKey: string;
+              region: string;
+            };
+          };
         };
       };
       responses: {
@@ -533,9 +522,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -549,9 +538,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -578,9 +567,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -594,9 +583,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -617,13 +606,13 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                templateMetaId: string;
-                contents: {
-                  lang: string;
-                  templateName: string;
+                  /** Format: uuid */
+                  templateMetaId: string;
+                  contents: {
+                      lang: string;
+                      templateName: string;
+                    }[];
                 }[];
-              }[];
               metadata?: {
                 links?: {
                   self: {
@@ -661,9 +650,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -677,9 +666,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -691,18 +680,18 @@ export interface paths {
         content: {
           "application/json": {
             contents: {
-              templateName: string;
-              lang: string;
-              subject: string;
-              excerpt: string;
-              plainText: string;
-              richText: string;
-            }[];
+                templateName: string;
+                lang: string;
+                subject: string;
+                excerpt: string;
+                plainText: string;
+                richText: string;
+              }[];
             variables: {
-              name: string;
-              type: string;
-              languages: string[];
-            }[];
+                name: string;
+                type: string;
+                languages: string[];
+              }[];
           };
         };
       };
@@ -727,9 +716,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -743,9 +732,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -767,17 +756,17 @@ export interface paths {
             "application/json": {
               data: {
                 contents: {
-                  templateName: string;
-                  subject: string;
-                  excerpt: string;
-                  plainText: string;
-                  richText: string;
-                  lang: string;
-                }[];
+                    templateName: string;
+                    subject: string;
+                    excerpt: string;
+                    plainText: string;
+                    richText: string;
+                    lang: string;
+                  }[];
                 fields: {
-                  fieldName: string;
-                  fieldType: string;
-                }[];
+                    fieldName: string;
+                    fieldType: string;
+                  }[];
               };
               metadata?: {
                 links?: {
@@ -816,9 +805,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -832,9 +821,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -851,19 +840,19 @@ export interface paths {
         content: {
           "application/json": {
             contents: {
-              /** Format: uuid */
-              id: string;
-              templateName: string;
-              lang: string;
-              subject: string;
-              excerpt: string;
-              plainText: string;
-              richText: string;
-            }[];
+                /** Format: uuid */
+                id: string;
+                templateName: string;
+                lang: string;
+                subject: string;
+                excerpt: string;
+                plainText: string;
+                richText: string;
+              }[];
             variables: {
-              name: string;
-              type: string;
-            }[];
+                name: string;
+                type: string;
+              }[];
           };
         };
       };
@@ -877,9 +866,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -893,9 +882,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -918,9 +907,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -934,9 +923,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -951,60 +940,59 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data: {
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
-                userId: string;
-                /** @default null */
-                userProfileId: null | string;
-                /** @default null */
-                phoneNumber: null | string;
-                /** @default null */
-                emailAddress: null | string;
-                organisationId: string;
-                /** @default pending */
-                organisationInvitationStatus:
-                  | "to_be_invited"
-                  | "pending"
-                  | "accepted"
-                  | "declined";
-                organisationInvitationSentAt?: string;
-                organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "email"
-                  | "sms"
-                  | "lifeEvent"
-                )[];
-                correlationQuality: "full" | "partial" | "not_related";
-                /** @default pending */
-                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
-                details?: {
+              data: ({
+                  /** Format: uuid */
+                  organisationSettingId: string;
+                  /** Format: uuid */
+                  userId: string;
                   /** @default null */
-                  publicIdentityId: null | string;
+                  userProfileId: null | string;
                   /** @default null */
-                  firstName: null | string;
+                  phoneNumber: null | string;
                   /** @default null */
-                  lastName: null | string;
-                  /** @default null */
-                  birthDate: null | string;
-                  /** @default null */
-                  address: {
+                  emailAddress: null | string;
+                  organisationId: string;
+                  /**
+                   * @default pending
+                   * @enum {string}
+                   */
+                  organisationInvitationStatus: "to_be_invited" | "pending" | "accepted" | "declined";
+                  organisationInvitationSentAt?: string;
+                  organisationInvitationFeedbackAt?: string;
+                  organisationPreferredTransports: ("sms" | "email" | "lifeEvent")[];
+                  /** @enum {string} */
+                  correlationQuality: "full" | "partial" | "not_related";
+                  /**
+                   * @default pending
+                   * @enum {string}
+                   */
+                  userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+                  details?: {
                     /** @default null */
-                    city: null | string;
+                    publicIdentityId: null | string;
                     /** @default null */
-                    zipCode: null | string;
+                    firstName: null | string;
                     /** @default null */
-                    street: null | string;
+                    lastName: null | string;
                     /** @default null */
-                    country: null | string;
+                    birthDate: null | string;
                     /** @default null */
-                    region: null | string;
-                  } | null;
-                  /** @default false */
-                  collectedConsent: boolean;
-                };
-              }[];
+                    address: ({
+                      /** @default null */
+                      city: null | string;
+                      /** @default null */
+                      zipCode: null | string;
+                      /** @default null */
+                      street: null | string;
+                      /** @default null */
+                      country: null | string;
+                      /** @default null */
+                      region: null | string;
+                    }) | null;
+                    /** @default false */
+                    collectedConsent: boolean;
+                  };
+                })[];
               metadata?: {
                 links?: {
                   self: {
@@ -1042,9 +1030,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1058,9 +1046,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1074,9 +1062,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1108,21 +1096,20 @@ export interface paths {
                 /** @default null */
                 emailAddress: null | string;
                 organisationId: string;
-                /** @default pending */
-                organisationInvitationStatus:
-                  | "to_be_invited"
-                  | "pending"
-                  | "accepted"
-                  | "declined";
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
+                organisationInvitationStatus: "to_be_invited" | "pending" | "accepted" | "declined";
                 organisationInvitationSentAt?: string;
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "email"
-                  | "sms"
-                  | "lifeEvent"
-                )[];
+                organisationPreferredTransports: ("sms" | "email" | "lifeEvent")[];
+                /** @enum {string} */
                 correlationQuality: "full" | "partial" | "not_related";
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
                   /** @default null */
@@ -1134,7 +1121,7 @@ export interface paths {
                   /** @default null */
                   birthDate: null | string;
                   /** @default null */
-                  address: {
+                  address: ({
                     /** @default null */
                     city: null | string;
                     /** @default null */
@@ -1145,7 +1132,7 @@ export interface paths {
                     country: null | string;
                     /** @default null */
                     region: null | string;
-                  } | null;
+                  }) | null;
                   /** @default false */
                   collectedConsent: boolean;
                 };
@@ -1187,9 +1174,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1203,9 +1190,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1219,9 +1206,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1237,7 +1224,10 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            /** @default accepted */
+            /**
+             * @default accepted
+             * @enum {string}
+             */
             invitationStatusFeedback: "accepted" | "declined";
             preferredTransports: string[];
           };
@@ -1260,21 +1250,20 @@ export interface paths {
                 /** @default null */
                 emailAddress: null | string;
                 organisationId: string;
-                /** @default pending */
-                organisationInvitationStatus:
-                  | "to_be_invited"
-                  | "pending"
-                  | "accepted"
-                  | "declined";
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
+                organisationInvitationStatus: "to_be_invited" | "pending" | "accepted" | "declined";
                 organisationInvitationSentAt?: string;
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "email"
-                  | "sms"
-                  | "lifeEvent"
-                )[];
+                organisationPreferredTransports: ("sms" | "email" | "lifeEvent")[];
+                /** @enum {string} */
                 correlationQuality: "full" | "partial" | "not_related";
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
                   /** @default null */
@@ -1286,7 +1275,7 @@ export interface paths {
                   /** @default null */
                   birthDate: null | string;
                   /** @default null */
-                  address: {
+                  address: ({
                     /** @default null */
                     city: null | string;
                     /** @default null */
@@ -1297,7 +1286,7 @@ export interface paths {
                     country: null | string;
                     /** @default null */
                     region: null | string;
-                  } | null;
+                  }) | null;
                   /** @default false */
                   collectedConsent: boolean;
                 };
@@ -1314,9 +1303,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1330,9 +1319,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1346,9 +1335,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1363,18 +1352,21 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data: {
-                organisationId: string;
-                /** Format: date-time */
-                importedAt: string;
-                /** @default api */
-                importChannel: "api" | "csv";
-                /** @default 0 */
-                retryCount: number;
-                /** @default null */
-                lastRetryAt: string | null;
-                importId: string;
-              }[];
+              data: ({
+                  organisationId: string;
+                  /** Format: date-time */
+                  importedAt: string;
+                  /**
+                   * @default api
+                   * @enum {string}
+                   */
+                  importChannel: "api" | "csv";
+                  /** @default 0 */
+                  retryCount: number;
+                  /** @default null */
+                  lastRetryAt: string | null;
+                  importId: string;
+                })[];
               metadata?: {
                 links?: {
                   self: {
@@ -1427,9 +1419,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1443,9 +1435,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1472,51 +1464,52 @@ export interface paths {
                 organisationId: string;
                 /** Format: date-time */
                 importedAt: string;
-                usersData: {
-                  importIndex: number;
-                  /** @default null */
-                  phoneNumber: null | string;
-                  /** @default null */
-                  emailAddress: null | string;
-                  /** @default pending */
-                  importStatus:
-                    | "pending"
-                    | "imported"
-                    | "not_found"
-                    | "error"
-                    | "missing_contacts";
-                  /** @default null */
-                  importError?: null | string;
-                  /** @default null */
-                  relatedUserProfileId?: null | string;
-                  /** @default null */
-                  relatedUserId?: null | string;
-                  tags?: string[];
-                  /** @default null */
-                  publicIdentityId: null | string;
-                  /** @default null */
-                  firstName: null | string;
-                  /** @default null */
-                  lastName: null | string;
-                  /** @default null */
-                  birthDate: null | string;
-                  /** @default null */
-                  address: {
+                usersData: ({
+                    importIndex: number;
                     /** @default null */
-                    city: null | string;
+                    phoneNumber: null | string;
                     /** @default null */
-                    zipCode: null | string;
+                    emailAddress: null | string;
+                    /**
+                     * @default pending
+                     * @enum {string}
+                     */
+                    importStatus: "pending" | "imported" | "not_found" | "error" | "missing_contacts";
                     /** @default null */
-                    street: null | string;
+                    importError?: null | string;
                     /** @default null */
-                    country: null | string;
+                    relatedUserProfileId?: null | string;
                     /** @default null */
-                    region: null | string;
-                  } | null;
-                  /** @default false */
-                  collectedConsent: boolean;
-                }[];
-                /** @default api */
+                    relatedUserId?: null | string;
+                    tags?: string[];
+                    /** @default null */
+                    publicIdentityId: null | string;
+                    /** @default null */
+                    firstName: null | string;
+                    /** @default null */
+                    lastName: null | string;
+                    /** @default null */
+                    birthDate: null | string;
+                    /** @default null */
+                    address: ({
+                      /** @default null */
+                      city: null | string;
+                      /** @default null */
+                      zipCode: null | string;
+                      /** @default null */
+                      street: null | string;
+                      /** @default null */
+                      country: null | string;
+                      /** @default null */
+                      region: null | string;
+                    }) | null;
+                    /** @default false */
+                    collectedConsent: boolean;
+                  })[];
+                /**
+                 * @default api
+                 * @enum {string}
+                 */
                 importChannel: "api" | "csv";
                 /** @default 0 */
                 retryCount: number;
@@ -1561,9 +1554,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1577,9 +1570,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1618,47 +1611,7 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data: {
-                /** @default null */
-                firstName: null | string;
-                /** @default null */
-                lastName: null | string;
-                /** @default null */
-                birthDate: null | string;
-                /** @default null */
-                lang: null | string;
-                /** @default null */
-                ppsn: null | string;
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
-                userId: string;
-                /** @default null */
-                userProfileId: null | string;
-                /** @default null */
-                phoneNumber: null | string;
-                /** @default null */
-                emailAddress: null | string;
-                organisationId: string;
-                /** @default pending */
-                organisationInvitationStatus:
-                  | "to_be_invited"
-                  | "pending"
-                  | "accepted"
-                  | "declined";
-                organisationInvitationSentAt?: string;
-                organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "email"
-                  | "sms"
-                  | "lifeEvent"
-                )[];
-                correlationQuality: "full" | "partial" | "not_related";
-                /** @default pending */
-                userStatus: "to_be_invited" | "pending" | "disabled" | "active";
-                details?: {
-                  /** @default null */
-                  publicIdentityId: null | string;
+              data: ({
                   /** @default null */
                   firstName: null | string;
                   /** @default null */
@@ -1666,22 +1619,61 @@ export interface paths {
                   /** @default null */
                   birthDate: null | string;
                   /** @default null */
-                  address: {
+                  lang: null | string;
+                  /** @default null */
+                  ppsn: null | string;
+                  /** Format: uuid */
+                  organisationSettingId: string;
+                  /** Format: uuid */
+                  userId: string;
+                  /** @default null */
+                  userProfileId: null | string;
+                  /** @default null */
+                  phoneNumber: null | string;
+                  /** @default null */
+                  emailAddress: null | string;
+                  organisationId: string;
+                  /**
+                   * @default pending
+                   * @enum {string}
+                   */
+                  organisationInvitationStatus: "to_be_invited" | "pending" | "accepted" | "declined";
+                  organisationInvitationSentAt?: string;
+                  organisationInvitationFeedbackAt?: string;
+                  organisationPreferredTransports: ("sms" | "email" | "lifeEvent")[];
+                  /** @enum {string} */
+                  correlationQuality: "full" | "partial" | "not_related";
+                  /**
+                   * @default pending
+                   * @enum {string}
+                   */
+                  userStatus: "to_be_invited" | "pending" | "disabled" | "active";
+                  details?: {
                     /** @default null */
-                    city: null | string;
+                    publicIdentityId: null | string;
                     /** @default null */
-                    zipCode: null | string;
+                    firstName: null | string;
                     /** @default null */
-                    street: null | string;
+                    lastName: null | string;
                     /** @default null */
-                    country: null | string;
+                    birthDate: null | string;
                     /** @default null */
-                    region: null | string;
-                  } | null;
-                  /** @default false */
-                  collectedConsent: boolean;
-                };
-              }[];
+                    address: ({
+                      /** @default null */
+                      city: null | string;
+                      /** @default null */
+                      zipCode: null | string;
+                      /** @default null */
+                      street: null | string;
+                      /** @default null */
+                      country: null | string;
+                      /** @default null */
+                      region: null | string;
+                    }) | null;
+                    /** @default false */
+                    collectedConsent: boolean;
+                  };
+                })[];
               metadata?: {
                 links?: {
                   self: {
@@ -1719,9 +1711,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1735,9 +1727,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1782,21 +1774,20 @@ export interface paths {
                 /** @default null */
                 emailAddress: null | string;
                 organisationId: string;
-                /** @default pending */
-                organisationInvitationStatus:
-                  | "to_be_invited"
-                  | "pending"
-                  | "accepted"
-                  | "declined";
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
+                organisationInvitationStatus: "to_be_invited" | "pending" | "accepted" | "declined";
                 organisationInvitationSentAt?: string;
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "email"
-                  | "sms"
-                  | "lifeEvent"
-                )[];
+                organisationPreferredTransports: ("sms" | "email" | "lifeEvent")[];
+                /** @enum {string} */
                 correlationQuality: "full" | "partial" | "not_related";
-                /** @default pending */
+                /**
+                 * @default pending
+                 * @enum {string}
+                 */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
                   /** @default null */
@@ -1808,7 +1799,7 @@ export interface paths {
                   /** @default null */
                   birthDate: null | string;
                   /** @default null */
-                  address: {
+                  address: ({
                     /** @default null */
                     city: null | string;
                     /** @default null */
@@ -1819,7 +1810,7 @@ export interface paths {
                     country: null | string;
                     /** @default null */
                     region: null | string;
-                  } | null;
+                  }) | null;
                   /** @default false */
                   collectedConsent: boolean;
                 };
@@ -1861,9 +1852,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1877,9 +1868,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1902,16 +1893,16 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                eventId: string;
-                /** Format: uuid */
-                messageId: string;
-                subject: string;
-                receiverFullName: string;
-                eventType: string;
-                eventStatus: string;
-                scheduledAt: string;
-              }[];
+                  /** Format: uuid */
+                  eventId: string;
+                  /** Format: uuid */
+                  messageId: string;
+                  subject: string;
+                  receiverFullName: string;
+                  eventType: string;
+                  eventStatus: string;
+                  scheduledAt: string;
+                }[];
               metadata?: {
                 links?: {
                   self: {
@@ -1949,9 +1940,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1965,9 +1956,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -1987,41 +1978,37 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data: {
-                eventStatus: string;
-                eventType: string;
-                data:
-                  | {
-                      messageId: string;
-                      receiverFullName: string;
-                      receiverPPSN: string;
-                      subject: string;
-                      lang: string;
-                      excerpt: string;
-                      richText: string;
-                      plainText: string;
-                      threadName: string;
-                      transports: string[];
-                      messageName: string;
-                      /** Format: date-time */
-                      scheduledAt: string;
-                      senderUserId: string;
-                      senderFullName: string;
-                      senderPPSN: string;
-                      organisationName: string;
-                      security: string;
-                      bypassConsent: boolean;
-                    }
-                  | {
-                      messageId: string;
-                      jobId: string;
-                    }
-                  | {
-                      messageId: string;
-                    };
-                /** Format: date-time */
-                createdAt: string;
-              }[];
+              data: ({
+                  eventStatus: string;
+                  eventType: string;
+                  data: {
+                    messageId: string;
+                    receiverFullName: string;
+                    receiverPPSN: string;
+                    subject: string;
+                    lang: string;
+                    excerpt: string;
+                    richText: string;
+                    plainText: string;
+                    threadName: string;
+                    transports: string[];
+                    /** Format: date-time */
+                    scheduledAt: string;
+                    senderUserId: string;
+                    senderFullName: string;
+                    senderPPSN: string;
+                    organisationName: string;
+                    security: string;
+                    bypassConsent: boolean;
+                  } | {
+                    messageId: string;
+                    jobId: string;
+                  } | {
+                    messageId: string;
+                  };
+                  /** Format: date-time */
+                  createdAt: string;
+                })[];
             };
           };
         };
@@ -2034,9 +2021,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -2050,9 +2037,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -2088,9 +2075,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -2104,9 +2091,9 @@ export interface paths {
               request_id: string;
               name: string;
               validation?: {
-                fieldName: string;
-                message: string;
-              }[];
+                  fieldName: string;
+                  message: string;
+                }[];
               validationContext?: string;
             };
           };
@@ -2119,7 +2106,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 
 export interface components {
-  schemas: {};
+  schemas: {
+  };
   responses: never;
   parameters: never;
   requestBodies: never;
