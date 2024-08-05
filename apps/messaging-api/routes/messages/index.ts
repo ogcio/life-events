@@ -20,6 +20,7 @@ import { QueryResult } from "pg";
 import { ServerError, AuthorizationError } from "shared-errors";
 import { utils } from "../../utils";
 import { sanitizePagination, getPaginationLinks } from "../../utils/pagination";
+import { ensureUserIdIsSet } from "../../utils/authentication-factory";
 
 const MESSAGES_TAGS = ["Messages"];
 
@@ -93,7 +94,7 @@ export default async function messages(app: FastifyInstance) {
             select id as "messageUserId", user_profile_id as "profileId" from users where id::text = $1 or user_profile_id = $1
             limit 1
         `,
-          [request.userData?.userId],
+          [queryRecipientUserId],
         );
         const allUserIds = allUserIdsQueryResult.rows.at(0);
         if (!allUserIds) {
@@ -247,7 +248,7 @@ export default async function messages(app: FastifyInstance) {
       return {
         data: await getMessage({
           pg: app.pg,
-          userId: request.userData!.userId,
+          userId: ensureUserIdIsSet(request, "GET_MESSAGE"),
           messageId: request.params.messageId,
         }),
       };

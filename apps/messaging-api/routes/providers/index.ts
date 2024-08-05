@@ -82,7 +82,7 @@ export default async function providers(app: FastifyInstance) {
         limit: request.query.limit,
         offset: request.query.offset,
       });
-      const { organizationId } = request.userData!;
+      const organizationId = ensureOrganizationIdIsSet(request, errorProcess);
       const { type } = request.query;
 
       const textSearchILikeClause = request.query?.search
