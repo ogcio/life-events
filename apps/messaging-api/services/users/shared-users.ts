@@ -1,4 +1,4 @@
-import { Pool, PoolClient, QueryResult } from "pg";
+import { PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
 import {
   OrganisationSetting,
@@ -215,17 +215,22 @@ export const getSettingsPerUserProfile = async (params: {
   });
 };
 
-export const getUserProfiles = async (ids: string[], pool: Pool) => {
-  return await pool
-    .query<{
-      firstName: string;
-      lastName: string;
-      ppsn: string;
-      id: string;
-      lang: string;
-      phone: string;
-      email: string;
-    }>(
+export type MessagingUserProfile = {
+  firstName: string;
+  lastName: string;
+  ppsn: string;
+  id: string;
+  lang: string;
+  phone: string;
+  email: string;
+};
+
+export const getUserProfiles = async (
+  ids: string[],
+  poolClient: PoolClient,
+): Promise<MessagingUserProfile[]> => {
+  return await poolClient
+    .query<MessagingUserProfile>(
       `
     select 
       (details ->> 'firstName') as "firstName",
