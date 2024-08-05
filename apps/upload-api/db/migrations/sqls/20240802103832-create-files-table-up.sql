@@ -5,6 +5,7 @@ CREATE TABLE files (
     lastScan DATE,
     createdAt DATE NOT NULL DEFAULT CURRENT_DATE,
     infected BOOLEAN NOT NULL DEFAULT FALSE,
+    infection_description TEXT,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     fileSize INTEGER,
     mimetype VARCHAR(255)
