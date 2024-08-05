@@ -228,7 +228,6 @@ export interface paths {
     get: {
       parameters: {
         query: {
-          search?: string;
           primary?: boolean;
           type: "sms" | "email";
           offset?: number;
