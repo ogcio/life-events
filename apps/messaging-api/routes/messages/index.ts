@@ -12,20 +12,14 @@ import {
   IdParamsSchema,
   GenericResponse,
 } from "../../types/schemaDefinitions";
-import { getMessage } from "../../services/messages/messages";
-import { newMessagingService } from "../../services/messages/messaging";
-import { getUserProfiles } from "../../services/users/shared-users";
-import { Profile } from "building-blocks-sdk";
-import { AuthorizationError, NotFoundError, ServerError } from "shared-errors";
-import {
-  MessagingEventType,
-  newMessagingEventLogger,
-} from "../../services/messages/eventLogger";
+import { getMessage, processMessages } from "../../services/messages/messages";
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
-import { getPaginationLinks, sanitizePagination } from "../../utils/pagination";
-import { utils } from "../../utils";
+import { ensureUserCanAccessUser } from "api-auth";
 import { QueryResult } from "pg";
+import { ServerError, AuthorizationError } from "shared-errors";
+import { utils } from "../../utils";
+import { sanitizePagination, getPaginationLinks } from "../../utils/pagination";
 
 const MESSAGES_TAGS = ["Messages"];
 
@@ -168,7 +162,6 @@ export default async function messages(app: FastifyInstance) {
             select 
               id,
               subject,
-              message_name as "messageName",
               thread_name as "threadName",
               organisation_id as "organisationId",
               user_id as "recipientId",
@@ -209,7 +202,6 @@ export default async function messages(app: FastifyInstance) {
                 id,
                 createdAt,
                 subject,
-                messageName,
                 organisationId,
                 threadName,
                 recipientId,
@@ -217,7 +209,6 @@ export default async function messages(app: FastifyInstance) {
                 id,
                 subject,
                 createdAt,
-                messageName,
                 threadName,
                 organisationId,
                 recipientId,
@@ -277,8 +268,7 @@ export default async function messages(app: FastifyInstance) {
         response: {
           "4xx": HttpError,
           "5xx": HttpError,
-          // We want to add self link, count=1 eg. in the metadata field?
-          // 201: getGenericResponseSchema(Type.String({ format: "uuid" })),
+        
           201: Type.Object({
             data: Type.Object({
               messageId: Type.String({ format: "uuid" }),
@@ -290,111 +280,37 @@ export default async function messages(app: FastifyInstance) {
     async function createMessageHandler(request, reply) {
       const errorKey = "FAILED_TO_CREATE_MESSAGE";
 
-      const senderUserId = request.userData?.userId;
-      const organisationId = request.userData?.organizationId;
-
-      if (!senderUserId || !organisationId) {
-        throw new AuthorizationError(errorKey, "unauthorized");
-      }
-
-      const eventLogger = newMessagingEventLogger(app.pg.pool, app.log);
-
-      const receiverUserId = request.body.recipientUserId;
-
-      const [receiverUser] = await getUserProfiles(
-        [receiverUserId],
-        app.pg.pool,
+      const userData = ensureUserCanAccessUser(
+        request.userData,
+        request.body.userId,
+        errorKey,
       );
 
-      if (!receiverUser) {
-        throw new NotFoundError(
-          errorKey,
-          "failed to get receiver user profile",
-        );
-      }
-
-      // Need to change to token once that PR is merged
-      const profileSdk = new Profile(request.userData!.accessToken);
-      const { data, error } = await profileSdk.getUser(
-        request.userData?.userId!,
-      );
-
-      if (error) {
-        throw new ServerError(
-          errorKey,
-          "failed to get sender user profile from profile sdk",
-          error,
-        );
-      }
-
-      if (!data) {
-        throw new NotFoundError(
-          errorKey,
-          "sender user from profile sdk was undefined",
-        );
-      }
-
-      const senderFullName = `${data.firstName} ${data.lastName}`.trim();
-      const receiverFullName =
-        `${receiverUser.firstName} ${receiverUser.lastName}`.trim();
-
-      // Create
-      const messageService = newMessagingService(app.pg.pool);
-
-      let messageId = "";
-      try {
-        messageId = await messageService.createMessage({
-          receiverUserId,
-          ...request.body,
-          ...request.body.message,
-          organisationId,
-        });
-      } catch (error) {
-        throw new ServerError(errorKey, "failed to create message", error);
-      }
-
-      await eventLogger.log(MessagingEventType.createRawMessage, [
-        {
-          organisationName: organisationId,
-          bypassConsent: request.body.bypassConsent,
-          security: request.body.security,
-          transports: request.body.preferredTransports,
-          scheduledAt: request.body.scheduleAt,
-          messageId,
-          ...request.body.message,
-          senderFullName,
-          senderPPSN: data.ppsn || "",
-          senderUserId,
-          receiverFullName,
-          receiverPPSN: receiverUser.ppsn,
-          receiverUserId,
-        },
-      ]);
-
-      await eventLogger.log(MessagingEventType.scheduleMessage, [
-        { messageId },
-      ]);
-
-      // Schedule
-      let jobId = "";
-      try {
-        const [job] = await messageService.scheduleMessages(
-          [{ messageId, userId: receiverUserId }],
-          request.body.scheduleAt,
-          organisationId,
-        );
-        jobId = job.jobId;
-      } catch (err) {
-        await eventLogger.log(MessagingEventType.scheduleMessageError, [
+      const messages = await processMessages({
+        inputMessages: [
           {
-            messageId,
-            jobId,
+            receiverUserId: request.body.userId,
+            ...request.body,
+            ...request.body.message,
+            organisationId: userData.organizationId!,
           },
-        ]);
+        ],
+        scheduleAt: request.body.scheduleAt,
+        errorProcess: errorKey,
+        pgPool: app.pg.pool,
+        logger: request.log,
+        senderUser: {
+          profileId: userData.userId,
+          organizationId: userData.organizationId,
+        },
+        allOrNone: true,
+      });
+      if (messages.errors.length > 0) {
+        throw messages.errors[0];
       }
 
       reply.statusCode = 201;
-      return { data: { messageId } };
+      return { data: { messageId: messages.scheduledMessages[0].entityId } };
     },
   );
 

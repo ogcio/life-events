@@ -81,7 +81,6 @@ export default async (props: MessageCreateProps) => {
           template.contents.map((c) => ({
             ...c,
             threadName: c.subject,
-            messageName: c.subject,
           })),
           user.lang || "",
           {

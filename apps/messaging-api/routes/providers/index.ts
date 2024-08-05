@@ -326,7 +326,7 @@ export default async function providers(app: FastifyInstance) {
         response: {
           200: Type.Object({
             data: Type.Object({
-              providerId: Type.String({ format: "uuid" }),
+              id: Type.String({ format: "uuid" }),
             }),
           }),
           "5xx": HttpError,
@@ -447,7 +447,7 @@ export default async function providers(app: FastifyInstance) {
         }
       }
 
-      return { data: { providerId } };
+      return { data: { id:providerId } };
     },
   );
 

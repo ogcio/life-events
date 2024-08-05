@@ -91,7 +91,6 @@ export namespace MessagingEventType {
 
 type MessageUpsertEvent = {
   threadName: string;
-  messageName: string;
   subject: string;
   excerpt: string;
   richText: string;

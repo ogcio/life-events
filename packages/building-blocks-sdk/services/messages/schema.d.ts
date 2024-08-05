@@ -51,7 +51,6 @@ export interface paths {
           "application/json": {
             message?: {
               threadName?: string;
-              messageName: string;
               subject: string;
               excerpt: string;
               richText: string;
