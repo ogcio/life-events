@@ -321,17 +321,32 @@ paths:
                     properties:
                       subject:
                         type: string
+                      createdAt:
+                        type: string
+                      threadName:
+                        type: string
+                      organisationId:
+                        type: string
+                      recipientUserId:
+                        type: string
                       excerpt:
                         type: string
                       plainText:
                         type: string
                       richText:
                         type: string
+                      isSeen:
+                        type: boolean
                     required:
                       - subject
+                      - createdAt
+                      - threadName
+                      - organisationId
+                      - recipientUserId
                       - excerpt
                       - plainText
                       - richText
+                      - isSeen
                   metadata:
                     type: object
                     properties:

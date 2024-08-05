@@ -42,9 +42,14 @@ export type MessageList = Static<typeof MessageListSchema>;
 
 export const ReadMessageSchema = Type.Object({
   subject: Type.String(),
+  createdAt: Type.String(),
+  threadName: Type.String(),
+  organisationId: Type.String(),
+  recipientUserId: Type.String(),
   excerpt: Type.String(),
   plainText: Type.String(),
   richText: Type.String(),
+  isSeen: Type.Boolean(),
 });
 export type ReadMessage = Static<typeof ReadMessageSchema>;
 

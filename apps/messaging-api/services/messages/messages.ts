@@ -43,10 +43,15 @@ export const getMessage = async (params: {
   const data = await params.pg.query<ReadMessage>(
     `
         select 
-            subject, 
-            excerpt, 
+            subject as "subject", 
+            excerpt as "excerpt", 
             plain_text as "plainText",
-            rich_text as "richText"
+            rich_text as "richText",
+            created_at as "createdAt",
+            thread_name as "threadName",
+            organisation_id as "organisationId",
+            user_id as "recipientUserId",
+            is_seen as "isSeen"
         from messages
         where user_id = $1 and id=$2
         order by created_at desc
