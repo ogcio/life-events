@@ -8,6 +8,7 @@ import Image from "next/image";
 import hero from "../../public/landingPage/hero.png";
 import payments from "../../public/landingPage/payments.png";
 import messaging from "../../public/landingPage/messaging.png";
+import favicon from "../../public/favicon.ico";
 import designSystem from "../../public/landingPage/designSystem.png";
 import forms from "../../public/landingPage/forms.png";
 import type { Metadata } from "next";
@@ -20,6 +21,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Building Blocks",
+  icons: [{ rel: "icon", url: favicon.src }],
 };
 
 const getLinks = (environment: string, locale: string) => {
