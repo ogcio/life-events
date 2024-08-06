@@ -9,9 +9,13 @@ export default async function jobs(app: FastifyInstance) {
     "/:id",
     {
       schema: {
+        description: "Executes the requested job",
         tags: ["Jobs"],
         body: Type.Object({
-          token: Type.String(),
+          token: Type.String({
+            description:
+              "The security token used to ensure you are allowed to execute this job",
+          }),
         }),
         response: {
           202: Type.Null(),

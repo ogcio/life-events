@@ -179,13 +179,24 @@ export type GenericResponse<T> = {
 
 export const MessageEventListSchema = Type.Array(
   Type.Object({
-    eventId: Type.String({ format: "uuid" }),
-    messageId: Type.String({ format: "uuid" }),
-    subject: Type.String(),
-    receiverFullName: Type.String(),
-    eventType: Type.String(),
-    eventStatus: Type.String(),
-    scheduledAt: Type.String(),
+    eventId: Type.String({
+      format: "uuid",
+      description: "Unique id of the event",
+    }),
+    messageId: Type.String({
+      format: "uuid",
+      description: "Unique id of the related message",
+    }),
+    subject: Type.String({ description: "Subject of the related message" }),
+    receiverFullName: Type.String({
+      description: "Full name of the recipient",
+    }),
+    eventType: Type.String({ description: "Event type description" }),
+    eventStatus: Type.String({ description: "Status for event type" }),
+    scheduledAt: Type.String({
+      description:
+        "Date and time which describes when the message has to be sent",
+    }),
   }),
 );
 
@@ -193,40 +204,77 @@ export type MessageEventListType = Static<typeof MessageEventListSchema>;
 
 export const MessageEventSchema = Type.Array(
   Type.Object({
-    eventStatus: Type.String(),
-    eventType: Type.String(),
+    eventType: Type.String({ description: "Event type description" }),
+    eventStatus: Type.String({ description: "Status for event type" }),
     data: Type.Union([
       // Create data
       Type.Object({
-        messageId: Type.String(),
-        receiverFullName: Type.String(),
-        receiverPPSN: Type.String(),
-        subject: Type.String(),
-        lang: Type.String(),
-        excerpt: Type.String(),
-        richText: Type.String(),
-        plainText: Type.String(),
-        threadName: Type.String(),
-        transports: Type.Array(Type.String()),
-        scheduledAt: Type.String({ format: "date-time" }),
-        senderUserId: Type.String(),
-        senderFullName: Type.String(),
-        senderPPSN: Type.String(),
-        organisationName: Type.String(),
+        messageId: Type.String({
+          description: "Unique id of the related message",
+        }),
+        receiverFullName: Type.String({
+          description: "Full name of the recipient",
+        }),
+        receiverPPSN: Type.String({
+          description: "PPSN of the recipient",
+        }),
+        subject: Type.String({ description: "Subject of the related message" }),
+        lang: Type.String({ description: "Language of the related message" }),
+        excerpt: Type.String({ description: "Excerpt of the related message" }),
+        richText: Type.String({
+          description: "Rich text content of the related message",
+        }),
+        plainText: Type.String({
+          description: "Plain text context of the related message",
+        }),
+        threadName: Type.String({
+          description: "Thread name of the related message",
+        }),
+        transports: Type.Array(Type.String(), {
+          description: "Selected transports to send the message",
+        }),
+        scheduledAt: Type.String({
+          format: "date-time",
+          description:
+            "Date and time which describes when the message has to be sent",
+        }),
+        senderUserId: Type.String({
+          description: "Unique user id of the sender",
+        }),
+        senderFullName: Type.String({
+          description: "Full name of the sender",
+        }),
+        senderPPSN: Type.String({
+          description: "PPSN of the sender",
+        }),
+        organisationName: Type.String({
+          description: "Organisation related to the sender",
+        }),
         security: SecurityLevelsSchema,
-        bypassConsent: Type.Boolean(),
+        bypassConsent: Type.Boolean({
+          description:
+            "If true, the message will be sent even if the recipient didn't accept the organisation's invitation",
+        }),
       }),
       // Schedule data
       Type.Object({
-        messageId: Type.String(),
-        jobId: Type.String(),
+        messageId: Type.String({
+          description: "Unique id of the related message",
+        }),
+        jobId: Type.String({ description: "Unique id of the job" }),
       }),
       // Error data
       Type.Object({
-        messageId: Type.String(),
+        messageId: Type.String({
+          description: "Unique id of the related message",
+        }),
       }),
     ]),
-    createdAt: Type.String({ format: "date-time" }),
+    createdAt: Type.String({
+      format: "date-time",
+      description:
+        "Date and time which describes when the event has been recorded",
+    }),
   }),
 );
 
