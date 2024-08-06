@@ -18,6 +18,9 @@ test.describe("Manual bank transfer provider", () => {
 
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
+  });
+
+  test.beforeEach(async () => {
     providerName = `Test manual bank transfer ${Date.now()}`;
   });
 
@@ -52,7 +55,40 @@ test.describe("Manual bank transfer provider", () => {
     await providersPage.checkProviderVisible(providerName);
   });
 
-  test("should not add a manual bank transfer provider if iban in missing @regression @normal", async () => {
+  test("should show error creating manual bank transfer provider if name is missing @regression @normal", async () => {
+    await description(
+      "This test checks that a validation error is shown when creating a new manual bank transfer provider if name is missing.",
+    );
+    await owner("OGCIO");
+    await tags("Providers", "Manual Bank Transfer");
+    await severity(Severity.NORMAL);
+
+    await page.goto(paymentSetupUrl);
+
+    const providersMenuLink = await page.getByRole("link", {
+      name: "Providers",
+    });
+    await providersMenuLink.click();
+
+    const providersPage = new ProvidersPage(page);
+    await providersPage.createNewPaymentProvider();
+    await providersPage.selectManualBankTransferProvider();
+
+    const addManualBankTransferProviderPage =
+      new AddManualBankTransferProviderPage(page);
+    await addManualBankTransferProviderPage.enterName("");
+    await addManualBankTransferProviderPage.enterAccountHolderName(
+      mockAccountHolderName,
+    );
+    await addManualBankTransferProviderPage.enterIban(mockIban);
+    await addManualBankTransferProviderPage.submitProviderCreation();
+
+    await addManualBankTransferProviderPage.expectValidationError(
+      "nameRequired",
+    );
+  });
+
+  test("should not add a manual bank transfer provider if iban is missing @regression @normal", async () => {
     await description(
       "This test checks that a new manual bank transfer provider is not created if iban is missing.",
     );
@@ -122,7 +158,7 @@ test.describe("Manual bank transfer provider", () => {
     await providersPage.checkProviderNotVisible(providerName);
   });
 
-  test("should not add a manual bank transfer provider if iban in invalid @regression @normal", async () => {
+  test("should not add a manual bank transfer provider if iban is invalid @regression @normal", async () => {
     await description(
       "This test checks that a new manual bank transfer provider is not created if an invalid iban is provided.",
     );
