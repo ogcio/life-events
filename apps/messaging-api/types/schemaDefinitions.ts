@@ -19,19 +19,21 @@ export const TypeboxStringEnum = <T extends string[]>(
     default: defaultValue,
   });
 
-export const EditableProvidersSchema = TypeboxStringEnum(["sms", "email"]);
-export type EditableProviders = Static<typeof EditableProvidersSchema>;
+export const EditableProviderTypesSchema = TypeboxStringEnum(["sms", "email"]);
+export type EditableProviderTypes = Static<typeof EditableProviderTypesSchema>;
 
-export const AllProvidersSchema = TypeboxStringEnum([
+export const AllProviderTypesSchema = TypeboxStringEnum([
   "sms",
   "email",
   "lifeEvent",
 ]);
-export type AllProviders = Static<typeof AllProvidersSchema>;
+export type AllProviderTypes = Static<typeof AllProviderTypesSchema>;
 
+export const ConfidentialSecurity = "confidential";
+export const PublicSecurity = "public";
 export const SecurityLevelsSchema = TypeboxStringEnum(
-  ["confidential", "public"],
-  "public",
+  [ConfidentialSecurity, PublicSecurity],
+  PublicSecurity,
 );
 export type SecurityLevels = Static<typeof SecurityLevelsSchema>;
 
@@ -77,7 +79,7 @@ export const TemplateInputSchema = Type.Object({
 export type TemplateInput = Static<typeof TemplateInputSchema>;
 
 export const CreateMessageOptionsSchema = Type.Object({
-  preferredTransports: Type.Array(AllProvidersSchema),
+  preferredTransports: Type.Array(AllProviderTypesSchema),
   userIds: Type.Array(Type.String()),
   security: SecurityLevelsSchema,
   scheduleAt: Type.String({ format: "date-time" }),
@@ -205,7 +207,7 @@ export const MessageEventSchema = Type.Array(
 );
 
 export const MessageCreateSchema = Type.Object({
-  preferredTransports: Type.Array(AllProvidersSchema),
+  preferredTransports: Type.Array(AllProviderTypesSchema),
   recipientUserId: Type.String(),
   security: SecurityLevelsSchema,
   bypassConsent: Type.Boolean({ default: false }),
@@ -226,7 +228,7 @@ export const ProviderListItemSchema = Type.Object({
   id: Type.String({ format: "uuid" }),
   providerName: Type.String(),
   isPrimary: Type.Boolean(),
-  type: EditableProvidersSchema,
+  type: EditableProviderTypesSchema,
 });
 
 export const ProviderListSchema = Type.Array(ProviderListItemSchema);

@@ -5,6 +5,7 @@ import {
   UsersImport,
 } from "../../../types/usersSchemaDefinitions";
 import {
+  ConfidentialSecurity,
   DEFAULT_LANGUAGE,
   MessageInput,
 } from "../../../types/schemaDefinitions";
@@ -256,7 +257,7 @@ const sendInvitations = async (params: {
         receiverUserId: userId,
         richText: messageInput.richText,
         scheduleAt: new Date().toISOString(),
-        security: "high",
+        security: ConfidentialSecurity,
         subject: messageInput.subject,
         threadName: messageInput.threadName || messageInput.subject,
       });
@@ -286,7 +287,7 @@ const sendInvitations = async (params: {
         receiverUserId: userId,
         richText: messageInput.richText,
         scheduleAt: new Date().toISOString(),
-        security: "high",
+        security: ConfidentialSecurity,
         subject: messageInput.subject,
         threadName: messageInput.threadName || messageInput.subject,
       });
@@ -311,7 +312,7 @@ const sendInvitations = async (params: {
         receiverUserId: userId,
         richText: messageInput.richText,
         scheduleAt: new Date().toISOString(),
-        security: "high",
+        security: ConfidentialSecurity,
         subject: messageInput.subject,
         threadName: messageInput.threadName || messageInput.subject,
       });

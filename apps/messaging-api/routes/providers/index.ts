@@ -8,7 +8,7 @@ import {
   PaginationParamsSchema,
   ProviderListItemSchema,
   ProviderUpdateSchema,
-  EditableProvidersSchema,
+  EditableProviderTypesSchema,
   ProviderListSchema,
   SmsProviderSchema,
   ProviderCreateSchema,
@@ -62,7 +62,7 @@ export default async function providers(app: FastifyInstance) {
           Type.Composite([
             Type.Object({
               primary: Type.Optional(Type.Boolean()),
-              type: EditableProvidersSchema,
+              type: EditableProviderTypesSchema,
             }),
             PaginationParamsSchema,
           ]),
@@ -202,7 +202,7 @@ export default async function providers(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Composite([
             Type.Object({
-              type: EditableProvidersSchema,
+              type: EditableProviderTypesSchema,
             }),
           ]),
         ),
