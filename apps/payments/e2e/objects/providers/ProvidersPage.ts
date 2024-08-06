@@ -100,8 +100,6 @@ export class ProvidersPage {
 
   async createRealexProvider(name: string) {
     await this.selectRealexProvider();
-
-    // TODO: change this
     const addRealexProviderPage = new AddRealexProviderPage(this.page);
     await addRealexProviderPage.create(name);
   }
