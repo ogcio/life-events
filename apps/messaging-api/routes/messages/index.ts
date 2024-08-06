@@ -46,7 +46,7 @@ export default async function messages(app: FastifyInstance) {
         app.checkPermissions(req, res, [Permissions.MessageSelf.Read]),
       schema: {
         description:
-          "Will return all the messages for the requested organisation or the requested recipient",
+          "Returns all the messages for the requested organisation or the requested recipient",
         tags: MESSAGES_TAGS,
         querystring: Type.Optional(
           Type.Composite([
@@ -233,10 +233,12 @@ export default async function messages(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.MessageSelf.Read]),
       schema: {
+        description: "Returns the requested message",
         tags: MESSAGES_TAGS,
         params: {
           messageId: Type.String({
             format: "uuid",
+            description: "The requested message unique id",
           }),
         },
         response: {
@@ -266,6 +268,7 @@ export default async function messages(app: FastifyInstance) {
           Permissions.Scheduler.Write,
         ]),
       schema: {
+        description: "Creates a message",
         tags: MESSAGES_TAGS,
         body: MessageCreateSchema,
         response: {
@@ -273,7 +276,10 @@ export default async function messages(app: FastifyInstance) {
           "5xx": HttpError,
           201: Type.Object({
             data: Type.Object({
-              messageId: Type.String({ format: "uuid" }),
+              messageId: Type.String({
+                format: "uuid",
+                description: "The unique id of the created message",
+              }),
             }),
           }),
         },

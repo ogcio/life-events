@@ -10,7 +10,7 @@ paths:
     get:
       tags: &a1
         - Messages
-      description: Will return all the messages for the requested organisation or the
+      description: Returns all the messages for the requested organisation or the
         requested recipient
       parameters:
         - schema:
@@ -168,6 +168,7 @@ paths:
                   - name
     post:
       tags: *a1
+      description: Creates a message
       requestBody:
         content:
           application/json:
@@ -175,6 +176,9 @@ paths:
               type: object
               properties:
                 preferredTransports:
+                  description: The list of the preferred transports to use. If the selected
+                    transports are not available for the recipient, others will
+                    be used
                   type: array
                   items:
                     type: string
@@ -183,6 +187,7 @@ paths:
                       - email
                       - lifeEvent
                 recipientUserId:
+                  description: Unique user id of the recipient
                   type: string
                 security:
                   type: string
@@ -192,31 +197,40 @@ paths:
                   default: public
                 bypassConsent:
                   default: false
+                  description: If true, the message will be sent even if the recipient didn't
+                    accept the organisation's invitation
                   type: boolean
                 scheduleAt:
                   format: date-time
+                  description: Date and time of when schedule the message
                   type: string
                 message:
                   type: object
                   properties:
                     threadName:
+                      description: Thread Name used to group messages
                       type: string
                     subject:
+                      description: Subject. This is the only part that will be seen outside of the
+                        messaging platform is security is 'confidential'
                       type: string
                     excerpt:
-                      type: string
-                    richText:
+                      description: Brief description of the message
                       type: string
                     plainText:
+                      description: Plain text version of the message
+                      type: string
+                    richText:
+                      description: Rich text version of the message
                       type: string
                     lang:
+                      description: Language used to send the message
                       type: string
                   required:
-                    - threadName
                     - subject
                     - excerpt
-                    - richText
                     - plainText
+                    - richText
                     - lang
               required:
                 - preferredTransports
@@ -239,6 +253,7 @@ paths:
                     properties:
                       messageId:
                         format: uuid
+                        description: The unique id of the created message
                         type: string
                     required:
                       - messageId
@@ -315,6 +330,7 @@ paths:
   /api/v1/messages/{messageId}:
     get:
       tags: *a1
+      description: Returns the requested message
       parameters:
         - schema:
             format: uuid
@@ -322,6 +338,7 @@ paths:
           in: path
           name: messageId
           required: true
+          description: The requested message unique id
       responses:
         "200":
           description: Default Response

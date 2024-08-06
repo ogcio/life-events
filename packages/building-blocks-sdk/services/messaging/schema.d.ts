@@ -5,6 +5,7 @@
 
 export interface paths {
   "/api/v1/messages/": {
+    /** @description Returns all the messages for the requested organisation or the requested recipient */
     get: {
       parameters: {
         query?: {
@@ -23,11 +24,17 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** @description Unique Id of the message */
                 id: string;
+                /** @description Subject */
                 subject: string;
+                /** @description Creation date time */
                 createdAt: string;
+                /** @description Thread Name used to group messages */
                 threadName: string;
+                /** @description Organisation sender id */
                 organisationId: string;
+                /** @description Unique id of the recipient */
                 recipientUserId: string;
               }[];
               metadata?: {
@@ -76,27 +83,42 @@ export interface paths {
         };
       };
     };
+    /** @description Creates a message */
     post: {
       requestBody: {
         content: {
           "application/json": {
+            /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
             preferredTransports: ("sms" | "email" | "lifeEvent")[];
+            /** @description Unique user id of the recipient */
             recipientUserId: string;
             /**
              * @default public
              * @enum {string}
              */
             security: "confidential" | "public";
-            /** @default false */
+            /**
+             * @description If true, the message will be sent even if the recipient didn't accept the organisation's invitation
+             * @default false
+             */
             bypassConsent: boolean;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Date and time of when schedule the message
+             */
             scheduleAt: string;
             message: {
-              threadName: string;
+              /** @description Thread Name used to group messages */
+              threadName?: string;
+              /** @description Subject. This is the only part that will be seen outside of the messaging platform is security is 'confidential' */
               subject: string;
+              /** @description Brief description of the message */
               excerpt: string;
-              richText: string;
+              /** @description Plain text version of the message */
               plainText: string;
+              /** @description Rich text version of the message */
+              richText: string;
+              /** @description Language used to send the message */
               lang: string;
             };
           };
@@ -108,7 +130,10 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description The unique id of the created message
+                 */
                 messageId: string;
               };
             };
@@ -150,9 +175,11 @@ export interface paths {
     };
   };
   "/api/v1/messages/{messageId}": {
+    /** @description Returns the requested message */
     get: {
       parameters: {
         path: {
+          /** @description The requested message unique id */
           messageId: string;
         };
       };
@@ -162,14 +189,23 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** @description Subject. This is the only part that will be seen outside of the messaging platform is security is 'confidential' */
                 subject: string;
+                /** @description Creation date time */
                 createdAt: string;
+                /** @description Thread Name used to group messages */
                 threadName: string;
+                /** @description Organisation sender id */
                 organisationId: string;
+                /** @description Unique id of the recipient */
                 recipientUserId: string;
+                /** @description Brief description of the message */
                 excerpt: string;
+                /** @description Plain text version of the message */
                 plainText: string;
+                /** @description Rich text version of the message */
                 richText: string;
+                /** @description True if the message has already been seen by the recipient */
                 isSeen: boolean;
                 /**
                  * @default public

@@ -72,12 +72,19 @@ export const ReadMessageSchema = Type.Object({
 export type ReadMessage = Static<typeof ReadMessageSchema>;
 
 export const MessageInputSchema = Type.Object({
-  threadName: Type.Optional(Type.String()),
-  subject: Type.String(),
-  excerpt: Type.String(),
-  richText: Type.String(),
-  plainText: Type.String(),
-  lang: Type.String(),
+  threadName: Type.Optional(
+    Type.String({
+      description: "Thread Name used to group messages",
+    }),
+  ),
+  subject: Type.String({
+    description:
+      "Subject. This is the only part that will be seen outside of the messaging platform is security is 'confidential'",
+  }),
+  excerpt: Type.String({ description: "Brief description of the message" }),
+  plainText: Type.String({ description: "Plain text version of the message" }),
+  richText: Type.String({ description: "Rich text version of the message" }),
+  lang: Type.String({ description: "Language used to send the message" }),
 });
 export type MessageInput = Static<typeof MessageInputSchema>;
 
@@ -224,19 +231,24 @@ export const MessageEventSchema = Type.Array(
 );
 
 export const MessageCreateSchema = Type.Object({
-  preferredTransports: Type.Array(AllProviderTypesSchema),
-  recipientUserId: Type.String(),
-  security: SecurityLevelsSchema,
-  bypassConsent: Type.Boolean({ default: false }),
-  scheduleAt: Type.String({ format: "date-time" }),
-  message: Type.Object({
-    threadName: Type.String(),
-    subject: Type.String(),
-    excerpt: Type.String(),
-    richText: Type.String(),
-    plainText: Type.String(),
-    lang: Type.String(),
+  preferredTransports: Type.Array(AllProviderTypesSchema, {
+    description:
+      "The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used",
   }),
+  recipientUserId: Type.String({
+    description: "Unique user id of the recipient",
+  }),
+  security: SecurityLevelsSchema,
+  bypassConsent: Type.Boolean({
+    default: false,
+    description:
+      "If true, the message will be sent even if the recipient didn't accept the organisation's invitation",
+  }),
+  scheduleAt: Type.String({
+    format: "date-time",
+    description: "Date and time of when schedule the message",
+  }),
+  message: MessageInputSchema,
 });
 
 export type MessageCreateType = Static<typeof MessageCreateSchema>;
