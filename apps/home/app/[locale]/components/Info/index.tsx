@@ -9,9 +9,6 @@ import messaging from "../../../../public/landingPage/messaging.png";
 import designSystem from "../../../../public/landingPage/designSystem.png";
 import forms from "../../../../public/landingPage/forms.png";
 import { getLinks } from "../../../../utils/index";
-import Header from "../Header/Header";
-import Banner from "../Banner";
-import Footer from "../Footer/Footer";
 
 type Props = {
   locale: string;
@@ -25,21 +22,6 @@ export default async ({ locale }: Props) => {
 
   return (
     <>
-      <Header locale={locale} />
-
-      <div className="govie-width-container" style={{ width: "100%" }}>
-        <Banner
-          tag={t("AlphaBanner.tag")}
-          text={t.rich("AlphaBanner.bannerText", {
-            url: (chunks) => (
-              <a className="govie-link" href={links.feedbackLink.href}>
-                {chunks}
-              </a>
-            ),
-          })}
-        />
-      </div>
-
       <div className="govie-width-container">
         <hr className="govie-section-break  govie-section-break--m" />
 
@@ -282,7 +264,6 @@ export default async ({ locale }: Props) => {
       </div>
 
       <hr className="govie-section-break govie-section-break govie-section-break--l" />
-      <Footer />
     </>
   );
 };
