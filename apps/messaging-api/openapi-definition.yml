@@ -251,12 +251,12 @@ paths:
                   data:
                     type: object
                     properties:
-                      messageId:
+                      id:
                         format: uuid
                         description: The unique id of the created message
                         type: string
                     required:
-                      - messageId
+                      - id
                 required:
                   - data
         4XX:
@@ -514,12 +514,15 @@ paths:
     get:
       tags: &a2
         - Providers
+      description: Returns the providers with the requested properties
       parameters:
         - schema:
             type: boolean
           in: query
           name: primary
           required: false
+          description: If set, returns only the primary providers if true, otherwise the
+            non-primary ones
         - schema:
             type: string
             enum:
@@ -690,6 +693,7 @@ paths:
                   - name
     post:
       tags: *a2
+      description: Creates a new provider
       requestBody:
         content:
           application/json:
@@ -851,6 +855,7 @@ paths:
   /api/v1/providers/{providerId}:
     get:
       tags: *a2
+      description: Returns the requested provider
       parameters:
         - schema:
             type: string
@@ -866,6 +871,7 @@ paths:
           in: path
           name: providerId
           required: true
+          description: The unique id of the requested provider
       responses:
         "200":
           description: Default Response

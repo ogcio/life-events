@@ -134,7 +134,7 @@ export interface paths {
                  * Format: uuid
                  * @description The unique id of the created message
                  */
-                messageId: string;
+                id: string;
               };
             };
           };
@@ -277,9 +277,11 @@ export interface paths {
     };
   };
   "/api/v1/providers/": {
+    /** @description Returns the providers with the requested properties */
     get: {
       parameters: {
         query: {
+          /** @description If set, returns only the primary providers if true, otherwise the non-primary ones */
           primary?: boolean;
           type: "sms" | "email";
           offset?: number;
@@ -361,6 +363,7 @@ export interface paths {
         };
       };
     };
+    /** @description Creates a new provider */
     post: {
       requestBody?: {
         content: {
@@ -441,12 +444,14 @@ export interface paths {
     };
   };
   "/api/v1/providers/{providerId}": {
+    /** @description Returns the requested provider */
     get: {
       parameters: {
         query: {
           type: "sms" | "email";
         };
         path: {
+          /** @description The unique id of the requested provider */
           providerId: string;
         };
       };

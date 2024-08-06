@@ -13,6 +13,7 @@ import {
   SmsProviderSchema,
   ProviderCreateSchema,
   SmsCreateSchema,
+  EditableProviderTypes,
 } from "../../types/schemaDefinitions";
 import { Static, Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
@@ -47,7 +48,7 @@ export default async function providers(app: FastifyInstance) {
   // get providers
   app.get<{
     Querystring: {
-      type: "email" | "sms";
+      type: EditableProviderTypes;
       primary?: boolean;
     } & PaginationParams;
     Response: GenericResponse<Static<typeof ProviderListSchema>>;
@@ -57,15 +58,24 @@ export default async function providers(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Provider.Read]),
       schema: {
+        description: "Returns the providers with the requested properties",
         tags,
         querystring: Type.Optional(
-          Type.Composite([
-            Type.Object({
-              primary: Type.Optional(Type.Boolean()),
-              type: EditableProviderTypesSchema,
-            }),
-            PaginationParamsSchema,
-          ]),
+          Type.Composite(
+            [
+              Type.Object({
+                primary: Type.Optional(
+                  Type.Boolean({
+                    description:
+                      "If set, returns only the primary providers if true, otherwise the non-primary ones",
+                  }),
+                ),
+                type: EditableProviderTypesSchema,
+              }),
+              PaginationParamsSchema,
+            ],
+            { description: "The 'type' parameter is mandatory" },
+          ),
         ),
         response: {
           200: getGenericResponseSchema(ProviderListSchema),
@@ -183,7 +193,7 @@ export default async function providers(app: FastifyInstance) {
 
   //get provider
   app.get<{
-    Querystring: { type: "email" | "sms" };
+    Querystring: { type: EditableProviderTypes };
     Params: {
       providerId: string;
     };
@@ -193,18 +203,23 @@ export default async function providers(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Provider.Read]),
       schema: {
+        description: "Returns the requested provider",
         tags,
         params: {
           providerId: Type.String({
             format: "uuid",
+            description: "The unique id of the requested provider",
           }),
         },
         querystring: Type.Optional(
-          Type.Composite([
-            Type.Object({
-              type: EditableProviderTypesSchema,
-            }),
-          ]),
+          Type.Composite(
+            [
+              Type.Object({
+                type: EditableProviderTypesSchema,
+              }),
+            ],
+            { description: "The 'type' parameter is mandatory" },
+          ),
         ),
         response: {
           200: Type.Object({
@@ -314,6 +329,7 @@ export default async function providers(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Provider.Write]),
       schema: {
+        description: "Creates a new provider",
         tags,
         body: ProviderCreateSchema,
         response: {

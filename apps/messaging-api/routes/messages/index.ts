@@ -276,7 +276,7 @@ export default async function messages(app: FastifyInstance) {
           "5xx": HttpError,
           201: Type.Object({
             data: Type.Object({
-              messageId: Type.String({
+              id: Type.String({
                 format: "uuid",
                 description: "The unique id of the created message",
               }),
@@ -318,7 +318,7 @@ export default async function messages(app: FastifyInstance) {
       }
 
       reply.statusCode = 201;
-      return { data: { messageId: messages.scheduledMessages[0].entityId } };
+      return { data: { id: messages.scheduledMessages[0].entityId } };
     },
   );
 
