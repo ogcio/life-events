@@ -1361,10 +1361,10 @@ paths:
                             type: object
                             properties:
                               lang:
-                                description: Language for the selected content
+                                description: Selected language
                                 type: string
                               templateName:
-                                description: Template name for the selected content
+                                description: Template name for the related language
                                 type: string
                             required:
                               - lang
@@ -1489,6 +1489,7 @@ paths:
                   - name
     post:
       tags: *a3
+      description: Creates a new template
       requestBody:
         content:
           application/json:
@@ -1501,16 +1502,22 @@ paths:
                     type: object
                     properties:
                       templateName:
+                        description: Template name for the related language
                         type: string
                       lang:
+                        description: Current language
                         type: string
                       subject:
+                        description: Subject of the template
                         type: string
                       excerpt:
+                        description: Brief description of the template content
                         type: string
                       plainText:
+                        description: Plain text version of the template
                         type: string
                       richText:
+                        description: Rich text version of the template
                         type: string
                     required:
                       - templateName
@@ -1520,6 +1527,8 @@ paths:
                       - plainText
                       - richText
                 variables:
+                  description: List of the variables that are needed to be filled to create a
+                    message using this template
                   type: array
                   items:
                     type: object
@@ -1553,6 +1562,7 @@ paths:
                     properties:
                       id:
                         format: uuid
+                        description: Unique id of the created message
                         type: string
                     required:
                       - id
@@ -1629,6 +1639,7 @@ paths:
   /api/v1/templates/{templateId}:
     get:
       tags: *a3
+      description: Returns the requested template
       parameters:
         - schema:
             type: string
@@ -1652,27 +1663,35 @@ paths:
                           type: object
                           properties:
                             templateName:
-                              type: string
-                            subject:
-                              type: string
-                            excerpt:
-                              type: string
-                            plainText:
-                              type: string
-                            richText:
+                              description: Template name for the related language
                               type: string
                             lang:
+                              description: Current language
+                              type: string
+                            subject:
+                              description: Subject of the template
+                              type: string
+                            excerpt:
+                              description: Brief description of the template content
+                              type: string
+                            plainText:
+                              description: Plain text version of the template
+                              type: string
+                            richText:
+                              description: Rich text version of the template
                               type: string
                           required:
                             - templateName
+                            - lang
                             - subject
                             - excerpt
                             - plainText
                             - richText
-                            - lang
                       fields:
                         type: array
                         items:
+                          description: List of the variables that are needed to be filled to create a
+                            message using this template
                           type: object
                           properties:
                             fieldName:
@@ -1802,6 +1821,7 @@ paths:
                   - name
     put:
       tags: *a3
+      description: Updates the requested template
       requestBody:
         content:
           application/json:
@@ -1815,18 +1835,25 @@ paths:
                     properties:
                       id:
                         format: uuid
+                        description: Unique id of the template
                         type: string
                       templateName:
+                        description: Template name for the related language
                         type: string
                       lang:
+                        description: Current language
                         type: string
                       subject:
+                        description: Subject of the template
                         type: string
                       excerpt:
+                        description: Brief description of the template content
                         type: string
                       plainText:
+                        description: Plain text version of the template
                         type: string
                       richText:
+                        description: Rich text version of the template
                         type: string
                     required:
                       - id
@@ -1837,6 +1864,8 @@ paths:
                       - plainText
                       - richText
                 variables:
+                  description: List of the variables that are needed to be filled to create a
+                    message using this template
                   type: array
                   items:
                     type: object
@@ -1859,6 +1888,8 @@ paths:
           name: templateId
           required: true
       responses:
+        "200":
+          description: Default Response
         4XX:
           description: Default Response
           content:
@@ -1929,6 +1960,7 @@ paths:
                   - name
     delete:
       tags: *a3
+      description: Deletes the requested template
       parameters:
         - schema:
             type: string
@@ -1936,6 +1968,8 @@ paths:
           name: templateId
           required: true
       responses:
+        "200":
+          description: Default Response
         4XX:
           description: Default Response
           content:

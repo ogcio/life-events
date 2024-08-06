@@ -62,23 +62,27 @@ interface GetTemplate {
 }
 
 const TemplateTypeWithoutId = Type.Object({
-  templateName: Type.String(),
-  lang: Type.String(),
-  subject: Type.String(),
-  excerpt: Type.String(),
-  plainText: Type.String(),
-  richText: Type.String(),
+  templateName: Type.String({
+    description: "Template name for the related language",
+  }),
+  lang: Type.String({ description: "Current language" }),
+  subject: Type.String({ description: "Subject of the template" }),
+  excerpt: Type.String({
+    description: "Brief description of the template content",
+  }),
+  plainText: Type.String({ description: "Plain text version of the template" }),
+  richText: Type.String({ description: "Rich text version of the template" }),
 });
 
-const TemplateType = Type.Object({
-  id: Type.String({ format: "uuid" }),
-  templateName: Type.String(),
-  lang: Type.String(),
-  subject: Type.String(),
-  excerpt: Type.String(),
-  plainText: Type.String(),
-  richText: Type.String(),
-});
+const TemplateType = Type.Composite([
+  Type.Object({
+    id: Type.String({
+      format: "uuid",
+      description: "Unique id of the template",
+    }),
+  }),
+  TemplateTypeWithoutId,
+]);
 
 export default async function templates(app: FastifyInstance) {
   app.get<GetTemplates>(
@@ -110,10 +114,10 @@ export default async function templates(app: FastifyInstance) {
                 contents: Type.Array(
                   Type.Object({
                     lang: Type.String({
-                      description: "Language for the selected content",
+                      description: "Selected language",
                     }),
                     templateName: Type.String({
-                      description: "Template name for the selected content",
+                      description: "Template name for the related language",
                     }),
                   }),
                 ),
@@ -173,25 +177,23 @@ export default async function templates(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Template.Read]),
       schema: {
+        description: "Returns the requested template",
         tags,
         response: {
           200: getGenericResponseSchema(
             Type.Object({
-              contents: Type.Array(
-                Type.Object({
-                  templateName: Type.String(),
-                  subject: Type.String(),
-                  excerpt: Type.String(),
-                  plainText: Type.String(),
-                  richText: Type.String(),
-                  lang: Type.String(),
-                }),
-              ),
+              contents: Type.Array(TemplateTypeWithoutId),
               fields: Type.Array(
-                Type.Object({
-                  fieldName: Type.String(),
-                  fieldType: Type.String(),
-                }),
+                Type.Object(
+                  {
+                    fieldName: Type.String(),
+                    fieldType: Type.String(),
+                  },
+                  {
+                    description:
+                      "List of the variables that are needed to be filled to create a message using this template",
+                  },
+                ),
               ),
             }),
           ),
@@ -302,6 +304,7 @@ export default async function templates(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Template.Write]),
       schema: {
+        description: "Creates a new template",
         tags,
         body: Type.Object({
           contents: Type.Array(TemplateTypeWithoutId),
@@ -311,6 +314,10 @@ export default async function templates(app: FastifyInstance) {
               type: Type.String(),
               languages: Type.Array(Type.String()),
             }),
+            {
+              description:
+                "List of the variables that are needed to be filled to create a message using this template",
+            },
           ),
         }),
         response: {
@@ -318,7 +325,10 @@ export default async function templates(app: FastifyInstance) {
           "4xx": HttpError,
           201: Type.Object({
             data: Type.Object({
-              id: Type.String({ format: "uuid" }),
+              id: Type.String({
+                format: "uuid",
+                description: "Unique id of the created message",
+              }),
             }),
           }),
         },
@@ -438,6 +448,7 @@ export default async function templates(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Template.Write]),
       schema: {
+        description: "Updates the requested template",
         tags,
         body: Type.Object({
           contents: Type.Array(TemplateType),
@@ -446,9 +457,14 @@ export default async function templates(app: FastifyInstance) {
               name: Type.String(),
               type: Type.String(),
             }),
+            {
+              description:
+                "List of the variables that are needed to be filled to create a message using this template",
+            },
           ),
         }),
         response: {
+          200: Type.Null(),
           "4xx": HttpError,
           "5xx": HttpError,
         },
@@ -533,14 +549,17 @@ export default async function templates(app: FastifyInstance) {
       }
     },
   );
+
   app.delete<GetTemplate>(
     "/:templateId",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Template.Delete]),
       schema: {
+        description: "Deletes the requested template",
         tags,
         response: {
+          200: Type.Null(),
           "4xx": HttpError,
           "5xx": HttpError,
         },

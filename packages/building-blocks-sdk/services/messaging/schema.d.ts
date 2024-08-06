@@ -716,9 +716,9 @@ export interface paths {
                  */
                 id: string;
                 contents: {
-                  /** @description Language for the selected content */
+                  /** @description Selected language */
                   lang: string;
-                  /** @description Template name for the selected content */
+                  /** @description Template name for the related language */
                   templateName: string;
                 }[];
               }[];
@@ -784,18 +784,26 @@ export interface paths {
         };
       };
     };
+    /** @description Creates a new template */
     post: {
       requestBody: {
         content: {
           "application/json": {
             contents: {
+              /** @description Template name for the related language */
               templateName: string;
+              /** @description Current language */
               lang: string;
+              /** @description Subject of the template */
               subject: string;
+              /** @description Brief description of the template content */
               excerpt: string;
+              /** @description Plain text version of the template */
               plainText: string;
+              /** @description Rich text version of the template */
               richText: string;
             }[];
+            /** @description List of the variables that are needed to be filled to create a message using this template */
             variables: {
               name: string;
               type: string;
@@ -810,7 +818,10 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the created message
+                 */
                 id: string;
               };
             };
@@ -852,6 +863,7 @@ export interface paths {
     };
   };
   "/api/v1/templates/{templateId}": {
+    /** @description Returns the requested template */
     get: {
       parameters: {
         path: {
@@ -865,12 +877,18 @@ export interface paths {
             "application/json": {
               data: {
                 contents: {
+                  /** @description Template name for the related language */
                   templateName: string;
-                  subject: string;
-                  excerpt: string;
-                  plainText: string;
-                  richText: string;
+                  /** @description Current language */
                   lang: string;
+                  /** @description Subject of the template */
+                  subject: string;
+                  /** @description Brief description of the template content */
+                  excerpt: string;
+                  /** @description Plain text version of the template */
+                  plainText: string;
+                  /** @description Rich text version of the template */
+                  richText: string;
                 }[];
                 fields: {
                   fieldName: string;
@@ -939,6 +957,7 @@ export interface paths {
         };
       };
     };
+    /** @description Updates the requested template */
     put: {
       parameters: {
         path: {
@@ -949,15 +968,25 @@ export interface paths {
         content: {
           "application/json": {
             contents: {
-              /** Format: uuid */
+              /**
+               * Format: uuid
+               * @description Unique id of the template
+               */
               id: string;
+              /** @description Template name for the related language */
               templateName: string;
+              /** @description Current language */
               lang: string;
+              /** @description Subject of the template */
               subject: string;
+              /** @description Brief description of the template content */
               excerpt: string;
+              /** @description Plain text version of the template */
               plainText: string;
+              /** @description Rich text version of the template */
               richText: string;
             }[];
+            /** @description List of the variables that are needed to be filled to create a message using this template */
             variables: {
               name: string;
               type: string;
@@ -966,6 +995,10 @@ export interface paths {
         };
       };
       responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
         /** @description Default Response */
         "4XX": {
           content: {
@@ -1000,6 +1033,7 @@ export interface paths {
         };
       };
     };
+    /** @description Deletes the requested template */
     delete: {
       parameters: {
         path: {
@@ -1007,6 +1041,10 @@ export interface paths {
         };
       };
       responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
         /** @description Default Response */
         "4XX": {
           content: {
