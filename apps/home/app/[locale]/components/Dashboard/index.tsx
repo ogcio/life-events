@@ -86,7 +86,6 @@ export default async function ({ locale, userRoles }: Props) {
 
   return (
     <>
-      <div className="govie-width-container" style={{ width: "100%" }}></div>
       <div className="govie-width-container" style={{ width: "100%" }}>
         <h1 className="govie-heading-l">{t("title")}</h1>
         <p className="govie-body">{t("description")}</p>
