@@ -8,106 +8,10 @@ import payments from "../../../../public/landingPage/payments.png";
 import messaging from "../../../../public/landingPage/messaging.png";
 import designSystem from "../../../../public/landingPage/designSystem.png";
 import forms from "../../../../public/landingPage/forms.png";
-import {
-  envDevelopment,
-  envProduction,
-  envStaging,
-  envUAT,
-} from "../../../../constants";
-
-const getLinks = (environment: string, locale: string) => {
-  locale = locale || "en";
-  switch (environment) {
-    case envDevelopment:
-      return {
-        learnMoreForm: new URL(
-          `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.forms.uat.gov.ie/",
-        ),
-        paymentsUrl: new URL(
-          `${locale}/info`,
-          "https://payments.dev.blocks.gov.ie/",
-        ),
-        formsUrl: new URL(locale, "https://forms.dev.blocks.gov.ie/"),
-        messagingUrl: new URL(
-          `${locale}/info`,
-          "https://messaging.dev.blocks.gov.ie",
-        ),
-        designSystemUrl: new URL("/", "https://ds.dev.blocks.gov.ie"),
-        feedbackLink: new URL(
-          `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.forms.uat.gov.ie",
-        ),
-      };
-
-    case envStaging:
-      return {
-        learnMoreForm: new URL(
-          `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.forms.uat.gov.ie/",
-        ),
-        paymentsUrl: new URL(
-          `${locale}/info`,
-          "https://payments.sta.blocks.gov.ie",
-        ),
-        formsUrl: new URL(locale, "https://forms.sta.blocks.gov.ie"),
-        messagingUrl: new URL(
-          `${locale}/info`,
-          "https://messaging.sta.blocks.gov.ie",
-        ),
-        designSystemUrl: new URL("/", "https://ds.sta.blocks.gov.ie"),
-        feedbackLink: new URL(
-          `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.forms.uat.gov.ie",
-        ),
-      };
-
-    case envUAT:
-      return {
-        learnMoreForm: new URL(
-          `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.forms.uat.gov.ie/",
-        ),
-        paymentsUrl: new URL(
-          `${locale}/info`,
-          "https://payments.uat.blocks.gov.ie",
-        ),
-        formsUrl: new URL(locale, "https://forms.uat.blocks.gov.ie"),
-        messagingUrl: new URL(
-          `${locale}/info`,
-          "https://messaging.uat.blocks.gov.ie",
-        ),
-        designSystemUrl: new URL("/", "https://ds.uat.blocks.gov.ie"),
-        feedbackLink: new URL(
-          `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.forms.uat.gov.ie",
-        ),
-      };
-
-    case envProduction:
-    default:
-      return {
-        learnMoreForm: new URL(
-          `${locale}/664ccbf2b644d000246cfd78`,
-          "https://www.forms.gov.ie",
-        ),
-        paymentsUrl: new URL(
-          `${locale}/info`,
-          "https://payments.blocks.gov.ie",
-        ),
-        formsUrl: new URL(locale, "https://forms.blocks.gov.ie"),
-        messagingUrl: new URL(
-          `${locale}/info`,
-          "https://messaging.blocks.gov.ie",
-        ),
-        designSystemUrl: new URL("/", "https://ds.blocks.gov.ie"),
-        feedbackLink: new URL(
-          `${locale}/664ccbdb0700c50024c53899`,
-          "https://www.forms.gov.ie",
-        ),
-      };
-  }
-};
+import { getLinks } from "../../../../utils/index";
+import Header from "../Header/Header";
+import Banner from "../Banner";
+import Footer from "../Footer/Footer";
 
 type Props = {
   locale: string;
@@ -121,6 +25,21 @@ export default async ({ locale }: Props) => {
 
   return (
     <>
+      <Header locale={locale} />
+
+      <div className="govie-width-container" style={{ width: "100%" }}>
+        <Banner
+          tag={t("AlphaBanner.tag")}
+          text={t.rich("AlphaBanner.bannerText", {
+            url: (chunks) => (
+              <a className="govie-link" href={links.feedbackLink.href}>
+                {chunks}
+              </a>
+            ),
+          })}
+        />
+      </div>
+
       <div className="govie-width-container">
         <hr className="govie-section-break  govie-section-break--m" />
 
@@ -363,6 +282,7 @@ export default async ({ locale }: Props) => {
       </div>
 
       <hr className="govie-section-break govie-section-break govie-section-break--l" />
+      <Footer />
     </>
   );
 };
