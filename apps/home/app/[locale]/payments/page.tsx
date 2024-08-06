@@ -1,8 +1,6 @@
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
 import "./page.scss";
-import Header from "./Header";
-import Footer from "./Footer";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import hero from "../../../public/paymentsLandingPage/hero.png";
@@ -26,25 +24,7 @@ export default async (props: Props) => {
 
   return (
     <>
-      <Header locale={props.params.locale} />
       <div className="govie-width-container">
-        <div className="govie-phase-banner">
-          <p className="govie-phase-banner__content">
-            <strong className="govie-tag govie-phase-banner__content__tag">
-              {t("AlphaBanner.tag")}
-            </strong>
-            <span className="govie-phase-banner__text">
-              {t.rich("AlphaBanner.bannerText", {
-                anchor: (chunks) => (
-                  <a className="govie-link" href={links.feedbackLink.href}>
-                    {chunks}
-                  </a>
-                ),
-              })}
-            </span>
-          </p>
-        </div>
-
         <hr className="govie-section-break  govie-section-break--m" />
 
         <div className="two-columns-layout">
@@ -186,8 +166,6 @@ export default async (props: Props) => {
       </div>
 
       <hr className="govie-section-break govie-section-break--xl" />
-
-      <Footer />
     </>
   );
 };
