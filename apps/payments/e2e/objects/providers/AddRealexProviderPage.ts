@@ -1,18 +1,18 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import {
   providersUrl,
-  StripeValidationError,
+  RealexValidationError,
   providerValidationErrorTexts,
 } from "../../utils/constants";
 import {
-  mockStripePublishableKey,
-  mockStripeSecretKey,
+  mockRealexMerchantId,
+  mockRealexSharedSecret,
 } from "../../utils/mocks";
 
-export class AddStripeProviderPage {
+export class AddRealexProviderPage {
   private readonly nameInput: Locator;
-  private readonly publishableKey: Locator;
-  private readonly secretKey: Locator;
+  private readonly merchantId: Locator;
+  private readonly sharedSecret: Locator;
   private readonly confirmButton: Locator;
 
   constructor(public readonly page: Page) {
@@ -20,36 +20,36 @@ export class AddStripeProviderPage {
       name: "Name",
       exact: true,
     });
-    this.publishableKey = this.page.getByRole("textbox", {
-      name: "Live Publishable Key",
+    this.merchantId = this.page.getByRole("textbox", {
+      name: "Merchant Id",
     });
-    this.secretKey = this.page.getByRole("textbox", {
-      name: "Live Secret Key",
+    this.sharedSecret = this.page.getByRole("textbox", {
+      name: "Shared secret",
     });
     this.confirmButton = this.page.getByRole("button", { name: "Confirm" });
   }
 
   async goto() {
-    await this.page.goto(`${providersUrl}/add-stripe`);
+    await this.page.goto(`${providersUrl}/add-realex`);
   }
 
   async enterName(name: string) {
     await this.nameInput.fill(name);
   }
 
-  async enterPublishableKey(key: string) {
-    await this.publishableKey.fill(key);
+  async enterMerchantId(id: string) {
+    await this.merchantId.fill(id);
   }
 
-  async enterSecretKey(key: string) {
-    await this.secretKey.fill(key);
+  async enterSharedSecret(key: string) {
+    await this.sharedSecret.fill(key);
   }
 
   async submitProviderCreation() {
     await this.confirmButton.click();
   }
 
-  async expectValidationError(expectedError: StripeValidationError) {
+  async expectValidationError(expectedError: RealexValidationError) {
     const errorMessage = await this.page.getByText(
       providerValidationErrorTexts[expectedError],
     );
@@ -58,8 +58,8 @@ export class AddStripeProviderPage {
 
   async create(name: string) {
     await this.enterName(name);
-    await this.enterPublishableKey(mockStripePublishableKey);
-    await this.enterSecretKey(mockStripeSecretKey);
+    await this.enterMerchantId(mockRealexMerchantId);
+    await this.enterSharedSecret(mockRealexSharedSecret);
     await this.submitProviderCreation();
 
     await this.page.waitForURL(providersUrl);

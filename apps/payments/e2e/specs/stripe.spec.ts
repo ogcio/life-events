@@ -1,4 +1,4 @@
-import { Page, expect } from "@playwright/test";
+import { Page } from "@playwright/test";
 import { test } from "../fixtures/test";
 import { mockStripePublishableKey, mockStripeSecretKey } from "../utils/mocks";
 import { paymentSetupUrl } from "../utils/constants";
