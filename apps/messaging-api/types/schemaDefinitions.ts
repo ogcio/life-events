@@ -114,8 +114,16 @@ export const PaginationParamsSchema = Type.Object({
 export type PaginationParams = Static<typeof PaginationParamsSchema>;
 
 export const IdParamsSchema = Type.Object({
-  recipientUserId: Type.Optional(Type.String()),
-  organisationId: Type.Optional(Type.String()),
+  recipientUserId: Type.Optional(
+    Type.String({
+      description: "Either recipientUserId and organisationId are mandatory",
+    }),
+  ),
+  organisationId: Type.Optional(
+    Type.String({
+      description: "Either recipientUserId and organisationId are mandatory",
+    }),
+  ),
 });
 
 export const PaginationLinkSchema = Type.Object({

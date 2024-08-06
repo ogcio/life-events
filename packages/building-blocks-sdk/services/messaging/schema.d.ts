@@ -9,7 +9,9 @@ export interface paths {
       parameters: {
         query?: {
           status?: "delivered";
+          /** @description Either recipientUserId and organisationId are mandatory */
           recipientUserId?: string;
+          /** @description Either recipientUserId and organisationId are mandatory */
           organisationId?: string;
           offset?: number;
           limit?: number;
