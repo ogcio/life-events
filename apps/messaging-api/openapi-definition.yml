@@ -39,6 +39,8 @@ paths:
           in: query
           name: offset
           required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
         - schema:
             default: 20
             minimum: 1
@@ -47,6 +49,8 @@ paths:
           in: query
           name: limit
           required: false
+          description: Indicates the maximum number of items that will be returned in a
+            single request
       responses:
         "200":
           description: Default Response
@@ -572,6 +576,8 @@ paths:
           in: query
           name: offset
           required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
         - schema:
             default: 20
             minimum: 1
@@ -580,6 +586,8 @@ paths:
           in: query
           name: limit
           required: false
+          description: Indicates the maximum number of items that will be returned in a
+            single request
       responses:
         "200":
           description: Default Response
@@ -3279,6 +3287,7 @@ paths:
     get:
       tags: &a5
         - User Imports
+      description: Retrieves the user import batches related to the current organisation
       responses:
         "200":
           description: Default Response
@@ -3371,8 +3380,9 @@ paths:
                   - data
     post:
       tags: *a5
-      description: If 'Content-Type' header contains 'multipart/form-data' it accepts
-        a CSV file, otherwise an array of users to import
+      description: Imports a new batch of users. If 'Content-Type' header contains
+        'multipart/form-data' it accepts a CSV file, otherwise an array of users
+        to import
       requestBody:
         content:
           multipart/form-data: &a6
@@ -3562,6 +3572,7 @@ paths:
   /api/v1/user-imports/{importId}:
     get:
       tags: *a5
+      description: Retrieves the requested user import batch
       parameters:
         - schema:
             default: true
@@ -3569,6 +3580,7 @@ paths:
           in: query
           name: includeImportedData
           required: true
+          description: If true, it returns the data of the user sent in the import batch
         - schema:
             format: uuid
             type: string
@@ -3880,14 +3892,17 @@ paths:
   /api/v1/user-imports/template-download:
     get:
       tags: *a5
-      description: it will return a string containing the template with the csv that
-        will be used to import users
+      description: Returns a string containing the template with the csv that will be
+        used to import users
       responses:
         "200":
-          description: Default Response
+          description: The header and one example line for the CSV template that must be
+            used to import users
           content:
             text/csv:
               schema:
+                description: The header and one example line for the CSV template that must be
+                  used to import users
                 type: string
   /api/v1/users/:
     get:
@@ -3899,26 +3914,36 @@ paths:
           in: query
           name: organisationId
           required: false
+          description: If set, the endpoint returns the users whom have an accepted
+            relation with the organisation id
         - schema:
             type: string
           in: query
           name: search
           required: false
+          description: If set, the endpoint searches for users whom contain this value in
+            either the name, the surname, or the email address
         - schema:
             type: string
           in: query
           name: transports
           required: false
+          description: If set, it must contain a list of transports divided by ',' and the
+            endpoint searches for users whom have selected at least one of them
+            as preferred for the organisation
         - schema:
             type: string
           in: query
           name: importId
           required: false
+          description: If set, the endpoint returns the users whom have imported by that
+            specific batch
         - schema:
             type: boolean
           in: query
           name: activeOnly
           required: false
+          description: If true, the endpoint returns active only users
         - schema:
             default: 0
             minimum: 0
@@ -3926,6 +3951,8 @@ paths:
           in: query
           name: offset
           required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
         - schema:
             default: 20
             minimum: 1
@@ -3934,6 +3961,8 @@ paths:
           in: query
           name: limit
           required: false
+          description: Indicates the maximum number of items that will be returned in a
+            single request
       responses:
         "200":
           description: Default Response
@@ -4276,12 +4305,14 @@ paths:
   /api/v1/users/{userId}:
     get:
       tags: *a7
+      description: Returns the requested user
       parameters:
         - schema:
             type: boolean
           in: query
           name: activeOnly
           required: false
+          description: If true, the endpoint returns active only users
         - schema:
             type: string
           in: path
@@ -4644,6 +4675,8 @@ paths:
           in: query
           name: offset
           required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
         - schema:
             default: 20
             minimum: 1
@@ -4652,6 +4685,8 @@ paths:
           in: query
           name: limit
           required: false
+          description: Indicates the maximum number of items that will be returned in a
+            single request
       responses:
         "200":
           description: Default Response

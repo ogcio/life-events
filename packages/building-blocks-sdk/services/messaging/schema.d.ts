@@ -14,7 +14,9 @@ export interface paths {
           recipientUserId?: string;
           /** @description Either recipientUserId and organisationId are mandatory */
           organisationId?: string;
+          /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
           offset?: number;
+          /** @description Indicates the maximum number of items that will be returned in a single request */
           limit?: number;
         };
       };
@@ -312,7 +314,9 @@ export interface paths {
           primary?: boolean;
           /** @description Provider types that can be manipulated */
           type: "sms" | "email";
+          /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
           offset?: number;
+          /** @description Indicates the maximum number of items that will be returned in a single request */
           limit?: number;
         };
       };
@@ -1835,6 +1839,7 @@ export interface paths {
     };
   };
   "/api/v1/user-imports/": {
+    /** @description Retrieves the user import batches related to the current organisation */
     get: {
       responses: {
         /** @description Default Response */
@@ -1887,7 +1892,7 @@ export interface paths {
         };
       };
     };
-    /** @description If 'Content-Type' header contains 'multipart/form-data' it accepts a CSV file, otherwise an array of users to import */
+    /** @description Imports a new batch of users. If 'Content-Type' header contains 'multipart/form-data' it accepts a CSV file, otherwise an array of users to import */
     post: {
       requestBody?: {
         content: {
@@ -1946,9 +1951,11 @@ export interface paths {
     };
   };
   "/api/v1/user-imports/{importId}": {
+    /** @description Retrieves the requested user import batch */
     get: {
       parameters: {
         query: {
+          /** @description If true, it returns the data of the user sent in the import batch */
           includeImportedData: boolean;
         };
         path: {
@@ -2132,10 +2139,10 @@ export interface paths {
     };
   };
   "/api/v1/user-imports/template-download": {
-    /** @description it will return a string containing the template with the csv that will be used to import users */
+    /** @description Returns a string containing the template with the csv that will be used to import users */
     get: {
       responses: {
-        /** @description Default Response */
+        /** @description The header and one example line for the CSV template that must be used to import users */
         200: {
           content: {
             "text/csv": string;
@@ -2148,12 +2155,19 @@ export interface paths {
     get: {
       parameters: {
         query?: {
+          /** @description If set, the endpoint returns the users whom have an accepted relation with the organisation id */
           organisationId?: string;
+          /** @description If set, the endpoint searches for users whom contain this value in either the name, the surname, or the email address */
           search?: string;
+          /** @description If set, it must contain a list of transports divided by ',' and the endpoint searches for users whom have selected at least one of them as preferred for the organisation */
           transports?: string;
+          /** @description If set, the endpoint returns the users whom have imported by that specific batch */
           importId?: string;
+          /** @description If true, the endpoint returns active only users */
           activeOnly?: boolean;
+          /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
           offset?: number;
+          /** @description Indicates the maximum number of items that will be returned in a single request */
           limit?: number;
         };
       };
@@ -2359,9 +2373,11 @@ export interface paths {
     };
   };
   "/api/v1/users/{userId}": {
+    /** @description Returns the requested user */
     get: {
       parameters: {
         query?: {
+          /** @description If true, the endpoint returns active only users */
           activeOnly?: boolean;
         };
         path: {
@@ -2576,7 +2592,9 @@ export interface paths {
         query?: {
           /** @description If set, it filters the events for the messages containing the set value in subject */
           search?: string;
+          /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
           offset?: number;
+          /** @description Indicates the maximum number of items that will be returned in a single request */
           limit?: number;
         };
       };
