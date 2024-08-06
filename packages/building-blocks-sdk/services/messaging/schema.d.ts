@@ -80,7 +80,11 @@ export interface paths {
           "application/json": {
             preferredTransports: ("sms" | "email" | "lifeEvent")[];
             recipientUserId: string;
-            security: string;
+            /**
+             * @default public
+             * @enum {string}
+             */
+            security: "confidential" | "public";
             /** @default false */
             bypassConsent: boolean;
             /** Format: date-time */
@@ -165,7 +169,11 @@ export interface paths {
                 plainText: string;
                 richText: string;
                 isSeen: boolean;
-                security: string;
+                /**
+                 * @default public
+                 * @enum {string}
+                 */
+                security: "confidential" | "public";
               };
               metadata?: {
                 links?: {
@@ -2054,7 +2062,11 @@ export interface paths {
                       senderFullName: string;
                       senderPPSN: string;
                       organisationName: string;
-                      security: string;
+                      /**
+                       * @default public
+                       * @enum {string}
+                       */
+                      security: "confidential" | "public";
                       bypassConsent: boolean;
                     }
                   | {
