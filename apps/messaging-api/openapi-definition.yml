@@ -514,7 +514,7 @@ paths:
     get:
       tags: &a2
         - Providers
-      description: Returns the providers with the requested properties
+      description: Returns the providers matching the requested query
       parameters:
         - schema:
             type: boolean
@@ -1330,12 +1330,14 @@ paths:
     get:
       tags: &a3
         - Templates
+      description: Returns the providers matching the requested query
       parameters:
         - schema:
             type: string
           in: query
           name: lang
           required: false
+          description: If set, templates with the requested language are returned
       responses:
         "200":
           description: Default Response
@@ -1349,8 +1351,9 @@ paths:
                     items:
                       type: object
                       properties:
-                        templateMetaId:
+                        id:
                           format: uuid
+                          description: Unique id of the template
                           type: string
                         contents:
                           type: array
@@ -1358,14 +1361,16 @@ paths:
                             type: object
                             properties:
                               lang:
+                                description: Language for the selected content
                                 type: string
                               templateName:
+                                description: Template name for the selected content
                                 type: string
                             required:
                               - lang
                               - templateName
                       required:
-                        - templateMetaId
+                        - id
                         - contents
                   metadata:
                     type: object

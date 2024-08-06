@@ -87,9 +87,15 @@ export default async function templates(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Template.Read]),
       schema: {
+        description: "Returns the providers matching the requested query",
         querystring: Type.Optional(
           Type.Object({
-            lang: Type.Optional(Type.String()),
+            lang: Type.Optional(
+              Type.String({
+                description:
+                  "If set, templates with the requested language are returned",
+              }),
+            ),
           }),
         ),
         tags,
@@ -97,11 +103,18 @@ export default async function templates(app: FastifyInstance) {
           200: getGenericResponseSchema(
             Type.Array(
               Type.Object({
-                templateMetaId: Type.String({ format: "uuid" }),
+                id: Type.String({
+                  format: "uuid",
+                  description: "Unique id of the template",
+                }),
                 contents: Type.Array(
                   Type.Object({
-                    lang: Type.String(),
-                    templateName: Type.String(),
+                    lang: Type.String({
+                      description: "Language for the selected content",
+                    }),
+                    templateName: Type.String({
+                      description: "Template name for the selected content",
+                    }),
                   }),
                 ),
               }),
@@ -135,17 +148,17 @@ export default async function templates(app: FastifyInstance) {
       );
 
       const data: {
-        templateMetaId: string;
+        id: string;
         contents: { templateName: string; lang: string }[];
       }[] = [];
 
       for (const row of result.rows) {
         const content = { lang: row.lang, templateName: row.templateName };
         data
-          .find((item) => item.templateMetaId === row.templateMetaId)
+          .find((item) => item.id === row.templateMetaId)
           ?.contents.push(content) ||
           data.push({
-            templateMetaId: row.templateMetaId,
+            id: row.templateMetaId,
             contents: [content],
           });
       }

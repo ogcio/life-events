@@ -277,7 +277,7 @@ export interface paths {
     };
   };
   "/api/v1/providers/": {
-    /** @description Returns the providers with the requested properties */
+    /** @description Returns the providers matching the requested query */
     get: {
       parameters: {
         query: {
@@ -696,9 +696,11 @@ export interface paths {
     };
   };
   "/api/v1/templates/": {
+    /** @description Returns the providers matching the requested query */
     get: {
       parameters: {
         query?: {
+          /** @description If set, templates with the requested language are returned */
           lang?: string;
         };
       };
@@ -708,10 +710,15 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                templateMetaId: string;
+                /**
+                 * Format: uuid
+                 * @description Unique id of the template
+                 */
+                id: string;
                 contents: {
+                  /** @description Language for the selected content */
                   lang: string;
+                  /** @description Template name for the selected content */
                   templateName: string;
                 }[];
               }[];

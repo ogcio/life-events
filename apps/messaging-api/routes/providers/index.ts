@@ -58,7 +58,7 @@ export default async function providers(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Provider.Read]),
       schema: {
-        description: "Returns the providers with the requested properties",
+        description: "Returns the providers matching the requested query",
         tags,
         querystring: Type.Optional(
           Type.Composite(
