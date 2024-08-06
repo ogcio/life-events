@@ -176,6 +176,10 @@ paths:
                   type: string
                 security:
                   type: string
+                  enum:
+                    - confidential
+                    - public
+                  default: public
                 bypassConsent:
                   default: false
                   type: boolean
@@ -339,6 +343,10 @@ paths:
                         type: boolean
                       security:
                         type: string
+                        enum:
+                          - confidential
+                          - public
+                        default: public
                     required:
                       - subject
                       - createdAt
@@ -4220,6 +4228,10 @@ paths:
                                   type: string
                                 security:
                                   type: string
+                                  enum:
+                                    - confidential
+                                    - public
+                                  default: public
                                 bypassConsent:
                                   type: boolean
                               required:

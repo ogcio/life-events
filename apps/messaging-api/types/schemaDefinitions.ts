@@ -29,6 +29,12 @@ export const AllProvidersSchema = TypeboxStringEnum([
 ]);
 export type AllProviders = Static<typeof AllProvidersSchema>;
 
+export const SecurityLevelsSchema = TypeboxStringEnum(
+  ["confidential", "public"],
+  "public",
+);
+export type SecurityLevels = Static<typeof SecurityLevelsSchema>;
+
 export const MessageListItemSchema = Type.Object({
   id: Type.String(),
   subject: Type.String(),
@@ -50,7 +56,7 @@ export const ReadMessageSchema = Type.Object({
   plainText: Type.String(),
   richText: Type.String(),
   isSeen: Type.Boolean(),
-  security: Type.String(),
+  security: SecurityLevelsSchema,
 });
 export type ReadMessage = Static<typeof ReadMessageSchema>;
 
@@ -73,7 +79,7 @@ export type TemplateInput = Static<typeof TemplateInputSchema>;
 export const CreateMessageOptionsSchema = Type.Object({
   preferredTransports: Type.Array(AllProvidersSchema),
   userIds: Type.Array(Type.String()),
-  security: Type.String(),
+  security: SecurityLevelsSchema,
   scheduleAt: Type.String({ format: "date-time" }),
 });
 export type CreateMessageOptions = Static<typeof CreateMessageOptionsSchema>;
@@ -181,7 +187,7 @@ export const MessageEventSchema = Type.Array(
         senderFullName: Type.String(),
         senderPPSN: Type.String(),
         organisationName: Type.String(),
-        security: Type.String(),
+        security: SecurityLevelsSchema,
         bypassConsent: Type.Boolean(),
       }),
       // Schedule data
@@ -201,7 +207,7 @@ export const MessageEventSchema = Type.Array(
 export const MessageCreateSchema = Type.Object({
   preferredTransports: Type.Array(AllProvidersSchema),
   recipientUserId: Type.String(),
-  security: Type.String(),
+  security: SecurityLevelsSchema,
   bypassConsent: Type.Boolean({ default: false }),
   scheduleAt: Type.String({ format: "date-time" }),
   message: Type.Object({
