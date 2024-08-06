@@ -192,6 +192,7 @@ paths:
                       - sms
                       - email
                       - lifeEvent
+                    description: All the available provider types
                 recipientUserId:
                   description: Unique user id of the recipient
                   type: string
@@ -201,6 +202,7 @@ paths:
                     - confidential
                     - public
                   default: public
+                  description: Confidentiality level of the message
                 bypassConsent:
                   default: false
                   description: If true, the message will be sent even if the recipient didn't
@@ -402,6 +404,7 @@ paths:
                           - confidential
                           - public
                         default: public
+                        description: Confidentiality level of the message
                     required:
                       - subject
                       - createdAt
@@ -561,6 +564,7 @@ paths:
           in: query
           name: type
           required: true
+          description: Provider types that can be manipulated
         - schema:
             default: 0
             minimum: 0
@@ -607,6 +611,7 @@ paths:
                           enum:
                             - sms
                             - email
+                          description: Provider types that can be manipulated
                       required:
                         - id
                         - providerName
@@ -941,6 +946,7 @@ paths:
           in: query
           name: type
           required: true
+          description: Provider types that can be manipulated
         - schema:
             format: uuid
             type: string
@@ -2192,6 +2198,7 @@ paths:
     get:
       tags: &a4
         - Organisation Settings
+      description: Returns the organisation settings for the logged in user
       responses:
         "200":
           description: Default Response
@@ -2205,28 +2212,34 @@ paths:
                     items:
                       type: object
                       properties:
-                        organisationSettingId:
+                        id:
                           format: uuid
+                          description: Unique id of the organisation setting
                           type: string
                         userId:
                           format: uuid
+                          description: Unique id of the related user
                           type: string
                         userProfileId:
                           default: null
+                          description: User profile id, if available
                           anyOf:
                             - type: "null"
                             - type: string
                         phoneNumber:
                           default: null
+                          description: Phone number of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         emailAddress:
                           default: null
+                          description: Email address of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         organisationId:
+                          description: Unique id of the related organisation
                           type: string
                         organisationInvitationStatus:
                           type: string
@@ -2236,24 +2249,35 @@ paths:
                             - accepted
                             - declined
                           default: pending
+                          description: Current status of the invitation to the messaging building block
                         organisationInvitationSentAt:
+                          description: Date and time describing when the organisation invitation has been
+                            sent
                           type: string
                         organisationInvitationFeedbackAt:
+                          description: Date and time describing when the user has gave a feedback to the
+                            organisation invitation
                           type: string
                         organisationPreferredTransports:
+                          description: The list of the preferred transports to use. If the selected
+                            transports are not available for the recipient,
+                            others will be used
                           type: array
                           items:
                             type: string
                             enum:
                               - sms
                               - email
-                              - lifeEvent
+                            description: Provider types that can be manipulated
                         correlationQuality:
                           type: string
                           enum:
                             - full
                             - partial
                             - not_related
+                          description: If full, it means that the user is already on the Life Events
+                            platform, if partial the match has to be reviewed,
+                            if not_related the user does not exist
                         userStatus:
                           type: string
                           enum:
@@ -2267,26 +2291,31 @@ paths:
                           properties:
                             publicIdentityId:
                               default: null
+                              description: PPSN of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             firstName:
                               default: null
+                              description: First name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             lastName:
                               default: null
+                              description: Last name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             birthDate:
                               default: null
+                              description: Birth date of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             address:
                               default: null
+                              description: Address of the imported user
                               anyOf:
                                 - type: object
                                   properties:
@@ -2324,6 +2353,10 @@ paths:
                                 - type: "null"
                             collectedConsent:
                               default: false
+                              description: If false, an invitation to the user asking to accept to receive
+                                messages from the organisation will be sent. If
+                                true, it means that the organisation already
+                                asked the permissions to the user
                               type: boolean
                           required:
                             - publicIdentityId
@@ -2333,7 +2366,7 @@ paths:
                             - address
                             - collectedConsent
                       required:
-                        - organisationSettingId
+                        - id
                         - userId
                         - userProfileId
                         - phoneNumber
@@ -2513,6 +2546,7 @@ paths:
   /api/v1/organisation-settings/{organisationSettingId}:
     get:
       tags: *a4
+      description: Returns the requested organisation setting
       parameters:
         - schema:
             type: string
@@ -2530,28 +2564,34 @@ paths:
                   data:
                     type: object
                     properties:
-                      organisationSettingId:
+                      id:
                         format: uuid
+                        description: Unique id of the organisation setting
                         type: string
                       userId:
                         format: uuid
+                        description: Unique id of the related user
                         type: string
                       userProfileId:
                         default: null
+                        description: User profile id, if available
                         anyOf:
                           - type: "null"
                           - type: string
                       phoneNumber:
                         default: null
+                        description: Phone number of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       emailAddress:
                         default: null
+                        description: Email address of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       organisationId:
+                        description: Unique id of the related organisation
                         type: string
                       organisationInvitationStatus:
                         type: string
@@ -2561,24 +2601,35 @@ paths:
                           - accepted
                           - declined
                         default: pending
+                        description: Current status of the invitation to the messaging building block
                       organisationInvitationSentAt:
+                        description: Date and time describing when the organisation invitation has been
+                          sent
                         type: string
                       organisationInvitationFeedbackAt:
+                        description: Date and time describing when the user has gave a feedback to the
+                          organisation invitation
                         type: string
                       organisationPreferredTransports:
+                        description: The list of the preferred transports to use. If the selected
+                          transports are not available for the recipient, others
+                          will be used
                         type: array
                         items:
                           type: string
                           enum:
                             - sms
                             - email
-                            - lifeEvent
+                          description: Provider types that can be manipulated
                       correlationQuality:
                         type: string
                         enum:
                           - full
                           - partial
                           - not_related
+                        description: If full, it means that the user is already on the Life Events
+                          platform, if partial the match has to be reviewed, if
+                          not_related the user does not exist
                       userStatus:
                         type: string
                         enum:
@@ -2592,26 +2643,31 @@ paths:
                         properties:
                           publicIdentityId:
                             default: null
+                            description: PPSN of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           firstName:
                             default: null
+                            description: First name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           lastName:
                             default: null
+                            description: Last name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           birthDate:
                             default: null
+                            description: Birth date of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           address:
                             default: null
+                            description: Address of the imported user
                             anyOf:
                               - type: object
                                 properties:
@@ -2649,6 +2705,10 @@ paths:
                               - type: "null"
                           collectedConsent:
                             default: false
+                            description: If false, an invitation to the user asking to accept to receive
+                              messages from the organisation will be sent. If
+                              true, it means that the organisation already asked
+                              the permissions to the user
                             type: boolean
                         required:
                           - publicIdentityId
@@ -2658,7 +2718,7 @@ paths:
                           - address
                           - collectedConsent
                     required:
-                      - organisationSettingId
+                      - id
                       - userId
                       - userProfileId
                       - phoneNumber
@@ -2837,6 +2897,7 @@ paths:
                   - name
     patch:
       tags: *a4
+      description: Updates the requested organisation settings
       requestBody:
         content:
           application/json:
@@ -2849,10 +2910,19 @@ paths:
                     - accepted
                     - declined
                   default: accepted
+                  description: Current status of the invitation to receive messages from the
+                    organisation
                 preferredTransports:
+                  description: The list of the preferred transports to use. If the selected
+                    transports are not available for the recipient, others will
+                    be used
                   type: array
                   items:
                     type: string
+                    enum:
+                      - sms
+                      - email
+                    description: Provider types that can be manipulated
               required:
                 - invitationStatusFeedback
                 - preferredTransports
@@ -2874,28 +2944,34 @@ paths:
                   data:
                     type: object
                     properties:
-                      organisationSettingId:
+                      id:
                         format: uuid
+                        description: Unique id of the organisation setting
                         type: string
                       userId:
                         format: uuid
+                        description: Unique id of the related user
                         type: string
                       userProfileId:
                         default: null
+                        description: User profile id, if available
                         anyOf:
                           - type: "null"
                           - type: string
                       phoneNumber:
                         default: null
+                        description: Phone number of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       emailAddress:
                         default: null
+                        description: Email address of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       organisationId:
+                        description: Unique id of the related organisation
                         type: string
                       organisationInvitationStatus:
                         type: string
@@ -2905,24 +2981,35 @@ paths:
                           - accepted
                           - declined
                         default: pending
+                        description: Current status of the invitation to the messaging building block
                       organisationInvitationSentAt:
+                        description: Date and time describing when the organisation invitation has been
+                          sent
                         type: string
                       organisationInvitationFeedbackAt:
+                        description: Date and time describing when the user has gave a feedback to the
+                          organisation invitation
                         type: string
                       organisationPreferredTransports:
+                        description: The list of the preferred transports to use. If the selected
+                          transports are not available for the recipient, others
+                          will be used
                         type: array
                         items:
                           type: string
                           enum:
                             - sms
                             - email
-                            - lifeEvent
+                          description: Provider types that can be manipulated
                       correlationQuality:
                         type: string
                         enum:
                           - full
                           - partial
                           - not_related
+                        description: If full, it means that the user is already on the Life Events
+                          platform, if partial the match has to be reviewed, if
+                          not_related the user does not exist
                       userStatus:
                         type: string
                         enum:
@@ -2936,26 +3023,31 @@ paths:
                         properties:
                           publicIdentityId:
                             default: null
+                            description: PPSN of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           firstName:
                             default: null
+                            description: First name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           lastName:
                             default: null
+                            description: Last name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           birthDate:
                             default: null
+                            description: Birth date of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           address:
                             default: null
+                            description: Address of the imported user
                             anyOf:
                               - type: object
                                 properties:
@@ -2993,6 +3085,10 @@ paths:
                               - type: "null"
                           collectedConsent:
                             default: false
+                            description: If false, an invitation to the user asking to accept to receive
+                              messages from the organisation will be sent. If
+                              true, it means that the organisation already asked
+                              the permissions to the user
                             type: boolean
                         required:
                           - publicIdentityId
@@ -3002,7 +3098,7 @@ paths:
                           - address
                           - collectedConsent
                     required:
-                      - organisationSettingId
+                      - id
                       - userId
                       - userProfileId
                       - phoneNumber
@@ -3012,6 +3108,51 @@ paths:
                       - organisationPreferredTransports
                       - correlationQuality
                       - userStatus
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
                 required:
                   - data
         "400":
@@ -3162,6 +3303,7 @@ paths:
                             - api
                             - csv
                           default: api
+                          description: Channel through which the users have been imported
                         retryCount:
                           default: 0
                           type: integer
@@ -3241,69 +3383,92 @@ paths:
                     type: object
                     properties:
                       importIndex:
+                        description: Numeric index of the user to import. It must increments by one
+                          across users so to be able to notify which users'
+                          import failed
                         type: integer
                       publicIdentityId:
                         default: null
+                        description: PPSN of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       firstName:
                         default: null
+                        description: First name of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       lastName:
                         default: null
+                        description: Last name of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       phoneNumber:
                         default: null
+                        description: Phone number of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       birthDate:
                         default: null
+                        description: Birth date of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       emailAddress:
                         default: null
+                        description: Email address of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       addressCity:
                         default: null
+                        description: City of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       addressZipCode:
                         default: null
+                        description: Zip Code of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       addressStreet:
                         default: null
+                        description: Street of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       addressCountry:
                         default: null
+                        description: Country of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       addressRegion:
                         default: null
+                        description: Region of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       tags:
                         default: null
+                        description: Tags of the user to be imported. The tags can made by multiple
+                          levels, splitting each level by a '.' and listing
+                          multiple tags using a ';'
+                        examples:
+                          - region.county;role.job
                         anyOf:
                           - type: "null"
                           - type: string
                       collectedConsent:
-                        default: null
+                        default: false
+                        description: If false, an invitation to the user asking to accept to receive
+                          messages from the organisation will be sent. If true,
+                          it means that the organisation already asked the
+                          permissions to the user
                         anyOf:
                           - type: "null"
                           - type: string
@@ -3435,11 +3600,13 @@ paths:
                               type: integer
                             phoneNumber:
                               default: null
+                              description: Phone number of the user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             emailAddress:
                               default: null
+                              description: Email address of the user
                               anyOf:
                                 - type: "null"
                                 - type: string
@@ -3452,47 +3619,58 @@ paths:
                                 - error
                                 - missing_contacts
                               default: pending
+                              description: Result of the import for the user
                             importError:
                               default: null
+                              description: The error raised during the import, if set
                               anyOf:
                                 - type: "null"
                                 - type: string
                             relatedUserProfileId:
                               default: null
+                              description: Related user profile id from the Life Events building block, if
+                                available
                               anyOf:
                                 - type: "null"
                                 - type: string
                             relatedUserId:
                               default: null
+                              description: Related user id from the Messaging building block, if available
                               anyOf:
                                 - type: "null"
                                 - type: string
                             tags:
+                              description: Tags related to the user
                               type: array
                               items:
                                 type: string
                             publicIdentityId:
                               default: null
+                              description: PPSN of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             firstName:
                               default: null
+                              description: First name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             lastName:
                               default: null
+                              description: Last name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             birthDate:
                               default: null
+                              description: Birth date of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             address:
                               default: null
+                              description: Address of the imported user
                               anyOf:
                                 - type: object
                                   properties:
@@ -3530,6 +3708,10 @@ paths:
                                 - type: "null"
                             collectedConsent:
                               default: false
+                              description: If false, an invitation to the user asking to accept to receive
+                                messages from the organisation will be sent. If
+                                true, it means that the organisation already
+                                asked the permissions to the user
                               type: boolean
                           required:
                             - importIndex
@@ -3548,6 +3730,7 @@ paths:
                           - api
                           - csv
                         default: api
+                        description: Channel through which the users have been imported
                       retryCount:
                         default: 0
                         type: integer
@@ -3764,53 +3947,64 @@ paths:
                     items:
                       type: object
                       properties:
+                        organizationSettingId:
+                          format: uuid
+                          description: Unique id of the organisation setting
+                          type: string
                         firstName:
                           default: null
+                          description: First name of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         lastName:
                           default: null
+                          description: Last name of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         birthDate:
                           default: null
+                          description: Birth date of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         lang:
                           default: null
+                          description: Preferred language of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         ppsn:
                           default: null
+                          description: PPSN of the user
                           anyOf:
                             - type: "null"
                             - type: string
-                        organisationSettingId:
-                          format: uuid
-                          type: string
                         userId:
                           format: uuid
+                          description: Unique id of the related user
                           type: string
                         userProfileId:
                           default: null
+                          description: User profile id, if available
                           anyOf:
                             - type: "null"
                             - type: string
                         phoneNumber:
                           default: null
+                          description: Phone number of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         emailAddress:
                           default: null
+                          description: Email address of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         organisationId:
+                          description: Unique id of the related organisation
                           type: string
                         organisationInvitationStatus:
                           type: string
@@ -3820,24 +4014,35 @@ paths:
                             - accepted
                             - declined
                           default: pending
+                          description: Current status of the invitation to the messaging building block
                         organisationInvitationSentAt:
+                          description: Date and time describing when the organisation invitation has been
+                            sent
                           type: string
                         organisationInvitationFeedbackAt:
+                          description: Date and time describing when the user has gave a feedback to the
+                            organisation invitation
                           type: string
                         organisationPreferredTransports:
+                          description: The list of the preferred transports to use. If the selected
+                            transports are not available for the recipient,
+                            others will be used
                           type: array
                           items:
                             type: string
                             enum:
                               - sms
                               - email
-                              - lifeEvent
+                            description: Provider types that can be manipulated
                         correlationQuality:
                           type: string
                           enum:
                             - full
                             - partial
                             - not_related
+                          description: If full, it means that the user is already on the Life Events
+                            platform, if partial the match has to be reviewed,
+                            if not_related the user does not exist
                         userStatus:
                           type: string
                           enum:
@@ -3851,26 +4056,31 @@ paths:
                           properties:
                             publicIdentityId:
                               default: null
+                              description: PPSN of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             firstName:
                               default: null
+                              description: First name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             lastName:
                               default: null
+                              description: Last name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             birthDate:
                               default: null
+                              description: Birth date of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             address:
                               default: null
+                              description: Address of the imported user
                               anyOf:
                                 - type: object
                                   properties:
@@ -3908,6 +4118,10 @@ paths:
                                 - type: "null"
                             collectedConsent:
                               default: false
+                              description: If false, an invitation to the user asking to accept to receive
+                                messages from the organisation will be sent. If
+                                true, it means that the organisation already
+                                asked the permissions to the user
                               type: boolean
                           required:
                             - publicIdentityId
@@ -3917,12 +4131,12 @@ paths:
                             - address
                             - collectedConsent
                       required:
+                        - organizationSettingId
                         - firstName
                         - lastName
                         - birthDate
                         - lang
                         - ppsn
-                        - organisationSettingId
                         - userId
                         - userProfileId
                         - phoneNumber
@@ -4084,53 +4298,64 @@ paths:
                   data:
                     type: object
                     properties:
+                      organizationSettingId:
+                        format: uuid
+                        description: Unique id of the organisation setting
+                        type: string
                       firstName:
                         default: null
+                        description: First name of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       lastName:
                         default: null
+                        description: Last name of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       birthDate:
                         default: null
+                        description: Birth date of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       lang:
                         default: null
+                        description: Preferred language of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       ppsn:
                         default: null
+                        description: PPSN of the user
                         anyOf:
                           - type: "null"
                           - type: string
-                      organisationSettingId:
-                        format: uuid
-                        type: string
                       userId:
                         format: uuid
+                        description: Unique id of the related user
                         type: string
                       userProfileId:
                         default: null
+                        description: User profile id, if available
                         anyOf:
                           - type: "null"
                           - type: string
                       phoneNumber:
                         default: null
+                        description: Phone number of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       emailAddress:
                         default: null
+                        description: Email address of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       organisationId:
+                        description: Unique id of the related organisation
                         type: string
                       organisationInvitationStatus:
                         type: string
@@ -4140,24 +4365,35 @@ paths:
                           - accepted
                           - declined
                         default: pending
+                        description: Current status of the invitation to the messaging building block
                       organisationInvitationSentAt:
+                        description: Date and time describing when the organisation invitation has been
+                          sent
                         type: string
                       organisationInvitationFeedbackAt:
+                        description: Date and time describing when the user has gave a feedback to the
+                          organisation invitation
                         type: string
                       organisationPreferredTransports:
+                        description: The list of the preferred transports to use. If the selected
+                          transports are not available for the recipient, others
+                          will be used
                         type: array
                         items:
                           type: string
                           enum:
                             - sms
                             - email
-                            - lifeEvent
+                          description: Provider types that can be manipulated
                       correlationQuality:
                         type: string
                         enum:
                           - full
                           - partial
                           - not_related
+                        description: If full, it means that the user is already on the Life Events
+                          platform, if partial the match has to be reviewed, if
+                          not_related the user does not exist
                       userStatus:
                         type: string
                         enum:
@@ -4171,26 +4407,31 @@ paths:
                         properties:
                           publicIdentityId:
                             default: null
+                            description: PPSN of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           firstName:
                             default: null
+                            description: First name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           lastName:
                             default: null
+                            description: Last name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           birthDate:
                             default: null
+                            description: Birth date of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           address:
                             default: null
+                            description: Address of the imported user
                             anyOf:
                               - type: object
                                 properties:
@@ -4228,6 +4469,10 @@ paths:
                               - type: "null"
                           collectedConsent:
                             default: false
+                            description: If false, an invitation to the user asking to accept to receive
+                              messages from the organisation will be sent. If
+                              true, it means that the organisation already asked
+                              the permissions to the user
                             type: boolean
                         required:
                           - publicIdentityId
@@ -4237,12 +4482,12 @@ paths:
                           - address
                           - collectedConsent
                     required:
+                      - organizationSettingId
                       - firstName
                       - lastName
                       - birthDate
                       - lang
                       - ppsn
-                      - organisationSettingId
                       - userId
                       - userProfileId
                       - phoneNumber
@@ -4665,6 +4910,7 @@ paths:
                                     - confidential
                                     - public
                                   default: public
+                                  description: Confidentiality level of the message
                                 bypassConsent:
                                   description: If true, the message will be sent even if the recipient didn't
                                     accept the organisation's invitation

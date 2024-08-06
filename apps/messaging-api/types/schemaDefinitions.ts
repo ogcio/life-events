@@ -12,21 +12,27 @@ export const DEFAULT_LANGUAGE = "en";
 export const TypeboxStringEnum = <T extends string[]>(
   items: [...T],
   defaultValue?: string,
+  description?: string,
 ) =>
   Type.Unsafe<T[number]>({
     type: "string",
     enum: items,
     default: defaultValue,
+    description,
   });
 
-export const EditableProviderTypesSchema = TypeboxStringEnum(["sms", "email"]);
+export const EditableProviderTypesSchema = TypeboxStringEnum(
+  ["sms", "email"],
+  undefined,
+  "Provider types that can be manipulated",
+);
 export type EditableProviderTypes = Static<typeof EditableProviderTypesSchema>;
 
-export const AllProviderTypesSchema = TypeboxStringEnum([
-  "sms",
-  "email",
-  "lifeEvent",
-]);
+export const AllProviderTypesSchema = TypeboxStringEnum(
+  ["sms", "email", "lifeEvent"],
+  undefined,
+  "All the available provider types",
+);
 export type AllProviderTypes = Static<typeof AllProviderTypesSchema>;
 
 export const ConfidentialSecurity = "confidential";
@@ -34,6 +40,7 @@ export const PublicSecurity = "public";
 export const SecurityLevelsSchema = TypeboxStringEnum(
   [ConfidentialSecurity, PublicSecurity],
   PublicSecurity,
+  "Confidentiality level of the message",
 );
 export type SecurityLevels = Static<typeof SecurityLevelsSchema>;
 

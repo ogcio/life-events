@@ -98,6 +98,7 @@ export interface paths {
             /** @description Unique user id of the recipient */
             recipientUserId: string;
             /**
+             * @description Confidentiality level of the message
              * @default public
              * @enum {string}
              */
@@ -223,6 +224,7 @@ export interface paths {
                 /** @description True if the message has already been seen by the recipient */
                 isSeen: boolean;
                 /**
+                 * @description Confidentiality level of the message
                  * @default public
                  * @enum {string}
                  */
@@ -308,6 +310,7 @@ export interface paths {
         query: {
           /** @description If set, returns only the primary providers if true, otherwise the non-primary ones */
           primary?: boolean;
+          /** @description Provider types that can be manipulated */
           type: "sms" | "email";
           offset?: number;
           limit?: number;
@@ -328,7 +331,10 @@ export interface paths {
                 providerName: string;
                 /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                 isPrimary: boolean;
-                /** @enum {string} */
+                /**
+                 * @description Provider types that can be manipulated
+                 * @enum {string}
+                 */
                 type: "sms" | "email";
               }[];
               metadata?: {
@@ -509,6 +515,7 @@ export interface paths {
     get: {
       parameters: {
         query: {
+          /** @description Provider types that can be manipulated */
           type: "sms" | "email";
         };
         path: {
@@ -1206,6 +1213,7 @@ export interface paths {
     };
   };
   "/api/v1/organisation-settings/": {
+    /** @description Returns the organisation settings for the logged in user */
     get: {
       responses: {
         /** @description Default Response */
@@ -1213,18 +1221,35 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the organisation setting
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related user
+                 */
                 userId: string;
-                /** @default null */
+                /**
+                 * @description User profile id, if available
+                 * @default null
+                 */
                 userProfileId: null | string;
-                /** @default null */
+                /**
+                 * @description Phone number of the user
+                 * @default null
+                 */
                 phoneNumber: null | string;
-                /** @default null */
+                /**
+                 * @description Email address of the user
+                 * @default null
+                 */
                 emailAddress: null | string;
+                /** @description Unique id of the related organisation */
                 organisationId: string;
                 /**
+                 * @description Current status of the invitation to the messaging building block
                  * @default pending
                  * @enum {string}
                  */
@@ -1233,14 +1258,16 @@ export interface paths {
                   | "pending"
                   | "accepted"
                   | "declined";
+                /** @description Date and time describing when the organisation invitation has been sent */
                 organisationInvitationSentAt?: string;
+                /** @description Date and time describing when the user has gave a feedback to the organisation invitation */
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "sms"
-                  | "email"
-                  | "lifeEvent"
-                )[];
-                /** @enum {string} */
+                /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+                organisationPreferredTransports: ("sms" | "email")[];
+                /**
+                 * @description If full, it means that the user is already on the Life Events platform, if partial the match has to be reviewed, if not_related the user does not exist
+                 * @enum {string}
+                 */
                 correlationQuality: "full" | "partial" | "not_related";
                 /**
                  * @default pending
@@ -1248,15 +1275,30 @@ export interface paths {
                  */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -1269,7 +1311,10 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 };
               }[];
@@ -1368,6 +1413,7 @@ export interface paths {
     };
   };
   "/api/v1/organisation-settings/{organisationSettingId}": {
+    /** @description Returns the requested organisation setting */
     get: {
       parameters: {
         path: {
@@ -1380,18 +1426,35 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the organisation setting
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related user
+                 */
                 userId: string;
-                /** @default null */
+                /**
+                 * @description User profile id, if available
+                 * @default null
+                 */
                 userProfileId: null | string;
-                /** @default null */
+                /**
+                 * @description Phone number of the user
+                 * @default null
+                 */
                 phoneNumber: null | string;
-                /** @default null */
+                /**
+                 * @description Email address of the user
+                 * @default null
+                 */
                 emailAddress: null | string;
+                /** @description Unique id of the related organisation */
                 organisationId: string;
                 /**
+                 * @description Current status of the invitation to the messaging building block
                  * @default pending
                  * @enum {string}
                  */
@@ -1400,14 +1463,16 @@ export interface paths {
                   | "pending"
                   | "accepted"
                   | "declined";
+                /** @description Date and time describing when the organisation invitation has been sent */
                 organisationInvitationSentAt?: string;
+                /** @description Date and time describing when the user has gave a feedback to the organisation invitation */
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "sms"
-                  | "email"
-                  | "lifeEvent"
-                )[];
-                /** @enum {string} */
+                /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+                organisationPreferredTransports: ("sms" | "email")[];
+                /**
+                 * @description If full, it means that the user is already on the Life Events platform, if partial the match has to be reviewed, if not_related the user does not exist
+                 * @enum {string}
+                 */
                 correlationQuality: "full" | "partial" | "not_related";
                 /**
                  * @default pending
@@ -1415,15 +1480,30 @@ export interface paths {
                  */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -1436,7 +1516,10 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 };
               };
@@ -1533,6 +1616,7 @@ export interface paths {
         };
       };
     };
+    /** @description Updates the requested organisation settings */
     patch: {
       parameters: {
         path: {
@@ -1543,11 +1627,13 @@ export interface paths {
         content: {
           "application/json": {
             /**
+             * @description Current status of the invitation to receive messages from the organisation
              * @default accepted
              * @enum {string}
              */
             invitationStatusFeedback: "accepted" | "declined";
-            preferredTransports: string[];
+            /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+            preferredTransports: ("sms" | "email")[];
           };
         };
       };
@@ -1557,18 +1643,35 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the organisation setting
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related user
+                 */
                 userId: string;
-                /** @default null */
+                /**
+                 * @description User profile id, if available
+                 * @default null
+                 */
                 userProfileId: null | string;
-                /** @default null */
+                /**
+                 * @description Phone number of the user
+                 * @default null
+                 */
                 phoneNumber: null | string;
-                /** @default null */
+                /**
+                 * @description Email address of the user
+                 * @default null
+                 */
                 emailAddress: null | string;
+                /** @description Unique id of the related organisation */
                 organisationId: string;
                 /**
+                 * @description Current status of the invitation to the messaging building block
                  * @default pending
                  * @enum {string}
                  */
@@ -1577,14 +1680,16 @@ export interface paths {
                   | "pending"
                   | "accepted"
                   | "declined";
+                /** @description Date and time describing when the organisation invitation has been sent */
                 organisationInvitationSentAt?: string;
+                /** @description Date and time describing when the user has gave a feedback to the organisation invitation */
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "sms"
-                  | "email"
-                  | "lifeEvent"
-                )[];
-                /** @enum {string} */
+                /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+                organisationPreferredTransports: ("sms" | "email")[];
+                /**
+                 * @description If full, it means that the user is already on the Life Events platform, if partial the match has to be reviewed, if not_related the user does not exist
+                 * @enum {string}
+                 */
                 correlationQuality: "full" | "partial" | "not_related";
                 /**
                  * @default pending
@@ -1592,15 +1697,30 @@ export interface paths {
                  */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -1613,9 +1733,37 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 };
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
               };
             };
           };
@@ -1698,6 +1846,7 @@ export interface paths {
                 /** Format: date-time */
                 importedAt: string;
                 /**
+                 * @description Channel through which the users have been imported
                  * @default api
                  * @enum {string}
                  */
@@ -1817,11 +1966,18 @@ export interface paths {
                 importedAt: string;
                 usersData: {
                   importIndex: number;
-                  /** @default null */
+                  /**
+                   * @description Phone number of the user
+                   * @default null
+                   */
                   phoneNumber: null | string;
-                  /** @default null */
+                  /**
+                   * @description Email address of the user
+                   * @default null
+                   */
                   emailAddress: null | string;
                   /**
+                   * @description Result of the import for the user
                    * @default pending
                    * @enum {string}
                    */
@@ -1831,22 +1987,47 @@ export interface paths {
                     | "not_found"
                     | "error"
                     | "missing_contacts";
-                  /** @default null */
+                  /**
+                   * @description The error raised during the import, if set
+                   * @default null
+                   */
                   importError?: null | string;
-                  /** @default null */
+                  /**
+                   * @description Related user profile id from the Life Events building block, if available
+                   * @default null
+                   */
                   relatedUserProfileId?: null | string;
-                  /** @default null */
+                  /**
+                   * @description Related user id from the Messaging building block, if available
+                   * @default null
+                   */
                   relatedUserId?: null | string;
+                  /** @description Tags related to the user */
                   tags?: string[];
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -1859,10 +2040,14 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 }[];
                 /**
+                 * @description Channel through which the users have been imported
                  * @default api
                  * @enum {string}
                  */
@@ -1978,28 +2163,60 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** @default null */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the organisation setting
+                 */
+                organizationSettingId: string;
+                /**
+                 * @description First name of the user
+                 * @default null
+                 */
                 firstName: null | string;
-                /** @default null */
+                /**
+                 * @description Last name of the user
+                 * @default null
+                 */
                 lastName: null | string;
-                /** @default null */
+                /**
+                 * @description Birth date of the user
+                 * @default null
+                 */
                 birthDate: null | string;
-                /** @default null */
+                /**
+                 * @description Preferred language of the user
+                 * @default null
+                 */
                 lang: null | string;
-                /** @default null */
+                /**
+                 * @description PPSN of the user
+                 * @default null
+                 */
                 ppsn: null | string;
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related user
+                 */
                 userId: string;
-                /** @default null */
+                /**
+                 * @description User profile id, if available
+                 * @default null
+                 */
                 userProfileId: null | string;
-                /** @default null */
+                /**
+                 * @description Phone number of the user
+                 * @default null
+                 */
                 phoneNumber: null | string;
-                /** @default null */
+                /**
+                 * @description Email address of the user
+                 * @default null
+                 */
                 emailAddress: null | string;
+                /** @description Unique id of the related organisation */
                 organisationId: string;
                 /**
+                 * @description Current status of the invitation to the messaging building block
                  * @default pending
                  * @enum {string}
                  */
@@ -2008,14 +2225,16 @@ export interface paths {
                   | "pending"
                   | "accepted"
                   | "declined";
+                /** @description Date and time describing when the organisation invitation has been sent */
                 organisationInvitationSentAt?: string;
+                /** @description Date and time describing when the user has gave a feedback to the organisation invitation */
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "sms"
-                  | "email"
-                  | "lifeEvent"
-                )[];
-                /** @enum {string} */
+                /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+                organisationPreferredTransports: ("sms" | "email")[];
+                /**
+                 * @description If full, it means that the user is already on the Life Events platform, if partial the match has to be reviewed, if not_related the user does not exist
+                 * @enum {string}
+                 */
                 correlationQuality: "full" | "partial" | "not_related";
                 /**
                  * @default pending
@@ -2023,15 +2242,30 @@ export interface paths {
                  */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -2044,7 +2278,10 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 };
               }[];
@@ -2137,28 +2374,60 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** @default null */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the organisation setting
+                 */
+                organizationSettingId: string;
+                /**
+                 * @description First name of the user
+                 * @default null
+                 */
                 firstName: null | string;
-                /** @default null */
+                /**
+                 * @description Last name of the user
+                 * @default null
+                 */
                 lastName: null | string;
-                /** @default null */
+                /**
+                 * @description Birth date of the user
+                 * @default null
+                 */
                 birthDate: null | string;
-                /** @default null */
+                /**
+                 * @description Preferred language of the user
+                 * @default null
+                 */
                 lang: null | string;
-                /** @default null */
+                /**
+                 * @description PPSN of the user
+                 * @default null
+                 */
                 ppsn: null | string;
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related user
+                 */
                 userId: string;
-                /** @default null */
+                /**
+                 * @description User profile id, if available
+                 * @default null
+                 */
                 userProfileId: null | string;
-                /** @default null */
+                /**
+                 * @description Phone number of the user
+                 * @default null
+                 */
                 phoneNumber: null | string;
-                /** @default null */
+                /**
+                 * @description Email address of the user
+                 * @default null
+                 */
                 emailAddress: null | string;
+                /** @description Unique id of the related organisation */
                 organisationId: string;
                 /**
+                 * @description Current status of the invitation to the messaging building block
                  * @default pending
                  * @enum {string}
                  */
@@ -2167,14 +2436,16 @@ export interface paths {
                   | "pending"
                   | "accepted"
                   | "declined";
+                /** @description Date and time describing when the organisation invitation has been sent */
                 organisationInvitationSentAt?: string;
+                /** @description Date and time describing when the user has gave a feedback to the organisation invitation */
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "sms"
-                  | "email"
-                  | "lifeEvent"
-                )[];
-                /** @enum {string} */
+                /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+                organisationPreferredTransports: ("sms" | "email")[];
+                /**
+                 * @description If full, it means that the user is already on the Life Events platform, if partial the match has to be reviewed, if not_related the user does not exist
+                 * @enum {string}
+                 */
                 correlationQuality: "full" | "partial" | "not_related";
                 /**
                  * @default pending
@@ -2182,15 +2453,30 @@ export interface paths {
                  */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -2203,7 +2489,10 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 };
               };
@@ -2445,6 +2734,7 @@ export interface paths {
                       /** @description Organisation related to the sender */
                       organisationName: string;
                       /**
+                       * @description Confidentiality level of the message
                        * @default public
                        * @enum {string}
                        */
