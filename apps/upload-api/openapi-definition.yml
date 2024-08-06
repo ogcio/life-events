@@ -6,6 +6,11 @@ info:
 components:
   schemas: {}
 paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
   /api/v1/files/:
     post:
       tags:
@@ -306,10 +311,5 @@ paths:
                   - detail
                   - request_id
                   - name
-  /api/v1/health:
-    get:
-      responses:
-        "200":
-          description: Default Response
 tags:
   - name: FileUploadApi
