@@ -50,6 +50,7 @@ export const ReadMessageSchema = Type.Object({
   plainText: Type.String(),
   richText: Type.String(),
   isSeen: Type.Boolean(),
+  security: Type.String(),
 });
 export type ReadMessage = Static<typeof ReadMessageSchema>;
 

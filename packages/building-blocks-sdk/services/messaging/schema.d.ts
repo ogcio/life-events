@@ -165,6 +165,7 @@ export interface paths {
                 plainText: string;
                 richText: string;
                 isSeen: boolean;
+                security: string;
               };
               metadata?: {
                 links?: {

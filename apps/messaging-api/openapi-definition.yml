@@ -337,6 +337,8 @@ paths:
                         type: string
                       isSeen:
                         type: boolean
+                      security:
+                        type: string
                     required:
                       - subject
                       - createdAt
@@ -347,6 +349,7 @@ paths:
                       - plainText
                       - richText
                       - isSeen
+                      - security
                   metadata:
                     type: object
                     properties:

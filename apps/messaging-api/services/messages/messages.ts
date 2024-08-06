@@ -51,7 +51,8 @@ export const getMessage = async (params: {
             thread_name as "threadName",
             organisation_id as "organisationId",
             user_id as "recipientUserId",
-            is_seen as "isSeen"
+            is_seen as "isSeen",
+            security_level as "security"
         from messages
         where user_id = $1 and id=$2
         order by created_at desc
