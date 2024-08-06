@@ -123,6 +123,8 @@ export const PaginationParamsSchema = Type.Object({
     Type.Integer({
       default: PAGINATION_MIN_OFFSET,
       minimum: PAGINATION_MIN_OFFSET,
+      description:
+        "Indicates where to start fetching data or how many records to skip, defining the initial position within the list",
     }),
   ),
   limit: Type.Optional(
@@ -130,6 +132,8 @@ export const PaginationParamsSchema = Type.Object({
       default: PAGINATION_LIMIT_DEFAULT,
       minimum: PAGINATION_MIN_LIMIT,
       maximum: PAGINATION_MAX_LIMIT,
+      description:
+        "Indicates the maximum number of items that will be returned in a single request",
     }),
   ),
 });
