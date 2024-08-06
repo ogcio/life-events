@@ -10,6 +10,8 @@ paths:
     get:
       tags: &a1
         - Messages
+      description: Will return all the messages for the requested organisation or the
+        requested recipient
       parameters:
         - schema:
             type: string
@@ -59,16 +61,22 @@ paths:
                       type: object
                       properties:
                         id:
+                          description: Unique Id of the message
                           type: string
                         subject:
+                          description: Subject
                           type: string
                         createdAt:
+                          description: Creation date time
                           type: string
                         threadName:
+                          description: Thread Name used to group messages
                           type: string
                         organisationId:
+                          description: Organisation sender id
                           type: string
                         recipientUserId:
+                          description: Unique id of the recipient
                           type: string
                       required:
                         - id
@@ -326,22 +334,32 @@ paths:
                     type: object
                     properties:
                       subject:
+                        description: Subject. This is the only part that will be seen outside of the
+                          messaging platform is security is 'confidential'
                         type: string
                       createdAt:
+                        description: Creation date time
                         type: string
                       threadName:
+                        description: Thread Name used to group messages
                         type: string
                       organisationId:
+                        description: Organisation sender id
                         type: string
                       recipientUserId:
+                        description: Unique id of the recipient
                         type: string
                       excerpt:
+                        description: Brief description of the message
                         type: string
                       plainText:
+                        description: Plain text version of the message
                         type: string
                       richText:
+                        description: Rich text version of the message
                         type: string
                       isSeen:
+                        description: True if the message has already been seen by the recipient
                         type: boolean
                       security:
                         type: string

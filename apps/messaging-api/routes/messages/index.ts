@@ -45,6 +45,8 @@ export default async function messages(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.MessageSelf.Read]),
       schema: {
+        description:
+          "Will return all the messages for the requested organisation or the requested recipient",
         tags: MESSAGES_TAGS,
         querystring: Type.Optional(
           Type.Composite([

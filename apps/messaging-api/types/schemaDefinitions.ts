@@ -38,26 +38,35 @@ export const SecurityLevelsSchema = TypeboxStringEnum(
 export type SecurityLevels = Static<typeof SecurityLevelsSchema>;
 
 export const MessageListItemSchema = Type.Object({
-  id: Type.String(),
-  subject: Type.String(),
-  createdAt: Type.String(),
-  threadName: Type.String(),
-  organisationId: Type.String(),
-  recipientUserId: Type.String(),
+  id: Type.String({ description: "Unique Id of the message" }),
+  subject: Type.String({ description: "Subject" }),
+  createdAt: Type.String({ description: "Creation date time" }),
+  threadName: Type.String({
+    description: "Thread Name used to group messages",
+  }),
+  organisationId: Type.String({ description: "Organisation sender id" }),
+  recipientUserId: Type.String({ description: "Unique id of the recipient" }),
 });
 export const MessageListSchema = Type.Array(MessageListItemSchema);
 export type MessageList = Static<typeof MessageListSchema>;
 
 export const ReadMessageSchema = Type.Object({
-  subject: Type.String(),
-  createdAt: Type.String(),
-  threadName: Type.String(),
-  organisationId: Type.String(),
-  recipientUserId: Type.String(),
-  excerpt: Type.String(),
-  plainText: Type.String(),
-  richText: Type.String(),
-  isSeen: Type.Boolean(),
+  subject: Type.String({
+    description:
+      "Subject. This is the only part that will be seen outside of the messaging platform is security is 'confidential'",
+  }),
+  createdAt: Type.String({ description: "Creation date time" }),
+  threadName: Type.String({
+    description: "Thread Name used to group messages",
+  }),
+  organisationId: Type.String({ description: "Organisation sender id" }),
+  recipientUserId: Type.String({ description: "Unique id of the recipient" }),
+  excerpt: Type.String({ description: "Brief description of the message" }),
+  plainText: Type.String({ description: "Plain text version of the message" }),
+  richText: Type.String({ description: "Rich text version of the message" }),
+  isSeen: Type.Boolean({
+    description: "True if the message has already been seen by the recipient",
+  }),
   security: SecurityLevelsSchema,
 });
 export type ReadMessage = Static<typeof ReadMessageSchema>;
