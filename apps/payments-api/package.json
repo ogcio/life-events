@@ -14,7 +14,6 @@
   },
   "nodemonConfig": {
     "watch": [
-      "../../packages/auth/src/**/*",
       "../../packages/feature-flags/src/**/*",
       "../../packages/messages/src/**/*",
       "../../packages/api-auth/**/*",
@@ -39,7 +38,6 @@
     "@fastify/type-provider-typebox": "^4.0.0",
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.31",
-    "auth": "*",
     "api-auth": "*",
     "dotenv": "^16.4.5",
     "error-handler": "*",
