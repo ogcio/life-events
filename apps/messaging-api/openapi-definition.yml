@@ -140,14 +140,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -267,14 +273,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -301,14 +313,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -450,14 +468,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -484,14 +508,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -637,14 +667,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -671,14 +707,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -814,14 +856,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -848,14 +896,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1007,14 +1061,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1041,14 +1101,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1184,14 +1250,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1218,14 +1290,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1266,14 +1344,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1300,14 +1384,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1427,14 +1517,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1461,14 +1557,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1576,14 +1678,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1610,14 +1718,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1759,14 +1873,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1793,14 +1913,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1898,14 +2024,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1932,14 +2064,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1978,14 +2116,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2012,14 +2156,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2248,14 +2398,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2282,14 +2438,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2316,14 +2478,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2555,14 +2723,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2589,14 +2763,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2623,14 +2803,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2836,14 +3022,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2870,14 +3062,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2904,14 +3102,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3118,14 +3322,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3152,14 +3362,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3406,14 +3622,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3440,14 +3662,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3759,14 +3987,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3793,14 +4027,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4067,14 +4307,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4101,14 +4347,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4131,12 +4383,15 @@ paths:
     get:
       tags: &a8
         - Message events
+      description: Returns the message events that match the requested query
       parameters:
         - schema:
             type: string
           in: query
           name: search
           required: false
+          description: If set, it filters the events for the messages containing the set
+            value in subject
         - schema:
             default: 0
             minimum: 0
@@ -4167,19 +4422,26 @@ paths:
                       properties:
                         eventId:
                           format: uuid
+                          description: Unique id of the event
                           type: string
                         messageId:
                           format: uuid
+                          description: Unique id of the related message
                           type: string
                         subject:
+                          description: Subject of the related message
                           type: string
                         receiverFullName:
+                          description: Full name of the recipient
                           type: string
                         eventType:
+                          description: Event type description
                           type: string
                         eventStatus:
+                          description: Status for event type
                           type: string
                         scheduledAt:
+                          description: Date and time which describes when the message has to be sent
                           type: string
                       required:
                         - eventId
@@ -4244,14 +4506,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4278,14 +4546,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4307,6 +4581,7 @@ paths:
   /api/v1/message-events/{eventId}:
     get:
       tags: *a8
+      description: Returns the selected event id
       parameters:
         - schema:
             type: string
@@ -4326,46 +4601,63 @@ paths:
                     items:
                       type: object
                       properties:
-                        eventStatus:
-                          type: string
                         eventType:
+                          description: Event type description
+                          type: string
+                        eventStatus:
+                          description: Status for event type
                           type: string
                         data:
                           anyOf:
                             - type: object
                               properties:
                                 messageId:
+                                  description: Unique id of the related message
                                   type: string
                                 receiverFullName:
+                                  description: Full name of the recipient
                                   type: string
                                 receiverPPSN:
+                                  description: PPSN of the recipient
                                   type: string
                                 subject:
+                                  description: Subject of the related message
                                   type: string
                                 lang:
+                                  description: Language of the related message
                                   type: string
                                 excerpt:
+                                  description: Excerpt of the related message
                                   type: string
                                 richText:
+                                  description: Rich text content of the related message
                                   type: string
                                 plainText:
+                                  description: Plain text context of the related message
                                   type: string
                                 threadName:
+                                  description: Thread name of the related message
                                   type: string
                                 transports:
+                                  description: Selected transports to send the message
                                   type: array
                                   items:
                                     type: string
                                 scheduledAt:
                                   format: date-time
+                                  description: Date and time which describes when the message has to be sent
                                   type: string
                                 senderUserId:
+                                  description: Unique user id of the sender
                                   type: string
                                 senderFullName:
+                                  description: Full name of the sender
                                   type: string
                                 senderPPSN:
+                                  description: PPSN of the sender
                                   type: string
                                 organisationName:
+                                  description: Organisation related to the sender
                                   type: string
                                 security:
                                   type: string
@@ -4374,6 +4666,8 @@ paths:
                                     - public
                                   default: public
                                 bypassConsent:
+                                  description: If true, the message will be sent even if the recipient didn't
+                                    accept the organisation's invitation
                                   type: boolean
                               required:
                                 - messageId
@@ -4396,8 +4690,10 @@ paths:
                             - type: object
                               properties:
                                 messageId:
+                                  description: Unique id of the related message
                                   type: string
                                 jobId:
+                                  description: Unique id of the job
                                   type: string
                               required:
                                 - messageId
@@ -4405,15 +4701,17 @@ paths:
                             - type: object
                               properties:
                                 messageId:
+                                  description: Unique id of the related message
                                   type: string
                               required:
                                 - messageId
                         createdAt:
                           format: date-time
+                          description: Date and time which describes when the event has been recorded
                           type: string
                       required:
-                        - eventStatus
                         - eventType
+                        - eventStatus
                         - data
                         - createdAt
                 required:
@@ -4426,14 +4724,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4460,14 +4764,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4490,6 +4800,7 @@ paths:
     post:
       tags:
         - Jobs
+      description: Executes the requested job
       requestBody:
         content:
           application/json:
@@ -4497,6 +4808,8 @@ paths:
               type: object
               properties:
                 token:
+                  description: The security token used to ensure you are allowed to execute this
+                    job
                   type: string
               required:
                 - token
@@ -4518,14 +4831,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4552,14 +4871,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object

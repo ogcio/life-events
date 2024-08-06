@@ -69,10 +69,15 @@ export interface paths {
         400: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -143,10 +148,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -159,10 +169,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -245,10 +260,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -261,10 +281,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -338,10 +363,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -354,10 +384,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -428,10 +463,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -444,10 +484,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -525,10 +570,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -541,10 +591,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -617,10 +672,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -633,10 +693,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -664,10 +729,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -680,10 +750,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -754,10 +829,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -770,10 +850,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -831,10 +916,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -847,10 +937,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -927,10 +1022,15 @@ export interface paths {
         404: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -943,10 +1043,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1003,10 +1108,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1019,10 +1129,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1049,10 +1164,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1065,10 +1185,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1180,10 +1305,15 @@ export interface paths {
         400: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1196,10 +1326,15 @@ export interface paths {
         404: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1212,10 +1347,15 @@ export interface paths {
         500: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1332,10 +1472,15 @@ export interface paths {
         400: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1348,10 +1493,15 @@ export interface paths {
         404: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1364,10 +1514,15 @@ export interface paths {
         500: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1469,10 +1624,15 @@ export interface paths {
         400: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1485,10 +1645,15 @@ export interface paths {
         404: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1501,10 +1666,15 @@ export interface paths {
         500: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1585,10 +1755,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1601,10 +1776,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1725,10 +1905,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1741,10 +1926,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1890,10 +2080,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1906,10 +2101,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2039,10 +2239,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2055,10 +2260,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2071,9 +2281,11 @@ export interface paths {
     };
   };
   "/api/v1/message-events/": {
+    /** @description Returns the message events that match the requested query */
     get: {
       parameters: {
         query?: {
+          /** @description If set, it filters the events for the messages containing the set value in subject */
           search?: string;
           offset?: number;
           limit?: number;
@@ -2085,14 +2297,25 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the event
+                 */
                 eventId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related message
+                 */
                 messageId: string;
+                /** @description Subject of the related message */
                 subject: string;
+                /** @description Full name of the recipient */
                 receiverFullName: string;
+                /** @description Event type description */
                 eventType: string;
+                /** @description Status for event type */
                 eventStatus: string;
+                /** @description Date and time which describes when the message has to be sent */
                 scheduledAt: string;
               }[];
               metadata?: {
@@ -2127,10 +2350,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2143,10 +2371,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2159,6 +2392,7 @@ export interface paths {
     };
   };
   "/api/v1/message-events/{eventId}": {
+    /** @description Returns the selected event id */
     get: {
       parameters: {
         path: {
@@ -2171,41 +2405,67 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                eventStatus: string;
+                /** @description Event type description */
                 eventType: string;
+                /** @description Status for event type */
+                eventStatus: string;
                 data:
                   | {
+                      /** @description Unique id of the related message */
                       messageId: string;
+                      /** @description Full name of the recipient */
                       receiverFullName: string;
+                      /** @description PPSN of the recipient */
                       receiverPPSN: string;
+                      /** @description Subject of the related message */
                       subject: string;
+                      /** @description Language of the related message */
                       lang: string;
+                      /** @description Excerpt of the related message */
                       excerpt: string;
+                      /** @description Rich text content of the related message */
                       richText: string;
+                      /** @description Plain text context of the related message */
                       plainText: string;
+                      /** @description Thread name of the related message */
                       threadName: string;
+                      /** @description Selected transports to send the message */
                       transports: string[];
-                      /** Format: date-time */
+                      /**
+                       * Format: date-time
+                       * @description Date and time which describes when the message has to be sent
+                       */
                       scheduledAt: string;
+                      /** @description Unique user id of the sender */
                       senderUserId: string;
+                      /** @description Full name of the sender */
                       senderFullName: string;
+                      /** @description PPSN of the sender */
                       senderPPSN: string;
+                      /** @description Organisation related to the sender */
                       organisationName: string;
                       /**
                        * @default public
                        * @enum {string}
                        */
                       security: "confidential" | "public";
+                      /** @description If true, the message will be sent even if the recipient didn't accept the organisation's invitation */
                       bypassConsent: boolean;
                     }
                   | {
+                      /** @description Unique id of the related message */
                       messageId: string;
+                      /** @description Unique id of the job */
                       jobId: string;
                     }
                   | {
+                      /** @description Unique id of the related message */
                       messageId: string;
                     };
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Date and time which describes when the event has been recorded
+                 */
                 createdAt: string;
               }[];
             };
@@ -2215,10 +2475,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2231,10 +2496,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2247,6 +2517,7 @@ export interface paths {
     };
   };
   "/api/v1/jobs/{id}": {
+    /** @description Executes the requested job */
     post: {
       parameters: {
         path: {
@@ -2256,6 +2527,7 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
+            /** @description The security token used to ensure you are allowed to execute this job */
             token: string;
           };
         };
@@ -2269,10 +2541,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2285,10 +2562,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
