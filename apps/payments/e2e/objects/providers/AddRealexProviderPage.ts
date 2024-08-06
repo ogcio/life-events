@@ -1,7 +1,7 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import {
   providersUrl,
-  StripeValidationError,
+  RealexValidationError,
   validationErrorTexts,
 } from "../../utils/constants";
 import {
@@ -49,7 +49,7 @@ export class AddRealexProviderPage {
     await this.confirmButton.click();
   }
 
-  async expectValidationError(expectedError: StripeValidationError) {
+  async expectValidationError(expectedError: RealexValidationError) {
     const errorMessage = await this.page.getByText(
       validationErrorTexts[expectedError],
     );
