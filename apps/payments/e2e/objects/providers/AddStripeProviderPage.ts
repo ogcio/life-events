@@ -2,7 +2,7 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import {
   providersUrl,
   StripeValidationError,
-  validationErrorTexts,
+  providerValidationErrorTexts,
 } from "../../utils/constants";
 import {
   mockStripePublishableKey,
@@ -51,7 +51,7 @@ export class AddStripeProviderPage {
 
   async expectValidationError(expectedError: StripeValidationError) {
     const errorMessage = await this.page.getByText(
-      validationErrorTexts[expectedError],
+      providerValidationErrorTexts[expectedError],
     );
     await expect(errorMessage).toBeVisible();
   }

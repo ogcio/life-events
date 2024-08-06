@@ -2,7 +2,7 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import {
   BankTransferValidationError,
   providersUrl,
-  validationErrorTexts,
+  providerValidationErrorTexts,
 } from "../../utils/constants";
 import { mockAccountHolderName, mockIban } from "../../utils/mocks";
 
@@ -48,7 +48,7 @@ export class BaseBankTransferProviderPage {
 
   async expectValidationError(expectedError: BankTransferValidationError) {
     const errorMessage = await this.page.getByText(
-      validationErrorTexts[expectedError],
+      providerValidationErrorTexts[expectedError],
     );
     await expect(errorMessage).toBeVisible();
   }

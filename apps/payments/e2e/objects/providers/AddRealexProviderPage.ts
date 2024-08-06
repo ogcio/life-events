@@ -2,7 +2,7 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import {
   providersUrl,
   RealexValidationError,
-  validationErrorTexts,
+  providerValidationErrorTexts,
 } from "../../utils/constants";
 import {
   mockRealexMerchantId,
@@ -51,7 +51,7 @@ export class AddRealexProviderPage {
 
   async expectValidationError(expectedError: RealexValidationError) {
     const errorMessage = await this.page.getByText(
-      validationErrorTexts[expectedError],
+      providerValidationErrorTexts[expectedError],
     );
     await expect(errorMessage).toBeVisible();
   }
