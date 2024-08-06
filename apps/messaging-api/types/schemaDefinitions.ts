@@ -254,30 +254,54 @@ export const MessageCreateSchema = Type.Object({
 export type MessageCreateType = Static<typeof MessageCreateSchema>;
 
 export const ProviderListItemSchema = Type.Object({
-  id: Type.String({ format: "uuid" }),
-  providerName: Type.String(),
-  isPrimary: Type.Boolean(),
+  id: Type.String({ format: "uuid", description: "Unique id of the provider" }),
+  providerName: Type.String({ description: "Name of the provider" }),
+  isPrimary: Type.Boolean({
+    description:
+      "If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type",
+  }),
   type: EditableProviderTypesSchema,
 });
 
 export const ProviderListSchema = Type.Array(ProviderListItemSchema);
 
 export const EmailCreateSchema = Type.Object({
-  providerName: Type.String(),
-  isPrimary: Type.Boolean(),
+  providerName: Type.String({ description: "Name of the provider" }),
+  isPrimary: Type.Boolean({
+    description:
+      "If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type",
+  }),
   type: Type.Literal("email"),
-  smtpHost: Type.String(),
-  smtpPort: Type.Number(),
-  username: Type.String(),
-  password: Type.String(),
-  throttle: Type.Optional(Type.Number()),
-  fromAddress: Type.String(),
-  ssl: Type.Boolean(),
+  smtpHost: Type.String({
+    description: "Address of the SMTP host",
+  }),
+  smtpPort: Type.Number({
+    description: "Port of the SMTP host",
+  }),
+  username: Type.String({
+    description: "Username to use to log into the SMTP server",
+  }),
+  password: Type.String({
+    description: "Password to use to log into the SMTP server",
+  }),
+  throttle: Type.Optional(
+    Type.Number({
+      description:
+        "Optional field to adjust how long time between each mail, in miliseconds",
+    }),
+  ),
+  fromAddress: Type.String({ description: "Email address to use as sender" }),
+  ssl: Type.Boolean({
+    description: "Is connection to the SMTP server secure?",
+  }),
 });
 
 export const SmsCreateSchema = Type.Object({
-  providerName: Type.String(),
-  isPrimary: Type.Boolean(),
+  providerName: Type.String({ description: "Name of the provider" }),
+  isPrimary: Type.Boolean({
+    description:
+      "If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type",
+  }),
   type: Type.Literal("sms"),
   config: Type.Union([
     Type.Object({

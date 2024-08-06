@@ -470,6 +470,7 @@ export default async function providers(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Provider.Write]),
       schema: {
+        description: "Updates the requested provider",
         tags,
         params: {
           providerId: Type.String({ format: "uuid" }),
@@ -644,9 +645,13 @@ export default async function providers(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Provider.Delete]),
       schema: {
+        description: "Deletes the requested provider",
         tags,
         params: {
-          providerId: Type.String({ format: "uuid" }),
+          providerId: Type.String({
+            format: "uuid",
+            description: "Unique id of the provider to be deleted",
+          }),
         },
         response: {
           200: Type.Null(),

@@ -561,10 +561,16 @@ paths:
                       properties:
                         id:
                           format: uuid
+                          description: Unique id of the provider
                           type: string
                         providerName:
+                          description: Name of the provider
                           type: string
                         isPrimary:
+                          description: If true, the provider is set as primary for the selected type for
+                            the current organisation. Please note, each
+                            organisation can only have one primary provider for
+                            each type
                           type: boolean
                         type:
                           type: string
@@ -702,26 +708,38 @@ paths:
                 - type: object
                   properties:
                     providerName:
+                      description: Name of the provider
                       type: string
                     isPrimary:
+                      description: If true, the provider is set as primary for the selected type for
+                        the current organisation. Please note, each organisation
+                        can only have one primary provider for each type
                       type: boolean
                     type:
                       type: string
                       enum:
                         - email
                     smtpHost:
+                      description: Address of the SMTP host
                       type: string
                     smtpPort:
+                      description: Port of the SMTP host
                       type: number
                     username:
+                      description: Username to use to log into the SMTP server
                       type: string
                     password:
+                      description: Password to use to log into the SMTP server
                       type: string
                     throttle:
+                      description: Optional field to adjust how long time between each mail, in
+                        miliseconds
                       type: number
                     fromAddress:
+                      description: Email address to use as sender
                       type: string
                     ssl:
+                      description: Is connection to the SMTP server secure?
                       type: boolean
                   required:
                     - providerName
@@ -736,8 +754,12 @@ paths:
                 - type: object
                   properties:
                     providerName:
+                      description: Name of the provider
                       type: string
                     isPrimary:
+                      description: If true, the provider is set as primary for the selected type for
+                        the current organisation. Please note, each organisation
+                        can only have one primary provider for each type
                       type: boolean
                     type:
                       type: string
@@ -888,26 +910,39 @@ paths:
                             format: uuid
                             type: string
                           providerName:
+                            description: Name of the provider
                             type: string
                           isPrimary:
+                            description: If true, the provider is set as primary for the selected type for
+                              the current organisation. Please note, each
+                              organisation can only have one primary provider
+                              for each type
                             type: boolean
                           type:
                             type: string
                             enum:
                               - email
                           smtpHost:
+                            description: Address of the SMTP host
                             type: string
                           smtpPort:
+                            description: Port of the SMTP host
                             type: number
                           username:
+                            description: Username to use to log into the SMTP server
                             type: string
                           password:
+                            description: Password to use to log into the SMTP server
                             type: string
                           throttle:
+                            description: Optional field to adjust how long time between each mail, in
+                              miliseconds
                             type: number
                           fromAddress:
+                            description: Email address to use as sender
                             type: string
                           ssl:
+                            description: Is connection to the SMTP server secure?
                             type: boolean
                         required:
                           - id
@@ -926,8 +961,13 @@ paths:
                             format: uuid
                             type: string
                           providerName:
+                            description: Name of the provider
                             type: string
                           isPrimary:
+                            description: If true, the provider is set as primary for the selected type for
+                              the current organisation. Please note, each
+                              organisation can only have one primary provider
+                              for each type
                             type: boolean
                           type:
                             type: string
@@ -1029,6 +1069,7 @@ paths:
                   - name
     put:
       tags: *a2
+      description: Updates the requested provider
       requestBody:
         content:
           application/json:
@@ -1040,26 +1081,38 @@ paths:
                       format: uuid
                       type: string
                     providerName:
+                      description: Name of the provider
                       type: string
                     isPrimary:
+                      description: If true, the provider is set as primary for the selected type for
+                        the current organisation. Please note, each organisation
+                        can only have one primary provider for each type
                       type: boolean
                     type:
                       type: string
                       enum:
                         - email
                     smtpHost:
+                      description: Address of the SMTP host
                       type: string
                     smtpPort:
+                      description: Port of the SMTP host
                       type: number
                     username:
+                      description: Username to use to log into the SMTP server
                       type: string
                     password:
+                      description: Password to use to log into the SMTP server
                       type: string
                     throttle:
+                      description: Optional field to adjust how long time between each mail, in
+                        miliseconds
                       type: number
                     fromAddress:
+                      description: Email address to use as sender
                       type: string
                     ssl:
+                      description: Is connection to the SMTP server secure?
                       type: boolean
                   required:
                     - id
@@ -1078,8 +1131,12 @@ paths:
                       format: uuid
                       type: string
                     providerName:
+                      description: Name of the provider
                       type: string
                     isPrimary:
+                      description: If true, the provider is set as primary for the selected type for
+                        the current organisation. Please note, each organisation
+                        can only have one primary provider for each type
                       type: boolean
                     type:
                       type: string
@@ -1189,6 +1246,7 @@ paths:
                   - name
     delete:
       tags: *a2
+      description: Deletes the requested provider
       parameters:
         - schema:
             format: uuid
@@ -1196,6 +1254,7 @@ paths:
           in: path
           name: providerId
           required: true
+          description: Unique id of the provider to be deleted
       responses:
         "200":
           description: Default Response

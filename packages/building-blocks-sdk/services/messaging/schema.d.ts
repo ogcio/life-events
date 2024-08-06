@@ -294,9 +294,14 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the provider
+                 */
                 id: string;
+                /** @description Name of the provider */
                 providerName: string;
+                /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                 isPrimary: boolean;
                 /** @enum {string} */
                 type: "sms" | "email";
@@ -369,20 +374,31 @@ export interface paths {
         content: {
           "application/json":
             | {
+                /** @description Name of the provider */
                 providerName: string;
+                /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                 isPrimary: boolean;
                 /** @enum {string} */
                 type: "email";
+                /** @description Address of the SMTP host */
                 smtpHost: string;
+                /** @description Port of the SMTP host */
                 smtpPort: number;
+                /** @description Username to use to log into the SMTP server */
                 username: string;
+                /** @description Password to use to log into the SMTP server */
                 password: string;
+                /** @description Optional field to adjust how long time between each mail, in miliseconds */
                 throttle?: number;
+                /** @description Email address to use as sender */
                 fromAddress: string;
+                /** @description Is connection to the SMTP server secure? */
                 ssl: boolean;
               }
             | {
+                /** @description Name of the provider */
                 providerName: string;
+                /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                 isPrimary: boolean;
                 /** @enum {string} */
                 type: "sms";
@@ -464,22 +480,33 @@ export interface paths {
                 | {
                     /** Format: uuid */
                     id: string;
+                    /** @description Name of the provider */
                     providerName: string;
+                    /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                     isPrimary: boolean;
                     /** @enum {string} */
                     type: "email";
+                    /** @description Address of the SMTP host */
                     smtpHost: string;
+                    /** @description Port of the SMTP host */
                     smtpPort: number;
+                    /** @description Username to use to log into the SMTP server */
                     username: string;
+                    /** @description Password to use to log into the SMTP server */
                     password: string;
+                    /** @description Optional field to adjust how long time between each mail, in miliseconds */
                     throttle?: number;
+                    /** @description Email address to use as sender */
                     fromAddress: string;
+                    /** @description Is connection to the SMTP server secure? */
                     ssl: boolean;
                   }
                 | {
                     /** Format: uuid */
                     id: string;
+                    /** @description Name of the provider */
                     providerName: string;
+                    /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                     isPrimary: boolean;
                     /** @enum {string} */
                     type: "sms";
@@ -528,6 +555,7 @@ export interface paths {
         };
       };
     };
+    /** @description Updates the requested provider */
     put: {
       parameters: {
         path: {
@@ -540,22 +568,33 @@ export interface paths {
             | {
                 /** Format: uuid */
                 id: string;
+                /** @description Name of the provider */
                 providerName: string;
+                /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                 isPrimary: boolean;
                 /** @enum {string} */
                 type: "email";
+                /** @description Address of the SMTP host */
                 smtpHost: string;
+                /** @description Port of the SMTP host */
                 smtpPort: number;
+                /** @description Username to use to log into the SMTP server */
                 username: string;
+                /** @description Password to use to log into the SMTP server */
                 password: string;
+                /** @description Optional field to adjust how long time between each mail, in miliseconds */
                 throttle?: number;
+                /** @description Email address to use as sender */
                 fromAddress: string;
+                /** @description Is connection to the SMTP server secure? */
                 ssl: boolean;
               }
             | {
                 /** Format: uuid */
                 id: string;
+                /** @description Name of the provider */
                 providerName: string;
+                /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                 isPrimary: boolean;
                 /** @enum {string} */
                 type: "sms";
@@ -608,9 +647,11 @@ export interface paths {
         };
       };
     };
+    /** @description Deletes the requested provider */
     delete: {
       parameters: {
         path: {
+          /** @description Unique id of the provider to be deleted */
           providerId: string;
         };
       };
