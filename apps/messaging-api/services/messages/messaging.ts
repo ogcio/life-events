@@ -53,7 +53,7 @@ export type CreateMessageParams = {
   plainText: string;
   richText: string;
   subject: string;
-  threadName: string;
+  threadName?: string;
   scheduleAt: string;
   bypassConsent: boolean;
   security: SecurityLevels;
