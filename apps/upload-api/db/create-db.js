@@ -15,6 +15,7 @@ const user = process.env[config.user.ENV];
 const host = process.env[config.host.ENV];
 const password = process.env[config.password.ENV];
 const port = process.env[config.port.ENV];
+const dbName = process.env[config.database.ENV];
 
 const createDatabase = async (dbName) => {
   const client = new Client({
@@ -47,13 +48,5 @@ const createDatabase = async (dbName) => {
     console.log("Disconnected from PostgreSQL");
   }
 };
-
-// Get the database name from command line arguments
-const dbName = process.argv[2];
-
-if (!dbName) {
-  console.error("Please provide a database name");
-  process.exit(1);
-}
 
 createDatabase(dbName);
