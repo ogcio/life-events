@@ -16,10 +16,10 @@ export const test = base.extend<providersFixtures>({
     await use(providerName);
   },
 
-  openBankingProvider: async ({ page, browserName }, use) => {
+  openBankingProvider: async ({ page }, use) => {
     const providersPage = new ProvidersPage(page);
     await providersPage.goto();
-    const providerName = `Test open banking ${browserName} ${new Date()}`;
+    const providerName = `Test open banking ${Date.now()}`;
     await providersPage.addProvider(providerName, "openbanking");
     await use(providerName);
   },
