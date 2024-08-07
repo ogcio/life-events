@@ -417,7 +417,7 @@ const scheduleMessage = async (
         }>(
           `
           select config from sms_providers
-          where is_primary and organisation_id = $1
+          where is_primary and organisation_id = $1 and deleted_at is null
           limit 1
         `,
           [organizationId],
