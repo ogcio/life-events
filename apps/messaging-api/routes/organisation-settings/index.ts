@@ -29,6 +29,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
+        description: "Returns the organisation settings for the logged in user",
         tags,
         response: {
           200: getGenericResponseSchema(Type.Array(OrganisationSettingSchema)),
@@ -64,6 +65,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
+        description: "Returns the requested organisation setting",
         tags,
         params: Type.Object({
           organisationSettingId: Type.String(),
@@ -103,13 +105,14 @@ export default async function organisationSettings(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.CitizenSelf.Write]),
       schema: {
+        description: "Updates the requested organisation settings",
         tags,
         body: OrganisationInvitationFeedbackSchema,
         params: Type.Object({
           organisationSettingId: Type.String(),
         }),
         response: {
-          202: Type.Object({ data: OrganisationSettingSchema }),
+          202: getGenericResponseSchema(OrganisationSettingSchema),
           400: HttpError,
           404: HttpError,
           500: HttpError,
