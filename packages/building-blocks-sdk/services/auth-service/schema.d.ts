@@ -34,7 +34,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -66,7 +66,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -104,7 +104,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -135,120 +135,6 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: never;
-        };
-      };
-    };
-  };
-  "/mock/auth": {
-    get: {
-      parameters: {
-        query?: {
-          response_type?: string;
-          client_id?: string;
-          redirect_uri?: string;
-          state?: string;
-          nonce?: string;
-          scope?: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": string;
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/mock/token": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            code: string;
-            grant_type: string;
-            redirect_uri: string;
-            client_id: string;
-            client_secret: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id_token: string;
-              access_token: string;
-              token_type: string;
-              not_before: number;
-              expires_in: number;
-              expires_on: number;
-              id_token_expires_in: number;
-              profile_info: string;
-              scope: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/mock/keys": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              keys: {
-                kid: string;
-                use: string;
-                kty?: string;
-                n?: string;
-                e?: string;
-              }[];
-            };
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              request_id: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
         };
       };
     };
