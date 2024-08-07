@@ -44,16 +44,15 @@ ENV NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_LIFE_EVENTS_SERVICE
 ENV NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE=$NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE
 ENV NEXT_PUBLIC_FORMS_URL=$NEXT_PUBLIC_FORMS_URL
 
-RUN npm run build --workspace=packages/shared-errors
-RUN npm run build --workspace=packages/nextjs-logging-wrapper
-RUN npm run build --workspace=apps/payments
+RUN npm run build --workspace=packages/shared-errors && \
+    npm run build --workspace=packages/nextjs-logging-wrapper && \
+    npm run build --workspace=apps/payments
 
-FROM base-deps AS runner
-
+FROM base-deps AS assembler
 WORKDIR /app
 
-ENV LOG_LEVEL=trace
 ENV NODE_ENV=production
+ENV LOG_LEVEL=trace
 
 COPY --from=builder /app/apps/payments/.next/standalone ./
 COPY --from=builder /app/apps/payments/.next/static ./apps/payments/.next/static
@@ -61,6 +60,16 @@ COPY --from=builder /app/apps/payments/.next/static ./apps/payments/.next/static
 COPY --from=deps /app/node_modules/ /app/node_modules/
 COPY --from=deps /app/apps/payments/database.json /app/apps/payments/
 COPY --from=deps /app/apps/payments/migrations /app/apps/payments/migrations
+
+RUN npm prune --omit=dev
+
+FROM base-deps AS runner
+WORKDIR /app
+
+ENV LOG_LEVEL=trace
+ENV NODE_ENV=production
+
+COPY --from=assembler /app /app
 
 EXPOSE 3001
 
