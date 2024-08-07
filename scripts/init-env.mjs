@@ -36,16 +36,10 @@ function copyEnvFiles(paths) {
 const paths = [
   ...fs
     .readdirSync(path.join(process.cwd(), "apps"))
-    .flatMap((p) => {
-      const subPath = path.join(process.cwd(), "apps", p)
-      if (fs.existsSync(path.join(subPath, 'db'))) {
-        return [path.join(process.cwd(), "apps", p), path.join(subPath, 'db')]
-      }
-      return path.join(process.cwd(), "apps", p)
-    }),
+    .map((p) => path.join(process.cwd(), "apps", p)),
   ...fs
     .readdirSync(path.join(process.cwd(), "packages"))
-    .flatMap((p) => path.join(process.cwd(), "packages", p)),
+    .map((p) => path.join(process.cwd(), "packages", p)),
   process.cwd(),
 ];
 
