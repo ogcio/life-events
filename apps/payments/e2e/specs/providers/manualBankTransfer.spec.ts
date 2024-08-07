@@ -264,4 +264,35 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await editProviderPage.providerForm.checkIban(otherMockIban);
     },
   );
+
+  testWithProvider(
+    "should disable and enable a manual bank transfer provider @regression @normal",
+    async ({ bankTransferProvider }) => {
+      await description(
+        "This test checks that a manual bank transfer provider is successfully disabled and enabled.",
+      );
+      await owner("OGCIO");
+      await tags("Providers", "Manual Bank Transfer");
+      await severity(Severity.NORMAL);
+
+      await page.goto(paymentSetupUrl);
+
+      const providersMenuLink = await page.getByRole("link", {
+        name: "Providers",
+      });
+      await providersMenuLink.click();
+
+      const providersPage = new ProvidersPage(page);
+      await providersPage.editProvider(bankTransferProvider);
+      const editProviderPage = new EditManualBankTransferProviderPage(page);
+      await editProviderPage.checkHeaderVisible();
+      await editProviderPage.disableProvider();
+      await providersPage.checkProviderIsDisabled(bankTransferProvider);
+
+      await providersPage.editProvider(bankTransferProvider);
+      await editProviderPage.checkHeaderVisible();
+      await editProviderPage.enableProvider();
+      await providersPage.checkProviderIsEnabled(bankTransferProvider);
+    },
+  );
 });
