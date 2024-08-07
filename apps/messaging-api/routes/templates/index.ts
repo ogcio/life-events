@@ -570,16 +570,10 @@ export default async function templates(app: FastifyInstance) {
 
       await app.pg.pool.query(
         `
-        with variables as (
-            delete from message_template_variables
-            where template_meta_id = $1
-        ), contents as (
-            delete from message_template_contents
-            where template_meta_id = $1
-        )
-        delete from message_template_meta
-        where id = $1
-      `,
+          UPDATE message_template_meta
+          SET deleted_at=now()
+          WHERE id = $1;
+        `,
         [templateId],
       );
     },
