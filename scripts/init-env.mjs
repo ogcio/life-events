@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-import fs, { readdirSync } from "fs";
+import fs from "fs";
 import path from "path";
 
 /**
