@@ -53,7 +53,7 @@ ENV NODE_ENV=production
 
 COPY --from=builder /app/apps/web/.next/standalone ./
 COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
-# # TODO: Filter and remove whatever is not necessary for db-migrate and db-migrate-pg
+# TODO: Filter and remove whatever is not necessary for db-migrate and db-migrate-pg
 COPY --from=builder /app/node_modules/ /app/node_modules/
 COPY --from=deps /app/apps/web/database.json /app/apps/web/
 COPY --from=deps /app/apps/web/migrations /app/apps/web/migrations
