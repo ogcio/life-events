@@ -4,7 +4,7 @@ import fastifySwaggerUi from "@fastify/swagger-ui";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import fastifyEnv from "@fastify/env";
 import sensible from "@fastify/sensible";
-// import postgres from "@fastify/postgres";
+import postgres from "@fastify/postgres";
 import multipart from "@fastify/multipart";
 import autoload from "@fastify/autoload";
 import fs from "fs";
@@ -71,13 +71,13 @@ export async function build(opts?: FastifyServerOptions) {
     },
   });
 
-  // app.register(postgres, {
-  //   host: app.config.POSTGRES_HOST,
-  //   port: Number(app.config.POSTGRES_PORT),
-  //   user: app.config.POSTGRES_USER,
-  //   password: app.config.POSTGRES_PASSWORD,
-  //   database: app.config.POSTGRES_DB_NAME_SHARED,
-  // });
+  app.register(postgres, {
+    host: app.config.POSTGRES_HOST as string,
+    port: Number(app.config.POSTGRES_PORT),
+    user: app.config.POSTGRES_USER as string,
+    password: app.config.POSTGRES_PASSWORD as string,
+    database: app.config.POSTGRES_DB_NAME as string,
+  });
 
   app.register(import("@fastify/cookie"), {
     hook: "onRequest", // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'

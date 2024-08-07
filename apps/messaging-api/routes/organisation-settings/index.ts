@@ -15,6 +15,7 @@ import {
 import { Permissions } from "../../types/permissions";
 import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 import { getSettingsPerUserProfile } from "../../services/users/shared-users";
+import { ensureUserIdIsSet } from "../../utils/authentication-factory";
 
 const tags = ["Organisation Settings"];
 
@@ -28,6 +29,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
+        description: "Returns the organisation settings for the logged in user",
         tags,
         response: {
           200: getGenericResponseSchema(Type.Array(OrganisationSettingSchema)),
@@ -38,13 +40,14 @@ export default async function organisationSettings(app: FastifyInstance) {
       },
     },
     async (request: FastifyRequest, _reply: FastifyReply) => {
+      const errorCode = "GET_ORGANISATION_SETTINGS";
       const client = await app.pg.pool.connect();
       try {
         return {
           data: await getSettingsPerUserProfile({
-            userProfileId: request.userData!.userId,
+            userProfileId: ensureUserIdIsSet(request, errorCode),
             client,
-            errorCode: "GET_ORGANISATION_SETTINGS",
+            errorCode,
           }),
         };
       } finally {
@@ -62,6 +65,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.CitizenSelf.Read]),
       schema: {
+        description: "Returns the requested organisation setting",
         tags,
         params: Type.Object({
           organisationSettingId: Type.String(),
@@ -82,7 +86,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await getOrganisationSettingsForProfile({
-        userProfileId: request.userData!.userId,
+        userProfileId: ensureUserIdIsSet(request, "GET_ORGANIZATION_SETTING"),
         organisationSettingId: request.params.organisationSettingId,
         pg: app.pg,
       }),
@@ -101,13 +105,14 @@ export default async function organisationSettings(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.CitizenSelf.Write]),
       schema: {
+        description: "Updates the requested organisation settings",
         tags,
         body: OrganisationInvitationFeedbackSchema,
         params: Type.Object({
           organisationSettingId: Type.String(),
         }),
         response: {
-          202: Type.Object({ data: OrganisationSettingSchema }),
+          202: getGenericResponseSchema(OrganisationSettingSchema),
           400: HttpError,
           404: HttpError,
           500: HttpError,
@@ -118,15 +123,16 @@ export default async function organisationSettings(app: FastifyInstance) {
       request: FastifyRequest<PatchOrgInvitationSchema>,
       _reply: FastifyReply,
     ) => {
+      const errorCode = "UPDATE_ORGANISATION_SETTINGS";
       await updateInvitationStatus({
-        userProfileId: request.userData!.userId,
+        userProfileId: ensureUserIdIsSet(request, errorCode),
         pg: app.pg,
         feedback: { userStatusFeedback: "active" },
       });
 
       return {
         data: await updateOrganisationFeedback({
-          userProfileId: request.userData!.userId,
+          userProfileId: ensureUserIdIsSet(request, errorCode),
           organisationSettingId: request.params.organisationSettingId,
           pg: app.pg,
           feedback: request.body,

@@ -20,6 +20,7 @@ import {
 } from "../../services/users/import/read-user-imports";
 import { HttpError } from "../../types/httpErrors";
 import { BadRequestError } from "shared-errors";
+import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory";
 
 const tags = ["User Imports"];
 enum MimeTypes {
@@ -43,6 +44,8 @@ export default async function userImports(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
+        description:
+          "Retrieves the user import batches related to the current organisation",
         tags,
         response: {
           200: getGenericResponseSchema(
@@ -56,7 +59,10 @@ export default async function userImports(app: FastifyInstance) {
         data: await getUserImportsForOrganisation({
           logger: request.log,
           pool: app.pg.pool,
-          organisationId: request.userData!.organizationId!,
+          organisationId: ensureOrganizationIdIsSet(
+            request,
+            "GET_USER_IMPORTS",
+          ),
         }),
       };
     },
@@ -77,7 +83,7 @@ export default async function userImports(app: FastifyInstance) {
         },
         consumes: [MimeTypes.FormData, MimeTypes.Json],
         description:
-          "If 'Content-Type' header contains 'multipart/form-data' it accepts a CSV file, otherwise an array of users to import",
+          "Imports a new batch of users. If 'Content-Type' header contains 'multipart/form-data' it accepts a CSV file, otherwise an array of users to import",
       },
     },
     async (request: FastifyRequest, _reply: FastifyReply) => {
@@ -115,10 +121,15 @@ export default async function userImports(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
+        description: "Retrieves the requested user import batch",
         tags,
         querystring: Type.Optional(
           Type.Object({
-            includeImportedData: Type.Boolean({ default: true }),
+            includeImportedData: Type.Boolean({
+              default: true,
+              description:
+                "If true, it returns the data of the user sent in the import batch",
+            }),
           }),
         ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
@@ -133,7 +144,7 @@ export default async function userImports(app: FastifyInstance) {
       data: await getUserImportForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: request.userData!.organizationId!,
+        organisationId: ensureOrganizationIdIsSet(request, "GET_USER_IMPORT"),
         importId: request.params.importId,
         includeUsersData: request.query.includeImportedData ?? true,
       }),
@@ -148,11 +159,14 @@ export default async function userImports(app: FastifyInstance) {
       schema: {
         tags,
         response: {
-          200: Type.String(),
+          200: Type.String({
+            description:
+              "The header and one example line for the CSV template that must be used to import users",
+          }),
         },
         produces: [MimeTypes.Csv],
         description:
-          "it will return a string containing the template with the csv that will be used to import users",
+          "Returns a string containing the template with the csv that will be used to import users",
       },
     },
     async (_request: FastifyRequest, reply: FastifyReply) => {

@@ -29,11 +29,15 @@ WORKDIR /app/apps/upload-api/
 RUN npm run build
 
 
-FROM base-deps AS runner
+FROM base-deps AS assembler
 WORKDIR /app
 
 
+ENV NODE_ENV=production
+ENV LOG_LEVEL=trace
+
 COPY --from=builder /app/package*.json /app/
+COPY --from=builder /app/node_modules /app/node_modules
 
 COPY --from=builder /app/apps/upload-api/dist /app/apps/upload-api/dist
 COPY --from=builder /app/apps/upload-api/node_modules /app/apps/upload-api/node_modules
@@ -55,12 +59,14 @@ COPY --from=builder /app/packages/api-auth/dist /app/packages/api-auth/dist
 COPY --from=builder /app/packages/api-auth/node_modules /app/packages/api-auth/node_modules
 COPY --from=builder /app/packages/api-auth/package.json /app/packages/api-auth/
 
+RUN npm prune --omit=dev
+
+FROM base-deps AS runner
 
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
-RUN npm prune --omit=dev
-
+COPY --from=assembler /app /app
 
 EXPOSE 8007
 

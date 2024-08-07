@@ -4,6 +4,10 @@ import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 import { Permissions } from "../../types/permissions";
 import { HttpError } from "../../types/httpErrors";
 import { getGenericResponseSchema } from "../../types/schemaDefinitions";
+import {
+  ensureOrganizationIdIsSet,
+  ensureUserIdIsSet,
+} from "../../utils/authentication-factory";
 
 const tags = ["Templates"];
 
@@ -58,23 +62,27 @@ interface GetTemplate {
 }
 
 const TemplateTypeWithoutId = Type.Object({
-  templateName: Type.String(),
-  lang: Type.String(),
-  subject: Type.String(),
-  excerpt: Type.String(),
-  plainText: Type.String(),
-  richText: Type.String(),
+  templateName: Type.String({
+    description: "Template name for the related language",
+  }),
+  lang: Type.String({ description: "Current language" }),
+  subject: Type.String({ description: "Subject of the template" }),
+  excerpt: Type.String({
+    description: "Brief description of the template content",
+  }),
+  plainText: Type.String({ description: "Plain text version of the template" }),
+  richText: Type.String({ description: "Rich text version of the template" }),
 });
 
-const TemplateType = Type.Object({
-  id: Type.String({ format: "uuid" }),
-  templateName: Type.String(),
-  lang: Type.String(),
-  subject: Type.String(),
-  excerpt: Type.String(),
-  plainText: Type.String(),
-  richText: Type.String(),
-});
+const TemplateType = Type.Composite([
+  Type.Object({
+    id: Type.String({
+      format: "uuid",
+      description: "Unique id of the template",
+    }),
+  }),
+  TemplateTypeWithoutId,
+]);
 
 export default async function templates(app: FastifyInstance) {
   app.get<GetTemplates>(
@@ -83,9 +91,15 @@ export default async function templates(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Template.Read]),
       schema: {
+        description: "Returns the providers matching the requested query",
         querystring: Type.Optional(
           Type.Object({
-            lang: Type.Optional(Type.String()),
+            lang: Type.Optional(
+              Type.String({
+                description:
+                  "If set, templates with the requested language are returned",
+              }),
+            ),
           }),
         ),
         tags,
@@ -93,11 +107,18 @@ export default async function templates(app: FastifyInstance) {
           200: getGenericResponseSchema(
             Type.Array(
               Type.Object({
-                templateMetaId: Type.String({ format: "uuid" }),
+                id: Type.String({
+                  format: "uuid",
+                  description: "Unique id of the template",
+                }),
                 contents: Type.Array(
                   Type.Object({
-                    lang: Type.String(),
-                    templateName: Type.String(),
+                    lang: Type.String({
+                      description: "Selected language",
+                    }),
+                    templateName: Type.String({
+                      description: "Template name for the related language",
+                    }),
                   }),
                 ),
               }),
@@ -125,23 +146,24 @@ export default async function templates(app: FastifyInstance) {
         join message_template_contents c on c.template_meta_id = m.id
         where 
           case when length($1) > 0 then lang=$1 else true end
+          AND m.deleted_at is null
           order by c.created_at desc
       `,
         [lang],
       );
 
       const data: {
-        templateMetaId: string;
+        id: string;
         contents: { templateName: string; lang: string }[];
       }[] = [];
 
       for (const row of result.rows) {
         const content = { lang: row.lang, templateName: row.templateName };
         data
-          .find((item) => item.templateMetaId === row.templateMetaId)
+          .find((item) => item.id === row.templateMetaId)
           ?.contents.push(content) ||
           data.push({
-            templateMetaId: row.templateMetaId,
+            id: row.templateMetaId,
             contents: [content],
           });
       }
@@ -156,25 +178,23 @@ export default async function templates(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Template.Read]),
       schema: {
+        description: "Returns the requested template",
         tags,
         response: {
           200: getGenericResponseSchema(
             Type.Object({
-              contents: Type.Array(
-                Type.Object({
-                  templateName: Type.String(),
-                  subject: Type.String(),
-                  excerpt: Type.String(),
-                  plainText: Type.String(),
-                  richText: Type.String(),
-                  lang: Type.String(),
-                }),
-              ),
+              contents: Type.Array(TemplateTypeWithoutId),
               fields: Type.Array(
-                Type.Object({
-                  fieldName: Type.String(),
-                  fieldType: Type.String(),
-                }),
+                Type.Object(
+                  {
+                    fieldName: Type.String(),
+                    fieldType: Type.String(),
+                  },
+                  {
+                    description:
+                      "List of the variables that are needed to be filled to create a message using this template",
+                  },
+                ),
               ),
             }),
           ),
@@ -184,98 +204,7 @@ export default async function templates(app: FastifyInstance) {
       },
     },
     async function handleGetOne(request, _reply) {
-      const templateId = request.params.templateId;
-
-      const templateMeta = await app.pg.pool.query<{
-        templateName: string;
-        subject: string;
-        excerpt: string;
-        plainText: string;
-        richText: string;
-        lang: string;
-        fieldName?: string;
-        fieldType?: string;
-      }>(
-        `
-            select
-              template_name as "templateName",
-              subject,
-              excerpt,
-              plain_text as "plainText",
-              rich_text as "richText",
-              lang,
-              v.field_name as "fieldName",
-              v.field_type as "fieldType"
-            from message_template_meta m
-            join message_template_contents c on c.template_meta_id = m.id
-            left join message_template_variables v on v.template_meta_id = m.id
-            where m.id = $1
-      `,
-        [templateId],
-      );
-
-      const template: {
-        contents: {
-          templateName: string;
-          subject: string;
-          excerpt: string;
-          plainText: string;
-          richText: string;
-          lang: string;
-        }[];
-        fields: { fieldName: string; fieldType: string }[];
-      } = {
-        contents: [],
-        fields: [],
-      };
-
-      for (const row of templateMeta.rows) {
-        const {
-          excerpt,
-          plainText,
-          richText,
-          subject,
-          templateName,
-          fieldName,
-          fieldType,
-          lang,
-        } = row;
-
-        const content = template.contents?.find(
-          (content) => content.lang === lang,
-        );
-
-        if (content) {
-          content.excerpt = excerpt;
-          content.excerpt = excerpt;
-          content.plainText = plainText;
-          content.richText = richText;
-          content.subject = subject;
-          content.templateName = templateName;
-        } else {
-          template.contents.push({
-            excerpt,
-            lang,
-            plainText,
-            richText,
-            subject,
-            templateName,
-          });
-        }
-
-        if (
-          fieldName &&
-          !template.fields.some((field) => field.fieldName === fieldName)
-        ) {
-          template.fields.push({ fieldName, fieldType: fieldType ?? "" });
-        }
-      }
-
-      if (!template.contents.length) {
-        throw new NotFoundError(TEMPLATES_ERROR, "no template found");
-      }
-
-      return { data: template };
+      return { data: await getTemplate(app, request.params.templateId) };
     },
   );
 
@@ -285,6 +214,7 @@ export default async function templates(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Template.Write]),
       schema: {
+        description: "Creates a new template",
         tags,
         body: Type.Object({
           contents: Type.Array(TemplateTypeWithoutId),
@@ -294,6 +224,10 @@ export default async function templates(app: FastifyInstance) {
               type: Type.String(),
               languages: Type.Array(Type.String()),
             }),
+            {
+              description:
+                "List of the variables that are needed to be filled to create a message using this template",
+            },
           ),
         }),
         response: {
@@ -301,14 +235,18 @@ export default async function templates(app: FastifyInstance) {
           "4xx": HttpError,
           201: Type.Object({
             data: Type.Object({
-              id: Type.String({ format: "uuid" }),
+              id: Type.String({
+                format: "uuid",
+                description: "Unique id of the created message",
+              }),
             }),
           }),
         },
       },
     },
     async function handleCreate(request, reply) {
-      const userId = request.userData!.userId;
+      const errorCode = "CREATE_TEMPLATE";
+      const userId = ensureUserIdIsSet(request, errorCode);
 
       const { contents, variables } = request.body;
 
@@ -328,7 +266,7 @@ export default async function templates(app: FastifyInstance) {
             limit 1);
         `,
           [
-            request.userData!.organizationId!,
+            ensureOrganizationIdIsSet(request, errorCode),
             contents
               .map((content) => content.templateName.toLowerCase())
               .join(", "),
@@ -348,7 +286,7 @@ export default async function templates(app: FastifyInstance) {
           values($1,$2)
           returning id
         `,
-          [request.userData!.organizationId!, userId],
+          [ensureOrganizationIdIsSet(request, errorCode), userId],
         );
         templateMetaId = templateMetaResponse.rows.at(0)?.id;
 
@@ -420,6 +358,7 @@ export default async function templates(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Template.Write]),
       schema: {
+        description: "Updates the requested template",
         tags,
         body: Type.Object({
           contents: Type.Array(TemplateType),
@@ -428,9 +367,14 @@ export default async function templates(app: FastifyInstance) {
               name: Type.String(),
               type: Type.String(),
             }),
+            {
+              description:
+                "List of the variables that are needed to be filled to create a message using this template",
+            },
           ),
         }),
         response: {
+          200: Type.Null(),
           "4xx": HttpError,
           "5xx": HttpError,
         },
@@ -438,6 +382,10 @@ export default async function templates(app: FastifyInstance) {
     },
     async function handleUpdate(request, _reply) {
       const templateId = request.params.templateId;
+      // adding this will return 404
+      // if template does not exist
+      await getTemplate(app, templateId);
+
       const { contents, variables } = request.body;
 
       const client = await app.pg.pool.connect();
@@ -515,14 +463,17 @@ export default async function templates(app: FastifyInstance) {
       }
     },
   );
+
   app.delete<GetTemplate>(
     "/:templateId",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Template.Delete]),
       schema: {
+        description: "Deletes the requested template",
         tags,
         response: {
+          200: Type.Null(),
           "4xx": HttpError,
           "5xx": HttpError,
         },
@@ -531,20 +482,111 @@ export default async function templates(app: FastifyInstance) {
     async function handleDelete(request, _reply) {
       const templateId = request.params.templateId;
 
+      // adding this will return 404
+      // if template does not exist
+      await getTemplate(app, templateId);
+
       await app.pg.pool.query(
         `
-        with variables as (
-            delete from message_template_variables
-            where template_meta_id = $1
-        ), contents as (
-            delete from message_template_contents
-            where template_meta_id = $1
-        )
-        delete from message_template_meta
-        where id = $1
-      `,
+          UPDATE message_template_meta
+          SET deleted_at=now()
+          WHERE id = $1;
+        `,
         [templateId],
       );
     },
   );
+
+  const getTemplate = async (app: FastifyInstance, templateId: string) => {
+    const templateMeta = await app.pg.pool.query<{
+      templateName: string;
+      subject: string;
+      excerpt: string;
+      plainText: string;
+      richText: string;
+      lang: string;
+      fieldName?: string;
+      fieldType?: string;
+    }>(
+      `
+          select
+            template_name as "templateName",
+            subject,
+            excerpt,
+            plain_text as "plainText",
+            rich_text as "richText",
+            lang,
+            v.field_name as "fieldName",
+            v.field_type as "fieldType"
+          from message_template_meta m
+          join message_template_contents c on c.template_meta_id = m.id
+          left join message_template_variables v on v.template_meta_id = m.id
+          where m.id = $1 AND m.deleted_at is null;
+    `,
+      [templateId],
+    );
+
+    const template: {
+      contents: {
+        templateName: string;
+        subject: string;
+        excerpt: string;
+        plainText: string;
+        richText: string;
+        lang: string;
+      }[];
+      fields: { fieldName: string; fieldType: string }[];
+    } = {
+      contents: [],
+      fields: [],
+    };
+
+    for (const row of templateMeta.rows) {
+      const {
+        excerpt,
+        plainText,
+        richText,
+        subject,
+        templateName,
+        fieldName,
+        fieldType,
+        lang,
+      } = row;
+
+      const content = template.contents?.find(
+        (content) => content.lang === lang,
+      );
+
+      if (content) {
+        content.excerpt = excerpt;
+        content.excerpt = excerpt;
+        content.plainText = plainText;
+        content.richText = richText;
+        content.subject = subject;
+        content.templateName = templateName;
+      } else {
+        template.contents.push({
+          excerpt,
+          lang,
+          plainText,
+          richText,
+          subject,
+          templateName,
+        });
+      }
+
+      if (
+        fieldName &&
+        !template.fields.some((field) => field.fieldName === fieldName)
+      ) {
+        template.fields.push({ fieldName, fieldType: fieldType ?? "" });
+      }
+    }
+
+    if (!template.contents.length) {
+      throw new NotFoundError(TEMPLATES_ERROR, "no template found");
+    }
+
+    return template;
+  };
 }

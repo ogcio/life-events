@@ -109,7 +109,7 @@ export default async (props: MessageCreateProps) => {
           message,
           preferredTransports,
           scheduleAt,
-          security: "",
+          security: "public",
           recipientUserId: user.userId,
         });
         if (Boolean(error)) {

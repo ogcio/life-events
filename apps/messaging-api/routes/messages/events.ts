@@ -14,6 +14,7 @@ import { MessageEventData } from "../../services/messages/eventLogger";
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
 import { getPaginationLinks, sanitizePagination } from "../../utils/pagination";
+import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory";
 
 const tags = ["Message events"];
 
@@ -29,11 +30,18 @@ export default async function messages(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Event.Read]),
       schema: {
+        description:
+          "Returns the message events that match the requested query",
         tags,
         querystring: Type.Optional(
           Type.Composite([
             Type.Object({
-              search: Type.Optional(Type.String()),
+              search: Type.Optional(
+                Type.String({
+                  description:
+                    "If set, it filters the events for the messages containing the set value in subject",
+                }),
+              ),
             }),
             PaginationParamsSchema,
           ]),
@@ -86,7 +94,7 @@ export default async function messages(app: FastifyInstance) {
             order by l.created_at;
         `,
         [
-          request.userData?.organizationId,
+          ensureOrganizationIdIsSet(request, "GET_MESSAGES"),
           textSearchILikeClause,
           limit,
           offset,
@@ -141,6 +149,7 @@ export default async function messages(app: FastifyInstance) {
     "/:eventId",
     {
       schema: {
+        description: "Returns the selected event id",
         tags,
         response: {
           200: Type.Object({

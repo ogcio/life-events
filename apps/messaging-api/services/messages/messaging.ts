@@ -9,6 +9,10 @@ import { utils } from "../../utils";
 import { isNativeError } from "util/types";
 import { BadRequestError, ServerError, ThirdPartyError } from "shared-errors";
 import { randomUUID } from "crypto";
+import {
+  AllProviderTypes,
+  SecurityLevels,
+} from "../../types/schemaDefinitions";
 
 type TemplateContent = {
   subject: string;
@@ -49,11 +53,11 @@ export type CreateMessageParams = {
   plainText: string;
   richText: string;
   subject: string;
-  threadName: string;
+  threadName?: string;
   scheduleAt: string;
   bypassConsent: boolean;
-  security: string; // Which levels do we have?
-  preferredTransports: Array<"email" | "sms" | "lifeEvent">;
+  security: SecurityLevels;
+  preferredTransports: Array<AllProviderTypes>;
   organisationId: string;
 };
 
@@ -69,13 +73,13 @@ export interface MessagingService {
    * @param templateContents - Contains the message content for different languages with interpolations
    * @param recipients - Receiving users
    * @param transports - Where to send except messaging system (email, sms, life events)
-   * @param security - TODO
+   * @param security - Confidential, public
    */
   createTemplateMessages(
     templateContents: TemplateContent[],
     recipients: User[],
     transports: string[],
-    security: string,
+    security: SecurityLevels,
     scheduleAt: string,
     organizationId: string,
   ): Promise<CreatedTemplateMessage[]>;
@@ -163,7 +167,7 @@ export function newMessagingService(
       templateContents: TemplateContent[],
       recipients: User[],
       transports: string[],
-      security: string,
+      security: SecurityLevels,
       scheduleAt: string,
       organizationId: string,
     ): Promise<CreatedTemplateMessage[]> {

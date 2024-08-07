@@ -5,11 +5,22 @@ import { version } from "../package.json";
 const ERROR_PROCESS = "HEALTHCHECK";
 
 export default async function healthCheck(app: FastifyInstance) {
-  app.get("/health", { schema: { tags: ["Health"], hide: true } }, async () => {
-    await checkDb(app);
+  app.get(
+    "/health",
+    {
+      schema: {
+        tags: ["Health"],
+        hide: true,
+        description:
+          "It checks the current health status of the APIs, pinging all the related items",
+      },
+    },
+    async () => {
+      await checkDb(app);
 
-    return { "messaging-api": version };
-  });
+      return { "messaging-api": version };
+    },
+  );
 }
 
 const checkDb = async (app: FastifyInstance): Promise<void> => {

@@ -1,4 +1,4 @@
-import { expect, Page } from "@playwright/test";
+import { Page } from "@playwright/test";
 import { test } from "../../fixtures/test";
 import { test as testWithProvider } from "../../fixtures/providersFixtures";
 import {
