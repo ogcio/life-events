@@ -30,11 +30,18 @@ export default async function messages(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Event.Read]),
       schema: {
+        description:
+          "Returns the message events that match the requested query",
         tags,
         querystring: Type.Optional(
           Type.Composite([
             Type.Object({
-              search: Type.Optional(Type.String()),
+              search: Type.Optional(
+                Type.String({
+                  description:
+                    "If set, it filters the events for the messages containing the set value in subject",
+                }),
+              ),
             }),
             PaginationParamsSchema,
           ]),
@@ -142,6 +149,7 @@ export default async function messages(app: FastifyInstance) {
     "/:eventId",
     {
       schema: {
+        description: "Returns the selected event id",
         tags,
         response: {
           200: Type.Object({

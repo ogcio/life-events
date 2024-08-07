@@ -59,11 +59,36 @@ export default async function users(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Composite([
             Type.Object({
-              organisationId: Type.Optional(Type.String()),
-              search: Type.Optional(Type.String()),
-              transports: Type.Optional(Type.String()),
-              importId: Type.Optional(Type.String()),
-              activeOnly: Type.Optional(Type.Boolean()),
+              organisationId: Type.Optional(
+                Type.String({
+                  description:
+                    "If set, the endpoint returns the users whom have an accepted relation with the organisation id",
+                }),
+              ),
+              search: Type.Optional(
+                Type.String({
+                  description:
+                    "If set, the endpoint searches for users whom contain this value in either the name, the surname, or the email address",
+                }),
+              ),
+              transports: Type.Optional(
+                Type.String({
+                  description:
+                    "If set, it must contain a list of transports divided by ',' and the endpoint searches for users whom have selected at least one of them as preferred for the organisation",
+                }),
+              ),
+              importId: Type.Optional(
+                Type.String({
+                  description:
+                    "If set, the endpoint returns the users whom have imported by that specific batch",
+                }),
+              ),
+              activeOnly: Type.Optional(
+                Type.Boolean({
+                  description:
+                    "If true, the endpoint returns active only users",
+                }),
+              ),
             }),
             PaginationParamsSchema,
           ]),
@@ -106,9 +131,14 @@ export default async function users(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Citizen.Read]),
       schema: {
+        description: "Returns the requested user",
         querystring: Type.Optional(
           Type.Object({
-            activeOnly: Type.Optional(Type.Boolean()),
+            activeOnly: Type.Optional(
+              Type.Boolean({
+                description: "If true, the endpoint returns active only users",
+              }),
+            ),
           }),
         ),
         tags,
