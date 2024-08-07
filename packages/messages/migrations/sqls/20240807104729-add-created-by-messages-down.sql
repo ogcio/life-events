@@ -1,0 +1,2 @@
+ALTER TABLE messages
+DROP COLUMN created_by_user_profile_id;
