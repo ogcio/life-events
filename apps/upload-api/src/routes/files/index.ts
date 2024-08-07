@@ -4,7 +4,7 @@ import { HttpError } from "../../types/httpErrors.js";
 import {
   DeleteObjectCommand,
   GetObjectCommand,
-  ListObjectsCommand,
+  ListObjectsV2Command,
 } from "@aws-sdk/client-s3";
 import { PassThrough } from "stream";
 import { EventEmitter } from "node:events";
@@ -327,7 +327,7 @@ export default async function routes(app: FastifyInstance) {
       let response = null;
       try {
         const data = await app.s3Client.client.send(
-          new ListObjectsCommand({ Bucket: app.s3Client.bucketName }),
+          new ListObjectsV2Command({ Bucket: app.s3Client.bucketName }),
         );
         response =
           data.Contents?.map((item) => ({
