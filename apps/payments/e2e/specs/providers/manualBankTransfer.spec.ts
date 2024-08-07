@@ -295,4 +295,70 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await providersPage.checkProviderIsEnabled(bankTransferProvider);
     },
   );
+
+  testWithProvider(
+    "should not edit a manual bank transfer provider if name is missing @regression @normal",
+    async ({ bankTransferProvider }) => {
+      await description(
+        "This test checks that while editing a manual bank transfer provider it cannot be saved if name is missing.",
+      );
+      await owner("OGCIO");
+      await tags("Providers", "Manual Bank Transfer");
+      await severity(Severity.NORMAL);
+
+      await page.goto(paymentSetupUrl);
+
+      const providersMenuLink = await page.getByRole("link", {
+        name: "Providers",
+      });
+      await providersMenuLink.click();
+
+      const providersPage = new ProvidersPage(page);
+      await providersPage.editProvider(bankTransferProvider);
+      const editProviderPage = new EditManualBankTransferProviderPage(page);
+      await editProviderPage.checkHeaderVisible();
+      await editProviderPage.providerForm.checkName(bankTransferProvider);
+      await editProviderPage.providerForm.enterName("");
+      await editProviderPage.saveChanges();
+      await editProviderPage.providerForm.expectValidationError("nameRequired");
+    },
+  );
+
+  testWithProvider(
+    "should not edit a manual bank transfer provider if account holder name is missing @regression @normal",
+    async ({ bankTransferProvider }) => {
+      await description(
+        "This test checks that while editing a manual bank transfer provider it cannot be saved if account holder name is missing.",
+      );
+      await owner("OGCIO");
+      await tags("Providers", "Manual Bank Transfer");
+      await severity(Severity.NORMAL);
+
+      await page.goto(paymentSetupUrl);
+
+      const providersMenuLink = await page.getByRole("link", {
+        name: "Providers",
+      });
+      await providersMenuLink.click();
+
+      const providersPage = new ProvidersPage(page);
+      await providersPage.editProvider(bankTransferProvider);
+      const editProviderPage = new EditManualBankTransferProviderPage(page);
+      await editProviderPage.checkHeaderVisible();
+      await editProviderPage.providerForm.checkAccountHolderName(
+        mockAccountHolderName,
+      );
+      await editProviderPage.providerForm.enterAccountHolderName("");
+      await editProviderPage.saveChanges();
+      await editProviderPage.providerForm.expectValidationError(
+        "accountHolderNameRequired",
+      );
+
+      await providersPage.goto();
+      await providersPage.editProvider(bankTransferProvider);
+      await editProviderPage.providerForm.checkAccountHolderName(
+        mockAccountHolderName,
+      );
+    },
+  );
 });
