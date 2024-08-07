@@ -1,8 +1,8 @@
 import { Page } from "@playwright/test";
-import { test } from "../fixtures/test";
-import { mockAccountHolderName, mockIban } from "../utils/mocks";
-import { paymentSetupUrl } from "../utils/constants";
-import { ProvidersPage } from "../objects/providers/ProvidersPage";
+import { test } from "../../fixtures/test";
+import { mockAccountHolderName, mockIban } from "../../utils/mocks";
+import { paymentSetupUrl } from "../../utils/constants";
+import { ProvidersPage } from "../../objects/providers/ProvidersPage";
 import {
   Severity,
   owner,
@@ -10,7 +10,7 @@ import {
   severity,
   description,
 } from "allure-js-commons";
-import { AddOpenBankingProviderPage } from "../objects/providers/AddOpenBankingProviderPage";
+import { AddOpenBankingProviderPage } from "../../objects/providers/AddOpenBankingProviderPage";
 
 test.describe("Open Banking provider", () => {
   let page: Page;
