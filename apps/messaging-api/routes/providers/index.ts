@@ -119,6 +119,7 @@ export default async function providers(app: FastifyInstance) {
                 (select count from count_selection) as "count"
             from email_providers
             where organisation_id = $1
+            AND deleted_at is null
             and ${primaryFilter}
             order by provider_name
             limit $2
@@ -149,6 +150,7 @@ export default async function providers(app: FastifyInstance) {
                   (select count from count_selection) as "count"
               from sms_providers
               where organisation_id = $1
+              AND deleted_at is null
               and ${primaryFilter}
               order by provider_name
               limit $2
@@ -238,85 +240,16 @@ export default async function providers(app: FastifyInstance) {
       if (request.query.type !== "email" && request.query.type !== "sms") {
         throw new BadRequestError(errorProcess, "illegal request type");
       }
-      let provider:
-        | Static<typeof EmailProviderSchema>
-        | Static<typeof SmsProviderSchema>
-        | undefined;
 
-      if (request.query.type === "email") {
-        try {
-          const queryResult = await app.pg.pool.query<
-            Static<typeof EmailProviderSchema>
-          >(
-            `
-                select 
-                    id,
-                    'email' as "type",
-                    provider_name as "providerName",
-                    COALESCE(is_primary, false) as "isPrimary",
-                    smtp_host as "smtpHost",
-                    smtp_port as "smtpPort",
-                    username,
-                    pw as "password",
-                    COALESCE(throttle_ms, 0) as "throttle",
-                    from_address as "fromAddress",
-                    is_ssl as "ssl"
-                from email_providers
-                where organisation_id = $1 and id = $2
-                order by provider_name
-          `,
-            [organisationId, providerId],
-          );
-
-          provider = queryResult.rows.at(0);
-        } catch (error) {
-          throw new ServerError(
-            errorProcess,
-            "failed to query email provider",
-            error,
-          );
-        }
-
-        if (!provider) {
-          throw new NotFoundError(
-            errorProcess,
-            "failed to find email provider",
-          );
-        }
-      } else if (request.query.type === "sms") {
-        try {
-          const queryResult = await app.pg.pool.query<
-            Static<typeof SmsProviderSchema>
-          >(
-            `
-                select 
-                    id,
-                    'sms' as "type",
-                    provider_name as "providerName",
-                    COALESCE(is_primary, false) as "isPrimary",
-                    config
-                from sms_providers
-                where organisation_id = $1 and id = $2
-                order by provider_name
-          `,
-            [organisationId, providerId],
-          );
-
-          provider = queryResult.rows.at(0);
-        } catch (error) {
-          throw new ServerError(
-            errorProcess,
-            "failed to query sms provider",
-            error,
-          );
-        }
-
-        if (!provider) {
-          throw new NotFoundError(errorProcess, "failed to find sms provider");
-        }
-      }
-
-      return { data: provider };
+      return {
+        data: await getProvider({
+          app,
+          providerType: request.query.type,
+          organisationId,
+          providerId,
+          errorProcess,
+        }),
+      };
     },
   );
 
@@ -498,6 +431,16 @@ export default async function providers(app: FastifyInstance) {
       if (!isSmsProvider(provider) && !isEmailProvider(provider)) {
         throw new BadRequestError(errorProcess, "illegal type query");
       }
+
+      // adding this will return
+      // 404 is it does not exist
+      await getProvider({
+        app,
+        providerType: provider.type,
+        organisationId: organizationId,
+        providerId: request.params.providerId,
+        errorProcess,
+      });
 
       if (isSmsProvider(provider)) {
         const client = await app.pg.pool.connect();
@@ -691,8 +634,97 @@ export default async function providers(app: FastifyInstance) {
       }
 
       if (deleted === 0) {
-        throw new NotFoundError(errorProcess, "no resource found");
+        throw new NotFoundError(errorProcess, "no provider found");
       }
     },
   );
+
+  const getProvider = async (params: {
+    app: FastifyInstance;
+    providerType: string;
+    providerId: string;
+    errorProcess: string;
+    organisationId: string;
+  }) => {
+    let provider:
+      | Static<typeof EmailProviderSchema>
+      | Static<typeof SmsProviderSchema>
+      | undefined;
+
+    const { app, providerType, providerId, errorProcess, organisationId } =
+      params;
+    if (providerType === "email") {
+      try {
+        const queryResult = await app.pg.pool.query<
+          Static<typeof EmailProviderSchema>
+        >(
+          `
+              select 
+                  id,
+                  'email' as "type",
+                  provider_name as "providerName",
+                  COALESCE(is_primary, false) as "isPrimary",
+                  smtp_host as "smtpHost",
+                  smtp_port as "smtpPort",
+                  username,
+                  pw as "password",
+                  COALESCE(throttle_ms, 0) as "throttle",
+                  from_address as "fromAddress",
+                  is_ssl as "ssl"
+              from email_providers
+              where organisation_id = $1 and id = $2
+                and deleted_at is null
+              order by provider_name
+        `,
+          [organisationId, providerId],
+        );
+
+        provider = queryResult.rows.at(0);
+      } catch (error) {
+        throw new ServerError(
+          errorProcess,
+          "failed to query email provider",
+          error,
+        );
+      }
+
+      if (!provider) {
+        throw new NotFoundError(errorProcess, "failed to find email provider");
+      }
+    } else if (providerType === "sms") {
+      try {
+        const queryResult = await app.pg.pool.query<
+          Static<typeof SmsProviderSchema>
+        >(
+          `
+              select 
+                  id,
+                  'sms' as "type",
+                  provider_name as "providerName",
+                  COALESCE(is_primary, false) as "isPrimary",
+                  config
+              from sms_providers
+              where organisation_id = $1 and id = $2
+                and deleted_at is null
+              order by provider_name
+        `,
+          [organisationId, providerId],
+        );
+
+        provider = queryResult.rows.at(0);
+      } catch (error) {
+        throw new ServerError(
+          errorProcess,
+          "failed to query sms provider",
+          error,
+        );
+      }
+
+      if (!provider) {
+        throw new NotFoundError(errorProcess, "failed to find sms provider");
+      }
+    }
+
+    return provider;
+  };
 }
