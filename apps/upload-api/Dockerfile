@@ -70,7 +70,6 @@ ENV LOG_LEVEL=trace
 COPY --from=assembler /app /app
 COPY --from=deps /app/apps/upload-api/db /app/apps/upload-api/db
 
-
 EXPOSE 8007
 
 WORKDIR /app/apps/upload-api
