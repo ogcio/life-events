@@ -23,15 +23,30 @@ export class BankTransferProviderForm {
   }
 
   async enterName(name: string) {
+    await this.nameInput.clear();
     await this.nameInput.fill(name);
   }
 
   async enterAccountHolderName(name: string) {
+    await this.accountHolderNameInput.clear();
     await this.accountHolderNameInput.fill(name);
   }
 
   async enterIban(iban: string) {
+    await this.ibanInput.clear();
     await this.ibanInput.fill(iban);
+  }
+
+  async checkName(name: string) {
+    await expect(this.nameInput).toHaveValue(name);
+  }
+
+  async checkAccountHolderName(name: string) {
+    await expect(this.accountHolderNameInput).toHaveValue(name);
+  }
+
+  async checkIban(iban: string) {
+    await expect(this.ibanInput).toHaveValue(iban);
   }
 
   async expectValidationError(expectedError: BankTransferValidationError) {
