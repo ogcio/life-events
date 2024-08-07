@@ -1,4 +1,6 @@
 export const mockIban = "IE29AIBK93115212345678";
+export const otherMockIban = "IE64IRCE92050112345678";
+
 export const mockAccountHolderName = "Name Surname";
 
 export const mockStripeSecretKey = "sk_test_123456";

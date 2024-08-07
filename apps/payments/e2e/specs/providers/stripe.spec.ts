@@ -44,9 +44,13 @@ test.describe("Stripe provider", () => {
     await providersPage.selectStripeProvider();
 
     const addStripeProviderPage = new AddStripeProviderPage(page);
-    await addStripeProviderPage.enterName(providerName);
-    await addStripeProviderPage.enterPublishableKey(mockStripePublishableKey);
-    await addStripeProviderPage.enterSecretKey(mockStripeSecretKey);
+    await addStripeProviderPage.providerForm.enterName(providerName);
+    await addStripeProviderPage.providerForm.enterPublishableKey(
+      mockStripePublishableKey,
+    );
+    await addStripeProviderPage.providerForm.enterSecretKey(
+      mockStripeSecretKey,
+    );
     await addStripeProviderPage.submitProviderCreation();
 
     await providersPage.checkProviderVisible(providerName);
@@ -72,12 +76,18 @@ test.describe("Stripe provider", () => {
     await providersPage.selectStripeProvider();
 
     const addStripeProviderPage = new AddStripeProviderPage(page);
-    await addStripeProviderPage.enterName("");
-    await addStripeProviderPage.enterPublishableKey(mockStripePublishableKey);
-    await addStripeProviderPage.enterSecretKey(mockStripeSecretKey);
+    await addStripeProviderPage.providerForm.enterName("");
+    await addStripeProviderPage.providerForm.enterPublishableKey(
+      mockStripePublishableKey,
+    );
+    await addStripeProviderPage.providerForm.enterSecretKey(
+      mockStripeSecretKey,
+    );
     await addStripeProviderPage.submitProviderCreation();
 
-    await addStripeProviderPage.expectValidationError("nameRequired");
+    await addStripeProviderPage.providerForm.expectValidationError(
+      "nameRequired",
+    );
   });
 
   test("should not add a stripe provider if publishable key is missing @regression @normal", async () => {
@@ -100,12 +110,16 @@ test.describe("Stripe provider", () => {
     await providersPage.selectStripeProvider();
 
     const addStripeProviderPage = new AddStripeProviderPage(page);
-    await addStripeProviderPage.enterName(providerName);
-    await addStripeProviderPage.enterPublishableKey("");
-    await addStripeProviderPage.enterSecretKey(mockStripeSecretKey);
+    await addStripeProviderPage.providerForm.enterName(providerName);
+    await addStripeProviderPage.providerForm.enterPublishableKey("");
+    await addStripeProviderPage.providerForm.enterSecretKey(
+      mockStripeSecretKey,
+    );
     await addStripeProviderPage.submitProviderCreation();
 
-    await addStripeProviderPage.expectValidationError("publishableKeyRequired");
+    await addStripeProviderPage.providerForm.expectValidationError(
+      "publishableKeyRequired",
+    );
 
     await providersPage.goto();
     await providersPage.checkProviderNotVisible(providerName);
@@ -131,12 +145,16 @@ test.describe("Stripe provider", () => {
     await providersPage.selectStripeProvider();
 
     const addStripeProviderPage = new AddStripeProviderPage(page);
-    await addStripeProviderPage.enterName(providerName);
-    await addStripeProviderPage.enterPublishableKey(mockStripePublishableKey);
-    await addStripeProviderPage.enterSecretKey("");
+    await addStripeProviderPage.providerForm.enterName(providerName);
+    await addStripeProviderPage.providerForm.enterPublishableKey(
+      mockStripePublishableKey,
+    );
+    await addStripeProviderPage.providerForm.enterSecretKey("");
     await addStripeProviderPage.submitProviderCreation();
 
-    await addStripeProviderPage.expectValidationError("secretKeyRequired");
+    await addStripeProviderPage.providerForm.expectValidationError(
+      "secretKeyRequired",
+    );
 
     await providersPage.goto();
     await providersPage.checkProviderNotVisible(providerName);

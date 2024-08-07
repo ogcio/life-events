@@ -77,6 +77,23 @@ export class ProvidersPage {
     await expect(accountName).not.toBeVisible();
   }
 
+  async checkProviderIsEnabled(name: string) {
+    const row = this.page.getByRole("row").filter({ hasText: name });
+    const connectedBadge = await row.getByRole("strong");
+    expect(connectedBadge).toHaveText("Connected");
+  }
+
+  async checkProviderIsDisabled(name: string) {
+    const row = this.page.getByRole("row").filter({ hasText: name });
+    const disconnectedBadge = await row.getByRole("strong");
+    expect(disconnectedBadge).toHaveText("Disconnected");
+  }
+
+  async editProvider(name: string) {
+    const row = this.page.getByRole("row").filter({ hasText: name });
+    await row.getByRole("link", { name: "edit" }).click();
+  }
+
   async createManualBankTransferProvider(name: string) {
     await this.selectManualBankTransferProvider();
     const addManualBankTransferProviderPage =

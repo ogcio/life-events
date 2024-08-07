@@ -24,10 +24,10 @@ export const test = base.extend<providersFixtures>({
     await use(providerName);
   },
 
-  bankTransferProvider: async ({ page, browserName }, use) => {
+  bankTransferProvider: async ({ page }, use) => {
     const providersPage = new ProvidersPage(page);
     await providersPage.goto();
-    const providerName = `Test bank transfer ${browserName} ${new Date()}`;
+    const providerName = `Test bank transfer ${Date.now()}`;
     await providersPage.addProvider(providerName, "banktransfer");
     await use(providerName);
   },
