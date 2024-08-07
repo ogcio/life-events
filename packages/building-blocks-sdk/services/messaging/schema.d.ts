@@ -5,13 +5,18 @@
 
 export interface paths {
   "/api/v1/messages/": {
+    /** @description Returns all the messages for the requested organisation or the requested recipient */
     get: {
       parameters: {
         query?: {
           status?: "delivered";
+          /** @description Either recipientUserId and organisationId are mandatory */
           recipientUserId?: string;
+          /** @description Either recipientUserId and organisationId are mandatory */
           organisationId?: string;
+          /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
           offset?: number;
+          /** @description Indicates the maximum number of items that will be returned in a single request */
           limit?: number;
         };
       };
@@ -21,11 +26,17 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** @description Unique Id of the message */
                 id: string;
+                /** @description Subject */
                 subject: string;
+                /** @description Creation date time */
                 createdAt: string;
+                /** @description Thread Name used to group messages */
                 threadName: string;
+                /** @description Organisation sender id */
                 organisationId: string;
+                /** @description Unique id of the recipient */
                 recipientUserId: string;
               }[];
               metadata?: {
@@ -60,10 +71,15 @@ export interface paths {
         400: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -74,23 +90,43 @@ export interface paths {
         };
       };
     };
+    /** @description Creates a message */
     post: {
       requestBody: {
         content: {
           "application/json": {
+            /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
             preferredTransports: ("sms" | "email" | "lifeEvent")[];
+            /** @description Unique user id of the recipient */
             recipientUserId: string;
-            security: string;
-            /** @default false */
+            /**
+             * @description Confidentiality level of the message
+             * @default public
+             * @enum {string}
+             */
+            security: "confidential" | "public";
+            /**
+             * @description If true, the message will be sent even if the recipient didn't accept the organisation's invitation
+             * @default false
+             */
             bypassConsent: boolean;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Date and time of when schedule the message
+             */
             scheduleAt: string;
             message: {
-              threadName: string;
+              /** @description Thread Name used to group messages */
+              threadName?: string;
+              /** @description Subject. This is the only part that will be seen outside of the messaging platform is security is 'confidential' */
               subject: string;
+              /** @description Brief description of the message */
               excerpt: string;
-              richText: string;
+              /** @description Plain text version of the message */
               plainText: string;
+              /** @description Rich text version of the message */
+              richText: string;
+              /** @description Language used to send the message */
               lang: string;
             };
           };
@@ -102,8 +138,11 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                messageId: string;
+                /**
+                 * Format: uuid
+                 * @description The unique id of the created message
+                 */
+                id: string;
               };
             };
           };
@@ -112,10 +151,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -128,10 +172,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -144,9 +193,11 @@ export interface paths {
     };
   };
   "/api/v1/messages/{messageId}": {
+    /** @description Returns the requested message */
     get: {
       parameters: {
         path: {
+          /** @description The requested message unique id */
           messageId: string;
         };
       };
@@ -156,15 +207,30 @@ export interface paths {
           content: {
             "application/json": {
               data: {
+                /** @description Subject. This is the only part that will be seen outside of the messaging platform is security is 'confidential' */
                 subject: string;
+                /** @description Creation date time */
                 createdAt: string;
+                /** @description Thread Name used to group messages */
                 threadName: string;
+                /** @description Organisation sender id */
                 organisationId: string;
+                /** @description Unique id of the recipient */
                 recipientUserId: string;
+                /** @description Brief description of the message */
                 excerpt: string;
+                /** @description Plain text version of the message */
                 plainText: string;
+                /** @description Rich text version of the message */
                 richText: string;
+                /** @description True if the message has already been seen by the recipient */
                 isSeen: boolean;
+                /**
+                 * @description Confidentiality level of the message
+                 * @default public
+                 * @enum {string}
+                 */
+                security: "confidential" | "public";
               };
               metadata?: {
                 links?: {
@@ -198,10 +264,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -214,10 +285,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -230,12 +306,17 @@ export interface paths {
     };
   };
   "/api/v1/providers/": {
+    /** @description Returns the providers matching the requested query */
     get: {
       parameters: {
         query: {
+          /** @description If set, returns only the primary providers if true, otherwise the non-primary ones */
           primary?: boolean;
+          /** @description Provider types that can be manipulated */
           type: "sms" | "email";
+          /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
           offset?: number;
+          /** @description Indicates the maximum number of items that will be returned in a single request */
           limit?: number;
         };
       };
@@ -245,11 +326,19 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the provider
+                 */
                 id: string;
+                /** @description Name of the provider */
                 providerName: string;
+                /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                 isPrimary: boolean;
-                /** @enum {string} */
+                /**
+                 * @description Provider types that can be manipulated
+                 * @enum {string}
+                 */
                 type: "sms" | "email";
               }[];
               metadata?: {
@@ -284,10 +373,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -300,10 +394,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -314,25 +413,37 @@ export interface paths {
         };
       };
     };
+    /** @description Creates a new provider */
     post: {
       requestBody?: {
         content: {
           "application/json":
             | {
+                /** @description Name of the provider */
                 providerName: string;
+                /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                 isPrimary: boolean;
                 /** @enum {string} */
                 type: "email";
+                /** @description Address of the SMTP host */
                 smtpHost: string;
+                /** @description Port of the SMTP host */
                 smtpPort: number;
+                /** @description Username to use to log into the SMTP server */
                 username: string;
+                /** @description Password to use to log into the SMTP server */
                 password: string;
+                /** @description Optional field to adjust how long time between each mail, in miliseconds */
                 throttle?: number;
+                /** @description Email address to use as sender */
                 fromAddress: string;
+                /** @description Is connection to the SMTP server secure? */
                 ssl: boolean;
               }
             | {
+                /** @description Name of the provider */
                 providerName: string;
+                /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                 isPrimary: boolean;
                 /** @enum {string} */
                 type: "sms";
@@ -362,10 +473,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -378,10 +494,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -394,12 +515,15 @@ export interface paths {
     };
   };
   "/api/v1/providers/{providerId}": {
+    /** @description Returns the requested provider */
     get: {
       parameters: {
         query: {
+          /** @description Provider types that can be manipulated */
           type: "sms" | "email";
         };
         path: {
+          /** @description The unique id of the requested provider */
           providerId: string;
         };
       };
@@ -412,22 +536,33 @@ export interface paths {
                 | {
                     /** Format: uuid */
                     id: string;
+                    /** @description Name of the provider */
                     providerName: string;
+                    /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                     isPrimary: boolean;
                     /** @enum {string} */
                     type: "email";
+                    /** @description Address of the SMTP host */
                     smtpHost: string;
+                    /** @description Port of the SMTP host */
                     smtpPort: number;
+                    /** @description Username to use to log into the SMTP server */
                     username: string;
+                    /** @description Password to use to log into the SMTP server */
                     password: string;
+                    /** @description Optional field to adjust how long time between each mail, in miliseconds */
                     throttle?: number;
+                    /** @description Email address to use as sender */
                     fromAddress: string;
+                    /** @description Is connection to the SMTP server secure? */
                     ssl: boolean;
                   }
                 | {
                     /** Format: uuid */
                     id: string;
+                    /** @description Name of the provider */
                     providerName: string;
+                    /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                     isPrimary: boolean;
                     /** @enum {string} */
                     type: "sms";
@@ -446,10 +581,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -462,10 +602,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -476,6 +621,7 @@ export interface paths {
         };
       };
     };
+    /** @description Updates the requested provider */
     put: {
       parameters: {
         path: {
@@ -488,22 +634,33 @@ export interface paths {
             | {
                 /** Format: uuid */
                 id: string;
+                /** @description Name of the provider */
                 providerName: string;
+                /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                 isPrimary: boolean;
                 /** @enum {string} */
                 type: "email";
+                /** @description Address of the SMTP host */
                 smtpHost: string;
+                /** @description Port of the SMTP host */
                 smtpPort: number;
+                /** @description Username to use to log into the SMTP server */
                 username: string;
+                /** @description Password to use to log into the SMTP server */
                 password: string;
+                /** @description Optional field to adjust how long time between each mail, in miliseconds */
                 throttle?: number;
+                /** @description Email address to use as sender */
                 fromAddress: string;
+                /** @description Is connection to the SMTP server secure? */
                 ssl: boolean;
               }
             | {
                 /** Format: uuid */
                 id: string;
+                /** @description Name of the provider */
                 providerName: string;
+                /** @description If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type */
                 isPrimary: boolean;
                 /** @enum {string} */
                 type: "sms";
@@ -526,10 +683,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -542,10 +704,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -556,9 +723,11 @@ export interface paths {
         };
       };
     };
+    /** @description Deletes the requested provider */
     delete: {
       parameters: {
         path: {
+          /** @description Unique id of the provider to be deleted */
           providerId: string;
         };
       };
@@ -571,10 +740,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -587,10 +761,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -603,9 +782,11 @@ export interface paths {
     };
   };
   "/api/v1/templates/": {
+    /** @description Returns the providers matching the requested query */
     get: {
       parameters: {
         query?: {
+          /** @description If set, templates with the requested language are returned */
           lang?: string;
         };
       };
@@ -615,10 +796,15 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                templateMetaId: string;
+                /**
+                 * Format: uuid
+                 * @description Unique id of the template
+                 */
+                id: string;
                 contents: {
+                  /** @description Selected language */
                   lang: string;
+                  /** @description Template name for the related language */
                   templateName: string;
                 }[];
               }[];
@@ -654,10 +840,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -670,10 +861,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -684,18 +880,26 @@ export interface paths {
         };
       };
     };
+    /** @description Creates a new template */
     post: {
       requestBody: {
         content: {
           "application/json": {
             contents: {
+              /** @description Template name for the related language */
               templateName: string;
+              /** @description Current language */
               lang: string;
+              /** @description Subject of the template */
               subject: string;
+              /** @description Brief description of the template content */
               excerpt: string;
+              /** @description Plain text version of the template */
               plainText: string;
+              /** @description Rich text version of the template */
               richText: string;
             }[];
+            /** @description List of the variables that are needed to be filled to create a message using this template */
             variables: {
               name: string;
               type: string;
@@ -710,7 +914,10 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the created message
+                 */
                 id: string;
               };
             };
@@ -720,10 +927,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -736,10 +948,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -752,6 +969,7 @@ export interface paths {
     };
   };
   "/api/v1/templates/{templateId}": {
+    /** @description Returns the requested template */
     get: {
       parameters: {
         path: {
@@ -765,12 +983,18 @@ export interface paths {
             "application/json": {
               data: {
                 contents: {
+                  /** @description Template name for the related language */
                   templateName: string;
-                  subject: string;
-                  excerpt: string;
-                  plainText: string;
-                  richText: string;
+                  /** @description Current language */
                   lang: string;
+                  /** @description Subject of the template */
+                  subject: string;
+                  /** @description Brief description of the template content */
+                  excerpt: string;
+                  /** @description Plain text version of the template */
+                  plainText: string;
+                  /** @description Rich text version of the template */
+                  richText: string;
                 }[];
                 fields: {
                   fieldName: string;
@@ -809,10 +1033,15 @@ export interface paths {
         404: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -825,10 +1054,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -839,6 +1073,7 @@ export interface paths {
         };
       };
     };
+    /** @description Updates the requested template */
     put: {
       parameters: {
         path: {
@@ -849,15 +1084,25 @@ export interface paths {
         content: {
           "application/json": {
             contents: {
-              /** Format: uuid */
+              /**
+               * Format: uuid
+               * @description Unique id of the template
+               */
               id: string;
+              /** @description Template name for the related language */
               templateName: string;
+              /** @description Current language */
               lang: string;
+              /** @description Subject of the template */
               subject: string;
+              /** @description Brief description of the template content */
               excerpt: string;
+              /** @description Plain text version of the template */
               plainText: string;
+              /** @description Rich text version of the template */
               richText: string;
             }[];
+            /** @description List of the variables that are needed to be filled to create a message using this template */
             variables: {
               name: string;
               type: string;
@@ -867,13 +1112,22 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
+        200: {
+          content: never;
+        };
+        /** @description Default Response */
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -886,10 +1140,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -900,6 +1159,7 @@ export interface paths {
         };
       };
     };
+    /** @description Deletes the requested template */
     delete: {
       parameters: {
         path: {
@@ -908,13 +1168,22 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
+        200: {
+          content: never;
+        };
+        /** @description Default Response */
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -927,10 +1196,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -943,6 +1217,7 @@ export interface paths {
     };
   };
   "/api/v1/organisation-settings/": {
+    /** @description Returns the organisation settings for the logged in user */
     get: {
       responses: {
         /** @description Default Response */
@@ -950,18 +1225,35 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the organisation setting
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related user
+                 */
                 userId: string;
-                /** @default null */
+                /**
+                 * @description User profile id, if available
+                 * @default null
+                 */
                 userProfileId: null | string;
-                /** @default null */
+                /**
+                 * @description Phone number of the user
+                 * @default null
+                 */
                 phoneNumber: null | string;
-                /** @default null */
+                /**
+                 * @description Email address of the user
+                 * @default null
+                 */
                 emailAddress: null | string;
+                /** @description Unique id of the related organisation */
                 organisationId: string;
                 /**
+                 * @description Current status of the invitation to the messaging building block
                  * @default pending
                  * @enum {string}
                  */
@@ -970,14 +1262,16 @@ export interface paths {
                   | "pending"
                   | "accepted"
                   | "declined";
+                /** @description Date and time describing when the organisation invitation has been sent */
                 organisationInvitationSentAt?: string;
+                /** @description Date and time describing when the user has gave a feedback to the organisation invitation */
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "sms"
-                  | "email"
-                  | "lifeEvent"
-                )[];
-                /** @enum {string} */
+                /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+                organisationPreferredTransports: ("sms" | "email")[];
+                /**
+                 * @description If full, it means that the user is already on the Life Events platform, if partial the match has to be reviewed, if not_related the user does not exist
+                 * @enum {string}
+                 */
                 correlationQuality: "full" | "partial" | "not_related";
                 /**
                  * @default pending
@@ -985,15 +1279,30 @@ export interface paths {
                  */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -1006,7 +1315,10 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 };
               }[];
@@ -1042,10 +1354,15 @@ export interface paths {
         400: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1058,10 +1375,15 @@ export interface paths {
         404: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1074,10 +1396,15 @@ export interface paths {
         500: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1090,6 +1417,7 @@ export interface paths {
     };
   };
   "/api/v1/organisation-settings/{organisationSettingId}": {
+    /** @description Returns the requested organisation setting */
     get: {
       parameters: {
         path: {
@@ -1102,18 +1430,35 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the organisation setting
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related user
+                 */
                 userId: string;
-                /** @default null */
+                /**
+                 * @description User profile id, if available
+                 * @default null
+                 */
                 userProfileId: null | string;
-                /** @default null */
+                /**
+                 * @description Phone number of the user
+                 * @default null
+                 */
                 phoneNumber: null | string;
-                /** @default null */
+                /**
+                 * @description Email address of the user
+                 * @default null
+                 */
                 emailAddress: null | string;
+                /** @description Unique id of the related organisation */
                 organisationId: string;
                 /**
+                 * @description Current status of the invitation to the messaging building block
                  * @default pending
                  * @enum {string}
                  */
@@ -1122,14 +1467,16 @@ export interface paths {
                   | "pending"
                   | "accepted"
                   | "declined";
+                /** @description Date and time describing when the organisation invitation has been sent */
                 organisationInvitationSentAt?: string;
+                /** @description Date and time describing when the user has gave a feedback to the organisation invitation */
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "sms"
-                  | "email"
-                  | "lifeEvent"
-                )[];
-                /** @enum {string} */
+                /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+                organisationPreferredTransports: ("sms" | "email")[];
+                /**
+                 * @description If full, it means that the user is already on the Life Events platform, if partial the match has to be reviewed, if not_related the user does not exist
+                 * @enum {string}
+                 */
                 correlationQuality: "full" | "partial" | "not_related";
                 /**
                  * @default pending
@@ -1137,15 +1484,30 @@ export interface paths {
                  */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -1158,7 +1520,10 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 };
               };
@@ -1194,10 +1559,15 @@ export interface paths {
         400: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1210,10 +1580,15 @@ export interface paths {
         404: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1226,10 +1601,15 @@ export interface paths {
         500: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1240,6 +1620,7 @@ export interface paths {
         };
       };
     };
+    /** @description Updates the requested organisation settings */
     patch: {
       parameters: {
         path: {
@@ -1250,11 +1631,13 @@ export interface paths {
         content: {
           "application/json": {
             /**
+             * @description Current status of the invitation to receive messages from the organisation
              * @default accepted
              * @enum {string}
              */
             invitationStatusFeedback: "accepted" | "declined";
-            preferredTransports: string[];
+            /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+            preferredTransports: ("sms" | "email")[];
           };
         };
       };
@@ -1264,18 +1647,35 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the organisation setting
+                 */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related user
+                 */
                 userId: string;
-                /** @default null */
+                /**
+                 * @description User profile id, if available
+                 * @default null
+                 */
                 userProfileId: null | string;
-                /** @default null */
+                /**
+                 * @description Phone number of the user
+                 * @default null
+                 */
                 phoneNumber: null | string;
-                /** @default null */
+                /**
+                 * @description Email address of the user
+                 * @default null
+                 */
                 emailAddress: null | string;
+                /** @description Unique id of the related organisation */
                 organisationId: string;
                 /**
+                 * @description Current status of the invitation to the messaging building block
                  * @default pending
                  * @enum {string}
                  */
@@ -1284,14 +1684,16 @@ export interface paths {
                   | "pending"
                   | "accepted"
                   | "declined";
+                /** @description Date and time describing when the organisation invitation has been sent */
                 organisationInvitationSentAt?: string;
+                /** @description Date and time describing when the user has gave a feedback to the organisation invitation */
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "sms"
-                  | "email"
-                  | "lifeEvent"
-                )[];
-                /** @enum {string} */
+                /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+                organisationPreferredTransports: ("sms" | "email")[];
+                /**
+                 * @description If full, it means that the user is already on the Life Events platform, if partial the match has to be reviewed, if not_related the user does not exist
+                 * @enum {string}
+                 */
                 correlationQuality: "full" | "partial" | "not_related";
                 /**
                  * @default pending
@@ -1299,15 +1701,30 @@ export interface paths {
                  */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -1320,9 +1737,37 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 };
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
               };
             };
           };
@@ -1331,10 +1776,15 @@ export interface paths {
         400: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1347,10 +1797,15 @@ export interface paths {
         404: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1363,10 +1818,15 @@ export interface paths {
         500: {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1379,6 +1839,7 @@ export interface paths {
     };
   };
   "/api/v1/user-imports/": {
+    /** @description Retrieves the user import batches related to the current organisation */
     get: {
       responses: {
         /** @description Default Response */
@@ -1390,6 +1851,7 @@ export interface paths {
                 /** Format: date-time */
                 importedAt: string;
                 /**
+                 * @description Channel through which the users have been imported
                  * @default api
                  * @enum {string}
                  */
@@ -1430,7 +1892,7 @@ export interface paths {
         };
       };
     };
-    /** @description If 'Content-Type' header contains 'multipart/form-data' it accepts a CSV file, otherwise an array of users to import */
+    /** @description Imports a new batch of users. If 'Content-Type' header contains 'multipart/form-data' it accepts a CSV file, otherwise an array of users to import */
     post: {
       requestBody?: {
         content: {
@@ -1447,10 +1909,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1463,10 +1930,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1479,9 +1951,11 @@ export interface paths {
     };
   };
   "/api/v1/user-imports/{importId}": {
+    /** @description Retrieves the requested user import batch */
     get: {
       parameters: {
         query: {
+          /** @description If true, it returns the data of the user sent in the import batch */
           includeImportedData: boolean;
         };
         path: {
@@ -1499,11 +1973,18 @@ export interface paths {
                 importedAt: string;
                 usersData: {
                   importIndex: number;
-                  /** @default null */
+                  /**
+                   * @description Phone number of the user
+                   * @default null
+                   */
                   phoneNumber: null | string;
-                  /** @default null */
+                  /**
+                   * @description Email address of the user
+                   * @default null
+                   */
                   emailAddress: null | string;
                   /**
+                   * @description Result of the import for the user
                    * @default pending
                    * @enum {string}
                    */
@@ -1513,22 +1994,47 @@ export interface paths {
                     | "not_found"
                     | "error"
                     | "missing_contacts";
-                  /** @default null */
+                  /**
+                   * @description The error raised during the import, if set
+                   * @default null
+                   */
                   importError?: null | string;
-                  /** @default null */
+                  /**
+                   * @description Related user profile id from the Life Events building block, if available
+                   * @default null
+                   */
                   relatedUserProfileId?: null | string;
-                  /** @default null */
+                  /**
+                   * @description Related user id from the Messaging building block, if available
+                   * @default null
+                   */
                   relatedUserId?: null | string;
+                  /** @description Tags related to the user */
                   tags?: string[];
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -1541,10 +2047,14 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 }[];
                 /**
+                 * @description Channel through which the users have been imported
                  * @default api
                  * @enum {string}
                  */
@@ -1587,10 +2097,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1603,10 +2118,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1619,10 +2139,10 @@ export interface paths {
     };
   };
   "/api/v1/user-imports/template-download": {
-    /** @description it will return a string containing the template with the csv that will be used to import users */
+    /** @description Returns a string containing the template with the csv that will be used to import users */
     get: {
       responses: {
-        /** @description Default Response */
+        /** @description The header and one example line for the CSV template that must be used to import users */
         200: {
           content: {
             "text/csv": string;
@@ -1635,12 +2155,19 @@ export interface paths {
     get: {
       parameters: {
         query?: {
+          /** @description If set, the endpoint returns the users whom have an accepted relation with the organisation id */
           organisationId?: string;
+          /** @description If set, the endpoint searches for users whom contain this value in either the name, the surname, or the email address */
           search?: string;
+          /** @description If set, it must contain a list of transports divided by ',' and the endpoint searches for users whom have selected at least one of them as preferred for the organisation */
           transports?: string;
+          /** @description If set, the endpoint returns the users whom have imported by that specific batch */
           importId?: string;
+          /** @description If true, the endpoint returns active only users */
           activeOnly?: boolean;
+          /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
           offset?: number;
+          /** @description Indicates the maximum number of items that will be returned in a single request */
           limit?: number;
         };
       };
@@ -1650,28 +2177,60 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** @default null */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the organisation setting
+                 */
+                organizationSettingId: string;
+                /**
+                 * @description First name of the user
+                 * @default null
+                 */
                 firstName: null | string;
-                /** @default null */
+                /**
+                 * @description Last name of the user
+                 * @default null
+                 */
                 lastName: null | string;
-                /** @default null */
+                /**
+                 * @description Birth date of the user
+                 * @default null
+                 */
                 birthDate: null | string;
-                /** @default null */
+                /**
+                 * @description Preferred language of the user
+                 * @default null
+                 */
                 lang: null | string;
-                /** @default null */
+                /**
+                 * @description PPSN of the user
+                 * @default null
+                 */
                 ppsn: null | string;
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related user
+                 */
                 userId: string;
-                /** @default null */
+                /**
+                 * @description User profile id, if available
+                 * @default null
+                 */
                 userProfileId: null | string;
-                /** @default null */
+                /**
+                 * @description Phone number of the user
+                 * @default null
+                 */
                 phoneNumber: null | string;
-                /** @default null */
+                /**
+                 * @description Email address of the user
+                 * @default null
+                 */
                 emailAddress: null | string;
+                /** @description Unique id of the related organisation */
                 organisationId: string;
                 /**
+                 * @description Current status of the invitation to the messaging building block
                  * @default pending
                  * @enum {string}
                  */
@@ -1680,14 +2239,16 @@ export interface paths {
                   | "pending"
                   | "accepted"
                   | "declined";
+                /** @description Date and time describing when the organisation invitation has been sent */
                 organisationInvitationSentAt?: string;
+                /** @description Date and time describing when the user has gave a feedback to the organisation invitation */
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "sms"
-                  | "email"
-                  | "lifeEvent"
-                )[];
-                /** @enum {string} */
+                /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+                organisationPreferredTransports: ("sms" | "email")[];
+                /**
+                 * @description If full, it means that the user is already on the Life Events platform, if partial the match has to be reviewed, if not_related the user does not exist
+                 * @enum {string}
+                 */
                 correlationQuality: "full" | "partial" | "not_related";
                 /**
                  * @default pending
@@ -1695,15 +2256,30 @@ export interface paths {
                  */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -1716,7 +2292,10 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 };
               }[];
@@ -1752,10 +2331,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1768,10 +2352,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1784,9 +2373,11 @@ export interface paths {
     };
   };
   "/api/v1/users/{userId}": {
+    /** @description Returns the requested user */
     get: {
       parameters: {
         query?: {
+          /** @description If true, the endpoint returns active only users */
           activeOnly?: boolean;
         };
         path: {
@@ -1799,28 +2390,60 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** @default null */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the organisation setting
+                 */
+                organizationSettingId: string;
+                /**
+                 * @description First name of the user
+                 * @default null
+                 */
                 firstName: null | string;
-                /** @default null */
+                /**
+                 * @description Last name of the user
+                 * @default null
+                 */
                 lastName: null | string;
-                /** @default null */
+                /**
+                 * @description Birth date of the user
+                 * @default null
+                 */
                 birthDate: null | string;
-                /** @default null */
+                /**
+                 * @description Preferred language of the user
+                 * @default null
+                 */
                 lang: null | string;
-                /** @default null */
+                /**
+                 * @description PPSN of the user
+                 * @default null
+                 */
                 ppsn: null | string;
-                /** Format: uuid */
-                organisationSettingId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related user
+                 */
                 userId: string;
-                /** @default null */
+                /**
+                 * @description User profile id, if available
+                 * @default null
+                 */
                 userProfileId: null | string;
-                /** @default null */
+                /**
+                 * @description Phone number of the user
+                 * @default null
+                 */
                 phoneNumber: null | string;
-                /** @default null */
+                /**
+                 * @description Email address of the user
+                 * @default null
+                 */
                 emailAddress: null | string;
+                /** @description Unique id of the related organisation */
                 organisationId: string;
                 /**
+                 * @description Current status of the invitation to the messaging building block
                  * @default pending
                  * @enum {string}
                  */
@@ -1829,14 +2452,16 @@ export interface paths {
                   | "pending"
                   | "accepted"
                   | "declined";
+                /** @description Date and time describing when the organisation invitation has been sent */
                 organisationInvitationSentAt?: string;
+                /** @description Date and time describing when the user has gave a feedback to the organisation invitation */
                 organisationInvitationFeedbackAt?: string;
-                organisationPreferredTransports: (
-                  | "sms"
-                  | "email"
-                  | "lifeEvent"
-                )[];
-                /** @enum {string} */
+                /** @description The list of the preferred transports to use. If the selected transports are not available for the recipient, others will be used */
+                organisationPreferredTransports: ("sms" | "email")[];
+                /**
+                 * @description If full, it means that the user is already on the Life Events platform, if partial the match has to be reviewed, if not_related the user does not exist
+                 * @enum {string}
+                 */
                 correlationQuality: "full" | "partial" | "not_related";
                 /**
                  * @default pending
@@ -1844,15 +2469,30 @@ export interface paths {
                  */
                 userStatus: "to_be_invited" | "pending" | "disabled" | "active";
                 details?: {
-                  /** @default null */
+                  /**
+                   * @description PPSN of the imported user
+                   * @default null
+                   */
                   publicIdentityId: null | string;
-                  /** @default null */
+                  /**
+                   * @description First name of the imported user
+                   * @default null
+                   */
                   firstName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Last name of the imported user
+                   * @default null
+                   */
                   lastName: null | string;
-                  /** @default null */
+                  /**
+                   * @description Birth date of the imported user
+                   * @default null
+                   */
                   birthDate: null | string;
-                  /** @default null */
+                  /**
+                   * @description Address of the imported user
+                   * @default null
+                   */
                   address: {
                     /** @default null */
                     city: null | string;
@@ -1865,7 +2505,10 @@ export interface paths {
                     /** @default null */
                     region: null | string;
                   } | null;
-                  /** @default false */
+                  /**
+                   * @description If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user
+                   * @default false
+                   */
                   collectedConsent: boolean;
                 };
               };
@@ -1901,10 +2544,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1917,10 +2565,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -1933,11 +2586,15 @@ export interface paths {
     };
   };
   "/api/v1/message-events/": {
+    /** @description Returns the message events that match the requested query */
     get: {
       parameters: {
         query?: {
+          /** @description If set, it filters the events for the messages containing the set value in subject */
           search?: string;
+          /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
           offset?: number;
+          /** @description Indicates the maximum number of items that will be returned in a single request */
           limit?: number;
         };
       };
@@ -1947,14 +2604,25 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the event
+                 */
                 eventId: string;
-                /** Format: uuid */
+                /**
+                 * Format: uuid
+                 * @description Unique id of the related message
+                 */
                 messageId: string;
+                /** @description Subject of the related message */
                 subject: string;
+                /** @description Full name of the recipient */
                 receiverFullName: string;
+                /** @description Event type description */
                 eventType: string;
+                /** @description Status for event type */
                 eventStatus: string;
+                /** @description Date and time which describes when the message has to be sent */
                 scheduledAt: string;
               }[];
               metadata?: {
@@ -1989,10 +2657,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2005,10 +2678,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2021,6 +2699,7 @@ export interface paths {
     };
   };
   "/api/v1/message-events/{eventId}": {
+    /** @description Returns the selected event id */
     get: {
       parameters: {
         path: {
@@ -2033,37 +2712,68 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                eventStatus: string;
+                /** @description Event type description */
                 eventType: string;
+                /** @description Status for event type */
+                eventStatus: string;
                 data:
                   | {
+                      /** @description Unique id of the related message */
                       messageId: string;
+                      /** @description Full name of the recipient */
                       receiverFullName: string;
+                      /** @description PPSN of the recipient */
                       receiverPPSN: string;
+                      /** @description Subject of the related message */
                       subject: string;
+                      /** @description Language of the related message */
                       lang: string;
+                      /** @description Excerpt of the related message */
                       excerpt: string;
+                      /** @description Rich text content of the related message */
                       richText: string;
+                      /** @description Plain text context of the related message */
                       plainText: string;
+                      /** @description Thread name of the related message */
                       threadName: string;
+                      /** @description Selected transports to send the message */
                       transports: string[];
-                      /** Format: date-time */
+                      /**
+                       * Format: date-time
+                       * @description Date and time which describes when the message has to be sent
+                       */
                       scheduledAt: string;
+                      /** @description Unique user id of the sender */
                       senderUserId: string;
+                      /** @description Full name of the sender */
                       senderFullName: string;
+                      /** @description PPSN of the sender */
                       senderPPSN: string;
+                      /** @description Organisation related to the sender */
                       organisationName: string;
-                      security: string;
+                      /**
+                       * @description Confidentiality level of the message
+                       * @default public
+                       * @enum {string}
+                       */
+                      security: "confidential" | "public";
+                      /** @description If true, the message will be sent even if the recipient didn't accept the organisation's invitation */
                       bypassConsent: boolean;
                     }
                   | {
+                      /** @description Unique id of the related message */
                       messageId: string;
+                      /** @description Unique id of the job */
                       jobId: string;
                     }
                   | {
+                      /** @description Unique id of the related message */
                       messageId: string;
                     };
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Date and time which describes when the event has been recorded
+                 */
                 createdAt: string;
               }[];
             };
@@ -2073,10 +2783,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2089,10 +2804,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2105,6 +2825,7 @@ export interface paths {
     };
   };
   "/api/v1/jobs/{id}": {
+    /** @description Executes the requested job */
     post: {
       parameters: {
         path: {
@@ -2114,6 +2835,7 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
+            /** @description The security token used to ensure you are allowed to execute this job */
             token: string;
           };
         };
@@ -2127,10 +2849,15 @@ export interface paths {
         "5XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;
@@ -2143,10 +2870,15 @@ export interface paths {
         "4XX": {
           content: {
             "application/json": {
+              /** @description Code used to categorize the error */
               code: string;
+              /** @description Description of the error */
               detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
               request_id: string;
+              /** @description Name of the error type */
               name: string;
+              /** @description List of the validation errors */
               validation?: {
                 fieldName: string;
                 message: string;

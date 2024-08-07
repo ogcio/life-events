@@ -167,7 +167,7 @@ export const getSettingsPerUser = async (params: {
     const result = await params.client.query<OrganisationSetting>(
       `
           SELECT
-              ouc.id as "organisationSettingId",
+              ouc.id as "id",
               ouc.user_id as "userId",
               users.user_profile_id as "userProfileId",
               users.email as "emailAddress",
