@@ -47,7 +47,7 @@ export function mailService(client: PoolClient): MailService {
         is_ssl as "ssl",
         COALESCE(is_primary, false) as "isPrimary"
       FROM email_providers
-      WHERE organisation_id = $1 and is_primary
+      WHERE organisation_id = $1 and is_primary and deleted_at is null
       `,
         [organisationId],
       );
@@ -93,6 +93,7 @@ export function mailService(client: PoolClient): MailService {
           select 
             id 
           from email_providers 
+          WHERE deleted_at is null
           order by created_at desc
           limit 1
         `,
