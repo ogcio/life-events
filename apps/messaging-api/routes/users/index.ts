@@ -20,7 +20,10 @@ import {
 import { Permissions } from "../../types/permissions";
 import { NotFoundError } from "shared-errors";
 import { ensureUserIsOrganisationMember } from "../../utils/error-utils";
-import { getProfileSdk } from "../../utils/authentication-factory";
+import {
+  ensureOrganizationIdIsSet,
+  getProfileSdk,
+} from "../../utils/authentication-factory";
 
 const tags = ["Users"];
 
@@ -77,7 +80,7 @@ export default async function users(app: FastifyInstance) {
       const pagination = sanitizePagination(query);
       const recipientsResponse = await getUsers({
         pool: app.pg.pool,
-        organisationId: request.userData!.organizationId!,
+        organisationId: ensureOrganizationIdIsSet(request, "GET_USERS"),
         search: query.search,
         pagination,
         importId: query.importId,
@@ -137,6 +140,9 @@ export default async function users(app: FastifyInstance) {
       });
 
       if (user.userProfileId) {
+        // organizationId is optional here, so is right
+        // to have it set or not based on the fact
+        // that a user is a public servant or not
         const profileSdk = await getProfileSdk(
           request.userData?.organizationId,
         );

@@ -35,7 +35,7 @@ export const MessageListItemSchema = Type.Object({
   createdAt: Type.String(),
   threadName: Type.String(),
   organisationId: Type.String(),
-  recipientId: Type.String(),
+  recipientUserId: Type.String(),
 });
 export const MessageListSchema = Type.Array(MessageListItemSchema);
 export type MessageList = Static<typeof MessageListSchema>;

@@ -25,6 +25,7 @@ import {
   ValidationError,
 } from "shared-errors";
 import { Permissions } from "../../types/permissions";
+import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory";
 
 export const prefix = "/providers";
 
@@ -81,7 +82,7 @@ export default async function providers(app: FastifyInstance) {
         limit: request.query.limit,
         offset: request.query.offset,
       });
-      const { organizationId } = request.userData!;
+      const organizationId = ensureOrganizationIdIsSet(request, errorProcess);
       const { type } = request.query;
 
       const textSearchILikeClause = request.query?.search
@@ -223,8 +224,8 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async function handleGetProvider(request) {
-      const organisationId = request.userData?.organizationId!;
       const errorProcess = "GET_PROVIDER";
+      const organisationId = ensureOrganizationIdIsSet(request, errorProcess);
       const providerId = request.params.providerId;
 
       if (request.query.type !== "email" && request.query.type !== "sms") {
@@ -335,8 +336,8 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async function handleCreateProvider(request) {
-      const organisationid = request.userData?.organizationId!;
       const errorProcess = "CREATE_PROVIDER";
+      const organisationid = ensureOrganizationIdIsSet(request, errorProcess);
       const provider = request.body;
 
       if (!isSmsProvider(provider) && !isEmailProvider(provider)) {
@@ -447,7 +448,7 @@ export default async function providers(app: FastifyInstance) {
         }
       }
 
-      return { data: { id:providerId } };
+      return { data: { id: providerId } };
     },
   );
 
@@ -482,7 +483,7 @@ export default async function providers(app: FastifyInstance) {
         );
       }
 
-      const organizationId = request.userData?.organizationId!;
+      const organizationId = ensureOrganizationIdIsSet(request, errorProcess);
       const provider = request.body;
 
       if (!isSmsProvider(provider) && !isEmailProvider(provider)) {
@@ -648,7 +649,7 @@ export default async function providers(app: FastifyInstance) {
     },
     async function handleDeleteProvider(request) {
       const errorProcess = "DELETE_PROVIDER";
-      const organizationId = request.userData?.organizationId!;
+      const organizationId = ensureOrganizationIdIsSet(request, errorProcess);
       const providerId = request.params.providerId;
 
       let deleted = 0;

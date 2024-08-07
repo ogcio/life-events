@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 import { PoolClient } from "pg";
 import { ServiceError } from "../../utils";
-import { ServerError, ValidationError } from "shared-errors";
 
 export type EmailProvider = {
   id: string;

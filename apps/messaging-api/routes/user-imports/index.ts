@@ -20,6 +20,7 @@ import {
 } from "../../services/users/import/read-user-imports";
 import { HttpError } from "../../types/httpErrors";
 import { BadRequestError } from "shared-errors";
+import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory";
 
 const tags = ["User Imports"];
 enum MimeTypes {
@@ -56,7 +57,10 @@ export default async function userImports(app: FastifyInstance) {
         data: await getUserImportsForOrganisation({
           logger: request.log,
           pool: app.pg.pool,
-          organisationId: request.userData!.organizationId!,
+          organisationId: ensureOrganizationIdIsSet(
+            request,
+            "GET_USER_IMPORTS",
+          ),
         }),
       };
     },
@@ -133,7 +137,7 @@ export default async function userImports(app: FastifyInstance) {
       data: await getUserImportForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: request.userData!.organizationId!,
+        organisationId: ensureOrganizationIdIsSet(request, "GET_USER_IMPORT"),
         importId: request.params.importId,
         includeUsersData: request.query.includeImportedData ?? true,
       }),

@@ -4,6 +4,10 @@ import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 import { Permissions } from "../../types/permissions";
 import { HttpError } from "../../types/httpErrors";
 import { getGenericResponseSchema } from "../../types/schemaDefinitions";
+import {
+  ensureOrganizationIdIsSet,
+  ensureUserIdIsSet,
+} from "../../utils/authentication-factory";
 
 const tags = ["Templates"];
 
@@ -308,7 +312,8 @@ export default async function templates(app: FastifyInstance) {
       },
     },
     async function handleCreate(request, reply) {
-      const userId = request.userData!.userId;
+      const errorCode = "CREATE_TEMPLATE";
+      const userId = ensureUserIdIsSet(request, errorCode);
 
       const { contents, variables } = request.body;
 
@@ -328,7 +333,7 @@ export default async function templates(app: FastifyInstance) {
             limit 1);
         `,
           [
-            request.userData!.organizationId!,
+            ensureOrganizationIdIsSet(request, errorCode),
             contents
               .map((content) => content.templateName.toLowerCase())
               .join(", "),
@@ -348,7 +353,7 @@ export default async function templates(app: FastifyInstance) {
           values($1,$2)
           returning id
         `,
-          [request.userData!.organizationId!, userId],
+          [ensureOrganizationIdIsSet(request, errorCode), userId],
         );
         templateMetaId = templateMetaResponse.rows.at(0)?.id;
 

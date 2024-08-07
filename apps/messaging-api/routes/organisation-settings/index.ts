@@ -15,6 +15,7 @@ import {
 import { Permissions } from "../../types/permissions";
 import { getGenericResponseSchema } from "../../types/schemaDefinitions";
 import { getSettingsPerUserProfile } from "../../services/users/shared-users";
+import { ensureUserIdIsSet } from "../../utils/authentication-factory";
 
 const tags = ["Organisation Settings"];
 
@@ -38,13 +39,14 @@ export default async function organisationSettings(app: FastifyInstance) {
       },
     },
     async (request: FastifyRequest, _reply: FastifyReply) => {
+      const errorCode = "GET_ORGANISATION_SETTINGS";
       const client = await app.pg.pool.connect();
       try {
         return {
           data: await getSettingsPerUserProfile({
-            userProfileId: request.userData!.userId,
+            userProfileId: ensureUserIdIsSet(request, errorCode),
             client,
-            errorCode: "GET_ORGANISATION_SETTINGS",
+            errorCode,
           }),
         };
       } finally {
@@ -82,7 +84,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await getOrganisationSettingsForProfile({
-        userProfileId: request.userData!.userId,
+        userProfileId: ensureUserIdIsSet(request, "GET_ORGANIZATION_SETTING"),
         organisationSettingId: request.params.organisationSettingId,
         pg: app.pg,
       }),
@@ -118,15 +120,16 @@ export default async function organisationSettings(app: FastifyInstance) {
       request: FastifyRequest<PatchOrgInvitationSchema>,
       _reply: FastifyReply,
     ) => {
+      const errorCode = "UPDATE_ORGANISATION_SETTINGS";
       await updateInvitationStatus({
-        userProfileId: request.userData!.userId,
+        userProfileId: ensureUserIdIsSet(request, errorCode),
         pg: app.pg,
         feedback: { userStatusFeedback: "active" },
       });
 
       return {
         data: await updateOrganisationFeedback({
-          userProfileId: request.userData!.userId,
+          userProfileId: ensureUserIdIsSet(request, errorCode),
           organisationSettingId: request.params.organisationSettingId,
           pg: app.pg,
           feedback: request.body,
