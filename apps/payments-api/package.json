@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "TAP_RCFILE=tap.yml tap",
-    "test:e2e" : "cd ./e2e && bru run --env local",
-    "test:dev" : "cd ./e2e && bru run --env dev",
+    "test:e2e": "cd ./e2e && bru run --env local",
+    "test:dev": "cd ./e2e && bru run --env dev",
     "start": "node dist/index.js",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
@@ -50,6 +50,7 @@
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.4",
     "@types/node": "^20.12.13",
+    "@types/pg": "^8.11.6",
     "@typescript-eslint/eslint-plugin": "^7.11.0",
     "@typescript-eslint/parser": "^7.11.0",
     "@usebruno/cli": "^1.20.4",
