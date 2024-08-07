@@ -1,8 +1,11 @@
 import { Page } from "@playwright/test";
-import { test } from "../fixtures/test";
-import { mockRealexMerchantId, mockRealexSharedSecret } from "../utils/mocks";
-import { paymentSetupUrl } from "../utils/constants";
-import { ProvidersPage } from "../objects/providers/ProvidersPage";
+import { test } from "../../fixtures/test";
+import {
+  mockRealexMerchantId,
+  mockRealexSharedSecret,
+} from "../../utils/mocks";
+import { paymentSetupUrl } from "../../utils/constants";
+import { ProvidersPage } from "../../objects/providers/ProvidersPage";
 import {
   Severity,
   owner,
@@ -10,7 +13,7 @@ import {
   severity,
   description,
 } from "allure-js-commons";
-import { AddRealexProviderPage } from "../objects/providers/AddRealexProviderPage";
+import { AddRealexProviderPage } from "../../objects/providers/AddRealexProviderPage";
 
 test.describe("Realex provider", () => {
   let page: Page;

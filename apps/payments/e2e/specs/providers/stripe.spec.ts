@@ -1,8 +1,11 @@
 import { Page } from "@playwright/test";
-import { test } from "../fixtures/test";
-import { mockStripePublishableKey, mockStripeSecretKey } from "../utils/mocks";
-import { paymentSetupUrl } from "../utils/constants";
-import { ProvidersPage } from "../objects/providers/ProvidersPage";
+import { test } from "../../fixtures/test";
+import {
+  mockStripePublishableKey,
+  mockStripeSecretKey,
+} from "../../utils/mocks";
+import { paymentSetupUrl } from "../../utils/constants";
+import { ProvidersPage } from "../../objects/providers/ProvidersPage";
 import {
   Severity,
   owner,
@@ -10,7 +13,7 @@ import {
   severity,
   description,
 } from "allure-js-commons";
-import { AddStripeProviderPage } from "../objects/providers/AddStripeProviderPage";
+import { AddStripeProviderPage } from "../../objects/providers/AddStripeProviderPage";
 
 test.describe("Stripe provider", () => {
   let page: Page;
