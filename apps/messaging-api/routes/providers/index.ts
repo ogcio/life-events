@@ -669,16 +669,18 @@ export default async function providers(app: FastifyInstance) {
       try {
         const deleteQueryResult = await app.pg.pool.query(
           `
-        with sms as (
-            delete from sms_providers 
-            where id = $1 and organisation_id = $2
-            returning 1
+        WITH sms as (
+            UPDATE sms_providers 
+            SET deleted_at = now()
+            WHERE id = $1 AND organisation_id = $2
+            RETURNING 1
         ), email as(
-            delete from email_providers 
-            where id = $1 and organisation_id = $2
-            returning 1
+            UPDATE email_providers 
+            SET deleted_at = now()
+            WHERE id = $1 AND organisation_id = $2
+            RETURNING 1
         )
-        select * from sms union all select * from email
+        SELECT * FROM sms UNION ALL select * FROM email
       `,
           [providerId, organizationId],
         );
