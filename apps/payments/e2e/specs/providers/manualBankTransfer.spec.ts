@@ -1,9 +1,9 @@
 import { Page } from "@playwright/test";
-import { test } from "../fixtures/test";
-import { mockAccountHolderName, mockIban } from "../utils/mocks";
-import { paymentSetupUrl } from "../utils/constants";
-import { ProvidersPage } from "../objects/providers/ProvidersPage";
-import { AddManualBankTransferProviderPage } from "../objects/providers/AddManualBankTransferProviderPage";
+import { test } from "../../fixtures/test";
+import { mockAccountHolderName, mockIban } from "../../utils/mocks";
+import { paymentSetupUrl } from "../../utils/constants";
+import { ProvidersPage } from "../../objects/providers/ProvidersPage";
+import { AddManualBankTransferProviderPage } from "../../objects/providers/AddManualBankTransferProviderPage";
 import {
   Severity,
   owner,

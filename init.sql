@@ -5,6 +5,7 @@ CREATE DATABASE payments;
 CREATE DATABASE shared;
 CREATE DATABASE profile;
 CREATE DATABASE scheduler;
+CREATE DATABASE upload;
 
 
 -- Setup Extensions
