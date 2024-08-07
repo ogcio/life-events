@@ -146,6 +146,7 @@ export default async function templates(app: FastifyInstance) {
         join message_template_contents c on c.template_meta_id = m.id
         where 
           case when length($1) > 0 then lang=$1 else true end
+          AND m.deleted_at is null
           order by c.created_at desc
       `,
         [lang],
@@ -203,98 +204,7 @@ export default async function templates(app: FastifyInstance) {
       },
     },
     async function handleGetOne(request, _reply) {
-      const templateId = request.params.templateId;
-
-      const templateMeta = await app.pg.pool.query<{
-        templateName: string;
-        subject: string;
-        excerpt: string;
-        plainText: string;
-        richText: string;
-        lang: string;
-        fieldName?: string;
-        fieldType?: string;
-      }>(
-        `
-            select
-              template_name as "templateName",
-              subject,
-              excerpt,
-              plain_text as "plainText",
-              rich_text as "richText",
-              lang,
-              v.field_name as "fieldName",
-              v.field_type as "fieldType"
-            from message_template_meta m
-            join message_template_contents c on c.template_meta_id = m.id
-            left join message_template_variables v on v.template_meta_id = m.id
-            where m.id = $1
-      `,
-        [templateId],
-      );
-
-      const template: {
-        contents: {
-          templateName: string;
-          subject: string;
-          excerpt: string;
-          plainText: string;
-          richText: string;
-          lang: string;
-        }[];
-        fields: { fieldName: string; fieldType: string }[];
-      } = {
-        contents: [],
-        fields: [],
-      };
-
-      for (const row of templateMeta.rows) {
-        const {
-          excerpt,
-          plainText,
-          richText,
-          subject,
-          templateName,
-          fieldName,
-          fieldType,
-          lang,
-        } = row;
-
-        const content = template.contents?.find(
-          (content) => content.lang === lang,
-        );
-
-        if (content) {
-          content.excerpt = excerpt;
-          content.excerpt = excerpt;
-          content.plainText = plainText;
-          content.richText = richText;
-          content.subject = subject;
-          content.templateName = templateName;
-        } else {
-          template.contents.push({
-            excerpt,
-            lang,
-            plainText,
-            richText,
-            subject,
-            templateName,
-          });
-        }
-
-        if (
-          fieldName &&
-          !template.fields.some((field) => field.fieldName === fieldName)
-        ) {
-          template.fields.push({ fieldName, fieldType: fieldType ?? "" });
-        }
-      }
-
-      if (!template.contents.length) {
-        throw new NotFoundError(TEMPLATES_ERROR, "no template found");
-      }
-
-      return { data: template };
+      return { data: await getTemplate(app, request.params.templateId) };
     },
   );
 
@@ -472,6 +382,10 @@ export default async function templates(app: FastifyInstance) {
     },
     async function handleUpdate(request, _reply) {
       const templateId = request.params.templateId;
+      // adding this will return 404
+      // if template does not exist
+      await getTemplate(app, templateId);
+
       const { contents, variables } = request.body;
 
       const client = await app.pg.pool.connect();
@@ -568,6 +482,10 @@ export default async function templates(app: FastifyInstance) {
     async function handleDelete(request, _reply) {
       const templateId = request.params.templateId;
 
+      // adding this will return 404
+      // if template does not exist
+      await getTemplate(app, templateId);
+
       await app.pg.pool.query(
         `
           UPDATE message_template_meta
@@ -578,4 +496,97 @@ export default async function templates(app: FastifyInstance) {
       );
     },
   );
+
+  const getTemplate = async (app: FastifyInstance, templateId: string) => {
+    const templateMeta = await app.pg.pool.query<{
+      templateName: string;
+      subject: string;
+      excerpt: string;
+      plainText: string;
+      richText: string;
+      lang: string;
+      fieldName?: string;
+      fieldType?: string;
+    }>(
+      `
+          select
+            template_name as "templateName",
+            subject,
+            excerpt,
+            plain_text as "plainText",
+            rich_text as "richText",
+            lang,
+            v.field_name as "fieldName",
+            v.field_type as "fieldType"
+          from message_template_meta m
+          join message_template_contents c on c.template_meta_id = m.id
+          left join message_template_variables v on v.template_meta_id = m.id
+          where m.id = $1 AND m.deleted_at is null;
+    `,
+      [templateId],
+    );
+
+    const template: {
+      contents: {
+        templateName: string;
+        subject: string;
+        excerpt: string;
+        plainText: string;
+        richText: string;
+        lang: string;
+      }[];
+      fields: { fieldName: string; fieldType: string }[];
+    } = {
+      contents: [],
+      fields: [],
+    };
+
+    for (const row of templateMeta.rows) {
+      const {
+        excerpt,
+        plainText,
+        richText,
+        subject,
+        templateName,
+        fieldName,
+        fieldType,
+        lang,
+      } = row;
+
+      const content = template.contents?.find(
+        (content) => content.lang === lang,
+      );
+
+      if (content) {
+        content.excerpt = excerpt;
+        content.excerpt = excerpt;
+        content.plainText = plainText;
+        content.richText = richText;
+        content.subject = subject;
+        content.templateName = templateName;
+      } else {
+        template.contents.push({
+          excerpt,
+          lang,
+          plainText,
+          richText,
+          subject,
+          templateName,
+        });
+      }
+
+      if (
+        fieldName &&
+        !template.fields.some((field) => field.fieldName === fieldName)
+      ) {
+        template.fields.push({ fieldName, fieldType: fieldType ?? "" });
+      }
+    }
+
+    if (!template.contents.length) {
+      throw new NotFoundError(TEMPLATES_ERROR, "no template found");
+    }
+
+    return template;
+  };
 }
