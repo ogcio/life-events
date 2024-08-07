@@ -361,4 +361,68 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       );
     },
   );
+
+  testWithProvider(
+    "should not edit a manual bank transfer provider if iban is missing @regression @normal",
+    async ({ bankTransferProvider }) => {
+      await description(
+        "This test checks that while editing a manual bank transfer provider it cannot be saved if iban is missing.",
+      );
+      await owner("OGCIO");
+      await tags("Providers", "Manual Bank Transfer");
+      await severity(Severity.NORMAL);
+
+      await page.goto(paymentSetupUrl);
+
+      const providersMenuLink = await page.getByRole("link", {
+        name: "Providers",
+      });
+      await providersMenuLink.click();
+
+      const providersPage = new ProvidersPage(page);
+      await providersPage.editProvider(bankTransferProvider);
+      const editProviderPage = new EditManualBankTransferProviderPage(page);
+      await editProviderPage.checkHeaderVisible();
+      await editProviderPage.providerForm.checkIban(mockIban);
+      await editProviderPage.providerForm.enterIban("");
+      await editProviderPage.saveChanges();
+      await editProviderPage.providerForm.expectValidationError("ibanRequired");
+
+      await providersPage.goto();
+      await providersPage.editProvider(bankTransferProvider);
+      await editProviderPage.providerForm.checkIban(mockIban);
+    },
+  );
+
+  testWithProvider(
+    "should not edit a manual bank transfer provider if iban is invalid @regression @normal",
+    async ({ bankTransferProvider }) => {
+      await description(
+        "This test checks that while editing a manual bank transfer provider it cannot be saved if iban is invalid.",
+      );
+      await owner("OGCIO");
+      await tags("Providers", "Manual Bank Transfer");
+      await severity(Severity.NORMAL);
+
+      await page.goto(paymentSetupUrl);
+
+      const providersMenuLink = await page.getByRole("link", {
+        name: "Providers",
+      });
+      await providersMenuLink.click();
+
+      const providersPage = new ProvidersPage(page);
+      await providersPage.editProvider(bankTransferProvider);
+      const editProviderPage = new EditManualBankTransferProviderPage(page);
+      await editProviderPage.checkHeaderVisible();
+      await editProviderPage.providerForm.checkIban(mockIban);
+      await editProviderPage.providerForm.enterIban("foo");
+      await editProviderPage.saveChanges();
+      await editProviderPage.providerForm.expectValidationError("ibanInvalid");
+
+      await providersPage.goto();
+      await providersPage.editProvider(bankTransferProvider);
+      await editProviderPage.providerForm.checkIban(mockIban);
+    },
+  );
 });
