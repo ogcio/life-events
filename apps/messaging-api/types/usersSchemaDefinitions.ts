@@ -325,7 +325,7 @@ export type OrganisationSetting = Static<typeof OrganisationSettingSchema>;
 
 export const UserPerOrganisationSchema = Type.Composite([
   Type.Object({
-    organizationSettingId: Type.String({
+    organisationSettingId: Type.String({
       format: "uuid",
       description: "Unique id of the organisation setting",
     }),
