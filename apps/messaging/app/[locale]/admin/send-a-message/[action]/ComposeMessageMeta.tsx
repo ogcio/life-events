@@ -140,10 +140,7 @@ export default async (props: MessageCreateProps) => {
 
           <select className="govie-select" name="templateMetaId">
             {templates?.map((template) => (
-              <option
-                key={template.templateMetaId}
-                value={template.templateMetaId}
-              >
+              <option key={template.id} value={template.id}>
                 {template.contents.find((content) => content.lang === lang)
                   ?.templateName || template.contents.at(0)?.templateName}
               </option>

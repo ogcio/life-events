@@ -13,7 +13,7 @@ import { isNativeError } from "util/types";
 import { Profile } from "building-blocks-sdk";
 import { IMPORT_USERS_ERROR } from "./import-users";
 import {
-  ALL_TRANSPORTS,
+  AvailableTransports,
   getUserByContacts,
   getUserByUserProfileId,
   getUserImports,
@@ -27,6 +27,7 @@ import {
   isLifeEventsError,
 } from "shared-errors";
 import { getProfileSdk } from "../../../utils/authentication-factory";
+import { EditableProviderTypes } from "../../../types/schemaDefinitions";
 
 interface FoundUser {
   id: string;
@@ -216,10 +217,10 @@ const processOrganizationUserRelation = async (params: {
   }
 
   let toSetStatus: "accepted" | "to_be_invited" = "to_be_invited";
-  let toSetTransports: string[] = [];
+  let toSetTransports: EditableProviderTypes[] = [];
   if (params.consentGranted) {
     toSetStatus = "accepted";
-    toSetTransports = ALL_TRANSPORTS;
+    toSetTransports = [AvailableTransports.EMAIL, AvailableTransports.SMS];
   }
 
   if (orgUserRelation) {

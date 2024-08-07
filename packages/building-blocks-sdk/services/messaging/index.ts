@@ -199,17 +199,15 @@ export class Messaging {
   async getEmailProviders(params?: {
     limit?: number;
     offset?: number;
-    search?: string;
     primary?: boolean;
   }) {
-    const { limit, offset, search, primary } = params || {};
+    const { limit, offset, primary } = params || {};
     const { error, data } = await this.client.GET("/api/v1/providers/", {
       params: {
         query: {
           type: "email",
           limit,
           offset,
-          search,
           primary,
         },
       },
@@ -301,17 +299,15 @@ export class Messaging {
   async getSmsProviders(params?: {
     limit?: number;
     offset?: number;
-    search?: string;
     primary?: boolean;
   }) {
-    const { limit, offset, search, primary } = params || {};
+    const { limit, offset, primary } = params || {};
     const { error, data } = await this.client.GET("/api/v1/providers/", {
       params: {
         query: {
           type: "sms",
           limit,
           offset,
-          search,
           primary,
         },
       },
