@@ -23,6 +23,7 @@ import {
   NotFoundError,
   ServerError,
 } from "shared-errors";
+import insertFileMetadata from "./utils/insertFileMetadata.js";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
 const FILE_INDEX = "FILE_INDEX";
@@ -183,13 +184,15 @@ const permissions = {
 
 const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
   const data = await request.file();
-  const userId = request.userData?.userId;
+  const userId = request.userData?.userId as string;
 
   if (!data) {
     throw new BadRequestError(FILE_UPLOAD, "Request is not multipart");
   }
 
   const stream = data.file;
+  const fileMimeType = data.mimetype;
+
   const filename = data.filename;
 
   if (!filename) {
@@ -204,6 +207,11 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     if (data.file.truncated) {
       eventEmitter.emit("fileTooLarge");
     }
+  });
+
+  let length = 0;
+  stream.on("data", (chunk) => {
+    length += chunk.length;
   });
 
   const antivirusPassthrough = app.avClient.passthrough();
@@ -221,11 +229,24 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
       );
     });
 
-    antivirusPassthrough.once("scan-complete", (result) => {
-      const { isInfected } = result;
+    antivirusPassthrough.once("scan-complete", async (result) => {
+      const { isInfected, viruses } = result;
+
       if (isInfected) {
+        await insertFileMetadata(app, FILE_UPLOAD, {
+          createdAt: new Date(),
+          lastScan: new Date(),
+          fileSize: length,
+          infected: true,
+          infectionDescription: viruses.join(","),
+          key: `${userId}/${filename}`,
+          mimetype: fileMimeType,
+          owner: userId as string,
+        });
+
         return reject(new CustomError(FILE_UPLOAD, "File is infected", 400));
       }
+
       resolve();
     });
   });
@@ -246,6 +267,28 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
 
   upload
     .done()
+    .then(async (resData) => {
+      const { Key } = resData;
+
+      try {
+        await insertFileMetadata(app, FILE_UPLOAD, {
+          createdAt: new Date(),
+          lastScan: new Date(),
+          fileSize: length,
+          infected: false,
+          infectionDescription: null,
+          key: Key as string,
+          mimetype: fileMimeType,
+          owner: userId as string,
+        });
+      } catch (err) {
+        app.log.error(err);
+        eventEmitter.emit(
+          "error",
+          new ServerError(FILE_UPLOAD, "Internal server error"),
+        );
+      }
+    })
     .catch((err) => {
       eventEmitter.emit("error", err);
     })
@@ -275,7 +318,11 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     });
 
     eventEmitter.once("error", (err) => {
-      reject(new BadRequestError("badRequest", getErrorMessage(err), err));
+      if (err.errorCode === 500) {
+        reject(new ServerError(FILE_UPLOAD, "Server error"));
+      } else {
+        reject(new BadRequestError("badRequest", getErrorMessage(err), err));
+      }
     });
 
     eventEmitter.on("error", () => {
@@ -359,6 +406,8 @@ export default async function routes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const userId = request.userData?.userId as string;
+
       if (!request.params.key) {
         throw new BadRequestError(FILE_DELETE, "File key not provided");
       }
@@ -366,7 +415,7 @@ export default async function routes(app: FastifyInstance) {
         await app.s3Client.client.send(
           new DeleteObjectCommand({
             Bucket: app.s3Client.bucketName,
-            Key: `${request.userData?.userId}/${request.params.key}`,
+            Key: `${userId}/${request.params.key}`,
           }),
         );
       } catch (err) {
