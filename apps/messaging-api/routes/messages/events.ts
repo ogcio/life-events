@@ -14,6 +14,7 @@ import { MessageEventData } from "../../services/messages/eventLogger";
 import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
 import { getPaginationLinks, sanitizePagination } from "../../utils/pagination";
+import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory";
 
 const tags = ["Message events"];
 
@@ -86,7 +87,7 @@ export default async function messages(app: FastifyInstance) {
             order by l.created_at;
         `,
         [
-          request.userData?.organizationId,
+          ensureOrganizationIdIsSet(request, "GET_MESSAGES"),
           textSearchILikeClause,
           limit,
           offset,
