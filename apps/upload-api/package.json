@@ -10,10 +10,7 @@
     "lint": "eslint . --ext .ts",
     "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/services/upload/schema.d.ts",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp src/logo.png dist/",
-    "migrate": "db-migrate --config db/database.json db:create upload && db-migrate --migrations-dir db/migrations --config db/database.json up",
-    "migrate-down": "db-migrate --migrations-dir db/migrations --config db/database.json down",
-    "create-db": "node db/create-db.js",
-    "create-db-2": "db-migrate db:create upload --config db/database.json"
+    "migrate": "node db/create-db.js upload && db-migrate --migrations-dir db/migrations --config db/database.json up"
   },
   "nodemonConfig": {
     "watch": [
