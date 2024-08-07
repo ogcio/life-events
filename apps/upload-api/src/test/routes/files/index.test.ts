@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify";
+import fastify, { FastifyInstance, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 import { equal } from "node:assert";
 import { EventEmitter } from "node:events";
@@ -10,6 +10,7 @@ const decorateRequest = (fastify: FastifyInstance, data) => {
     return Promise.resolve(data);
   });
 };
+
 // return new
 
 t.test("files", async (t) => {
@@ -17,6 +18,10 @@ t.test("files", async (t) => {
 
   let antivirusPassthrough: PassThrough;
   let passthroughStream: PassThrough;
+
+  const uploadEventEmitter = new EventEmitter();
+  const s3SendEventEmitter = new EventEmitter();
+  const pgEventEmitter = new EventEmitter();
 
   // supply type param so that TS knows what it returns
   const { build } = await t.mockImport<typeof import("../../../app.js")>(
@@ -37,15 +42,27 @@ t.test("files", async (t) => {
           );
         }),
       },
+      "@fastify/postgres": {
+        default: fp(async (fastify) => {
+          fastify.decorate("pg", {
+            query: () => {
+              return new Promise<void>((resolve, reject) => {
+                pgEventEmitter.once("error", (err) => reject(err));
+                pgEventEmitter.once("done", () => resolve());
+              });
+            },
+          });
+        }),
+      },
       "api-auth": {
         default: fp(async (fastify) => {
-          fastify.decorate("checkPermissions", () => {});
+          fastify.decorate("checkPermissions", (request) => {
+            request.userData = { userId: "userId" };
+          });
         }),
       },
     },
   );
-  const uploadEventEmitter = new EventEmitter();
-  const s3SendEventEmitter = new EventEmitter();
 
   const routes = await t.mockImport<
     typeof import("../../../routes/files/index.js")
@@ -56,8 +73,8 @@ t.test("files", async (t) => {
 
         async done() {
           return new Promise<void>((resolve, reject) => {
-            uploadEventEmitter.once("fileUploaded", () => {
-              resolve();
+            uploadEventEmitter.once("fileUploaded", (data) => {
+              resolve(data);
             });
             uploadEventEmitter.once("upload-error", () => {
               reject(new Error("upload error"));
@@ -176,7 +193,11 @@ t.test("files", async (t) => {
 
       passthroughStream.end(Buffer.alloc(1));
       setTimeout(() => {
-        antivirusPassthrough.emit("scan-complete", { isInfected: true });
+        antivirusPassthrough.emit("scan-complete", {
+          isInfected: true,
+          viruses: ["virus signature"],
+        });
+        pgEventEmitter.emit("done");
         s3SendEventEmitter.emit("sendComplete");
       });
     });
@@ -199,8 +220,11 @@ t.test("files", async (t) => {
 
       passthroughStream.end(Buffer.alloc(1));
       setTimeout(() => {
-        uploadEventEmitter.emit("fileUploaded");
-        antivirusPassthrough.emit("scan-complete", { isInfected: false });
+        uploadEventEmitter.emit("fileUploaded", { Key: "key" });
+        setTimeout(() => {
+          pgEventEmitter.emit("done");
+          antivirusPassthrough.emit("scan-complete", { isInfected: false });
+        });
       });
     });
 
@@ -225,12 +249,8 @@ t.test("files", async (t) => {
 
         setTimeout(() => {
           passthroughStream.truncated = true;
-          // passthroughStream.emit("limit");
-          // passthroughStream.push("");
           uploadEventEmitter.emit("fileUploaded");
           antivirusPassthrough.emit("scan-complete", { isInfected: false });
-          // // passthroughStream.push(Buffer.alloc(1));
-          // // streamPassThrough.end();
           setTimeout(() => {
             s3SendEventEmitter.emit("send-error");
           });
@@ -350,6 +370,32 @@ t.test("files", async (t) => {
         });
       },
     );
+
+    t.test("should return an error when the pg connection throws", (t) => {
+      decorateRequest(app, {
+        file: passthroughStream,
+        filename: "sample.txt",
+      });
+
+      app
+        .inject({
+          method: "POST",
+          url: "/files",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 500);
+          t.end();
+        });
+
+      passthroughStream.end(Buffer.alloc(1));
+      setTimeout(() => {
+        uploadEventEmitter.emit("fileUploaded", { Key: "key" });
+        setTimeout(() => {
+          antivirusPassthrough.emit("scan-complete", { isInfected: false });
+          pgEventEmitter.emit("error", new Error("pg error"));
+        });
+      });
+    });
   });
 
   t.test("list", async (t) => {

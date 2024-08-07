@@ -57,7 +57,8 @@ migrate:
 	npm run migrate --workspace=payments && \
 	npm run migrate --workspace=messages && \
 	npm run migrate --workspace=profile && \
-	npm run migrate --workspace=scheduler
+	npm run migrate --workspace=scheduler && \
+	npm run migrate --workspace=upload-api 
 
 ## Logto ##
 init-logto:
