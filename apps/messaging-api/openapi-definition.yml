@@ -3980,7 +3980,7 @@ paths:
                     items:
                       type: object
                       properties:
-                        organizationSettingId:
+                        organisationSettingId:
                           format: uuid
                           description: Unique id of the organisation setting
                           type: string
@@ -4164,7 +4164,7 @@ paths:
                             - address
                             - collectedConsent
                       required:
-                        - organizationSettingId
+                        - organisationSettingId
                         - firstName
                         - lastName
                         - birthDate
@@ -4333,7 +4333,7 @@ paths:
                   data:
                     type: object
                     properties:
-                      organizationSettingId:
+                      organisationSettingId:
                         format: uuid
                         description: Unique id of the organisation setting
                         type: string
@@ -4517,7 +4517,7 @@ paths:
                           - address
                           - collectedConsent
                     required:
-                      - organizationSettingId
+                      - organisationSettingId
                       - firstName
                       - lastName
                       - birthDate

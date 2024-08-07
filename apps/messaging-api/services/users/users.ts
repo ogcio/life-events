@@ -185,7 +185,7 @@ const getUserFieldsToSelect = () => `
   users.details->>'lastName' as "lastName",
   users.details->>'birthDate' as "birthDate",
   users.details->>'publicIdentityId' as "ppsn",
-  ouc.id as "organizationSettingId",
+  ouc.id as "organisationSettingId",
   ouc.preferred_transports as "organisationPreferredTransports",
   ouc.organisation_id as "organisationId",
   ouc.invitation_status as "organisationInvitationStatus",

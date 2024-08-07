@@ -2183,7 +2183,7 @@ export interface paths {
                  * Format: uuid
                  * @description Unique id of the organisation setting
                  */
-                organizationSettingId: string;
+                organisationSettingId: string;
                 /**
                  * @description First name of the user
                  * @default null
@@ -2396,7 +2396,7 @@ export interface paths {
                  * Format: uuid
                  * @description Unique id of the organisation setting
                  */
-                organizationSettingId: string;
+                organisationSettingId: string;
                 /**
                  * @description First name of the user
                  * @default null
