@@ -45,11 +45,13 @@ test.describe("Manual bank transfer provider", () => {
 
     const addManualBankTransferProviderPage =
       new AddManualBankTransferProviderPage(page);
-    await addManualBankTransferProviderPage.enterName(providerName);
-    await addManualBankTransferProviderPage.enterAccountHolderName(
+    await addManualBankTransferProviderPage.providerForm.enterName(
+      providerName,
+    );
+    await addManualBankTransferProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
     );
-    await addManualBankTransferProviderPage.enterIban(mockIban);
+    await addManualBankTransferProviderPage.providerForm.enterIban(mockIban);
     await addManualBankTransferProviderPage.submitProviderCreation();
 
     await providersPage.checkProviderVisible(providerName);
@@ -76,14 +78,14 @@ test.describe("Manual bank transfer provider", () => {
 
     const addManualBankTransferProviderPage =
       new AddManualBankTransferProviderPage(page);
-    await addManualBankTransferProviderPage.enterName("");
-    await addManualBankTransferProviderPage.enterAccountHolderName(
+    await addManualBankTransferProviderPage.providerForm.enterName("");
+    await addManualBankTransferProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
     );
-    await addManualBankTransferProviderPage.enterIban(mockIban);
+    await addManualBankTransferProviderPage.providerForm.enterIban(mockIban);
     await addManualBankTransferProviderPage.submitProviderCreation();
 
-    await addManualBankTransferProviderPage.expectValidationError(
+    await addManualBankTransferProviderPage.providerForm.expectValidationError(
       "nameRequired",
     );
   });
@@ -109,14 +111,16 @@ test.describe("Manual bank transfer provider", () => {
 
     const addManualBankTransferProviderPage =
       new AddManualBankTransferProviderPage(page);
-    await addManualBankTransferProviderPage.enterName(providerName);
-    await addManualBankTransferProviderPage.enterAccountHolderName(
+    await addManualBankTransferProviderPage.providerForm.enterName(
+      providerName,
+    );
+    await addManualBankTransferProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
     );
-    await addManualBankTransferProviderPage.enterIban("");
+    await addManualBankTransferProviderPage.providerForm.enterIban("");
     await addManualBankTransferProviderPage.submitProviderCreation();
 
-    await addManualBankTransferProviderPage.expectValidationError(
+    await addManualBankTransferProviderPage.providerForm.expectValidationError(
       "ibanRequired",
     );
 
@@ -145,12 +149,16 @@ test.describe("Manual bank transfer provider", () => {
 
     const addManualBankTransferProviderPage =
       new AddManualBankTransferProviderPage(page);
-    await addManualBankTransferProviderPage.enterName(providerName);
-    await addManualBankTransferProviderPage.enterAccountHolderName("");
-    await addManualBankTransferProviderPage.enterIban("ABCD");
+    await addManualBankTransferProviderPage.providerForm.enterName(
+      providerName,
+    );
+    await addManualBankTransferProviderPage.providerForm.enterAccountHolderName(
+      "",
+    );
+    await addManualBankTransferProviderPage.providerForm.enterIban("ABCD");
     await addManualBankTransferProviderPage.submitProviderCreation();
 
-    await addManualBankTransferProviderPage.expectValidationError(
+    await addManualBankTransferProviderPage.providerForm.expectValidationError(
       "accountHolderNameRequired",
     );
 
@@ -179,14 +187,16 @@ test.describe("Manual bank transfer provider", () => {
 
     const addManualBankTransferProviderPage =
       new AddManualBankTransferProviderPage(page);
-    await addManualBankTransferProviderPage.enterName(providerName);
-    await addManualBankTransferProviderPage.enterAccountHolderName(
+    await addManualBankTransferProviderPage.providerForm.enterName(
+      providerName,
+    );
+    await addManualBankTransferProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
     );
-    await addManualBankTransferProviderPage.enterIban("ABCD");
+    await addManualBankTransferProviderPage.providerForm.enterIban("ABCD");
     await addManualBankTransferProviderPage.submitProviderCreation();
 
-    await addManualBankTransferProviderPage.expectValidationError(
+    await addManualBankTransferProviderPage.providerForm.expectValidationError(
       "ibanInvalid",
     );
 

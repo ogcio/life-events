@@ -44,9 +44,13 @@ test.describe("Realex provider", () => {
     await providersPage.selectRealexProvider();
 
     const addRealexProviderPage = new AddRealexProviderPage(page);
-    await addRealexProviderPage.enterName(providerName);
-    await addRealexProviderPage.enterMerchantId(mockRealexMerchantId);
-    await addRealexProviderPage.enterSharedSecret(mockRealexSharedSecret);
+    await addRealexProviderPage.providerForm.enterName(providerName);
+    await addRealexProviderPage.providerForm.enterMerchantId(
+      mockRealexMerchantId,
+    );
+    await addRealexProviderPage.providerForm.enterSharedSecret(
+      mockRealexSharedSecret,
+    );
     await addRealexProviderPage.submitProviderCreation();
 
     await providersPage.checkProviderVisible(providerName);
@@ -72,9 +76,13 @@ test.describe("Realex provider", () => {
     await providersPage.selectRealexProvider();
 
     const addRealexProviderPage = new AddRealexProviderPage(page);
-    await addRealexProviderPage.enterName("");
-    await addRealexProviderPage.enterMerchantId(mockRealexMerchantId);
-    await addRealexProviderPage.enterSharedSecret(mockRealexSharedSecret);
+    await addRealexProviderPage.providerForm.enterName("");
+    await addRealexProviderPage.providerForm.enterMerchantId(
+      mockRealexMerchantId,
+    );
+    await addRealexProviderPage.providerForm.enterSharedSecret(
+      mockRealexSharedSecret,
+    );
     await addRealexProviderPage.submitProviderCreation();
 
     await addRealexProviderPage.expectValidationError("nameRequired");
@@ -100,9 +108,11 @@ test.describe("Realex provider", () => {
     await providersPage.selectRealexProvider();
 
     const addRealexProviderPage = new AddRealexProviderPage(page);
-    await addRealexProviderPage.enterName(providerName);
-    await addRealexProviderPage.enterMerchantId("");
-    await addRealexProviderPage.enterSharedSecret(mockRealexSharedSecret);
+    await addRealexProviderPage.providerForm.enterName(providerName);
+    await addRealexProviderPage.providerForm.enterMerchantId("");
+    await addRealexProviderPage.providerForm.enterSharedSecret(
+      mockRealexSharedSecret,
+    );
     await addRealexProviderPage.submitProviderCreation();
 
     await addRealexProviderPage.expectValidationError("merchantIdRequired");
@@ -131,9 +141,11 @@ test.describe("Realex provider", () => {
     await providersPage.selectRealexProvider();
 
     const addRealexProviderPage = new AddRealexProviderPage(page);
-    await addRealexProviderPage.enterName(providerName);
-    await addRealexProviderPage.enterMerchantId(mockRealexMerchantId);
-    await addRealexProviderPage.enterSharedSecret("");
+    await addRealexProviderPage.providerForm.enterName(providerName);
+    await addRealexProviderPage.providerForm.enterMerchantId(
+      mockRealexMerchantId,
+    );
+    await addRealexProviderPage.providerForm.enterSharedSecret("");
     await addRealexProviderPage.submitProviderCreation();
 
     await addRealexProviderPage.expectValidationError("sharedSecretRequired");
