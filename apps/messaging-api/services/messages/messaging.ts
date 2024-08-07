@@ -59,6 +59,7 @@ export type CreateMessageParams = {
   security: SecurityLevels;
   preferredTransports: Array<AllProviderTypes>;
   organisationId: string;
+  senderUserProfileId: string;
 };
 
 export interface MessagingService {
@@ -126,6 +127,7 @@ export function newMessagingService(
         params.threadName,
         params.organisationId,
         params.scheduleAt,
+        params.senderUserProfileId,
       ];
 
       const values = valueArray.map((_, i) => `$${i + 1}`).join(", ");
@@ -147,7 +149,8 @@ export function newMessagingService(
             preferred_transports,
             thread_name,
             organisation_id,
-            scheduled_at
+            scheduled_at,
+            sender_user_profile_id
         ) values (${values})
         returning 
           id, user_id

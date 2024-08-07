@@ -52,6 +52,7 @@ export const getMessage = async (params: {
             organisation_id as "organisationId",
             user_id as "recipientUserId",
             is_seen as "isSeen",
+            sender_user_profile_id as "senderUserProfileId",
             security_level as "security"
         from messages
         where user_id = $1 and id=$2

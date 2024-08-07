@@ -409,6 +409,9 @@ paths:
                           - public
                         default: public
                         description: Confidentiality level of the message
+                      senderUserProfileId:
+                        description: Unique id of the sender from the Life Events building block
+                        type: string
                     required:
                       - subject
                       - createdAt
@@ -420,6 +423,7 @@ paths:
                       - richText
                       - isSeen
                       - security
+                      - senderUserProfileId
                   metadata:
                     type: object
                     properties:
@@ -3976,7 +3980,7 @@ paths:
                     items:
                       type: object
                       properties:
-                        organizationSettingId:
+                        organisationSettingId:
                           format: uuid
                           description: Unique id of the organisation setting
                           type: string
@@ -4160,7 +4164,7 @@ paths:
                             - address
                             - collectedConsent
                       required:
-                        - organizationSettingId
+                        - organisationSettingId
                         - firstName
                         - lastName
                         - birthDate
@@ -4329,7 +4333,7 @@ paths:
                   data:
                     type: object
                     properties:
-                      organizationSettingId:
+                      organisationSettingId:
                         format: uuid
                         description: Unique id of the organisation setting
                         type: string
@@ -4513,7 +4517,7 @@ paths:
                           - address
                           - collectedConsent
                     required:
-                      - organizationSettingId
+                      - organisationSettingId
                       - firstName
                       - lastName
                       - birthDate
