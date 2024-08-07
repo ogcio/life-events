@@ -409,6 +409,9 @@ paths:
                           - public
                         default: public
                         description: Confidentiality level of the message
+                      senderUserProfileId:
+                        description: Unique id of the sender from the Life Events building block
+                        type: string
                     required:
                       - subject
                       - createdAt
@@ -420,6 +423,7 @@ paths:
                       - richText
                       - isSeen
                       - security
+                      - senderUserProfileId
                   metadata:
                     type: object
                     properties:

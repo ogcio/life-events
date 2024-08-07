@@ -231,6 +231,8 @@ export interface paths {
                  * @enum {string}
                  */
                 security: "confidential" | "public";
+                /** @description Unique id of the sender from the Life Events building block */
+                senderUserProfileId: string;
               };
               metadata?: {
                 links?: {
