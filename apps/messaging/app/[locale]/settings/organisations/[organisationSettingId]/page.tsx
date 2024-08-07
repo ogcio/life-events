@@ -42,7 +42,7 @@ export default async (props: { params: { organisationSettingId: string } }) => {
 
     const status =
       formData.get("invitationStatus") ?? AVAILABLE_STATUSES.ACCEPTED;
-    let preferredTransports: string[] = [];
+    let preferredTransports: ("email" | "sms")[] = [];
     for (const transport of Object.values(AVAILABLE_TRANSPORTS)) {
       if (Boolean(formData.get(transport))) {
         preferredTransports.push(transport);

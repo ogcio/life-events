@@ -10,6 +10,8 @@ paths:
     get:
       tags: &a1
         - Messages
+      description: Returns all the messages for the requested organisation or the
+        requested recipient
       parameters:
         - schema:
             type: string
@@ -23,11 +25,13 @@ paths:
           in: query
           name: recipientUserId
           required: false
+          description: Either recipientUserId and organisationId are mandatory
         - schema:
             type: string
           in: query
           name: organisationId
           required: false
+          description: Either recipientUserId and organisationId are mandatory
         - schema:
             default: 0
             minimum: 0
@@ -35,6 +39,8 @@ paths:
           in: query
           name: offset
           required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
         - schema:
             default: 20
             minimum: 1
@@ -43,6 +49,8 @@ paths:
           in: query
           name: limit
           required: false
+          description: Indicates the maximum number of items that will be returned in a
+            single request
       responses:
         "200":
           description: Default Response
@@ -57,16 +65,22 @@ paths:
                       type: object
                       properties:
                         id:
+                          description: Unique Id of the message
                           type: string
                         subject:
+                          description: Subject
                           type: string
                         createdAt:
+                          description: Creation date time
                           type: string
                         threadName:
+                          description: Thread Name used to group messages
                           type: string
                         organisationId:
+                          description: Organisation sender id
                           type: string
                         recipientUserId:
+                          description: Unique id of the recipient
                           type: string
                       required:
                         - id
@@ -130,14 +144,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -158,6 +178,7 @@ paths:
                   - name
     post:
       tags: *a1
+      description: Creates a message
       requestBody:
         content:
           application/json:
@@ -165,6 +186,9 @@ paths:
               type: object
               properties:
                 preferredTransports:
+                  description: The list of the preferred transports to use. If the selected
+                    transports are not available for the recipient, others will
+                    be used
                   type: array
                   items:
                     type: string
@@ -172,37 +196,53 @@ paths:
                       - sms
                       - email
                       - lifeEvent
+                    description: All the available provider types
                 recipientUserId:
+                  description: Unique user id of the recipient
                   type: string
                 security:
                   type: string
+                  enum:
+                    - confidential
+                    - public
+                  default: public
+                  description: Confidentiality level of the message
                 bypassConsent:
                   default: false
+                  description: If true, the message will be sent even if the recipient didn't
+                    accept the organisation's invitation
                   type: boolean
                 scheduleAt:
                   format: date-time
+                  description: Date and time of when schedule the message
                   type: string
                 message:
                   type: object
                   properties:
                     threadName:
+                      description: Thread Name used to group messages
                       type: string
                     subject:
+                      description: Subject. This is the only part that will be seen outside of the
+                        messaging platform is security is 'confidential'
                       type: string
                     excerpt:
-                      type: string
-                    richText:
+                      description: Brief description of the message
                       type: string
                     plainText:
+                      description: Plain text version of the message
+                      type: string
+                    richText:
+                      description: Rich text version of the message
                       type: string
                     lang:
+                      description: Language used to send the message
                       type: string
                   required:
-                    - threadName
                     - subject
                     - excerpt
-                    - richText
                     - plainText
+                    - richText
                     - lang
               required:
                 - preferredTransports
@@ -223,11 +263,12 @@ paths:
                   data:
                     type: object
                     properties:
-                      messageId:
+                      id:
                         format: uuid
+                        description: The unique id of the created message
                         type: string
                     required:
-                      - messageId
+                      - id
                 required:
                   - data
         4XX:
@@ -238,14 +279,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -272,14 +319,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -301,6 +354,7 @@ paths:
   /api/v1/messages/{messageId}:
     get:
       tags: *a1
+      description: Returns the requested message
       parameters:
         - schema:
             format: uuid
@@ -308,6 +362,7 @@ paths:
           in: path
           name: messageId
           required: true
+          description: The requested message unique id
       responses:
         "200":
           description: Default Response
@@ -320,18 +375,51 @@ paths:
                     type: object
                     properties:
                       subject:
+                        description: Subject. This is the only part that will be seen outside of the
+                          messaging platform is security is 'confidential'
+                        type: string
+                      createdAt:
+                        description: Creation date time
+                        type: string
+                      threadName:
+                        description: Thread Name used to group messages
+                        type: string
+                      organisationId:
+                        description: Organisation sender id
+                        type: string
+                      recipientUserId:
+                        description: Unique id of the recipient
                         type: string
                       excerpt:
+                        description: Brief description of the message
                         type: string
                       plainText:
+                        description: Plain text version of the message
                         type: string
                       richText:
+                        description: Rich text version of the message
                         type: string
+                      isSeen:
+                        description: True if the message has already been seen by the recipient
+                        type: boolean
+                      security:
+                        type: string
+                        enum:
+                          - confidential
+                          - public
+                        default: public
+                        description: Confidentiality level of the message
                     required:
                       - subject
+                      - createdAt
+                      - threadName
+                      - organisationId
+                      - recipientUserId
                       - excerpt
                       - plainText
                       - richText
+                      - isSeen
+                      - security
                   metadata:
                     type: object
                     properties:
@@ -387,14 +475,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -421,14 +515,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -451,12 +551,15 @@ paths:
     get:
       tags: &a2
         - Providers
+      description: Returns the providers matching the requested query
       parameters:
         - schema:
             type: boolean
           in: query
           name: primary
           required: false
+          description: If set, returns only the primary providers if true, otherwise the
+            non-primary ones
         - schema:
             type: string
             enum:
@@ -465,6 +568,7 @@ paths:
           in: query
           name: type
           required: true
+          description: Provider types that can be manipulated
         - schema:
             default: 0
             minimum: 0
@@ -472,6 +576,8 @@ paths:
           in: query
           name: offset
           required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
         - schema:
             default: 20
             minimum: 1
@@ -480,6 +586,8 @@ paths:
           in: query
           name: limit
           required: false
+          description: Indicates the maximum number of items that will be returned in a
+            single request
       responses:
         "200":
           description: Default Response
@@ -495,16 +603,23 @@ paths:
                       properties:
                         id:
                           format: uuid
+                          description: Unique id of the provider
                           type: string
                         providerName:
+                          description: Name of the provider
                           type: string
                         isPrimary:
+                          description: If true, the provider is set as primary for the selected type for
+                            the current organisation. Please note, each
+                            organisation can only have one primary provider for
+                            each type
                           type: boolean
                         type:
                           type: string
                           enum:
                             - sms
                             - email
+                          description: Provider types that can be manipulated
                       required:
                         - id
                         - providerName
@@ -565,14 +680,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -599,14 +720,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -627,6 +754,7 @@ paths:
                   - name
     post:
       tags: *a2
+      description: Creates a new provider
       requestBody:
         content:
           application/json:
@@ -635,26 +763,38 @@ paths:
                 - type: object
                   properties:
                     providerName:
+                      description: Name of the provider
                       type: string
                     isPrimary:
+                      description: If true, the provider is set as primary for the selected type for
+                        the current organisation. Please note, each organisation
+                        can only have one primary provider for each type
                       type: boolean
                     type:
                       type: string
                       enum:
                         - email
                     smtpHost:
+                      description: Address of the SMTP host
                       type: string
                     smtpPort:
+                      description: Port of the SMTP host
                       type: number
                     username:
+                      description: Username to use to log into the SMTP server
                       type: string
                     password:
+                      description: Password to use to log into the SMTP server
                       type: string
                     throttle:
+                      description: Optional field to adjust how long time between each mail, in
+                        miliseconds
                       type: number
                     fromAddress:
+                      description: Email address to use as sender
                       type: string
                     ssl:
+                      description: Is connection to the SMTP server secure?
                       type: boolean
                   required:
                     - providerName
@@ -669,8 +809,12 @@ paths:
                 - type: object
                   properties:
                     providerName:
+                      description: Name of the provider
                       type: string
                     isPrimary:
+                      description: If true, the provider is set as primary for the selected type for
+                        the current organisation. Please note, each organisation
+                        can only have one primary provider for each type
                       type: boolean
                     type:
                       type: string
@@ -725,14 +869,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -759,14 +909,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -788,6 +944,7 @@ paths:
   /api/v1/providers/{providerId}:
     get:
       tags: *a2
+      description: Returns the requested provider
       parameters:
         - schema:
             type: string
@@ -797,12 +954,14 @@ paths:
           in: query
           name: type
           required: true
+          description: Provider types that can be manipulated
         - schema:
             format: uuid
             type: string
           in: path
           name: providerId
           required: true
+          description: The unique id of the requested provider
       responses:
         "200":
           description: Default Response
@@ -819,26 +978,39 @@ paths:
                             format: uuid
                             type: string
                           providerName:
+                            description: Name of the provider
                             type: string
                           isPrimary:
+                            description: If true, the provider is set as primary for the selected type for
+                              the current organisation. Please note, each
+                              organisation can only have one primary provider
+                              for each type
                             type: boolean
                           type:
                             type: string
                             enum:
                               - email
                           smtpHost:
+                            description: Address of the SMTP host
                             type: string
                           smtpPort:
+                            description: Port of the SMTP host
                             type: number
                           username:
+                            description: Username to use to log into the SMTP server
                             type: string
                           password:
+                            description: Password to use to log into the SMTP server
                             type: string
                           throttle:
+                            description: Optional field to adjust how long time between each mail, in
+                              miliseconds
                             type: number
                           fromAddress:
+                            description: Email address to use as sender
                             type: string
                           ssl:
+                            description: Is connection to the SMTP server secure?
                             type: boolean
                         required:
                           - id
@@ -857,8 +1029,13 @@ paths:
                             format: uuid
                             type: string
                           providerName:
+                            description: Name of the provider
                             type: string
                           isPrimary:
+                            description: If true, the provider is set as primary for the selected type for
+                              the current organisation. Please note, each
+                              organisation can only have one primary provider
+                              for each type
                             type: boolean
                           type:
                             type: string
@@ -898,14 +1075,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -932,14 +1115,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -960,6 +1149,7 @@ paths:
                   - name
     put:
       tags: *a2
+      description: Updates the requested provider
       requestBody:
         content:
           application/json:
@@ -971,26 +1161,38 @@ paths:
                       format: uuid
                       type: string
                     providerName:
+                      description: Name of the provider
                       type: string
                     isPrimary:
+                      description: If true, the provider is set as primary for the selected type for
+                        the current organisation. Please note, each organisation
+                        can only have one primary provider for each type
                       type: boolean
                     type:
                       type: string
                       enum:
                         - email
                     smtpHost:
+                      description: Address of the SMTP host
                       type: string
                     smtpPort:
+                      description: Port of the SMTP host
                       type: number
                     username:
+                      description: Username to use to log into the SMTP server
                       type: string
                     password:
+                      description: Password to use to log into the SMTP server
                       type: string
                     throttle:
+                      description: Optional field to adjust how long time between each mail, in
+                        miliseconds
                       type: number
                     fromAddress:
+                      description: Email address to use as sender
                       type: string
                     ssl:
+                      description: Is connection to the SMTP server secure?
                       type: boolean
                   required:
                     - id
@@ -1009,8 +1211,12 @@ paths:
                       format: uuid
                       type: string
                     providerName:
+                      description: Name of the provider
                       type: string
                     isPrimary:
+                      description: If true, the provider is set as primary for the selected type for
+                        the current organisation. Please note, each organisation
+                        can only have one primary provider for each type
                       type: boolean
                     type:
                       type: string
@@ -1058,14 +1264,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1092,14 +1304,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1120,6 +1338,7 @@ paths:
                   - name
     delete:
       tags: *a2
+      description: Deletes the requested provider
       parameters:
         - schema:
             format: uuid
@@ -1127,6 +1346,7 @@ paths:
           in: path
           name: providerId
           required: true
+          description: Unique id of the provider to be deleted
       responses:
         "200":
           description: Default Response
@@ -1138,14 +1358,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1172,14 +1398,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1202,12 +1434,14 @@ paths:
     get:
       tags: &a3
         - Templates
+      description: Returns the providers matching the requested query
       parameters:
         - schema:
             type: string
           in: query
           name: lang
           required: false
+          description: If set, templates with the requested language are returned
       responses:
         "200":
           description: Default Response
@@ -1221,8 +1455,9 @@ paths:
                     items:
                       type: object
                       properties:
-                        templateMetaId:
+                        id:
                           format: uuid
+                          description: Unique id of the template
                           type: string
                         contents:
                           type: array
@@ -1230,14 +1465,16 @@ paths:
                             type: object
                             properties:
                               lang:
+                                description: Selected language
                                 type: string
                               templateName:
+                                description: Template name for the related language
                                 type: string
                             required:
                               - lang
                               - templateName
                       required:
-                        - templateMetaId
+                        - id
                         - contents
                   metadata:
                     type: object
@@ -1294,14 +1531,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1328,14 +1571,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1356,6 +1605,7 @@ paths:
                   - name
     post:
       tags: *a3
+      description: Creates a new template
       requestBody:
         content:
           application/json:
@@ -1368,16 +1618,22 @@ paths:
                     type: object
                     properties:
                       templateName:
+                        description: Template name for the related language
                         type: string
                       lang:
+                        description: Current language
                         type: string
                       subject:
+                        description: Subject of the template
                         type: string
                       excerpt:
+                        description: Brief description of the template content
                         type: string
                       plainText:
+                        description: Plain text version of the template
                         type: string
                       richText:
+                        description: Rich text version of the template
                         type: string
                     required:
                       - templateName
@@ -1387,6 +1643,8 @@ paths:
                       - plainText
                       - richText
                 variables:
+                  description: List of the variables that are needed to be filled to create a
+                    message using this template
                   type: array
                   items:
                     type: object
@@ -1420,6 +1678,7 @@ paths:
                     properties:
                       id:
                         format: uuid
+                        description: Unique id of the created message
                         type: string
                     required:
                       - id
@@ -1433,14 +1692,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1467,14 +1732,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1496,6 +1767,7 @@ paths:
   /api/v1/templates/{templateId}:
     get:
       tags: *a3
+      description: Returns the requested template
       parameters:
         - schema:
             type: string
@@ -1519,27 +1791,35 @@ paths:
                           type: object
                           properties:
                             templateName:
-                              type: string
-                            subject:
-                              type: string
-                            excerpt:
-                              type: string
-                            plainText:
-                              type: string
-                            richText:
+                              description: Template name for the related language
                               type: string
                             lang:
+                              description: Current language
+                              type: string
+                            subject:
+                              description: Subject of the template
+                              type: string
+                            excerpt:
+                              description: Brief description of the template content
+                              type: string
+                            plainText:
+                              description: Plain text version of the template
+                              type: string
+                            richText:
+                              description: Rich text version of the template
                               type: string
                           required:
                             - templateName
+                            - lang
                             - subject
                             - excerpt
                             - plainText
                             - richText
-                            - lang
                       fields:
                         type: array
                         items:
+                          description: List of the variables that are needed to be filled to create a
+                            message using this template
                           type: object
                           properties:
                             fieldName:
@@ -1607,14 +1887,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1641,14 +1927,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1669,6 +1961,7 @@ paths:
                   - name
     put:
       tags: *a3
+      description: Updates the requested template
       requestBody:
         content:
           application/json:
@@ -1682,18 +1975,25 @@ paths:
                     properties:
                       id:
                         format: uuid
+                        description: Unique id of the template
                         type: string
                       templateName:
+                        description: Template name for the related language
                         type: string
                       lang:
+                        description: Current language
                         type: string
                       subject:
+                        description: Subject of the template
                         type: string
                       excerpt:
+                        description: Brief description of the template content
                         type: string
                       plainText:
+                        description: Plain text version of the template
                         type: string
                       richText:
+                        description: Rich text version of the template
                         type: string
                     required:
                       - id
@@ -1704,6 +2004,8 @@ paths:
                       - plainText
                       - richText
                 variables:
+                  description: List of the variables that are needed to be filled to create a
+                    message using this template
                   type: array
                   items:
                     type: object
@@ -1726,6 +2028,8 @@ paths:
           name: templateId
           required: true
       responses:
+        "200":
+          description: Default Response
         4XX:
           description: Default Response
           content:
@@ -1734,14 +2038,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1768,14 +2078,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1796,6 +2112,7 @@ paths:
                   - name
     delete:
       tags: *a3
+      description: Deletes the requested template
       parameters:
         - schema:
             type: string
@@ -1803,6 +2120,8 @@ paths:
           name: templateId
           required: true
       responses:
+        "200":
+          description: Default Response
         4XX:
           description: Default Response
           content:
@@ -1811,14 +2130,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1845,14 +2170,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -1875,6 +2206,7 @@ paths:
     get:
       tags: &a4
         - Organisation Settings
+      description: Returns the organisation settings for the logged in user
       responses:
         "200":
           description: Default Response
@@ -1888,28 +2220,34 @@ paths:
                     items:
                       type: object
                       properties:
-                        organisationSettingId:
+                        id:
                           format: uuid
+                          description: Unique id of the organisation setting
                           type: string
                         userId:
                           format: uuid
+                          description: Unique id of the related user
                           type: string
                         userProfileId:
                           default: null
+                          description: User profile id, if available
                           anyOf:
                             - type: "null"
                             - type: string
                         phoneNumber:
                           default: null
+                          description: Phone number of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         emailAddress:
                           default: null
+                          description: Email address of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         organisationId:
+                          description: Unique id of the related organisation
                           type: string
                         organisationInvitationStatus:
                           type: string
@@ -1919,24 +2257,35 @@ paths:
                             - accepted
                             - declined
                           default: pending
+                          description: Current status of the invitation to the messaging building block
                         organisationInvitationSentAt:
+                          description: Date and time describing when the organisation invitation has been
+                            sent
                           type: string
                         organisationInvitationFeedbackAt:
+                          description: Date and time describing when the user has gave a feedback to the
+                            organisation invitation
                           type: string
                         organisationPreferredTransports:
+                          description: The list of the preferred transports to use. If the selected
+                            transports are not available for the recipient,
+                            others will be used
                           type: array
                           items:
                             type: string
                             enum:
                               - sms
                               - email
-                              - lifeEvent
+                            description: Provider types that can be manipulated
                         correlationQuality:
                           type: string
                           enum:
                             - full
                             - partial
                             - not_related
+                          description: If full, it means that the user is already on the Life Events
+                            platform, if partial the match has to be reviewed,
+                            if not_related the user does not exist
                         userStatus:
                           type: string
                           enum:
@@ -1950,26 +2299,31 @@ paths:
                           properties:
                             publicIdentityId:
                               default: null
+                              description: PPSN of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             firstName:
                               default: null
+                              description: First name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             lastName:
                               default: null
+                              description: Last name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             birthDate:
                               default: null
+                              description: Birth date of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             address:
                               default: null
+                              description: Address of the imported user
                               anyOf:
                                 - type: object
                                   properties:
@@ -2007,6 +2361,10 @@ paths:
                                 - type: "null"
                             collectedConsent:
                               default: false
+                              description: If false, an invitation to the user asking to accept to receive
+                                messages from the organisation will be sent. If
+                                true, it means that the organisation already
+                                asked the permissions to the user
                               type: boolean
                           required:
                             - publicIdentityId
@@ -2016,7 +2374,7 @@ paths:
                             - address
                             - collectedConsent
                       required:
-                        - organisationSettingId
+                        - id
                         - userId
                         - userProfileId
                         - phoneNumber
@@ -2081,14 +2439,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2115,14 +2479,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2149,14 +2519,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2178,6 +2554,7 @@ paths:
   /api/v1/organisation-settings/{organisationSettingId}:
     get:
       tags: *a4
+      description: Returns the requested organisation setting
       parameters:
         - schema:
             type: string
@@ -2195,28 +2572,34 @@ paths:
                   data:
                     type: object
                     properties:
-                      organisationSettingId:
+                      id:
                         format: uuid
+                        description: Unique id of the organisation setting
                         type: string
                       userId:
                         format: uuid
+                        description: Unique id of the related user
                         type: string
                       userProfileId:
                         default: null
+                        description: User profile id, if available
                         anyOf:
                           - type: "null"
                           - type: string
                       phoneNumber:
                         default: null
+                        description: Phone number of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       emailAddress:
                         default: null
+                        description: Email address of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       organisationId:
+                        description: Unique id of the related organisation
                         type: string
                       organisationInvitationStatus:
                         type: string
@@ -2226,24 +2609,35 @@ paths:
                           - accepted
                           - declined
                         default: pending
+                        description: Current status of the invitation to the messaging building block
                       organisationInvitationSentAt:
+                        description: Date and time describing when the organisation invitation has been
+                          sent
                         type: string
                       organisationInvitationFeedbackAt:
+                        description: Date and time describing when the user has gave a feedback to the
+                          organisation invitation
                         type: string
                       organisationPreferredTransports:
+                        description: The list of the preferred transports to use. If the selected
+                          transports are not available for the recipient, others
+                          will be used
                         type: array
                         items:
                           type: string
                           enum:
                             - sms
                             - email
-                            - lifeEvent
+                          description: Provider types that can be manipulated
                       correlationQuality:
                         type: string
                         enum:
                           - full
                           - partial
                           - not_related
+                        description: If full, it means that the user is already on the Life Events
+                          platform, if partial the match has to be reviewed, if
+                          not_related the user does not exist
                       userStatus:
                         type: string
                         enum:
@@ -2257,26 +2651,31 @@ paths:
                         properties:
                           publicIdentityId:
                             default: null
+                            description: PPSN of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           firstName:
                             default: null
+                            description: First name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           lastName:
                             default: null
+                            description: Last name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           birthDate:
                             default: null
+                            description: Birth date of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           address:
                             default: null
+                            description: Address of the imported user
                             anyOf:
                               - type: object
                                 properties:
@@ -2314,6 +2713,10 @@ paths:
                               - type: "null"
                           collectedConsent:
                             default: false
+                            description: If false, an invitation to the user asking to accept to receive
+                              messages from the organisation will be sent. If
+                              true, it means that the organisation already asked
+                              the permissions to the user
                             type: boolean
                         required:
                           - publicIdentityId
@@ -2323,7 +2726,7 @@ paths:
                           - address
                           - collectedConsent
                     required:
-                      - organisationSettingId
+                      - id
                       - userId
                       - userProfileId
                       - phoneNumber
@@ -2388,14 +2791,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2422,14 +2831,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2456,14 +2871,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2484,6 +2905,7 @@ paths:
                   - name
     patch:
       tags: *a4
+      description: Updates the requested organisation settings
       requestBody:
         content:
           application/json:
@@ -2496,10 +2918,19 @@ paths:
                     - accepted
                     - declined
                   default: accepted
+                  description: Current status of the invitation to receive messages from the
+                    organisation
                 preferredTransports:
+                  description: The list of the preferred transports to use. If the selected
+                    transports are not available for the recipient, others will
+                    be used
                   type: array
                   items:
                     type: string
+                    enum:
+                      - sms
+                      - email
+                    description: Provider types that can be manipulated
               required:
                 - invitationStatusFeedback
                 - preferredTransports
@@ -2521,28 +2952,34 @@ paths:
                   data:
                     type: object
                     properties:
-                      organisationSettingId:
+                      id:
                         format: uuid
+                        description: Unique id of the organisation setting
                         type: string
                       userId:
                         format: uuid
+                        description: Unique id of the related user
                         type: string
                       userProfileId:
                         default: null
+                        description: User profile id, if available
                         anyOf:
                           - type: "null"
                           - type: string
                       phoneNumber:
                         default: null
+                        description: Phone number of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       emailAddress:
                         default: null
+                        description: Email address of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       organisationId:
+                        description: Unique id of the related organisation
                         type: string
                       organisationInvitationStatus:
                         type: string
@@ -2552,24 +2989,35 @@ paths:
                           - accepted
                           - declined
                         default: pending
+                        description: Current status of the invitation to the messaging building block
                       organisationInvitationSentAt:
+                        description: Date and time describing when the organisation invitation has been
+                          sent
                         type: string
                       organisationInvitationFeedbackAt:
+                        description: Date and time describing when the user has gave a feedback to the
+                          organisation invitation
                         type: string
                       organisationPreferredTransports:
+                        description: The list of the preferred transports to use. If the selected
+                          transports are not available for the recipient, others
+                          will be used
                         type: array
                         items:
                           type: string
                           enum:
                             - sms
                             - email
-                            - lifeEvent
+                          description: Provider types that can be manipulated
                       correlationQuality:
                         type: string
                         enum:
                           - full
                           - partial
                           - not_related
+                        description: If full, it means that the user is already on the Life Events
+                          platform, if partial the match has to be reviewed, if
+                          not_related the user does not exist
                       userStatus:
                         type: string
                         enum:
@@ -2583,26 +3031,31 @@ paths:
                         properties:
                           publicIdentityId:
                             default: null
+                            description: PPSN of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           firstName:
                             default: null
+                            description: First name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           lastName:
                             default: null
+                            description: Last name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           birthDate:
                             default: null
+                            description: Birth date of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           address:
                             default: null
+                            description: Address of the imported user
                             anyOf:
                               - type: object
                                 properties:
@@ -2640,6 +3093,10 @@ paths:
                               - type: "null"
                           collectedConsent:
                             default: false
+                            description: If false, an invitation to the user asking to accept to receive
+                              messages from the organisation will be sent. If
+                              true, it means that the organisation already asked
+                              the permissions to the user
                             type: boolean
                         required:
                           - publicIdentityId
@@ -2649,7 +3106,7 @@ paths:
                           - address
                           - collectedConsent
                     required:
-                      - organisationSettingId
+                      - id
                       - userId
                       - userProfileId
                       - phoneNumber
@@ -2659,6 +3116,51 @@ paths:
                       - organisationPreferredTransports
                       - correlationQuality
                       - userStatus
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
                 required:
                   - data
         "400":
@@ -2669,14 +3171,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2703,14 +3211,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2737,14 +3251,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2767,6 +3287,7 @@ paths:
     get:
       tags: &a5
         - User Imports
+      description: Retrieves the user import batches related to the current organisation
       responses:
         "200":
           description: Default Response
@@ -2791,6 +3312,7 @@ paths:
                             - api
                             - csv
                           default: api
+                          description: Channel through which the users have been imported
                         retryCount:
                           default: 0
                           type: integer
@@ -2858,8 +3380,9 @@ paths:
                   - data
     post:
       tags: *a5
-      description: If 'Content-Type' header contains 'multipart/form-data' it accepts
-        a CSV file, otherwise an array of users to import
+      description: Imports a new batch of users. If 'Content-Type' header contains
+        'multipart/form-data' it accepts a CSV file, otherwise an array of users
+        to import
       requestBody:
         content:
           multipart/form-data: &a6
@@ -2870,69 +3393,92 @@ paths:
                     type: object
                     properties:
                       importIndex:
+                        description: Numeric index of the user to import. It must increments by one
+                          across users so to be able to notify which users'
+                          import failed
                         type: integer
                       publicIdentityId:
                         default: null
+                        description: PPSN of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       firstName:
                         default: null
+                        description: First name of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       lastName:
                         default: null
+                        description: Last name of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       phoneNumber:
                         default: null
+                        description: Phone number of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       birthDate:
                         default: null
+                        description: Birth date of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       emailAddress:
                         default: null
+                        description: Email address of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       addressCity:
                         default: null
+                        description: City of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       addressZipCode:
                         default: null
+                        description: Zip Code of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       addressStreet:
                         default: null
+                        description: Street of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       addressCountry:
                         default: null
+                        description: Country of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       addressRegion:
                         default: null
+                        description: Region of the user to be imported
                         anyOf:
                           - type: "null"
                           - type: string
                       tags:
                         default: null
+                        description: Tags of the user to be imported. The tags can made by multiple
+                          levels, splitting each level by a '.' and listing
+                          multiple tags using a ';'
+                        examples:
+                          - region.county;role.job
                         anyOf:
                           - type: "null"
                           - type: string
                       collectedConsent:
-                        default: null
+                        default: false
+                        description: If false, an invitation to the user asking to accept to receive
+                          messages from the organisation will be sent. If true,
+                          it means that the organisation already asked the
+                          permissions to the user
                         anyOf:
                           - type: "null"
                           - type: string
@@ -2951,14 +3497,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -2985,14 +3537,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3014,6 +3572,7 @@ paths:
   /api/v1/user-imports/{importId}:
     get:
       tags: *a5
+      description: Retrieves the requested user import batch
       parameters:
         - schema:
             default: true
@@ -3021,6 +3580,7 @@ paths:
           in: query
           name: includeImportedData
           required: true
+          description: If true, it returns the data of the user sent in the import batch
         - schema:
             format: uuid
             type: string
@@ -3052,11 +3612,13 @@ paths:
                               type: integer
                             phoneNumber:
                               default: null
+                              description: Phone number of the user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             emailAddress:
                               default: null
+                              description: Email address of the user
                               anyOf:
                                 - type: "null"
                                 - type: string
@@ -3069,47 +3631,58 @@ paths:
                                 - error
                                 - missing_contacts
                               default: pending
+                              description: Result of the import for the user
                             importError:
                               default: null
+                              description: The error raised during the import, if set
                               anyOf:
                                 - type: "null"
                                 - type: string
                             relatedUserProfileId:
                               default: null
+                              description: Related user profile id from the Life Events building block, if
+                                available
                               anyOf:
                                 - type: "null"
                                 - type: string
                             relatedUserId:
                               default: null
+                              description: Related user id from the Messaging building block, if available
                               anyOf:
                                 - type: "null"
                                 - type: string
                             tags:
+                              description: Tags related to the user
                               type: array
                               items:
                                 type: string
                             publicIdentityId:
                               default: null
+                              description: PPSN of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             firstName:
                               default: null
+                              description: First name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             lastName:
                               default: null
+                              description: Last name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             birthDate:
                               default: null
+                              description: Birth date of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             address:
                               default: null
+                              description: Address of the imported user
                               anyOf:
                                 - type: object
                                   properties:
@@ -3147,6 +3720,10 @@ paths:
                                 - type: "null"
                             collectedConsent:
                               default: false
+                              description: If false, an invitation to the user asking to accept to receive
+                                messages from the organisation will be sent. If
+                                true, it means that the organisation already
+                                asked the permissions to the user
                               type: boolean
                           required:
                             - importIndex
@@ -3165,6 +3742,7 @@ paths:
                           - api
                           - csv
                         default: api
+                        description: Channel through which the users have been imported
                       retryCount:
                         default: 0
                         type: integer
@@ -3239,14 +3817,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3273,14 +3857,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3302,14 +3892,17 @@ paths:
   /api/v1/user-imports/template-download:
     get:
       tags: *a5
-      description: it will return a string containing the template with the csv that
-        will be used to import users
+      description: Returns a string containing the template with the csv that will be
+        used to import users
       responses:
         "200":
-          description: Default Response
+          description: The header and one example line for the CSV template that must be
+            used to import users
           content:
             text/csv:
               schema:
+                description: The header and one example line for the CSV template that must be
+                  used to import users
                 type: string
   /api/v1/users/:
     get:
@@ -3321,26 +3914,36 @@ paths:
           in: query
           name: organisationId
           required: false
+          description: If set, the endpoint returns the users whom have an accepted
+            relation with the organisation id
         - schema:
             type: string
           in: query
           name: search
           required: false
+          description: If set, the endpoint searches for users whom contain this value in
+            either the name, the surname, or the email address
         - schema:
             type: string
           in: query
           name: transports
           required: false
+          description: If set, it must contain a list of transports divided by ',' and the
+            endpoint searches for users whom have selected at least one of them
+            as preferred for the organisation
         - schema:
             type: string
           in: query
           name: importId
           required: false
+          description: If set, the endpoint returns the users whom have imported by that
+            specific batch
         - schema:
             type: boolean
           in: query
           name: activeOnly
           required: false
+          description: If true, the endpoint returns active only users
         - schema:
             default: 0
             minimum: 0
@@ -3348,6 +3951,8 @@ paths:
           in: query
           name: offset
           required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
         - schema:
             default: 20
             minimum: 1
@@ -3356,6 +3961,8 @@ paths:
           in: query
           name: limit
           required: false
+          description: Indicates the maximum number of items that will be returned in a
+            single request
       responses:
         "200":
           description: Default Response
@@ -3369,53 +3976,64 @@ paths:
                     items:
                       type: object
                       properties:
+                        organizationSettingId:
+                          format: uuid
+                          description: Unique id of the organisation setting
+                          type: string
                         firstName:
                           default: null
+                          description: First name of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         lastName:
                           default: null
+                          description: Last name of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         birthDate:
                           default: null
+                          description: Birth date of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         lang:
                           default: null
+                          description: Preferred language of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         ppsn:
                           default: null
+                          description: PPSN of the user
                           anyOf:
                             - type: "null"
                             - type: string
-                        organisationSettingId:
-                          format: uuid
-                          type: string
                         userId:
                           format: uuid
+                          description: Unique id of the related user
                           type: string
                         userProfileId:
                           default: null
+                          description: User profile id, if available
                           anyOf:
                             - type: "null"
                             - type: string
                         phoneNumber:
                           default: null
+                          description: Phone number of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         emailAddress:
                           default: null
+                          description: Email address of the user
                           anyOf:
                             - type: "null"
                             - type: string
                         organisationId:
+                          description: Unique id of the related organisation
                           type: string
                         organisationInvitationStatus:
                           type: string
@@ -3425,24 +4043,35 @@ paths:
                             - accepted
                             - declined
                           default: pending
+                          description: Current status of the invitation to the messaging building block
                         organisationInvitationSentAt:
+                          description: Date and time describing when the organisation invitation has been
+                            sent
                           type: string
                         organisationInvitationFeedbackAt:
+                          description: Date and time describing when the user has gave a feedback to the
+                            organisation invitation
                           type: string
                         organisationPreferredTransports:
+                          description: The list of the preferred transports to use. If the selected
+                            transports are not available for the recipient,
+                            others will be used
                           type: array
                           items:
                             type: string
                             enum:
                               - sms
                               - email
-                              - lifeEvent
+                            description: Provider types that can be manipulated
                         correlationQuality:
                           type: string
                           enum:
                             - full
                             - partial
                             - not_related
+                          description: If full, it means that the user is already on the Life Events
+                            platform, if partial the match has to be reviewed,
+                            if not_related the user does not exist
                         userStatus:
                           type: string
                           enum:
@@ -3456,26 +4085,31 @@ paths:
                           properties:
                             publicIdentityId:
                               default: null
+                              description: PPSN of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             firstName:
                               default: null
+                              description: First name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             lastName:
                               default: null
+                              description: Last name of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             birthDate:
                               default: null
+                              description: Birth date of the imported user
                               anyOf:
                                 - type: "null"
                                 - type: string
                             address:
                               default: null
+                              description: Address of the imported user
                               anyOf:
                                 - type: object
                                   properties:
@@ -3513,6 +4147,10 @@ paths:
                                 - type: "null"
                             collectedConsent:
                               default: false
+                              description: If false, an invitation to the user asking to accept to receive
+                                messages from the organisation will be sent. If
+                                true, it means that the organisation already
+                                asked the permissions to the user
                               type: boolean
                           required:
                             - publicIdentityId
@@ -3522,12 +4160,12 @@ paths:
                             - address
                             - collectedConsent
                       required:
+                        - organizationSettingId
                         - firstName
                         - lastName
                         - birthDate
                         - lang
                         - ppsn
-                        - organisationSettingId
                         - userId
                         - userProfileId
                         - phoneNumber
@@ -3592,14 +4230,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3626,14 +4270,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3655,12 +4305,14 @@ paths:
   /api/v1/users/{userId}:
     get:
       tags: *a7
+      description: Returns the requested user
       parameters:
         - schema:
             type: boolean
           in: query
           name: activeOnly
           required: false
+          description: If true, the endpoint returns active only users
         - schema:
             type: string
           in: path
@@ -3677,53 +4329,64 @@ paths:
                   data:
                     type: object
                     properties:
+                      organizationSettingId:
+                        format: uuid
+                        description: Unique id of the organisation setting
+                        type: string
                       firstName:
                         default: null
+                        description: First name of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       lastName:
                         default: null
+                        description: Last name of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       birthDate:
                         default: null
+                        description: Birth date of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       lang:
                         default: null
+                        description: Preferred language of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       ppsn:
                         default: null
+                        description: PPSN of the user
                         anyOf:
                           - type: "null"
                           - type: string
-                      organisationSettingId:
-                        format: uuid
-                        type: string
                       userId:
                         format: uuid
+                        description: Unique id of the related user
                         type: string
                       userProfileId:
                         default: null
+                        description: User profile id, if available
                         anyOf:
                           - type: "null"
                           - type: string
                       phoneNumber:
                         default: null
+                        description: Phone number of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       emailAddress:
                         default: null
+                        description: Email address of the user
                         anyOf:
                           - type: "null"
                           - type: string
                       organisationId:
+                        description: Unique id of the related organisation
                         type: string
                       organisationInvitationStatus:
                         type: string
@@ -3733,24 +4396,35 @@ paths:
                           - accepted
                           - declined
                         default: pending
+                        description: Current status of the invitation to the messaging building block
                       organisationInvitationSentAt:
+                        description: Date and time describing when the organisation invitation has been
+                          sent
                         type: string
                       organisationInvitationFeedbackAt:
+                        description: Date and time describing when the user has gave a feedback to the
+                          organisation invitation
                         type: string
                       organisationPreferredTransports:
+                        description: The list of the preferred transports to use. If the selected
+                          transports are not available for the recipient, others
+                          will be used
                         type: array
                         items:
                           type: string
                           enum:
                             - sms
                             - email
-                            - lifeEvent
+                          description: Provider types that can be manipulated
                       correlationQuality:
                         type: string
                         enum:
                           - full
                           - partial
                           - not_related
+                        description: If full, it means that the user is already on the Life Events
+                          platform, if partial the match has to be reviewed, if
+                          not_related the user does not exist
                       userStatus:
                         type: string
                         enum:
@@ -3764,26 +4438,31 @@ paths:
                         properties:
                           publicIdentityId:
                             default: null
+                            description: PPSN of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           firstName:
                             default: null
+                            description: First name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           lastName:
                             default: null
+                            description: Last name of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           birthDate:
                             default: null
+                            description: Birth date of the imported user
                             anyOf:
                               - type: "null"
                               - type: string
                           address:
                             default: null
+                            description: Address of the imported user
                             anyOf:
                               - type: object
                                 properties:
@@ -3821,6 +4500,10 @@ paths:
                               - type: "null"
                           collectedConsent:
                             default: false
+                            description: If false, an invitation to the user asking to accept to receive
+                              messages from the organisation will be sent. If
+                              true, it means that the organisation already asked
+                              the permissions to the user
                             type: boolean
                         required:
                           - publicIdentityId
@@ -3830,12 +4513,12 @@ paths:
                           - address
                           - collectedConsent
                     required:
+                      - organizationSettingId
                       - firstName
                       - lastName
                       - birthDate
                       - lang
                       - ppsn
-                      - organisationSettingId
                       - userId
                       - userProfileId
                       - phoneNumber
@@ -3900,14 +4583,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3934,14 +4623,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -3964,12 +4659,15 @@ paths:
     get:
       tags: &a8
         - Message events
+      description: Returns the message events that match the requested query
       parameters:
         - schema:
             type: string
           in: query
           name: search
           required: false
+          description: If set, it filters the events for the messages containing the set
+            value in subject
         - schema:
             default: 0
             minimum: 0
@@ -3977,6 +4675,8 @@ paths:
           in: query
           name: offset
           required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
         - schema:
             default: 20
             minimum: 1
@@ -3985,6 +4685,8 @@ paths:
           in: query
           name: limit
           required: false
+          description: Indicates the maximum number of items that will be returned in a
+            single request
       responses:
         "200":
           description: Default Response
@@ -4000,19 +4702,26 @@ paths:
                       properties:
                         eventId:
                           format: uuid
+                          description: Unique id of the event
                           type: string
                         messageId:
                           format: uuid
+                          description: Unique id of the related message
                           type: string
                         subject:
+                          description: Subject of the related message
                           type: string
                         receiverFullName:
+                          description: Full name of the recipient
                           type: string
                         eventType:
+                          description: Event type description
                           type: string
                         eventStatus:
+                          description: Status for event type
                           type: string
                         scheduledAt:
+                          description: Date and time which describes when the message has to be sent
                           type: string
                       required:
                         - eventId
@@ -4077,14 +4786,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4111,14 +4826,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4140,6 +4861,7 @@ paths:
   /api/v1/message-events/{eventId}:
     get:
       tags: *a8
+      description: Returns the selected event id
       parameters:
         - schema:
             type: string
@@ -4159,50 +4881,74 @@ paths:
                     items:
                       type: object
                       properties:
-                        eventStatus:
-                          type: string
                         eventType:
+                          description: Event type description
+                          type: string
+                        eventStatus:
+                          description: Status for event type
                           type: string
                         data:
                           anyOf:
                             - type: object
                               properties:
                                 messageId:
+                                  description: Unique id of the related message
                                   type: string
                                 receiverFullName:
+                                  description: Full name of the recipient
                                   type: string
                                 receiverPPSN:
+                                  description: PPSN of the recipient
                                   type: string
                                 subject:
+                                  description: Subject of the related message
                                   type: string
                                 lang:
+                                  description: Language of the related message
                                   type: string
                                 excerpt:
+                                  description: Excerpt of the related message
                                   type: string
                                 richText:
+                                  description: Rich text content of the related message
                                   type: string
                                 plainText:
+                                  description: Plain text context of the related message
                                   type: string
                                 threadName:
+                                  description: Thread name of the related message
                                   type: string
                                 transports:
+                                  description: Selected transports to send the message
                                   type: array
                                   items:
                                     type: string
                                 scheduledAt:
                                   format: date-time
+                                  description: Date and time which describes when the message has to be sent
                                   type: string
                                 senderUserId:
+                                  description: Unique user id of the sender
                                   type: string
                                 senderFullName:
+                                  description: Full name of the sender
                                   type: string
                                 senderPPSN:
+                                  description: PPSN of the sender
                                   type: string
                                 organisationName:
+                                  description: Organisation related to the sender
                                   type: string
                                 security:
                                   type: string
+                                  enum:
+                                    - confidential
+                                    - public
+                                  default: public
+                                  description: Confidentiality level of the message
                                 bypassConsent:
+                                  description: If true, the message will be sent even if the recipient didn't
+                                    accept the organisation's invitation
                                   type: boolean
                               required:
                                 - messageId
@@ -4225,8 +4971,10 @@ paths:
                             - type: object
                               properties:
                                 messageId:
+                                  description: Unique id of the related message
                                   type: string
                                 jobId:
+                                  description: Unique id of the job
                                   type: string
                               required:
                                 - messageId
@@ -4234,15 +4982,17 @@ paths:
                             - type: object
                               properties:
                                 messageId:
+                                  description: Unique id of the related message
                                   type: string
                               required:
                                 - messageId
                         createdAt:
                           format: date-time
+                          description: Date and time which describes when the event has been recorded
                           type: string
                       required:
-                        - eventStatus
                         - eventType
+                        - eventStatus
                         - data
                         - createdAt
                 required:
@@ -4255,14 +5005,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4289,14 +5045,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4319,6 +5081,7 @@ paths:
     post:
       tags:
         - Jobs
+      description: Executes the requested job
       requestBody:
         content:
           application/json:
@@ -4326,6 +5089,8 @@ paths:
               type: object
               properties:
                 token:
+                  description: The security token used to ensure you are allowed to execute this
+                    job
                   type: string
               required:
                 - token
@@ -4347,14 +5112,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
@@ -4381,14 +5152,20 @@ paths:
                 type: object
                 properties:
                   code:
+                    description: Code used to categorize the error
                     type: string
                   detail:
+                    description: Description of the error
                     type: string
                   request_id:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
                   name:
+                    description: Name of the error type
                     type: string
                   validation:
+                    description: List of the validation errors
                     type: array
                     items:
                       type: object
