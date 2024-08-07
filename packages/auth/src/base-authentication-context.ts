@@ -12,6 +12,7 @@ import {
   setSelectedOrganization,
   getCitizenToken,
   getOrgToken,
+  isAuthenticated,
 } from "./authentication-context";
 import { AuthenticationError } from "shared-errors";
 import { notFound } from "next/navigation";
@@ -111,7 +112,7 @@ export class BaseAuthenticationContext {
   }
 
   async isAuthenticated(): Promise<boolean> {
-    return this.isCitizenAuthenticated() || this.isPublicServantAuthenticated();
+    return isAuthenticated(this.config);
   }
 
   async getOrganizations(): Promise<Record<string, OrganizationData>> {
