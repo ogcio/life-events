@@ -17,9 +17,10 @@ import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
 import { ensureUserCanAccessUser } from "api-auth";
 import { QueryResult } from "pg";
-import { ServerError, AuthorizationError } from "shared-errors";
+import { ServerError, AuthorizationError, NotFoundError } from "shared-errors";
 import { utils } from "../../utils";
 import { sanitizePagination, getPaginationLinks } from "../../utils/pagination";
+import { ensureUserIdIsSet } from "../../utils/authentication-factory";
 
 const MESSAGES_TAGS = ["Messages"];
 
@@ -92,12 +93,12 @@ export default async function messages(app: FastifyInstance) {
           `
             select id as "messageUserId", user_profile_id as "profileId" from users where id::text = $1 or user_profile_id = $1
             limit 1
-        `,
-          [request.userData?.userId],
+          `,
+          [queryRecipientUserId],
         );
         const allUserIds = allUserIdsQueryResult.rows.at(0);
         if (!allUserIds) {
-          throw new AuthorizationError(errorProcess, "illegal user id request");
+          throw new NotFoundError(errorProcess, "user not found");
         }
 
         if (
@@ -164,7 +165,7 @@ export default async function messages(app: FastifyInstance) {
               subject,
               thread_name as "threadName",
               organisation_id as "organisationId",
-              user_id as "recipientId",
+              user_id as "recipientUserId",
               created_at as "createdAt",
               (select count from count_selection) as "count"
             from messages
@@ -204,14 +205,14 @@ export default async function messages(app: FastifyInstance) {
                 subject,
                 organisationId,
                 threadName,
-                recipientId,
+                recipientUserId,
               }) => ({
                 id,
                 subject,
                 createdAt,
                 threadName,
                 organisationId,
-                recipientId,
+                recipientUserId,
               }),
             ) ?? [],
           metadata: {
@@ -247,7 +248,7 @@ export default async function messages(app: FastifyInstance) {
       return {
         data: await getMessage({
           pg: app.pg,
-          userId: request.userData!.userId,
+          userId: ensureUserIdIsSet(request, "GET_MESSAGE"),
           messageId: request.params.messageId,
         }),
       };
@@ -268,7 +269,6 @@ export default async function messages(app: FastifyInstance) {
         response: {
           "4xx": HttpError,
           "5xx": HttpError,
-        
           201: Type.Object({
             data: Type.Object({
               messageId: Type.String({ format: "uuid" }),
@@ -282,14 +282,14 @@ export default async function messages(app: FastifyInstance) {
 
       const userData = ensureUserCanAccessUser(
         request.userData,
-        request.body.userId,
+        request.body.recipientUserId,
         errorKey,
       );
 
       const messages = await processMessages({
         inputMessages: [
           {
-            receiverUserId: request.body.userId,
+            receiverUserId: request.body.recipientUserId,
             ...request.body,
             ...request.body.message,
             organisationId: userData.organizationId!,

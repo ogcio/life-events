@@ -1,5 +1,6 @@
 import { getAccessToken, getOrganizationToken } from "api-auth";
 import { Profile } from "building-blocks-sdk";
+import { AuthorizationError } from "shared-errors";
 
 const getBaseProfileConfig = (): {
   logtoOidcEndpoint: string;
@@ -35,4 +36,28 @@ export const getProfileSdk = async (
     : getCitizenProfileToken());
 
   return new Profile(token);
+};
+
+export const ensureUserIdIsSet = (
+  request: { userData?: { userId?: string } },
+  errorProcess: string,
+  errorMessage: string = "User id is not set",
+): string => {
+  if (request.userData && request.userData.userId) {
+    return request.userData.userId;
+  }
+
+  throw new AuthorizationError(errorProcess, errorMessage);
+};
+
+export const ensureOrganizationIdIsSet = (
+  request: { userData?: { organizationId?: string } },
+  errorProcess: string,
+  errorMessage: string = "Organization id is not set",
+): string => {
+  if (request.userData && request.userData.organizationId) {
+    return request.userData.organizationId;
+  }
+
+  throw new AuthorizationError(errorProcess, errorMessage);
 };
