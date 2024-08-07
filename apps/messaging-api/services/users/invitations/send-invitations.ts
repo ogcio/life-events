@@ -76,6 +76,7 @@ export const sendInvitationsForUsersImport = async (params: {
     const sent = await sendInvitations({
       toSend,
       organisationId: toImportUsers.organisationId,
+      senderUserProfileId: params.requestUserId,
     });
 
     await processMessages({
@@ -231,6 +232,7 @@ const prepareInvitations = (params: {
 const sendInvitations = async (params: {
   toSend: ToSendInvitations;
   organisationId: string;
+  senderUserProfileId: string;
 }): Promise<{
   invitedToMessaging: string[];
   invitedToOrganisation: string[];
@@ -260,6 +262,7 @@ const sendInvitations = async (params: {
         security: ConfidentialSecurity,
         subject: messageInput.subject,
         threadName: messageInput.threadName || messageInput.subject,
+        senderUserProfileId: params.senderUserProfileId,
       });
     }
 
@@ -290,6 +293,7 @@ const sendInvitations = async (params: {
         security: ConfidentialSecurity,
         subject: messageInput.subject,
         threadName: messageInput.threadName || messageInput.subject,
+        senderUserProfileId: params.senderUserProfileId,
       });
     }
 
@@ -315,6 +319,7 @@ const sendInvitations = async (params: {
         security: ConfidentialSecurity,
         subject: messageInput.subject,
         threadName: messageInput.threadName || messageInput.subject,
+        senderUserProfileId: params.senderUserProfileId,
       });
     }
     output.welcomed.push(...params.toSend.welcome[language].userIds);
