@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { BankTransferProviderForm } from "../components/BankTransferProviderForm";
 
-export class EditManualBankTransferProviderPage {
+export class EditOpenBankingProviderPage {
   public readonly providerForm: BankTransferProviderForm;
   private readonly saveButton: Locator;
   private readonly disableButton: Locator;
@@ -14,7 +14,7 @@ export class EditManualBankTransferProviderPage {
     this.disableButton = this.page.getByRole("button", { name: "Disable" });
     this.enableButton = this.page.getByRole("button", { name: "Enable" });
     this.header = this.page.getByRole("heading", {
-      name: "Edit Manual Bank Transfer Payment Provider",
+      name: "Edit OpenBanking Payment Provider",
     });
   }
 
