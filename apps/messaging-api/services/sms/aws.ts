@@ -1,13 +1,12 @@
 import { SMSService } from "../../routes";
-import AWS from "aws-sdk";
+import { SNS } from "@aws-sdk/client-sns";
 
 export function awsSnsSmsService(
   accessKeyId: string,
   secretAccessKey: string,
   region: string,
 ): SMSService {
-  const aws = new AWS.SNS({
-    apiVersion: "latest",
+  const aws = new SNS({
     region,
     credentials: { accessKeyId, secretAccessKey },
   });
