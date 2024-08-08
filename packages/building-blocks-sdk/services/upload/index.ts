@@ -17,6 +17,24 @@ export class Upload {
     this.client.use(authMiddleware);
   }
 
+  async getFile(key: string) {
+    const {
+      error,
+      data,
+      response: { headers, status },
+    } = await this.client.GET("/api/v1/files/{key}", {
+      params: { path: { key } },
+      parseAs: "stream",
+    });
+
+    return {
+      error,
+      data,
+      headers: Object.fromEntries(headers.entries()),
+      status,
+    };
+  }
+
   async getFiles() {
     const { error, data } = await this.client.GET("/api/v1/files/");
     return { error, data: data?.data };
