@@ -20,7 +20,7 @@ t.test("Common error is managed as expected", async () => {
   t.same(response.json(), {
     code: HttpErrorClasses.ServerError,
     detail: "error message",
-    request_id: "req-1",
+    requestId: "req-1",
     name: "FastifyError",
   });
 
@@ -41,12 +41,17 @@ t.test("Validation error is managed as a Life Events One", async () => {
   t.same(response.json(), {
     code: HttpErrorClasses.ValidationError,
     detail: "error message",
-    request_id: "req-1",
+    requestId: "req-1",
     name: "VALIDATION_ERROR",
     validation: [
       {
         fieldName: "the.instance.path",
         message: "error message",
+        validationRule: "field",
+        additionalInfo: {
+          field: "one",
+          property: "two",
+        },
       },
     ],
     process: "/validation?error_message=error+message",
@@ -71,7 +76,7 @@ t.test(
     t.same(response.json(), {
       code: HttpErrorClasses.UnknownError,
       detail: "error message",
-      request_id: "req-1",
+      requestId: "req-1",
       name: "FastifyError",
     });
 
@@ -92,7 +97,7 @@ t.test("404 error is managed as expected", async () => {
   t.same(response.json(), {
     code: HttpErrorClasses.NotFoundError,
     detail: "Route not found",
-    request_id: "req-1",
+    requestId: "req-1",
     process: "/this-path-does-not-exist",
     name: new NotFoundError("TEMP", "TEMP").name,
   });

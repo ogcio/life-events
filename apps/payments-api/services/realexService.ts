@@ -1,11 +1,11 @@
-import { RealexHppResponse } from "../routes/schemas";
+import { RealexHppResponseDO } from "../plugins/entities/providers/types";
 import CryptographyService from "./cryptographyService";
 
 interface IRealexService {
   generateTimestamp(timestamp?: Date): string;
   generateHash(text: string): string;
-  verifyHash(hppDataResponse: RealexHppResponse): boolean;
-  generateHTMLResponse(response: RealexHppResponse): string;
+  verifyHash(hppDataResponse: RealexHppResponseDO): boolean;
+  generateHTMLResponse(response: RealexHppResponseDO): string;
 }
 export class RealexService implements IRealexService {
   private cryptographyService: CryptographyService;
@@ -41,7 +41,7 @@ export class RealexService implements IRealexService {
     );
   }
 
-  verifyHash(response: RealexHppResponse): boolean {
+  verifyHash(response: RealexHppResponseDO): boolean {
     const {
       TIMESTAMP,
       MERCHANT_ID,
@@ -58,7 +58,7 @@ export class RealexService implements IRealexService {
     return validHash === response.SHA256HASH;
   }
 
-  generateHTMLResponse(response: RealexHppResponse): string {
+  generateHTMLResponse(response: RealexHppResponseDO): string {
     const errorQueryParam =
       response.RESULT !== "00" ? `&error=${response.RESULT}` : "";
     const url = new URL(
