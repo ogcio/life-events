@@ -1,48 +1,26 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import {
   providersUrl,
-  RealexValidationError,
   providerValidationErrorTexts,
+  RealexValidationError,
 } from "../../utils/constants";
 import {
   mockRealexMerchantId,
   mockRealexSharedSecret,
 } from "../../utils/mocks";
+import { RealexProviderForm } from "../components/RealexProviderForm";
 
 export class AddRealexProviderPage {
-  private readonly nameInput: Locator;
-  private readonly merchantId: Locator;
-  private readonly sharedSecret: Locator;
+  public readonly providerForm: RealexProviderForm;
   private readonly confirmButton: Locator;
 
   constructor(public readonly page: Page) {
-    this.nameInput = this.page.getByRole("textbox", {
-      name: "Name",
-      exact: true,
-    });
-    this.merchantId = this.page.getByRole("textbox", {
-      name: "Merchant Id",
-    });
-    this.sharedSecret = this.page.getByRole("textbox", {
-      name: "Shared secret",
-    });
+    this.providerForm = new RealexProviderForm(page);
     this.confirmButton = this.page.getByRole("button", { name: "Confirm" });
   }
 
   async goto() {
     await this.page.goto(`${providersUrl}/add-realex`);
-  }
-
-  async enterName(name: string) {
-    await this.nameInput.fill(name);
-  }
-
-  async enterMerchantId(id: string) {
-    await this.merchantId.fill(id);
-  }
-
-  async enterSharedSecret(key: string) {
-    await this.sharedSecret.fill(key);
   }
 
   async submitProviderCreation() {
@@ -57,9 +35,9 @@ export class AddRealexProviderPage {
   }
 
   async create(name: string) {
-    await this.enterName(name);
-    await this.enterMerchantId(mockRealexMerchantId);
-    await this.enterSharedSecret(mockRealexSharedSecret);
+    await this.providerForm.enterName(name);
+    await this.providerForm.enterMerchantId(mockRealexMerchantId);
+    await this.providerForm.enterSharedSecret(mockRealexSharedSecret);
     await this.submitProviderCreation();
 
     await this.page.waitForURL(providersUrl);

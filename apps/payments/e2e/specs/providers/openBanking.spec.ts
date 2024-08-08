@@ -44,11 +44,11 @@ test.describe("Open Banking provider", () => {
     await providersPage.selectOpenBankingProvider();
 
     const addOpenBankingProviderPage = new AddOpenBankingProviderPage(page);
-    await addOpenBankingProviderPage.enterName(providerName);
-    await addOpenBankingProviderPage.enterAccountHolderName(
+    await addOpenBankingProviderPage.providerForm.enterName(providerName);
+    await addOpenBankingProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
     );
-    await addOpenBankingProviderPage.enterIban(mockIban);
+    await addOpenBankingProviderPage.providerForm.enterIban(mockIban);
     await addOpenBankingProviderPage.submitProviderCreation();
 
     await providersPage.checkProviderVisible(providerName);
@@ -74,14 +74,16 @@ test.describe("Open Banking provider", () => {
     await providersPage.selectOpenBankingProvider();
 
     const addOpenBankingProviderPage = new AddOpenBankingProviderPage(page);
-    await addOpenBankingProviderPage.enterName("");
-    await addOpenBankingProviderPage.enterAccountHolderName(
+    await addOpenBankingProviderPage.providerForm.enterName("");
+    await addOpenBankingProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
     );
-    await addOpenBankingProviderPage.enterIban(mockIban);
+    await addOpenBankingProviderPage.providerForm.enterIban(mockIban);
     await addOpenBankingProviderPage.submitProviderCreation();
 
-    await addOpenBankingProviderPage.expectValidationError("nameRequired");
+    await addOpenBankingProviderPage.providerForm.expectValidationError(
+      "nameRequired",
+    );
   });
 
   test("should not add an open banking provider if iban is missing @regression @normal", async () => {
@@ -105,14 +107,16 @@ test.describe("Open Banking provider", () => {
     await providersPage.selectOpenBankingProvider();
 
     const addOpenBankingProviderPage = new AddOpenBankingProviderPage(page);
-    await addOpenBankingProviderPage.enterName(providerName);
-    await addOpenBankingProviderPage.enterAccountHolderName(
+    await addOpenBankingProviderPage.providerForm.enterName(providerName);
+    await addOpenBankingProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
     );
-    await addOpenBankingProviderPage.enterIban("");
+    await addOpenBankingProviderPage.providerForm.enterIban("");
     await addOpenBankingProviderPage.submitProviderCreation();
 
-    await addOpenBankingProviderPage.expectValidationError("ibanRequired");
+    await addOpenBankingProviderPage.providerForm.expectValidationError(
+      "ibanRequired",
+    );
 
     await providersPage.goto();
     await providersPage.checkProviderNotVisible(providerName);
@@ -138,12 +142,12 @@ test.describe("Open Banking provider", () => {
     await providersPage.selectOpenBankingProvider();
 
     const addOpenBankingProviderPage = new AddOpenBankingProviderPage(page);
-    await addOpenBankingProviderPage.enterName(providerName);
-    await addOpenBankingProviderPage.enterAccountHolderName("");
-    await addOpenBankingProviderPage.enterIban(mockIban);
+    await addOpenBankingProviderPage.providerForm.enterName(providerName);
+    await addOpenBankingProviderPage.providerForm.enterAccountHolderName("");
+    await addOpenBankingProviderPage.providerForm.enterIban(mockIban);
     await addOpenBankingProviderPage.submitProviderCreation();
 
-    await addOpenBankingProviderPage.expectValidationError(
+    await addOpenBankingProviderPage.providerForm.expectValidationError(
       "accountHolderNameRequired",
     );
 
@@ -171,14 +175,16 @@ test.describe("Open Banking provider", () => {
     await providersPage.selectOpenBankingProvider();
 
     const addOpenBankingProviderPage = new AddOpenBankingProviderPage(page);
-    await addOpenBankingProviderPage.enterName(providerName);
-    await addOpenBankingProviderPage.enterAccountHolderName(
+    await addOpenBankingProviderPage.providerForm.enterName(providerName);
+    await addOpenBankingProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
     );
-    await addOpenBankingProviderPage.enterIban("ABCD");
+    await addOpenBankingProviderPage.providerForm.enterIban("ABCD");
     await addOpenBankingProviderPage.submitProviderCreation();
 
-    await addOpenBankingProviderPage.expectValidationError("ibanInvalid");
+    await addOpenBankingProviderPage.providerForm.expectValidationError(
+      "ibanInvalid",
+    );
 
     await providersPage.goto();
     await providersPage.checkProviderNotVisible(providerName);
