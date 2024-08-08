@@ -17,10 +17,10 @@ export const test = base.extend<providersFixtures>({
     await use(providerName);
   },
 
-  stripeProvider: async ({ page, browserName }, use) => {
+  stripeProvider: async ({ page }, use) => {
     const providersPage = new ProvidersPage(page);
     await providersPage.goto();
-    const providerName = `Test stripe ${browserName} ${new Date()}`;
+    const providerName = `Test stripe ${Date.now()}`;
     await providersPage.addProvider(providerName, "stripe");
     await use(providerName);
   },
