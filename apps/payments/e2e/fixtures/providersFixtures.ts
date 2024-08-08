@@ -2,16 +2,25 @@ import { ProvidersPage } from "../objects/providers/ProvidersPage";
 import { test as base } from "./test";
 
 type providersFixtures = {
+  realexProvider: string;
   stripeProvider: string;
   openBankingProvider: string;
   bankTransferProvider: string;
 };
 
 export const test = base.extend<providersFixtures>({
-  stripeProvider: async ({ page, browserName }, use) => {
+  realexProvider: async ({ page }, use) => {
     const providersPage = new ProvidersPage(page);
     await providersPage.goto();
-    const providerName = `Test stripe ${browserName} ${new Date()}`;
+    const providerName = `Test realex ${Date.now()}`;
+    await providersPage.addProvider(providerName, "realex");
+    await use(providerName);
+  },
+
+  stripeProvider: async ({ page }, use) => {
+    const providersPage = new ProvidersPage(page);
+    await providersPage.goto();
+    const providerName = `Test stripe ${Date.now()}`;
     await providersPage.addProvider(providerName, "stripe");
     await use(providerName);
   },
