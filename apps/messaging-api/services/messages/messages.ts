@@ -2,7 +2,6 @@ import { PostgresDb } from "@fastify/postgres";
 import { ReadMessage } from "../../types/schemaDefinitions";
 import { ServiceError, utils } from "../../utils";
 import { FastifyBaseLogger } from "fastify";
-import { JobType } from "aws-sdk/clients/importexport";
 import { Pool, PoolClient } from "pg";
 import { mailService } from "../../routes/providers/services";
 import { awsSnsSmsService } from "../sms/aws";
@@ -84,7 +83,7 @@ export const executeJob = async (params: {
     | {
         jobId: string;
         userId: string;
-        type: JobType;
+        type: string;
         status: scheduledMessageByTemplateStatus;
       }
     | undefined;
@@ -136,7 +135,7 @@ export const executeJob = async (params: {
       .query<{
         userId: string;
         jobId: string;
-        type: JobType;
+        type: string;
         status: scheduledMessageByTemplateStatus;
       }>(
         `
