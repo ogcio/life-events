@@ -14,7 +14,7 @@ export class EditRealexProviderPage {
     this.disableButton = this.page.getByRole("button", { name: "Disable" });
     this.enableButton = this.page.getByRole("button", { name: "Enable" });
     this.header = this.page.getByRole("heading", {
-      name: "Edit Realex Provider",
+      name: "Edit Realex Payment Provider",
     });
   }
 
