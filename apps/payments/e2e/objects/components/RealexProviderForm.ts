@@ -34,6 +34,18 @@ export class RealexProviderForm {
     await this.sharedSecret.fill(key);
   }
 
+  async checkName(name: string) {
+    await expect(this.nameInput).toHaveValue(name);
+  }
+
+  async checkMerchantId(id: string) {
+    await expect(this.merchantId).toHaveValue(id);
+  }
+
+  async checkSharedSecret(key: string) {
+    await expect(this.sharedSecret).toHaveValue(key);
+  }
+
   async expectValidationError(expectedError: RealexValidationError) {
     const errorMessage = await this.page.getByText(
       providerValidationErrorTexts[expectedError],
