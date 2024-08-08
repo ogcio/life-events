@@ -31,6 +31,8 @@ export const Metadata = Type.Object({
   infectionDescription: Type.Optional(Type.String()),
 });
 
+export type MetadataType = Static<typeof Metadata>;
+
 export const getGenericResponseSchema = <T extends TSchema>(dataType: T) =>
   Type.Object({
     data: dataType,
