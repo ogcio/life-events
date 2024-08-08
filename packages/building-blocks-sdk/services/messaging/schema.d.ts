@@ -76,7 +76,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -156,7 +156,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -177,7 +177,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -271,7 +271,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -292,7 +292,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -380,7 +380,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -401,7 +401,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -480,7 +480,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -501,7 +501,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -588,7 +588,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -609,7 +609,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -690,7 +690,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -711,7 +711,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -747,7 +747,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -768,7 +768,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -847,7 +847,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -868,7 +868,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -934,7 +934,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -955,7 +955,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1040,7 +1040,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1061,7 +1061,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1126,7 +1126,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1147,7 +1147,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1182,7 +1182,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1203,7 +1203,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1361,7 +1361,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1382,7 +1382,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1403,7 +1403,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1566,7 +1566,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1587,7 +1587,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1608,7 +1608,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1783,7 +1783,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1804,7 +1804,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1825,7 +1825,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1916,7 +1916,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -1937,7 +1937,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2104,7 +2104,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2125,7 +2125,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2338,7 +2338,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2359,7 +2359,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2551,7 +2551,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2572,7 +2572,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2664,7 +2664,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2685,7 +2685,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2790,7 +2790,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2811,7 +2811,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2856,7 +2856,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
@@ -2877,7 +2877,7 @@ export interface paths {
               /** @description Description of the error */
               detail: string;
               /** @description Unique request id. This one will be used to troubleshoot the problems */
-              request_id: string;
+              requestId: string;
               /** @description Name of the error type */
               name: string;
               /** @description List of the validation errors */
