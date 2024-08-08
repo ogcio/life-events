@@ -51,7 +51,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -89,7 +89,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -131,7 +131,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -144,7 +144,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -189,7 +189,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -202,7 +202,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -232,7 +232,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -245,7 +245,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -283,7 +283,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -296,7 +296,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -328,7 +328,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -379,7 +379,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -392,7 +392,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -439,7 +439,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -452,7 +452,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -491,7 +491,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -504,7 +504,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -549,7 +549,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -594,7 +594,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -636,7 +636,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
@@ -649,7 +649,7 @@ export interface paths {
             "application/json": {
               code: string;
               detail: string;
-              request_id: string;
+              requestId: string;
               name: string;
               validation?: unknown;
               validationContext?: string;
