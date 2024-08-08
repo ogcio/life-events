@@ -4,6 +4,16 @@
  */
 
 export interface paths {
+  "/health": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
   "/api/v1/files/": {
     get: {
       responses: {
@@ -185,16 +195,6 @@ export interface paths {
               validationContext?: string;
             };
           };
-        };
-      };
-    };
-  };
-  "/api/v1/health": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
         };
       };
     };
