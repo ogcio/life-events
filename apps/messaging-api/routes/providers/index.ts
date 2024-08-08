@@ -224,9 +224,7 @@ export default async function providers(app: FastifyInstance) {
           ),
         ),
         response: {
-          200: Type.Object({
-            data: ProviderUpdateSchema,
-          }),
+          200: getGenericResponseSchema(ProviderUpdateSchema),
           "5xx": HttpError,
           "4xx": HttpError,
         },
