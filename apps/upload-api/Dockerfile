@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY ./package*.json /app/
 COPY ./apps/upload-api/ /app/apps/upload-api/
+COPY ./apps/upload-api/db /app/apps/upload-api/db
 COPY ./packages/shared-errors/ /app/packages/shared-errors/
 COPY ./packages/logging-wrapper/ /app/packages/logging-wrapper/
 COPY ./packages/error-handler/ /app/packages/error-handler/
@@ -67,6 +68,7 @@ ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
 COPY --from=assembler /app /app
+COPY --from=deps /app/apps/upload-api/db /app/apps/upload-api/db
 
 EXPOSE 8007
 

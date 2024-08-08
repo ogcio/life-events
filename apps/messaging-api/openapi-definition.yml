@@ -149,7 +149,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -174,7 +174,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     post:
       tags: *a1
@@ -284,7 +284,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -309,7 +309,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -324,7 +324,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -349,7 +349,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/messages/{messageId}:
     get:
@@ -409,6 +409,9 @@ paths:
                           - public
                         default: public
                         description: Confidentiality level of the message
+                      senderUserProfileId:
+                        description: Unique id of the sender from the Life Events building block
+                        type: string
                     required:
                       - subject
                       - createdAt
@@ -420,6 +423,7 @@ paths:
                       - richText
                       - isSeen
                       - security
+                      - senderUserProfileId
                   metadata:
                     type: object
                     properties:
@@ -480,7 +484,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -505,7 +509,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -520,7 +524,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -545,7 +549,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/providers/:
     get:
@@ -685,7 +689,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -710,7 +714,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -725,7 +729,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -750,7 +754,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     post:
       tags: *a2
@@ -874,7 +878,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -899,7 +903,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -914,7 +918,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -939,7 +943,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/providers/{providerId}:
     get:
@@ -1080,7 +1084,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1105,7 +1109,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -1120,7 +1124,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1145,7 +1149,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     put:
       tags: *a2
@@ -1269,7 +1273,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1294,7 +1298,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -1309,7 +1313,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1334,7 +1338,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     delete:
       tags: *a2
@@ -1363,7 +1367,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1388,7 +1392,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -1403,7 +1407,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1428,7 +1432,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/templates/:
     get:
@@ -1536,7 +1540,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1561,7 +1565,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -1576,7 +1580,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1601,7 +1605,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     post:
       tags: *a3
@@ -1697,7 +1701,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1722,7 +1726,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -1737,7 +1741,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1762,7 +1766,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/templates/{templateId}:
     get:
@@ -1892,7 +1896,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1917,7 +1921,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -1932,7 +1936,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -1957,7 +1961,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     put:
       tags: *a3
@@ -2043,7 +2047,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -2068,7 +2072,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -2083,7 +2087,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -2108,7 +2112,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     delete:
       tags: *a3
@@ -2135,7 +2139,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -2160,7 +2164,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -2175,7 +2179,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -2200,7 +2204,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/organisation-settings/:
     get:
@@ -2444,7 +2448,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -2469,7 +2473,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "404":
           description: Default Response
@@ -2484,7 +2488,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -2509,7 +2513,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -2524,7 +2528,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -2549,7 +2553,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/organisation-settings/{organisationSettingId}:
     get:
@@ -2796,7 +2800,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -2821,7 +2825,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "404":
           description: Default Response
@@ -2836,7 +2840,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -2861,7 +2865,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -2876,7 +2880,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -2901,7 +2905,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     patch:
       tags: *a4
@@ -3176,7 +3180,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -3201,7 +3205,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "404":
           description: Default Response
@@ -3216,7 +3220,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -3241,7 +3245,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -3256,7 +3260,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -3281,7 +3285,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/user-imports/:
     get:
@@ -3502,7 +3506,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -3527,7 +3531,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -3542,7 +3546,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -3567,7 +3571,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/user-imports/{importId}:
     get:
@@ -3822,7 +3826,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -3847,7 +3851,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -3862,7 +3866,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -3887,7 +3891,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/user-imports/template-download:
     get:
@@ -3976,7 +3980,7 @@ paths:
                     items:
                       type: object
                       properties:
-                        organizationSettingId:
+                        organisationSettingId:
                           format: uuid
                           description: Unique id of the organisation setting
                           type: string
@@ -4160,7 +4164,7 @@ paths:
                             - address
                             - collectedConsent
                       required:
-                        - organizationSettingId
+                        - organisationSettingId
                         - firstName
                         - lastName
                         - birthDate
@@ -4235,7 +4239,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -4260,7 +4264,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -4275,7 +4279,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -4300,7 +4304,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/users/{userId}:
     get:
@@ -4329,7 +4333,7 @@ paths:
                   data:
                     type: object
                     properties:
-                      organizationSettingId:
+                      organisationSettingId:
                         format: uuid
                         description: Unique id of the organisation setting
                         type: string
@@ -4513,7 +4517,7 @@ paths:
                           - address
                           - collectedConsent
                     required:
-                      - organizationSettingId
+                      - organisationSettingId
                       - firstName
                       - lastName
                       - birthDate
@@ -4588,7 +4592,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -4613,7 +4617,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -4628,7 +4632,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -4653,7 +4657,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/message-events/:
     get:
@@ -4791,7 +4795,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -4816,7 +4820,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -4831,7 +4835,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -4856,7 +4860,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/message-events/{eventId}:
     get:
@@ -5010,7 +5014,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -5035,7 +5039,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -5050,7 +5054,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -5075,7 +5079,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/jobs/{id}:
     post:
@@ -5117,7 +5121,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -5142,7 +5146,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -5157,7 +5161,7 @@ paths:
                   detail:
                     description: Description of the error
                     type: string
-                  request_id:
+                  requestId:
                     description: Unique request id. This one will be used to troubleshoot the
                       problems
                     type: string
@@ -5182,5 +5186,5 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
