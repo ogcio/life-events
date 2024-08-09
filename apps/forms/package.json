@@ -17,8 +17,8 @@
   "dependencies": {
     "design-system": "*",
     "dotenv": "^16.4.5",
-    "next": "14.2.2",
-    "next-intl": "^3.7.0",
+    "next": "14.2.5",
+    "next-intl": "^3.17.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
