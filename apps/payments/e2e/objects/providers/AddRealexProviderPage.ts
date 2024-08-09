@@ -1,9 +1,5 @@
-import { type Page, type Locator, expect } from "@playwright/test";
-import {
-  providersUrl,
-  providerValidationErrorTexts,
-  RealexValidationError,
-} from "../../utils/constants";
+import { type Page, type Locator } from "@playwright/test";
+import { providersUrl } from "../../utils/constants";
 import {
   mockRealexMerchantId,
   mockRealexSharedSecret,
@@ -25,13 +21,6 @@ export class AddRealexProviderPage {
 
   async submitProviderCreation() {
     await this.confirmButton.click();
-  }
-
-  async expectValidationError(expectedError: RealexValidationError) {
-    const errorMessage = await this.page.getByText(
-      providerValidationErrorTexts[expectedError],
-    );
-    await expect(errorMessage).toBeVisible();
   }
 
   async create(name: string) {
