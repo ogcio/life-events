@@ -10,7 +10,8 @@
     "typeRoots": [
       "types"
     ],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "outDir": "dist"
   },
   "ts-node": {
     "esm": true,
