@@ -10,26 +10,15 @@
     "lint": "eslint . --ext .ts",
     "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/services/upload/schema.d.ts",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp src/logo.png dist/",
-    "migrate": "node db/create-db.js && db-migrate --migrations-dir db/migrations --config db/database.json up"
-  },
-  "nodemonConfig": {
-    "watch": [
-      "../../packages/auth/src/**/*",
-      "../../packages/feature-flags/src/**/*",
-      "../../packages/messages/src/**/*",
-      "../../packages/logging-wrapper/src/**/*",
-      "../../packages/error-handler/src/**/*",
-      "./**/*"
-    ],
-    "ext": "ts,json",
-    "exec": "node --import tsx src/index.ts"
+    "migrate": "node db/create-db.js && db-migrate --migrations-dir db/migrations --config db/database.json up",
+    "migrate-down": "db-migrate --migrations-dir db/migrations --config db/database.json down"
   },
   "type": "module",
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.608.0",
-    "@aws-sdk/lib-storage": "^3.609.0",
+    "@aws-sdk/client-s3": "^3.627.0",
+    "@aws-sdk/lib-storage": "^3.627.0",
     "@fastify/autoload": "^5.8.0",
     "@fastify/cookie": "^9.3.1",
     "@fastify/cors": "^9.0.1",
@@ -44,19 +33,20 @@
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.16",
     "api-auth": "*",
-    "logging-wrapper": "*",
     "clamscan": "^2.2.1",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
     "jose": "^5.2.4",
-    "pg": "^8.11.3",
-    "db-migrate": "^0.11.14",
-    "db-migrate-pg": "^1.5.2"
+    "logging-wrapper": "*",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.1",
     "@types/clamscan": "^2.0.8",
     "@types/node": "^20.11.28",
+    "@types/pg": "^8.11.6",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^7.5.0",
     "eslint": "^8.57.0",
@@ -68,6 +58,6 @@
     "tap": "^18.8.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.2"
+    "typescript": "5.5.4"
   }
 }
