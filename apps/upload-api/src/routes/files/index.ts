@@ -24,7 +24,6 @@ import getUserFiles from "./utils/getUserFiles.js";
 import insertFileMetadata from "./utils/insertFileMetadata.js";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
-// const FILE_INDEX = "FILE_INDEX";
 const FILE_DELETE = "FILE_DELETE";
 const FILE_DOWNLOAD = "FILE_DOWNLOAD";
 
@@ -410,7 +409,7 @@ export default async function routes(app: FastifyInstance) {
 
       const fileData = await getFileMetadata(app, request.params.key, userId);
 
-      const file = fileData.rows.length > 0 ? fileData.rows[0] : undefined;
+      const file = fileData.rows?.[0];
 
       if (!file) {
         throw new NotFoundError(FILE_DELETE);
@@ -489,7 +488,7 @@ export default async function routes(app: FastifyInstance) {
       const thePromise = new Promise<void>((resolve, reject) => {
         antivirusPassthrough.once("error", (err) => {
           app.log.error(err);
-          // Rejecting here can cause html 5 video to cause ERR_STREAM_PREMATURE_CLOSE
+          // Rejecting here can cause html 5 video to throw ERR_STREAM_PREMATURE_CLOSE
 
           // return reject(
           //   new CustomError(
@@ -527,9 +526,6 @@ export default async function routes(app: FastifyInstance) {
       );
 
       reply.header("Content-Disposition", `filename="${file.filename}"`);
-      // reply.header("content-range", `bytes 10240`);
-      // reply.header("accept-ranges", `bytes`);
-
       reply.header("Content-type", file.mimetype);
       reply.header("Content-Length", file.fileSize);
 
