@@ -1,0 +1,2 @@
+ALTER TABLE files
+ADD COLUMN antivirus_db_version VARCHAR(255) DEFAULT NULL;

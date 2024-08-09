@@ -94,19 +94,40 @@ paths:
                     items:
                       type: object
                       properties:
-                        id:
+                        filename:
                           type: string
-                        url:
+                        id:
                           type: string
                         key:
                           type: string
-                        size:
+                        owner:
+                          type: string
+                        fileSize:
                           type: number
+                        mimetype:
+                          type: string
+                        createdAt:
+                          type: string
+                        lastScan:
+                          type: string
+                        deleted:
+                          default: false
+                          type: boolean
+                        infected:
+                          type: boolean
+                        infectionDescription:
+                          type: string
+                        antivirusDbVersion:
+                          type: string
                       required:
-                        - id
-                        - url
+                        - filename
                         - key
-                        - size
+                        - owner
+                        - fileSize
+                        - mimetype
+                        - createdAt
+                        - lastScan
+                        - infected
                 required:
                   - data
         4XX:
