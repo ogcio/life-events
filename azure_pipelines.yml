@@ -53,7 +53,6 @@ stages:
         - securityScan
         - BuildDeps
       jobs:
-      - template: pipeline-templates/download_dependencies.yml
       - template: build/build_service.yml@pipeline-templates
         parameters:
           serviceName: ${{ serviceName }}
