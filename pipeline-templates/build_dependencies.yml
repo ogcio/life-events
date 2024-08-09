@@ -16,9 +16,9 @@ jobs:
       displayName: 'Docker save base'
       inputs:
         action: 'Run a Docker command'
-        customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_base_$(Build.BuildId).tar base-deps:latest'
+        customCommand: 'save -o $(Build.ArtifactStagingDirectory)/base-deps-$(Build.BuildId).tar base-deps:latest'
     - publish:  $(Build.ArtifactStagingDirectory)
-      artifact: 'docker-base-$(Build.BuildId)'
+      artifact: 'base-deps-$(Build.BuildId)'
     - task: Docker@2
       displayName:  Build design system image
       inputs:
@@ -31,6 +31,6 @@ jobs:
       displayName: 'Docker save design-system'
       inputs:
         action: 'Run a Docker command'
-        customCommand: 'save -o $(Build.ArtifactStagingDirectory)/image_design_system_$(Build.BuildId).tar design-system-container:latest'
+        customCommand: 'save -o $(Build.ArtifactStagingDirectory)/design-system-container-$(Build.BuildId).tar design-system-container:latest'
     - publish:  $(Build.ArtifactStagingDirectory)
       artifact: 'docker-design-system-$(Build.BuildId)'
