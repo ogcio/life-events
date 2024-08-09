@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
-import { ServerError } from "shared-errors";
 
 type FileMetadata = {
+  filename: string;
   key: string;
   owner: string;
   fileSize: number;
@@ -12,12 +12,9 @@ type FileMetadata = {
   infectionDescription: string | null;
 };
 
-export default async (
-  app: FastifyInstance,
-  tag: string,
-  metadata: FileMetadata,
-) => {
+export default async (app: FastifyInstance, metadata: FileMetadata) => {
   const {
+    filename,
     createdAt,
     fileSize,
     infectionDescription,
@@ -31,9 +28,9 @@ export default async (
   await app.pg.query(
     `
       INSERT INTO files (
-        key, owner, fileSize, mimetype, createdAt, lastScan, infected, infection_description
+        key, owner, fileSize, mimetype, createdAt, lastScan, infected, infection_description, filename
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8
+          $1, $2, $3, $4, $5, $6, $7, $8, $9
           )
           RETURNING *;
           `,
@@ -46,6 +43,7 @@ export default async (
       lastScan,
       infected,
       infectionDescription,
+      filename,
     ],
   );
 };
