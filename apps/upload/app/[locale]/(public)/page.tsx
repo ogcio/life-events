@@ -7,6 +7,7 @@ import uploadFile from "./actions/uploadFile";
 import deleteFile from "./actions/deleteFile";
 
 import DeleteFile from "./components/DeleteFile";
+import FileTable from "./components/FileTable";
 
 type Props = {
   params: {
@@ -31,6 +32,8 @@ export default async (props: Props) => {
   const messages = await getMessages({ locale: props.params.locale });
   const uploadMessages = messages.Upload as AbstractIntlMessages;
 
+  const token = await AuthenticationFactory.getToken();
+
   return (
     <NextIntlClientProvider messages={uploadMessages}>
       <section>
@@ -41,13 +44,7 @@ export default async (props: Props) => {
         )}
         <div>
           {files && (
-            <ul>
-              {files.map(({ key, size, url }) => (
-                <li key={key}>
-                  {key} - <DeleteFile deleteFile={deleteFile} id={key} />
-                </li>
-              ))}
-            </ul>
+            <FileTable files={files} deleteFile={deleteFile} token={token} />
           )}
         </div>
 
