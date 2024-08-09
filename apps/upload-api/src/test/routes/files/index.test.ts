@@ -1,6 +1,5 @@
-import fastify, { FastifyInstance, FastifyRequest } from "fastify";
+import { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
-import { equal } from "node:assert";
 import { EventEmitter } from "node:events";
 import { PassThrough } from "stream";
 import t from "tap";
