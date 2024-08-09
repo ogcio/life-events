@@ -33,4 +33,4 @@ jobs:
         action: 'Run a Docker command'
         customCommand: 'save -o $(Build.ArtifactStagingDirectory)/design-system-container-$(Build.BuildId).tar design-system-container:latest'
     - publish:  $(Build.ArtifactStagingDirectory)
-      artifact: 'docker-design-system-$(Build.BuildId)'
+      artifact: 'design-system-container-$(Build.BuildId)'
