@@ -95,8 +95,9 @@ stages:
       displayName: Deploy to ECS - ${{ serviceName }}
       dependsOn: Push_${{ replace(serviceName, '-', '_') }}
       jobs:
-      - template: pipeline-templates/deploy_ecs.yml
+      - template: deploy/deploy_ecs.yml@pipeline-templates
         parameters:
           awsServiceConnection: ${{ variables.awsServiceConnection }}
           awsRegion: ${{ variables.awsRegion }}
-          serviceName: ${{ serviceName }}
+          serviceName: ${{ serviceName }}-service
+          clusterName: life-events-ecs
