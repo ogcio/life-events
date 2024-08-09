@@ -43,7 +43,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -53,7 +53,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -66,7 +66,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -76,7 +76,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     get:
       tags:
@@ -117,7 +117,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -127,7 +127,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -140,7 +140,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -150,7 +150,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/files/{key}:
     delete:
@@ -190,7 +190,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -200,7 +200,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -213,7 +213,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -223,7 +223,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     get:
       tags:
@@ -253,7 +253,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -263,7 +263,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         4XX:
           description: Default Response
@@ -276,7 +276,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -286,7 +286,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -299,7 +299,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -309,7 +309,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
 tags:
   - name: FileUploadApi
