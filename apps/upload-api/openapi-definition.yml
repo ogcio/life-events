@@ -94,6 +94,8 @@ paths:
                     items:
                       type: object
                       properties:
+                        id:
+                          type: string
                         url:
                           type: string
                         key:
@@ -101,6 +103,7 @@ paths:
                         size:
                           type: number
                       required:
+                        - id
                         - url
                         - key
                         - size
@@ -240,8 +243,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties: {}
+                type: string
         "500":
           description: Default Response
           content:
