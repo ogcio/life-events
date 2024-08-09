@@ -52,7 +52,7 @@
     "@usebruno/cli": "^1.20.4",
     "db-migrate": "^0.11.14",
     "db-migrate-pg": "^1.5.2",
-    "eslint": "^8.57.0",
+    "eslint": "^9.8.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "openapi-typescript": "^6.7.5",
