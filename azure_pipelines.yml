@@ -59,6 +59,7 @@ stages:
           serviceName: ${{ serviceName }}
           pushArtefacts: ${{ variables.pushArtefacts }}
           dockerfile: apps/${{ serviceName }}/Dockerfile
+          dependencies: "base-deps, design-system-container"
           # TODO: Use arguments per service
           buildArguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicApiEndpoint)" --build-arg "NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT=$(nextPublicMessagingServiceEntryPoint)" --build-arg "NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT=$(nextPublicPaymentsServiceEntryPoint)" --build-arg "NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT=$(nextPublicLifeEventsServiceEntryPoint)" --build-arg "NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE=$(nextPublicBuildingBlocksLandingPage)" --build-arg "NEXT_PUBLIC_FORMS_URL=$(nextPublicFormsUrl)" --build-arg "NEXT_PUBLIC_MATOMO_URL=$(nextPublicMatomoUrl)" --build-arg "NEXT_PUBLIC_LIFE_EVENTS_MATOMO_SITE_ID=$(nextPublicLifeEventsMatomoSiteId)" --build-arg "NEXT_PUBLIC_BUILDING_BLOCKS_MATOMO_SITE_ID=$(nextPublicBuildingBlocksMatomoSiteId)" --build-arg "NEXT_PUBLIC_MATOMO_PROTOCOL=$(nextPublicMatomoProtocol)" --build-arg "NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT=$(nextPublicProfileServiceEntryPoint)" --build-arg "NEXT_PUBLIC_FORMS_SERVICE_ENTRY_POINT=$(nextPublicFormsServiceEntryPoint)" --build-arg "NEXT_PUBLIC_DESIGN_SYSTEM_SERVICE_ENTRY_POINT=$(nextPublicDesignSystemServiceEntryPoint)"'
   - stage: EnvApproval
