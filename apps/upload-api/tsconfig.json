@@ -7,11 +7,9 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "typeRoots": ["src/types"],
+    "typeRoots": [
+      "src/types"
+    ],
     "outDir": "dist"
   },
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node",
-  }
 }
