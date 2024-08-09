@@ -85,11 +85,12 @@ stages:
         - EnvApproval
       condition: and(${{ variables.pushArtefacts }}, succeeded())
       jobs:
-      - template: pipeline-templates/push_image.yml
+      - template: build/push_image_ecr.yml@pipeline-templates
         parameters:
           awsServiceConnection: ${{ variables.awsServiceConnection }}
           awsRegion: ${{ variables.awsRegion }}
           serviceName: ${{ serviceName }}
+          repositoryName: life-events-${{ serviceName }}
     - stage: Deploy_${{ replace(serviceName, '-', '_') }}
       displayName: Deploy to ECS - ${{ serviceName }}
       dependsOn: Push_${{ replace(serviceName, '-', '_') }}
