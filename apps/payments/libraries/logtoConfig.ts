@@ -2,6 +2,7 @@ import { AuthenticationContextConfig } from "auth/base-authentication-context";
 import { AuthUserScope } from "auth/index";
 import { routeDefinitions } from "../app/routeDefinitions";
 import { organizationScopes } from "auth/authentication-context";
+import { headers } from "next/headers";
 
 export const paymentsApiResource = process.env.PAYMENTS_BACKEND_URL + "/";
 
@@ -33,6 +34,11 @@ export const paymentsPublicServantScopes = [
   "payments:payment_request.public:read",
 ];
 
+const buildLoginUrlWithPostLoginRedirect = () => {
+  const currentPath = headers().get("x-url");
+  return `${routeDefinitions.preLogin.path()}?loginUrl=${routeDefinitions.login.path()}&postLoginRedirectUrl=${currentPath}`;
+};
+
 export const getAuthenticationContextConfig =
   (): AuthenticationContextConfig => ({
     baseUrl: baseConfig.baseUrl,
@@ -41,7 +47,7 @@ export const getAuthenticationContextConfig =
     citizenScopes,
     publicServantExpectedRoles,
     publicServantScopes: paymentsPublicServantScopes,
-    loginUrl: routeDefinitions.login.path(),
+    loginUrl: buildLoginUrlWithPostLoginRedirect(),
     resourceUrl: paymentsApiResource,
   });
 
@@ -59,3 +65,4 @@ export default {
 
 export const postSignoutRedirect =
   process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT;
+export const postLoginRedirectUrlCookieName = "logtoPostLoginRedirectUrl";
