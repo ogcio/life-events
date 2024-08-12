@@ -1,0 +1,19 @@
+@import "app/styles/globals.scss";
+
+.container {
+  :global(.govie-phase-banner__content) {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    @media (min-width: $breakpoint-sm) {
+      display: table;
+    }
+  }
+
+  @media (min-width: $breakpoint-sm) {
+    margin: 0 auto;
+    width: 80%;
+  }
+}
