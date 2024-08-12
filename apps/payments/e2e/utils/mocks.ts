@@ -9,6 +9,7 @@ export const mockStripePublishableKey = "pk_test_123456";
 export const mockRealexMerchantId = "mock_realex_id";
 export const mockRealexSharedSecret = "mock_realex_secret";
 
-export const mockDescription = "foo";
-export const mockAmount = 100;
+export const paymentRequestDescription = "A test payment request";
+export const mockPaymentRequestReference = "123";
 export const mockRedirectUrl = "https://localhost:3000";
+export const mockAmount = "100";
