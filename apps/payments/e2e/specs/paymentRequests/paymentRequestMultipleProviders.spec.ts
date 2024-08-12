@@ -178,4 +178,235 @@ test.describe("Payment Request with multiple providers", () => {
     await paymentRequestsPage.checkStatus(name, "active");
     await paymentRequestsPage.checkReference(name, mockPaymentRequestReference);
   });
+
+  test("should not create an inactive payment request if title is missing @regression @normal", async ({
+    bankTransferProvider,
+    openBankingProvider,
+    realexProvider,
+  }) => {
+    await description(
+      "This test checks that a payment request is not created if title is missing.",
+    );
+    await owner("OGCIO");
+    await tags("Payment Request", "Multiple");
+    await severity(Severity.NORMAL);
+
+    const paymentRequestsPage = new PaymentRequestsPage(page);
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoCreate();
+
+    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    await createPaymentRequestPage.enterTitle("");
+    await createPaymentRequestPage.enterDescription(paymentRequestDescription);
+    await createPaymentRequestPage.selectManualBankTransferAccount(
+      bankTransferProvider,
+    );
+    await createPaymentRequestPage.selectOpenBankingAccount(
+      openBankingProvider,
+    );
+    await createPaymentRequestPage.selectCardAccount(realexProvider);
+    await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
+    await createPaymentRequestPage.enterAmount(mockAmount);
+    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectCustomAmount();
+    await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
+    await createPaymentRequestPage.selectInactiveStatus();
+    await createPaymentRequestPage.saveChanges();
+    await createPaymentRequestPage.expectValidationError("titleRequired");
+  });
+
+  test("should not create an inactive payment request if reference is missing @regression @normal", async ({
+    bankTransferProvider,
+    openBankingProvider,
+    realexProvider,
+  }) => {
+    await description(
+      "This test checks that a payment request is not created if reference is missing.",
+    );
+    await owner("OGCIO");
+    await tags("Payment Request", "Multiple");
+    await severity(Severity.NORMAL);
+
+    const paymentRequestsPage = new PaymentRequestsPage(page);
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoCreate();
+
+    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    await createPaymentRequestPage.enterTitle(name);
+    await createPaymentRequestPage.enterDescription(paymentRequestDescription);
+    await createPaymentRequestPage.selectManualBankTransferAccount(
+      bankTransferProvider,
+    );
+    await createPaymentRequestPage.selectOpenBankingAccount(
+      openBankingProvider,
+    );
+    await createPaymentRequestPage.selectCardAccount(realexProvider);
+    await createPaymentRequestPage.enterReference("");
+    await createPaymentRequestPage.enterAmount(mockAmount);
+    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectCustomAmount();
+    await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
+    await createPaymentRequestPage.selectInactiveStatus();
+    await createPaymentRequestPage.saveChanges();
+    await createPaymentRequestPage.expectValidationError("referenceRequired");
+
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.checkHeader();
+    await paymentRequestsPage.checkRequestIsNotVisible(name);
+  });
+
+  test("should not create an inactive payment request if amount is missing @regression @normal", async ({
+    bankTransferProvider,
+    openBankingProvider,
+    realexProvider,
+  }) => {
+    await description(
+      "This test checks that a payment request is not created if amount is missing.",
+    );
+    await owner("OGCIO");
+    await tags("Payment Request", "Multiple");
+    await severity(Severity.NORMAL);
+
+    const paymentRequestsPage = new PaymentRequestsPage(page);
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoCreate();
+
+    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    await createPaymentRequestPage.enterTitle(name);
+    await createPaymentRequestPage.enterDescription(paymentRequestDescription);
+    await createPaymentRequestPage.selectManualBankTransferAccount(
+      bankTransferProvider,
+    );
+    await createPaymentRequestPage.selectOpenBankingAccount(
+      openBankingProvider,
+    );
+    await createPaymentRequestPage.selectCardAccount(realexProvider);
+    await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
+    await createPaymentRequestPage.enterAmount("");
+    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectCustomAmount();
+    await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
+    await createPaymentRequestPage.selectInactiveStatus();
+    await createPaymentRequestPage.saveChanges();
+    await createPaymentRequestPage.expectValidationError("amountRequired");
+
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.checkHeader();
+    await paymentRequestsPage.checkRequestIsNotVisible(name);
+  });
+
+  test("should not create an inactive payment request if redirect url is missing @regression @normal", async ({
+    bankTransferProvider,
+    openBankingProvider,
+    realexProvider,
+  }) => {
+    await description(
+      "This test checks that a payment request is not created if redirect url is missing.",
+    );
+    await owner("OGCIO");
+    await tags("Payment Request", "Multiple");
+    await severity(Severity.NORMAL);
+
+    const paymentRequestsPage = new PaymentRequestsPage(page);
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoCreate();
+
+    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    await createPaymentRequestPage.enterTitle(name);
+    await createPaymentRequestPage.enterDescription(paymentRequestDescription);
+    await createPaymentRequestPage.selectManualBankTransferAccount(
+      bankTransferProvider,
+    );
+    await createPaymentRequestPage.selectOpenBankingAccount(
+      openBankingProvider,
+    );
+    await createPaymentRequestPage.selectCardAccount(realexProvider);
+    await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
+    await createPaymentRequestPage.enterAmount(mockAmount);
+    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectCustomAmount();
+    await createPaymentRequestPage.enterRedirectURL("");
+    await createPaymentRequestPage.selectInactiveStatus();
+    await createPaymentRequestPage.saveChanges();
+    await createPaymentRequestPage.expectValidationError("redirectURLRequired");
+
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.checkHeader();
+    await paymentRequestsPage.checkRequestIsNotVisible(name);
+  });
+
+  test("should not create an active payment request if no provider is selected @regression @critical", async () => {
+    await description(
+      "This test checks that a payment request cannot be created as active is no provider is selected.",
+    );
+    await owner("OGCIO");
+    await tags("Payment Request", "Multiple");
+    await severity(Severity.CRITICAL);
+
+    const paymentRequestsPage = new PaymentRequestsPage(page);
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoCreate();
+
+    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    await createPaymentRequestPage.enterTitle(name);
+    await createPaymentRequestPage.enterDescription(paymentRequestDescription);
+    await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
+    await createPaymentRequestPage.enterAmount(mockAmount);
+    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectCustomAmount();
+    await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
+    await createPaymentRequestPage.selectActiveStatus();
+    await createPaymentRequestPage.saveChanges();
+    await createPaymentRequestPage.expectValidationError("statusInvalid");
+
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.checkHeader();
+    await paymentRequestsPage.checkRequestIsNotVisible(name);
+  });
+
+  test("should create an inactive payment request with no provider selected @regression @normal", async ({
+    context,
+  }) => {
+    await description(
+      "This test checks the successful creation of an inactive payment request with no provider selected.",
+    );
+    await owner("OGCIO");
+    await tags("Payment Request", "Multiple");
+    await severity(Severity.NORMAL);
+
+    const paymentRequestsPage = new PaymentRequestsPage(page);
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoCreate();
+
+    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    await createPaymentRequestPage.enterTitle(name);
+    await createPaymentRequestPage.enterDescription(paymentRequestDescription);
+    await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
+    await createPaymentRequestPage.enterAmount(mockAmount);
+    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectCustomAmount();
+    await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
+    await createPaymentRequestPage.selectInactiveStatus();
+    await createPaymentRequestPage.saveChanges();
+
+    const detailsPage = new PaymentRequestDetailsPage(page);
+    await detailsPage.checkHeader();
+    await detailsPage.checkTitle(name);
+    await detailsPage.checkDescription(paymentRequestDescription);
+    await detailsPage.checkStatus("inactive");
+    await detailsPage.checkAmount(mockAmount);
+    await detailsPage.checkRedirectUrl(mockRedirectUrl);
+    await detailsPage.checkAmountOverrideOption(true);
+    await detailsPage.checkCustomAmountOption(true);
+    await detailsPage.checkEmptyPaymentsList();
+
+    const link = await detailsPage.getPaymentLink();
+    const newPage = await context.newPage();
+    await newPage.goto(link);
+    const inactivePayPage = new InactivePayPage(newPage);
+    await inactivePayPage.checkHeader();
+    await inactivePayPage.checkDescription();
+
+    // TODO: check request is visible in list
+  });
 });
