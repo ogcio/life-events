@@ -30,13 +30,13 @@ test.describe("Manual bank transfer provider creation", () => {
     providerName = `Test manual bank transfer ${Date.now()}`;
   });
 
-  test("should add a manual bank transfer provider @smoke @critical", async () => {
+  test("should add a manual bank transfer provider @smoke @blocker", async () => {
     await description(
       "This test checks the successful creation of a new manual bank transfer provider.",
     );
     await owner("OGCIO");
     await tags("Providers", "Manual Bank Transfer");
-    await severity(Severity.CRITICAL);
+    await severity(Severity.BLOCKER);
 
     await page.goto(paymentSetupUrl);
 
