@@ -39,7 +39,7 @@ export class PaymentRequestFormPage {
       "Allow the user to pay a custom amount",
     );
     this.redirectURLInput = this.page.locator('input[name="redirect-url"]');
-    this.activeStatusRadioBtn = this.page.getByLabel("Active");
+    this.activeStatusRadioBtn = this.page.getByLabel("Active", { exact: true });
     this.inactiveStatusRadioBtn = this.page.getByLabel("Inactive");
     this.saveButton = this.page.getByRole("button", { name: "Save" });
   }
