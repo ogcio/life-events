@@ -43,11 +43,14 @@ export class PaymentRequestsPage {
   }
 
   async checkBeneficiaryAccounts(name: string, accounts: string[]) {
-    const accountsCell = this.page
+    const accountsCell = await this.page
       .getByRole("row")
       .filter({ hasText: name })
-      .getByRole("cell", { name: accounts.join(", ") });
-    await expect(accountsCell).toBeVisible();
+      .getByRole("cell")
+      .nth(1);
+    await Promise.all(
+      accounts.map((a) => expect(accountsCell).toContainText(a)),
+    );
   }
 
   async checkAmount(name: string, amount: string) {

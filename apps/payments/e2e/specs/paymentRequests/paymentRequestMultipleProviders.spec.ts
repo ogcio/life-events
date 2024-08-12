@@ -19,7 +19,7 @@ import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/Payment
 import { InactivePayPage } from "../../objects/payments/InactivePayPage";
 import { PreviewPayPage } from "../../objects/payments/PreviewPayPage";
 
-test.describe("Payment Request with manual bank transfer provider", () => {
+test.describe("Payment Request with multiple providers", () => {
   let page: Page;
   let name: string;
 
@@ -28,18 +28,20 @@ test.describe("Payment Request with manual bank transfer provider", () => {
   });
 
   test.beforeEach(async () => {
-    name = `Test banktransfer${Date.now()}`;
+    name = `Test multiple ${Date.now()}`;
   });
 
-  test("should create an inactive payment request with a manual bank transfer provider @regression @normal", async ({
-    bankTransferProvider,
+  test("should create an inactive payment request with multiple providers provider @smoke @normal", async ({
     context,
+    bankTransferProvider,
+    openBankingProvider,
+    realexProvider,
   }) => {
     await description(
-      "This test checks the successful creation of an inactive payment request with a manual bank transfer provider.",
+      "This test checks the successful creation of an inactive payment request with multiple providers.",
     );
     await owner("OGCIO");
-    await tags("Payment Request", "Manual Bank Transfer");
+    await tags("Payment Request", "Multiple");
     await severity(Severity.NORMAL);
 
     const paymentRequestsPage = new PaymentRequestsPage(page);
@@ -52,6 +54,10 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await createPaymentRequestPage.selectManualBankTransferAccount(
       bankTransferProvider,
     );
+    await createPaymentRequestPage.selectOpenBankingAccount(
+      openBankingProvider,
+    );
+    await createPaymentRequestPage.selectCardAccount(realexProvider);
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
     await createPaymentRequestPage.selectAllowAmountOverride();
@@ -67,6 +73,8 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await detailsPage.checkStatus("inactive");
     await detailsPage.checkAccounts([
       { name: bankTransferProvider, type: "banktransfer" },
+      { name: openBankingProvider, type: "openbanking" },
+      { name: realexProvider, type: "realex" },
     ]);
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
@@ -86,22 +94,26 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await paymentRequestsPage.checkRequestIsVisible(name);
     await paymentRequestsPage.checkBeneficiaryAccounts(name, [
       bankTransferProvider,
+      openBankingProvider,
+      realexProvider,
     ]);
     await paymentRequestsPage.checkAmount(name, mockAmount);
     await paymentRequestsPage.checkStatus(name, "inactive");
     await paymentRequestsPage.checkReference(name, mockPaymentRequestReference);
   });
 
-  test("should create an active payment request with a manual bank transfer provider @smoke @blocker", async ({
+  test("should create an active payment request with multiple providers @smoke @normal", async ({
     bankTransferProvider,
+    openBankingProvider,
+    stripeProvider,
     context,
   }) => {
     await description(
-      "This test checks the successful creation of an inactive payment request with a manual bank transfer provider.",
+      "This test checks the successful creation of an inactive payment request with multiple providers.",
     );
     await owner("OGCIO");
-    await tags("Payment Request", "Manual Bank Transfer");
-    await severity(Severity.BLOCKER);
+    await tags("Payment Request", "Multiple");
+    await severity(Severity.NORMAL);
 
     const paymentRequestsPage = new PaymentRequestsPage(page);
     await paymentRequestsPage.goto();
@@ -113,9 +125,15 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await createPaymentRequestPage.selectManualBankTransferAccount(
       bankTransferProvider,
     );
+    await createPaymentRequestPage.selectOpenBankingAccount(
+      openBankingProvider,
+    );
+    await createPaymentRequestPage.selectCardAccount(stripeProvider);
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
     await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
+    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.selectActiveStatus();
     await createPaymentRequestPage.saveChanges();
 
@@ -126,11 +144,13 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await detailsPage.checkStatus("active");
     await detailsPage.checkAccounts([
       { name: bankTransferProvider, type: "banktransfer" },
+      { name: openBankingProvider, type: "openbanking" },
+      { name: stripeProvider, type: "stripe" },
     ]);
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
-    await detailsPage.checkAmountOverrideOption(false);
-    await detailsPage.checkCustomAmountOption(false);
+    await detailsPage.checkAmountOverrideOption(true);
+    await detailsPage.checkCustomAmountOption(true);
     await detailsPage.checkEmptyPaymentsList();
 
     const link = await detailsPage.getPaymentLink();
@@ -139,9 +159,11 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
-    await previewPayPage.checkCustomAmountOptionNotVisible();
+    await previewPayPage.checkCustomAmountOptionVisible();
     await previewPayPage.checkPaymentMethodHeader();
     await previewPayPage.checkPaymentMethodVisible("banktransfer");
+    await previewPayPage.checkPaymentMethodVisible("openbanking");
+    await previewPayPage.checkPaymentMethodVisible("card");
     await previewPayPage.checkButton();
 
     await paymentRequestsPage.goto();
@@ -149,6 +171,8 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await paymentRequestsPage.checkRequestIsVisible(name);
     await paymentRequestsPage.checkBeneficiaryAccounts(name, [
       bankTransferProvider,
+      openBankingProvider,
+      stripeProvider,
     ]);
     await paymentRequestsPage.checkAmount(name, mockAmount);
     await paymentRequestsPage.checkStatus(name, "active");
