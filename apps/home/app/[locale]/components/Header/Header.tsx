@@ -6,7 +6,6 @@ import LanguageSwitch from "./LanguageSwitch";
 import UserIcon from "./UserIcon";
 
 import styles from "./Header.module.scss";
-import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
 import { getTranslations } from "next-intl/server";
 
 type HeaderProps = {
@@ -22,19 +21,6 @@ export default async ({ locale }: HeaderProps) => {
   let initials = "";
   let userName = "";
   let isLoggedIn = false;
-
-  if (showLogin) {
-    const instance = AuthenticationFactory.getInstance();
-    isLoggedIn = await instance.isAuthenticated();
-
-    if (isLoggedIn) {
-      const context = await instance.getContext();
-      isPublicServant = context.isPublicServant;
-      userName = context.user.name || "";
-      const [firstName, lastName] = userName.split(" ");
-      initials = firstName.charAt(0) + lastName.charAt(0);
-    }
-  }
 
   return (
     <header role="banner" data-module="govie-header" className="govie-header">
