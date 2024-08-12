@@ -25,8 +25,9 @@
     "exec": "next dev -p 3001"
   },
   "dependencies": {
-    "@stripe/react-stripe-js": "^2.7.1",
-    "@stripe/stripe-js": "^3.4.1",
+    "@logto/next": "^3.2.7",
+    "@stripe/react-stripe-js": "^2.7.3",
+    "@stripe/stripe-js": "^4.1.0",
     "auth": "*",
     "building-blocks-sdk": "*",
     "dayjs": "^1.11.11",
@@ -43,14 +44,14 @@
     "server-only": "^0.0.1",
     "shared-components": "*",
     "sqids": "^0.3.0",
-    "stripe": "^15.8.0",
+    "stripe": "^16.5.0",
     "truelayer-embedded-payment-page": "^0.2.24",
     "truelayer-signing": "^0.1.7"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
     "@playwright/test": "^1.44.1",
-    "@types/node": "20.12.13",
+    "@types/node": "22.0.0",
     "@types/pg": "^8.11.6",
     "@types/react": "18.3.3",
     "allure-playwright": "^3.0.0-beta.7",
