@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 import {
-  BankTransferValidationError,
+  BankTransferProviderValidationError,
   providerValidationErrorTexts,
 } from "../../utils/constants";
 
@@ -49,7 +49,9 @@ export class BankTransferProviderForm {
     await expect(this.ibanInput).toHaveValue(iban);
   }
 
-  async expectValidationError(expectedError: BankTransferValidationError) {
+  async expectValidationError(
+    expectedError: BankTransferProviderValidationError,
+  ) {
     const errorMessage = await this.page.getByText(
       providerValidationErrorTexts[expectedError],
     );
