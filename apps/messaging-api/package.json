@@ -2,15 +2,16 @@
   "name": "messaging-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "TAP_RCFILE=tap.yml tap",
-    "test:e2e" : "cd ./e2e && bru run --env local",
-    "test:dev" : "cd ./e2e && bru run --env dev",
+    "test:e2e": "cd ./e2e && bru run --env local",
+    "test:dev": "cd ./e2e && bru run --env dev",
     "start": "node --import tsx index.ts",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
-    "generate-ts-client": "npx openapi-typescript openapi-definition.yml -o ../../packages/building-blocks-sdk/services/messaging/schema.d.ts"
+    "generate-ts-client": "npx openapi-typescript openapi-definition.yml -o ../../packages/building-blocks-sdk/services/messaging/schema.d.ts",
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp logo.png dist/"
   },
   "nodemonConfig": {
     "watch": [
@@ -55,6 +56,7 @@
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.4",
     "@types/node": "^20.14.14",
+    "@types/nodemailer": "^6.4.15",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@usebruno/cli": "^1.22.0",

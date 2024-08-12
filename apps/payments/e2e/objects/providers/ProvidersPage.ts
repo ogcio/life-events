@@ -8,15 +8,23 @@ import { AddRealexProviderPage } from "./AddRealexProviderPage";
 
 export class ProvidersPage {
   private readonly createNewAccountBtn: Locator;
+  private readonly header: Locator;
 
   constructor(public readonly page: Page) {
     this.createNewAccountBtn = this.page.getByRole("button", {
       name: "Create payment provider",
     });
+    this.header = this.page.getByRole("heading", {
+      name: "Your payment providers",
+    });
   }
 
   async goto() {
     await this.page.goto(providersUrl);
+  }
+
+  async checkHeader() {
+    await expect(this.header).toBeVisible();
   }
 
   async addProvider(name: string, type: ProviderType) {
