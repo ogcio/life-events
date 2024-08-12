@@ -1,4 +1,4 @@
-@import "../styles/globals.scss";
+@import "../../styles/globals.scss";
 
 .three-columns-layout {
   display: flex;
@@ -39,7 +39,7 @@
 }
 
 .custom-footer {
-  justify-content: end !important;
+  justify-content: end;
 }
 
 @include phone {
@@ -52,7 +52,7 @@
   }
 
   .custom-footer {
-    justify-content: center !important;
+    justify-content: center;
   }
 }
 

@@ -1,43 +1,9 @@
-import {
-  envDevelopment,
-  envProduction,
-  envStaging,
-  envUAT,
-} from "../../constants";
 import "./Header.css";
-
-const availableLinks = {
-  DEV: {
-    homePageUrl: "https://dev.blocks.gov.ie",
-  },
-  STA: {
-    homePageUrl: "https://sta.blocks.gov.ie",
-  },
-};
-
-const getLinks = (environment: string, locale: string) => {
-  locale = locale || "en";
-  switch (environment) {
-    case envDevelopment:
-      return {
-        homePageUrl: new URL("", "https://dev.blocks.gov.ie"),
-      };
-    case envStaging:
-      return {
-        homePageUrl: new URL("", "https://sta.blocks.gov.ie"),
-      };
-    case envUAT:
-      return {
-        homePageUrl: new URL("", "https://uat.blocks.gov.ie"),
-      };
-    case envProduction:
-    default:
-      return { homePageUrl: new URL("", "https://blocks.gov.ie") };
-  }
-};
+import { getLinks } from "../../../utils";
 
 export default async (props: { locale: string }) => {
   const environment = String(process.env.ENVIRONMENT);
+
   const links = getLinks(environment, props.locale);
 
   return (
