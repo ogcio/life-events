@@ -156,27 +156,48 @@ export const IdParamsSchema = Type.Object({
   ),
 });
 
-export const PaginationLinkSchema = Type.Object({
-  href: Type.Optional(Type.String()),
-});
+export const getPaginationLinkSchema = (description?: string) =>
+  Type.Object({
+    href: Type.Optional(Type.String({ description })),
+  });
 
-export type PaginationLink = Static<typeof PaginationLinkSchema>;
-
-export const PaginationLinksSchema = Type.Object({
-  self: PaginationLinkSchema,
-  next: Type.Optional(PaginationLinkSchema),
-  prev: Type.Optional(PaginationLinkSchema),
-  first: PaginationLinkSchema,
-  last: PaginationLinkSchema,
-  pages: Type.Record(Type.String(), PaginationLinkSchema),
-});
+export const PaginationLinksSchema = Type.Object(
+  {
+    self: getPaginationLinkSchema("URL pointing to the request itself"),
+    next: Type.Optional(
+      getPaginationLinkSchema(
+        "URL pointing to the next page of results in a paginated response. If there are no more results, this field may be omitted",
+      ),
+    ),
+    prev: Type.Optional(
+      getPaginationLinkSchema(
+        "URL pointing to the previous page of results in a paginated response. If there are no more results, this field may be omitted",
+      ),
+    ),
+    first: getPaginationLinkSchema(
+      "URL pointing to the first page of results in a paginated response",
+    ),
+    last: getPaginationLinkSchema(
+      "URL pointing to the first page of results in a paginated response",
+    ),
+    pages: Type.Record(Type.String(), getPaginationLinkSchema(), {
+      description:
+        "It may contain a list of other useful URLs, e.g. one entry for page:'page 1', 'page 2'",
+    }),
+  },
+  { description: "Object containing the links to the related endpoints" },
+);
 
 export type PaginationLinks = Static<typeof PaginationLinksSchema>;
 
 export const ResponseMetadataSchema = Type.Optional(
   Type.Object({
     links: Type.Optional(PaginationLinksSchema),
-    totalCount: Type.Optional(Type.Number()),
+    totalCount: Type.Optional(
+      Type.Number({
+        description: "Number representing the total number of available items",
+      }),
+    ),
   }),
 );
 
