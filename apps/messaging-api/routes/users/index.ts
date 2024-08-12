@@ -11,7 +11,11 @@ import {
   PaginationParamsSchema,
   getGenericResponseSchema,
 } from "../../types/schemaDefinitions";
-import { getUser, getUsers } from "../../services/users/users";
+import {
+  getUser,
+  getUsers,
+  getUsersPerImport,
+} from "../../services/users/users";
 import {
   PaginationDetails,
   formatAPIResponse,
@@ -103,14 +107,17 @@ export default async function users(app: FastifyInstance) {
     async (request: FastifyRequest<GetUsersSchema>, _reply: FastifyReply) => {
       const query = request.query;
       const pagination = sanitizePagination(query);
-      const recipientsResponse = await getUsers({
+      const importId = query.importId;
+      const params = {
         pool: app.pg.pool,
         organisationId: ensureOrganizationIdIsSet(request, "GET_USERS"),
         search: query.search,
         pagination,
-        importId: query.importId,
         transports: query.transports ? query.transports.trim().split(",") : [],
-      });
+      };
+      const recipientsResponse = importId
+        ? await getUsersPerImport({ ...params, importId })
+        : await getUsers(params);
 
       const paginationDetails: PaginationDetails = {
         ...pagination,
