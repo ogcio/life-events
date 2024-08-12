@@ -104,6 +104,12 @@ export const routeDefinitions = {
       return `/${routeDefinitions.login.slug}`;
     },
   },
+  preLogin: {
+    slug: "preLogin",
+    path() {
+      return `/${routeDefinitions.preLogin.slug}`;
+    },
+  },
   signOut: {
     slug: "signout",
     path() {
