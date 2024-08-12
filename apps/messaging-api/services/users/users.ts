@@ -23,7 +23,6 @@ export const getUsers = async (params: {
       ? buildGetRecipientsPerImportQueries({ ...params, importId })
       : buildGetRecipientsQueries(params);
 
-    console.log({ queries: JSON.stringify(queries) });
     const countResponse = client.query<{ count: number }>(
       queries.count.query,
       queries.count.values,
