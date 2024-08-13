@@ -135,12 +135,24 @@ export class PaymentRequestFormPage {
     await this.manualBankTransferSelect.selectOption(provider);
   }
 
+  async deselectManualBankTransferAccount() {
+    await this.manualBankTransferSelect.selectOption(null);
+  }
+
   async selectOpenBankingAccount(provider: string) {
     await this.openBankingSelect.selectOption(provider);
   }
 
+  async deselectOpenBankingAccount() {
+    await this.openBankingSelect.selectOption(null);
+  }
+
   async selectCardAccount(provider: string) {
     await this.cardSelect.selectOption(provider);
+  }
+
+  async deselectCardAccount() {
+    await this.cardSelect.selectOption(null);
   }
 
   async enterReference(value: string) {
