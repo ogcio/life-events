@@ -37,15 +37,12 @@ test.describe("Payment Request deletion", () => {
       bankTransferProvider,
     });
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
-    await paymentRequestsPage.goto();
-    await paymentRequestsPage.gotoDetails(paymentRequestTitle);
-
     const detailsPage = new PaymentRequestDetailsPage(page);
     await detailsPage.checkHeader();
     await detailsPage.delete();
     await detailsPage.confirmDelete();
 
+    const paymentRequestsPage = new PaymentRequestsPage(page);
     await paymentRequestsPage.checkRequestIsNotVisible(paymentRequestTitle);
   });
 

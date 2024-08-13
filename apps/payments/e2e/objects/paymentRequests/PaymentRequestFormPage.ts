@@ -87,7 +87,7 @@ export class PaymentRequestFormPage {
     await this.selectCustomAmount();
     await this.enterRedirectURL(mockRedirectUrl);
     (await props.status) === "inactive"
-      ? this.selectInactiveStatus
+      ? this.selectInactiveStatus()
       : this.selectActiveStatus();
     await this.saveChanges();
   }
