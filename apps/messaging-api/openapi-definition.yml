@@ -1108,6 +1108,64 @@ paths:
                           - isPrimary
                           - type
                           - config
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
                   - data
         5XX:
