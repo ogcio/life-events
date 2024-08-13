@@ -1,5 +1,5 @@
 import { expect, Page } from "@playwright/test";
-import { test } from "../../fixtures/providersFixtures";
+import { test } from "../../fixtures/paymentRequestsFixtures";
 import {
   Severity,
   owner,
@@ -7,11 +7,9 @@ import {
   severity,
   description,
 } from "allure-js-commons";
-import { PaymentRequestsPage } from "../../objects/paymentRequests/PaymentRequestsListPage";
 import { PaymentRequestFormPage } from "../../objects/paymentRequests/PaymentRequestFormPage";
 import {
   mockAmount,
-  mockPaymentRequestReference,
   mockRedirectUrl,
   paymentRequestDescription,
 } from "../../utils/mocks";
@@ -42,7 +40,6 @@ test.describe("Edit payment Request", () => {
     realexProvider,
     stripeProvider,
     openBankingProvider,
-    context,
   }) => {
     await description(
       "This test checks the successful creation and edit of a payment request.",
@@ -51,22 +48,14 @@ test.describe("Edit payment Request", () => {
     await tags("Payment Request", "Edit");
     await severity(Severity.NORMAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
-    await paymentRequestsPage.goto();
-    await paymentRequestsPage.gotoCreate();
-
     const createPaymentRequestPage = new PaymentRequestFormPage(page);
-    await createPaymentRequestPage.enterTitle(name);
-    await createPaymentRequestPage.enterDescription(paymentRequestDescription);
-    await createPaymentRequestPage.selectManualBankTransferAccount(
-      bankTransferProvider,
-    );
-    await createPaymentRequestPage.selectCardAccount(realexProvider);
-    await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
-    await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
-    await createPaymentRequestPage.selectActiveStatus();
-    await createPaymentRequestPage.saveChanges();
+    await createPaymentRequestPage.goto();
+    await createPaymentRequestPage.create({
+      title: name,
+      bankTransferProvider: bankTransferProvider,
+      openBankingProvider: openBankingProvider,
+      cardProvider: stripeProvider,
+    });
 
     const detailsPage = new PaymentRequestDetailsPage(page);
     await detailsPage.checkHeader();
@@ -75,12 +64,12 @@ test.describe("Edit payment Request", () => {
     await detailsPage.checkStatus("active");
     await detailsPage.checkAccounts([
       { name: bankTransferProvider, type: "banktransfer" },
-      { name: realexProvider, type: "realex" },
+      { name: stripeProvider, type: "stripe" },
     ]);
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
-    await detailsPage.checkAmountOverrideOption(false);
-    await detailsPage.checkCustomAmountOption(false);
+    await detailsPage.checkAmountOverrideOption(true);
+    await detailsPage.checkCustomAmountOption(true);
     await detailsPage.checkEmptyPaymentsList();
 
     await detailsPage.gotoEdit();
@@ -90,11 +79,11 @@ test.describe("Edit payment Request", () => {
     await editPaymentRequestPage.enterDescription(updatedDescription);
     await editPaymentRequestPage.deselectManualBankTransferAccount();
     await editPaymentRequestPage.selectOpenBankingAccount(openBankingProvider);
-    await editPaymentRequestPage.selectCardAccount(stripeProvider);
+    await editPaymentRequestPage.selectCardAccount(realexProvider);
     await editPaymentRequestPage.enterAmount(updatedAmount);
     await editPaymentRequestPage.enterRedirectURL(updatedRedirectUri);
-    await editPaymentRequestPage.selectAllowAmountOverride();
-    await editPaymentRequestPage.selectCustomAmount();
+    await editPaymentRequestPage.deselectAllowAmountOverride();
+    await editPaymentRequestPage.deselectCustomAmount();
     await editPaymentRequestPage.selectInactiveStatus();
     await editPaymentRequestPage.saveChanges();
 
@@ -103,18 +92,17 @@ test.describe("Edit payment Request", () => {
     await detailsPage.checkDescription(updatedDescription);
     await detailsPage.checkAccounts([
       { name: openBankingProvider, type: "openbanking" },
-      { name: stripeProvider, type: "stripe" },
+      { name: realexProvider, type: "realex" },
     ]);
     await detailsPage.checkAmount(updatedAmount);
     await detailsPage.checkRedirectUrl(updatedRedirectUri);
-    await detailsPage.checkAmountOverrideOption(true);
-    await detailsPage.checkCustomAmountOption(true);
+    await detailsPage.checkAmountOverrideOption(false);
+    await detailsPage.checkCustomAmountOption(false);
     await detailsPage.checkStatus("inactive");
   });
 
   test("should get error message if remove all providers during edit and status is active @regression @normal", async ({
     bankTransferProvider,
-    context,
   }) => {
     await description(
       "This test checks if a user gets an error when removes all the providers and don't change the status to be inactive.",
@@ -123,21 +111,12 @@ test.describe("Edit payment Request", () => {
     await tags("Payment Request", "Edit");
     await severity(Severity.NORMAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
-    await paymentRequestsPage.goto();
-    await paymentRequestsPage.gotoCreate();
-
     const createPaymentRequestPage = new PaymentRequestFormPage(page);
-    await createPaymentRequestPage.enterTitle(name);
-    await createPaymentRequestPage.enterDescription(paymentRequestDescription);
-    await createPaymentRequestPage.selectManualBankTransferAccount(
-      bankTransferProvider,
-    );
-    await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
-    await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
-    await createPaymentRequestPage.selectActiveStatus();
-    await createPaymentRequestPage.saveChanges();
+    await createPaymentRequestPage.goto();
+    await createPaymentRequestPage.create({
+      title: name,
+      bankTransferProvider: bankTransferProvider,
+    });
 
     const detailsPage = new PaymentRequestDetailsPage(page);
 
@@ -164,21 +143,12 @@ test.describe("Edit payment Request", () => {
     await tags("Payment Request", "Edit");
     await severity(Severity.NORMAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
-    await paymentRequestsPage.goto();
-    await paymentRequestsPage.gotoCreate();
-
     const createPaymentRequestPage = new PaymentRequestFormPage(page);
-    await createPaymentRequestPage.enterTitle(name);
-    await createPaymentRequestPage.enterDescription(paymentRequestDescription);
-    await createPaymentRequestPage.selectManualBankTransferAccount(
-      bankTransferProvider,
-    );
-    await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
-    await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
-    await createPaymentRequestPage.selectActiveStatus();
-    await createPaymentRequestPage.saveChanges();
+    await createPaymentRequestPage.goto();
+    await createPaymentRequestPage.create({
+      title: name,
+      bankTransferProvider: bankTransferProvider,
+    });
 
     const detailsPage = new PaymentRequestDetailsPage(page);
 
@@ -195,6 +165,13 @@ test.describe("Edit payment Request", () => {
 
     const editPaymentRequestErrorPage = new PaymentRequestFormPage(page);
     await expect(editPageURL).toEqual(page.url());
-    // ... checks
+    await editPaymentRequestErrorPage.expectValidationError("titleRequired");
+    await editPaymentRequestErrorPage.expectValidationError(
+      "referenceRequired",
+    );
+    await editPaymentRequestErrorPage.expectValidationError("amountRequired");
+    await editPaymentRequestErrorPage.expectValidationError(
+      "redirectURLRequired",
+    );
   });
 });
