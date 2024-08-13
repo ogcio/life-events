@@ -5,13 +5,9 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/v1/users?activeOnly=true
+  url: {{baseUrl}}/api/v1/users
   body: none
   auth: bearer
-}
-
-query {
-  activeOnly: true
 }
 
 auth:bearer {

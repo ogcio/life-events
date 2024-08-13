@@ -110,6 +110,7 @@ export default async function users(app: FastifyInstance) {
         pagination,
         importId: query.importId,
         transports: query.transports ? query.transports.trim().split(",") : [],
+        activeOnly: query.activeOnly,
       };
       const recipientsResponse = await getUsers(params);
 
