@@ -83,7 +83,10 @@ export default async function providers(app: FastifyInstance) {
     "/:providerId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [authPermissions.PROVIDER_ALL]),
+        app.checkPermissions(req, res, [
+          authPermissions.PROVIDER_ALL,
+          authPermissions.PROVIDER_PUBLIC_READ,
+        ]),
       schema: {
         tags: TAGS,
         response: {
@@ -96,10 +99,6 @@ export default async function providers(app: FastifyInstance) {
     async (request, reply) => {
       const organizationId = request.userData?.organizationId;
       const { providerId } = request.params;
-
-      if (!organizationId) {
-        throw app.httpErrors.unauthorized("Unauthorized!");
-      }
 
       const provider = await app.providers.getProviderById(
         providerId,

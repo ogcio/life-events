@@ -5,20 +5,59 @@
 
 export interface paths {
   "/health": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
-          content: never;
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/providers/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               id: string;
@@ -30,6 +69,10 @@ export interface paths {
                 | "realex"
                 | "worldpay";
               data:
+                | {
+                    iban: string;
+                    accountHolderName: string;
+                  }
                 | {
                     iban: string;
                     accountHolderName: string;
@@ -52,6 +95,9 @@ export interface paths {
         };
         /** @description Default Response */
         401: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -65,7 +111,14 @@ export interface paths {
         };
       };
     };
+    put?: never;
     post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
       requestBody: {
         content: {
           "application/json": {
@@ -77,7 +130,7 @@ export interface paths {
               | "realex"
               | "worldpay";
             data: {
-              [key: string]: string;
+              [key: string]: string | undefined;
             };
           };
         };
@@ -85,6 +138,9 @@ export interface paths {
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               id: string;
@@ -93,6 +149,9 @@ export interface paths {
         };
         /** @description Default Response */
         401: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -106,6 +165,9 @@ export interface paths {
         };
         /** @description Default Response */
         422: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -119,6 +181,9 @@ export interface paths {
         };
         /** @description Default Response */
         500: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -132,17 +197,35 @@ export interface paths {
         };
       };
     };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/providers/{providerId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
       parameters: {
+        query?: never;
+        header?: never;
         path: {
           providerId: string;
         };
+        cookie?: never;
       };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               id: string;
@@ -154,6 +237,10 @@ export interface paths {
                 | "realex"
                 | "worldpay";
               data:
+                | {
+                    iban: string;
+                    accountHolderName: string;
+                  }
                 | {
                     iban: string;
                     accountHolderName: string;
@@ -176,6 +263,9 @@ export interface paths {
         };
         /** @description Default Response */
         401: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -189,6 +279,9 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -204,9 +297,12 @@ export interface paths {
     };
     put: {
       parameters: {
+        query?: never;
+        header?: never;
         path: {
           providerId: string;
         };
+        cookie?: never;
       };
       requestBody: {
         content: {
@@ -219,7 +315,7 @@ export interface paths {
               | "realex"
               | "worldpay";
             data: {
-              [key: string]: string;
+              [key: string]: string | undefined;
             };
             status: "connected" | "disconnected";
           };
@@ -228,6 +324,9 @@ export interface paths {
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               ok: boolean;
@@ -236,6 +335,9 @@ export interface paths {
         };
         /** @description Default Response */
         401: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -249,6 +351,9 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -262,6 +367,9 @@ export interface paths {
         };
         /** @description Default Response */
         422: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -275,18 +383,37 @@ export interface paths {
         };
       };
     };
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/requests/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
       parameters: {
         query?: {
           offset?: number;
           limit?: number;
         };
+        header?: never;
+        path?: never;
+        cookie?: never;
       };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               data: {
@@ -307,6 +434,10 @@ export interface paths {
                     | "worldpay";
                   status: "connected" | "disconnected";
                   data:
+                    | {
+                        iban: string;
+                        accountHolderName: string;
+                      }
                     | {
                         iban: string;
                         accountHolderName: string;
@@ -345,9 +476,11 @@ export interface paths {
                     href?: string;
                   };
                   pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
+                    [key: string]:
+                      | {
+                          href?: string;
+                        }
+                      | undefined;
                   };
                 };
                 totalCount?: number;
@@ -358,6 +491,12 @@ export interface paths {
       };
     };
     put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
       requestBody: {
         content: {
           "application/json": {
@@ -381,6 +520,9 @@ export interface paths {
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               id: string;
@@ -390,6 +532,12 @@ export interface paths {
       };
     };
     post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
       requestBody: {
         content: {
           "application/json": {
@@ -408,6 +556,9 @@ export interface paths {
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               id: string;
@@ -416,17 +567,35 @@ export interface paths {
         };
       };
     };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/requests/{requestId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
       parameters: {
+        query?: never;
+        header?: never;
         path: {
           requestId: string;
         };
+        cookie?: never;
       };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               paymentRequestId: string;
@@ -446,6 +615,10 @@ export interface paths {
                   | "worldpay";
                 status: "connected" | "disconnected";
                 data:
+                  | {
+                      iban: string;
+                      accountHolderName: string;
+                    }
                   | {
                       iban: string;
                       accountHolderName: string;
@@ -473,6 +646,9 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -486,21 +662,33 @@ export interface paths {
         };
       };
     };
+    put?: never;
+    post?: never;
     delete: {
       parameters: {
+        query?: never;
+        header?: never;
         path: {
           requestId: string;
         };
+        cookie?: never;
       };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": Record<string, never>;
           };
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -514,6 +702,9 @@ export interface paths {
         };
         /** @description Default Response */
         500: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -527,17 +718,34 @@ export interface paths {
         };
       };
     };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/requests/{requestId}/public-info": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
       parameters: {
+        query?: never;
+        header?: never;
         path: {
           requestId: string;
         };
+        cookie?: never;
       };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               paymentRequestId: string;
@@ -557,6 +765,10 @@ export interface paths {
                   | "worldpay";
                 status: "connected" | "disconnected";
                 data:
+                  | {
+                      iban: string;
+                      accountHolderName: string;
+                    }
                   | {
                       iban: string;
                       accountHolderName: string;
@@ -584,6 +796,9 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -597,21 +812,40 @@ export interface paths {
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/requests/{requestId}/transactions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
       parameters: {
         query?: {
           offset?: number;
           limit?: number;
         };
+        header?: never;
         path: {
           requestId: string;
         };
+        cookie?: never;
       };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               data: {
@@ -644,9 +878,11 @@ export interface paths {
                     href?: string;
                   };
                   pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
+                    [key: string]:
+                      | {
+                          href?: string;
+                        }
+                      | undefined;
                   };
                 };
                 totalCount?: number;
@@ -656,17 +892,37 @@ export interface paths {
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/transactions/{transactionId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
       parameters: {
+        query?: never;
+        header?: never;
         path: {
           transactionId: string;
         };
+        cookie?: never;
       };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               data: {
@@ -708,9 +964,11 @@ export interface paths {
                     href?: string;
                   };
                   pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
+                    [key: string]:
+                      | {
+                          href?: string;
+                        }
+                      | undefined;
                   };
                 };
                 totalCount?: number;
@@ -720,6 +978,9 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -733,11 +994,19 @@ export interface paths {
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
     patch: {
       parameters: {
+        query?: never;
+        header?: never;
         path: {
           transactionId: string;
         };
+        cookie?: never;
       };
       requestBody: {
         content: {
@@ -754,12 +1023,18 @@ export interface paths {
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": Record<string, never>;
           };
         };
         /** @description Default Response */
         500: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -773,18 +1048,32 @@ export interface paths {
         };
       };
     };
+    trace?: never;
   };
   "/api/v1/transactions/": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
       parameters: {
         query?: {
           offset?: number;
           limit?: number;
         };
+        header?: never;
+        path?: never;
+        cookie?: never;
       };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               data: {
@@ -826,9 +1115,11 @@ export interface paths {
                     href?: string;
                   };
                   pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
+                    [key: string]:
+                      | {
+                          href?: string;
+                        }
+                      | undefined;
                   };
                 };
                 totalCount?: number;
@@ -838,6 +1129,9 @@ export interface paths {
         };
         /** @description Default Response */
         401: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -851,6 +1145,9 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -864,6 +1161,9 @@ export interface paths {
         };
         /** @description Default Response */
         500: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -877,7 +1177,14 @@ export interface paths {
         };
       };
     };
+    put?: never;
     post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
       requestBody: {
         content: {
           "application/json": {
@@ -896,6 +1203,9 @@ export interface paths {
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               data: {
@@ -919,9 +1229,11 @@ export interface paths {
                     href?: string;
                   };
                   pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
+                    [key: string]:
+                      | {
+                          href?: string;
+                        }
+                      | undefined;
                   };
                 };
                 totalCount?: number;
@@ -931,6 +1243,9 @@ export interface paths {
         };
         /** @description Default Response */
         401: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -944,6 +1259,9 @@ export interface paths {
         };
         /** @description Default Response */
         500: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -957,12 +1275,33 @@ export interface paths {
         };
       };
     };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/transactions/generatePaymentIntentId": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               data: {
@@ -986,9 +1325,11 @@ export interface paths {
                     href?: string;
                   };
                   pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
+                    [key: string]:
+                      | {
+                          href?: string;
+                        }
+                      | undefined;
                   };
                 };
                 totalCount?: number;
@@ -998,6 +1339,9 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -1011,18 +1355,38 @@ export interface paths {
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/citizen/transactions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
       parameters: {
         query?: {
           offset?: number;
           limit?: number;
         };
+        header?: never;
+        path?: never;
+        cookie?: never;
       };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               data: {
@@ -1055,9 +1419,11 @@ export interface paths {
                     href?: string;
                   };
                   pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
+                    [key: string]:
+                      | {
+                          href?: string;
+                        }
+                      | undefined;
                   };
                 };
                 totalCount?: number;
@@ -1067,6 +1433,9 @@ export interface paths {
         };
         /** @description Default Response */
         401: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -1080,6 +1449,9 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -1093,6 +1465,9 @@ export interface paths {
         };
         /** @description Default Response */
         500: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -1106,17 +1481,37 @@ export interface paths {
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/citizen/transactions/{transactionId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
       parameters: {
+        query?: never;
+        header?: never;
         path: {
           transactionId: string;
         };
+        cookie?: never;
       };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               data: {
@@ -1158,9 +1553,11 @@ export interface paths {
                     href?: string;
                   };
                   pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
+                    [key: string]:
+                      | {
+                          href?: string;
+                        }
+                      | undefined;
                   };
                 };
                 totalCount?: number;
@@ -1170,6 +1567,9 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -1183,8 +1583,21 @@ export interface paths {
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/realex/paymentObject": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
       parameters: {
         query: {
@@ -1192,10 +1605,17 @@ export interface paths {
           intentId: string;
           providerId: string;
         };
+        header?: never;
+        path?: never;
+        cookie?: never;
       };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               ACCOUNT: string;
@@ -1211,6 +1631,9 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -1224,6 +1647,9 @@ export interface paths {
         };
         /** @description Default Response */
         422: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -1237,9 +1663,30 @@ export interface paths {
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/realex/verifyPaymentResponse": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
     post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
       requestBody?: {
         content: {
           "application/json": Record<string, never>;
@@ -1248,12 +1695,18 @@ export interface paths {
       responses: {
         /** @description Default Response */
         200: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": string;
           };
         };
         /** @description Default Response */
         404: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -1267,6 +1720,9 @@ export interface paths {
         };
         /** @description Default Response */
         422: {
+          headers: {
+            [name: string]: unknown;
+          };
           content: {
             "application/json": {
               code: string;
@@ -1280,42 +1736,87 @@ export interface paths {
         };
       };
     };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/test/citizen": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
-          content: never;
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
   "/api/v1/test/pub-ser": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
     get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         200: {
-          content: never;
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
         };
       };
     };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
   };
 }
-
 export type webhooks = Record<string, never>;
-
 export interface components {
-  schemas: {};
+  schemas: never;
   responses: never;
   parameters: never;
   requestBodies: never;
   headers: never;
   pathItems: never;
 }
-
 export type $defs = Record<string, never>;
-
-export type external = Record<string, never>;
-
 export type operations = Record<string, never>;
