@@ -1,0 +1,25 @@
+meta {
+  name: Get providers without type
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/providers
+  body: none
+  auth: bearer
+}
+
+headers {
+  : 
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 422
+  res.body.requestId: isDefined
+  res.body.code: isDefined
+}

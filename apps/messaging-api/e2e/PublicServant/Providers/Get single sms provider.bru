@@ -1,0 +1,30 @@
+meta {
+  name: Get single sms provider
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/providers/{{smsProviderId}}?type=sms
+  body: none
+  auth: bearer
+}
+
+query {
+  type: sms
+}
+
+headers {
+  : 
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data.providerName: isDefined
+  res.body.data.id: eq {{smsProviderId}}
+}
