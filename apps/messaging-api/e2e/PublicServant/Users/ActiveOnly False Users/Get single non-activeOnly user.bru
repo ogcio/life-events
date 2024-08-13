@@ -1,13 +1,17 @@
 meta {
-  name: Get single user
+  name: Get single non-activeOnly user
   type: http
   seq: 2
 }
 
 get {
-  url: {{baseUrl}}/api/v1/users/{{userId}}
+  url: {{baseUrl}}/api/v1/users/{{nonActiveUserId}}?activeOnly=false
   body: none
   auth: bearer
+}
+
+query {
+  activeOnly: false
 }
 
 auth:bearer {
