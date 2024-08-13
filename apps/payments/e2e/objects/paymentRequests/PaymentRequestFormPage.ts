@@ -1,5 +1,9 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import { paymentSetupUrl } from "../../utils/constants";
+import {
+  PaymentRequestValidationError,
+  paymentRequestValidationErrorTexts,
+  paymentSetupUrl,
+} from "../../utils/constants";
 
 export class PaymentRequestFormPage {
   private readonly header: Locator;
@@ -143,5 +147,12 @@ export class PaymentRequestFormPage {
 
   async saveChanges() {
     await this.saveButton.click();
+  }
+
+  async expectValidationError(expectedError: PaymentRequestValidationError) {
+    const errorMessage = await this.page.getByText(
+      paymentRequestValidationErrorTexts[expectedError],
+    );
+    await expect(errorMessage).toBeVisible();
   }
 }

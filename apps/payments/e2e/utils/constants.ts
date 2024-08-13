@@ -53,3 +53,26 @@ export const providerValidationErrorTexts: Record<
   merchantIdRequired: "Merchant Id is required.",
   sharedSecretRequired: "Shared Secret is required.",
 };
+
+export const PaymentRequestValidationErrors = [
+  "titleRequired",
+  "referenceRequired",
+  "amountRequired",
+  "redirectURLRequired",
+  "statusInvalid",
+] as const;
+
+export type PaymentRequestValidationError =
+  (typeof PaymentRequestValidationErrors)[number];
+
+export const paymentRequestValidationErrorTexts: Record<
+  PaymentRequestValidationError,
+  string
+> = {
+  titleRequired: "Title is required.",
+  referenceRequired: "Reference is required.",
+  amountRequired: "Amount is required.",
+  redirectURLRequired: "Redirect URL is required.",
+  statusInvalid:
+    "Payment Request Status cannot be active if no providers are selected.",
+};

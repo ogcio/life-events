@@ -28,7 +28,7 @@ test.describe("Payment Request with open banking provider", () => {
   });
 
   test.beforeEach(async () => {
-    name = `Test ${Date.now()}`;
+    name = `Test openbanking ${Date.now()}`;
   });
 
   test("should create an inactive payment request with a open banking provider @regression @normal", async ({
@@ -139,6 +139,7 @@ test.describe("Payment Request with open banking provider", () => {
     const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
+    await previewPayPage.checkCustomAmountOptionNotVisible();
     await previewPayPage.checkPaymentMethodHeader();
     await previewPayPage.checkPaymentMethodVisible("openbanking");
     await previewPayPage.checkButton();
