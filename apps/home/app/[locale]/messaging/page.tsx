@@ -8,11 +8,18 @@ import multiChannel from "../../../public/messagingLandingPage/multi_channel.png
 import template from "../../../public/messagingLandingPage/template.png";
 import postbox from "../../../public/messagingLandingPage/postbox.png";
 import { getLinks } from "../../../utils/index";
+import favicon from "../../../public/favicon.ico";
+import type { Metadata } from "next";
 
 type Props = {
   params: {
     locale: string;
   };
+};
+
+export const metadata: Metadata = {
+  title: "Messaging",
+  icons: [{ rel: "icon", url: favicon.src }],
 };
 
 export default async (props: Props) => {
