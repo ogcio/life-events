@@ -19,6 +19,7 @@ import {
   BadRequestError,
   CustomError,
   getErrorMessage,
+  LifeEventsError,
   NotFoundError,
   ServerError,
 } from "shared-errors";
@@ -28,7 +29,6 @@ import getUserFiles from "./utils/getUserFiles.js";
 import insertFileMetadata from "./utils/insertFileMetadata.js";
 import updateFileMetadata from "./utils/updateFileMetadata.js";
 import getDbVersion from "./utils/getDbVersion.js";
-import { Stream } from "node:stream";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
 const FILE_DELETE = "FILE_DELETE";
@@ -90,41 +90,32 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     length += chunk.length;
   });
 
+  const getDbVersionPromise = getDbVersion(app.avClient);
+
   const antivirusPassthrough = app.avClient.passthrough();
 
   const antiVirusPromise = new Promise<void>((resolve, reject) => {
-    antivirusPassthrough.once("error", (err) => {
-      return reject(
-        new CustomError(
-          FILE_UPLOAD,
-          "Internal server error",
-          500,
-          "ANTIVIRUS_SCAN_ERROR",
-          err,
-        ),
-      );
-    });
-
     antivirusPassthrough.once("scan-complete", async (result) => {
-      const { isInfected } = result;
-      console.log({ result });
+      const dbVersion = await getDbVersionPromise;
+
+      const { isInfected, viruses } = result;
 
       if (isInfected) {
-        // await insertFileMetadata(app, {
-        //   createdAt: new Date(),
-        //   lastScan: new Date(),
-        //   fileSize: length,
-        //   infected: true,
-        //   infectionDescription: viruses.join(","),
-        //   key: `${userId}/${filename}`,
-        //   mimetype: fileMimeType,
-        //   owner: userId as string,
-        //   filename,
-        // });
+        await insertFileMetadata(app, {
+          createdAt: new Date(),
+          lastScan: new Date(),
+          fileSize: length,
+          infected: true,
+          infectionDescription: viruses.join(","),
+          key: `${userId}/${filename}`,
+          mimetype: fileMimeType,
+          owner: userId as string,
+          filename,
+          antivirusDbVersion: dbVersion,
+          deleted: true,
+        });
         return reject(new CustomError(FILE_UPLOAD, "File is infected", 400));
       }
-      console.log("done");
-
       resolve();
     });
   });
@@ -147,32 +138,24 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     .done()
     .then(async (resData) => {
       const { Key } = resData;
-      try {
-        const antivirusDbVersion = await getDbVersion(app.avClient);
-        await insertFileMetadata(app, {
-          createdAt: new Date(),
-          lastScan: new Date(),
-          fileSize: length,
-          infected: false,
-          key: Key as string,
-          mimetype: fileMimeType,
-          owner: userId as string,
-          filename,
-          antivirusDbVersion: antivirusDbVersion,
-        });
-      } catch (err) {
-        app.log.error(err);
-        eventEmitter.emit(
-          "error",
-          new ServerError(FILE_UPLOAD, "Internal server error"),
-        );
-      }
+      const dbVersion = await getDbVersionPromise;
+
+      await insertFileMetadata(app, {
+        createdAt: new Date(),
+        lastScan: new Date(),
+        fileSize: length,
+        infected: false,
+        key: Key as string,
+        mimetype: fileMimeType,
+        owner: userId as string,
+        deleted: false,
+        filename,
+        antivirusDbVersion: dbVersion,
+      });
+      eventEmitter.emit("fileUploaded");
     })
     .catch((err) => {
       eventEmitter.emit("error", err);
-    })
-    .then(() => {
-      eventEmitter.emit("fileUploaded");
     });
 
   pipeline(
@@ -197,11 +180,13 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     });
 
     eventEmitter.once("error", (err) => {
-      if (err.errorCode === 500) {
-        reject(new ServerError(FILE_UPLOAD, "Server error"));
-      } else {
+      const err_ = err as LifeEventsError;
+      if (err_.errorCode === 400) {
         reject(new BadRequestError("badRequest", getErrorMessage(err), err));
+      } else {
+        app.log.error(err);
       }
+      reject(new ServerError(FILE_UPLOAD, "Server error"));
     });
 
     eventEmitter.on("error", () => {
@@ -252,6 +237,7 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       const userId = request.userData?.userId as string;
       const data = await getUserFiles(app, userId);
+
       const files = data.rows;
       reply.send({ data: files });
     },
@@ -314,7 +300,6 @@ export default async function routes(app: FastifyInstance) {
           200: Type.String(),
           "4xx": HttpError,
           "5xx": HttpError,
-          500: HttpError,
         },
       },
     },
@@ -330,6 +315,10 @@ export default async function routes(app: FastifyInstance) {
 
       if (!file) {
         throw new NotFoundError(FILE_DOWNLOAD, "File not found");
+      }
+
+      if (file.infected) {
+        throw new CustomError(FILE_DOWNLOAD, "File is infected", 400);
       }
 
       try {
@@ -364,6 +353,7 @@ export default async function routes(app: FastifyInstance) {
         const thePromise = new Promise<void>((resolve, reject) => {
           antivirusPassthrough.once("error", (err) => {
             app.log.error(err);
+
             // Rejecting here can cause html 5 video to throw ERR_STREAM_PREMATURE_CLOSE
 
             // return reject(
@@ -383,31 +373,33 @@ export default async function routes(app: FastifyInstance) {
               const s3Config = app.s3Client;
               let fileDeleted = false;
               try {
-                await deleteObject(
-                  s3Config.client,
-                  s3Config.bucketName,
-                  file.key,
-                );
+                // await deleteObject(
+                //   s3Config.client,
+                //   s3Config.bucketName,
+                //   file.key,
+                // );
                 fileDeleted = true;
               } catch (error) {
                 app.log.error(error);
               }
               try {
-                await updateFileMetadata(app, {
-                  ...file,
-                  lastScan: new Date(),
-                  infected: true,
-                  deleted: fileDeleted,
-                  infectionDescription: viruses.join(","),
-                  antivirusDbVersion,
-                });
+                // await updateFileMetadata(app, {
+                //   ...file,
+                //   lastScan: new Date(),
+                //   infected: true,
+                //   deleted: fileDeleted,
+                //   infectionDescription: viruses.join(","),
+                //   antivirusDbVersion,
+                // });
               } catch (error) {
                 app.log.error(error);
               }
+              // return;
 
-              return reject(
-                new CustomError(FILE_DOWNLOAD, "File is infected", 400),
-              );
+              return reply.raw.destroy();
+              // return reject(
+              //   new CustomError(FILE_DOWNLOAD, "File is infected", 400),
+              // );
             }
             resolve();
           });
@@ -423,18 +415,18 @@ export default async function routes(app: FastifyInstance) {
 
       const downloadPassthrough = new PassThrough();
       pipelinedStreams.push(downloadPassthrough as unknown as ReadableStream);
-      //TODO: check for a better solution
+      //TODO: check for a better solution for types
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       pipeline(pipelinedStreams as any, (err) => {
         if (err) {
           app.log.error(err);
+          return;
         }
       });
 
       reply.header("Content-Disposition", `filename="${file.filename}"`);
       reply.header("Content-type", file.mimetype);
       reply.header("Content-Length", file.fileSize);
-
       return reply.send(downloadPassthrough);
     },
   );
