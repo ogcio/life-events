@@ -77,7 +77,8 @@ test.describe("Payment Request with open banking provider", () => {
     const link = await detailsPage.getPaymentLink();
     const newPage = await context.newPage();
     await newPage.goto(link);
-    const inactivePayPage = new InactivePayPage(newPage);
+    await newPage.close();
+    const inactivePayPage = new InactivePayPage(page);
     await inactivePayPage.checkHeader();
     await inactivePayPage.checkDescription();
 
@@ -136,7 +137,8 @@ test.describe("Payment Request with open banking provider", () => {
     const link = await detailsPage.getPaymentLink();
     const newPage = await context.newPage();
     await newPage.goto(link);
-    const previewPayPage = new PreviewPayPage(newPage);
+    await newPage.close();
+    const previewPayPage = new PreviewPayPage(page);
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
     await previewPayPage.checkCustomAmountOptionNotVisible();
