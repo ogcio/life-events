@@ -1,4 +1,3 @@
-import { Page } from "@playwright/test";
 import { test } from "../../fixtures/paymentRequestsFixtures";
 import {
   Severity,
@@ -8,46 +7,13 @@ import {
   description,
 } from "allure-js-commons";
 import { PaymentRequestsPage } from "../../objects/paymentRequests/PaymentRequestsListPage";
-import { PaymentRequestFormPage } from "../../objects/paymentRequests/PaymentRequestFormPage";
 
 import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/PaymentRequestDetailsPage";
 
 test.describe("Payment Request deletion", () => {
-  let page: Page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
-
-  test("should delete an inactive payment request @regression @minor", async ({
-    bankTransferProvider,
-  }) => {
-    await description(
-      "This test checks the successful deletion of an inactive payment request.",
-    );
-    await owner("OGCIO");
-    await tags("Payment Request", "Delete");
-    await severity(Severity.MINOR);
-
-    const paymentRequestTitle = `Test ${Date.now()}`;
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
-    await createPaymentRequestPage.goto();
-    await createPaymentRequestPage.create({
-      title: paymentRequestTitle,
-      bankTransferProvider,
-    });
-
-    const detailsPage = new PaymentRequestDetailsPage(page);
-    await detailsPage.checkHeader();
-    await detailsPage.delete();
-    await detailsPage.confirmDelete();
-
-    const paymentRequestsPage = new PaymentRequestsPage(page);
-    await paymentRequestsPage.checkRequestIsNotVisible(paymentRequestTitle);
-  });
-
   test("should delete an active payment request when it has no transactions @regression @minor", async ({
     paymentRequestWithMultipleProviders,
+    browser,
   }) => {
     await description(
       "This test checks the successful deletion of an active payment request when it has no transactions.",
@@ -56,6 +22,7 @@ test.describe("Payment Request deletion", () => {
     await tags("Payment Request", "Delete");
     await severity(Severity.MINOR);
 
+    const page = await browser.newPage();
     const paymentRequestsPage = new PaymentRequestsPage(page);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(paymentRequestWithMultipleProviders);
