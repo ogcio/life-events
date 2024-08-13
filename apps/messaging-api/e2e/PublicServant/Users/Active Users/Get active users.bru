@@ -1,0 +1,39 @@
+meta {
+  name: Get active users
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users?activeOnly=true
+  body: none
+  auth: bearer
+}
+
+query {
+  activeOnly: true
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:post-response {
+  activeUserId: res.body.data[0].userId
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data[0]: isDefined
+  res.body.data[0].id: isDefined
+}
+
+tests {
+  test("all users must have accepted invitation", function() {
+         const response = res.getBody();
+        for(const entry of response.data) {
+          expect(entry.organisationInvitationStatus).to.equal("accepted");
+        }
+       });
+}
