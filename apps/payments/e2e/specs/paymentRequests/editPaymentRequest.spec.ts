@@ -37,7 +37,7 @@ test.describe("Edit payment Request", () => {
     updatedRedirectUri = `${mockRedirectUrl}/updated`;
   });
 
-  test("should create and edit a payment request @smoke @blocker", async ({
+  test("should create and edit a payment request @smoke @normal", async ({
     bankTransferProvider,
     realexProvider,
     stripeProvider,
@@ -49,7 +49,7 @@ test.describe("Edit payment Request", () => {
     );
     await owner("OGCIO");
     await tags("Payment Request", "Edit");
-    await severity(Severity.BLOCKER);
+    await severity(Severity.NORMAL);
 
     const paymentRequestsPage = new PaymentRequestsPage(page);
     await paymentRequestsPage.goto();
@@ -112,7 +112,7 @@ test.describe("Edit payment Request", () => {
     await detailsPage.checkStatus("inactive");
   });
 
-  test("should get error message if remove all providers during edit and status is active @smoke @blocker", async ({
+  test("should get error message if remove all providers during edit and status is active @regression @normal", async ({
     bankTransferProvider,
     context,
   }) => {
@@ -121,7 +121,7 @@ test.describe("Edit payment Request", () => {
     );
     await owner("OGCIO");
     await tags("Payment Request", "Edit");
-    await severity(Severity.BLOCKER);
+    await severity(Severity.NORMAL);
 
     const paymentRequestsPage = new PaymentRequestsPage(page);
     await paymentRequestsPage.goto();
@@ -150,10 +150,10 @@ test.describe("Edit payment Request", () => {
 
     const editPaymentRequestErrorPage = new PaymentRequestFormPage(page);
     await expect(editPageURL).toEqual(page.url());
-    await editPaymentRequestErrorPage.checkStatusError();
+    await editPaymentRequestErrorPage.expectValidationError("statusInvalid");
   });
 
-  test("should get error message if required fields are empty @smoke @blocker", async ({
+  test("should get error message if required fields are empty @regression @normal", async ({
     bankTransferProvider,
     context,
   }) => {
@@ -162,7 +162,7 @@ test.describe("Edit payment Request", () => {
     );
     await owner("OGCIO");
     await tags("Payment Request", "Edit");
-    await severity(Severity.BLOCKER);
+    await severity(Severity.NORMAL);
 
     const paymentRequestsPage = new PaymentRequestsPage(page);
     await paymentRequestsPage.goto();
