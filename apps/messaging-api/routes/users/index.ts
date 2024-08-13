@@ -103,14 +103,15 @@ export default async function users(app: FastifyInstance) {
     async (request: FastifyRequest<GetUsersSchema>, _reply: FastifyReply) => {
       const query = request.query;
       const pagination = sanitizePagination(query);
-      const recipientsResponse = await getUsers({
+      const params = {
         pool: app.pg.pool,
         organisationId: ensureOrganizationIdIsSet(request, "GET_USERS"),
         search: query.search,
         pagination,
         importId: query.importId,
         transports: query.transports ? query.transports.trim().split(",") : [],
-      });
+      };
+      const recipientsResponse = await getUsers(params);
 
       const paginationDetails: PaginationDetails = {
         ...pagination,
