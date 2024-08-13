@@ -17,7 +17,7 @@ headers {
 
 body:form-urlencoded {
   grant_type: client_credentials
-  scope: messaging:provider:* messaging:event:read messaging:citizen:*
+  scope: messaging:provider:* messaging:event:read messaging:citizen:* messaging:template:*
   organization_id: ogcio
 }
 
@@ -28,5 +28,5 @@ vars:post-response {
 assert {
   res.status: eq 200
   res.body.access_token: isDefined
-  res.body.scope: eq messaging:citizen:* messaging:provider:* messaging:event:read
+  res.body.scope: eq messaging:citizen:* messaging:provider:* messaging:template:* messaging:event:read
 }

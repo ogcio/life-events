@@ -1,17 +1,13 @@
 meta {
-  name: Get sms providers
+  name: Get templates
   type: http
-  seq: 2
+  seq: 1
 }
 
 get {
-  url: {{baseUrl}}/api/v1/providers?type=sms
+  url: {{baseUrl}}/api/v1/templates
   body: none
   auth: bearer
-}
-
-query {
-  type: sms
 }
 
 auth:bearer {
@@ -19,7 +15,7 @@ auth:bearer {
 }
 
 vars:post-response {
-  smsProviderId: res.body.data[0].id
+  templateId: res.body.data[0].id
 }
 
 assert {
@@ -27,4 +23,5 @@ assert {
   res.body.data: isDefined
   res.body.data[0]: isDefined
   res.body.data[0].id: isDefined
+  res.body.data[0].contents: isDefined
 }
