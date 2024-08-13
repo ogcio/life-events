@@ -85,10 +85,10 @@ test.describe("Payment Request with multiple providers", () => {
     const link = await detailsPage.getPaymentLink();
     const newPage = await context.newPage();
     await newPage.goto(link);
-    await newPage.close();
-    const inactivePayPage = new InactivePayPage(page);
+    const inactivePayPage = new InactivePayPage(newPage);
     await inactivePayPage.checkHeader();
     await inactivePayPage.checkDescription();
+    await newPage.close();
 
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
@@ -157,8 +157,7 @@ test.describe("Payment Request with multiple providers", () => {
     const link = await detailsPage.getPaymentLink();
     const newPage = await context.newPage();
     await newPage.goto(link);
-    await newPage.close();
-    const previewPayPage = new PreviewPayPage(page);
+    const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
     await previewPayPage.checkCustomAmountOptionVisible();
@@ -167,6 +166,7 @@ test.describe("Payment Request with multiple providers", () => {
     await previewPayPage.checkPaymentMethodVisible("openbanking");
     await previewPayPage.checkPaymentMethodVisible("card");
     await previewPayPage.checkButton();
+    await newPage.close();
 
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
@@ -405,10 +405,10 @@ test.describe("Payment Request with multiple providers", () => {
     const link = await detailsPage.getPaymentLink();
     const newPage = await context.newPage();
     await newPage.goto(link);
-    await newPage.close();
-    const inactivePayPage = new InactivePayPage(page);
+    const inactivePayPage = new InactivePayPage(newPage);
     await inactivePayPage.checkHeader();
     await inactivePayPage.checkDescription();
+    await newPage.close();
 
     // TODO: check request is visible in list - waiting for https://dev.azure.com/OGCIO-Digital-Services/Digital%20Services%20Programme/_boards/board/t/Payments/Stories?workitem=20445
   });

@@ -77,10 +77,10 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     const link = await detailsPage.getPaymentLink();
     const newPage = await context.newPage();
     await newPage.goto(link);
-    await newPage.close();
-    const inactivePayPage = new InactivePayPage(page);
+    const inactivePayPage = new InactivePayPage(newPage);
     await inactivePayPage.checkHeader();
     await inactivePayPage.checkDescription();
+    await newPage.close();
 
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
@@ -137,14 +137,14 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     const link = await detailsPage.getPaymentLink();
     const newPage = await context.newPage();
     await newPage.goto(link);
-    await newPage.close();
-    const previewPayPage = new PreviewPayPage(page);
+    const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
     await previewPayPage.checkCustomAmountOptionNotVisible();
     await previewPayPage.checkPaymentMethodHeader();
     await previewPayPage.checkPaymentMethodVisible("banktransfer");
     await previewPayPage.checkButton();
+    await newPage.close();
 
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
