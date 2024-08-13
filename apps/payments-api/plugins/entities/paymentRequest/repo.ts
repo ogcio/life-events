@@ -43,9 +43,9 @@ export class PaymentRequestRepo {
           ELSE '[]'::json
           END as providers
       from payment_requests pr
-      left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id
-      left join payment_providers pp on ppr.provider_id = pp.provider_id AND ppr.enabled IS TRUE
-      where pr.organization_id = $1 and ppr.enabled
+      left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id AND ppr.enabled IS TRUE
+      left join payment_providers pp on ppr.provider_id = pp.provider_id
+      where pr.organization_id = $1
       group by pr.payment_request_id
       ORDER BY pr.created_at DESC
       LIMIT $2 OFFSET $3`,
