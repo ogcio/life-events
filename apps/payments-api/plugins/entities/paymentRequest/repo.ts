@@ -31,17 +31,17 @@ export class PaymentRequestRepo {
         pr.reference,
         pr.status,
         CASE 
-            WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
-                'userId', pp.user_id,
-                'id', pp.provider_id,
-                'name', pp.provider_name,
-                'type', pp.provider_type,
-                'status', pp.status,
-                'data', pp.provider_data,
-                'createdAt', pp.created_at
-            ))
+          WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
+            'userId', pp.user_id,
+            'id', pp.provider_id,
+            'name', pp.provider_name,
+            'type', pp.provider_type,
+            'status', pp.status,
+            'data', pp.provider_data,
+            'createdAt', pp.created_at
+          ))
           ELSE '[]'::json
-          END as providers
+        END as providers
       from payment_requests pr
       left join payment_requests_providers ppr on pr.payment_request_id = ppr.payment_request_id AND ppr.enabled IS TRUE
       left join payment_providers pp on ppr.provider_id = pp.provider_id
