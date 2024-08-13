@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 vars:post-response {
-  ~userImportId: res.body.data[0].importId
+  usersData: res.body.data.usersData
 }
 
 assert {
