@@ -173,13 +173,10 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
                   : state.defaultState?.details?.status === "active"
               }
             />
-            <label
-              className="govie-label--s govie-radios__label"
-              htmlFor="active"
-            >
-              {t("form.status.active")}
+            <div className="govie-label--s govie-radios__label">
+              <label htmlFor="active">{t("form.status.active")}</label>
               <p className="govie-body">{t("form.status.activeDescription")}</p>
-            </label>
+            </div>
           </div>
 
           <div className="govie-radios__item">
@@ -194,15 +191,12 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
               }
             />
 
-            <label
-              className="govie-label--s govie-radios__label"
-              htmlFor="inactive"
-            >
-              {t("form.status.inactive")}
+            <div className="govie-label--s govie-radios__label">
+              <label htmlFor="inactive">{t("form.status.inactive")}</label>
               <p className="govie-body">
                 {t("form.status.inactiveDescription")}
               </p>
-            </label>
+            </div>
           </div>
         </div>
       </div>

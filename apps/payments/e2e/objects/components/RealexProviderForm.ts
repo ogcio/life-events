@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 import {
   providerValidationErrorTexts,
-  RealexValidationError,
+  RealexProviderValidationError,
 } from "../../utils/constants";
 
 export class RealexProviderForm {
@@ -46,7 +46,7 @@ export class RealexProviderForm {
     await expect(this.sharedSecret).toHaveValue(key);
   }
 
-  async expectValidationError(expectedError: RealexValidationError) {
+  async expectValidationError(expectedError: RealexProviderValidationError) {
     const errorMessage = await this.page.getByText(
       providerValidationErrorTexts[expectedError],
     );

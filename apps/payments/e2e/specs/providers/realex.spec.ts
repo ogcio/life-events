@@ -87,7 +87,9 @@ test.describe("Realex provider creation", () => {
     );
     await addRealexProviderPage.submitProviderCreation();
 
-    await addRealexProviderPage.expectValidationError("nameRequired");
+    await addRealexProviderPage.providerForm.expectValidationError(
+      "nameRequired",
+    );
   });
 
   test("should not add a realex provider if merchant id is missing @regression @normal", async () => {
@@ -117,7 +119,9 @@ test.describe("Realex provider creation", () => {
     );
     await addRealexProviderPage.submitProviderCreation();
 
-    await addRealexProviderPage.expectValidationError("merchantIdRequired");
+    await addRealexProviderPage.providerForm.expectValidationError(
+      "merchantIdRequired",
+    );
 
     await providersPage.goto();
     await providersPage.checkProviderNotVisible(providerName);
@@ -150,7 +154,9 @@ test.describe("Realex provider creation", () => {
     await addRealexProviderPage.providerForm.enterSharedSecret("");
     await addRealexProviderPage.submitProviderCreation();
 
-    await addRealexProviderPage.expectValidationError("sharedSecretRequired");
+    await addRealexProviderPage.providerForm.expectValidationError(
+      "sharedSecretRequired",
+    );
 
     await providersPage.goto();
     await providersPage.checkProviderNotVisible(providerName);

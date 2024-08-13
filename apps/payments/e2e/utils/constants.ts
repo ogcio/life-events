@@ -7,7 +7,43 @@ export const myGovIdMockSettings = {
   publicServantUser: "Tony Stark",
 };
 
-export const providerValidationErrorTexts: Record<ValidationError, string> = {
+export const BankTransferProviderValidationErrors = [
+  "nameRequired",
+  "accountHolderNameRequired",
+  "ibanRequired",
+  "ibanInvalid",
+] as const;
+
+export type BankTransferProviderValidationError =
+  (typeof BankTransferProviderValidationErrors)[number];
+
+export const StripeProviderValidationErrors = [
+  "nameRequired",
+  "publishableKeyRequired",
+  "secretKeyRequired",
+] as const;
+
+export type StripeProviderValidationError =
+  (typeof StripeProviderValidationErrors)[number];
+
+export const RealexProviderValidationErrors = [
+  "nameRequired",
+  "merchantIdRequired",
+  "sharedSecretRequired",
+] as const;
+
+export type RealexProviderValidationError =
+  (typeof RealexProviderValidationErrors)[number];
+
+type ProviderValidationError =
+  | StripeProviderValidationError
+  | BankTransferProviderValidationError
+  | RealexProviderValidationError;
+
+export const providerValidationErrorTexts: Record<
+  ProviderValidationError,
+  string
+> = {
   nameRequired: "Name is required.",
   accountHolderNameRequired: "Bank Account Holder Name is required.",
   ibanRequired: "IBAN is required.",
@@ -18,23 +54,25 @@ export const providerValidationErrorTexts: Record<ValidationError, string> = {
   sharedSecretRequired: "Shared Secret is required.",
 };
 
-export type StripeValidationError =
-  | "nameRequired"
-  | "publishableKeyRequired"
-  | "secretKeyRequired";
+export const PaymentRequestValidationErrors = [
+  "titleRequired",
+  "referenceRequired",
+  "amountRequired",
+  "redirectURLRequired",
+  "statusInvalid",
+] as const;
 
-export type BankTransferValidationError =
-  | "nameRequired"
-  | "accountHolderNameRequired"
-  | "ibanRequired"
-  | "ibanInvalid";
+export type PaymentRequestValidationError =
+  (typeof PaymentRequestValidationErrors)[number];
 
-export type RealexValidationError =
-  | "nameRequired"
-  | "merchantIdRequired"
-  | "sharedSecretRequired";
-
-type ValidationError =
-  | StripeValidationError
-  | BankTransferValidationError
-  | RealexValidationError;
+export const paymentRequestValidationErrorTexts: Record<
+  PaymentRequestValidationError,
+  string
+> = {
+  titleRequired: "Title is required.",
+  referenceRequired: "Reference is required.",
+  amountRequired: "Amount is required.",
+  redirectURLRequired: "Redirect URL is required.",
+  statusInvalid:
+    "Payment Request Status cannot be active if no providers are selected.",
+};

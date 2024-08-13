@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from "@playwright/test";
 import {
   providerValidationErrorTexts,
-  StripeValidationError,
+  StripeProviderValidationError,
 } from "../../utils/constants";
 
 export class StripeProviderForm {
@@ -46,7 +46,7 @@ export class StripeProviderForm {
     await expect(this.secretKey).toHaveValue(key);
   }
 
-  async expectValidationError(expectedError: StripeValidationError) {
+  async expectValidationError(expectedError: StripeProviderValidationError) {
     const errorMessage = await this.page.getByText(
       providerValidationErrorTexts[expectedError],
     );
