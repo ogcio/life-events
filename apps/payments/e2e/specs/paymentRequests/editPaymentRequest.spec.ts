@@ -8,11 +8,7 @@ import {
   description,
 } from "allure-js-commons";
 import { PaymentRequestFormPage } from "../../objects/paymentRequests/PaymentRequestFormPage";
-import {
-  mockAmount,
-  mockRedirectUrl,
-  paymentRequestDescription,
-} from "../../utils/mocks";
+import { mockRedirectUrl, paymentRequestDescription } from "../../utils/mocks";
 import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/PaymentRequestDetailsPage";
 
 test.describe("Edit payment Request", () => {
@@ -115,7 +111,6 @@ test.describe("Edit payment Request", () => {
 
   test("should get error message if required fields are empty @regression @normal", async ({
     bankTransferProvider,
-    context,
   }) => {
     await description(
       "This test checks if a user gets validation errors when required fields are empty.",

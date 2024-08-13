@@ -14,6 +14,12 @@ export class MyGovIdMockLoginPage {
     await this.page.getByLabel("Select user").selectOption(email);
   }
 
+  async selectCitizen(citizen: string) {
+    const [name, surname] = citizen.split(" ");
+    const email = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.citizenEmailDomain}`;
+    await this.page.getByLabel("Select user").selectOption(email);
+  }
+
   async enterPassword(password: string) {
     await this.pwInput.fill(password);
   }
