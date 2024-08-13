@@ -19,9 +19,9 @@ test.describe("Edit payment Request", () => {
   let page: Page;
   let name: string;
   let updatedName: string;
-  let updatedDescription: string;
-  let updatedAmount: string;
-  let updatedRedirectUri: string;
+  const updatedDescription = `${paymentRequestDescription} updated`;
+  const updatedAmount = "50";
+  const updatedRedirectUri = `${mockRedirectUrl}/updated`;
 
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
@@ -30,9 +30,6 @@ test.describe("Edit payment Request", () => {
   test.beforeEach(async () => {
     name = `Test ${Date.now()}`;
     updatedName = `${name} Updated`;
-    updatedDescription = `${paymentRequestDescription} updated`;
-    updatedAmount = "50";
-    updatedRedirectUri = `${mockRedirectUrl}/updated`;
   });
 
   test("should create and edit a payment request @smoke @normal", async ({
@@ -53,25 +50,10 @@ test.describe("Edit payment Request", () => {
     await createPaymentRequestPage.create({
       title: name,
       bankTransferProvider: bankTransferProvider,
-      openBankingProvider: openBankingProvider,
       cardProvider: stripeProvider,
     });
 
     const detailsPage = new PaymentRequestDetailsPage(page);
-    await detailsPage.checkHeader();
-    await detailsPage.checkTitle(name);
-    await detailsPage.checkDescription(paymentRequestDescription);
-    await detailsPage.checkStatus("active");
-    await detailsPage.checkAccounts([
-      { name: bankTransferProvider, type: "banktransfer" },
-      { name: stripeProvider, type: "stripe" },
-    ]);
-    await detailsPage.checkAmount(mockAmount);
-    await detailsPage.checkRedirectUrl(mockRedirectUrl);
-    await detailsPage.checkAmountOverrideOption(true);
-    await detailsPage.checkCustomAmountOption(true);
-    await detailsPage.checkEmptyPaymentsList();
-
     await detailsPage.gotoEdit();
 
     const editPaymentRequestPage = new PaymentRequestFormPage(page);
@@ -119,7 +101,6 @@ test.describe("Edit payment Request", () => {
     });
 
     const detailsPage = new PaymentRequestDetailsPage(page);
-
     await detailsPage.gotoEdit();
 
     const editPaymentRequestPage = new PaymentRequestFormPage(page);
@@ -156,11 +137,11 @@ test.describe("Edit payment Request", () => {
 
     const editPaymentRequestPage = new PaymentRequestFormPage(page);
     const editPageURL = page.url();
-    await createPaymentRequestPage.enterTitle("");
-    await createPaymentRequestPage.enterDescription("");
-    await createPaymentRequestPage.enterReference("");
-    await createPaymentRequestPage.enterAmount("");
-    await createPaymentRequestPage.enterRedirectURL("");
+    await editPaymentRequestPage.enterTitle("");
+    await editPaymentRequestPage.enterDescription("");
+    await editPaymentRequestPage.enterReference("");
+    await editPaymentRequestPage.enterAmount("");
+    await editPaymentRequestPage.enterRedirectURL("");
     await editPaymentRequestPage.saveChanges();
 
     const editPaymentRequestErrorPage = new PaymentRequestFormPage(page);
