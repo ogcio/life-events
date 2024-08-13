@@ -59,12 +59,6 @@ export default async function users(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Composite([
             Type.Object({
-              organisationId: Type.Optional(
-                Type.String({
-                  description:
-                    "If set, the endpoint returns the users whom have an accepted relation with the organisation id",
-                }),
-              ),
               search: Type.Optional(
                 Type.String({
                   description:

@@ -4109,13 +4109,6 @@ paths:
         - schema:
             type: string
           in: query
-          name: organisationId
-          required: false
-          description: If set, the endpoint returns the users whom have an accepted
-            relation with the organisation id
-        - schema:
-            type: string
-          in: query
           name: search
           required: false
           description: If set, the endpoint searches for users whom contain this value in
