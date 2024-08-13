@@ -62,7 +62,7 @@ test.describe("Open Banking provider creation", () => {
 
   test("should show error creating open banking provider if name is missing @regression @normal", async () => {
     await description(
-      "This test checks that a validation error is shown when creating a new open banking provider is not created if name is missing.",
+      "This test checks that a validation error is shown when creating a new open banking provider if name is missing.",
     );
     await owner("OGCIO");
     await tags("Providers", "Open Banking");

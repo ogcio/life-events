@@ -28,7 +28,7 @@ test.describe("Payment Request with realex provider", () => {
   });
 
   test.beforeEach(async () => {
-    name = `Test ${Date.now()}`;
+    name = `Test realex ${Date.now()}`;
   });
 
   test("should create an inactive payment request with a realex provider @regression @normal", async ({
@@ -129,6 +129,7 @@ test.describe("Payment Request with realex provider", () => {
     const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
+    await previewPayPage.checkCustomAmountOptionNotVisible();
     await previewPayPage.checkPaymentMethodHeader();
     await previewPayPage.checkPaymentMethodVisible("card");
     await previewPayPage.checkButton();

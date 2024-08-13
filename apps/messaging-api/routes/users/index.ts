@@ -110,7 +110,7 @@ export default async function users(app: FastifyInstance) {
         pagination,
         importId: query.importId,
         transports: query.transports ? query.transports.trim().split(",") : [],
-        activeOnly: query.activeOnly,
+        activeOnly: parseActiveOnlyParam(query.activeOnly),
       };
       const recipientsResponse = await getUsers(params);
 
@@ -165,10 +165,7 @@ export default async function users(app: FastifyInstance) {
         pool: app.pg.pool,
         organisationId,
         userId,
-        activeOnly:
-          typeof request.query.activeOnly === "undefined"
-            ? true
-            : request.query.activeOnly,
+        activeOnly: parseActiveOnlyParam(request.query.activeOnly),
       });
 
       if (user.userProfileId) {
@@ -200,4 +197,7 @@ export default async function users(app: FastifyInstance) {
       return { data: user };
     },
   );
+
+  const parseActiveOnlyParam = (activeOnly: boolean | undefined): boolean =>
+    typeof activeOnly === "undefined" ? true : activeOnly;
 }

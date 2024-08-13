@@ -28,7 +28,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
   });
 
   test.beforeEach(async () => {
-    name = `Test ${Date.now()}`;
+    name = `Test banktransfer${Date.now()}`;
   });
 
   test("should create an inactive payment request with a manual bank transfer provider @regression @normal", async ({
@@ -139,6 +139,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
+    await previewPayPage.checkCustomAmountOptionNotVisible();
     await previewPayPage.checkPaymentMethodHeader();
     await previewPayPage.checkPaymentMethodVisible("banktransfer");
     await previewPayPage.checkButton();

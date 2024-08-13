@@ -92,13 +92,14 @@ export class PaymentRequestDetailsPage {
     }[],
   ) {
     await Promise.all(
-      providers.map(
-        async (provider) =>
-          await this.page
+      providers.map((provider) =>
+        expect(
+          this.page
             .locator("div")
             .filter({ hasText: providerTypeAccountLabelMap[provider.type] })
             .last()
             .getByText(provider.name),
+        ).toBeVisible(),
       ),
     );
   }
