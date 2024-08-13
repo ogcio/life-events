@@ -4,6 +4,11 @@ info:
   description: API for OGCIO Messaging Service
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas: {}
 paths:
   /api/v1/messages/:
@@ -5415,3 +5420,5 @@ paths:
                   - detail
                   - requestId
                   - name
+security:
+  - bearerAuth: []
