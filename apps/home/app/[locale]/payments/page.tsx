@@ -9,11 +9,18 @@ import interfaceCitizen from "../../../public/paymentsLandingPage/interfaceCitiz
 import interfacePublicServant from "../../../public/paymentsLandingPage/interfacePublicServant.png";
 import security from "../../../public/paymentsLandingPage/security.png";
 import { getLinks } from "../../../utils";
+import type { Metadata } from "next";
+import favicon from "../../../public/favicon.ico";
 
 type Props = {
   params: {
     locale: string;
   };
+};
+
+export const metadata: Metadata = {
+  title: "Payments",
+  icons: [{ rel: "icon", url: favicon.src }],
 };
 
 export default async (props: Props) => {
