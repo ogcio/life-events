@@ -407,6 +407,6 @@ test.describe("Payment Request with multiple providers", () => {
     await inactivePayPage.checkHeader();
     await inactivePayPage.checkDescription();
 
-    // TODO: check request is visible in list
+    // TODO: check request is visible in list - waiting for https://dev.azure.com/OGCIO-Digital-Services/Digital%20Services%20Programme/_boards/board/t/Payments/Stories?workitem=20445
   });
 });
