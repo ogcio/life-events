@@ -2,12 +2,12 @@ import { PaymentRequestFormPage } from "../objects/paymentRequests/PaymentReques
 import { test as base } from "./providersFixtures";
 
 type paymentRequestsFixtures = {
-  paymentRequestMultiple: string;
-  paymentRequestRealex: string;
+  paymentRequestWithMultipleProviders: string;
+  paymentRequestWithRealexProvider: string;
 };
 
 export const test = base.extend<paymentRequestsFixtures>({
-  paymentRequestMultiple: async (
+  paymentRequestWithMultipleProviders: async (
     { page, bankTransferProvider, openBankingProvider, stripeProvider },
     use,
   ) => {
@@ -24,7 +24,7 @@ export const test = base.extend<paymentRequestsFixtures>({
     await use(paymentRequestTitle);
   },
 
-  paymentRequestRealex: async ({ page, realexProvider }, use) => {
+  paymentRequestWithRealexProvider: async ({ page, realexProvider }, use) => {
     const paymentRequestTitle = `Test realex provider ${Date.now()}`;
     const paymentRequestCreatePage = new PaymentRequestFormPage(page);
     await paymentRequestCreatePage.goto();
