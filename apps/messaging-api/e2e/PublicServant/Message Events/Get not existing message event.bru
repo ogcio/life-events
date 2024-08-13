@@ -1,11 +1,11 @@
 meta {
-  name: Get providers without type
+  name: Get not existing message event
   type: http
   seq: 3
 }
 
 get {
-  url: {{baseUrl}}/api/v1/providers
+  url: {{baseUrl}}/api/v1/message-events/09569127-7cb2-4716-9783-0865a778a1b2
   body: none
   auth: bearer
 }
@@ -15,7 +15,6 @@ auth:bearer {
 }
 
 assert {
-  res.status: eq 422
+  res.status: eq 404
   res.body.requestId: isDefined
-  res.body.code: isDefined
 }
