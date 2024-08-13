@@ -1,5 +1,6 @@
-import { Page } from "@playwright/test";
+import { expect, Page } from "@playwright/test";
 import { test } from "../../fixtures/providersFixtures";
+import { test as prTest } from "../../fixtures/paymentRequestsFixtures";
 import {
   Severity,
   owner,
@@ -18,6 +19,29 @@ import {
 import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/PaymentRequestDetailsPage";
 import { InactivePayPage } from "../../objects/payments/InactivePayPage";
 import { PreviewPayPage } from "../../objects/payments/PreviewPayPage";
+
+prTest.describe("Testy test", () => {
+  let page: Page;
+
+  test.beforeAll(async ({ browser }) => {
+    page = await browser.newPage();
+  });
+
+  test("should testy test @regression @normal", async ({
+    paymentRequestMultiple,
+    context,
+  }) => {
+    await description("whatever");
+    await owner("OGCIO");
+    await tags("Payment Request", "Manual Bank Transfer");
+    await severity(Severity.NORMAL);
+
+    const paymentRequestsPage = new PaymentRequestsPage(page);
+    await paymentRequestsPage.goto();
+
+    await expect(page.getByText(paymentRequestMultiple)).toBeVisible();
+  });
+});
 
 test.describe("Payment Request with manual bank transfer provider", () => {
   let page: Page;

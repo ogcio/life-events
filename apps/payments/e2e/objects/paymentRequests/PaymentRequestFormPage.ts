@@ -4,7 +4,19 @@ import {
   paymentRequestValidationErrorTexts,
   paymentSetupUrl,
 } from "../../utils/constants";
+import {
+  mockAmount,
+  mockPaymentRequestReference,
+  mockRedirectUrl,
+  paymentRequestDescription,
+} from "../../utils/mocks";
 
+export type PaymentRequestProps = {
+  title: string;
+  cardProvider?: string;
+  openBankingProvider?: string;
+  bankTransferProvider?: string;
+};
 export class PaymentRequestFormPage {
   private readonly header: Locator;
   private readonly titleInput: Locator;
@@ -50,6 +62,31 @@ export class PaymentRequestFormPage {
 
   async goto() {
     await this.page.goto(`${paymentSetupUrl}/create`);
+  }
+
+  async create(props: PaymentRequestProps) {
+    await this.enterTitle(props.title);
+    await this.enterDescription(paymentRequestDescription);
+
+    if (props.bankTransferProvider) {
+      await this.selectManualBankTransferAccount(props.bankTransferProvider);
+    }
+
+    if (props.openBankingProvider) {
+      await this.selectOpenBankingAccount(props.openBankingProvider);
+    }
+
+    if (props.cardProvider) {
+      await this.selectCardAccount(props.cardProvider);
+    }
+
+    await this.enterReference(mockPaymentRequestReference);
+    await this.enterAmount(mockAmount);
+    await this.selectAllowAmountOverride();
+    await this.selectCustomAmount();
+    await this.enterRedirectURL(mockRedirectUrl);
+    await this.selectActiveStatus();
+    await this.saveChanges();
   }
 
   async checkHeading() {
