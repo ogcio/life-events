@@ -31,6 +31,7 @@ export class PaymentRequestFormPage {
   private readonly customAmountCheckbox: Locator;
   private readonly activeStatusRadioBtn: Locator;
   private readonly inactiveStatusRadioBtn: Locator;
+  private readonly statusError: Locator;
   private readonly saveButton: Locator;
 
   constructor(public readonly page: Page) {
@@ -57,6 +58,9 @@ export class PaymentRequestFormPage {
     this.redirectURLInput = this.page.locator('input[name="redirect-url"]');
     this.activeStatusRadioBtn = this.page.getByLabel("Active", { exact: true });
     this.inactiveStatusRadioBtn = this.page.getByLabel("Inactive");
+    this.statusError = this.page.getByText(
+      "Payment Request Status cannot be active if no providers are selected.",
+    );
     this.saveButton = this.page.getByRole("button", { name: "Save" });
   }
 
@@ -121,6 +125,10 @@ export class PaymentRequestFormPage {
     expect(this.referenceInput).toHaveValue(ref);
   }
 
+  async checkStatusError() {
+    await expect(this.statusError).toBeVisible();
+  }
+
   async enterTitle(title: string) {
     await this.titleInput.clear();
     await this.titleInput.fill(title);
@@ -135,12 +143,24 @@ export class PaymentRequestFormPage {
     await this.manualBankTransferSelect.selectOption(provider);
   }
 
+  async deselectManualBankTransferAccount() {
+    await this.manualBankTransferSelect.selectOption(null);
+  }
+
   async selectOpenBankingAccount(provider: string) {
     await this.openBankingSelect.selectOption(provider);
   }
 
+  async deselectOpenBankingAccount() {
+    await this.openBankingSelect.selectOption(null);
+  }
+
   async selectCardAccount(provider: string) {
     await this.cardSelect.selectOption(provider);
+  }
+
+  async deselectCardAccount() {
+    await this.cardSelect.selectOption(null);
   }
 
   async enterReference(value: string) {
