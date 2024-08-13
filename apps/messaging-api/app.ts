@@ -42,6 +42,20 @@ export async function build(opts?: FastifyServerOptions) {
         description: "API for OGCIO Messaging Service",
         version,
       },
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+          },
+        },
+      },
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
     },
   });
 
