@@ -1,0 +1,20 @@
+meta {
+  name: Get not existing user import
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users/09569127-7cb2-4716-9783-0865a778a1b2
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 404
+  res.body.requestId: isDefined
+}
