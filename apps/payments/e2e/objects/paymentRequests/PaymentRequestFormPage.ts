@@ -16,6 +16,7 @@ export type PaymentRequestProps = {
   cardProvider?: string;
   openBankingProvider?: string;
   bankTransferProvider?: string;
+  status?: "active" | "inactive";
 };
 export class PaymentRequestFormPage {
   private readonly header: Locator;
@@ -85,17 +86,15 @@ export class PaymentRequestFormPage {
     await this.selectAllowAmountOverride();
     await this.selectCustomAmount();
     await this.enterRedirectURL(mockRedirectUrl);
-    await this.selectActiveStatus();
+    (await props.status) === "inactive"
+      ? this.selectInactiveStatus()
+      : this.selectActiveStatus();
     await this.saveChanges();
   }
 
   async checkHeading() {
     await expect(this.header).toBeVisible();
   }
-
-  async checkActiveStatus() {}
-
-  async checkInactiveStatus() {}
 
   async checkTitle(title: string) {
     expect(this.titleInput).toHaveValue(title);
@@ -135,12 +134,24 @@ export class PaymentRequestFormPage {
     await this.manualBankTransferSelect.selectOption(provider);
   }
 
+  async deselectManualBankTransferAccount() {
+    await this.manualBankTransferSelect.selectOption(null);
+  }
+
   async selectOpenBankingAccount(provider: string) {
     await this.openBankingSelect.selectOption(provider);
   }
 
+  async deselectOpenBankingAccount() {
+    await this.openBankingSelect.selectOption(null);
+  }
+
   async selectCardAccount(provider: string) {
     await this.cardSelect.selectOption(provider);
+  }
+
+  async deselectCardAccount() {
+    await this.cardSelect.selectOption(null);
   }
 
   async enterReference(value: string) {
