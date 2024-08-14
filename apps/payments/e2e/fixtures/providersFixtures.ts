@@ -1,5 +1,5 @@
 import { ProvidersPage } from "../objects/providers/ProvidersPage";
-import { test as base } from "./test";
+import { test as base } from "./auth";
 
 type providersFixtures = {
   realexProvider: string;
