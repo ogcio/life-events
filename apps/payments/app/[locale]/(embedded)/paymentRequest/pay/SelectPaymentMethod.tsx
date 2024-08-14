@@ -86,15 +86,14 @@ export default function ({
             disabled={isPublicServant}
             className="govie-radios__input"
           />
-          <label
-            className="govie-label--s govie-radios__label"
-            htmlFor={`${paymentMethod}-${index}`}
-          >
-            {t(`payBy.${paymentMethod}.title`)}
+          <div className="govie-label--s govie-radios__label">
+            <label htmlFor={`${paymentMethod}-${index}`}>
+              {t(`payBy.${paymentMethod}.title`)}
+            </label>
             <p className="govie-body">
               {t(`payBy.${paymentMethod}.description`)}
             </p>
-          </label>
+          </div>
         </div>
       );
     });

@@ -18,14 +18,19 @@ export class PaymentMethodForm {
 
   async checkPaymentMethodVisible(providerType: PaymentMethod) {
     await expect(
-      this.page.getByText(paymentMethodCheckboxLabelMap[providerType]),
+      this.page.getByLabel(paymentMethodCheckboxLabelMap[providerType]),
     ).toBeVisible();
   }
 
   async checkPaymentMethodNotVisible(providerType: PaymentMethod) {
     await expect(
-      this.page.getByText(paymentMethodCheckboxLabelMap[providerType]),
+      this.page.getByLabel(paymentMethodCheckboxLabelMap[providerType]),
     ).not.toBeVisible();
+  }
+
+  async choosePaymentMethod(method: PaymentMethod) {
+    const option = this.page.getByLabel(paymentMethodCheckboxLabelMap[method]);
+    await option.check();
   }
 
   async checkButtonEnabled() {
@@ -36,5 +41,9 @@ export class PaymentMethodForm {
   async checkButtonDisabled() {
     await expect(this.confirmBtn).toBeVisible();
     await expect(this.confirmBtn).toBeDisabled();
+  }
+
+  async proceedToPayment() {
+    await this.confirmBtn.click();
   }
 }

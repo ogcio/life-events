@@ -50,5 +50,7 @@ test.describe("Transaction with manual bank transfer", () => {
     await payPage.paymentMethodForm.checkPaymentMethodVisible("openbanking");
     await payPage.paymentMethodForm.checkPaymentMethodVisible("card");
     await payPage.paymentMethodForm.checkButtonEnabled();
+    await payPage.paymentMethodForm.choosePaymentMethod("banktransfer");
+    await payPage.paymentMethodForm.proceedToPayment();
   });
 });
