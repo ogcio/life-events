@@ -331,6 +331,10 @@ export default async function routes(app: FastifyInstance) {
       } catch (err) {
         const err_ = err as { $metadata: { httpStatusCode: number } };
         if (err_.$metadata.httpStatusCode === 404) {
+          await updateFileMetadata(app, {
+            ...file,
+            deleted: true,
+          });
           throw new NotFoundError(FILE_DOWNLOAD, "File not found");
         } else {
           throw new ServerError(FILE_DOWNLOAD, "Internal server error", err);
@@ -366,40 +370,40 @@ export default async function routes(app: FastifyInstance) {
             //   ),
             // );
           });
+
           antivirusPassthrough.once("scan-complete", async (result) => {
             const { isInfected, viruses } = result;
 
+            let fileDeleted = false;
+
             if (isInfected) {
               const s3Config = app.s3Client;
-              let fileDeleted = false;
               try {
-                // await deleteObject(
-                //   s3Config.client,
-                //   s3Config.bucketName,
-                //   file.key,
-                // );
+                await deleteObject(
+                  s3Config.client,
+                  s3Config.bucketName,
+                  file.key,
+                );
                 fileDeleted = true;
               } catch (error) {
                 app.log.error(error);
               }
-              try {
-                // await updateFileMetadata(app, {
-                //   ...file,
-                //   lastScan: new Date(),
-                //   infected: true,
-                //   deleted: fileDeleted,
-                //   infectionDescription: viruses.join(","),
-                //   antivirusDbVersion,
-                // });
-              } catch (error) {
-                app.log.error(error);
-              }
-              // return;
+            }
 
+            try {
+              await updateFileMetadata(app, {
+                ...file,
+                lastScan: new Date(),
+                infected: isInfected,
+                deleted: fileDeleted,
+                infectionDescription: viruses.join(","),
+                antivirusDbVersion,
+              });
+            } catch (error) {
+              app.log.error(error);
+            }
+            if (isInfected) {
               return reply.raw.destroy();
-              // return reject(
-              //   new CustomError(FILE_DOWNLOAD, "File is infected", 400),
-              // );
             }
             resolve();
           });

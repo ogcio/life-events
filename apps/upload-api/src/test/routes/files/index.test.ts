@@ -32,10 +32,10 @@ t.test("files", async (t) => {
   let antivirusPassthrough: PassThrough;
   let passthroughStream: PassThrough & { truncated: boolean };
 
-  const uploadEventEmitter = new EventEmitter();
-  const s3SendEventEmitter = new EventEmitter();
-  const antivirusVersionEventEmitter = new EventEmitter();
-  const pgEventEmitter = new EventEmitter();
+  let uploadEventEmitter: EventEmitter;
+  let s3SendEventEmitter: EventEmitter;
+  let antivirusVersionEventEmitter: EventEmitter;
+  let pgEventEmitter: EventEmitter;
 
   // supply type param so that TS knows what it returns
   const { build } = await t.mockImport<typeof import("../../../app.js")>(
@@ -142,6 +142,10 @@ t.test("files", async (t) => {
   );
 
   t.beforeEach(async () => {
+    uploadEventEmitter = new EventEmitter();
+    s3SendEventEmitter = new EventEmitter();
+    antivirusVersionEventEmitter = new EventEmitter();
+    pgEventEmitter = new EventEmitter();
     app = await build();
 
     antivirusPassthrough = new PassThrough();
@@ -597,6 +601,22 @@ t.test("files", async (t) => {
       s3SendEventEmitter.emit("send-error");
       await nextTick();
     });
+
+    t.test("should throw not found when metadata is not present", async (t) => {
+      app
+        .inject({
+          method: "DELETE",
+          url: "/files/dummyfile.txt",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 404);
+          t.end();
+        });
+
+      await nextTick();
+      pgEventEmitter.emit("done", []);
+      await nextTick();
+    });
   });
 
   t.test("get", async (t) => {
@@ -618,7 +638,44 @@ t.test("files", async (t) => {
         $metadata: { httpStatusCode: 404 },
       });
       await nextTick();
+      pgEventEmitter.emit("done", []);
+      await nextTick();
     });
+
+    t.test("should return a 404 when file metadata is not found", async (t) => {
+      app
+        .inject({
+          method: "GET",
+          url: "/files/dummyfile.txt",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 404);
+          t.end();
+        });
+
+      await nextTick();
+      pgEventEmitter.emit("done", []);
+      await nextTick();
+    });
+
+    t.test(
+      "should return a 400 error when trying to get an infected file",
+      async (t) => {
+        app
+          .inject({
+            method: "GET",
+            url: "/files/dummyfile.txt",
+          })
+          .then((response) => {
+            t.equal(response.statusCode, 400);
+            t.end();
+          });
+
+        await nextTick();
+        pgEventEmitter.emit("done", [{ infected: true }]);
+        await nextTick();
+      },
+    );
 
     t.test("should return a 500 when an error happens in s3", async (t) => {
       app
@@ -690,7 +747,10 @@ t.test("files", async (t) => {
         await nextTick();
         antivirusPassthrough.emit("scan-complete", {
           isInfected: false,
+          viruses: [],
         });
+        await nextTick();
+        pgEventEmitter.emit("done", []);
         await nextTick();
       },
     );
@@ -727,6 +787,7 @@ t.test("files", async (t) => {
         await nextTick();
         antivirusPassthrough.emit("scan-complete", {
           isInfected: false,
+          viruses: [],
         });
         await nextTick();
       },
@@ -753,21 +814,119 @@ t.test("files", async (t) => {
         pgEventEmitter.emit("done", [
           { filename: "filename", mimetype: "text/plain", fileSize: 100 },
         ]);
+        await nextTick();
         const stream = new PassThrough();
         s3SendEventEmitter.emit("sendComplete", {
           Body: { transformToWebStream: () => stream },
         });
+        await nextTick();
         stream.end(Buffer.alloc(1));
+        await nextTick();
         antivirusVersionEventEmitter.emit("version", "");
         await nextTick();
         antivirusPassthrough.emit("scan-complete", {
           isInfected: true,
+          viruses: ["v1"],
         });
+        await nextTick();
         s3SendEventEmitter.emit("sendComplete");
         await nextTick();
         pgEventEmitter.emit("done", []);
         await nextTick();
       },
     );
+
+    t.test("should log the error if s3 deletion throws", async (t) => {
+      const logger = app.log.error;
+      const errorLog: string[] = [];
+      app.log.error = (...params: unknown[]) => {
+        const _error = params[0] as { message: string };
+        errorLog.push(_error.message);
+        logger(params);
+      };
+
+      app
+        .inject({
+          method: "GET",
+          url: "/files/file.txt",
+        })
+        .catch(() => {
+          const expectedError = errorLog.some((m) => m === "send-error");
+
+          t.equal(expectedError, true);
+          t.end();
+        });
+
+      await nextTick();
+      pgEventEmitter.emit("done", [
+        { filename: "filename", mimetype: "text/plain", fileSize: 100 },
+      ]);
+      await nextTick();
+      const stream = new PassThrough();
+      s3SendEventEmitter.emit("sendComplete", {
+        Body: { transformToWebStream: () => stream },
+      });
+      await nextTick();
+      stream.end(Buffer.alloc(1));
+      await nextTick();
+      antivirusVersionEventEmitter.emit("version", "");
+      await nextTick();
+      antivirusPassthrough.emit("scan-complete", {
+        isInfected: true,
+        viruses: ["v1"],
+      });
+      await nextTick();
+      s3SendEventEmitter.emit("send-error");
+      await nextTick();
+      pgEventEmitter.emit("done", []);
+      await nextTick();
+    });
+
+    t.test("should log the error if file metadata update fails", async (t) => {
+      const logger = app.log.error;
+      const errorLog: string[] = [];
+      app.log.error = (...params: unknown[]) => {
+        const _error = params[0] as { message: string };
+        errorLog.push(_error.message);
+        logger(params);
+      };
+
+      app
+        .inject({
+          method: "GET",
+          url: "/files/file.txt",
+        })
+        .catch(() => {
+          const expectedError = errorLog.some((m) => m === "dummy");
+
+          t.equal(expectedError, true);
+          t.end();
+        });
+
+      await nextTick();
+      pgEventEmitter.emit("done", [
+        { filename: "filename", mimetype: "text/plain", fileSize: 100 },
+      ]);
+
+      await nextTick();
+      const stream = new PassThrough();
+      s3SendEventEmitter.emit("sendComplete", {
+        Body: { transformToWebStream: () => stream },
+      });
+      await nextTick();
+      stream.end(Buffer.alloc(1));
+      await nextTick();
+      antivirusVersionEventEmitter.emit("version", "");
+      await nextTick();
+      antivirusPassthrough.emit("scan-complete", {
+        isInfected: true,
+        viruses: ["v1"],
+      });
+      await nextTick();
+      s3SendEventEmitter.emit("sendComplete");
+      await nextTick();
+      pgEventEmitter.emit("error", new Error("dummy"));
+      await nextTick();
+    });
   });
 });

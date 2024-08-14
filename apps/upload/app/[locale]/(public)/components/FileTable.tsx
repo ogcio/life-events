@@ -20,7 +20,7 @@ const TableRow = ({ file, deleteFile }: TableRowProps) => {
   return (
     <tr className="govie-table__row">
       <th className="govie-table__header" scope="row">
-        {!file.infected && (
+        {!file.infected && !file.deleted && (
           <a href={`/api/file/${file.id}`} target="_blank">
             {file.filename}
           </a>
