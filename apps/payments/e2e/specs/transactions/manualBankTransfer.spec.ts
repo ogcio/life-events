@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { test } from "../../fixtures/citizenPageFixtures";
+import { test as testWithTransaction } from "../../fixtures/transactionsFixtures";
 import {
   Severity,
   owner,
@@ -71,4 +72,18 @@ test.describe("Transaction with manual bank transfer", () => {
       citizenPage.getByRole("img", { name: "Google" }),
     ).toBeVisible();
   });
+});
+
+testWithTransaction.describe("foo", async () => {
+  testWithTransaction(
+    "bar",
+    async ({ manualBankTransferTransaction, citizenPage }) => {
+      await citizenPage.goto("/citizen/transactions");
+      await expect(
+        citizenPage.getByRole("heading", { name: "My payments" }),
+      ).toBeVisible();
+      const { referenceCode, date } = manualBankTransferTransaction;
+      await expect(citizenPage.getByText(date)).toBeVisible();
+    },
+  );
 });
