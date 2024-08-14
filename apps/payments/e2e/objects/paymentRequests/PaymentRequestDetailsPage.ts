@@ -142,6 +142,30 @@ export class PaymentRequestDetailsPage {
     await this.deleteButton.click();
   }
 
+  async confirmDelete() {
+    await expect(
+      this.page.getByRole("heading", { name: "Delete Payment Request" }),
+    ).toBeVisible();
+    await expect(
+      this.page.getByText(
+        "Are you sure you want to delete this payment request?",
+      ),
+    ).toBeVisible();
+    await expect(
+      this.page.getByRole("button", { name: "Cancel" }),
+    ).toBeVisible();
+    const deleteButtonInModal = await this.page
+      .locator("form")
+      .filter({ hasText: "Delete Payment Request" })
+      .getByRole("button", { name: "Delete" });
+    await expect(deleteButtonInModal).toBeVisible();
+    await deleteButtonInModal.click();
+  }
+
+  async checkDeleteDisabled() {
+    await expect(this.deleteButton).toBeDisabled();
+  }
+
   async getPaymentLink() {
     await expect(this.paymentLinkLabel).toBeVisible();
     return (await this.paymentLink.textContent()) ?? "";

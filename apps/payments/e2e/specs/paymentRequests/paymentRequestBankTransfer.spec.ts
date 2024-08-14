@@ -142,6 +142,8 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await previewPayPage.checkCustomAmountOptionNotVisible();
     await previewPayPage.checkPaymentMethodHeader();
     await previewPayPage.checkPaymentMethodVisible("banktransfer");
+    await previewPayPage.checkPaymentMethodNotVisible("openbanking");
+    await previewPayPage.checkPaymentMethodNotVisible("card");
     await previewPayPage.checkButton();
 
     await paymentRequestsPage.goto();
