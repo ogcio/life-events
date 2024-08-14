@@ -141,9 +141,11 @@ test.describe("Payment Request with open banking provider", () => {
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
     await previewPayPage.customAmountForm.checkCustomAmountOptionNotVisible();
-    await previewPayPage.checkPaymentMethodHeader();
-    await previewPayPage.checkPaymentMethodVisible("openbanking");
-    await previewPayPage.checkButton();
+    await previewPayPage.paymentMethodForm.checkPaymentMethodHeader();
+    await previewPayPage.paymentMethodForm.checkPaymentMethodVisible(
+      "openbanking",
+    );
+    await previewPayPage.paymentMethodForm.checkButtonDisabled();
     await newPage.close();
 
     await paymentRequestsPage.goto();

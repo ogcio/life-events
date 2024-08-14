@@ -16,7 +16,7 @@ test.describe("Edit payment Request", () => {
   let name: string;
   let updatedName: string;
   const updatedDescription = `${paymentRequestDescription} updated`;
-  const updatedAmount = "50";
+  const updatedAmount = "50.00";
   const updatedRedirectUri = `${mockRedirectUrl}/updated`;
 
   test.beforeAll(async ({ browser }) => {

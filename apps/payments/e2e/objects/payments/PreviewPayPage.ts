@@ -1,14 +1,13 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import { PaymentMethod, paymentMethodCheckboxLabelMap } from "../../utils";
 import { CustomAmountForm } from "../components/CustomAmountForm";
+import { PaymentMethodForm } from "../components/PaymentMethodsForm";
 
 export class PreviewPayPage {
   private readonly previewBanner: Locator;
   private readonly header: Locator;
   private readonly totalText: (amount: string) => Locator;
-  private readonly paymentMethodHeader: Locator;
   public readonly customAmountForm: CustomAmountForm;
-  private readonly confirmBtn: Locator;
+  public readonly paymentMethodForm: PaymentMethodForm;
 
   constructor(public readonly page: Page) {
     this.previewBanner = page.getByText(
@@ -19,11 +18,8 @@ export class PreviewPayPage {
       page.getByRole("heading", {
         name: `Total to pay: €${amount}`,
       });
-    this.paymentMethodHeader = page.getByRole("heading", {
-      name: "Choose payment method",
-    });
     this.customAmountForm = new CustomAmountForm(page);
-    this.confirmBtn = page.getByRole("button", { name: "Confirm method" });
+    this.paymentMethodForm = new PaymentMethodForm(page);
   }
 
   async checkHeader() {
@@ -35,26 +31,5 @@ export class PreviewPayPage {
 
   async checkAmount(amount: string) {
     await expect(this.totalText(amount)).toBeVisible();
-  }
-
-  async checkPaymentMethodHeader() {
-    await expect(this.paymentMethodHeader).toBeVisible();
-  }
-
-  async checkPaymentMethodVisible(providerType: PaymentMethod) {
-    await expect(
-      this.page.getByText(paymentMethodCheckboxLabelMap[providerType]),
-    ).toBeVisible();
-  }
-
-  async checkPaymentMethodNotVisible(providerType: PaymentMethod) {
-    await expect(
-      this.page.getByText(paymentMethodCheckboxLabelMap[providerType]),
-    ).not.toBeVisible();
-  }
-
-  async checkButton() {
-    await expect(this.confirmBtn).toBeVisible();
-    await expect(this.confirmBtn).toBeDisabled();
   }
 }

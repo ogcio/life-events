@@ -131,9 +131,9 @@ test.describe("Payment Request with stripe provider", () => {
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
     await previewPayPage.customAmountForm.checkCustomAmountOptionNotVisible();
-    await previewPayPage.checkPaymentMethodHeader();
-    await previewPayPage.checkPaymentMethodVisible("card");
-    await previewPayPage.checkButton();
+    await previewPayPage.paymentMethodForm.checkPaymentMethodHeader();
+    await previewPayPage.paymentMethodForm.checkPaymentMethodVisible("card");
+    await previewPayPage.paymentMethodForm.checkButtonDisabled();
     await newPage.close();
 
     await paymentRequestsPage.goto();

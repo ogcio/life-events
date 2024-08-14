@@ -161,11 +161,15 @@ test.describe("Payment Request with multiple providers", () => {
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
     await previewPayPage.customAmountForm.checkCustomAmountOptionVisible();
-    await previewPayPage.checkPaymentMethodHeader();
-    await previewPayPage.checkPaymentMethodVisible("banktransfer");
-    await previewPayPage.checkPaymentMethodVisible("openbanking");
-    await previewPayPage.checkPaymentMethodVisible("card");
-    await previewPayPage.checkButton();
+    await previewPayPage.paymentMethodForm.checkPaymentMethodHeader();
+    await previewPayPage.paymentMethodForm.checkPaymentMethodVisible(
+      "banktransfer",
+    );
+    await previewPayPage.paymentMethodForm.checkPaymentMethodVisible(
+      "openbanking",
+    );
+    await previewPayPage.paymentMethodForm.checkPaymentMethodVisible("card");
+    await previewPayPage.paymentMethodForm.checkButtonDisabled();
     await newPage.close();
 
     await paymentRequestsPage.goto();
