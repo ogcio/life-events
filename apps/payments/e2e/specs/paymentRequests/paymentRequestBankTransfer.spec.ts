@@ -145,6 +145,10 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await previewPayPage.paymentMethodForm.checkPaymentMethodVisible(
       "banktransfer",
     );
+    await previewPayPage.paymentMethodForm.checkPaymentMethodNotVisible(
+      "openbanking",
+    );
+    await previewPayPage.paymentMethodForm.checkPaymentMethodNotVisible("card");
     await previewPayPage.paymentMethodForm.checkButtonDisabled();
     await newPage.close();
 
