@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { expect, Page } from "@playwright/test";
 import { test } from "../../fixtures/citizenPagesFixtures";
 import {
   Severity,
@@ -9,21 +9,17 @@ import {
 } from "allure-js-commons";
 import { PaymentRequestsPage } from "../../objects/paymentRequests/PaymentRequestsListPage";
 import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/PaymentRequestDetailsPage";
-import { mockAmount } from "../../utils/mocks";
+import {
+  mockAccountHolderName,
+  mockAmount,
+  mockIban,
+  mockRedirectUrl,
+} from "../../utils/mocks";
+import { ManualBankTransferTransactionPage } from "../../objects/payments/ManualBankTransferTransactionPage";
 
 test.describe("Transaction with manual bank transfer", () => {
-  let page: Page;
-  let name: string;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
-
-  test.beforeEach(async () => {
-    name = `Test multiple ${Date.now()}`;
-  });
-
   test("should initiate a payment with a manual bank transfer provider @smoke @blocker", async ({
+    browser,
     paymentRequestWithMultipleProviders,
     payPage,
   }) => {
@@ -34,13 +30,15 @@ test.describe("Transaction with manual bank transfer", () => {
     await tags("Transaction", "Manual Bank Transfer");
     await severity(Severity.BLOCKER);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const publicServantPage = await browser.newPage();
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(paymentRequestWithMultipleProviders);
 
-    const detailsPage = new PaymentRequestDetailsPage(page);
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     const paymentLink = await detailsPage.getPaymentLink();
 
+    const citizenPage = payPage.page;
     await payPage.goto(paymentLink);
     await payPage.checkHeader();
     await payPage.checkAmount(mockAmount);
@@ -52,5 +50,24 @@ test.describe("Transaction with manual bank transfer", () => {
     await payPage.paymentMethodForm.checkButtonEnabled();
     await payPage.paymentMethodForm.choosePaymentMethod("banktransfer");
     await payPage.paymentMethodForm.proceedToPayment();
+
+    const manualBankTransferTransactionPage =
+      new ManualBankTransferTransactionPage(citizenPage);
+    await manualBankTransferTransactionPage.checkHeader();
+    await manualBankTransferTransactionPage.checkTitle(
+      paymentRequestWithMultipleProviders,
+    );
+    await manualBankTransferTransactionPage.checkTotal(mockAmount);
+    await manualBankTransferTransactionPage.checkAccountName(
+      mockAccountHolderName,
+    );
+    await manualBankTransferTransactionPage.checkIban(mockIban);
+    await manualBankTransferTransactionPage.checkReferenceCode();
+    await manualBankTransferTransactionPage.confirmPayment();
+
+    await expect(citizenPage).toHaveURL(mockRedirectUrl);
+    await expect(
+      citizenPage.getByRole("img", { name: "Google" }),
+    ).toBeVisible();
   });
 });
