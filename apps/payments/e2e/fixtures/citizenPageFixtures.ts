@@ -1,9 +1,7 @@
 import { Page } from "@playwright/test";
-import { PayPage } from "../objects/payments/PayPage";
 import { test as base } from "./paymentRequestsFixtures";
 
 type citizenPageFixtures = {
-  payPage: PayPage;
   citizenPage: Page;
 };
 
