@@ -18,6 +18,10 @@ export class PayPage {
     this.paymentMethodForm = new PaymentMethodForm(page);
   }
 
+  async goto(link: string) {
+    await this.page.goto(link);
+  }
+
   async checkHeader() {
     await expect(this.header).toBeVisible();
   }
