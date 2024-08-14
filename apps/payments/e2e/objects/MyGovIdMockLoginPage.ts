@@ -35,4 +35,12 @@ export class MyGovIdMockLoginPage {
     });
     await expect(heading).toBeVisible();
   }
+
+  async expectCitizenPaymentsPage() {
+    const heading = await this.page.getByRole("heading", {
+      name: "My Payments",
+      exact: true,
+    });
+    await expect(heading).toBeVisible();
+  }
 }

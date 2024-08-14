@@ -87,7 +87,7 @@ export const test = baseTest.extend<
       await loginPage.enterPassword(password);
       await loginPage.submitLogin(myGovIdMockSettings.citizen);
 
-      await loginPage.expectPaymentSetupPage();
+      await loginPage.expectCitizenPaymentsPage();
 
       await page.context().storageState({ path: fileName });
 
