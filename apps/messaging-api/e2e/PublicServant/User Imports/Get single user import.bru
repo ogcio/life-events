@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 vars:post-response {
-  usersData: res.body.data.usersData
+  usersData: res.body.data ? res.body.data.usersData : undefined
 }
 
 assert {

@@ -19,7 +19,7 @@ auth:bearer {
 }
 
 vars:post-response {
-  activeUserId: res.body.data[0].userId
+  activeUserId: res.body.data && res.body.data[0] ?  res.body.data[0].userId : undefined
 }
 
 assert {

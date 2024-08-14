@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 vars:post-response {
-  messageEventId: res.body.data[0].eventId
+  messageEventId: res.body.data && res.body.data[0] ?  res.body.data[0].eventId : undefined
 }
 
 assert {

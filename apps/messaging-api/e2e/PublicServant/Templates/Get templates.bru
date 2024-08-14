@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 vars:post-response {
-  templateId: res.body.data[0].id
+  templateId: res.body.data && res.body.data[0] ?  res.body.data[0].id : undefined
 }
 
 assert {
