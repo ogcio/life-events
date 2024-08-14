@@ -1,13 +1,13 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { PaymentMethod, paymentMethodCheckboxLabelMap } from "../../utils";
+import { CustomAmountForm } from "../components/CustomAmountForm";
 
 export class PreviewPayPage {
   private readonly previewBanner: Locator;
   private readonly header: Locator;
   private readonly totalText: (amount: string) => Locator;
   private readonly paymentMethodHeader: Locator;
-  private readonly customAmountInput: Locator;
-  private readonly changeAmountBtn: Locator;
+  public readonly customAmountForm: CustomAmountForm;
   private readonly confirmBtn: Locator;
 
   constructor(public readonly page: Page) {
@@ -22,8 +22,7 @@ export class PreviewPayPage {
     this.paymentMethodHeader = page.getByRole("heading", {
       name: "Choose payment method",
     });
-    this.customAmountInput = page.getByLabel("Pay a custom amount");
-    this.changeAmountBtn = page.getByRole("button", { name: "Change amount" });
+    this.customAmountForm = new CustomAmountForm(page);
     this.confirmBtn = page.getByRole("button", { name: "Confirm method" });
   }
 
@@ -52,17 +51,6 @@ export class PreviewPayPage {
     await expect(
       this.page.getByText(paymentMethodCheckboxLabelMap[providerType]),
     ).not.toBeVisible();
-  }
-
-  async checkCustomAmountOptionVisible() {
-    await expect(this.customAmountInput).toBeVisible();
-    await expect(this.changeAmountBtn).toBeVisible();
-    await expect(this.changeAmountBtn).toBeEnabled();
-  }
-
-  async checkCustomAmountOptionNotVisible() {
-    await expect(this.customAmountInput).not.toBeVisible();
-    await expect(this.changeAmountBtn).not.toBeVisible();
   }
 
   async checkButton() {

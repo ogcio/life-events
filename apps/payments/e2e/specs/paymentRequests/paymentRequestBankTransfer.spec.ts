@@ -140,7 +140,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
-    await previewPayPage.checkCustomAmountOptionNotVisible();
+    await previewPayPage.customAmountForm.checkCustomAmountOptionNotVisible();
     await previewPayPage.checkPaymentMethodHeader();
     await previewPayPage.checkPaymentMethodVisible("banktransfer");
     await previewPayPage.checkButton();

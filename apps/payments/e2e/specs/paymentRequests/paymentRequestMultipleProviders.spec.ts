@@ -160,7 +160,7 @@ test.describe("Payment Request with multiple providers", () => {
     const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
-    await previewPayPage.checkCustomAmountOptionVisible();
+    await previewPayPage.customAmountForm.checkCustomAmountOptionVisible();
     await previewPayPage.checkPaymentMethodHeader();
     await previewPayPage.checkPaymentMethodVisible("banktransfer");
     await previewPayPage.checkPaymentMethodVisible("openbanking");
