@@ -193,5 +193,5 @@ export default async function users(app: FastifyInstance) {
   );
 
   const parseActiveOnlyParam = (activeOnly: boolean | undefined): boolean =>
-   activeOnly ?? true;
+    activeOnly ?? true;
 }
