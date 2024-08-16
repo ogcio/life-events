@@ -25,18 +25,13 @@ test.describe("Payments landing page", () => {
 
   const testLandingPage = async (landingPage: LandingPage) => {
     await landingPage.checkFeedbackLink(feedbackLink);
-    await landingPage.checkHeaderCTA(learnMoreForm);
-    await landingPage.checkFooterCTA(learnMoreForm);
+    await landingPage.checkCTA(learnMoreForm);
 
     await landingPage.checkHeader();
     await landingPage.checkHeaderBlock();
 
     await landingPage.checkBenefitsHeader();
-    await landingPage.checkBenefitsBlock1Content();
-    await landingPage.checkBenefitsBlock2Content();
-    await landingPage.checkBenefitsBlock3Content();
-    await landingPage.checkBenefitsBlock4Content();
-    await landingPage.checkBenefitsBlock5Content();
+    await landingPage.checkBenefitsContent();
 
     await landingPage.checkGetStartedBlockContent();
   };
