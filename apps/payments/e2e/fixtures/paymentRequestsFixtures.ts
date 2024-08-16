@@ -3,6 +3,7 @@ import { test as base } from "./providersFixtures";
 
 type paymentRequestsFixtures = {
   paymentRequestWithMultipleProviders: string;
+  paymentRequestWithBankTransferProviders: string;
   paymentRequestWithRealexProvider: string;
 };
 
@@ -19,6 +20,21 @@ export const test = base.extend<paymentRequestsFixtures>({
       bankTransferProvider: bankTransferProvider,
       openBankingProvider: openBankingProvider,
       cardProvider: stripeProvider,
+    });
+
+    await use(paymentRequestTitle);
+  },
+
+  paymentRequestWithBankTransferProviders: async (
+    { page, bankTransferProvider },
+    use,
+  ) => {
+    const paymentRequestTitle = `Test multiple providers ${Date.now()}`;
+    const paymentRequestCreatePage = new PaymentRequestFormPage(page);
+    await paymentRequestCreatePage.goto();
+    await paymentRequestCreatePage.create({
+      title: paymentRequestTitle,
+      bankTransferProvider: bankTransferProvider,
     });
 
     await use(paymentRequestTitle);

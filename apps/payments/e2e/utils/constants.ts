@@ -6,6 +6,7 @@ export const myGovIdMockSettings = {
   publicServantEmailDomain: "gov.ie",
   publicServantUser: "Tony Stark",
   citizen: "Peter Parker",
+  citizen2: "Bruce Wayne",
   citizenEmailDomain: "mail.ie",
 };
 
