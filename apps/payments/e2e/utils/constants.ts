@@ -5,7 +5,9 @@ export const password = "123";
 export const myGovIdMockSettings = {
   publicServantEmailDomain: "gov.ie",
   publicServantUser: "Tony Stark",
+  publicServantEmail: "tony.stark@gov.ie",
   citizen: "Peter Parker",
+  citizenEmail: "peter.parker@mail.ie",
   citizen2: "Bruce Wayne",
   citizenEmailDomain: "mail.ie",
 };

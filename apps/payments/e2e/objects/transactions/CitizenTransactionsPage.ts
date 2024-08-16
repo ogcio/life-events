@@ -1,4 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
+import { ManualBankTransferTransaction } from "../../fixtures/transactionsFixtures";
 
 export class CitizenTransactionsPage {
   private readonly header: Locator;
@@ -20,30 +21,22 @@ export class CitizenTransactionsPage {
     await this.page.goto(`citizen/transactions`);
   }
 
-  async checkTransaction(
-    paymentRequestTitle: string,
-    amount: string,
-    date: string,
-  ) {
+  async checkTransaction(transaction: ManualBankTransferTransaction) {
     const transactionRow = await this.page
       .locator("tr")
-      .filter({ hasText: paymentRequestTitle })
-      .filter({ hasText: amount })
-      .filter({ hasText: date })
+      .filter({ hasText: transaction.paymentRequestTitle })
+      .filter({ hasText: transaction.amount })
+      .filter({ hasText: transaction.date })
       .first();
     await expect(transactionRow).toBeVisible();
   }
 
-  async checkTransactionIsMissing(
-    paymentRequestTitle: string,
-    amount: string,
-    date: string,
-  ) {
+  async checkTransactionIsMissing(transaction: ManualBankTransferTransaction) {
     const transactionRow = await this.page
       .locator("tr")
-      .filter({ hasText: paymentRequestTitle })
-      .filter({ hasText: amount })
-      .filter({ hasText: date })
+      .filter({ hasText: transaction.paymentRequestTitle })
+      .filter({ hasText: transaction.amount })
+      .filter({ hasText: transaction.date })
       .first();
     await expect(transactionRow).not.toBeVisible();
   }

@@ -5,13 +5,16 @@ import { PayPage } from "../objects/payments/PayPage";
 import { ManualBankTransferTransactionPage } from "../objects/payments/ManualBankTransferTransactionPage";
 import dayjs from "dayjs";
 
+export type ManualBankTransferTransaction = {
+  referenceCode: string;
+  paymentRequestTitle: string;
+  amount: string;
+  lastUpdated: string;
+  date: string;
+};
+
 type transactionFixtures = {
-  manualBankTransferTransaction: {
-    referenceCode: string;
-    paymentRequestTitle: string;
-    amount: string;
-    date: string;
-  };
+  manualBankTransferTransaction: ManualBankTransferTransaction;
 };
 
 export const test = base.extend<transactionFixtures>({
@@ -49,6 +52,7 @@ export const test = base.extend<transactionFixtures>({
       referenceCode,
       paymentRequestTitle,
       amount,
+      lastUpdated: dayjs(new Date()).format("DD/MM/YYYY - HH:mm:ss"),
       date: dayjs(new Date()).format("DD/MM/YYYY - HH:mm"),
     });
   },
