@@ -1,6 +1,9 @@
 export const paymentSetupUrl = "/en/paymentSetup";
 export const paymentRequestUrl = `${paymentSetupUrl}/requests`;
 export const providersUrl = `${paymentSetupUrl}/providers`;
+export const landingPageUrl = "/en/info";
+export const landingPage2Url = "http://localhost:3004/en/payments";
+
 export const password = "123";
 export const myGovIdMockSettings = {
   publicServantEmailDomain: "gov.ie",

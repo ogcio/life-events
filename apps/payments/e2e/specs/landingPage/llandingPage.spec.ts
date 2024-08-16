@@ -1,0 +1,79 @@
+import { Page } from "@playwright/test";
+import { test } from "@playwright/test";
+
+import {
+  Severity,
+  owner,
+  tags,
+  severity,
+  description,
+} from "allure-js-commons";
+import { LandingPage } from "../../objects/LandingPage";
+import { landingPage2Url } from "../../utils/constants";
+
+test.describe("Payments landing page", () => {
+  let page: Page;
+
+  const learnMoreForm =
+    "https://www.forms.uat.gov.ie/en/664b6de45f7c9800231daf22";
+  const feedbackLink =
+    "https://www.forms.uat.gov.ie/en/664c61ba5f7c9800231db294";
+
+  test.beforeAll(async ({ browser }) => {
+    page = await browser.newPage();
+  });
+
+  test("should test the Payments landing page @smoke @normal", async () => {
+    await description("This test checks the Payments landing page's content");
+    await owner("OGCIO");
+    await tags("Landing page");
+    await severity(Severity.NORMAL);
+
+    const landingPage = new LandingPage(page);
+    await landingPage.goto();
+
+    await landingPage.checkFeedbackLink(feedbackLink);
+    await landingPage.checkHeaderCTA(learnMoreForm);
+    await landingPage.checkFooterCTA(learnMoreForm);
+
+    await landingPage.checkHeader();
+    await landingPage.checkHeaderBlock();
+
+    await landingPage.checkBenefitsHeader();
+    await landingPage.checkBenefitsBlock1Content();
+    await landingPage.checkBenefitsBlock2Content();
+    await landingPage.checkBenefitsBlock3Content();
+    await landingPage.checkBenefitsBlock4Content();
+    await landingPage.checkBenefitsBlock5Content();
+
+    await landingPage.checkGetStartedBlockContent();
+  });
+
+  test("should test the Payments landing page 2 @smoke @normal", async () => {
+    await description(
+      "This test checks the second Payments landing page's content",
+    );
+    await owner("OGCIO");
+    await tags("Landing page");
+    await severity(Severity.NORMAL);
+
+    const landingPage = new LandingPage(page);
+    await landingPage.goto(landingPage2Url);
+
+    await landingPage.checkFeedbackLink(feedbackLink);
+    await landingPage.checkHeaderCTA(learnMoreForm);
+    await landingPage.checkFooterCTA(learnMoreForm);
+
+    await landingPage.checkHeader();
+    await landingPage.checkHeaderBlock();
+
+    await landingPage.checkBenefitsHeader();
+    await landingPage.checkBenefitsBlock1Content();
+    await landingPage.checkBenefitsBlock2Content();
+    await landingPage.checkBenefitsBlock3Content();
+    await landingPage.checkBenefitsBlock4Content();
+    await landingPage.checkBenefitsBlock5Content();
+
+    await landingPage.checkGetStartedBlockContent();
+  });
+});

@@ -8,11 +8,7 @@ import {
   description,
 } from "allure-js-commons";
 import { PaymentRequestFormPage } from "../../objects/paymentRequests/PaymentRequestFormPage";
-import {
-  mockAmount,
-  mockRedirectUrl,
-  paymentRequestDescription,
-} from "../../utils/mocks";
+import { mockRedirectUrl, paymentRequestDescription } from "../../utils/mocks";
 import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/PaymentRequestDetailsPage";
 
 test.describe("Edit payment Request", () => {
