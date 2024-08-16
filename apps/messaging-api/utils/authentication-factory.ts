@@ -22,7 +22,7 @@ const getOrganizationProfileToken = (organizationId: string): Promise<string> =>
 const getCitizenProfileToken = (): Promise<string> =>
   getAccessToken({
     ...getBaseProfileConfig(),
-    scopes: ["profile:user.self:read"],
+    scopes: ["profile:user:read"],
     resource: process.env.PROFILE_BACKEND_URL?.endsWith("/")
       ? process.env.PROFILE_BACKEND_URL
       : `${process.env.PROFILE_BACKEND_URL}/`,

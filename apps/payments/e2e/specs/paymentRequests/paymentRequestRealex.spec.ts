@@ -132,6 +132,8 @@ test.describe("Payment Request with realex provider", () => {
     await previewPayPage.checkCustomAmountOptionNotVisible();
     await previewPayPage.checkPaymentMethodHeader();
     await previewPayPage.checkPaymentMethodVisible("card");
+    await previewPayPage.checkPaymentMethodNotVisible("openbanking");
+    await previewPayPage.checkPaymentMethodNotVisible("banktransfer");
     await previewPayPage.checkButton();
 
     await paymentRequestsPage.goto();

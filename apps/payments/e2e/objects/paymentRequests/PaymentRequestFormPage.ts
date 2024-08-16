@@ -4,7 +4,20 @@ import {
   paymentRequestValidationErrorTexts,
   paymentSetupUrl,
 } from "../../utils/constants";
+import {
+  mockAmount,
+  mockPaymentRequestReference,
+  mockRedirectUrl,
+  paymentRequestDescription,
+} from "../../utils/mocks";
 
+export type PaymentRequestProps = {
+  title: string;
+  cardProvider?: string;
+  openBankingProvider?: string;
+  bankTransferProvider?: string;
+  status?: "active" | "inactive";
+};
 export class PaymentRequestFormPage {
   private readonly header: Locator;
   private readonly titleInput: Locator;
@@ -52,13 +65,36 @@ export class PaymentRequestFormPage {
     await this.page.goto(`${paymentSetupUrl}/create`);
   }
 
+  async create(props: PaymentRequestProps) {
+    await this.enterTitle(props.title);
+    await this.enterDescription(paymentRequestDescription);
+
+    if (props.bankTransferProvider) {
+      await this.selectManualBankTransferAccount(props.bankTransferProvider);
+    }
+
+    if (props.openBankingProvider) {
+      await this.selectOpenBankingAccount(props.openBankingProvider);
+    }
+
+    if (props.cardProvider) {
+      await this.selectCardAccount(props.cardProvider);
+    }
+
+    await this.enterReference(mockPaymentRequestReference);
+    await this.enterAmount(mockAmount);
+    await this.selectAllowAmountOverride();
+    await this.selectCustomAmount();
+    await this.enterRedirectURL(mockRedirectUrl);
+    (await props.status) === "inactive"
+      ? this.selectInactiveStatus()
+      : this.selectActiveStatus();
+    await this.saveChanges();
+  }
+
   async checkHeading() {
     await expect(this.header).toBeVisible();
   }
-
-  async checkActiveStatus() {}
-
-  async checkInactiveStatus() {}
 
   async checkTitle(title: string) {
     expect(this.titleInput).toHaveValue(title);
@@ -98,12 +134,24 @@ export class PaymentRequestFormPage {
     await this.manualBankTransferSelect.selectOption(provider);
   }
 
+  async deselectManualBankTransferAccount() {
+    await this.manualBankTransferSelect.selectOption(null);
+  }
+
   async selectOpenBankingAccount(provider: string) {
     await this.openBankingSelect.selectOption(provider);
   }
 
+  async deselectOpenBankingAccount() {
+    await this.openBankingSelect.selectOption(null);
+  }
+
   async selectCardAccount(provider: string) {
     await this.cardSelect.selectOption(provider);
+  }
+
+  async deselectCardAccount() {
+    await this.cardSelect.selectOption(null);
   }
 
   async enterReference(value: string) {
