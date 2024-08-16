@@ -23,15 +23,7 @@ test.describe("Payments landing page", () => {
     page = await browser.newPage();
   });
 
-  test("should test the Payments landing page @smoke @normal", async () => {
-    await description("This test checks the Payments landing page's content");
-    await owner("OGCIO");
-    await tags("Landing page");
-    await severity(Severity.NORMAL);
-
-    const landingPage = new LandingPage(page);
-    await landingPage.goto();
-
+  const testLandingPage = async (landingPage: LandingPage) => {
     await landingPage.checkFeedbackLink(feedbackLink);
     await landingPage.checkHeaderCTA(learnMoreForm);
     await landingPage.checkFooterCTA(learnMoreForm);
@@ -47,6 +39,18 @@ test.describe("Payments landing page", () => {
     await landingPage.checkBenefitsBlock5Content();
 
     await landingPage.checkGetStartedBlockContent();
+  };
+
+  test("should test the Payments landing page @smoke @normal", async () => {
+    await description("This test checks the Payments landing page's content");
+    await owner("OGCIO");
+    await tags("Landing page");
+    await severity(Severity.NORMAL);
+
+    const landingPage = new LandingPage(page);
+    await landingPage.goto();
+
+    await testLandingPage(landingPage);
   });
 
   test("should test the Payments landing page 2 @smoke @normal", async () => {
@@ -60,20 +64,6 @@ test.describe("Payments landing page", () => {
     const landingPage = new LandingPage(page);
     await landingPage.goto(landingPage2Url);
 
-    await landingPage.checkFeedbackLink(feedbackLink);
-    await landingPage.checkHeaderCTA(learnMoreForm);
-    await landingPage.checkFooterCTA(learnMoreForm);
-
-    await landingPage.checkHeader();
-    await landingPage.checkHeaderBlock();
-
-    await landingPage.checkBenefitsHeader();
-    await landingPage.checkBenefitsBlock1Content();
-    await landingPage.checkBenefitsBlock2Content();
-    await landingPage.checkBenefitsBlock3Content();
-    await landingPage.checkBenefitsBlock4Content();
-    await landingPage.checkBenefitsBlock5Content();
-
-    await landingPage.checkGetStartedBlockContent();
+    await testLandingPage(landingPage);
   });
 });
