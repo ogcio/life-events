@@ -1,4 +1,4 @@
-import { type Page, type Locator } from "@playwright/test";
+import { type Page, type Locator, expect } from "@playwright/test";
 import { CountrySelection } from "./CountrySelection";
 import { BankSelection } from "./BankSelection";
 import { ReviewPayment } from "./ReviewPayment";
@@ -21,7 +21,7 @@ export class TrueLayerDialogPage {
       .getByRole("button", { name: "Cancel payment" });
     this.loader = page
       .frameLocator(this.frame)
-      .getByRole("heading", { name: "Connecting..." });
+      .getByRole("heading", { name: "Connecting" });
   }
 
   async pay() {
@@ -30,7 +30,9 @@ export class TrueLayerDialogPage {
     await this.reviewPayment.proceed();
   }
 
-  async checkLoader() {}
+  async checkLoader() {
+    await expect(this.loader).toBeVisible();
+  }
 
   async cancelPayment() {
     await this.cancelBtn.click();
