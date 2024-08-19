@@ -1,6 +1,5 @@
 import { expect } from "@playwright/test";
 import { test } from "../../fixtures/citizenPageFixtures";
-import { test as testWithTransaction } from "../../fixtures/transactionsFixtures";
 import {
   Severity,
   owner,
@@ -22,7 +21,7 @@ import { PayPage } from "../../objects/payments/PayPage";
 test.describe("Transaction with manual bank transfer", () => {
   test("should initiate a payment with a manual bank transfer provider @smoke @blocker", async ({
     browser,
-    paymentRequestWithMultipleProviders,
+    paymentRequestWithManualBankTransferProvider,
     citizenPage,
   }) => {
     await description(
@@ -35,7 +34,9 @@ test.describe("Transaction with manual bank transfer", () => {
     const publicServantPage = await browser.newPage();
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
-    await paymentRequestsPage.gotoDetails(paymentRequestWithMultipleProviders);
+    await paymentRequestsPage.gotoDetails(
+      paymentRequestWithManualBankTransferProvider,
+    );
 
     const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     const paymentLink = await detailsPage.getPaymentLink();
@@ -47,8 +48,6 @@ test.describe("Transaction with manual bank transfer", () => {
     await payPage.customAmountForm.checkCustomAmountOptionVisible();
     await payPage.paymentMethodForm.checkPaymentMethodHeader();
     await payPage.paymentMethodForm.checkPaymentMethodVisible("banktransfer");
-    await payPage.paymentMethodForm.checkPaymentMethodVisible("openbanking");
-    await payPage.paymentMethodForm.checkPaymentMethodVisible("card");
     await payPage.paymentMethodForm.checkButtonEnabled();
     await payPage.paymentMethodForm.choosePaymentMethod("banktransfer");
     await payPage.paymentMethodForm.proceedToPayment();
@@ -57,7 +56,7 @@ test.describe("Transaction with manual bank transfer", () => {
       new ManualBankTransferTransactionPage(citizenPage);
     await manualBankTransferTransactionPage.checkHeader();
     await manualBankTransferTransactionPage.checkTitle(
-      paymentRequestWithMultipleProviders,
+      paymentRequestWithManualBankTransferProvider,
     );
     await manualBankTransferTransactionPage.checkTotal(mockAmount);
     await manualBankTransferTransactionPage.checkAccountName(
@@ -72,18 +71,4 @@ test.describe("Transaction with manual bank transfer", () => {
       citizenPage.getByRole("img", { name: "Google" }),
     ).toBeVisible();
   });
-});
-
-testWithTransaction.describe("foo", async () => {
-  testWithTransaction(
-    "bar",
-    async ({ manualBankTransferTransaction, citizenPage }) => {
-      await citizenPage.goto("/citizen/transactions");
-      await expect(
-        citizenPage.getByRole("heading", { name: "My payments" }),
-      ).toBeVisible();
-      const { referenceCode, date } = manualBankTransferTransaction;
-      await expect(citizenPage.getByText(date)).toBeVisible();
-    },
-  );
 });

@@ -13,7 +13,8 @@ export async function GET(request: NextRequest) {
 
   // We need to perform this operation in a route since RSC doesn't allow us to set cookies directly
   if (postLoginRedirectUrl) {
-    cookies().set(postLoginRedirectUrlCookieName, postLoginRedirectUrl, {
+    const redirectURL = new URL(postLoginRedirectUrl);
+    cookies().set(postLoginRedirectUrlCookieName, redirectURL.pathname, {
       expires: Date.now() + FIVE_MINUTES,
     });
   }

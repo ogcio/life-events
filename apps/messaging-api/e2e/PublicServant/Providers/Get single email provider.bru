@@ -1,0 +1,27 @@
+meta {
+  name: Get single email provider
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/providers/{{emailProviderId}}?type=email
+  body: none
+  auth: bearer
+}
+
+query {
+  type: email
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data: isDefined
+  res.body.data.providerName: isDefined
+  res.body.data.id: eq {{emailProviderId}}
+}

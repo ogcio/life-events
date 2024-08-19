@@ -12,7 +12,7 @@ import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/Payment
 
 test.describe("Payment Request deletion", () => {
   test("should delete an active payment request when it has no transactions @regression @minor", async ({
-    paymentRequestWithMultipleProviders,
+    paymentRequestWithOpenBankingProvider,
     browser,
   }) => {
     await description(
@@ -25,7 +25,9 @@ test.describe("Payment Request deletion", () => {
     const page = await browser.newPage();
     const paymentRequestsPage = new PaymentRequestsPage(page);
     await paymentRequestsPage.goto();
-    await paymentRequestsPage.gotoDetails(paymentRequestWithMultipleProviders);
+    await paymentRequestsPage.gotoDetails(
+      paymentRequestWithOpenBankingProvider,
+    );
 
     const detailsPage = new PaymentRequestDetailsPage(page);
     await detailsPage.checkHeader();
@@ -33,7 +35,7 @@ test.describe("Payment Request deletion", () => {
     await detailsPage.confirmDelete();
 
     await paymentRequestsPage.checkRequestIsNotVisible(
-      paymentRequestWithMultipleProviders,
+      paymentRequestWithOpenBankingProvider,
     );
   });
 

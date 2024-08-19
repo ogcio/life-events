@@ -29,25 +29,19 @@ variables:
   - ${{ else }}:
     - template: pipeline-variables/dev.yml
 
+resources:
+  repositories:
+    - repository: pipeline-templates
+      type: github
+      name: ogcio/building-blocks-pipelines
+      ref: main
+      endpoint: ogcio
+
 stages:
   - stage: securityScan
     displayName: Security Scans
     jobs:
-      - job: gitLeaksScan
-        #continueOnError: True
-        pool:
-          vmImage: "ubuntu-22.04"
-        displayName: GitLeaks Scan
-        steps:
-          - task: DockerInstaller@0
-            displayName: Docker Installer
-            inputs:
-              dockerVersion: 17.09.0-ce
-              releaseType: stable
-          - script: |
-              docker pull zricethezav/gitleaks:v8.10.3
-              docker run --rm -i -v "$(pwd):/src" zricethezav/gitleaks:v8.10.3 detect --source="/src" -c "src/.gitleaks.toml"  --no-git -v
-            displayName: GitLeaks Scan
+      - template: security/gitleaks.yml@pipeline-templates
   - stage: BuildDeps
     displayName: Build service dependencies
     jobs:
@@ -58,11 +52,15 @@ stages:
       dependsOn: 
         - securityScan
         - BuildDeps
-      jobs:  
-      - template: pipeline-templates/build_service.yml
+      jobs:
+      - template: build/build_service.yml@pipeline-templates
         parameters:
           serviceName: ${{ serviceName }}
           pushArtefacts: ${{ variables.pushArtefacts }}
+          dockerfile: apps/${{ serviceName }}/Dockerfile
+          dependencies: "base-deps, design-system-container"
+          # TODO: Use arguments per service
+          buildArguments: '--build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$(nextPublicStripePublishableKey)" --build-arg "NEXT_PUBLIC_HOST_URL=$(nextPublicHostUrl)" --build-arg "NEXT_PUBLIC_API_ENDPOINT=$(nextPublicApiEndpoint)" --build-arg "NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT=$(nextPublicMessagingServiceEntryPoint)" --build-arg "NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT=$(nextPublicPaymentsServiceEntryPoint)" --build-arg "NEXT_PUBLIC_LIFE_EVENTS_SERVICE_ENTRY_POINT=$(nextPublicLifeEventsServiceEntryPoint)" --build-arg "NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE=$(nextPublicBuildingBlocksLandingPage)" --build-arg "NEXT_PUBLIC_FORMS_URL=$(nextPublicFormsUrl)" --build-arg "NEXT_PUBLIC_MATOMO_URL=$(nextPublicMatomoUrl)" --build-arg "NEXT_PUBLIC_LIFE_EVENTS_MATOMO_SITE_ID=$(nextPublicLifeEventsMatomoSiteId)" --build-arg "NEXT_PUBLIC_BUILDING_BLOCKS_MATOMO_SITE_ID=$(nextPublicBuildingBlocksMatomoSiteId)" --build-arg "NEXT_PUBLIC_MATOMO_PROTOCOL=$(nextPublicMatomoProtocol)" --build-arg "NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT=$(nextPublicProfileServiceEntryPoint)" --build-arg "NEXT_PUBLIC_FORMS_SERVICE_ENTRY_POINT=$(nextPublicFormsServiceEntryPoint)" --build-arg "NEXT_PUBLIC_DESIGN_SYSTEM_SERVICE_ENTRY_POINT=$(nextPublicDesignSystemServiceEntryPoint)"'
   - stage: EnvApproval
     displayName: Approvals for deployments - ${{ upper(variables.environment) }}
     dependsOn:
@@ -88,17 +86,19 @@ stages:
         - EnvApproval
       condition: and(${{ variables.pushArtefacts }}, succeeded())
       jobs:
-      - template: pipeline-templates/push_image.yml
+      - template: build/push_image_ecr.yml@pipeline-templates
         parameters:
           awsServiceConnection: ${{ variables.awsServiceConnection }}
           awsRegion: ${{ variables.awsRegion }}
           serviceName: ${{ serviceName }}
+          repositoryName: life-events-${{ serviceName }}
     - stage: Deploy_${{ replace(serviceName, '-', '_') }}
       displayName: Deploy to ECS - ${{ serviceName }}
       dependsOn: Push_${{ replace(serviceName, '-', '_') }}
       jobs:
-      - template: pipeline-templates/deploy_ecs.yml
+      - template: deploy/deploy_ecs.yml@pipeline-templates
         parameters:
           awsServiceConnection: ${{ variables.awsServiceConnection }}
           awsRegion: ${{ variables.awsRegion }}
-          serviceName: ${{ serviceName }}
+          serviceName: ${{ serviceName }}-service
+          clusterName: life-events-ecs

@@ -41,6 +41,7 @@ const paths = [
     .readdirSync(path.join(process.cwd(), "packages"))
     .map((p) => path.join(process.cwd(), "packages", p)),
   process.cwd(),
+  path.join(process.cwd(), "apps", "messaging-api", "e2e"),
 ];
 
 copyEnvFiles(paths);

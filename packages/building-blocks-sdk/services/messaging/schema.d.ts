@@ -2237,8 +2237,6 @@ export interface paths {
     get: {
       parameters: {
         query?: {
-          /** @description If set, the endpoint returns the users whom have an accepted relation with the organisation id */
-          organisationId?: string;
           /** @description If set, the endpoint searches for users whom contain this value in either the name, the surname, or the email address */
           search?: string;
           /** @description If set, it must contain a list of transports divided by ',' and the endpoint searches for users whom have selected at least one of them as preferred for the organisation */
