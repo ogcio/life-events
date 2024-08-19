@@ -8,19 +8,22 @@ import dayjs from "dayjs";
 type transactionFixtures = {
   manualBankTransferTransaction: {
     referenceCode: string;
+    amount: string;
     date: string;
   };
 };
 
 export const test = base.extend<transactionFixtures>({
   manualBankTransferTransaction: async (
-    { browser, paymentRequestWithMultipleProviders, citizenPage },
+    { browser, paymentRequestWithManualBankTransferProvider, citizenPage },
     use,
   ) => {
     const publicServantPage = await browser.newPage();
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
-    await paymentRequestsPage.gotoDetails(paymentRequestWithMultipleProviders);
+    await paymentRequestsPage.gotoDetails(
+      paymentRequestWithManualBankTransferProvider,
+    );
 
     const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     const paymentLink = await detailsPage.getPaymentLink();
@@ -34,10 +37,12 @@ export const test = base.extend<transactionFixtures>({
       new ManualBankTransferTransactionPage(citizenPage);
     const referenceCode =
       await manualBankTransferTransactionPage.getReferenceCode();
+    const amount = await manualBankTransferTransactionPage.getAmount();
     await manualBankTransferTransactionPage.confirmPayment();
 
     await use({
       referenceCode,
+      amount,
       date: dayjs(new Date()).format("DD/MM/YYYY - HH:mm"),
     });
   },

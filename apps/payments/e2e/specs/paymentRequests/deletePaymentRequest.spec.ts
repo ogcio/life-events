@@ -1,4 +1,5 @@
-import { test } from "../../fixtures/paymentRequestsFixtures";
+// import { test } from "../../fixtures/paymentRequestsFixtures";
+import { test } from "../../fixtures/transactionsFixtures";
 import {
   Severity,
   owner,
@@ -39,7 +40,11 @@ test.describe("Payment Request deletion", () => {
     );
   });
 
-  test("should not delete an active payment request when it has transactions @regression @critical", async () => {
+  test("should not delete an active payment request when it has transactions @regression @critical", async ({
+    paymentRequestWithManualBankTransferProvider,
+    manualBankTransferTransaction,
+    browser,
+  }) => {
     await description(
       "This test checks than active payment request cannot be deleted when it has transactions.",
     );
@@ -47,6 +52,16 @@ test.describe("Payment Request deletion", () => {
     await tags("Payment Request", "Delete");
     await severity(Severity.CRITICAL);
 
-    // TODO: will test this when transaction fixture is available
+    const page = await browser.newPage();
+    const paymentRequestsPage = new PaymentRequestsPage(page);
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoDetails(
+      paymentRequestWithManualBankTransferProvider,
+    );
+
+    const detailsPage = new PaymentRequestDetailsPage(page);
+    await detailsPage.checkHeader();
+    await detailsPage.checkPaymentsList(manualBankTransferTransaction);
+    await detailsPage.checkDeleteDisabled();
   });
 });
