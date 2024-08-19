@@ -1,0 +1,40 @@
+meta {
+  name: Get users for import
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users?importId={{userImportId}}&activeOnly=false&limit=100
+  body: none
+  auth: bearer
+}
+
+query {
+  importId: {{userImportId}}
+  activeOnly: false
+  limit: 100
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data[0]: isDefined
+}
+
+tests {
+  test("users must be the same as in user import data", function() {
+      // this variable is set in 
+      // get single user import post-response vars
+      const usersData = bru.getVar("usersData");
+      const currentBody = res.getBody().data;
+      const currentUserIds = currentBody.map(user => user.userId).sort().join(",");
+      const userDataUserIds = usersData.filter(user => user.importStatus !== "missing_contacts").map(user => user.relatedUserId).sort().join(",");
+      console.log(JSON.stringify({currentUserIds, userDataUserIds}));
+     expect(currentUserIds).to.equal(userDataUserIds);
+  });
+}

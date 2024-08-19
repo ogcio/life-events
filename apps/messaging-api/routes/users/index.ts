@@ -59,12 +59,6 @@ export default async function users(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Composite([
             Type.Object({
-              organisationId: Type.Optional(
-                Type.String({
-                  description:
-                    "If set, the endpoint returns the users whom have an accepted relation with the organisation id",
-                }),
-              ),
               search: Type.Optional(
                 Type.String({
                   description:
@@ -110,6 +104,7 @@ export default async function users(app: FastifyInstance) {
         pagination,
         importId: query.importId,
         transports: query.transports ? query.transports.trim().split(",") : [],
+        activeOnly: parseActiveOnlyParam(query.activeOnly),
       };
       const recipientsResponse = await getUsers(params);
 
@@ -164,10 +159,7 @@ export default async function users(app: FastifyInstance) {
         pool: app.pg.pool,
         organisationId,
         userId,
-        activeOnly:
-          typeof request.query.activeOnly === "undefined"
-            ? true
-            : request.query.activeOnly,
+        activeOnly: parseActiveOnlyParam(request.query.activeOnly),
       });
 
       if (user.userProfileId) {
@@ -199,4 +191,7 @@ export default async function users(app: FastifyInstance) {
       return { data: user };
     },
   );
+
+  const parseActiveOnlyParam = (activeOnly: boolean | undefined): boolean =>
+    activeOnly ?? true;
 }

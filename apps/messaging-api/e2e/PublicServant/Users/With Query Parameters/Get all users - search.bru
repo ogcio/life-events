@@ -1,0 +1,44 @@
+meta {
+  name: Get all users - search
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users?search={{searchQuery}}
+  body: none
+  auth: bearer
+}
+
+query {
+  search: {{searchQuery}}
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:pre-request {
+  searchQuery: .ie
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data[0]: isDefined
+  res.body.data[0].id: isDefined
+}
+
+tests {
+  test("users must contain search query", function () {
+    let searchQuery = bru.getVar("searchQuery");
+    const response = res.getBody().data;
+    for (const entry of response) {
+      const isEmailAddressValid = entry.emailAddress.includes(searchQuery);
+      const isNameValid = entry.firstName.includes(searchQuery);
+      const isSurnameValid = entry.lastName.includes(searchQuery);
+      expect(isEmailAddressValid ?? isNameValid ?? isSurnameValid).to.equal(true);
+    }
+  });
+  
+}
