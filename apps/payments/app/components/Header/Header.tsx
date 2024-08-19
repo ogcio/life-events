@@ -61,6 +61,7 @@ export default async ({ locale }: HeaderProps) => {
               href={"/signout"}
               prefetch={false}
               style={{ display: "flex" }}
+              aria-label="signout"
             >
               <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
             </Link>

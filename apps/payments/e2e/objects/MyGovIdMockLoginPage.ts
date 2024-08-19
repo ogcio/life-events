@@ -14,6 +14,12 @@ export class MyGovIdMockLoginPage {
     await this.page.getByLabel("Select user").selectOption(email);
   }
 
+  async selectCitizen(citizen: string) {
+    const [name, surname] = citizen.split(" ");
+    const email = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.citizenEmailDomain}`;
+    await this.page.getByLabel("Select user").selectOption(email);
+  }
+
   async enterPassword(password: string) {
     await this.pwInput.fill(password);
   }
@@ -25,6 +31,14 @@ export class MyGovIdMockLoginPage {
   async expectPaymentSetupPage() {
     const heading = await this.page.getByRole("heading", {
       name: "Payments",
+      exact: true,
+    });
+    await expect(heading).toBeVisible();
+  }
+
+  async expectCitizenPaymentsPage() {
+    const heading = await this.page.getByRole("heading", {
+      name: "My Payments",
       exact: true,
     });
     await expect(heading).toBeVisible();
