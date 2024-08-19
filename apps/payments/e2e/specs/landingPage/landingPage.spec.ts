@@ -48,9 +48,9 @@ test.describe("Payments landing page", () => {
     await testLandingPage(landingPage);
   });
 
-  test("should test the Payments landing page 2 @smoke @normal", async () => {
+  test("should test the Payments landing page hosted by the Home service @smoke @normal", async () => {
     await description(
-      "This test checks the second Payments landing page's content",
+      "This test checks the Payments landing page's content hosted by the Home service",
     );
     await owner("OGCIO");
     await tags("Landing page");
