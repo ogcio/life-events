@@ -20,12 +20,7 @@ export const baseConfig = {
 };
 
 const organizationId = "ogcio";
-// TODO: TBD
-export const citizenScopes = [
-  "upload:file.self:write",
-  "upload:file.self:read",
-  "upload:file.self:delete",
-];
+export const citizenScopes = ["upload:file.self:read"];
 export const publicServantScopes = ["upload:file:*"];
 const publicServantExpectedRole = "File Upload Public Servant";
 
@@ -42,7 +37,7 @@ export const getAuthenticationContextConfig =
     resourceUrl: uploadApiResource,
   });
 
-export const postSignoutRedirect = process.env.LIFE_EVENTS_ADMIN_ENTRY_POINT;
+export const postSignoutRedirect = process.env.UPLOAD_ENTRY_POINT;
 
 export const getSignInConfiguration = () => ({
   ...getBaseLogtoConfig(),
