@@ -10,15 +10,19 @@ const baseURL =
 const loginUrl = process.env.LOGTO_ENDPOINT ?? "http://localhost:3301/";
 
 export * from "@playwright/test";
-export const test = baseTest.extend<{}, { workerStorageState: string }>({
-  storageState: ({ workerStorageState }, use) => use(workerStorageState),
+export const test = baseTest.extend<
+  {},
+  { pubServantWorkerStorageState: string; userWorkerStorageState: string }
+>({
+  storageState: ({ pubServantWorkerStorageState }, use) =>
+    use(pubServantWorkerStorageState),
 
-  workerStorageState: [
+  pubServantWorkerStorageState: [
     async ({ browser }, use) => {
       const id = test.info().parallelIndex;
       const fileName = path.resolve(
         test.info().project.outputDir,
-        `.auth/${id}.json`,
+        `.auth/public-servant-${id}.json`,
       );
 
       if (fs.existsSync(fileName)) {
@@ -45,6 +49,45 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
       await loginPage.submitLogin(myGovIdMockSettings.publicServantUser);
 
       await loginPage.expectPaymentSetupPage();
+
+      await page.context().storageState({ path: fileName });
+
+      await page.close();
+      await use(fileName);
+    },
+    { scope: "worker" },
+  ],
+
+  userWorkerStorageState: [
+    async ({ browser }, use) => {
+      const id = test.info().parallelIndex;
+      const fileName = path.resolve(
+        test.info().project.outputDir,
+        `.auth/citizen-${id}.json`,
+      );
+
+      if (fs.existsSync(fileName)) {
+        await use(fileName);
+        return;
+      }
+
+      const page = await browser.newPage({ storageState: undefined });
+
+      await page.goto(baseURL);
+      expect(page.url()).toEqual(expect.stringContaining(loginUrl));
+
+      const logtoLoginBtn = await page.getByRole("button", {
+        name: "Continue with MyGovId",
+      });
+      await logtoLoginBtn.click();
+
+      const loginPage = new MyGovIdMockLoginPage(page);
+
+      await loginPage.selectCitizen(myGovIdMockSettings.citizen);
+      await loginPage.enterPassword(password);
+      await loginPage.submitLogin(myGovIdMockSettings.citizen);
+
+      await loginPage.expectCitizenPaymentsPage();
 
       await page.context().storageState({ path: fileName });
 

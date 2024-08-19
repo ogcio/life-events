@@ -88,6 +88,7 @@ test.describe("Payment Request with multiple providers", () => {
     const inactivePayPage = new InactivePayPage(newPage);
     await inactivePayPage.checkHeader();
     await inactivePayPage.checkDescription();
+    await newPage.close();
 
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
@@ -159,12 +160,17 @@ test.describe("Payment Request with multiple providers", () => {
     const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
-    await previewPayPage.checkCustomAmountOptionVisible();
-    await previewPayPage.checkPaymentMethodHeader();
-    await previewPayPage.checkPaymentMethodVisible("banktransfer");
-    await previewPayPage.checkPaymentMethodVisible("openbanking");
-    await previewPayPage.checkPaymentMethodVisible("card");
-    await previewPayPage.checkButton();
+    await previewPayPage.customAmountForm.checkCustomAmountOptionVisible();
+    await previewPayPage.paymentMethodForm.checkPaymentMethodHeader();
+    await previewPayPage.paymentMethodForm.checkPaymentMethodVisible(
+      "banktransfer",
+    );
+    await previewPayPage.paymentMethodForm.checkPaymentMethodVisible(
+      "openbanking",
+    );
+    await previewPayPage.paymentMethodForm.checkPaymentMethodVisible("card");
+    await previewPayPage.paymentMethodForm.checkButtonDisabled();
+    await newPage.close();
 
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
@@ -406,6 +412,7 @@ test.describe("Payment Request with multiple providers", () => {
     const inactivePayPage = new InactivePayPage(newPage);
     await inactivePayPage.checkHeader();
     await inactivePayPage.checkDescription();
+    await newPage.close();
 
     // TODO: check request is visible in list - waiting for https://dev.azure.com/OGCIO-Digital-Services/Digital%20Services%20Programme/_boards/board/t/Payments/Stories?workitem=20445
   });
