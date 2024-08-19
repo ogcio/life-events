@@ -8,6 +8,8 @@ export const password = "123";
 export const myGovIdMockSettings = {
   publicServantEmailDomain: "gov.ie",
   publicServantUser: "Tony Stark",
+  citizen: "Peter Parker",
+  citizenEmailDomain: "mail.ie",
 };
 
 export const BankTransferProviderValidationErrors = [
