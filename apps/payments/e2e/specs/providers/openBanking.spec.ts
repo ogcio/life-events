@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import { test } from "../../fixtures/test";
+import { test } from "../../fixtures/auth";
 import { test as testWithProvider } from "../../fixtures/providersFixtures";
 import {
   mockAccountHolderName,

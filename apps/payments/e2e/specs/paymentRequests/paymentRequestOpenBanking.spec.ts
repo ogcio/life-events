@@ -80,6 +80,7 @@ test.describe("Payment Request with open banking provider", () => {
     const inactivePayPage = new InactivePayPage(newPage);
     await inactivePayPage.checkHeader();
     await inactivePayPage.checkDescription();
+    await newPage.close();
 
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
@@ -139,12 +140,17 @@ test.describe("Payment Request with open banking provider", () => {
     const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
     await previewPayPage.checkAmount(mockAmount);
-    await previewPayPage.checkCustomAmountOptionNotVisible();
-    await previewPayPage.checkPaymentMethodHeader();
-    await previewPayPage.checkPaymentMethodVisible("openbanking");
-    await previewPayPage.checkPaymentMethodNotVisible("banktransfer");
-    await previewPayPage.checkPaymentMethodNotVisible("card");
-    await previewPayPage.checkButton();
+    await previewPayPage.customAmountForm.checkCustomAmountOptionNotVisible();
+    await previewPayPage.paymentMethodForm.checkPaymentMethodHeader();
+    await previewPayPage.paymentMethodForm.checkPaymentMethodVisible(
+      "openbanking",
+    );
+    await previewPayPage.paymentMethodForm.checkPaymentMethodNotVisible(
+      "banktransfer",
+    );
+    await previewPayPage.paymentMethodForm.checkPaymentMethodNotVisible("card");
+    await previewPayPage.paymentMethodForm.checkButtonDisabled();
+    await newPage.close();
 
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();

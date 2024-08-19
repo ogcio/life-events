@@ -11,5 +11,5 @@ export const mockRealexSharedSecret = "mock_realex_secret";
 
 export const paymentRequestDescription = "A test payment request";
 export const mockPaymentRequestReference = "A reference";
-export const mockRedirectUrl = "https://localhost:3000";
+export const mockRedirectUrl = "https://www.google.com";
 export const mockAmount = "100.00";
