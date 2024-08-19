@@ -15,6 +15,7 @@ import { HttpError } from "../../types/httpErrors";
 import { Permissions } from "../../types/permissions";
 import { getPaginationLinks, sanitizePagination } from "../../utils/pagination";
 import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory";
+import { NotFoundError } from "shared-errors";
 
 const tags = ["Message events"];
 
@@ -186,6 +187,10 @@ export default async function messages(app: FastifyInstance) {
     `,
         [eventId],
       );
+
+      if (!queryResult.rows.length) {
+        return new NotFoundError("GET_EVENT", "no event found");
+      }
 
       return { data: queryResult.rows };
     },
