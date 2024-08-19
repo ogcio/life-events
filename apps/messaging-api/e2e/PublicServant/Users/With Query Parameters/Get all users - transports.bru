@@ -1,0 +1,44 @@
+meta {
+  name: Get all users - transports
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users?transports={{transportsQuery}}
+  body: none
+  auth: bearer
+}
+
+query {
+  transports: {{transportsQuery}}
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:pre-request {
+  transportsQuery: email,sms
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data[0]: isDefined
+  res.body.data[0].id: isDefined
+}
+
+tests {
+  test("user must contain transportsQuery", function () {
+    let transports = bru.getVar("transportsQuery").split(",");
+    const response = res.getBody().data;
+    for (const entry of response) {
+      const atLeastOne = entry.organisationPreferredTransports.some((transport) =>
+        transports.includes(transport)
+      );
+      expect(atLeastOne).to.equal(true);
+    }
+  });
+  
+}

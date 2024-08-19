@@ -1,0 +1,26 @@
+meta {
+  name: Get user imports
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/user-imports
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:post-response {
+  userImportId: res.body.data && res.body.data[0] ?  res.body.data[0].importId : undefined
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data[0]: isDefined
+  res.body.data[0].id: isDefined
+}
