@@ -1,8 +1,9 @@
 import { FastifyInstance } from "fastify";
 import { FileMetadataType } from "../../../types/schemaDefinitions.js";
 
-export default (app: FastifyInstance, metadata: FileMetadataType) => {
+export default async (app: FastifyInstance, metadata: FileMetadataType) => {
   const {
+    id,
     filename,
     createdAt,
     fileSize,
@@ -16,16 +17,25 @@ export default (app: FastifyInstance, metadata: FileMetadataType) => {
     antivirusDbVersion,
   } = metadata;
 
-  return app.pg.query(
+  await app.pg.query(
     `
-      INSERT INTO files (
-        key, owner, fileSize, mimetype, createdAt, lastScan, infected, infection_description, filename, antivirus_db_version, deleted
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
-          )
-          RETURNING *;
-          `,
+     UPDATE files
+    SET
+    key=$2,
+    owner = $3,
+    fileSize = $4,
+    mimetype = $5,
+    createdAt = $6,
+    lastScan = $7,
+    infected = $8,
+    infection_description = $9,
+    filename = $10,
+    deleted = $11,
+    antivirus_db_version = $12
+    WHERE id = $1
+    RETURNING *;`,
     [
+      id,
       key,
       owner,
       fileSize,
@@ -35,8 +45,8 @@ export default (app: FastifyInstance, metadata: FileMetadataType) => {
       infected,
       infectionDescription,
       filename,
-      antivirusDbVersion,
       deleted,
+      antivirusDbVersion,
     ],
   );
 };

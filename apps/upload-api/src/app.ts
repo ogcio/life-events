@@ -90,6 +90,7 @@ export async function build(opts?: FastifyServerOptions) {
       );
     },
   });
+
   app.register(postgres, {
     host: app.config.POSTGRES_HOST as string,
     port: Number(app.config.POSTGRES_PORT),

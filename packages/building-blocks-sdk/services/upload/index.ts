@@ -18,21 +18,30 @@ export class Upload {
   }
 
   async getFile(key: string) {
-    const {
-      error,
-      data,
-      response: { headers, status },
-    } = await this.client.GET("/api/v1/files/{key}", {
-      params: { path: { key } },
-      parseAs: "stream",
-    });
+    try {
+      const {
+        error,
+        data,
+        response: { headers, status },
+      } = await this.client.GET("/api/v1/files/{key}", {
+        params: { path: { key } },
+        parseAs: "stream",
+      });
 
-    return {
-      error,
-      data,
-      headers: Object.fromEntries(headers.entries()),
-      status,
-    };
+      return {
+        error,
+        data,
+        headers: Object.fromEntries(headers.entries()),
+        status,
+      };
+    } catch (e) {
+      return {
+        error: e,
+        data: null,
+        headers: null,
+        status: 500,
+      };
+    }
   }
 
   async getFiles() {
