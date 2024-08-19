@@ -163,7 +163,6 @@ export default async (props: MessageCreateProps) => {
   const messaging = await AuthenticationFactory.getMessagingClient();
   const response = await messaging.getUsers({
     ...queryParams,
-    organisationId: organization.id,
     transports: props.state.transportations.join(","),
     activeOnly: true,
   });

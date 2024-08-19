@@ -1,0 +1,23 @@
+meta {
+  name: Get single template
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/templates/{{templateId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data.contents: isDefined
+  res.body.data.contents[0]: isDefined 
+  res.body.data.contents[0].templateName: isString 
+}
