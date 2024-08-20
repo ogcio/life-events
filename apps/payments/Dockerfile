@@ -46,6 +46,7 @@ ENV NEXT_PUBLIC_FORMS_URL=$NEXT_PUBLIC_FORMS_URL
 
 RUN npm run build --workspace=packages/shared-errors && \
     npm run build --workspace=packages/nextjs-logging-wrapper && \
+    npm run build --workspace=packages/building-blocks-sdk && \
     npm run build --workspace=apps/payments
 
 FROM base-deps AS assembler

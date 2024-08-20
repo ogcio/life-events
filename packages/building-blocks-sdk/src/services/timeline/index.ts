@@ -1,5 +1,5 @@
 import createClient, { FetchResponse, type Middleware } from "openapi-fetch";
-import type { paths } from "./schema";
+import type { paths } from "./schema.js";
 
 const formatQueryResult = async <T, O>(
   promise: Promise<FetchResponse<T, O, "application/json">>,
