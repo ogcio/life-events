@@ -7,23 +7,10 @@
     "test": "TAP_RCFILE=tap.yml tap",
     "test:e2e": "cd ./e2e && bru run --env local",
     "test:dev": "cd ./e2e && bru run --env dev",
-    "start": "node --import tsx index.ts",
-    "dev": "nodemon | pino-pretty",
+    "dev": "node --watch --import tsx src/index.ts | pino-pretty",
     "lint": "eslint . --ext .ts",
     "generate-ts-client": "npx openapi-typescript openapi-definition.yml -o ../../packages/building-blocks-sdk/services/messaging/schema.d.ts",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp logo.png dist/"
-  },
-  "nodemonConfig": {
-    "watch": [
-      "../../packages/auth/src/**/*",
-      "../../packages/feature-flags/src/**/*",
-      "../../packages/messages/src/**/*",
-      "../../packages/logging-wrapper/src/**/*",
-      "../../packages/error-handler/src/**/*",
-      "./**/*"
-    ],
-    "ext": "ts,json",
-    "exec": "node --import tsx index.ts"
   },
   "type": "module",
   "author": "",

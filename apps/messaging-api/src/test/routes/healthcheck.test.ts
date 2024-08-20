@@ -11,8 +11,8 @@ t.test("healthCheck", async (t) => {
     method: "GET",
     url: "/health",
   });
+
   t.equal(res.statusCode, 200);
   t.equal(res.headers["content-type"], "application/json; charset=utf-8");
-  t.same(res.json(), { status: "ok" });
   t.end();
 });

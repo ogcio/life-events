@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { isLifeEventsError, ServerError } from "shared-errors";
 import { getErrorMessage } from "../utils/error-utils.js";
-import { version } from "../package.json";
+import getVersion from "../utils/getVersion.js";
 const ERROR_PROCESS = "HEALTHCHECK";
 
 export default async function healthCheck(app: FastifyInstance) {
@@ -17,16 +17,16 @@ export default async function healthCheck(app: FastifyInstance) {
     },
     async () => {
       await checkDb(app);
-
+      const version = await getVersion();
       return { "messaging-api": version };
     },
   );
 }
 
 const checkDb = async (app: FastifyInstance): Promise<void> => {
+  const pool = await app.pg.connect();
   try {
-    const pool = await app.pg.connect();
-    const res = await pool.query('SELECT 1 as "column"');
+    const res = await app.pg.query('SELECT 1 as "column"');
     if (res.rowCount !== 1) {
       throw new ServerError(
         ERROR_PROCESS,
@@ -37,6 +37,9 @@ const checkDb = async (app: FastifyInstance): Promise<void> => {
     if (isLifeEventsError(e)) {
       throw e;
     }
+
     throw new ServerError(ERROR_PROCESS, getErrorMessage(e));
+  } finally {
+    pool.release();
   }
 };
