@@ -31,7 +31,9 @@ build-api-auth:
 	npm run build --workspace=api-auth
 build-error-handler: 
 	npm run build --workspace=error-handler
-build-packages: build-shared-errors build-logging-wrapper build-error-handler build-api-auth
+build-sdk: 
+	npm run build --workspace=building-blocks-sdk
+build-packages: build-shared-errors build-logging-wrapper build-error-handler build-api-auth build-sdk
 init-packages: npm-install build-packages
 
 ## Docker ##
