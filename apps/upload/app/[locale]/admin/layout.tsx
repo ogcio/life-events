@@ -23,15 +23,6 @@ export default async ({
     return redirect("/", RedirectType.replace);
   }
 
-  const publicServancContext = await authFactory.getPublicServant();
-
-  // const hasPermissions = hasAdminPermissions(
-  //   context.accessToken as string,
-  //   context.scopes,
-  // );
-
-  const hasPermissions = true;
-
   return (
     <html lang={locale}>
       <head>
@@ -50,15 +41,7 @@ export default async ({
         {/* All designs are made for 1440 px  */}
         <main className={styles.mainContainer}>
           <FeedbackBanner locale={locale} />
-          <div style={{ margin: "0 auto", paddingTop: "20px" }}>
-            {!hasPermissions ? (
-              <h3 className="govie-heading-m">
-                Missing permission to check this page please contact...
-              </h3>
-            ) : (
-              children
-            )}
-          </div>
+          <div style={{ margin: "0 auto", paddingTop: "20px" }}>{children}</div>
         </main>
         <Footer />
       </body>
