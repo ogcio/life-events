@@ -86,7 +86,11 @@ t.test("files", async (t) => {
       "api-auth": {
         default: fp(async (fastify) => {
           fastify.decorate("checkPermissions", async (request) => {
-            request.userData = { userId: "userId", accessToken: "accessToken" };
+            request.userData = {
+              userId: "userId",
+              accessToken: "accessToken",
+              organizationId: "ogcio",
+            };
           });
         }),
       },

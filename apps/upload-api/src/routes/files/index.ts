@@ -30,9 +30,14 @@ import insertFileMetadata from "./utils/insertFileMetadata.js";
 import updateFileMetadata from "./utils/updateFileMetadata.js";
 import getDbVersion from "./utils/getDbVersion.js";
 import { Permissions } from "../../types/permissions.js";
+import {
+  ensureOrganizationIdIsSet,
+  ensureUserIdIsSet,
+} from "../../utils/authentication-factory.js";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
 const FILE_DELETE = "FILE_DELETE";
+const FILE_INDEX = "FILE_INDEX";
 const FILE_DOWNLOAD = "FILE_DOWNLOAD";
 
 const deleteObject = (
@@ -80,6 +85,8 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     length += chunk.length;
   });
 
+  const organizationId = request.userData?.organizationId as string;
+
   const getDbVersionPromise = getDbVersion(app.avClient);
 
   const antivirusPassthrough = app.avClient.passthrough();
@@ -103,6 +110,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
           filename,
           antivirusDbVersion: dbVersion,
           deleted: true,
+          organizationId,
         });
         return reject(new CustomError(FILE_UPLOAD, "File is infected", 400));
       }
@@ -140,6 +148,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
         owner: userId as string,
         deleted: false,
         filename,
+        organizationId,
         antivirusDbVersion: dbVersion,
       });
       eventEmitter.emit("fileUploaded");
@@ -228,8 +237,9 @@ export default async function routes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.userData?.userId as string;
-      const data = await getUserFiles(app, userId);
+      const userId = ensureUserIdIsSet(request, FILE_INDEX);
+      const organizationId = ensureOrganizationIdIsSet(request, FILE_INDEX);
+      const data = await getUserFiles(app, userId, organizationId);
 
       const files = data.rows;
       reply.send({ data: files });

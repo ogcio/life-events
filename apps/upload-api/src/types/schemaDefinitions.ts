@@ -46,6 +46,7 @@ export const FileMetadata = Type.Object({
   infected: Type.Boolean(),
   infectionDescription: Type.Optional(Type.String()),
   antivirusDbVersion: Type.Optional(Type.String()),
+  organizationId: Type.String(),
 });
 
 export type FileMetadataType = Static<typeof FileMetadata>;
