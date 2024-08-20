@@ -43,6 +43,7 @@ ENV LOG_LEVEL=trace
 
 RUN npm run build --workspace=packages/shared-errors && \
     npm run build --workspace=packages/nextjs-logging-wrapper && \
+    npm run build --workspace=packages/building-blocks-sdk && \
     npm run build --workspace=apps/messaging
 
 FROM base-deps AS assembler

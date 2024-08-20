@@ -3,7 +3,12 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "test": "TAP_RCFILE=tap.yml tap"
+    "test": "TAP_RCFILE=tap.yml tap",
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*.js"
   },
   "dependencies": {
     "openapi-fetch": "^0.9.7"
@@ -14,5 +19,5 @@
     "typescript": "5.4.5"
   },
   "type": "module",
-  "main": "./index.ts"
+  "main": "./src/index.ts"
 }
