@@ -6,7 +6,6 @@ import { getMessages } from "next-intl/server";
 import uploadFile from "./actions/uploadFile";
 import deleteFile from "./actions/deleteFile";
 
-import DeleteFile from "./components/DeleteFile";
 import FileTable from "./components/FileTable";
 
 type Props = {
@@ -17,6 +16,9 @@ type Props = {
 
 export default async (props: Props) => {
   const uploadClient = await AuthenticationFactory.getUploadClient();
+
+  const { isPublicServant } =
+    await AuthenticationFactory.getInstance().getContext();
 
   const { data: files, error } = await uploadClient.getFiles();
 
@@ -32,8 +34,6 @@ export default async (props: Props) => {
   const messages = await getMessages({ locale: props.params.locale });
   const uploadMessages = messages.Upload as AbstractIntlMessages;
 
-  const token = await AuthenticationFactory.getToken();
-
   return (
     <NextIntlClientProvider messages={uploadMessages}>
       <section>
@@ -43,12 +43,10 @@ export default async (props: Props) => {
           <h3 className="govie-heading-m">No files uploaded</h3>
         )}
         <div>
-          {files && (
-            <FileTable files={files} deleteFile={deleteFile} token={token} />
-          )}
+          {files && <FileTable files={files} deleteFile={deleteFile} />}
         </div>
 
-        <FileUpload uploadFile={uploadFile} />
+        {isPublicServant && <FileUpload uploadFile={uploadFile} />}
       </section>
     </NextIntlClientProvider>
   );

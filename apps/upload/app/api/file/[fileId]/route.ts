@@ -20,5 +20,5 @@ export async function GET(
     }
   }
 
-  return new Response(data, { headers });
+  return new Response(data, { headers: headers || {} });
 }

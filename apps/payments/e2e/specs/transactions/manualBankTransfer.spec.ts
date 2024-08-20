@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../../fixtures/citizenPagesFixtures";
+import { test } from "../../fixtures/citizenPageFixtures";
 import {
   Severity,
   owner,
@@ -16,12 +16,13 @@ import {
   mockRedirectUrl,
 } from "../../utils/mocks";
 import { ManualBankTransferTransactionPage } from "../../objects/payments/ManualBankTransferTransactionPage";
+import { PayPage } from "../../objects/payments/PayPage";
 
 test.describe("Transaction with manual bank transfer", () => {
   test("should initiate a payment with a manual bank transfer provider @smoke @blocker", async ({
     browser,
-    paymentRequestWithMultipleProviders,
-    payPage,
+    paymentRequestWithManualBankTransferProvider,
+    citizenPage,
   }) => {
     await description(
       "This test checks that a payment transaction with a manual bank transfer provider is successfully initiated by a citizen",
@@ -33,20 +34,20 @@ test.describe("Transaction with manual bank transfer", () => {
     const publicServantPage = await browser.newPage();
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
-    await paymentRequestsPage.gotoDetails(paymentRequestWithMultipleProviders);
+    await paymentRequestsPage.gotoDetails(
+      paymentRequestWithManualBankTransferProvider,
+    );
 
     const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     const paymentLink = await detailsPage.getPaymentLink();
 
-    const citizenPage = payPage.page;
+    const payPage = new PayPage(citizenPage);
     await payPage.goto(paymentLink);
     await payPage.checkHeader();
     await payPage.checkAmount(mockAmount);
     await payPage.customAmountForm.checkCustomAmountOptionVisible();
     await payPage.paymentMethodForm.checkPaymentMethodHeader();
     await payPage.paymentMethodForm.checkPaymentMethodVisible("banktransfer");
-    await payPage.paymentMethodForm.checkPaymentMethodVisible("openbanking");
-    await payPage.paymentMethodForm.checkPaymentMethodVisible("card");
     await payPage.paymentMethodForm.checkButtonEnabled();
     await payPage.paymentMethodForm.choosePaymentMethod("banktransfer");
     await payPage.paymentMethodForm.proceedToPayment();
@@ -55,7 +56,7 @@ test.describe("Transaction with manual bank transfer", () => {
       new ManualBankTransferTransactionPage(citizenPage);
     await manualBankTransferTransactionPage.checkHeader();
     await manualBankTransferTransactionPage.checkTitle(
-      paymentRequestWithMultipleProviders,
+      paymentRequestWithManualBankTransferProvider,
     );
     await manualBankTransferTransactionPage.checkTotal(mockAmount);
     await manualBankTransferTransactionPage.checkAccountName(

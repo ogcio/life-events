@@ -6,5 +6,5 @@ import { getSignInConfiguration } from "../../../utils/logto-config";
 export async function GET(request: NextRequest) {
   await handleSignIn(getSignInConfiguration(), request.nextUrl.searchParams);
 
-  redirect("/admin");
+  redirect("/");
 }

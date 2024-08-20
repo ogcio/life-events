@@ -22,10 +22,18 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                id: string;
-                url: string;
+                filename: string;
+                id?: string;
                 key: string;
-                size: number;
+                owner: string;
+                fileSize: number;
+                mimetype: string;
+                createdAt: string;
+                lastScan: string;
+                /** @default false */
+                deleted?: boolean;
+                infected: boolean;
+                infectionDescription?: string;
               }[];
             };
           };
@@ -168,62 +176,6 @@ export interface paths {
               data: {
                 message: string;
               };
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              requestId: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              requestId: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
-  };
-  "/api/v1/files/metadata/{key}": {
-    get: {
-      parameters: {
-        path: {
-          key: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": Record<string, never>;
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              requestId: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
             };
           };
         };
