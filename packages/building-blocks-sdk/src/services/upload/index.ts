@@ -1,5 +1,5 @@
 import createClient, { FetchResponse, type Middleware } from "openapi-fetch";
-import type { paths } from "./schema";
+import type { paths } from "./schema.js";
 
 export class Upload {
   client: ReturnType<typeof createClient<paths>>;
