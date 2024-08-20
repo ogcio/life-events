@@ -1,5 +1,5 @@
 import createClient, { type Middleware } from "openapi-fetch";
-import type { paths } from "./schema";
+import type { paths } from "./schema.js";
 
 function newInterpolator(interpolations: Record<string, string>) {
   return function replacer(acc: string, key: string) {
