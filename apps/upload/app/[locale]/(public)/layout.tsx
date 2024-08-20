@@ -12,6 +12,7 @@ import AnalyticsTracker from "analytics/components/AnalyticsTracker";
 import favicon from "../../../public/favicon.ico";
 import { AuthenticationFactory } from "../../utils/authentication-factory";
 import hasCitizenPermissions from "./utils/hasCitizenPermissions";
+import { hasPermissions } from "auth/check-permissions";
 
 export const metadata: Metadata = {
   title: "Life events",
@@ -31,22 +32,7 @@ export default async function RootLayout({
   params: { locale: string };
 }) {
   const authFactory = AuthenticationFactory.getInstance();
-  const context = await authFactory.getCitizen();
-
-  if (await authFactory.isPublicServantAuthenticated()) {
-    redirect(`/${locale}/admin`, RedirectType.replace);
-  }
-
-  const hasPermissions = true;
-
-  // const hasPermissions = hasCitizenPermissions(
-  //   "THIS FIELD IS UNUSED",
-  //   context.scopes,
-  // );
-
-  // const {
-  //   user: { id: userId },
-  // } = context;
+  await authFactory.getContext();
 
   //TODO: IMPLEMENT ACTUAL VERIFICATION LEVEL FROM PROFILE API
   const verificationLevel = 2;
@@ -74,15 +60,7 @@ export default async function RootLayout({
         {/* All designs are made for 1440 px  */}
         <main className={styles.mainContainer}>
           <FeedbackBanner locale={locale} />
-          <div style={{ margin: "0 auto", paddingTop: "20px" }}>
-            {!hasPermissions ? (
-              <h3 className="govie-heading-m">
-                MISSING PERMISSIONS FOR THIS APP
-              </h3>
-            ) : (
-              children
-            )}
-          </div>
+          <div style={{ margin: "0 auto", paddingTop: "20px" }}>{children}</div>
         </main>
         <Footer />
       </body>

@@ -17,6 +17,9 @@ type Props = {
 export default async (props: Props) => {
   const uploadClient = await AuthenticationFactory.getUploadClient();
 
+  const { isPublicServant } =
+    await AuthenticationFactory.getInstance().getContext();
+
   const { data: files, error } = await uploadClient.getFiles();
 
   if (error) {
@@ -43,7 +46,7 @@ export default async (props: Props) => {
           {files && <FileTable files={files} deleteFile={deleteFile} />}
         </div>
 
-        <FileUpload uploadFile={uploadFile} />
+        {isPublicServant && <FileUpload uploadFile={uploadFile} />}
       </section>
     </NextIntlClientProvider>
   );

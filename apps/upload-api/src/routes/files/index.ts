@@ -29,21 +29,11 @@ import getUserFiles from "./utils/getUserFiles.js";
 import insertFileMetadata from "./utils/insertFileMetadata.js";
 import updateFileMetadata from "./utils/updateFileMetadata.js";
 import getDbVersion from "./utils/getDbVersion.js";
+import { Permissions } from "../../types/permissions.js";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
 const FILE_DELETE = "FILE_DELETE";
 const FILE_DOWNLOAD = "FILE_DOWNLOAD";
-
-const permissions = {
-  citizen: {
-    test: "upload:file.self:read",
-    testError: "fake_permission",
-  },
-  publicServant: {
-    test: "payments:create:object",
-    testError: "fake_permission",
-  },
-};
 
 const deleteObject = (
   s3Client: S3Client,
@@ -196,13 +186,11 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
 };
 
 export default async function routes(app: FastifyInstance) {
-  app.addHook("preValidation", async (request, reply) => {
-    await app.checkPermissions(request, reply, [permissions.citizen.test]);
-  });
-
   app.post(
     "/",
     {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Upload.Write]),
       schema: {
         consumes: ["multipart/form-data"],
         tags: ["Files"],
@@ -225,6 +213,11 @@ export default async function routes(app: FastifyInstance) {
   app.get(
     "/",
     {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [
+          Permissions.Upload.Read,
+          Permissions.UploadSelf.Read,
+        ]),
       schema: {
         tags: ["Files"],
         response: {
@@ -246,6 +239,8 @@ export default async function routes(app: FastifyInstance) {
   app.delete<{ Params: { key: string } }>(
     "/:key",
     {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Upload.Write]),
       schema: {
         tags: ["Files"],
         params: Type.Object({ key: Type.String() }),
@@ -293,6 +288,11 @@ export default async function routes(app: FastifyInstance) {
   app.get<{ Params: { key: string } }>(
     "/:key",
     {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [
+          Permissions.UploadSelf.Read,
+          Permissions.Upload.Read,
+        ]),
       schema: {
         tags: ["Files"],
         params: Type.Object({ key: Type.String() }),
