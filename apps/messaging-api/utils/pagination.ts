@@ -4,7 +4,7 @@ export type PaginationDetails = {
   offset?: number;
   limit?: number;
   totalCount: number;
-  url: string;
+  url: URL;
 };
 
 export const PAGINATION_OFFSET_DEFAULT = 0;
@@ -22,7 +22,6 @@ export const formatAPIResponse = <T>(
   };
 
   if (pagination) {
-    pagination.url = pagination.url.split("?")[0];
     response.metadata = {
       links: getPaginationLinks(pagination),
       totalCount: pagination.totalCount,
@@ -41,28 +40,71 @@ export const getPaginationLinks = (inputDetails: PaginationDetails) => {
 
   return {
     self: {
-      href: `${details.url}?limit=${details.limit}&offset=${details.offset}`,
+      href: (() => {
+        const link = new URL(details.url);
+        link.searchParams.append("limit", details.limit.toString());
+        link.searchParams.append("offset", details.offset.toString());
+        return link.href;
+      })(),
     },
     next: {
       href:
         details.offset + details.limit < details.totalCount
-          ? `${details.url}?limit=${details.limit}&offset=${details.offset + details.limit}`
+          ? (() => {
+              const link = new URL(details.url);
+              link.searchParams.append("limit", details.limit.toString());
+              link.searchParams.append(
+                "offset",
+                (details.offset + details.limit).toString(),
+              );
+              return link.href;
+            })()
           : undefined,
     },
     prev: {
       href:
         details.offset - details.limit >= 0
-          ? `${details.url}?limit=${details.limit}&offset=${details.offset - details.limit}`
+          ? (() => {
+              const link = new URL(details.url);
+              link.searchParams.append("limit", details.limit.toString());
+              link.searchParams.append(
+                "offset",
+                (details.offset - details.limit).toString(),
+              );
+              return link.href;
+            })()
           : undefined,
     },
     first: {
-      href: `${details.url}?limit=${details.limit}&offset=0`,
+      href: (() => {
+        const link = new URL(details.url);
+        link.searchParams.append("limit", details.limit.toString());
+        link.searchParams.append("offset", "0");
+        return link.href;
+      })(),
     },
     last: {
       href:
         details.totalCount > 0
-          ? `${details.url}?limit=${details.limit}&offset=${Math.ceil(details.totalCount / details.limit) * details.limit - details.limit}`
-          : `${details.url}?limit=${details.limit}&offset=0`,
+          ? (() => {
+              const link = new URL(details.url);
+              link.searchParams.append("limit", details.limit.toString());
+              link.searchParams.append(
+                "offset",
+                (
+                  Math.ceil(details.totalCount / details.limit) *
+                    details.limit -
+                  details.limit
+                ).toString(),
+              );
+              return link.href;
+            })()
+          : (() => {
+              const link = new URL(details.url);
+              link.searchParams.append("limit", details.limit.toString());
+              link.searchParams.append("offset", "0");
+              return link.href;
+            })(),
     },
     pages: generatePageLinks(details),
   };
@@ -91,37 +133,100 @@ const generatePageLinks = (details: Required<PaginationDetails>) => {
   }
 
   pageLinks[1] = {
-    href: `${details.url}?limit=${details.limit}&offset=0`,
+    href: (() => {
+      const link = new URL(details.url);
+      link.searchParams.append("limit", details.limit.toString());
+      link.searchParams.append("offset", "0");
+      return link.href;
+    })(),
   };
   pageLinks[nrOfBatches] = {
-    href: `${details.url}?limit=${details.limit}&offset=${(nrOfBatches - 1) * details.limit}`,
+    href: (() => {
+      const link = new URL(details.url);
+      link.searchParams.append("limit", details.limit.toString());
+      link.searchParams.append(
+        "offset",
+        ((nrOfBatches - 1) * details.limit).toString(),
+      );
+      return link.href;
+    })(),
   };
 
   const currentBatch = Math.floor(details.offset / details.limit) + 1;
 
   if (currentBatch === 1) {
     pageLinks[2] = {
-      href: `${details.url}?limit=${details.limit}&offset=${1 * details.limit}`,
+      href: (() => {
+        const link = new URL(details.url);
+        link.searchParams.append("limit", details.limit.toString());
+        link.searchParams.append("offset", (1 * details.limit).toString());
+        return link.href;
+      })(),
     };
     pageLinks[3] = {
-      href: `${details.url}?limit=${details.limit}&offset=${3 * details.limit}`,
+      href: (() => {
+        const link = new URL(details.url);
+        link.searchParams.append("limit", details.limit.toString());
+        link.searchParams.append("offset", (3 * details.limit).toString());
+        return link.href;
+      })(),
     };
   } else if (currentBatch === nrOfBatches) {
     pageLinks[nrOfBatches - 2] = {
-      href: `${details.url}?limit=${details.limit}&offset=${(nrOfBatches - 3) * details.limit}`,
+      href: (() => {
+        const link = new URL(details.url);
+        link.searchParams.append("limit", details.limit.toString());
+        link.searchParams.append(
+          "offset",
+          ((nrOfBatches - 3) * details.limit).toString(),
+        );
+        return link.href;
+      })(),
     };
     pageLinks[nrOfBatches - 1] = {
-      href: `${details.url}?limit=${details.limit}&offset=${(nrOfBatches - 2) * details.limit}`,
+      href: (() => {
+        const link = new URL(details.url);
+        link.searchParams.append("limit", details.limit.toString());
+        link.searchParams.append(
+          "offset",
+          ((nrOfBatches - 2) * details.limit).toString(),
+        );
+        return link.href;
+      })(),
     };
   } else {
     pageLinks[currentBatch - 1] = {
-      href: `${details.url}?limit=${details.limit}&offset=${(currentBatch - 2) * details.limit}`,
+      href: (() => {
+        const link = new URL(details.url);
+        link.searchParams.append("limit", details.limit.toString());
+        link.searchParams.append(
+          "offset",
+          ((currentBatch - 2) * details.limit).toString(),
+        );
+        return link.href;
+      })(),
     };
     pageLinks[currentBatch] = {
-      href: `${details.url}?limit=${details.limit}&offset=${(currentBatch - 1) * details.limit}`,
+      href: (() => {
+        const link = new URL(details.url);
+        link.searchParams.append("limit", details.limit.toString());
+        link.searchParams.append(
+          "offset",
+          ((currentBatch - 1) * details.limit).toString(),
+        );
+        return link.href;
+      })(),
     };
     pageLinks[currentBatch + 1] = {
-      href: `${details.url}?limit=${details.limit}&offset=${currentBatch * details.limit}`,
+      href: (() => {
+        const link = new URL(details.url);
+        link.searchParams.append("limit", details.limit.toString());
+        link.searchParams.append(
+          "offset",
+          (currentBatch * details.limit).toString(),
+        );
+        return link.href;
+      })(),
     };
   }
 

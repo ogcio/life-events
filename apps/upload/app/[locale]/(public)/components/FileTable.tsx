@@ -1,3 +1,6 @@
+import type { FileMetadata } from "../../../types";
+import ds from "design-system";
+import styles from "./FileTable.module.scss";
 import DeleteFile from "./DeleteFile";
 
 const formatBytes = (bytes: number) => {
@@ -8,42 +11,44 @@ const formatBytes = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
 };
 
-type File = {
-  id: string;
-  url: string;
-  key: string;
-  size: number;
-};
-
 type TableRowProps = {
-  file: File;
+  file: FileMetadata;
   deleteFile: (formData: FormData) => Promise<{ error: string }>;
-  token: string;
 };
 
-const TableRow = ({ file, deleteFile, token }: TableRowProps) => {
+const TableRow = ({ file, deleteFile }: TableRowProps) => {
   return (
     <tr className="govie-table__row">
       <th className="govie-table__header" scope="row">
-        <a href={`/api/file/${file.id}`} target="_blank">
-          {file.key}
-        </a>
+        {!file.infected && !file.deleted && (
+          <a href={`/api/file/${file.id}`} target="_blank">
+            {file.filename}
+          </a>
+        )}
+        {file.infected && (
+          <span>
+            {file.filename} -
+            <span style={{ color: ds.colours.ogcio.red }}>
+              <span className="govie-visually-hidden">Error:</span> The file is
+              infected
+            </span>
+          </span>
+        )}
       </th>
-      <td className="govie-table__cell">{formatBytes(file.size)}</td>
+      <td className="govie-table__cell">{formatBytes(file.fileSize)}</td>
       <td className="govie-table__cell">
-        <DeleteFile deleteFile={deleteFile} id={file.id} />
+        <DeleteFile deleteFile={deleteFile} id={file.id as string} />
       </td>
     </tr>
   );
 };
 
 type FileTableProps = {
-  files: File[];
+  files: FileMetadata[];
   deleteFile: (formData: FormData) => Promise<{ error: string }>;
-  token: string;
 };
 
-export default ({ deleteFile, files, token }: FileTableProps) => {
+export default ({ deleteFile, files }: FileTableProps) => {
   return (
     <table className="govie-table">
       <caption className="govie-table__caption govie-table__caption--m">
@@ -64,12 +69,7 @@ export default ({ deleteFile, files, token }: FileTableProps) => {
       </thead>
       <tbody className="govie-table__body">
         {files.map((file) => (
-          <TableRow
-            key={file.id}
-            file={file}
-            deleteFile={deleteFile}
-            token={token}
-          />
+          <TableRow key={file.id} file={file} deleteFile={deleteFile} />
         ))}
       </tbody>
     </table>

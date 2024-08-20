@@ -21,7 +21,7 @@ export default fp(
       ...(credentials.accessKeyId.length > 0 &&
       credentials.secretAccessKey.length > 0
         ? { credentials: credentials }
-        : undefined),
+        : {}),
     };
 
     const s3Config = {
