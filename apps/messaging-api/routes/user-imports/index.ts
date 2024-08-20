@@ -1,26 +1,26 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { Permissions } from "../../types/permissions";
+import { Permissions } from "../../types/permissions.js";
 import { Type } from "@sinclair/typebox";
 import {
   getCsvExample,
   IMPORT_USERS_ERROR,
   importCsvFileFromRequest,
   importCsvRecords,
-} from "../../services/users/import/import-users";
+} from "../../services/users/import/import-users.js";
 import {
   CsvRecord,
   CsvRecordSchema,
   UsersImport,
   UsersImportSchema,
-} from "../../types/usersSchemaDefinitions";
-import { getGenericResponseSchema } from "../../types/schemaDefinitions";
+} from "../../types/usersSchemaDefinitions.js";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
 import {
   getUserImportForOrganisation,
   getUserImportsForOrganisation,
-} from "../../services/users/import/read-user-imports";
-import { HttpError } from "../../types/httpErrors";
+} from "../../services/users/import/read-user-imports.js";
+import { HttpError } from "../../types/httpErrors.js";
 import { BadRequestError } from "shared-errors";
-import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory";
+import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory.js";
 
 const tags = ["User Imports"];
 enum MimeTypes {

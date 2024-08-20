@@ -1,12 +1,12 @@
 import { PostgresDb } from "@fastify/postgres";
-import { getSettingsPerUser, getUserByUserProfileId } from "../shared-users";
-import { executeUpdateOrganisationFeedback } from "./shared-invitations";
+import { getSettingsPerUser, getUserByUserProfileId } from "../shared-users.js";
+import { executeUpdateOrganisationFeedback } from "./shared-invitations.js";
 import {
   InvitationFeedback,
   OrganisationInvitationFeedback,
   OrganisationSetting,
   User,
-} from "../../../types/usersSchemaDefinitions";
+} from "../../../types/usersSchemaDefinitions.js";
 import { PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
 import { BadRequestError, NotFoundError, ServerError } from "shared-errors";

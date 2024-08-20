@@ -11,16 +11,22 @@ import {
   MessageListItemSchema,
   IdParamsSchema,
   GenericResponse,
-} from "../../types/schemaDefinitions";
-import { getMessage, processMessages } from "../../services/messages/messages";
-import { HttpError } from "../../types/httpErrors";
-import { Permissions } from "../../types/permissions";
+} from "../../types/schemaDefinitions.js";
+import {
+  getMessage,
+  processMessages,
+} from "../../services/messages/messages.js";
+import { HttpError } from "../../types/httpErrors.js";
+import { Permissions } from "../../types/permissions.js";
 import { ensureUserCanAccessUser } from "api-auth";
 import { QueryResult } from "pg";
 import { ServerError, AuthorizationError, NotFoundError } from "shared-errors";
-import { utils } from "../../utils";
-import { sanitizePagination, getPaginationLinks } from "../../utils/pagination";
-import { ensureUserIdIsSet } from "../../utils/authentication-factory";
+import { utils } from "../../utils.js";
+import {
+  sanitizePagination,
+  getPaginationLinks,
+} from "../../utils/pagination.js";
+import { ensureUserIdIsSet } from "../../utils/authentication-factory.js";
 
 const MESSAGES_TAGS = ["Messages"];
 

@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import { FastifyBaseLogger } from "fastify";
-import { SecurityLevels } from "../../types/schemaDefinitions";
+import { SecurityLevels } from "../../types/schemaDefinitions.js";
 
 /**
  * Might go with

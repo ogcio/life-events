@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
-import { HttpError } from "../../types/httpErrors";
-import { executeJob } from "../../services/messages/messages";
+import { HttpError } from "../../types/httpErrors.js";
+import { executeJob } from "../../services/messages/messages.js";
 export const prefix = "/jobs";
 
 export default async function jobs(app: FastifyInstance) {

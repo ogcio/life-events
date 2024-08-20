@@ -1,9 +1,9 @@
 import { Pool } from "pg";
-import { PaginationParams } from "../../types/schemaDefinitions";
-import { utils } from "../../utils";
+import { PaginationParams } from "../../types/schemaDefinitions.js";
+import { utils } from "../../utils.js";
 import { isLifeEventsError, NotFoundError, ServerError } from "shared-errors";
-import { SELECTABLE_TRANSPORTS } from "./shared-users";
-import { UserPerOrganisation } from "../../types/usersSchemaDefinitions";
+import { SELECTABLE_TRANSPORTS } from "./shared-users.js";
+import { UserPerOrganisation } from "../../types/usersSchemaDefinitions.js";
 
 const ERROR_PROCESS = "GET_USERS";
 

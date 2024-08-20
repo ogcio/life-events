@@ -1,6 +1,6 @@
 import { writeFile } from "fs/promises";
 
-import { build } from "./app";
+import { build } from "./app.js";
 
 import { getLoggingConfiguration } from "logging-wrapper";
 

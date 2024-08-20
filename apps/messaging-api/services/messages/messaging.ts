@@ -5,14 +5,14 @@
  */
 
 import { PoolClient } from "pg";
-import { utils } from "../../utils";
+import { utils } from "../../utils.js";
 import { isNativeError } from "util/types";
 import { BadRequestError, ServerError, ThirdPartyError } from "shared-errors";
 import { randomUUID } from "crypto";
 import {
   AllProviderTypes,
   SecurityLevels,
-} from "../../types/schemaDefinitions";
+} from "../../types/schemaDefinitions.js";
 
 type TemplateContent = {
   subject: string;

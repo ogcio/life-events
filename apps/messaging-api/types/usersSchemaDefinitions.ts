@@ -2,7 +2,7 @@ import { Static, Type } from "@sinclair/typebox";
 import {
   EditableProviderTypesSchema,
   TypeboxStringEnum,
-} from "./schemaDefinitions";
+} from "./schemaDefinitions.js";
 
 const NullableStringType = (options?: {
   description?: string;

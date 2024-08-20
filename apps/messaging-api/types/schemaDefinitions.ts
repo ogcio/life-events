@@ -4,7 +4,7 @@ import {
   PAGINATION_MAX_LIMIT,
   PAGINATION_MIN_LIMIT,
   PAGINATION_MIN_OFFSET,
-} from "../utils/pagination";
+} from "../utils/pagination.js";
 
 export const AVAILABLE_LANGUAGES = ["en", "ga"];
 export const DEFAULT_LANGUAGE = "en";

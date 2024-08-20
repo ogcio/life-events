@@ -1,21 +1,21 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
-import { HttpError } from "../../types/httpErrors";
+import { HttpError } from "../../types/httpErrors.js";
 import {
   OrganisationInvitationFeedbackSchema,
   OrganisationInvitationFeedback,
   OrganisationSetting,
   OrganisationSettingSchema,
-} from "../../types/usersSchemaDefinitions";
+} from "../../types/usersSchemaDefinitions.js";
 import {
   getOrganisationSettingsForProfile,
   updateInvitationStatus,
   updateOrganisationFeedback,
-} from "../../services/users/invitations/accept-invitations";
-import { Permissions } from "../../types/permissions";
-import { getGenericResponseSchema } from "../../types/schemaDefinitions";
-import { getSettingsPerUserProfile } from "../../services/users/shared-users";
-import { ensureUserIdIsSet } from "../../utils/authentication-factory";
+} from "../../services/users/invitations/accept-invitations.js";
+import { Permissions } from "../../types/permissions.js";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
+import { getSettingsPerUserProfile } from "../../services/users/shared-users.js";
+import { ensureUserIdIsSet } from "../../utils/authentication-factory.js";
 
 const tags = ["Organisation Settings"];
 

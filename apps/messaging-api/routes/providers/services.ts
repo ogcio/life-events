@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { PoolClient } from "pg";
-import { ServiceError } from "../../utils";
+import { ServiceError } from "../../utils.js";
 
 export type EmailProvider = {
   id: string;

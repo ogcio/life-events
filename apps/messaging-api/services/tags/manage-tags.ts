@@ -1,5 +1,5 @@
 import { PoolClient } from "pg";
-import { Tag } from "../../types/usersSchemaDefinitions";
+import { Tag } from "../../types/usersSchemaDefinitions.js";
 import { ServerError } from "shared-errors";
 
 const TAGS_PATH_SEPARATOR = ".";

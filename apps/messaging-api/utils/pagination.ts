@@ -1,4 +1,7 @@
-import { GenericResponse, PaginationParams } from "../types/schemaDefinitions";
+import {
+  GenericResponse,
+  PaginationParams,
+} from "../types/schemaDefinitions.js";
 
 export type PaginationDetails = {
   offset?: number;

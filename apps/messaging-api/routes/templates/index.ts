@@ -1,13 +1,13 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
-import { Permissions } from "../../types/permissions";
-import { HttpError } from "../../types/httpErrors";
-import { getGenericResponseSchema } from "../../types/schemaDefinitions";
+import { Permissions } from "../../types/permissions.js";
+import { HttpError } from "../../types/httpErrors.js";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
 import {
   ensureOrganizationIdIsSet,
   ensureUserIdIsSet,
-} from "../../utils/authentication-factory";
+} from "../../utils/authentication-factory.js";
 
 const tags = ["Templates"];
 

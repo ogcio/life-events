@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { isLifeEventsError, ServerError } from "shared-errors";
-import { getErrorMessage } from "../utils/error-utils";
+import { getErrorMessage } from "../utils/error-utils.js";
 import { version } from "../package.json";
 const ERROR_PROCESS = "HEALTHCHECK";
 

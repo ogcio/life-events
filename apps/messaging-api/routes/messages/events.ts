@@ -8,13 +8,16 @@ import {
   MessageEventListSchema,
   PaginationParams,
   PaginationParamsSchema,
-} from "../../types/schemaDefinitions";
+} from "../../types/schemaDefinitions.js";
 
-import { MessageEventData } from "../../services/messages/eventLogger";
-import { HttpError } from "../../types/httpErrors";
-import { Permissions } from "../../types/permissions";
-import { getPaginationLinks, sanitizePagination } from "../../utils/pagination";
-import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory";
+import { MessageEventData } from "../../services/messages/eventLogger.js";
+import { HttpError } from "../../types/httpErrors.js";
+import { Permissions } from "../../types/permissions.js";
+import {
+  getPaginationLinks,
+  sanitizePagination,
+} from "../../utils/pagination.js";
+import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory.js";
 import { NotFoundError } from "shared-errors";
 
 const tags = ["Message events"];

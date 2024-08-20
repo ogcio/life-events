@@ -4,7 +4,7 @@ import {
   OrganisationSetting,
   User,
   UsersImport,
-} from "../../types/usersSchemaDefinitions";
+} from "../../types/usersSchemaDefinitions.js";
 import { Profile } from "building-blocks-sdk";
 import { NotFoundError, ServerError } from "shared-errors";
 

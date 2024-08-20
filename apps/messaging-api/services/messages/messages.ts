@@ -1,15 +1,15 @@
 import { PostgresDb } from "@fastify/postgres";
-import { ReadMessage } from "../../types/schemaDefinitions";
-import { ServiceError, utils } from "../../utils";
+import { ReadMessage } from "../../types/schemaDefinitions.js";
+import { ServiceError, utils } from "../../utils.js";
 import { FastifyBaseLogger } from "fastify";
 import { Pool, PoolClient } from "pg";
-import { mailService } from "../../routes/providers/services";
-import { awsSnsSmsService } from "../sms/aws";
+import { mailService } from "../../routes/providers/services.js";
+import { awsSnsSmsService } from "../sms/aws.js";
 import {
   getUserProfiles,
   MessagingUserProfile,
   ProfileSdkFacade,
-} from "../users/shared-users";
+} from "../users/shared-users.js";
 import { isNativeError } from "util/types";
 import {
   BadRequestError,
@@ -24,13 +24,13 @@ import {
   MessagingEventLogger,
   MessagingEventType,
   newMessagingEventLogger,
-} from "./eventLogger";
-import { getProfileSdk } from "../../utils/authentication-factory";
+} from "./eventLogger.js";
+import { getProfileSdk } from "../../utils/authentication-factory.js";
 import {
   CreateMessageParams,
   MessagingService,
   newMessagingService,
-} from "./messaging";
+} from "./messaging.js";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 

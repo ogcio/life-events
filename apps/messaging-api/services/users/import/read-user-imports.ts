@@ -1,7 +1,7 @@
 import { FastifyBaseLogger } from "fastify";
 import { Pool } from "pg";
-import { getUserImports } from "../shared-users";
-import { UsersImport } from "../../../types/usersSchemaDefinitions";
+import { getUserImports } from "../shared-users.js";
+import { UsersImport } from "../../../types/usersSchemaDefinitions.js";
 import { NotFoundError } from "shared-errors";
 
 export const READ_USER_IMPORTS_ERROR = "READ_USER_IMPORTS_ERROR";

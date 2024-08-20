@@ -5,13 +5,13 @@ import {
   ImportStatus,
   ToImportUser,
   UsersImport,
-} from "../../../types/usersSchemaDefinitions";
+} from "../../../types/usersSchemaDefinitions.js";
 import "@fastify/multipart";
 import { parseFile, writeToBuffer } from "fast-csv";
 import { Pool, PoolClient } from "pg";
 import { isNativeError } from "util/types";
-import { mapUsers } from "./map-users";
-import { sendInvitationsForUsersImport } from "../invitations/send-invitations";
+import { mapUsers } from "./map-users.js";
+import { sendInvitationsForUsersImport } from "../invitations/send-invitations.js";
 import { PostgresDb } from "@fastify/postgres";
 import { BadRequestError, ServerError } from "shared-errors";
 

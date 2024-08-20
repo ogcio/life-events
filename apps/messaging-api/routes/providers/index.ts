@@ -14,10 +14,13 @@ import {
   ProviderCreateSchema,
   SmsCreateSchema,
   EditableProviderTypes,
-} from "../../types/schemaDefinitions";
+} from "../../types/schemaDefinitions.js";
 import { Static, Type } from "@sinclair/typebox";
-import { HttpError } from "../../types/httpErrors";
-import { getPaginationLinks, sanitizePagination } from "../../utils/pagination";
+import { HttpError } from "../../types/httpErrors.js";
+import {
+  getPaginationLinks,
+  sanitizePagination,
+} from "../../utils/pagination.js";
 import { QueryResult } from "pg";
 import {
   BadRequestError,
@@ -25,8 +28,8 @@ import {
   ServerError,
   ValidationError,
 } from "shared-errors";
-import { Permissions } from "../../types/permissions";
-import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory";
+import { Permissions } from "../../types/permissions.js";
+import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory.js";
 
 export const prefix = "/providers";
 

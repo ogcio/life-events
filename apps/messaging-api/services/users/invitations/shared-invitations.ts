@@ -1,7 +1,7 @@
 import { PoolClient } from "pg";
 import { isNativeError } from "util/types";
-import { OrganisationInvitationFeedback } from "../../../types/usersSchemaDefinitions";
-import { utils } from "../../../utils";
+import { OrganisationInvitationFeedback } from "../../../types/usersSchemaDefinitions.js";
+import { utils } from "../../../utils.js";
 import { ServerError } from "shared-errors";
 
 export const executeUpdateOrganisationFeedback = async (params: {

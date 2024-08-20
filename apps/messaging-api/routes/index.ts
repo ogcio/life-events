@@ -1,13 +1,13 @@
 import { FastifyInstance } from "fastify";
 
-import messages, { prefix as messagePrefix } from "./messages";
-import providers, { prefix as providersPrefix } from "./providers";
-import templates from "./templates";
-import organisationSettings from "./organisation-settings";
-import userImports from "./user-imports";
-import users from "./users";
-import events, { prefix as eventsPrefix } from "./messages/events";
-import jobs, { prefix as jobsPrefix } from "./jobs";
+import messages, { prefix as messagePrefix } from "./messages/index.js";
+import providers, { prefix as providersPrefix } from "./providers/index.js";
+import templates from "./templates/index.js";
+import organisationSettings from "./organisation-settings/index.js";
+import userImports from "./user-imports/index.js";
+import users from "./users/index.js";
+import events, { prefix as eventsPrefix } from "./messages/events.js";
+import jobs, { prefix as jobsPrefix } from "./jobs/index.js";
 
 export default async function routes(app: FastifyInstance) {
   app.register(messages, { prefix: messagePrefix });

@@ -1,29 +1,29 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Type } from "@sinclair/typebox";
-import { HttpError } from "../../types/httpErrors";
+import { HttpError } from "../../types/httpErrors.js";
 import {
   UserPerOrganisation,
   UserPerOrganisationSchema,
-} from "../../types/usersSchemaDefinitions";
+} from "../../types/usersSchemaDefinitions.js";
 import {
   GenericResponse,
   PaginationParams,
   PaginationParamsSchema,
   getGenericResponseSchema,
-} from "../../types/schemaDefinitions";
-import { getUser, getUsers } from "../../services/users/users";
+} from "../../types/schemaDefinitions.js";
+import { getUser, getUsers } from "../../services/users/users.js";
 import {
   PaginationDetails,
   formatAPIResponse,
   sanitizePagination,
-} from "../../utils/pagination";
-import { Permissions } from "../../types/permissions";
+} from "../../utils/pagination.js";
+import { Permissions } from "../../types/permissions.js";
 import { NotFoundError } from "shared-errors";
-import { ensureUserIsOrganisationMember } from "../../utils/error-utils";
+import { ensureUserIsOrganisationMember } from "../../utils/error-utils.js";
 import {
   ensureOrganizationIdIsSet,
   getProfileSdk,
-} from "../../utils/authentication-factory";
+} from "../../utils/authentication-factory.js";
 
 const tags = ["Users"];
 

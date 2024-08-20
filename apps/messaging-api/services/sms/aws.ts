@@ -1,4 +1,4 @@
-import { SMSService } from "../../routes";
+import { SMSService } from "../../routes/index.js";
 import { SNS } from "@aws-sdk/client-sns";
 
 export function awsSnsSmsService(

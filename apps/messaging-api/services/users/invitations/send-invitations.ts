@@ -3,17 +3,17 @@ import { PoolClient } from "pg";
 import {
   OrganisationSetting,
   UsersImport,
-} from "../../../types/usersSchemaDefinitions";
+} from "../../../types/usersSchemaDefinitions.js";
 import {
   ConfidentialSecurity,
   DEFAULT_LANGUAGE,
   MessageInput,
-} from "../../../types/schemaDefinitions";
+} from "../../../types/schemaDefinitions.js";
 import { PostgresDb } from "@fastify/postgres";
-import { ALL_TRANSPORTS } from "../shared-users";
+import { ALL_TRANSPORTS } from "../shared-users.js";
 import { ServerError } from "shared-errors";
-import { CreateMessageParams } from "../../messages/messaging";
-import { processMessages } from "../../messages/messages";
+import { CreateMessageParams } from "../../messages/messaging.js";
+import { processMessages } from "../../messages/messages.js";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
 

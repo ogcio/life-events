@@ -8,26 +8,26 @@ import {
   UserDetails,
   UserStatus,
   UsersImport,
-} from "../../../types/usersSchemaDefinitions";
+} from "../../../types/usersSchemaDefinitions.js";
 import { isNativeError } from "util/types";
 import { Profile } from "building-blocks-sdk";
-import { IMPORT_USERS_ERROR } from "./import-users";
+import { IMPORT_USERS_ERROR } from "./import-users.js";
 import {
   AvailableTransports,
   getUserByContacts,
   getUserByUserProfileId,
   getUserImports,
-} from "../shared-users";
-import { processTagsPerUser } from "../../tags/manage-tags";
-import { executeUpdateOrganisationFeedback } from "../invitations/shared-invitations";
+} from "../shared-users.js";
+import { processTagsPerUser } from "../../tags/manage-tags.js";
+import { executeUpdateOrganisationFeedback } from "../invitations/shared-invitations.js";
 import {
   NotFoundError,
   NotImplementedError,
   ServerError,
   isLifeEventsError,
 } from "shared-errors";
-import { getProfileSdk } from "../../../utils/authentication-factory";
-import { EditableProviderTypes } from "../../../types/schemaDefinitions";
+import { getProfileSdk } from "../../../utils/authentication-factory.js";
+import { EditableProviderTypes } from "../../../types/schemaDefinitions.js";
 
 interface FoundUser {
   id: string;
