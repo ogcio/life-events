@@ -9,6 +9,7 @@ type transactionFixtures = {
   manualBankTransferTransaction: {
     referenceCode: string;
     amount: string;
+    status: string;
     date: string;
   };
 };
@@ -43,6 +44,7 @@ export const test = base.extend<transactionFixtures>({
     await use({
       referenceCode,
       amount,
+      status: "pending",
       date: dayjs(new Date()).format("DD/MM/YYYY - HH:mm"),
     });
   },

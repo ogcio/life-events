@@ -1,4 +1,3 @@
-// import { test } from "../../fixtures/paymentRequestsFixtures";
 import { test } from "../../fixtures/transactionsFixtures";
 import {
   Severity,
@@ -61,7 +60,7 @@ test.describe("Payment Request deletion", () => {
 
     const detailsPage = new PaymentRequestDetailsPage(page);
     await detailsPage.checkHeader();
-    await detailsPage.checkPaymentsList(manualBankTransferTransaction);
+    await detailsPage.checkPaymentsList([manualBankTransferTransaction]);
     await detailsPage.checkDeleteDisabled();
   });
 });

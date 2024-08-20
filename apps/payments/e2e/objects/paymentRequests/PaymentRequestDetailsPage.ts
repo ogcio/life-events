@@ -171,7 +171,12 @@ export class PaymentRequestDetailsPage {
     return (await this.paymentLink.textContent()) ?? "";
   }
 
-  async checkPaymentsList(transaction: { amount: string }) {
+  async checkPaymentsList(
+    transactions: {
+      amount: string;
+      status: string;
+    }[],
+  ) {
     await expect(
       this.page.getByRole("heading", { name: "Payments Received" }),
     ).toBeVisible();
@@ -184,11 +189,13 @@ export class PaymentRequestDetailsPage {
       await expect(columnHeader).toBeVisible();
     }
 
-    const transactionRow = await this.page
-      .getByRole("row")
-      .filter({ hasText: "pending" })
-      .filter({ hasText: transaction.amount })
-      .filter({ hasText: "Details" });
-    await expect(transactionRow).toBeVisible();
+    for (const transaction of transactions) {
+      const transactionRow = await this.page
+        .getByRole("row")
+        .filter({ hasText: transaction.status })
+        .filter({ hasText: transaction.amount })
+        .filter({ hasText: "Details" });
+      await expect(transactionRow).toBeVisible();
+    }
   }
 }
