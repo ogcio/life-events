@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../../fixtures/citizenPageFixtures";
+import { test } from "../../fixtures/paymentRequestsFixtures";
 import {
   Severity,
   owner,

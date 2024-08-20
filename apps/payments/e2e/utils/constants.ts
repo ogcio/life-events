@@ -5,10 +5,10 @@ export const landingPageUrl = "/en/info";
 export const landingPage2Url = "http://localhost:3004/en/payments";
 
 export const password = "123";
+export const citizens = ["Peter Parker", "Bruce Wayne"];
+export const publicServants = ["Tony Stark", "John Doe"];
 export const myGovIdMockSettings = {
   publicServantEmailDomain: "gov.ie",
-  publicServantUser: "Tony Stark",
-  citizen: "Peter Parker",
   citizenEmailDomain: "mail.ie",
 };
 

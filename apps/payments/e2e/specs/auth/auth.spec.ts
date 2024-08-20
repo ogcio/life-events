@@ -10,7 +10,7 @@ import {
 } from "allure-js-commons";
 import { ProvidersPage } from "../../objects/providers/ProvidersPage";
 import { MyGovIdMockLoginPage } from "../../objects/MyGovIdMockLoginPage";
-import { myGovIdMockSettings, password } from "../../utils/constants";
+import { password, publicServants } from "../../utils/constants";
 
 test.describe("Auth", () => {
   let page: Page;
@@ -37,11 +37,9 @@ test.describe("Auth", () => {
 
     const loginPage = new MyGovIdMockLoginPage(page);
 
-    await loginPage.selectPublicServantUser(
-      myGovIdMockSettings.publicServantUser,
-    );
+    await loginPage.selectPublicServantUser(publicServants[0]);
     await loginPage.enterPassword(password);
-    await loginPage.submitLogin(myGovIdMockSettings.publicServantUser);
+    await loginPage.submitLogin(publicServants[0]);
 
     await providersPage.checkHeader();
   });
