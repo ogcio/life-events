@@ -2,11 +2,19 @@ import { type Page, type Locator, expect } from "@playwright/test";
 import { CountrySelection } from "./CountrySelection";
 import { BankSelection } from "./BankSelection";
 import { ReviewPayment } from "./ReviewPayment";
+import { CancelPaymentComponent } from "./CancelPaymentComponent";
+import { PayWithPhone } from "./PayWithPhone";
+import { PaymentInProgress } from "./PaymentInProgress";
+import { MockBankPortal } from "./MockBankPortal";
 
 export class TrueLayerDialogPage {
   public readonly countrySelection: CountrySelection;
   public readonly bankSelection: BankSelection;
   public readonly reviewPayment: ReviewPayment;
+  public readonly cancelPaymentComponent: CancelPaymentComponent;
+  public readonly payWithPhone: PayWithPhone;
+  public readonly mockBankPortal: MockBankPortal;
+  public readonly paymentInProgress: PaymentInProgress;
   private readonly cancelBtn: Locator;
   private readonly loader: Locator;
   private readonly frame: string;
@@ -16,6 +24,10 @@ export class TrueLayerDialogPage {
     this.countrySelection = new CountrySelection(page, this.frame);
     this.bankSelection = new BankSelection(page, this.frame);
     this.reviewPayment = new ReviewPayment(page, this.frame);
+    this.cancelPaymentComponent = new CancelPaymentComponent(page, this.frame);
+    this.payWithPhone = new PayWithPhone(page, this.frame);
+    this.mockBankPortal = new MockBankPortal(page);
+    this.paymentInProgress = new PaymentInProgress(page);
     this.cancelBtn = page
       .frameLocator(this.frame)
       .getByRole("button", { name: "Cancel payment" });

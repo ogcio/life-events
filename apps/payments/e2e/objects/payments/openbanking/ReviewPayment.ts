@@ -16,7 +16,7 @@ export class ReviewPayment {
       name: "Review payment",
     });
     this.transferInfo = (name: string) =>
-      this.frameLocator.getByText(`You're sending ${name} (payments)`);
+      this.frameLocator.getByText(`You\'re sending ${name}(payments)`);
     this.amountText = (amount: string) =>
       this.frameLocator.getByText(`€${amount}`);
     this.goToBankBtn = this.frameLocator.getByRole("button", {
