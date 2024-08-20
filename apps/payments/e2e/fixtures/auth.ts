@@ -59,7 +59,7 @@ export const test = baseTest.extend<
     pubServantWorkerStorageState: string;
     secondPubServantWorkerStorageState: string;
     userWorkerStorageState: string;
-    user2WorkerStorageState: string;
+    secondUserWorkerStorageState: string;
   }
 >({
   pubServantWorkerStorageState: [
@@ -82,7 +82,7 @@ export const test = baseTest.extend<
   secondPubServantWorkerStorageState: [
     async ({ browser }, use) => {
       const id = test.info().parallelIndex;
-      const storagePath = `.auth/public-servant-${id}.json`;
+      const storagePath = `.auth/second-public-servant-${id}.json`;
 
       const fileName = await getWorkerStorageState(
         browser,
@@ -113,10 +113,10 @@ export const test = baseTest.extend<
     { scope: "worker" },
   ],
 
-  user2WorkerStorageState: [
+  secondUserWorkerStorageState: [
     async ({ browser }, use) => {
       const id = test.info().parallelIndex;
-      const storagePath = `.auth/citizen-${id}.json`;
+      const storagePath = `.auth/second-citizen-${id}.json`;
 
       const fileName = await getWorkerStorageState(
         browser,

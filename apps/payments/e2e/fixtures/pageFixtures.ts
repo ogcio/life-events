@@ -3,7 +3,7 @@ import { test as base } from "./auth";
 
 type citizenPageFixtures = {
   citizenPage: Page;
-  citizen2Page: Page;
+  secondCitizenPage: Page;
   publicServantPage: Page;
   secondPublicServantPage: Page;
 };
@@ -18,9 +18,9 @@ export const test = base.extend<citizenPageFixtures>({
     await context.close();
   },
 
-  citizen2Page: async ({ browser, user2WorkerStorageState }, use) => {
+  secondCitizenPage: async ({ browser, secondUserWorkerStorageState }, use) => {
     const context = await browser.newContext({
-      storageState: user2WorkerStorageState,
+      storageState: secondUserWorkerStorageState,
     });
     const citizenPage = await context.newPage();
     await use(citizenPage);
