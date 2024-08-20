@@ -106,8 +106,11 @@ export default async function providers(app: FastifyInstance) {
       } else if (request.query.primary === false) {
         primaryFilter = "where is_primary != true";
       }
+
+      const url = new URL(`/api/v1${prefix}`, process.env.HOST_URL);
       if (type == "email") {
         try {
+          url.searchParams.append("type", "email");
           query = await app.pg.pool.query<QueryProvider>(
             `
             with count_selection as(
@@ -139,6 +142,7 @@ export default async function providers(app: FastifyInstance) {
         }
       } else if (type === "sms") {
         try {
+          url.searchParams.append("type", "sms");
           query = await app.pg.pool.query<QueryProvider>(
             `
               with count_selection as(
@@ -176,7 +180,7 @@ export default async function providers(app: FastifyInstance) {
       }
 
       const totalCount = query.rows.at(0)?.count || 0;
-      const url = new URL(`/api/v1/${prefix}`, process.env.HOST_URL).href;
+
       const links = getPaginationLinks({
         totalCount,
         url,
