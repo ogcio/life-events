@@ -94,7 +94,7 @@ paths:
                     items:
                       type: object
                       properties:
-                        filename:
+                        fileName:
                           type: string
                         id:
                           type: string
@@ -122,7 +122,7 @@ paths:
                             - ppsn
                         fileSize:
                           type: number
-                        mimetype:
+                        mimeType:
                           type: string
                         createdAt:
                           type: string
@@ -138,11 +138,11 @@ paths:
                         antivirusDbVersion:
                           type: string
                       required:
-                        - filename
+                        - fileName
                         - key
                         - owner
                         - fileSize
-                        - mimetype
+                        - mimeType
                         - createdAt
                         - lastScan
                         - infected

@@ -100,16 +100,16 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
       const { isInfected, viruses } = result;
 
       if (isInfected) {
-        await insertFileMetadata(app, {
+        await insertFileMetadata(app.pg, {
           createdAt: new Date(),
           lastScan: new Date(),
           fileSize: length,
           infected: true,
           infectionDescription: viruses.join(","),
           key: `${userId}/${filename}`,
-          mimetype: fileMimeType,
+          mimeType: fileMimeType,
           owner: userId as string,
-          filename,
+          fileName: filename,
           antivirusDbVersion: dbVersion,
           deleted: true,
           organizationId,
@@ -140,7 +140,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
       const { Key } = resData;
       const dbVersion = await getDbVersionPromise;
 
-      await insertFileMetadata(app, {
+      await insertFileMetadata(app.pg, {
         createdAt: new Date(),
         lastScan: new Date(),
         fileSize: length,
@@ -244,7 +244,7 @@ export default async function routes(app: FastifyInstance) {
 
       const profileSdk = await getProfileSdk(organizationId);
 
-      const data = await getUserFiles(app, userId, organizationId);
+      const data = await getUserFiles(app.pg, userId, organizationId);
 
       const files = data.rows;
 
@@ -308,7 +308,7 @@ export default async function routes(app: FastifyInstance) {
       const organizationId = ensureOrganizationIdIsSet(request, FILE_DELETE);
 
       const fileData = await getFileMetadata(
-        app,
+        app.pg,
         request.params.key,
         userId,
         organizationId,
@@ -328,7 +328,7 @@ export default async function routes(app: FastifyInstance) {
           }),
         );
 
-        await deleteFileMetadata(app, request.params.key);
+        await deleteFileMetadata(app.pg, request.params.key);
       } catch (err) {
         throw new ServerError(FILE_DELETE, "Internal server error", err);
       }
@@ -362,7 +362,12 @@ export default async function routes(app: FastifyInstance) {
       const organizationId = request.userData?.organizationId;
 
       const key = request.params.key;
-      const fileData = await getFileMetadata(app, key, userId, organizationId);
+      const fileData = await getFileMetadata(
+        app.pg,
+        key,
+        userId,
+        organizationId,
+      );
 
       const file = fileData.rows.length > 0 ? fileData.rows[0] : undefined;
 
@@ -384,7 +389,7 @@ export default async function routes(app: FastifyInstance) {
       } catch (err) {
         const err_ = err as { $metadata: { httpStatusCode: number } };
         if (err_.$metadata.httpStatusCode === 404) {
-          await updateFileMetadata(app, {
+          await updateFileMetadata(app.pg, {
             ...file,
             deleted: true,
           });
@@ -444,7 +449,7 @@ export default async function routes(app: FastifyInstance) {
             }
 
             try {
-              await updateFileMetadata(app, {
+              await updateFileMetadata(app.pg, {
                 ...file,
                 lastScan: new Date(),
                 infected: isInfected,

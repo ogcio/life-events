@@ -500,12 +500,12 @@ t.test("files", async (t) => {
             t.match(response.json(), {
               data: [
                 {
-                  filename: "filename",
+                  fileName: "fileName",
                   id: "1",
-                  key: "user/filename",
+                  key: "user/fileName",
                   owner: ownerData,
                   fileSize: 100,
-                  mimetype: "image/png",
+                  mimeType: "image/png",
                   createdAt: "2024-08-12T13:12:18.681Z",
                   lastScan: "2024-08-12T13:12:18.681Z",
                   deleted: false,
@@ -523,12 +523,12 @@ t.test("files", async (t) => {
         await nextTick();
         pgEventEmitter.emit("done", [
           {
-            filename: "filename",
+            fileName: "fileName",
             id: "1",
-            key: "user/filename",
+            key: "user/fileName",
             owner: "user",
             fileSize: 100,
-            mimetype: "image/png",
+            mimeType: "image/png",
             createdAt: "2024-08-12T13:12:18.681Z",
             lastScan: "2024-08-12T13:12:18.681Z",
             deleted: false,

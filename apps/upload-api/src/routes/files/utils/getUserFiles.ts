@@ -1,13 +1,13 @@
-import { FastifyInstance } from "fastify";
 import { FileMetadataType } from "../../../types/schemaDefinitions.js";
+import fastifyPostgres from "@fastify/postgres";
 
-export default async (
-  app: FastifyInstance,
+export default (
+  pg: fastifyPostgres.PostgresDb,
   owner: string,
   organizationId?: string,
 ) => {
   let query = `
-    SELECT id, key, owner, fileSize as "fileSize", mimetype, createdAt as "createdAt", lastScan as "lastScan", infected, infection_description as "infectionDescription", deleted, filename FROM files
+    SELECT id, key, owner, file_size as "fileSize", mime_type as "mimeType", created_at as "createdAt", last_scan as "lastScan", infected, infection_description as "infectionDescription", deleted, file_name as "fileName" FROM files
     WHERE owner = $1
     `;
 
@@ -17,5 +17,5 @@ export default async (
     query = `${query} OR organization_id = $2`;
     params.push(organizationId);
   }
-  return await app.pg.query<FileMetadataType>(query, params);
+  return pg.query<FileMetadataType>(query, params);
 };
