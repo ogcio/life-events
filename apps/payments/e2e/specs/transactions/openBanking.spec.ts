@@ -1,4 +1,4 @@
-import { test } from "../../fixtures/citizenPagesFixtures";
+import { test } from "../../fixtures/paymentRequestsFixtures";
 import {
   Severity,
   owner,
@@ -16,12 +16,13 @@ import {
 import { TrueLayerDialogPage } from "../../objects/payments/openbanking/TrueLayerDialogPage";
 import { expect } from "@playwright/test";
 import { referenceCodeSearchParam } from "../../utils/constants";
+import { PayPage } from "../../objects/payments/PayPage";
 
 test.describe("Transaction with open banking", () => {
   test("should cancel a payment with an open banking provider @smoke @normal", async ({
-    browser,
     paymentRequestWithOpenBankingProvider,
-    payPage,
+    publicServantPage,
+    citizenPage,
   }) => {
     await description(
       "This test checks that a payment transaction with an open banking provider can be initiated and then cancelled by a citizen",
@@ -30,7 +31,6 @@ test.describe("Transaction with open banking", () => {
     await tags("Transaction", "Open Banking");
     await severity(Severity.NORMAL);
 
-    const publicServantPage = await browser.newPage();
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
@@ -40,7 +40,7 @@ test.describe("Transaction with open banking", () => {
     const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     const paymentLink = await detailsPage.getPaymentLink();
 
-    const citizenPage = payPage.page;
+    const payPage = new PayPage(citizenPage);
     await payPage.goto(paymentLink);
     await payPage.checkHeader();
     await payPage.checkAmount(mockAmount);
@@ -76,9 +76,9 @@ test.describe("Transaction with open banking", () => {
   });
 
   test("should complete a payment with an open banking provider @smoke @critical", async ({
-    browser,
     paymentRequestWithOpenBankingProvider,
-    payPage,
+    publicServantPage,
+    citizenPage,
   }) => {
     await description(
       "This test checks that a payment transaction with an open banking provider is successfully completed by a citizen",
@@ -87,7 +87,6 @@ test.describe("Transaction with open banking", () => {
     await tags("Transaction", "Open Banking");
     await severity(Severity.CRITICAL);
 
-    const publicServantPage = await browser.newPage();
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
@@ -97,7 +96,7 @@ test.describe("Transaction with open banking", () => {
     const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     const paymentLink = await detailsPage.getPaymentLink();
 
-    const citizenPage = payPage.page;
+    const payPage = new PayPage(citizenPage);
     await payPage.goto(paymentLink);
     await payPage.checkHeader();
     await payPage.checkAmount(mockAmount);
