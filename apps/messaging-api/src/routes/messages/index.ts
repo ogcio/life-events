@@ -71,12 +71,12 @@ export default async function messages(app: FastifyInstance) {
     },
     async function getMessagesHandler(request, _reply) {
       const errorProcess = "GET_MESSAGES";
-      let url = "";
+      let url: URL | undefined;
       try {
         url = utils.apiV1Url({
           resourcePath: prefix,
           base: process.env.HOST_URL || "",
-        }).href;
+        });
       } catch (error) {
         throw new ServerError(errorProcess, "failed to build link url", error);
       }

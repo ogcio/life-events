@@ -129,7 +129,7 @@ export default async function messages(app: FastifyInstance) {
 
       const links = getPaginationLinks({
         totalCount,
-        url: baseUrl().href,
+        url: baseUrl(),
         limit,
         offset,
       });

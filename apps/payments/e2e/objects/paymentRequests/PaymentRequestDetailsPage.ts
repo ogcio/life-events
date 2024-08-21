@@ -170,4 +170,32 @@ export class PaymentRequestDetailsPage {
     await expect(this.paymentLinkLabel).toBeVisible();
     return (await this.paymentLink.textContent()) ?? "";
   }
+
+  async checkPaymentsList(
+    transactions: {
+      amount: string;
+      status: string;
+    }[],
+  ) {
+    await expect(
+      this.page.getByRole("heading", { name: "Payments Received" }),
+    ).toBeVisible();
+
+    const tableHeaders = ["Status", "Date", "Amount", "Actions"];
+    for (const header of tableHeaders) {
+      const columnHeader = await this.page.getByRole("columnheader", {
+        name: header,
+      });
+      await expect(columnHeader).toBeVisible();
+    }
+
+    for (const transaction of transactions) {
+      const transactionRow = await this.page
+        .getByRole("row")
+        .filter({ hasText: transaction.status })
+        .filter({ hasText: transaction.amount })
+        .filter({ hasText: "Details" });
+      await expect(transactionRow).toBeVisible();
+    }
+  }
 }
