@@ -60,6 +60,11 @@ export default async function Page(props: Props) {
 
   if (error) {
     status = TransactionStatuses.Failed;
+    return (
+      <h3 style={{ textAlign: "center", marginTop: "5rem" }}>
+        There was an error processing your payment.
+      </h3>
+    );
   }
 
   if (!extPaymentId) {
