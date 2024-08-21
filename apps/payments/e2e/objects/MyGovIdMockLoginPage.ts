@@ -8,15 +8,27 @@ export class MyGovIdMockLoginPage {
     this.pwInput = this.page.getByRole("textbox");
   }
 
-  async selectPublicServantUser(publicServantUser: string) {
-    const [name, surname] = publicServantUser.split(" ");
-    const email = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.publicServantEmailDomain}`;
-    await this.page.getByLabel("Select user").selectOption(email);
-  }
+  // async selectPublicServantUser(publicServantUser: string) {
+  //   const [name, surname] = publicServantUser.split(" ");
+  //   const email = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.publicServantEmailDomain}`;
+  //   await this.page.getByLabel("Select user").selectOption(email);
+  // }
 
-  async selectCitizen(citizen: string) {
-    const [name, surname] = citizen.split(" ");
-    const email = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.citizenEmailDomain}`;
+  // async selectCitizen(citizen: string) {
+  //   const [name, surname] = citizen.split(" ");
+  //   const email = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.citizenEmailDomain}`;
+  //   await this.page.getByLabel("Select user").selectOption(email);
+  // }
+
+  async selectUser(userName: string, role: string) {
+    const [name, surname] = userName.split(" ");
+    let emailDomain = myGovIdMockSettings.publicServantEmailDomain;
+
+    if (role === "citizen") {
+      emailDomain = myGovIdMockSettings.citizenEmailDomain;
+    }
+
+    const email = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${emailDomain}`;
     await this.page.getByLabel("Select user").selectOption(email);
   }
 

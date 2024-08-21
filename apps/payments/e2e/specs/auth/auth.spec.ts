@@ -37,7 +37,7 @@ test.describe("Auth", () => {
 
     const loginPage = new MyGovIdMockLoginPage(page);
 
-    await loginPage.selectPublicServantUser(publicServants[0]);
+    await loginPage.selectUser(publicServants[0], "publicServant");
     await loginPage.enterPassword(password);
     await loginPage.submitLogin(publicServants[0]);
 

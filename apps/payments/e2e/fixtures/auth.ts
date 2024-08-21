@@ -21,6 +21,7 @@ const getWorkerStorageState = async (
   storagePath: string,
   userName: string,
   pass: string,
+  role: string,
 ) => {
   const fileName = path.resolve(test.info().project.outputDir, storagePath);
 
@@ -40,11 +41,15 @@ const getWorkerStorageState = async (
 
   const loginPage = new MyGovIdMockLoginPage(page);
 
-  await loginPage.selectPublicServantUser(userName);
+  await loginPage.selectUser(userName, role);
   await loginPage.enterPassword(pass);
   await loginPage.submitLogin(userName);
 
-  await loginPage.expectPaymentSetupPage();
+  if (role === "publicServant") {
+    await loginPage.expectPaymentSetupPage();
+  } else {
+    await loginPage.expectCitizenPaymentsPage();
+  }
 
   await page.context().storageState({ path: fileName });
 
@@ -72,6 +77,7 @@ export const test = baseTest.extend<
         storagePath,
         publicServants[0],
         password,
+        "publicServant",
       );
 
       await use(fileName);
@@ -89,6 +95,7 @@ export const test = baseTest.extend<
         storagePath,
         publicServants[1],
         password,
+        "publicServant",
       );
 
       await use(fileName);
@@ -106,6 +113,7 @@ export const test = baseTest.extend<
         storagePath,
         citizens[0],
         password,
+        "citizen",
       );
 
       await use(fileName);
@@ -123,6 +131,7 @@ export const test = baseTest.extend<
         storagePath,
         citizens[1],
         password,
+        "citizen",
       );
 
       await use(fileName);

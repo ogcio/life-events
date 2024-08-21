@@ -1,4 +1,4 @@
-import { expect, Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { test } from "../../fixtures/paymentRequestsFixtures";
 import {
   Severity,
@@ -12,16 +12,11 @@ import { mockRedirectUrl, paymentRequestDescription } from "../../utils/mocks";
 import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/PaymentRequestDetailsPage";
 
 test.describe("Edit payment Request", () => {
-  let page: Page;
   let name: string;
   let updatedName: string;
   const updatedDescription = `${paymentRequestDescription} updated`;
   const updatedAmount = "50.00";
   const updatedRedirectUri = `${mockRedirectUrl}/updated`;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
 
   test.beforeEach(async () => {
     name = `Test ${Date.now()}`;
@@ -33,6 +28,7 @@ test.describe("Edit payment Request", () => {
     realexProvider,
     stripeProvider,
     openBankingProvider,
+    publicServantPage,
   }) => {
     await description(
       "This test checks the successful creation and edit of a payment request.",
@@ -41,7 +37,9 @@ test.describe("Edit payment Request", () => {
     await tags("Payment Request", "Edit");
     await severity(Severity.NORMAL);
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.goto();
     await createPaymentRequestPage.create({
       title: name,
@@ -49,10 +47,12 @@ test.describe("Edit payment Request", () => {
       cardProvider: stripeProvider,
     });
 
-    const detailsPage = new PaymentRequestDetailsPage(page);
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     await detailsPage.gotoEdit();
 
-    const editPaymentRequestPage = new PaymentRequestFormPage(page);
+    const editPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await editPaymentRequestPage.enterTitle(updatedName);
     await editPaymentRequestPage.enterDescription(updatedDescription);
     await editPaymentRequestPage.deselectManualBankTransferAccount();
@@ -65,7 +65,9 @@ test.describe("Edit payment Request", () => {
     await editPaymentRequestPage.selectInactiveStatus();
     await editPaymentRequestPage.saveChanges();
 
-    const afterEditDetailsPage = new PaymentRequestDetailsPage(page);
+    const afterEditDetailsPage = new PaymentRequestDetailsPage(
+      publicServantPage,
+    );
     await afterEditDetailsPage.checkTitle(updatedName);
     await detailsPage.checkDescription(updatedDescription);
     await detailsPage.checkAccounts([
@@ -81,6 +83,7 @@ test.describe("Edit payment Request", () => {
 
   test("should get error message if remove all providers during edit and status is active @regression @normal", async ({
     bankTransferProvider,
+    publicServantPage,
   }) => {
     await description(
       "This test checks if a user gets an error when removes all the providers and don't change the status to be inactive.",
@@ -89,28 +92,35 @@ test.describe("Edit payment Request", () => {
     await tags("Payment Request", "Edit");
     await severity(Severity.NORMAL);
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.goto();
     await createPaymentRequestPage.create({
       title: name,
       bankTransferProvider: bankTransferProvider,
     });
 
-    const detailsPage = new PaymentRequestDetailsPage(page);
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     await detailsPage.gotoEdit();
 
-    const editPaymentRequestPage = new PaymentRequestFormPage(page);
-    const editPageURL = page.url();
+    const editPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
+    const editPageURL = publicServantPage.url();
     await editPaymentRequestPage.deselectManualBankTransferAccount();
     await editPaymentRequestPage.saveChanges();
 
-    const editPaymentRequestErrorPage = new PaymentRequestFormPage(page);
-    await expect(editPageURL).toEqual(page.url());
+    const editPaymentRequestErrorPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
+    await expect(editPageURL).toEqual(publicServantPage.url());
     await editPaymentRequestErrorPage.expectValidationError("statusInvalid");
   });
 
   test("should get error message if required fields are empty @regression @normal", async ({
     bankTransferProvider,
+    publicServantPage,
   }) => {
     await description(
       "This test checks if a user gets validation errors when required fields are empty.",
@@ -119,19 +129,23 @@ test.describe("Edit payment Request", () => {
     await tags("Payment Request", "Edit");
     await severity(Severity.NORMAL);
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.goto();
     await createPaymentRequestPage.create({
       title: name,
       bankTransferProvider: bankTransferProvider,
     });
 
-    const detailsPage = new PaymentRequestDetailsPage(page);
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
 
     await detailsPage.gotoEdit();
 
-    const editPaymentRequestPage = new PaymentRequestFormPage(page);
-    const editPageURL = page.url();
+    const editPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
+    const editPageURL = publicServantPage.url();
     await editPaymentRequestPage.enterTitle("");
     await editPaymentRequestPage.enterDescription("");
     await editPaymentRequestPage.enterReference("");
@@ -139,8 +153,10 @@ test.describe("Edit payment Request", () => {
     await editPaymentRequestPage.enterRedirectURL("");
     await editPaymentRequestPage.saveChanges();
 
-    const editPaymentRequestErrorPage = new PaymentRequestFormPage(page);
-    await expect(editPageURL).toEqual(page.url());
+    const editPaymentRequestErrorPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
+    await expect(editPageURL).toEqual(publicServantPage.url());
     await editPaymentRequestErrorPage.expectValidationError("titleRequired");
     await editPaymentRequestErrorPage.expectValidationError(
       "referenceRequired",
