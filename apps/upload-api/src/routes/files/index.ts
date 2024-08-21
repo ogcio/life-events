@@ -10,6 +10,7 @@ import { EventEmitter } from "node:events";
 import { PassThrough, pipeline } from "stream";
 import { HttpError } from "../../types/httpErrors.js";
 import {
+  FileOwnerType,
   getGenericResponseSchema,
   ResponseMetadata,
 } from "../../types/schemaDefinitions.js";
@@ -33,6 +34,7 @@ import { Permissions } from "../../types/permissions.js";
 import {
   ensureOrganizationIdIsSet,
   ensureUserIdIsSet,
+  getProfileSdk,
 } from "../../utils/authentication-factory.js";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
@@ -238,11 +240,44 @@ export default async function routes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const userId = ensureUserIdIsSet(request, FILE_INDEX);
-      const organizationId = ensureOrganizationIdIsSet(request, FILE_INDEX);
+      const organizationId = request.userData?.organizationId;
+
+      const profileSdk = await getProfileSdk(organizationId);
+
       const data = await getUserFiles(app, userId, organizationId);
 
       const files = data.rows;
-      reply.send({ data: files });
+
+      const userIds = files.map((f) => f.owner);
+      let usersData: { [key: string]: FileOwnerType };
+
+      if (files.length === 0) {
+        return reply.send({ data: [] });
+      }
+
+      try {
+        const usersResponse = await profileSdk.selectUsers(userIds);
+
+        if (usersResponse.error) {
+          throw new ServerError(
+            FILE_DELETE,
+            "Internal server error",
+            usersResponse.error,
+          );
+        }
+
+        if (usersResponse.data) {
+          usersData = usersResponse.data.reduce(
+            (acc, next) => ({ ...acc, [next.id]: next }),
+            {},
+          );
+        }
+      } catch (err) {
+        throw new ServerError(FILE_DELETE, "Internal server error", err);
+      }
+      const filesData = files.map((f) => ({ ...f, owner: usersData[f.owner] }));
+
+      reply.send({ data: filesData });
     },
   );
 
@@ -270,7 +305,14 @@ export default async function routes(app: FastifyInstance) {
         throw new BadRequestError(FILE_DELETE, "File key not provided");
       }
 
-      const fileData = await getFileMetadata(app, request.params.key, userId);
+      const organizationId = ensureOrganizationIdIsSet(request, FILE_DELETE);
+
+      const fileData = await getFileMetadata(
+        app,
+        request.params.key,
+        userId,
+        organizationId,
+      );
 
       const file = fileData.rows?.[0];
 
@@ -316,10 +358,11 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       let response;
 
-      const userId = request.userData?.userId as string;
+      const userId = ensureUserIdIsSet(request, FILE_INDEX);
+      const organizationId = request.userData?.organizationId;
 
       const key = request.params.key;
-      const fileData = await getFileMetadata(app, key, userId);
+      const fileData = await getFileMetadata(app, key, userId, organizationId);
 
       const file = fileData.rows.length > 0 ? fileData.rows[0] : undefined;
 

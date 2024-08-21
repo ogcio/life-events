@@ -101,7 +101,25 @@ paths:
                         key:
                           type: string
                         owner:
-                          type: string
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            firstName:
+                              type: string
+                            lastName:
+                              type: string
+                            ppsn:
+                              type: string
+                            email:
+                              type: string
+                            phone:
+                              type: string
+                          required:
+                            - id
+                            - firstName
+                            - lastName
+                            - ppsn
                         fileSize:
                           type: number
                         mimetype:

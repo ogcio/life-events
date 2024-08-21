@@ -36,6 +36,7 @@ const TableRow = ({ file, deleteFile }: TableRowProps) => {
         )}
       </th>
       <td className="govie-table__cell">{formatBytes(file.fileSize)}</td>
+      <td className="govie-table__cell">{file.owner.email}</td>
       <td className="govie-table__cell">
         <DeleteFile deleteFile={deleteFile} id={file.id as string} />
       </td>
@@ -61,6 +62,9 @@ export default ({ deleteFile, files }: FileTableProps) => {
           </th>
           <th scope="col" className="govie-table__header">
             File size
+          </th>
+          <th scope="col" className="govie-table__header">
+            Uploaded by
           </th>
           <th scope="col" className="govie-table__header">
             Action

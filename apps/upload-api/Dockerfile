@@ -8,26 +8,20 @@ COPY ./apps/upload-api/db /app/apps/upload-api/db
 COPY ./packages/shared-errors/ /app/packages/shared-errors/
 COPY ./packages/logging-wrapper/ /app/packages/logging-wrapper/
 COPY ./packages/error-handler/ /app/packages/error-handler/
+COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 COPY ./packages/api-auth/ /app/packages/api-auth/
 
 RUN npm ci
 
 FROM deps AS builder
 
-WORKDIR /app/packages/shared-errors/
-RUN npm run build
 
-WORKDIR /app/packages/logging-wrapper/
-RUN npm run build
-
-WORKDIR /app/packages/error-handler/
-RUN npm run build
-
-WORKDIR /app/packages/api-auth/
-RUN npm run build
-
-WORKDIR /app/apps/upload-api/
-RUN npm run build
+RUN npm run build -w=/app/packages/shared-errors && \
+    npm run build -w=/app/packages/logging-wrapper && \
+    npm run build -w=/app/packages/error-handler && \
+    npm run build -w=/app/packages/building-blocks-sdk && \
+    npm run build -w=/app/packages/api-auth && \
+    npm run build -w=/app/apps/upload-api
 
 
 FROM base-deps AS assembler
@@ -55,6 +49,10 @@ COPY --from=builder /app/packages/logging-wrapper/package.json /app/packages/log
 COPY --from=builder /app/packages/error-handler/dist /app/packages/error-handler/dist
 COPY --from=builder /app/packages/error-handler/node_modules /app/packages/error-handler/node_modules
 COPY --from=builder /app/packages/error-handler/package.json /app/packages/error-handler/
+
+COPY --from=builder /app/packages/building-blocks-sdk/dist /app/packages/building-blocks-sdk/dist
+COPY --from=builder /app/packages/building-blocks-sdk/node_modules /app/packages/building-blocks-sdk/node_modules
+COPY --from=builder /app/packages/building-blocks-sdk/package.json /app/packages/building-blocks-sdk/
 
 COPY --from=builder /app/packages/api-auth/dist /app/packages/api-auth/dist
 COPY --from=builder /app/packages/api-auth/node_modules /app/packages/api-auth/node_modules

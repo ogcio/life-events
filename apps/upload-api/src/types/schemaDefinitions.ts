@@ -11,11 +11,22 @@ export const Token = Type.Object({
 
 export type TokenType = Static<typeof Token>;
 
+const FileOwner = Type.Object({
+  id: Type.String(),
+  firstName: Type.String(),
+  lastName: Type.String(),
+  ppsn: Type.String(),
+  email: Type.Optional(Type.String()),
+  phone: Type.Optional(Type.String()),
+});
+
+export type FileOwnerType = Static<typeof FileOwner>;
+
 export const ResponseMetadata = Type.Object({
   filename: Type.String(),
   id: Type.Optional(Type.String()),
   key: Type.String(),
-  owner: Type.String(),
+  owner: FileOwner,
   fileSize: Type.Number(),
   mimetype: Type.String(),
   createdAt: Type.String(),
