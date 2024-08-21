@@ -526,7 +526,7 @@ t.test("files", async (t) => {
             fileName: "fileName",
             id: "1",
             key: "user/fileName",
-            owner: "user",
+            ownerId: "user",
             fileSize: 100,
             mimeType: "image/png",
             createdAt: "2024-08-12T13:12:18.681Z",

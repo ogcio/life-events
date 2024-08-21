@@ -7,7 +7,7 @@ export default (
   organizationId?: string,
 ) => {
   let query = `
-    SELECT id, key, owner, file_size as "fileSize", mime_type as "mimeType", created_at as "createdAt", last_scan as "lastScan", infected, infection_description as "infectionDescription", deleted, file_name as "fileName" FROM files
+    SELECT id, key, owner as "ownerId", file_size as "fileSize", mime_type as "mimeType", created_at as "createdAt", last_scan as "lastScan", infected, infection_description as "infectionDescription", deleted, file_name as "fileName" FROM files
     WHERE owner = $1
     `;
 

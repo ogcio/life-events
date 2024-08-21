@@ -13,7 +13,7 @@ export default (pg: fastifyPostgres.PostgresDb, metadata: FileMetadataType) => {
     deleted,
     mimeType,
     infected,
-    owner,
+    ownerId,
     antivirusDbVersion,
   } = metadata;
 
@@ -37,7 +37,7 @@ export default (pg: fastifyPostgres.PostgresDb, metadata: FileMetadataType) => {
     [
       id,
       key,
-      owner,
+      ownerId,
       fileSize,
       mimeType,
       createdAt,

@@ -108,7 +108,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
           infectionDescription: viruses.join(","),
           key: `${userId}/${filename}`,
           mimeType: fileMimeType,
-          owner: userId as string,
+          ownerId: userId as string,
           fileName: filename,
           antivirusDbVersion: dbVersion,
           deleted: true,
@@ -147,7 +147,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
         infected: false,
         key: Key as string,
         mimeType: fileMimeType,
-        owner: userId as string,
+        ownerId: userId as string,
         deleted: false,
         fileName: filename,
         organizationId,
@@ -248,7 +248,7 @@ export default async function routes(app: FastifyInstance) {
 
       const files = data.rows;
 
-      const userIds = files.map((f) => f.owner);
+      const userIds = files.map((f) => f.ownerId);
       let usersData: { [key: string]: FileOwnerType };
 
       if (files.length === 0) {
@@ -275,7 +275,10 @@ export default async function routes(app: FastifyInstance) {
       } catch (err) {
         throw new ServerError(FILE_DELETE, "Internal server error", err);
       }
-      const filesData = files.map((f) => ({ ...f, owner: usersData[f.owner] }));
+      const filesData = files.map((f) => ({
+        ...f,
+        owner: usersData[f.ownerId],
+      }));
 
       reply.send({ data: filesData });
     },

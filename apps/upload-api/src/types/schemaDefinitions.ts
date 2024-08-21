@@ -48,7 +48,7 @@ export const FileMetadata = Type.Object({
   fileName: Type.String(),
   id: Type.Optional(Type.String()),
   key: Type.String(),
-  owner: Type.String(),
+  ownerId: Type.String(),
   fileSize: Type.Number(),
   mimeType: Type.String(),
   createdAt: Type.Date(),
