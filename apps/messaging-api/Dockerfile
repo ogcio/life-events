@@ -14,20 +14,12 @@ RUN npm ci
 
 FROM deps AS builder
 
-WORKDIR /app/packages/shared-errors/
-RUN npm run build
-
-WORKDIR /app/packages/logging-wrapper/
-RUN npm run build
-
-WORKDIR /app/packages/error-handler/
-RUN npm run build
-
-WORKDIR /app/packages/api-auth/
-RUN npm run build
-
-WORKDIR /app/apps/messaging-api/
-RUN npm run build
+RUN npm run build --workspace=packages/shared-errors && \
+    npm run build --workspace=packages/logging-wrapper && \
+    npm run build --workspace=packages/error-handler && \
+    npm run build --workspace=packages/api-auth && \
+    npm run build --workspace=packages/building-blocks-sdk && \
+    npm run build --workspace=apps/messaging-api
 
 FROM base-deps AS assembler
 WORKDIR /app
@@ -57,6 +49,10 @@ COPY --from=builder /app/packages/error-handler/package.json /app/packages/error
 COPY --from=builder /app/packages/api-auth/dist /app/packages/api-auth/dist
 COPY --from=builder /app/packages/api-auth/node_modules /app/packages/api-auth/node_modules
 COPY --from=builder /app/packages/api-auth/package.json /app/packages/api-auth/
+
+COPY --from=builder /app/packages/building-blocks-sdk/dist /app/packages/building-blocks-sdk/dist
+COPY --from=builder /app/packages/building-blocks-sdk/node_modules /app/packages/building-blocks-sdk/node_modules
+COPY --from=builder /app/packages/building-blocks-sdk/package.json /app/packages/building-blocks-sdk/
 
 RUN npm prune --omit=dev
 
