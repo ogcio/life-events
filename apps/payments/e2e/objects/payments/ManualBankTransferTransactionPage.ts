@@ -73,6 +73,17 @@ export class ManualBankTransferTransactionPage {
     return referenceCodeCell.innerText();
   }
 
+  async getAmount() {
+    const amountCell = await this.page
+      .locator("div")
+      .filter({ hasText: "Total to pay" })
+      .last()
+      .locator("dt")
+      .last();
+    await expect(amountCell).toBeVisible();
+    return amountCell.innerText();
+  }
+
   async confirmPayment() {
     await this.confirmBtn.click();
   }
