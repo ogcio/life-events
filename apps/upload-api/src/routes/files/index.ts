@@ -146,10 +146,10 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
         fileSize: length,
         infected: false,
         key: Key as string,
-        mimetype: fileMimeType,
+        mimeType: fileMimeType,
         owner: userId as string,
         deleted: false,
-        filename,
+        fileName: filename,
         organizationId,
         antivirusDbVersion: dbVersion,
       });
@@ -486,8 +486,8 @@ export default async function routes(app: FastifyInstance) {
         }
       });
 
-      reply.header("Content-Disposition", `filename="${file.filename}"`);
-      reply.header("Content-type", file.mimetype);
+      reply.header("Content-Disposition", `filename="${file.fileName}"`);
+      reply.header("Content-type", file.mimeType);
       reply.header("Content-Length", file.fileSize);
       return reply.send(downloadPassthrough);
     },
