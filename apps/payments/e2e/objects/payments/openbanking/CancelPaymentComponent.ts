@@ -23,6 +23,9 @@ export class CancelPaymentComponent {
   async proceedAndCancelPayment() {
     await expect(this.header).toBeVisible();
     await this.optionBtn.click();
+
+    // sometimes Playwright finds the button outside of the viewport and can't click it even after scrolling into view
+    await this.page.setViewportSize({ width: 1920, height: 1080 });
     await this.proceedBtn.click();
   }
 }

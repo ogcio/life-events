@@ -15,6 +15,7 @@ import {
 } from "../../utils/mocks";
 import { TrueLayerDialogPage } from "../../objects/payments/openbanking/TrueLayerDialogPage";
 import { expect } from "@playwright/test";
+import { referenceCodeSearchParam } from "../../utils/constants";
 
 test.describe("Transaction with open banking", () => {
   test("should cancel a payment with an open banking provider @smoke @normal", async ({
@@ -60,59 +61,18 @@ test.describe("Transaction with open banking", () => {
     await expect(
       citizenPage.getByText("There was an error processing your payment."),
     ).toBeVisible();
+    const referenceCode = new URL(citizenPage.url()).searchParams.get(
+      referenceCodeSearchParam.openBanking,
+    ) as unknown as string;
 
-    // TODO: check transaction status
-  });
-
-  test("should initiate a payment with an open banking provider and then abort it @smoke @normal", async ({
-    browser,
-    paymentRequestWithOpenBankingProvider,
-    payPage,
-  }) => {
-    await description(
-      "This test checks that a payment transaction with an open banking provider is successfully canceled if a citizen initiate it and then leaves the flow",
-    );
-    await owner("OGCIO");
-    await tags("Transaction", "Open Banking");
-    await severity(Severity.NORMAL);
-
-    const publicServantPage = await browser.newPage();
-    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
       paymentRequestWithOpenBankingProvider,
     );
 
-    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
-    const paymentLink = await detailsPage.getPaymentLink();
-
-    const citizenPage = payPage.page;
-    await payPage.goto(paymentLink);
-    await payPage.checkHeader();
-    await payPage.checkAmount(mockAmount);
-    await payPage.customAmountForm.checkCustomAmountOptionVisible();
-    await payPage.paymentMethodForm.checkPaymentMethodHeader();
-    await payPage.paymentMethodForm.checkPaymentMethodVisible("openbanking");
-    await payPage.paymentMethodForm.checkButtonEnabled();
-    await payPage.paymentMethodForm.choosePaymentMethod("openbanking");
-    await payPage.paymentMethodForm.proceedToPayment();
-
-    const openBankingTransactionPage = new TrueLayerDialogPage(citizenPage);
-    await openBankingTransactionPage.checkLoader();
-    await openBankingTransactionPage.countrySelection.checkHeader();
-    await openBankingTransactionPage.countrySelection.chooseIreland();
-    await openBankingTransactionPage.bankSelection.checkHeader();
-    await openBankingTransactionPage.bankSelection.chooseMockBank();
-    await openBankingTransactionPage.reviewPayment.checkPayment({
-      amount: mockAmount,
-      accountHolder: mockAccountHolderName,
-    });
-    await openBankingTransactionPage.reviewPayment.proceed();
-
-    await citizenPage.goBack();
-    await payPage.checkHeader();
-
-    // TODO: check transaction status
+    await detailsPage.checkPaymentsList([
+      { amount: mockAmount, status: "initiated", referenceCode },
+    ]);
   });
 
   test("should complete a payment with an open banking provider @smoke @critical", async ({
@@ -171,13 +131,38 @@ test.describe("Transaction with open banking", () => {
     await openBankingTransactionPage.paymentInProgress.checkIsInProgress(
       mockAmount,
     );
+
+    let temporaryRedirectionUrl = "";
+    let paymentReferenceCode;
+    citizenPage.on("response", async (response) => {
+      if (response.status() === 307) {
+        temporaryRedirectionUrl = response.url();
+        const urlObj = new URL(temporaryRedirectionUrl);
+        paymentReferenceCode = urlObj.searchParams.get(
+          referenceCodeSearchParam.openBanking,
+        );
+      }
+    });
+
     await openBankingTransactionPage.paymentInProgress.continue();
+    expect(temporaryRedirectionUrl).not.toBeNull();
 
     await expect(citizenPage.url()).toContain(mockRedirectUrl);
     await expect(
       citizenPage.getByRole("img", { name: "Google" }),
     ).toBeVisible();
 
-    // TODO: check transaction status
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoDetails(
+      paymentRequestWithOpenBankingProvider,
+    );
+
+    await detailsPage.checkPaymentsList([
+      {
+        amount: mockAmount,
+        status: "succeeded",
+        referenceCode: paymentReferenceCode,
+      },
+    ]);
   });
 });
