@@ -60,6 +60,8 @@ test.describe("Transaction with open banking", () => {
     await expect(
       citizenPage.getByText("There was an error processing your payment."),
     ).toBeVisible();
+
+    // TODO: check transaction status
   });
 
   test("should initiate a payment with an open banking provider and then abort it @smoke @normal", async ({
@@ -109,6 +111,8 @@ test.describe("Transaction with open banking", () => {
 
     await citizenPage.goBack();
     await payPage.checkHeader();
+
+    // TODO: check transaction status
   });
 
   test("should complete a payment with an open banking provider @smoke @critical", async ({
@@ -173,5 +177,7 @@ test.describe("Transaction with open banking", () => {
     await expect(
       citizenPage.getByRole("img", { name: "Google" }),
     ).toBeVisible();
+
+    // TODO: check transaction status
   });
 });
