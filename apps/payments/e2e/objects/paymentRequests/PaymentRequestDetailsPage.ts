@@ -164,6 +164,10 @@ export class PaymentRequestDetailsPage {
 
   async checkDeleteDisabled() {
     await expect(this.deleteButton).toBeDisabled();
+    await this.deleteButton.hover();
+    await this.page.getByText(
+      "Cannot delete payment request since there are existing transactions",
+    );
   }
 
   async getPaymentLink() {
