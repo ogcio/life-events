@@ -12,6 +12,10 @@ export const myGovIdMockSettings = {
   citizenEmailDomain: "mail.ie",
 };
 
+export const referenceCodeSearchParam = {
+  openBanking: "payment_id",
+};
+
 export const BankTransferProviderValidationErrors = [
   "nameRequired",
   "accountHolderNameRequired",

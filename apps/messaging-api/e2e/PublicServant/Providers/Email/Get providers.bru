@@ -1,17 +1,17 @@
 meta {
-  name: Get sms providers
+  name: Get providers
   type: http
-  seq: 2
+  seq: 7
 }
 
 get {
-  url: {{baseUrl}}/api/v1/providers?type=sms
+  url: {{baseUrl}}/api/v1/providers?type=email
   body: none
   auth: bearer
 }
 
 query {
-  type: sms
+  type: email
 }
 
 auth:bearer {
@@ -19,7 +19,7 @@ auth:bearer {
 }
 
 vars:post-response {
-  smsProviderId: res.body.data && res.body.data[0] ?  res.body.data[0].id : undefined
+  emailProviderId: res.body.data && res.body.data[0] ?  res.body.data[0].id : undefined
 }
 
 assert {
@@ -27,4 +27,5 @@ assert {
   res.body.data: isDefined
   res.body.data[0]: isDefined
   res.body.data[0].id: isDefined
+  res.body.metadata.totalCount: gte 0
 }
