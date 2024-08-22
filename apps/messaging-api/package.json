@@ -9,7 +9,7 @@
     "test:dev": "cd ./e2e && bru run --env dev",
     "dev": "node --watch --import tsx src/index.ts | pino-pretty",
     "lint": "eslint . --ext .ts",
-    "generate-ts-client": "npx openapi-typescript openapi-definition.yml -o ../../packages/building-blocks-sdk/services/messaging/schema.d.ts",
+    "generate-ts-client": "npx openapi-typescript openapi-definition.yml -o ../../packages/building-blocks-sdk/src/services/messaging/schema.d.ts",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp logo.png dist/"
   },
   "type": "module",
