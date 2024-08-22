@@ -7,6 +7,7 @@ import { PayWithPhone } from "./PayWithPhone";
 import { PaymentInProgress } from "./PaymentInProgress";
 import { MockBankPortal } from "./MockBankPortal";
 import { PaymentAuthorizationFailed } from "./PaymentAuthorizationFailed";
+import { PaymentRejected } from "./PaymentRejected";
 
 export class TrueLayerDialogPage {
   public readonly countrySelection: CountrySelection;
@@ -17,6 +18,7 @@ export class TrueLayerDialogPage {
   public readonly mockBankPortal: MockBankPortal;
   public readonly paymentInProgress: PaymentInProgress;
   public readonly paymentAuthorizationFailed: PaymentAuthorizationFailed;
+  public readonly paymentRejected: PaymentRejected;
   private readonly cancelBtn: Locator;
   private readonly loader: Locator;
   private readonly frame: string;
@@ -31,6 +33,7 @@ export class TrueLayerDialogPage {
     this.mockBankPortal = new MockBankPortal(page);
     this.paymentInProgress = new PaymentInProgress(page);
     this.paymentAuthorizationFailed = new PaymentAuthorizationFailed(page);
+    this.paymentRejected = new PaymentRejected(page);
     this.cancelBtn = page
       .frameLocator(this.frame)
       .getByRole("button", { name: "Cancel payment" });

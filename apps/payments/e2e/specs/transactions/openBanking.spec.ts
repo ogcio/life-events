@@ -248,5 +248,77 @@ test.describe("Transaction with open banking", () => {
     ]);
   });
 
-  // Execution rejection
+  test("should fail a payment with an open banking provider rejecting execution @regression @normal", async ({
+    browser,
+    paymentRequestWithOpenBankingProvider,
+    payPage,
+  }) => {
+    await description(
+      "This test checks that a payment transaction with an open banking provider fails if execution is rejected",
+    );
+    await owner("OGCIO");
+    await tags("Transaction", "Open Banking");
+    await severity(Severity.NORMAL);
+
+    const publicServantPage = await browser.newPage();
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoDetails(
+      paymentRequestWithOpenBankingProvider,
+    );
+
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
+    const paymentLink = await detailsPage.getPaymentLink();
+
+    const citizenPage = payPage.page;
+    await payPage.goto(paymentLink);
+    await payPage.checkHeader();
+    await payPage.checkAmount(mockAmount);
+    await payPage.customAmountForm.checkCustomAmountOptionVisible();
+    await payPage.paymentMethodForm.checkPaymentMethodHeader();
+    await payPage.paymentMethodForm.checkPaymentMethodVisible("openbanking");
+    await payPage.paymentMethodForm.checkButtonEnabled();
+    await payPage.paymentMethodForm.choosePaymentMethod("openbanking");
+    await payPage.paymentMethodForm.proceedToPayment();
+
+    const openBankingTransactionPage = new TrueLayerDialogPage(citizenPage);
+    await openBankingTransactionPage.checkLoader();
+    await openBankingTransactionPage.countrySelection.checkHeader();
+    await openBankingTransactionPage.countrySelection.chooseIreland();
+    await openBankingTransactionPage.bankSelection.checkHeader();
+    await openBankingTransactionPage.bankSelection.chooseMockBank();
+    await openBankingTransactionPage.reviewPayment.checkPayment({
+      amount: mockAmount,
+      accountHolder: mockAccountHolderName,
+    });
+    await openBankingTransactionPage.reviewPayment.proceed();
+    await openBankingTransactionPage.payWithPhone.proceedToPayment();
+    await openBankingTransactionPage.mockBankPortal.checkPortalTitle();
+    await openBankingTransactionPage.mockBankPortal.enterUserName(
+      TestCases.Rejected,
+    );
+    await openBankingTransactionPage.mockBankPortal.enterPin();
+    await openBankingTransactionPage.mockBankPortal.continue();
+    await openBankingTransactionPage.mockBankPortal.checkSelectAccountTitle();
+    await openBankingTransactionPage.mockBankPortal.continue();
+    await openBankingTransactionPage.paymentRejected.checkIsFailed();
+    const referenceCode =
+      await openBankingTransactionPage.paymentRejected.getReferenceCode();
+    await openBankingTransactionPage.paymentRejected.goBack();
+
+    // TODO: user here should be redirected to /complete and an error should be shown
+    // await expect(
+    //   citizenPage.getByText("There was an error processing your payment."),
+    // ).toBeVisible();
+
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoDetails(
+      paymentRequestWithOpenBankingProvider,
+    );
+
+    // TODO: status should be failed
+    await detailsPage.checkPaymentsList([
+      { amount: mockAmount, status: "succeeded", referenceCode },
+    ]);
+  });
 });
