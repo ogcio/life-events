@@ -17,8 +17,22 @@ import { TrueLayerDialogPage } from "../../objects/payments/openbanking/TrueLaye
 import { expect } from "@playwright/test";
 import { PayPage } from "../../objects/payments/PayPage";
 import { StripeForm } from "../../objects/payments/stripe/StripeForm";
+import dayjs from "dayjs";
 
 test.describe("Transaction with stripe", () => {
+  const cards = {
+    success: "4242 4242 4242 4242",
+    genericDecline: "4000 0000 0000 0002",
+    insufficientFunds: "4000 0000 0000 9995",
+    incorrectNumber: "4242 4242 4242 4241",
+  };
+  const securityCode = "123";
+  let expirationDate: string;
+
+  test.beforeAll(async () => {
+    expirationDate = dayjs().add(1, "month").format("MM/YY");
+  });
+
   test("should complete a payment with Stripe provider @smoke @critical", async ({
     paymentRequestWithStripeProvider,
     publicServantPage,
@@ -49,8 +63,21 @@ test.describe("Transaction with stripe", () => {
     await payPage.paymentMethodForm.choosePaymentMethod("card");
     await payPage.paymentMethodForm.proceedToPayment();
 
+    citizenPage.on("response", async (response) =>
+      console.log("<<<<", response.url()),
+    );
+
     const stripe = new StripeForm(citizenPage);
     await stripe.checkForm();
+    await stripe.fillCardNumber(cards.success);
+    await stripe.fillExpDate(expirationDate);
+    await stripe.fillSecurityCode(securityCode);
+    await stripe.pay();
+
+    await expect(citizenPage.url()).toContain(mockRedirectUrl);
+    await expect(
+      citizenPage.getByRole("img", { name: "Google" }),
+    ).toBeVisible();
 
     // TODO: check transaction status
   });
