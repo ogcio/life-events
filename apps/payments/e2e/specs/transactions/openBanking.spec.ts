@@ -76,7 +76,7 @@ test.describe("Transaction with open banking", () => {
     );
 
     await detailsPage.checkPaymentsList([
-      { amount: mockAmount, status: "initiated", referenceCode },
+      { amount: mockAmount, status: "failed", referenceCode },
     ]);
   });
 
@@ -230,19 +230,17 @@ test.describe("Transaction with open banking", () => {
       await openBankingTransactionPage.paymentAuthorizationFailed.getReferenceCode();
     await openBankingTransactionPage.paymentAuthorizationFailed.goBack();
 
-    // TODO: user here should be redirected to /complete and an error should be shown
-    // await expect(
-    //   citizenPage.getByText("There was an error processing your payment."),
-    // ).toBeVisible();
+    await expect(
+      citizenPage.getByText("There was an error processing your payment."),
+    ).toBeVisible();
 
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
       paymentRequestWithOpenBankingProvider,
     );
 
-    // TODO: status should be failed
     await detailsPage.checkPaymentsList([
-      { amount: mockAmount, status: "succeeded", referenceCode },
+      { amount: mockAmount, status: "failed", referenceCode },
     ]);
   });
 
@@ -303,19 +301,17 @@ test.describe("Transaction with open banking", () => {
       await openBankingTransactionPage.paymentRejected.getReferenceCode();
     await openBankingTransactionPage.paymentRejected.goBack();
 
-    // TODO: user here should be redirected to /complete and an error should be shown
-    // await expect(
-    //   citizenPage.getByText("There was an error processing your payment."),
-    // ).toBeVisible();
+    await expect(
+      citizenPage.getByText("There was an error processing your payment."),
+    ).toBeVisible();
 
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
       paymentRequestWithOpenBankingProvider,
     );
 
-    // TODO: status should be failed
     await detailsPage.checkPaymentsList([
-      { amount: mockAmount, status: "succeeded", referenceCode },
+      { amount: mockAmount, status: "failed", referenceCode },
     ]);
   });
 });

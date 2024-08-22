@@ -217,3 +217,20 @@ export const buildPaginationLinks = (
     pages: buildLinks(pagesLinks),
   } as PaginationLinks;
 };
+
+export const getInternalStatus = (status: string) => {
+  switch (status) {
+    case "processing":
+      return TransactionStatuses.Pending;
+    case "succeeded":
+      return TransactionStatuses.Succeeded;
+    case "payment_failed":
+      return TransactionStatuses.Failed;
+    case "executed":
+      return TransactionStatuses.Succeeded;
+    case "failed":
+      return TransactionStatuses.Failed;
+    default:
+      return TransactionStatuses.Succeeded;
+  }
+};
