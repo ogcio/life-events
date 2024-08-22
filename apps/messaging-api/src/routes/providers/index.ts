@@ -24,6 +24,8 @@ import {
 import { QueryResult } from "pg";
 import {
   BadRequestError,
+  isLifeEventsError,
+  LifeEventsError,
   NotFoundError,
   ServerError,
   ValidationError,
@@ -290,11 +292,36 @@ export default async function providers(app: FastifyInstance) {
         throw new BadRequestError(errorProcess, "illegal type query");
       }
 
+      const client = await app.pg.pool.connect();
+
       let providerId = "";
+
+      let queryError: LifeEventsError | undefined;
       if (isSmsProvider(provider)) {
-        const client = await app.pg.pool.connect();
         try {
           client.query("begin");
+
+          const exists = await client.query<{ exists: boolean }>(
+            `
+              select exists(select 1 from sms_providers where organisation_id = $1 and lower(provider_name) = $2)
+            `,
+            [organisationid, provider.providerName.toLocaleLowerCase().trim()],
+          );
+
+          if (exists.rows.at(0)?.exists) {
+            throw new ValidationError(
+              errorProcess,
+              "provider name already in use",
+              [
+                {
+                  fieldName: "providerName",
+                  message: "alreadyInUse",
+                  validationRule: "already-in-use",
+                },
+              ],
+            );
+          }
+
           const isPrimaryConverted = provider.isPrimary || null;
           if (isPrimaryConverted) {
             await client.query(
@@ -334,18 +361,39 @@ export default async function providers(app: FastifyInstance) {
 
           await client.query("commit");
         } catch (error) {
-          await client.query("rollback");
-          throw new ServerError(
-            errorProcess,
-            "failed to insert sms provider",
-            error,
-          );
+          queryError = isLifeEventsError(error)
+            ? error
+            : new ServerError(
+                errorProcess,
+                "failed to insert sms provider",
+                error,
+              );
         }
       } else if (isEmailProvider(provider)) {
-        const client = await app.pg.pool.connect();
-
         try {
           client.query("begin");
+
+          const exists = await client.query<{ exists: boolean }>(
+            `
+              select exists(select 1 from email_providers where organisation_id = $1 and lower(provider_name) = $2)
+            `,
+            [organisationid, provider.providerName.toLocaleLowerCase().trim()],
+          );
+
+          if (exists.rows.at(0)?.exists) {
+            throw new ValidationError(
+              errorProcess,
+              "provider name already in use",
+              [
+                {
+                  fieldName: "providerName",
+                  message: "alreadyInUse",
+                  validationRule: "already-in-use",
+                },
+              ],
+            );
+          }
+
           const isPrimaryConverted = provider.isPrimary || null;
           if (isPrimaryConverted) {
             await client.query(
@@ -385,13 +433,23 @@ export default async function providers(app: FastifyInstance) {
 
           await client.query("commit");
         } catch (error) {
-          await client.query("rollback");
-          throw new ServerError(
-            errorProcess,
-            "failed to insert email provider",
-            error,
-          );
+          queryError = isLifeEventsError(error)
+            ? error
+            : new ServerError(
+                errorProcess,
+                "failed to insert email provider",
+                error,
+              );
         }
+      }
+
+      try {
+        if (queryError) {
+          await client.query("rollback");
+          throw queryError;
+        }
+      } finally {
+        client.release();
       }
 
       return { data: { id: providerId } };
