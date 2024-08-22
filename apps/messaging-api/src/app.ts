@@ -19,6 +19,8 @@ import fastifyMultipart from "@fastify/multipart";
 import v8 from "v8";
 import { CustomError } from "shared-errors";
 import getVersion from "./utils/getVersion.js";
+import _Ajv from "ajv";
+const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -27,6 +29,17 @@ dotenv.config();
 
 export async function build(opts?: FastifyServerOptions) {
   const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
+  // app.setValidatorCompiler((schema) => {
+  //   const ajv = new Ajv({
+  //     removeAdditional: true,
+  //     useDefaults: true,
+  //     coerceTypes: false,
+  //     allErrors: true,
+  //   });
+
+  //   return ajv.compile.bind(ajv)(schema.schema);
+  // });
+
   initializeLoggingHooks(app);
   initializeErrorHandler(app);
 
