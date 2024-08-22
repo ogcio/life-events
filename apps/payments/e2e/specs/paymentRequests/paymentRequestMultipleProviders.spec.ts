@@ -1,4 +1,3 @@
-import { Page } from "@playwright/test";
 import { test } from "../../fixtures/providersFixtures";
 import {
   Severity,
@@ -20,19 +19,14 @@ import { InactivePayPage } from "../../objects/payments/InactivePayPage";
 import { PreviewPayPage } from "../../objects/payments/PreviewPayPage";
 
 test.describe("Payment Request with multiple providers", () => {
-  let page: Page;
   let name: string;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
 
   test.beforeEach(async () => {
     name = `Test multiple ${Date.now()}`;
   });
 
   test("should create an inactive payment request with multiple providers provider @smoke @normal", async ({
-    context,
+    publicServantPage,
     bankTransferProvider,
     openBankingProvider,
     realexProvider,
@@ -44,11 +38,13 @@ test.describe("Payment Request with multiple providers", () => {
     await tags("Payment Request", "Multiple");
     await severity(Severity.NORMAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoCreate();
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
@@ -66,7 +62,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.selectInactiveStatus();
     await createPaymentRequestPage.saveChanges();
 
-    const detailsPage = new PaymentRequestDetailsPage(page);
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     await detailsPage.checkHeader();
     await detailsPage.checkTitle(name);
     await detailsPage.checkDescription(paymentRequestDescription);
@@ -83,7 +79,7 @@ test.describe("Payment Request with multiple providers", () => {
     await detailsPage.checkEmptyPaymentsList();
 
     const link = await detailsPage.getPaymentLink();
-    const newPage = await context.newPage();
+    const newPage = await publicServantPage.context().newPage();
     await newPage.goto(link);
     const inactivePayPage = new InactivePayPage(newPage);
     await inactivePayPage.checkHeader();
@@ -107,7 +103,7 @@ test.describe("Payment Request with multiple providers", () => {
     bankTransferProvider,
     openBankingProvider,
     stripeProvider,
-    context,
+    publicServantPage,
   }) => {
     await description(
       "This test checks the successful creation of an inactive payment request with multiple providers.",
@@ -116,11 +112,13 @@ test.describe("Payment Request with multiple providers", () => {
     await tags("Payment Request", "Multiple");
     await severity(Severity.NORMAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoCreate();
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
@@ -138,7 +136,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.selectActiveStatus();
     await createPaymentRequestPage.saveChanges();
 
-    const detailsPage = new PaymentRequestDetailsPage(page);
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     await detailsPage.checkHeader();
     await detailsPage.checkTitle(name);
     await detailsPage.checkDescription(paymentRequestDescription);
@@ -155,7 +153,7 @@ test.describe("Payment Request with multiple providers", () => {
     await detailsPage.checkEmptyPaymentsList();
 
     const link = await detailsPage.getPaymentLink();
-    const newPage = await context.newPage();
+    const newPage = await publicServantPage.context().newPage();
     await newPage.goto(link);
     const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
@@ -189,6 +187,7 @@ test.describe("Payment Request with multiple providers", () => {
     bankTransferProvider,
     openBankingProvider,
     realexProvider,
+    publicServantPage,
   }) => {
     await description(
       "This test checks that a payment request is not created if title is missing.",
@@ -197,11 +196,13 @@ test.describe("Payment Request with multiple providers", () => {
     await tags("Payment Request", "Multiple");
     await severity(Severity.NORMAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoCreate();
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.enterTitle("");
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
@@ -225,6 +226,7 @@ test.describe("Payment Request with multiple providers", () => {
     bankTransferProvider,
     openBankingProvider,
     realexProvider,
+    publicServantPage,
   }) => {
     await description(
       "This test checks that a payment request is not created if reference is missing.",
@@ -233,11 +235,13 @@ test.describe("Payment Request with multiple providers", () => {
     await tags("Payment Request", "Multiple");
     await severity(Severity.NORMAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoCreate();
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
@@ -265,6 +269,7 @@ test.describe("Payment Request with multiple providers", () => {
     bankTransferProvider,
     openBankingProvider,
     realexProvider,
+    publicServantPage,
   }) => {
     await description(
       "This test checks that a payment request is not created if amount is missing.",
@@ -273,11 +278,13 @@ test.describe("Payment Request with multiple providers", () => {
     await tags("Payment Request", "Multiple");
     await severity(Severity.NORMAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoCreate();
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
@@ -305,6 +312,7 @@ test.describe("Payment Request with multiple providers", () => {
     bankTransferProvider,
     openBankingProvider,
     realexProvider,
+    publicServantPage,
   }) => {
     await description(
       "This test checks that a payment request is not created if redirect url is missing.",
@@ -313,11 +321,13 @@ test.describe("Payment Request with multiple providers", () => {
     await tags("Payment Request", "Multiple");
     await severity(Severity.NORMAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoCreate();
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
@@ -341,7 +351,9 @@ test.describe("Payment Request with multiple providers", () => {
     await paymentRequestsPage.checkRequestIsNotVisible(name);
   });
 
-  test("should not create an active payment request if no provider is selected @regression @critical", async () => {
+  test("should not create an active payment request if no provider is selected @regression @critical", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a payment request cannot be created as active is no provider is selected.",
     );
@@ -349,11 +361,13 @@ test.describe("Payment Request with multiple providers", () => {
     await tags("Payment Request", "Multiple");
     await severity(Severity.CRITICAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoCreate();
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
@@ -371,7 +385,7 @@ test.describe("Payment Request with multiple providers", () => {
   });
 
   test("should create an inactive payment request with no provider selected @regression @normal", async ({
-    context,
+    publicServantPage,
   }) => {
     await description(
       "This test checks the successful creation of an inactive payment request with no provider selected.",
@@ -380,11 +394,13 @@ test.describe("Payment Request with multiple providers", () => {
     await tags("Payment Request", "Multiple");
     await severity(Severity.NORMAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoCreate();
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
@@ -395,7 +411,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.selectInactiveStatus();
     await createPaymentRequestPage.saveChanges();
 
-    const detailsPage = new PaymentRequestDetailsPage(page);
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     await detailsPage.checkHeader();
     await detailsPage.checkTitle(name);
     await detailsPage.checkDescription(paymentRequestDescription);
@@ -407,7 +423,7 @@ test.describe("Payment Request with multiple providers", () => {
     await detailsPage.checkEmptyPaymentsList();
 
     const link = await detailsPage.getPaymentLink();
-    const newPage = await context.newPage();
+    const newPage = await publicServantPage.context().newPage();
     await newPage.goto(link);
     const inactivePayPage = new InactivePayPage(newPage);
     await inactivePayPage.checkHeader();
