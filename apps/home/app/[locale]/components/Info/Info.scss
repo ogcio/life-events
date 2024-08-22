@@ -1,4 +1,4 @@
-@import "../../styles/globals.scss";
+@import "../../../styles/globals.scss";
 
 .three-columns-layout {
   display: flex;
@@ -39,7 +39,7 @@
 }
 
 .custom-footer {
-  justify-content: end;
+  justify-content: end !important;
 }
 
 @include phone {
@@ -52,11 +52,11 @@
   }
 
   .custom-footer {
-    justify-content: center;
+    justify-content: center !important;
   }
 }
 
-@media (min-width: $breakpoint-tablet) {
+@media (min-width: $breakpoint-lg) {
   .govie-width-container {
     h1 {
       font-size: 56px !important;

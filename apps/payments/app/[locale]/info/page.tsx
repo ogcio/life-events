@@ -10,17 +10,12 @@ import integration from "../../../public/landingPage/integration.png";
 import interfaceCitizen from "../../../public/landingPage/interfaceCitizen.png";
 import interfacePublicServant from "../../../public/landingPage/interfacePublicServant.png";
 import security from "../../../public/landingPage/security.png";
-import type { Metadata } from "next";
 import {
   envDevelopment,
   envProduction,
   envStaging,
   envUAT,
 } from "../../constants";
-
-export const metadata: Metadata = {
-  title: "Payments",
-};
 
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";

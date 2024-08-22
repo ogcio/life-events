@@ -1,0 +1,3 @@
+.govie-link--no-visited-override:visited {
+  color: inherit;
+}

@@ -74,5 +74,105 @@
         "cta": "Sign up to learn more"
       }
     }
+  },
+  "MessagingLandingPage": {
+    "AlphaBanner": {
+      "tag": "Alpha",
+      "bannerText": "This is a new service - your <anchor>feedback</anchor> will help us to improve it."
+    },
+    "sections": {
+      "main": {
+        "title": "Messaging",
+        "description": "Messaging Building Block uses the electronic postbox embedded within systems, so people can access their messages in one place.",
+        "listDescription": "Messaging Building Block allows you to:",
+        "listItem1": "send email and text messages across various channels",
+        "listItem2": "set up reminders and notifications",
+        "listItem3": "craft reusable templates"
+      },
+      "benefits": {
+        "title": "Benefits",
+        "section1": {
+          "title": "Centralised platform",
+          "description": "Contact the public through their chosen method of communication - whether that's email, text message or through the electronic postbox."
+        },
+        "section2": {
+          "title": "Secure",
+          "description": "Messaging Building Block prioritises security to safeguard sensitive information and ensure compliance with data protection regulations."
+        },
+        "section3": {
+          "title": "Reusable Templates",
+          "description": "Easily create templates for any type of communication (for example, confirmations, reminders and success notifications). This will ensure consistency and streamline your processes."
+        },
+        "section4": {
+          "title": "Electronic Postbox",
+          "description": "Embedded within other systems, the electronic postbox allows users to easily access their messages and take action."
+        },
+        "section5": {
+          "title": "Accessibility Compliance",
+          "description": "Messaging Building Block meets with accessibility regulations, Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users can access and interact with messages."
+        },
+        "section6": {
+          "title": "Dedicated Support",
+          "description": "Our team of experts is here to assist you every step of the way. Whether you have technical questions or need assistance with implementation, the dedicated support team ensures a smooth experience."
+        }
+      },
+      "getStarted": {
+        "title": "Get started",
+        "description": "Ready to elevate your communication strategy? Contact us to schedule a demo and see how Messaging Building Block can transform how you engage with the public.",
+        "cta": "Sign up to learn more"
+      }
+    }
+  },
+  "PaymentsLandingPage": {
+    "AlphaBanner": {
+      "tag": "Alpha",
+      "bannerText": "This is a new service - your <anchor>feedback</anchor> will help us to improve it."
+    },
+    "actions": {
+      "login": "Login"
+    },
+    "benefits": "Benefits",
+    "sections": {
+      "main": {
+        "title": "Payments",
+        "description": "Our Payments Building Block is built on a robust infrastructure that enables secure and efficient financial transactions, giving users peace of mind every time they use it.",
+        "cta": "Sign up to learn more"
+      },
+      "integration": {
+        "title": "Seamless Integration",
+        "description": "The Payments Building Block seamlessly connects with multiple payment methods, including credit cards, digital wallets, and bank transfers, to offer flexibility to your users."
+      },
+      "security": {
+        "title": "Enhanced Security",
+        "description": "The Payments Building Block employs encryption protocols and payment providers that are Payment Card Industry (PCI) compliant, giving you peace of mind."
+      },
+      "interface": {
+        "title": "User-Friendly Interface",
+        "description": "The Payments Building Block has an intuitive interface that makes payment processing simple for both administrators and users. Whether you're generating payment requests or tracking transactions, it's quick and simple.",
+        "citizenPOV": "Citizen Point of View",
+        "publicServantPOV": "Public Servant Point of View"
+      },
+      "accessibility": {
+        "title": "Accessibility",
+        "description": "The Payments Building Block is designed with accessibility in mind. It conforms with the Web Content Accessibility Guidelines (WCAG) 2.0, ensuring that all users can easily access the service."
+      },
+      "support": {
+        "title": "Dedicated Support",
+        "description": "Our team of experts is here to assist you every step of the way. Whether you have technical questions or need assistance with implementation, you can rely on the Payments Building Block's dedicated support team."
+      },
+      "getStarted": {
+        "title": "Get Started",
+        "description": "Ready to transform your payment processes? Contact us to schedule a demo or to learn more about how Payments Building Block can empower your public sector department.",
+        "cta": "Sign up to learn more"
+      }
+    }
+  },
+  "Menu": {
+    "login": "Login",
+    "logout": "Logout",
+    "loading": "Loading..."
+  },
+  "Footer": {
+    "license": "All content is available under the <link>Open Government Licence v3.0</link>, except where otherwise stated"
   }
 }

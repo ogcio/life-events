@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import banner from "../../public/landingPage/banner.png";
+import favicon from "../../public/favicon.ico";
 import interfaces from "../../public/landingPage/interfaces.png";
 import userFillingForm from "../../public/landingPage/user_filling_form.gif";
 import paymentService1 from "../../public/landingPage/payment_service1.png";
@@ -21,6 +22,7 @@ import {
 
 export const metadata: Metadata = {
   title: "FormsIE",
+  icons: [{ rel: "icon", url: favicon.src }],
 };
 
 const getLinks = (environment: string, locale: string) => {
@@ -32,11 +34,11 @@ const getLinks = (environment: string, locale: string) => {
       return {
         feedbackLink: new URL(
           `${locale}/664c61ba5f7c9800231db294`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
         formsLink: new URL(
           `${locale}/664b6de45f7c9800231daf22`,
-          "https://www.formsg.testing.gov.ie",
+          "https://www.forms.uat.gov.ie",
         ),
       };
 
