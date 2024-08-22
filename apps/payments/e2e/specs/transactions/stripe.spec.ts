@@ -13,8 +13,9 @@ import { expect } from "@playwright/test";
 import { PayPage } from "../../objects/payments/PayPage";
 import { StripeForm } from "../../objects/payments/stripe/StripeForm";
 import dayjs from "dayjs";
+import { referenceCodeSearchParam } from "../../utils/constants";
 
-test.describe("Transaction with stripe", () => {
+test.describe("Transaction with Stripe", () => {
   const cards = {
     success: "4242 4242 4242 4242",
     genericDecline: "4000 0000 0000 0002",
@@ -64,6 +65,17 @@ test.describe("Transaction with stripe", () => {
     await stripe.fillCardNumber(cards.success);
     await stripe.fillExpDate(expirationDate);
     await stripe.fillSecurityCode(securityCode);
+
+    let paymentReferenceCode;
+    citizenPage.on("response", async (response) => {
+      if (response.status() === 307) {
+        const urlObj = new URL(response.url());
+        paymentReferenceCode = urlObj.searchParams.get(
+          referenceCodeSearchParam.stripe,
+        );
+      }
+    });
+
     await stripe.pay();
 
     await expect(
@@ -71,11 +83,16 @@ test.describe("Transaction with stripe", () => {
     ).toBeVisible();
     await expect(citizenPage.url()).toContain(mockRedirectUrl);
 
-    // TODO: Change this after transaction check is done
-    await citizenPage.goto("/en/citizen/transactions");
-    await expect(
-      citizenPage.getByText(paymentRequestWithStripeProvider),
-    ).toBeVisible();
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoDetails(paymentRequestWithStripeProvider);
+
+    await detailsPage.checkPaymentsList([
+      {
+        amount: mockAmount,
+        status: "succeeded",
+        referenceCode: paymentReferenceCode,
+      },
+    ]);
   });
 
   test("should fail a payment with Stripe provider in case of an error @smoke @critical", async ({
