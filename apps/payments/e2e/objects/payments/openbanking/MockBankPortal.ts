@@ -1,10 +1,5 @@
 import { expect, Locator, Page } from "@playwright/test";
-
-export type OpenBankingTestCase =
-  | "test_executed"
-  | "test_authorisation_failed"
-  | "test_execution_rejected";
-
+import { TestCases } from "../../../specs/transactions/openBanking.spec";
 export class MockBankPortal {
   private readonly portalTitle: Locator;
   private readonly selectAccountTitle: Locator;
@@ -28,7 +23,7 @@ export class MockBankPortal {
     await expect(this.selectAccountTitle).toBeVisible();
   }
 
-  async enterUserName(testcase: OpenBankingTestCase) {
+  async enterUserName(testcase: TestCases) {
     await this.usernameInput.fill(testcase);
   }
 
