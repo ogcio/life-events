@@ -1,5 +1,4 @@
-import { Page } from "@playwright/test";
-import { test } from "../../fixtures/auth";
+import { test } from "../../fixtures/pageFixtures";
 import { test as testWithProvider } from "../../fixtures/providersFixtures";
 import {
   mockAccountHolderName,
@@ -19,18 +18,15 @@ import { AddOpenBankingProviderPage } from "../../objects/providers/AddOpenBanki
 import { EditOpenBankingProviderPage } from "../../objects/providers/EditOpenBankingProviderPage";
 
 test.describe("Open Banking provider creation", () => {
-  let page: Page;
   let providerName: string;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
 
   test.beforeEach(async () => {
     providerName = `Test open banking ${Date.now()}`;
   });
 
-  test("should add an open banking provider @smoke @critical", async () => {
+  test("should add an open banking provider @smoke @critical", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks the successful creation of a new open banking provider.",
     );
@@ -38,18 +34,20 @@ test.describe("Open Banking provider creation", () => {
     await tags("Providers", "Open Banking");
     await severity(Severity.CRITICAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectOpenBankingProvider();
 
-    const addOpenBankingProviderPage = new AddOpenBankingProviderPage(page);
+    const addOpenBankingProviderPage = new AddOpenBankingProviderPage(
+      publicServantPage,
+    );
     await addOpenBankingProviderPage.providerForm.enterName(providerName);
     await addOpenBankingProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
@@ -60,7 +58,9 @@ test.describe("Open Banking provider creation", () => {
     await providersPage.checkProviderVisible(providerName);
   });
 
-  test("should show error creating open banking provider if name is missing @regression @normal", async () => {
+  test("should show error creating open banking provider if name is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a validation error is shown when creating a new open banking provider if name is missing.",
     );
@@ -68,18 +68,20 @@ test.describe("Open Banking provider creation", () => {
     await tags("Providers", "Open Banking");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectOpenBankingProvider();
 
-    const addOpenBankingProviderPage = new AddOpenBankingProviderPage(page);
+    const addOpenBankingProviderPage = new AddOpenBankingProviderPage(
+      publicServantPage,
+    );
     await addOpenBankingProviderPage.providerForm.enterName("");
     await addOpenBankingProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
@@ -92,7 +94,9 @@ test.describe("Open Banking provider creation", () => {
     );
   });
 
-  test("should not add an open banking provider if iban is missing @regression @normal", async () => {
+  test("should not add an open banking provider if iban is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     console.log("providerName 2", providerName);
     await description(
       "This test checks that a new open banking provider is not created if iban is missing.",
@@ -101,18 +105,20 @@ test.describe("Open Banking provider creation", () => {
     await tags("Providers", "Open Banking");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectOpenBankingProvider();
 
-    const addOpenBankingProviderPage = new AddOpenBankingProviderPage(page);
+    const addOpenBankingProviderPage = new AddOpenBankingProviderPage(
+      publicServantPage,
+    );
     await addOpenBankingProviderPage.providerForm.enterName(providerName);
     await addOpenBankingProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
@@ -128,7 +134,9 @@ test.describe("Open Banking provider creation", () => {
     await providersPage.checkProviderNotVisible(providerName);
   });
 
-  test("should not add an open banking provider if account holder name is missing @regression @normal", async () => {
+  test("should not add an open banking provider if account holder name is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a new open banking provider is not created if account holder name is missing.",
     );
@@ -136,18 +144,20 @@ test.describe("Open Banking provider creation", () => {
     await tags("Providers", "Open Banking");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectOpenBankingProvider();
 
-    const addOpenBankingProviderPage = new AddOpenBankingProviderPage(page);
+    const addOpenBankingProviderPage = new AddOpenBankingProviderPage(
+      publicServantPage,
+    );
     await addOpenBankingProviderPage.providerForm.enterName(providerName);
     await addOpenBankingProviderPage.providerForm.enterAccountHolderName("");
     await addOpenBankingProviderPage.providerForm.enterIban(mockIban);
@@ -161,7 +171,9 @@ test.describe("Open Banking provider creation", () => {
     await providersPage.checkProviderNotVisible(providerName);
   });
 
-  test("should not add an open banking provider if iban is invalid @regression @normal", async () => {
+  test("should not add an open banking provider if iban is invalid @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a newn open banking provider is not created if an invalid iban is provided.",
     );
@@ -169,18 +181,20 @@ test.describe("Open Banking provider creation", () => {
     await tags("Providers", "Open Banking");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectOpenBankingProvider();
 
-    const addOpenBankingProviderPage = new AddOpenBankingProviderPage(page);
+    const addOpenBankingProviderPage = new AddOpenBankingProviderPage(
+      publicServantPage,
+    );
     await addOpenBankingProviderPage.providerForm.enterName(providerName);
     await addOpenBankingProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
@@ -198,16 +212,11 @@ test.describe("Open Banking provider creation", () => {
 });
 
 testWithProvider.describe("Open banking provider editing", () => {
-  let page: Page;
   const newAccountHolderName = "foo bar";
-
-  testWithProvider.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
 
   testWithProvider(
     "should edit an open banking provider @regression @normal",
-    async ({ openBankingProvider }) => {
+    async ({ openBankingProvider, publicServantPage }) => {
       await description(
         "This test checks the successful editing of an open banking provider.",
       );
@@ -217,16 +226,18 @@ testWithProvider.describe("Open banking provider editing", () => {
 
       const newProviderName = `${openBankingProvider} edited`;
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(openBankingProvider);
-      const editProviderPage = new EditOpenBankingProviderPage(page);
+      const editProviderPage = new EditOpenBankingProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkName(openBankingProvider);
       await editProviderPage.providerForm.enterName(newProviderName);
@@ -252,7 +263,7 @@ testWithProvider.describe("Open banking provider editing", () => {
 
   testWithProvider(
     "should disable and enable an open banking provider @regression @normal",
-    async ({ openBankingProvider }) => {
+    async ({ openBankingProvider, publicServantPage }) => {
       await description(
         "This test checks that an open banking provider is successfully disabled and enabled.",
       );
@@ -260,16 +271,18 @@ testWithProvider.describe("Open banking provider editing", () => {
       await tags("Providers", "Open Banking");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(openBankingProvider);
-      const editProviderPage = new EditOpenBankingProviderPage(page);
+      const editProviderPage = new EditOpenBankingProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.disableProvider();
       await providersPage.checkProviderIsDisabled(openBankingProvider);
@@ -283,7 +296,7 @@ testWithProvider.describe("Open banking provider editing", () => {
 
   testWithProvider(
     "should not edit an open banking provider if name is missing @regression @normal",
-    async ({ openBankingProvider }) => {
+    async ({ openBankingProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing an open banking provider it cannot be saved if name is missing.",
       );
@@ -291,16 +304,18 @@ testWithProvider.describe("Open banking provider editing", () => {
       await tags("Providers", "Open Banking");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(openBankingProvider);
-      const editProviderPage = new EditOpenBankingProviderPage(page);
+      const editProviderPage = new EditOpenBankingProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkName(openBankingProvider);
       await editProviderPage.providerForm.enterName("");
@@ -311,7 +326,7 @@ testWithProvider.describe("Open banking provider editing", () => {
 
   testWithProvider(
     "should not edit an open banking provider if account holder name is missing @regression @normal",
-    async ({ openBankingProvider }) => {
+    async ({ openBankingProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing an open banking provider it cannot be saved if account holder name is missing.",
       );
@@ -319,16 +334,18 @@ testWithProvider.describe("Open banking provider editing", () => {
       await tags("Providers", "Open Banking");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(openBankingProvider);
-      const editProviderPage = new EditOpenBankingProviderPage(page);
+      const editProviderPage = new EditOpenBankingProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkAccountHolderName(
         mockAccountHolderName,
@@ -349,7 +366,7 @@ testWithProvider.describe("Open banking provider editing", () => {
 
   testWithProvider(
     "should not edit an open banking provider if iban is missing @regression @normal",
-    async ({ openBankingProvider }) => {
+    async ({ openBankingProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing an open banking provider it cannot be saved if iban is missing.",
       );
@@ -357,16 +374,18 @@ testWithProvider.describe("Open banking provider editing", () => {
       await tags("Providers", "Open Banking");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(openBankingProvider);
-      const editProviderPage = new EditOpenBankingProviderPage(page);
+      const editProviderPage = new EditOpenBankingProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkIban(mockIban);
       await editProviderPage.providerForm.enterIban("");
@@ -381,7 +400,7 @@ testWithProvider.describe("Open banking provider editing", () => {
 
   testWithProvider(
     "should not edit an open banking provider if iban is invalid @regression @normal",
-    async ({ openBankingProvider }) => {
+    async ({ openBankingProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing an open banking provider it cannot be saved if iban is invalid.",
       );
@@ -389,16 +408,18 @@ testWithProvider.describe("Open banking provider editing", () => {
       await tags("Providers", "Open Banking");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(openBankingProvider);
-      const editProviderPage = new EditOpenBankingProviderPage(page);
+      const editProviderPage = new EditOpenBankingProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkIban(mockIban);
       await editProviderPage.providerForm.enterIban("foo");

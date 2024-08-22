@@ -1,7 +1,7 @@
 meta {
-  name: Get single sms provider
+  name: Get deleted provider
   type: http
-  seq: 5
+  seq: 9
 }
 
 get {
@@ -19,8 +19,7 @@ auth:bearer {
 }
 
 assert {
-  res.status: eq 200
-  res.body.data: isDefined
-  res.body.data.providerName: isDefined
-  res.body.data.id: eq {{smsProviderId}}
+  res.status: eq 404
+  res.body.code: eq NOT_FOUND_ERROR
+  res.body.requestId: isDefined
 }

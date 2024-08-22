@@ -13,7 +13,7 @@ import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/Payment
 test.describe("Payment Request deletion", () => {
   test("should delete an active payment request when it has no transactions @regression @minor", async ({
     paymentRequestWithOpenBankingProvider,
-    browser,
+    publicServantPage,
   }) => {
     await description(
       "This test checks the successful deletion of an active payment request when it has no transactions.",
@@ -22,14 +22,13 @@ test.describe("Payment Request deletion", () => {
     await tags("Payment Request", "Delete");
     await severity(Severity.MINOR);
 
-    const page = await browser.newPage();
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
       paymentRequestWithOpenBankingProvider,
     );
 
-    const detailsPage = new PaymentRequestDetailsPage(page);
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     await detailsPage.checkHeader();
     await detailsPage.delete();
     await detailsPage.confirmDelete();
@@ -42,7 +41,7 @@ test.describe("Payment Request deletion", () => {
   test("should not delete an active payment request when it has transactions @regression @critical", async ({
     paymentRequestWithManualBankTransferProvider,
     manualBankTransferTransaction,
-    browser,
+    publicServantPage,
   }) => {
     await description(
       "This test checks than active payment request cannot be deleted when it has transactions.",
@@ -51,14 +50,13 @@ test.describe("Payment Request deletion", () => {
     await tags("Payment Request", "Delete");
     await severity(Severity.CRITICAL);
 
-    const page = await browser.newPage();
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
       paymentRequestWithManualBankTransferProvider,
     );
 
-    const detailsPage = new PaymentRequestDetailsPage(page);
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     await detailsPage.checkHeader();
     await detailsPage.checkPaymentsList([manualBankTransferTransaction]);
     await detailsPage.checkDeleteDisabled();

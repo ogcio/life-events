@@ -11,11 +11,18 @@ type paymentRequestsFixtures = {
 
 export const test = base.extend<paymentRequestsFixtures>({
   paymentRequestWithMultipleProviders: async (
-    { page, bankTransferProvider, openBankingProvider, stripeProvider },
+    {
+      publicServantPage,
+      bankTransferProvider,
+      openBankingProvider,
+      stripeProvider,
+    },
     use,
   ) => {
     const paymentRequestTitle = `Test multiple providers ${Date.now()}`;
-    const paymentRequestCreatePage = new PaymentRequestFormPage(page);
+    const paymentRequestCreatePage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await paymentRequestCreatePage.goto();
     await paymentRequestCreatePage.create({
       title: paymentRequestTitle,
@@ -28,11 +35,13 @@ export const test = base.extend<paymentRequestsFixtures>({
   },
 
   paymentRequestWithManualBankTransferProvider: async (
-    { page, bankTransferProvider },
+    { publicServantPage, bankTransferProvider },
     use,
   ) => {
     const paymentRequestTitle = `Test manual bank transfer provider ${Date.now()}`;
-    const paymentRequestCreatePage = new PaymentRequestFormPage(page);
+    const paymentRequestCreatePage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await paymentRequestCreatePage.goto();
     await paymentRequestCreatePage.create({
       title: paymentRequestTitle,
@@ -43,11 +52,13 @@ export const test = base.extend<paymentRequestsFixtures>({
   },
 
   paymentRequestWithOpenBankingProvider: async (
-    { page, openBankingProvider },
+    { publicServantPage, openBankingProvider },
     use,
   ) => {
     const paymentRequestTitle = `Test open banking provider ${Date.now()}`;
-    const paymentRequestCreatePage = new PaymentRequestFormPage(page);
+    const paymentRequestCreatePage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await paymentRequestCreatePage.goto();
     await paymentRequestCreatePage.create({
       title: paymentRequestTitle,
@@ -57,9 +68,14 @@ export const test = base.extend<paymentRequestsFixtures>({
     await use(paymentRequestTitle);
   },
 
-  paymentRequestWithStripeProvider: async ({ page, stripeProvider }, use) => {
+  paymentRequestWithStripeProvider: async (
+    { publicServantPage, stripeProvider },
+    use,
+  ) => {
     const paymentRequestTitle = `Test stripe provider ${Date.now()}`;
-    const paymentRequestCreatePage = new PaymentRequestFormPage(page);
+    const paymentRequestCreatePage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await paymentRequestCreatePage.goto();
     await paymentRequestCreatePage.create({
       title: paymentRequestTitle,
@@ -69,9 +85,14 @@ export const test = base.extend<paymentRequestsFixtures>({
     await use(paymentRequestTitle);
   },
 
-  paymentRequestWithRealexProvider: async ({ page, realexProvider }, use) => {
+  paymentRequestWithRealexProvider: async (
+    { publicServantPage, realexProvider },
+    use,
+  ) => {
     const paymentRequestTitle = `Test realex provider ${Date.now()}`;
-    const paymentRequestCreatePage = new PaymentRequestFormPage(page);
+    const paymentRequestCreatePage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await paymentRequestCreatePage.goto();
     await paymentRequestCreatePage.create({
       title: paymentRequestTitle,

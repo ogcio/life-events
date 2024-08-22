@@ -1,5 +1,4 @@
-import { Page } from "@playwright/test";
-import { test } from "../../fixtures/auth";
+import { test } from "../../fixtures/pageFixtures";
 import { test as testWithProvider } from "../../fixtures/providersFixtures";
 import {
   mockStripePublishableKey,
@@ -18,34 +17,33 @@ import { AddStripeProviderPage } from "../../objects/providers/AddStripeProvider
 import { EditStripeProviderPage } from "../../objects/providers/EditStripeProviderPage";
 
 test.describe("Stripe provider creation", () => {
-  let page: Page;
   let providerName: string;
-
-  test.beforeAll(async ({ browser }) => (page = await browser.newPage()));
 
   test.beforeEach(async () => {
     providerName = `Test stripe ${Date.now()}`;
   });
 
-  test("should add a stripe provider @smoke @critical", async () => {
+  test("should add a stripe provider @smoke @critical", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks the successful creation of a new stripe provider.",
     );
     await owner("OGCIO");
     await tags("Providers", "Stripe");
     await severity(Severity.CRITICAL);
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectStripeProvider();
 
-    const addStripeProviderPage = new AddStripeProviderPage(page);
+    const addStripeProviderPage = new AddStripeProviderPage(publicServantPage);
     await addStripeProviderPage.providerForm.enterName(providerName);
     await addStripeProviderPage.providerForm.enterPublishableKey(
       mockStripePublishableKey,
@@ -58,7 +56,9 @@ test.describe("Stripe provider creation", () => {
     await providersPage.checkProviderVisible(providerName);
   });
 
-  test("should show error creating stripe provider if name is missing @regression @normal", async () => {
+  test("should show error creating stripe provider if name is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a validation error is shown when creating a new stripe provider if name is missing.",
     );
@@ -66,18 +66,18 @@ test.describe("Stripe provider creation", () => {
     await tags("Providers", "Stripe");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectStripeProvider();
 
-    const addStripeProviderPage = new AddStripeProviderPage(page);
+    const addStripeProviderPage = new AddStripeProviderPage(publicServantPage);
     await addStripeProviderPage.providerForm.enterName("");
     await addStripeProviderPage.providerForm.enterPublishableKey(
       mockStripePublishableKey,
@@ -92,7 +92,9 @@ test.describe("Stripe provider creation", () => {
     );
   });
 
-  test("should not add a stripe provider if publishable key is missing @regression @normal", async () => {
+  test("should not add a stripe provider if publishable key is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a new stripe provider is not created if publishable key is missing.",
     );
@@ -100,18 +102,18 @@ test.describe("Stripe provider creation", () => {
     await tags("Providers", "Stripe");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectStripeProvider();
 
-    const addStripeProviderPage = new AddStripeProviderPage(page);
+    const addStripeProviderPage = new AddStripeProviderPage(publicServantPage);
     await addStripeProviderPage.providerForm.enterName(providerName);
     await addStripeProviderPage.providerForm.enterPublishableKey("");
     await addStripeProviderPage.providerForm.enterSecretKey(
@@ -127,7 +129,9 @@ test.describe("Stripe provider creation", () => {
     await providersPage.checkProviderNotVisible(providerName);
   });
 
-  test("should not add a stripe provider if secret key is missing @regression @normal", async () => {
+  test("should not add a stripe provider if secret key is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a new stripe provider is not created if secret key is missing.",
     );
@@ -135,18 +139,18 @@ test.describe("Stripe provider creation", () => {
     await tags("Providers", "Stripe");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectStripeProvider();
 
-    const addStripeProviderPage = new AddStripeProviderPage(page);
+    const addStripeProviderPage = new AddStripeProviderPage(publicServantPage);
     await addStripeProviderPage.providerForm.enterName(providerName);
     await addStripeProviderPage.providerForm.enterPublishableKey(
       mockStripePublishableKey,
@@ -164,15 +168,9 @@ test.describe("Stripe provider creation", () => {
 });
 
 testWithProvider.describe("Stripe provider editing", () => {
-  let page: Page;
-
-  testWithProvider.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
-
   testWithProvider(
     "should edit a Stripe provider @regression @normal",
-    async ({ stripeProvider }) => {
+    async ({ stripeProvider, publicServantPage }) => {
       await description(
         "This test checks the successful editing of a Stripe provider.",
       );
@@ -184,16 +182,16 @@ testWithProvider.describe("Stripe provider editing", () => {
       const newPublishableKey = "new_pk_test_123456";
       const newProviderName = `${stripeProvider} edited`;
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(stripeProvider);
-      const editProviderPage = new EditStripeProviderPage(page);
+      const editProviderPage = new EditStripeProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkName(stripeProvider);
       await editProviderPage.providerForm.enterName(newProviderName);
@@ -219,7 +217,7 @@ testWithProvider.describe("Stripe provider editing", () => {
 
   testWithProvider(
     "should disable and enable a stripe provider @regression @normal",
-    async ({ stripeProvider }) => {
+    async ({ stripeProvider, publicServantPage }) => {
       await description(
         "This test checks that a stripe provider is successfully disabled and enabled.",
       );
@@ -227,16 +225,16 @@ testWithProvider.describe("Stripe provider editing", () => {
       await tags("Providers", "Stripe");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(stripeProvider);
-      const editProviderPage = new EditStripeProviderPage(page);
+      const editProviderPage = new EditStripeProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.disableProvider();
       await providersPage.checkProviderIsDisabled(stripeProvider);
@@ -250,7 +248,7 @@ testWithProvider.describe("Stripe provider editing", () => {
 
   testWithProvider(
     "should not edit a Stripe provider if name is missing @regression @normal",
-    async ({ stripeProvider }) => {
+    async ({ stripeProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing a Stripe provider it cannot be saved if name is missing.",
       );
@@ -258,16 +256,16 @@ testWithProvider.describe("Stripe provider editing", () => {
       await tags("Providers", "Stripe");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(stripeProvider);
-      const editProviderPage = new EditStripeProviderPage(page);
+      const editProviderPage = new EditStripeProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkName(stripeProvider);
       await editProviderPage.providerForm.enterName("");
@@ -278,7 +276,7 @@ testWithProvider.describe("Stripe provider editing", () => {
 
   testWithProvider(
     "should not edit a stripe provider if publishable key is missing @regression @normal",
-    async ({ stripeProvider }) => {
+    async ({ stripeProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing a stripe provider it cannot be saved if publishable key is missing.",
       );
@@ -286,16 +284,16 @@ testWithProvider.describe("Stripe provider editing", () => {
       await tags("Providers", "Stripe");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(stripeProvider);
-      const editProviderPage = new EditStripeProviderPage(page);
+      const editProviderPage = new EditStripeProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkPublishableKey(
         mockStripePublishableKey,
@@ -316,7 +314,7 @@ testWithProvider.describe("Stripe provider editing", () => {
 
   testWithProvider(
     "should not edit a stripe provider if secret key is missing @regression @normal",
-    async ({ stripeProvider }) => {
+    async ({ stripeProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing a stripe provider it cannot be saved if secret key is missing.",
       );
@@ -324,16 +322,16 @@ testWithProvider.describe("Stripe provider editing", () => {
       await tags("Providers", "Stripe");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(stripeProvider);
-      const editProviderPage = new EditStripeProviderPage(page);
+      const editProviderPage = new EditStripeProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkSecretKey(mockStripeSecretKey);
       await editProviderPage.providerForm.enterSecretKey("");

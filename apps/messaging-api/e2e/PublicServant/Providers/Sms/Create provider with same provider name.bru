@@ -1,0 +1,37 @@
+meta {
+  name: Create provider with same provider name
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/providers
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "type":"sms",
+    "isPrimary":true,
+    "providerName": "{{randomStringSms}}",
+    "config":{
+      "type":"AWS",
+      "accessKey":"key",
+      "secretAccessKey":"secret",
+      "region":"region"
+    }
+  }
+}
+
+assert {
+  res.status: eq 422
+  res.body.requestId: isDefined
+  res.body.validation[0].fieldName: eq providerName
+  res.body.validation[0].message: eq alreadyInUse
+  res.body.code: eq VALIDATION_ERROR
+}

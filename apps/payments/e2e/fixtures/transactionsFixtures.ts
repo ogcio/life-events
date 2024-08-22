@@ -1,4 +1,4 @@
-import { test as base } from "./citizenPageFixtures";
+import { test as base } from "./paymentRequestsFixtures";
 import { PaymentRequestsPage } from "../objects/paymentRequests/PaymentRequestsListPage";
 import { PaymentRequestDetailsPage } from "../objects/paymentRequests/PaymentRequestDetailsPage";
 import { PayPage } from "../objects/payments/PayPage";
@@ -16,10 +16,9 @@ type transactionFixtures = {
 
 export const test = base.extend<transactionFixtures>({
   manualBankTransferTransaction: async (
-    { browser, paymentRequestWithManualBankTransferProvider, citizenPage },
+    { paymentRequestWithManualBankTransferProvider, publicServantPage, citizenPage },
     use,
   ) => {
-    const publicServantPage = await browser.newPage();
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(

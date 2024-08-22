@@ -1,0 +1,30 @@
+meta {
+  name: Get single provider
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/providers/{{smsProviderId}}?type=sms
+  body: none
+  auth: bearer
+}
+
+query {
+  type: sms
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data.providerName: eq update {{randomStringSms}}
+  res.body.data.id: eq {{smsProviderId}}
+  res.body.data.isPrimary: isFalsy
+  res.body.data.config.accessKey: eq update key
+  res.body.data.config.secretAccessKey: eq update secret
+  res.body.data.config.region: eq update region
+}
