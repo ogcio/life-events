@@ -64,11 +64,22 @@ test.describe("Transaction with manual bank transfer", () => {
     );
     await manualBankTransferTransactionPage.checkIban(mockIban);
     await manualBankTransferTransactionPage.checkReferenceCode();
+    const referenceCode =
+      await manualBankTransferTransactionPage.getReferenceCode();
     await manualBankTransferTransactionPage.confirmPayment();
 
     await expect(citizenPage).toHaveURL(mockRedirectUrl);
     await expect(
       citizenPage.getByRole("img", { name: "Google" }),
     ).toBeVisible();
+
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoDetails(
+      paymentRequestWithManualBankTransferProvider,
+    );
+
+    await detailsPage.checkPaymentsList([
+      { amount: mockAmount, status: "pending", referenceCode },
+    ]);
   });
 });

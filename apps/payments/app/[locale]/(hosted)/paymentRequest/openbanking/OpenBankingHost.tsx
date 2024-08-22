@@ -35,6 +35,7 @@ export default function Page(props: Props) {
 
         const url = new URL(props.returnUri);
         url.searchParams.append("error", "aborted");
+        url.searchParams.append("payment_id", props.paymentId);
         router.push(url.href);
       },
       onError: () => {
@@ -42,6 +43,7 @@ export default function Page(props: Props) {
 
         const url = new URL(props.returnUri);
         url.searchParams.append("error", "error");
+        url.searchParams.append("payment_id", props.paymentId);
         router.push(url.href);
       },
       onLoad: () => {

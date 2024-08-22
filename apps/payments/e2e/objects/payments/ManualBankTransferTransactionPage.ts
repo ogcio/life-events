@@ -70,7 +70,7 @@ export class ManualBankTransferTransactionPage {
       .locator("dt")
       .last();
     await expect(referenceCodeCell).toBeVisible();
-    return referenceCodeCell.innerText();
+    return (await referenceCodeCell.innerText()).trim();
   }
 
   async getAmount() {

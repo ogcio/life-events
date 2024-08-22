@@ -164,6 +164,10 @@ export class PaymentRequestDetailsPage {
 
   async checkDeleteDisabled() {
     await expect(this.deleteButton).toBeDisabled();
+    await this.deleteButton.hover();
+    await this.page.getByText(
+      "Cannot delete payment request since there are existing transactions",
+    );
   }
 
   async getPaymentLink() {
@@ -175,6 +179,7 @@ export class PaymentRequestDetailsPage {
     transactions: {
       amount: string;
       status: string;
+      referenceCode: string;
     }[],
   ) {
     await expect(
@@ -190,12 +195,18 @@ export class PaymentRequestDetailsPage {
     }
 
     for (const transaction of transactions) {
-      const transactionRow = await this.page
-        .getByRole("row")
-        .filter({ hasText: transaction.status })
-        .filter({ hasText: transaction.amount })
-        .filter({ hasText: "Details" });
-      await expect(transactionRow).toBeVisible();
+      const transactionRow = await this.page.locator(
+        `tr[data-reference-code="${transaction.referenceCode}"]`,
+      );
+      await expect(
+        transactionRow.getByRole("cell", { name: transaction.amount }),
+      ).toBeVisible();
+      await expect(
+        transactionRow.getByRole("cell", { name: transaction.status }),
+      ).toBeVisible();
+      await expect(
+        transactionRow.getByRole("link", { name: "Details" }),
+      ).toBeVisible();
     }
   }
 }
