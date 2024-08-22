@@ -34,6 +34,7 @@ export interface paths {
                 deleted?: boolean;
                 infected: boolean;
                 infectionDescription?: string;
+                antivirusDbVersion?: string;
               }[];
             };
           };
@@ -119,19 +120,6 @@ export interface paths {
         200: {
           content: {
             "application/json": string;
-          };
-        };
-        /** @description Default Response */
-        500: {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              requestId: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
           };
         };
         /** @description Default Response */
