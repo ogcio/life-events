@@ -8,12 +8,7 @@ import {
 } from "allure-js-commons";
 import { PaymentRequestsPage } from "../../objects/paymentRequests/PaymentRequestsListPage";
 import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/PaymentRequestDetailsPage";
-import {
-  mockAccountHolderName,
-  mockAmount,
-  mockRedirectUrl,
-} from "../../utils/mocks";
-import { TrueLayerDialogPage } from "../../objects/payments/openbanking/TrueLayerDialogPage";
+import { mockAmount, mockRedirectUrl } from "../../utils/mocks";
 import { expect } from "@playwright/test";
 import { PayPage } from "../../objects/payments/PayPage";
 import { StripeForm } from "../../objects/payments/stripe/StripeForm";
@@ -26,6 +21,7 @@ test.describe("Transaction with stripe", () => {
     insufficientFunds: "4000 0000 0000 9995",
     incorrectNumber: "4242 4242 4242 4241",
   };
+
   const securityCode = "123";
   let expirationDate: string;
 
@@ -63,10 +59,6 @@ test.describe("Transaction with stripe", () => {
     await payPage.paymentMethodForm.choosePaymentMethod("card");
     await payPage.paymentMethodForm.proceedToPayment();
 
-    citizenPage.on("response", async (response) =>
-      console.log("<<<<", response.url()),
-    );
-
     const stripe = new StripeForm(citizenPage);
     await stripe.checkForm();
     await stripe.fillCardNumber(cards.success);
@@ -74,11 +66,62 @@ test.describe("Transaction with stripe", () => {
     await stripe.fillSecurityCode(securityCode);
     await stripe.pay();
 
-    await expect(citizenPage.url()).toContain(mockRedirectUrl);
     await expect(
       citizenPage.getByRole("img", { name: "Google" }),
     ).toBeVisible();
+    await expect(citizenPage.url()).toContain(mockRedirectUrl);
 
-    // TODO: check transaction status
+    // TODO: Change this after transaction check is done
+    await citizenPage.goto("/en/citizen/transactions");
+    await expect(
+      citizenPage.getByText(paymentRequestWithStripeProvider),
+    ).toBeVisible();
+  });
+
+  test("should fail a payment with Stripe provider in case of an error @smoke @critical", async ({
+    paymentRequestWithStripeProvider,
+    publicServantPage,
+    citizenPage,
+  }) => {
+    await description(
+      "This test checks that a payment transaction with Stripe provider is failing if there is an error with the specified card number or account",
+    );
+    await owner("OGCIO");
+    await tags("Transaction", "Stripe");
+    await severity(Severity.CRITICAL);
+
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoDetails(paymentRequestWithStripeProvider);
+
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
+    const paymentLink = await detailsPage.getPaymentLink();
+
+    const payPage = new PayPage(citizenPage);
+    await payPage.goto(paymentLink);
+    await payPage.paymentMethodForm.choosePaymentMethod("card");
+    await payPage.paymentMethodForm.proceedToPayment();
+
+    const stripe = new StripeForm(citizenPage);
+    const stripeURL = citizenPage.url();
+    await stripe.fillCardNumber(cards.genericDecline);
+    await stripe.fillExpDate(expirationDate);
+    await stripe.fillSecurityCode(securityCode);
+    await stripe.pay();
+
+    await stripe.checkDeclineError();
+    await expect(citizenPage.url()).toContain(stripeURL);
+
+    await stripe.fillCardNumber(cards.insufficientFunds);
+    await stripe.pay();
+
+    await stripe.checkInsufficientFundsError();
+    await expect(citizenPage.url()).toContain(stripeURL);
+
+    await stripe.fillCardNumber(cards.incorrectNumber);
+    await stripe.pay();
+
+    await stripe.checkIncorrectCardNumberError();
+    await expect(citizenPage.url()).toContain(stripeURL);
   });
 });

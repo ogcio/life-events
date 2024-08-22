@@ -47,4 +47,22 @@ export class StripeForm {
   async pay() {
     await this.submitButton.click();
   }
+
+  async checkDeclineError() {
+    await expect(
+      this.frameLocator.getByText("Your card was declined."),
+    ).toBeVisible();
+  }
+
+  async checkInsufficientFundsError() {
+    await expect(
+      this.frameLocator.getByText("Your card has insufficient funds."),
+    ).toBeVisible();
+  }
+
+  async checkIncorrectCardNumberError() {
+    await expect(
+      this.frameLocator.getByText("Your card number is invalid."),
+    ).toBeVisible();
+  }
 }
