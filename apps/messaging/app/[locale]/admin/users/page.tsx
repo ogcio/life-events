@@ -63,14 +63,12 @@ export default async (props: {
   const isImportCsv = listType === searchValueImportCsv;
   let users: UiUserInvitation[] | undefined = [];
   if (isUsers) {
-    const { accessToken, organization } =
+    const { organization } =
       await AuthenticationFactory.getInstance().getPublicServant();
-    if (!accessToken || !organization) {
+    if (!organization) {
       throw notFound();
     }
-    const messagingClient = await AuthenticationFactory.getMessagingClient({
-      token: accessToken,
-    });
+    const messagingClient = await AuthenticationFactory.getMessagingClient();
     const { data } = await messagingClient.getUsers({ activeOnly: false });
     users = data;
   }

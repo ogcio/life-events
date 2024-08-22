@@ -1,0 +1,43 @@
+{
+  "name": "upload",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon",
+    "build": "next build",
+    "start": "next start -p 3008",
+    "test:e2e": "playwright test",
+    "test:lighthouse": "node performance-tests/lighthouse/main.mjs",
+    "migrate": "db-migrate up"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "../../packages/auth/src/**/*"
+    ],
+    "ext": "ts,tsx,json",
+    "exec": "next dev -p 3008"
+  },
+  "dependencies": {
+    "analytics": "*",
+    "auth": "*",
+    "building-blocks-sdk": "*",
+    "design-system": "*",
+    "next": "14.2.5",
+    "next-intl": "^3.17.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "server-only": "^0.0.1",
+    "sqids": "^0.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.1",
+    "@types/node": "20.10.4",
+    "@types/pg": "^8.11.0",
+    "@types/react": "18.2.45",
+    "typescript": "5.3.3",
+    "chrome-launcher": "^1.1.2",
+    "fs": "0.0.1-security",
+    "lighthouse": "^12.1.0",
+    "puppeteer": "^22.12.1",
+    "request": "^2.88.2"
+  }
+}

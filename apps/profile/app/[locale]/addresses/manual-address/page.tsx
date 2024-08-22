@@ -10,10 +10,8 @@ import { AuthenticationFactory } from "../../../utils/authentication-factory";
 export default async (props: NextPageProps) => {
   const mainAuthContext =
     await AuthenticationFactory.getInstance().getContext();
-  const mainProfile = await AuthenticationFactory.getProfileClient({
-    token: mainAuthContext.accessToken,
-  });
-  const mainUser = await mainProfile.getUser();
+  const mainProfile = await AuthenticationFactory.getProfileClient();
+  const mainUser = await mainProfile.getUser(mainAuthContext.user.id);
   if (!mainUser.data) {
     return notFound();
   }
@@ -196,8 +194,11 @@ export default async (props: NextPageProps) => {
     }
 
     const createProfile = await AuthenticationFactory.getProfileClient();
-
-    const { data: userExistsQuery, error } = await createProfile.getUser();
+    const createAddressUser =
+      await AuthenticationFactory.getInstance().getUser();
+    const { data: userExistsQuery, error } = await createProfile.getUser(
+      createAddressUser.id,
+    );
 
     if (error) {
       //handle error

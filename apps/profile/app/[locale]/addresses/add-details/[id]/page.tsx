@@ -21,11 +21,8 @@ export default async (props: NextPageProps) => {
     throw notFound();
   }
 
-  const { accessToken, user } =
-    await AuthenticationFactory.getInstance().getContext();
-  const profileClient = await AuthenticationFactory.getProfileClient({
-    token: accessToken,
-  });
+  const { user } = await AuthenticationFactory.getInstance().getContext();
+  const profileClient = await AuthenticationFactory.getProfileClient();
 
   const { data: address, error } = await profileClient.getAddress(addressId);
 
@@ -72,7 +69,7 @@ export default async (props: NextPageProps) => {
         field: form.fieldTranslationKeys.isPrimaryAddress,
       });
     }
-    const { user: saveDetailsUser, accessToken: saveDetailsToken } =
+    const { user: saveDetailsUser } =
       await AuthenticationFactory.getInstance().getContext();
 
     if (errors.length) {
@@ -84,9 +81,7 @@ export default async (props: NextPageProps) => {
       return revalidatePath("/");
     }
 
-    const saveDetailsProfile = await AuthenticationFactory.getProfileClient({
-      token: saveDetailsToken,
-    });
+    const saveDetailsProfile = await AuthenticationFactory.getProfileClient();
 
     if (isOwner !== undefined && isPrimaryAddress !== undefined) {
       const result = await saveDetailsProfile.patchAddress(addressId, {

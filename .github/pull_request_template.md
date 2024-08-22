@@ -12,6 +12,9 @@
 - [ ] **Bug fix**
 - [ ] **New feature**
 - [ ] **Dev change**
+- [ ] **Additional tests**
+- [ ] **Documentation**
+- [ ] **Other**
 
 ### Checklist:
 

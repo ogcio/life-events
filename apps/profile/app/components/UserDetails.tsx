@@ -81,7 +81,8 @@ async function submitAction(formData: FormData) {
   }
 
   const submitProfile = await AuthenticationFactory.getProfileClient();
-  const { data: currentDataResults, error } = await submitProfile.getUser();
+  const { data: currentDataResults, error } =
+    await submitProfile.getUser(userId);
 
   if (error) {
     //handle error
@@ -89,7 +90,7 @@ async function submitAction(formData: FormData) {
   }
 
   if (currentDataResults) {
-    const result = await submitProfile.updateUser(data);
+    const result = await submitProfile.updateUser(userId, data);
 
     if (result?.error) {
       //handle error
@@ -110,10 +111,9 @@ export default async () => {
 
   const red = ds.colours.ogcio.red;
   const mainAuth = AuthenticationFactory.getInstance();
-  const mainProfile = await AuthenticationFactory.getProfileClient({
-    authenticationContext: mainAuth,
-  });
-  const { data, error } = await mainProfile.getUser();
+  const mainProfile = await AuthenticationFactory.getProfileClient();
+  const mainUser = await mainAuth.getUser();
+  const { data, error } = await mainProfile.getUser(mainUser.id);
 
   if (error) {
     // handle error
@@ -152,8 +152,12 @@ export default async () => {
 
   async function togglePPSN() {
     "use server";
-
-    const { data: userExistsQuery, error } = await mainProfile.getUser();
+    const toggleInstance = AuthenticationFactory.getInstance();
+    const toggleProfile = await AuthenticationFactory.getProfileClient();
+    const toggleUser = await toggleInstance.getUser();
+    const { data: userExistsQuery, error } = await toggleProfile.getUser(
+      toggleUser.id,
+    );
 
     if (error) {
       //handle error
@@ -163,7 +167,7 @@ export default async () => {
     if (userExistsQuery) {
       const isPPSNVisible = userExistsQuery.ppsnVisible;
 
-      const result = await mainProfile.patchUser({
+      const result = await mainProfile.patchUser(toggleUser.id, {
         ppsnVisible: !isPPSNVisible,
       });
 
@@ -191,7 +195,6 @@ export default async () => {
   const monthOfBirth = dob.month() + 1;
   const yearOfBirth = dob.year();
 
-  const mainUser = await mainAuth.getUser();
   const errors = await form.getErrorsQuery(mainUser.id, "user");
 
   const phoneError = errors.rows.find(

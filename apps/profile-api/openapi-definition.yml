@@ -71,7 +71,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -81,7 +81,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     post:
       tags: *a1
@@ -134,7 +134,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -144,7 +144,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/addresses/{addressId}:
     get:
@@ -204,7 +204,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -214,7 +214,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -227,7 +227,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -237,7 +237,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     put:
       tags: *a1
@@ -302,7 +302,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -312,7 +312,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -325,7 +325,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -335,7 +335,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     patch:
       tags: *a1
@@ -378,7 +378,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -388,7 +388,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -401,7 +401,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -411,7 +411,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     delete:
       tags: *a1
@@ -444,7 +444,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -454,7 +454,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -467,7 +467,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -477,7 +477,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/entitlements/:
     get:
@@ -522,7 +522,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -532,12 +532,18 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
-  /api/v1/user/:
+  /api/v1/users/{userId}:
     get:
       tags: &a2
-        - user
+        - Users
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: userId
+          required: true
       responses:
         "200":
           description: Default Response
@@ -608,7 +614,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -618,7 +624,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -631,7 +637,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -641,8 +647,193 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
+    put:
+      tags: *a2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                email:
+                  type: string
+                title:
+                  type: string
+                dateOfBirth:
+                  type: string
+                ppsn:
+                  type: string
+                ppsnVisible:
+                  type: boolean
+                gender:
+                  type: string
+                phone:
+                  type: string
+                consentToPrefillData:
+                  type: boolean
+                preferredLanguage:
+                  type: string
+              required:
+                - firstname
+                - lastname
+                - email
+                - title
+                - dateOfBirth
+                - ppsn
+                - ppsnVisible
+                - gender
+                - phone
+                - preferredLanguage
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: userId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+    patch:
+      tags: *a2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ppsnVisible:
+                  type: boolean
+                consentToPrefillData:
+                  type: boolean
+                preferredLanguage:
+                  type: string
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: userId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/users/:
     post:
       tags: *a2
       requestBody:
@@ -703,7 +894,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -713,181 +904,9 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
-    put:
-      tags: *a2
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                firstname:
-                  type: string
-                lastname:
-                  type: string
-                email:
-                  type: string
-                title:
-                  type: string
-                dateOfBirth:
-                  type: string
-                ppsn:
-                  type: string
-                ppsnVisible:
-                  type: boolean
-                gender:
-                  type: string
-                phone:
-                  type: string
-                consentToPrefillData:
-                  type: boolean
-                preferredLanguage:
-                  type: string
-              required:
-                - firstname
-                - lastname
-                - email
-                - title
-                - dateOfBirth
-                - ppsn
-                - ppsnVisible
-                - gender
-                - phone
-                - preferredLanguage
-        required: true
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                required:
-                  - id
-        "404":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        "500":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-    patch:
-      tags: *a2
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ppsnVisible:
-                  type: boolean
-                consentToPrefillData:
-                  type: boolean
-                preferredLanguage:
-                  type: string
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                required:
-                  - id
-        "404":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-        "500":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
-  /api/v1/user/find:
+  /api/v1/users/find:
     get:
       tags: *a2
       parameters:
@@ -966,7 +985,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -976,9 +995,9 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
-  /api/v1/user/select:
+  /api/v1/users/select:
     post:
       tags: *a2
       requestBody:
@@ -1038,7 +1057,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1048,7 +1067,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -1061,7 +1080,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1071,7 +1090,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
 tags:
   - name: User

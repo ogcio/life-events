@@ -16,11 +16,9 @@ export default async (props: NextPageProps) => {
     throw notFound();
   }
 
-  const { accessToken: mainToken, user: mainUser } =
+  const { user: mainUser } =
     await AuthenticationFactory.getInstance().getContext();
-  const mainProfile = await AuthenticationFactory.getProfileClient({
-    token: mainToken,
-  });
+  const mainProfile = await AuthenticationFactory.getProfileClient();
   const errors = await form.getErrorsQuery(
     mainUser.id,
     routes.addresses.editAddress.slug,

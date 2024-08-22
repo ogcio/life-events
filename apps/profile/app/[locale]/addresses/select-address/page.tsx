@@ -15,10 +15,8 @@ export default async (props: NextPageProps) => {
   } = props;
   const mainAuthContext =
     await AuthenticationFactory.getInstance().getContext();
-  const mainProfile = await AuthenticationFactory.getProfileClient({
-    token: mainAuthContext.accessToken,
-  });
-  const mainUser = await mainProfile.getUser();
+  const mainProfile = await AuthenticationFactory.getProfileClient();
+  const mainUser = await mainProfile.getUser(mainAuthContext.user.id);
   if (!mainUser.data) {
     return notFound();
   }
@@ -79,10 +77,8 @@ export default async (props: NextPageProps) => {
     "use server";
     const submitAuthContext =
       await AuthenticationFactory.getInstance().getContext();
-    const submitProfile = await AuthenticationFactory.getProfileClient({
-      token: submitAuthContext.accessToken,
-    });
-    const submitUser = await submitProfile.getUser();
+    const submitProfile = await AuthenticationFactory.getProfileClient();
+    const submitUser = await submitProfile.getUser(submitAuthContext.user.id);
     if (!submitUser.data) {
       return notFound();
     }
@@ -170,7 +166,9 @@ export default async (props: NextPageProps) => {
         .toISOString();
     }
 
-    const { data: userExistsQuery, error } = await submitProfile.getUser();
+    const { data: userExistsQuery, error } = await submitProfile.getUser(
+      submitAuthContext.user.id,
+    );
 
     if (error) {
       //handle error

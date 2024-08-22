@@ -49,23 +49,64 @@ export const getPublicServantContext = (
     buildPublicServantContextParameters(params),
   );
 
-export const isPublicServantAuthenticated = (params: PublicServantParameters) =>
-  AuthSession.isAuthenticated(
-    buildPublicServantAuthConfig(params),
-    buildPublicServantContextParameters(params),
-  );
+export const isPublicServantAuthenticated = async (
+  params: PublicServantParameters,
+): Promise<boolean> => {
+  if (
+    !AuthSession.isAuthenticated(
+      buildPublicServantAuthConfig(params),
+      buildPublicServantContextParameters(params),
+    )
+  ) {
+    return false;
+  }
 
-export const isCitizenAuthenticated = (params: CitizenParameters) =>
-  AuthSession.isAuthenticated(
-    buildCitizenAuthConfig(params),
-    buildCitizenContextParameters(params),
-  );
+  const publicServantContext = await getPublicServantContext(params);
+
+  return publicServantContext.isPublicServant;
+};
+
+export const isAuthenticated = async (params: {
+  appId: string;
+  baseUrl: string;
+}): Promise<boolean> => {
+  return AuthSession.isAuthenticated({ ...getBaseLogtoConfig(), ...params });
+};
+
+export const isCitizenAuthenticated = async (
+  params: CitizenParameters,
+): Promise<boolean> => {
+  if (
+    !AuthSession.isAuthenticated(
+      buildCitizenAuthConfig(params),
+      buildCitizenContextParameters(params),
+    )
+  ) {
+    return false;
+  }
+
+  const citizen = await getCitizenContext(params);
+
+  return !citizen.isPublicServant;
+};
 
 export const getSelectedOrganization = () =>
   AuthSession.getSelectedOrganization();
 
 export const setSelectedOrganization = (organizationId) =>
   AuthSession.setSelectedOrganization(organizationId);
+
+export const getCitizenToken = (
+  params: CitizenParameters,
+  resource?: string,
+): Promise<string> =>
+  AuthSession.getCitizenToken(buildCitizenAuthConfig(params), resource);
+
+export const getOrgToken = (
+  params: PublicServantParameters,
+  organizationId: string,
+): Promise<string> =>
+  AuthSession.getOrgToken(buildPublicServantAuthConfig(params), organizationId);
 
 const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
   ...getBaseLogtoConfig(),
@@ -79,7 +120,7 @@ const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
 const buildPublicServantContextParameters = (
   params: PublicServantParameters,
 ) => ({
-  getOrganizationToken: true,
+  getOrganizationToken: false,
   fetchUserInfo: true,
   publicServantExpectedRoles: params.publicServantExpectedRoles ?? [],
   organizationId: params.organizationId,
@@ -97,7 +138,7 @@ const buildCitizenAuthConfig = (params: CitizenParameters) => ({
 });
 
 const buildCitizenContextParameters = (params: CitizenParameters) => ({
-  getAccessToken: true,
+  getAccessToken: false,
   resource: params.resourceUrl,
   fetchUserInfo: true,
   publicServantExpectedRoles: params.publicServantExpectedRoles ?? [],

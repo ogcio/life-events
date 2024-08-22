@@ -31,7 +31,9 @@ build-api-auth:
 	npm run build --workspace=api-auth
 build-error-handler: 
 	npm run build --workspace=error-handler
-build-packages: build-shared-errors build-logging-wrapper build-error-handler build-api-auth
+build-sdk: 
+	npm run build --workspace=building-blocks-sdk
+build-packages: build-shared-errors build-logging-wrapper build-error-handler build-api-auth build-sdk
 init-packages: npm-install build-packages
 
 ## Docker ##
@@ -57,7 +59,8 @@ migrate:
 	npm run migrate --workspace=payments && \
 	npm run migrate --workspace=messages && \
 	npm run migrate --workspace=profile && \
-	npm run migrate --workspace=scheduler
+	npm run migrate --workspace=scheduler && \
+	npm run migrate --workspace=upload-api 
 
 ## Logto ##
 init-logto:
@@ -83,7 +86,9 @@ run-services:
 	"npm run dev --workspace=profile-api"  \
 	"npm run dev --workspace=timeline-api" \
 	"npm run dev --workspace=home" \
-	"npm run dev --workspace=forms"
+	"npm run dev --workspace=forms" \
+	"npm run dev --workspace=upload" \
+	"npm run dev --workspace=upload-api"
 start-services: install-concurrently run-services
 	
 kill-services:

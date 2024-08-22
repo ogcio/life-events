@@ -77,9 +77,7 @@ export default async function Bank(params: {
 }) {
   const authContext = AuthenticationFactory.getInstance();
   const { user, isPublicServant } = await authContext.getContext();
-  const paymentsApi = await AuthenticationFactory.getPaymentsClient({
-    authenticationContext: authContext,
-  });
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
   if (isPublicServant) {
     return redirect("/not-found", RedirectType.replace);

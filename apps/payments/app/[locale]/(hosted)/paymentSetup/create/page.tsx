@@ -11,6 +11,7 @@ import { ProviderType } from "../providers/types";
 import { paymentRequestValidationMap } from "../../../../validationMaps";
 import { getTranslations } from "next-intl/server";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { PageWrapper } from "../../PageWrapper";
 
 type Props = {
   params: {
@@ -123,5 +124,9 @@ export default async function Page({ params: { locale } }: Props) {
     return formResult;
   }
 
-  return <PaymentSetupFormPage locale={locale} action={handleSubmit} />;
+  return (
+    <PageWrapper locale={locale} disableOrgSelector={true}>
+      <PaymentSetupFormPage locale={locale} action={handleSubmit} />
+    </PageWrapper>
+  );
 }

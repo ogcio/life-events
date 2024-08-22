@@ -1,4 +1,4 @@
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { AuthenticationFactory } from "../utils/authentication-factory";
 
@@ -7,10 +7,8 @@ async function submitAction(formData: FormData) {
 
   const submitAuthContext =
     await AuthenticationFactory.getInstance().getContext();
-  const submitProfile = await AuthenticationFactory.getProfileClient({
-    token: submitAuthContext.accessToken,
-  });
-  const submitUser = await submitProfile.getUser();
+  const submitProfile = await AuthenticationFactory.getProfileClient();
+  const submitUser = await submitProfile.getUser(submitAuthContext.user.id);
   if (!submitUser.data) {
     return notFound();
   }
@@ -18,39 +16,21 @@ async function submitAction(formData: FormData) {
   const consentToPrefillData = formData.get("consentToPrefillData");
   const isUserConsenting = consentToPrefillData === "on";
 
-  const { data: userExistsQuery, error } = await submitProfile.getUser();
+  const result = await submitProfile.patchUser(submitAuthContext.user.id, {
+    consentToPrefillData: isUserConsenting,
+  });
 
-  if (error) {
+  if (result?.error) {
     //handle error
-  }
-
-  if (userExistsQuery) {
-    const result = await submitProfile.patchUser({
-      consentToPrefillData: isUserConsenting,
-    });
-
-    if (result?.error) {
-      //handle error
-    }
-  } else {
-    const { error } = await submitProfile.createUser({
-      consentToPrefillData: isUserConsenting,
-      firstname: submitUser.data.firstName,
-      lastname: submitUser.data.lastName,
-      email: submitUser.data.email,
-      preferredLanguage: await getLocale(),
-    });
-
-    if (error) {
-      //handle error
-    }
   }
 }
 
 async function getConsentData() {
+  const getConsentDataUser =
+    await AuthenticationFactory.getInstance().getUser();
   const consentProfile = await AuthenticationFactory.getProfileClient();
 
-  const { data, error } = await consentProfile.getUser();
+  const { data, error } = await consentProfile.getUser(getConsentDataUser.id);
 
   if (error) {
     //handle error

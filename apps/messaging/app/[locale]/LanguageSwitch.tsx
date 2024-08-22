@@ -30,9 +30,10 @@ export default async ({ theme }: { theme: Theme }) => {
     if (url.search) {
       path += url.search;
     }
-
+    const authenticationContext = AuthenticationFactory.getInstance();
+    const authUser = await authenticationContext.getUser();
     const userProfile = await AuthenticationFactory.getProfileClient();
-    await userProfile.patchUser({
+    await userProfile.patchUser(authUser.id, {
       preferredLanguage: handleLang,
     });
     cookies().delete("NEXT_LOCALE");

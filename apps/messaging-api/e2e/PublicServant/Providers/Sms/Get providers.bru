@@ -1,0 +1,31 @@
+meta {
+  name: Get providers
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/providers?type=sms
+  body: none
+  auth: bearer
+}
+
+query {
+  type: sms
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:post-response {
+  smsProviderId: res.body.data && res.body.data[0] ?  res.body.data[0].id : undefined
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data[0]: isDefined
+  res.body.data[0].id: isDefined
+  res.body.metadata.totalCount: gt 0
+}

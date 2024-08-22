@@ -32,9 +32,10 @@ ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 ENV NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT
 
-RUN npm run build --workspace=packages/shared-errors
-RUN npm run build --workspace=packages/nextjs-logging-wrapper
-RUN npm run build --workspace=apps/profile
+RUN npm run build --workspace=packages/shared-errors && \
+    npm run build --workspace=packages/nextjs-logging-wrapper && \
+    npm run build --workspace=packages/building-blocks-sdk && \
+    npm run build --workspace=apps/profile
 
 FROM base-deps AS runner
 

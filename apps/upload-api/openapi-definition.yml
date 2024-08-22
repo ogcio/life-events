@@ -6,6 +6,11 @@ info:
 components:
   schemas: {}
 paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
   /api/v1/files/:
     post:
       tags:
@@ -38,7 +43,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -48,7 +53,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -61,7 +66,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -71,7 +76,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     get:
       tags:
@@ -89,16 +94,40 @@ paths:
                     items:
                       type: object
                       properties:
-                        url:
+                        filename:
+                          type: string
+                        id:
                           type: string
                         key:
                           type: string
-                        size:
+                        owner:
+                          type: string
+                        fileSize:
                           type: number
+                        mimetype:
+                          type: string
+                        createdAt:
+                          type: string
+                        lastScan:
+                          type: string
+                        deleted:
+                          default: false
+                          type: boolean
+                        infected:
+                          type: boolean
+                        infectionDescription:
+                          type: string
+                        antivirusDbVersion:
+                          type: string
                       required:
-                        - url
+                        - filename
                         - key
-                        - size
+                        - owner
+                        - fileSize
+                        - mimetype
+                        - createdAt
+                        - lastScan
+                        - infected
                 required:
                   - data
         4XX:
@@ -112,7 +141,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -122,7 +151,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -135,7 +164,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -145,7 +174,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/files/{key}:
     delete:
@@ -185,7 +214,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -195,7 +224,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -208,7 +237,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -218,7 +247,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     get:
       tags:
@@ -235,31 +264,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties: {}
-        "500":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
-                required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
+                type: string
         4XX:
           description: Default Response
           content:
@@ -271,7 +276,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -281,7 +286,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -294,7 +299,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -304,12 +309,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
-  /api/v1/health:
-    get:
-      responses:
-        "200":
-          description: Default Response
 tags:
   - name: FileUploadApi

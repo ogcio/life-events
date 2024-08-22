@@ -9,6 +9,12 @@ export const envSchema = {
     "LOGTO_JWK_ENDPOINT",
     "LOGTO_OIDC_ENDPOINT",
     "LOGTO_API_RESOURCE_INDICATOR",
+    "HOST",
+    "POSTGRES_USER",
+    "POSTGRES_PASSWORD",
+    "POSTGRES_HOST",
+    "POSTGRES_PORT",
+    "POSTGRES_DB_NAME",
   ],
   properties: {
     CLAMAV_HOST: { type: "string" },
@@ -21,5 +27,21 @@ export const envSchema = {
     LOGTO_JWK_ENDPOINT: { type: "string" },
     LOGTO_OIDC_ENDPOINT: { type: "string" },
     LOGTO_API_RESOURCE_INDICATOR: { type: "string" },
+    HOST: { type: "string" },
+    POSTGRES_USER: {
+      type: "string",
+    },
+    POSTGRES_PASSWORD: {
+      type: "string",
+    },
+    POSTGRES_HOST: {
+      type: "string",
+    },
+    POSTGRES_PORT: {
+      type: "number",
+    },
+    POSTGRES_DB_NAME: {
+      type: "string",
+    },
   },
 };

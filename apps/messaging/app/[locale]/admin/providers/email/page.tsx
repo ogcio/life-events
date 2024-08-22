@@ -48,7 +48,7 @@ export default async (props: {
       }
     }
 
-    const { accessToken: submitAccessToken, user: submitUser } =
+    const { user: submitUser } =
       await AuthenticationFactory.getInstance().getContext();
     if (formErrors.length) {
       await temporaryMockUtils.createErrors(
@@ -64,9 +64,7 @@ export default async (props: {
       return;
     }
 
-    const messagesClient = await AuthenticationFactory.getMessagingClient({
-      token: submitAccessToken,
-    });
+    const messagesClient = await AuthenticationFactory.getMessagingClient();
 
     let serverError:
       | Awaited<ReturnType<typeof messagesClient.createEmailProvider>>["error"]
@@ -141,11 +139,8 @@ export default async (props: {
     redirect(url.href);
   }
 
-  const { accessToken, user } =
-    await AuthenticationFactory.getInstance().getContext();
-  const client = await AuthenticationFactory.getMessagingClient({
-    token: accessToken,
-  });
+  const { user } = await AuthenticationFactory.getInstance().getContext();
+  const client = await AuthenticationFactory.getMessagingClient();
 
   let data:
     | Awaited<ReturnType<typeof client.getEmailProvider>>["data"]
