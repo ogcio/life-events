@@ -1,14 +1,14 @@
 import { Page } from "@playwright/test";
 import { test as base } from "./auth";
 
-type citizenPageFixtures = {
+type pageFixtures = {
   citizenPage: Page;
   secondCitizenPage: Page;
   publicServantPage: Page;
   secondPublicServantPage: Page;
 };
 
-export const test = base.extend<citizenPageFixtures>({
+export const test = base.extend<pageFixtures>({
   citizenPage: async ({ browser, userWorkerStorageState }, use) => {
     const context = await browser.newContext({
       storageState: userWorkerStorageState,

@@ -25,17 +25,13 @@ export class OrganizationSelector {
   }
 
   async isActive() {
-    const selectDisabled = await this.orgSelector.isDisabled();
-    const buttonDisabled = await this.submitBttn.isDisabled();
-    await expect(selectDisabled).toBeFalsy();
-    await expect(buttonDisabled).toBeFalsy();
+    await expect(this.orgSelector).toBeEnabled();
+    await expect(this.submitBttn).toBeEnabled();
   }
 
   async isDisabled() {
-    const selectDisabled = await this.orgSelector.isDisabled();
-    const buttonDisabled = await this.submitBttn.isDisabled();
-    await expect(selectDisabled).toBeTruthy();
-    await expect(buttonDisabled).toBeTruthy();
+    await expect(this.orgSelector).toBeDisabled();
+    await expect(this.submitBttn).toBeDisabled();
   }
 
   async hasOrganisationSelected(organisationName: string) {
