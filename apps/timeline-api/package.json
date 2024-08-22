@@ -10,7 +10,7 @@
     "start": "node dist/index.js",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
-    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/services/timeline/schema.d.ts",
+    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/src/services/timeline/schema.d.ts",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp logo.png dist/"
   },
   "nodemonConfig": {
