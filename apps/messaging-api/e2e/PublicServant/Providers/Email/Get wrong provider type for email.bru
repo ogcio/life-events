@@ -1,17 +1,17 @@
 meta {
-  name: Get wrong provider type
+  name: Get wrong provider type for email
   type: http
-  seq: 6
+  seq: 9
 }
 
 get {
-  url: {{baseUrl}}/api/v1/providers/{{smsProviderId}}?type=email
+  url: {{baseUrl}}/api/v1/providers/{{emailProviderId}}?type=sms
   body: none
   auth: bearer
 }
 
 query {
-  type: email
+  type: sms
 }
 
 auth:bearer {
@@ -21,7 +21,7 @@ auth:bearer {
 assert {
   res.status: eq 404
   res.body.code: isDefined
-  res.body.detail: isDefined
+  res.body.detail: eq failed to find sms provider
   res.body.requestId: isDefined
   res.body.name: isDefined
 }

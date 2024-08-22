@@ -1,0 +1,29 @@
+meta {
+  name: Get providers with offset limit
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/v1/providers?type=email&limit=1&offset=0
+  body: none
+  auth: bearer
+}
+
+query {
+  type: email
+  limit: 1
+  offset: 0
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.body.data[0].id: isDefined {{emailProviderId}}
+  res.body.data[0].providerName: isDefined {{randomString}}
+  res.body.data[0].type: eq email
+  res.body.data[0].isPrimary: isDefined true
+  res.body.data: length 1
+}

@@ -1,4 +1,3 @@
-import { Page } from "@playwright/test";
 import { test } from "../../fixtures/providersFixtures";
 import {
   Severity,
@@ -20,12 +19,7 @@ import { InactivePayPage } from "../../objects/payments/InactivePayPage";
 import { PreviewPayPage } from "../../objects/payments/PreviewPayPage";
 
 test.describe("Payment Request with stripe provider", () => {
-  let page: Page;
   let name: string;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
 
   test.beforeEach(async () => {
     name = `Test stripe ${Date.now()}`;
@@ -33,7 +27,7 @@ test.describe("Payment Request with stripe provider", () => {
 
   test("should create an inactive payment request with a stripe provider @regression @normal", async ({
     stripeProvider,
-    context,
+    publicServantPage,
   }) => {
     await description(
       "This test checks the successful creation of an inactive payment request with a stripe provider.",
@@ -42,11 +36,13 @@ test.describe("Payment Request with stripe provider", () => {
     await tags("Payment Request", "Stripe");
     await severity(Severity.NORMAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoCreate();
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectCardAccount(stripeProvider);
@@ -58,7 +54,7 @@ test.describe("Payment Request with stripe provider", () => {
     await createPaymentRequestPage.selectInactiveStatus();
     await createPaymentRequestPage.saveChanges();
 
-    const detailsPage = new PaymentRequestDetailsPage(page);
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     await detailsPage.checkHeader();
     await detailsPage.checkTitle(name);
     await detailsPage.checkDescription(paymentRequestDescription);
@@ -71,7 +67,7 @@ test.describe("Payment Request with stripe provider", () => {
     await detailsPage.checkEmptyPaymentsList();
 
     const link = await detailsPage.getPaymentLink();
-    const newPage = await context.newPage();
+    const newPage = await publicServantPage.context().newPage();
     await newPage.goto(link);
     const inactivePayPage = new InactivePayPage(newPage);
     await inactivePayPage.checkHeader();
@@ -89,7 +85,7 @@ test.describe("Payment Request with stripe provider", () => {
 
   test("should create an active payment request with a stripe provider @smoke @critical", async ({
     stripeProvider,
-    context,
+    publicServantPage,
   }) => {
     await description(
       "This test checks the successful creation of an inactive payment request with a stripe provider.",
@@ -98,11 +94,13 @@ test.describe("Payment Request with stripe provider", () => {
     await tags("Payment Request", "Stripe");
     await severity(Severity.CRITICAL);
 
-    const paymentRequestsPage = new PaymentRequestsPage(page);
+    const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoCreate();
 
-    const createPaymentRequestPage = new PaymentRequestFormPage(page);
+    const createPaymentRequestPage = new PaymentRequestFormPage(
+      publicServantPage,
+    );
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectCardAccount(stripeProvider);
@@ -112,7 +110,7 @@ test.describe("Payment Request with stripe provider", () => {
     await createPaymentRequestPage.selectActiveStatus();
     await createPaymentRequestPage.saveChanges();
 
-    const detailsPage = new PaymentRequestDetailsPage(page);
+    const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
     await detailsPage.checkHeader();
     await detailsPage.checkTitle(name);
     await detailsPage.checkDescription(paymentRequestDescription);
@@ -125,7 +123,7 @@ test.describe("Payment Request with stripe provider", () => {
     await detailsPage.checkEmptyPaymentsList();
 
     const link = await detailsPage.getPaymentLink();
-    const newPage = await context.newPage();
+    const newPage = await publicServantPage.context().newPage();
     await newPage.goto(link);
     const previewPayPage = new PreviewPayPage(newPage);
     await previewPayPage.checkHeader();
