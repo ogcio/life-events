@@ -3,7 +3,7 @@ import { testPlanFilter } from "allure-playwright/testplan";
 import path from "path";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ path: ".env.test" });
 
 const baseURL =
   process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT ??
