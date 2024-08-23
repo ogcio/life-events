@@ -10,5 +10,17 @@
     "comment": "Test password used in E2E tests",
     "false_positive": true,
     "ignored_at": "2024-08-23T07:56:16Z"
+  },
+  "ee7bd12e86bb07870e00b87e62fbb72e_0": {
+    "author": "alfonsograziano",
+    "comment": "create-db script - input validated",
+    "false_positive": true,
+    "ignored_at": "2024-08-23T10:46:24Z"
+  },
+  "ee7bd12e86bb07870e00b87e62fbb72e_1": {
+    "author": "alfonsograziano",
+    "comment": "create-db script - input validated in db creation",
+    "false_positive": true,
+    "ignored_at": "2024-08-23T10:47:02Z"
   }
 }

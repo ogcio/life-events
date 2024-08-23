@@ -42,7 +42,8 @@ const createDatabase = async (dbName) => {
 
     if (res.rowCount === 0) {
       // Create the database if it doesn't exist
-
+      // PostgreSQL does not support parameterized queries for database creation directly
+      // but we're validating dbName before the query execution
       await client.query(`CREATE DATABASE ${dbName}`);
       console.log(`Database ${dbName} created successfully`);
     } else {
