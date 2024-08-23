@@ -28,17 +28,14 @@ const __dirname = dirname(__filename);
 dotenv.config();
 
 export async function build(opts?: FastifyServerOptions) {
-  const app = fastify(opts).withTypeProvider<TypeBoxTypeProvider>();
-  // app.setValidatorCompiler((schema) => {
-  //   const ajv = new Ajv({
-  //     removeAdditional: true,
-  //     useDefaults: true,
-  //     coerceTypes: false,
-  //     allErrors: true,
-  //   });
-
-  //   return ajv.compile.bind(ajv)(schema.schema);
-  // });
+  const app = fastify({
+    ...opts,
+    ajv: {
+      customOptions: {
+        coerceTypes: false,
+      },
+    },
+  }).withTypeProvider<TypeBoxTypeProvider>();
 
   initializeLoggingHooks(app);
   initializeErrorHandler(app);

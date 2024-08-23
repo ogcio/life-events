@@ -364,7 +364,6 @@ export const EmailCreateSchema = Type.Object({
   }),
   smtpPort: Type.Number({
     description: "Port of the SMTP host",
-    minimum: 1,
   }),
   username: Type.String({
     description: "Username to use to log into the SMTP server",
