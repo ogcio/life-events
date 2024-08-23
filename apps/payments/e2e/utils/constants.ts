@@ -14,6 +14,7 @@ export const myGovIdMockSettings = {
 
 export const referenceCodeSearchParam = {
   openBanking: "payment_id",
+  stripe: "payment_intent",
 };
 
 export const BankTransferProviderValidationErrors = [
