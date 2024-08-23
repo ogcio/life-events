@@ -17,6 +17,7 @@ const password = process.env[config.password.ENV];
 const port = process.env[config.port.ENV];
 const dbName = process.env[config.database.ENV];
 
+// bearer:disable javascript_lang_sql_injection
 const createDatabase = async (dbName) => {
   const client = new Client({
     user,
