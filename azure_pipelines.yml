@@ -51,7 +51,6 @@ stages:
       - ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
         - job: bearerScan
           displayName: Bearer
-          continueOnError: true
           steps:
             - task: DockerInstaller@0
               displayName: Docker Installer
