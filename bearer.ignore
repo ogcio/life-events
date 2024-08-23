@@ -10,5 +10,5 @@
     "comment": "Test password used in E2E tests",
     "false_positive": true,
     "ignored_at": "2024-08-23T07:56:16Z"
-  },
+  }
 }
