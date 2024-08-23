@@ -111,7 +111,7 @@ export default async function users(app: FastifyInstance) {
       const paginationDetails: PaginationDetails = {
         ...pagination,
         totalCount: recipientsResponse.total,
-        url: new URL(request.url),
+        url: new URL(`${app.listeningOrigin}${request.url}`),
       };
 
       return formatAPIResponse(
