@@ -25,18 +25,25 @@ const createDatabase = async (dbName) => {
     port,
   });
 
+  // Regular expression to ensure that dbName contains only valid characters (letters, numbers, underscores)
+  if (!/^[a-zA-Z0-9_]+$/.test(dbName)) {
+    throw new Error("Invalid database name.");
+  }
+
   try {
     await client.connect();
     console.log("Connected to PostgreSQL");
 
     // Check if the database exists
-    const checkDbQuery = `SELECT 1 FROM pg_database WHERE datname='${dbName}'`;
-    const res = await client.query(checkDbQuery);
+    const res = await client.query(
+      "SELECT 1 FROM pg_database WHERE datname = $1",
+      [dbName],
+    );
 
     if (res.rowCount === 0) {
       // Create the database if it doesn't exist
-      const createDbQuery = `CREATE DATABASE ${dbName}`;
-      await client.query(createDbQuery);
+
+      await client.query(`CREATE DATABASE ${dbName}`);
       console.log(`Database ${dbName} created successfully`);
     } else {
       console.log(`Database ${dbName} already exists`);
