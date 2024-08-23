@@ -1,7 +1,7 @@
 import t from "tap";
 import fp from "fastify-plugin";
 
-t.test("messaging - providers schema", async (t) => {
+t.test("messaging - /api/v1/providers schema", async (t) => {
   const { build } = await t.mockImport<typeof import("../../app.js")>(
     "../../app.js",
     {
