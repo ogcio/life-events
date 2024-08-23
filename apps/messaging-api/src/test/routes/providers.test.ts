@@ -2573,5 +2573,125 @@ t.test("messaging - providers schema", async (t) => {
     });
   });
 
+  t.test("get one", async (t) => {
+    t.test("non uuid id url param should fail", async (t) => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/api/v1/providers/fail",
+      });
+
+      const body = await res.json();
+
+      t.equal(res.statusCode, 422, statusCodeValidationInfo);
+      t.equal(body.code, "VALIDATION_ERROR", bodyCodeValidationInfo);
+      t.equal(
+        body.validation.find(
+          (v: { fieldName: string }) => v.fieldName === "providerId",
+        )?.message,
+        'must match format "uuid"',
+        errorMsgValidationInfo,
+      );
+    });
+
+    t.test("no type search query should fail", async (t) => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/api/v1/providers/ca3b108f-7b9a-487e-b40a-eb535e6056ca",
+      });
+
+      const body = await res.json();
+
+      t.equal(res.statusCode, 422, statusCodeValidationInfo);
+      t.equal(body.code, "VALIDATION_ERROR", bodyCodeValidationInfo);
+      t.equal(
+        body.validation.find(
+          (v: { fieldName: string }) => v.fieldName === "type",
+        )?.message,
+        "must have required property 'type'",
+        errorMsgValidationInfo,
+      );
+    });
+
+    t.test("invalid type search query should fail", async (t) => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/api/v1/providers/ca3b108f-7b9a-487e-b40a-eb535e6056ca?type=fail",
+      });
+
+      const body = await res.json();
+
+      t.equal(res.statusCode, 422, statusCodeValidationInfo);
+      t.equal(body.code, "VALIDATION_ERROR", bodyCodeValidationInfo);
+      t.equal(
+        body.validation.find(
+          (v: { fieldName: string }) => v.fieldName === "type",
+        )?.message,
+        "must be equal to one of the allowed values",
+        errorMsgValidationInfo,
+      );
+    });
+  });
+
+  t.test("get many", async (t) => {
+    t.test("no type search query should fail", async (t) => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/api/v1/providers",
+      });
+
+      const body = await res.json();
+
+      t.equal(res.statusCode, 422, statusCodeValidationInfo);
+      t.equal(body.code, "VALIDATION_ERROR", bodyCodeValidationInfo);
+      t.equal(
+        body.validation.find(
+          (v: { fieldName: string }) => v.fieldName === "type",
+        )?.message,
+        "must have required property 'type'",
+        errorMsgValidationInfo,
+      );
+    });
+
+    t.test("invalid type search query should fail", async (t) => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/api/v1/providers?type=fail",
+      });
+
+      const body = await res.json();
+
+      t.equal(res.statusCode, 422, statusCodeValidationInfo);
+      t.equal(body.code, "VALIDATION_ERROR", bodyCodeValidationInfo);
+      t.equal(
+        body.validation.find(
+          (v: { fieldName: string }) => v.fieldName === "type",
+        )?.message,
+        "must be equal to one of the allowed values",
+        errorMsgValidationInfo,
+      );
+    });
+  });
+
+  t.test("delete", async (t) => {
+    t.test("non uuid id url param should fail", async (t) => {
+      const res = await app.inject({
+        method: "DELETE",
+        url: "/api/v1/providers/fail",
+      });
+
+      const body = await res.json();
+
+      t.equal(res.statusCode, 422, statusCodeValidationInfo);
+      t.equal(body.code, "VALIDATION_ERROR", bodyCodeValidationInfo);
+      t.equal(
+        body.validation.find(
+          (v: { fieldName: string }) => v.fieldName === "providerId",
+        )?.message,
+        'must match format "uuid"',
+        errorMsgValidationInfo,
+      );
+    });
+  });
+
   t.end();
 });
