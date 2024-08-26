@@ -40,7 +40,7 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <head>
-        <title>Life Events App</title>
+        <title>File Explorer</title>
       </head>
       <body
         style={{
