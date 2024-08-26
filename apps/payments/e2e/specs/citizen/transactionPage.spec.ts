@@ -11,7 +11,7 @@ import { CitizenTransactionDetailsPage } from "../../objects/transactions/Citize
 import { citizens, myGovIdMockSettings } from "../../utils/constants";
 
 test.describe("Citizen transactions page", async () => {
-  test("Should create and list a transaction created by a citizen @smoke @blocker", async ({
+  test("Should create and list a transaction created by a citizen @smoke @normal", async ({
     manualBankTransferTransaction,
     citizenPage,
   }) => {
@@ -20,7 +20,7 @@ test.describe("Citizen transactions page", async () => {
     );
     await owner("OGCIO");
     await tags("Citizen", "Transaction");
-    await severity(Severity.BLOCKER);
+    await severity(Severity.NORMAL);
 
     const transactionsPage = new CitizenTransactionsPage(citizenPage);
     await transactionsPage.goto();
@@ -29,7 +29,7 @@ test.describe("Citizen transactions page", async () => {
     await transactionsPage.checkTransaction(manualBankTransferTransaction);
   });
 
-  test("Should list the transaction only to the user who created it @smoke @blocker", async ({
+  test("Should list the transaction only to the user who created it @smoke @normal", async ({
     manualBankTransferTransaction,
     secondCitizenPage,
   }) => {
@@ -38,7 +38,7 @@ test.describe("Citizen transactions page", async () => {
     );
     await owner("OGCIO");
     await tags("Citizen", "Transaction");
-    await severity(Severity.BLOCKER);
+    await severity(Severity.NORMAL);
 
     const transactions2Page = new CitizenTransactionsPage(secondCitizenPage);
     await transactions2Page.goto();
@@ -50,7 +50,7 @@ test.describe("Citizen transactions page", async () => {
     await transactions2Page.checkEmptyTransactionsScreen();
   });
 
-  test("Should show the transaction's details @smoke @blocker", async ({
+  test("Should show the transaction's details @smoke @normal", async ({
     manualBankTransferTransaction,
     citizenPage,
   }) => {
@@ -59,7 +59,7 @@ test.describe("Citizen transactions page", async () => {
     );
     await owner("OGCIO");
     await tags("Citizen", "Transaction");
-    await severity(Severity.BLOCKER);
+    await severity(Severity.NORMAL);
 
     const transactionsPage = new CitizenTransactionsPage(citizenPage);
     await transactionsPage.goto();

@@ -4,7 +4,7 @@ import { PaymentRequestDetailsPage } from "../objects/paymentRequests/PaymentReq
 import { PayPage } from "../objects/payments/PayPage";
 import { ManualBankTransferTransactionPage } from "../objects/payments/ManualBankTransferTransactionPage";
 
-export type ManualBankTransferTransaction = {
+export type Transaction = {
   referenceCode: string;
   amount: string;
   paymentRequestTitle: string;
@@ -12,7 +12,7 @@ export type ManualBankTransferTransaction = {
 };
 
 type transactionFixtures = {
-  manualBankTransferTransaction: ManualBankTransferTransaction;
+  manualBankTransferTransaction: Transaction;
 };
 
 export const test = base.extend<transactionFixtures>({
@@ -43,14 +43,12 @@ export const test = base.extend<transactionFixtures>({
     const referenceCode =
       await manualBankTransferTransactionPage.getReferenceCode();
     const amount = await manualBankTransferTransactionPage.getAmount();
-    const paymentRequestTitle =
-      await manualBankTransferTransactionPage.getPaymentRequestTitle();
     await manualBankTransferTransactionPage.confirmPayment();
 
     await use({
       referenceCode,
       amount,
-      paymentRequestTitle,
+      paymentRequestTitle: paymentRequestWithManualBankTransferProvider,
       status: "pending",
     });
   },

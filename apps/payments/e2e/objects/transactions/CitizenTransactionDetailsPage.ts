@@ -1,15 +1,14 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import { ManualBankTransferTransaction } from "../../fixtures/transactionsFixtures";
+import { Transaction } from "../../fixtures/transactionsFixtures";
 
 export class CitizenTransactionDetailsPage {
   private readonly header: Locator;
 
   private readonly titleLabel = "Payment Request Title";
   private readonly amountLabel = "Amount";
-  private readonly lastUpdateLabel = "Last update";
   private readonly statusLabel = "Status";
   private readonly providerTypeLabel = "Provider type";
-  private readonly referenceLabel = "Payment reference code	";
+  private readonly referenceLabel = "Payment reference code";
   private readonly payerNameLabel = "Payer name";
   private readonly payerMailLabel = "Payer email";
 
@@ -23,7 +22,7 @@ export class CitizenTransactionDetailsPage {
     await expect(this.header).toBeVisible();
   }
 
-  async goto(transaction: ManualBankTransferTransaction) {
+  async goto(transaction: Transaction) {
     const transactionRow = await this.page.locator(
       `tr[data-reference-code="${transaction.referenceCode}"]`,
     );

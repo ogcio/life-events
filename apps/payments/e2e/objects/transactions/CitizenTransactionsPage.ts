@@ -1,5 +1,5 @@
 import { type Page, type Locator, expect } from "@playwright/test";
-import { ManualBankTransferTransaction } from "../../fixtures/transactionsFixtures";
+import { Transaction } from "../../fixtures/transactionsFixtures";
 
 export class CitizenTransactionsPage {
   private readonly header: Locator;
@@ -21,7 +21,7 @@ export class CitizenTransactionsPage {
     await this.page.goto(`/en/citizen/transactions`);
   }
 
-  async checkTransaction(transaction: ManualBankTransferTransaction) {
+  async checkTransaction(transaction: Transaction) {
     const transactionRow = await this.page.locator(
       `tr[data-reference-code="${transaction.referenceCode}"]`,
     );
@@ -36,7 +36,7 @@ export class CitizenTransactionsPage {
     ).toBeVisible();
   }
 
-  async checkTransactionIsMissing(transaction: ManualBankTransferTransaction) {
+  async checkTransactionIsMissing(transaction: Transaction) {
     const transactionRow = await this.page.locator(
       `tr[data-reference-code="${transaction.referenceCode}"]`,
     );
