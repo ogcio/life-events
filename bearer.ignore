@@ -1,0 +1,14 @@
+{
+  "2dec0656170a8be687997e6c5ca32979_0": {
+    "author": "williamwd",
+    "comment": "Constant used for substitution, the value comes from a proper secret",
+    "false_positive": true,
+    "ignored_at": "2024-07-18T10:58:16Z"
+  },
+  "da3cd6c849c0a35b31ea7209294d3275_0": {
+    "author": "alfonsograziano",
+    "comment": "Test password used in E2E tests",
+    "false_positive": true,
+    "ignored_at": "2024-08-23T07:56:16Z"
+  }
+}

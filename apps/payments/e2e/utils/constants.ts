@@ -68,6 +68,7 @@ export const PaymentRequestValidationErrors = [
   "titleRequired",
   "referenceRequired",
   "amountRequired",
+  "amountMaximum",
   "redirectURLRequired",
   "statusInvalid",
 ] as const;
@@ -82,6 +83,7 @@ export const paymentRequestValidationErrorTexts: Record<
   titleRequired: "Title is required.",
   referenceRequired: "Reference is required.",
   amountRequired: "Amount is required.",
+  amountMaximum: "Amount must be less than 10000.",
   redirectURLRequired: "Redirect URL is required.",
   statusInvalid:
     "Payment Request Status cannot be active if no providers are selected.",
