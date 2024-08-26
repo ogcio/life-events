@@ -1,35 +1,35 @@
-import { FastifyInstance } from "fastify";
 import { FileMetadataType } from "../../../types/schemaDefinitions.js";
+import fastifyPostgres from "@fastify/postgres";
 
-export default async (app: FastifyInstance, metadata: FileMetadataType) => {
+export default (pg: fastifyPostgres.PostgresDb, metadata: FileMetadataType) => {
   const {
     id,
-    filename,
+    fileName,
     createdAt,
     fileSize,
     infectionDescription,
     key,
     lastScan,
     deleted,
-    mimetype,
+    mimeType,
     infected,
-    owner,
+    ownerId,
     antivirusDbVersion,
   } = metadata;
 
-  await app.pg.query(
+  return pg.query(
     `
-     UPDATE files
+    UPDATE files
     SET
-    key=$2,
+    key = $2,
     owner = $3,
-    fileSize = $4,
-    mimetype = $5,
-    createdAt = $6,
-    lastScan = $7,
+    file_size = $4,
+    mime_type = $5,
+    created_at = $6,
+    last_scan = $7,
     infected = $8,
     infection_description = $9,
-    filename = $10,
+    file_name = $10,
     deleted = $11,
     antivirus_db_version = $12
     WHERE id = $1
@@ -37,14 +37,14 @@ export default async (app: FastifyInstance, metadata: FileMetadataType) => {
     [
       id,
       key,
-      owner,
+      ownerId,
       fileSize,
-      mimetype,
+      mimeType,
       createdAt,
       lastScan,
       infected,
       infectionDescription,
-      filename,
+      fileName,
       deleted,
       antivirusDbVersion,
     ],

@@ -22,6 +22,7 @@ export class AuthenticationFactory {
 
   static async getUploadClient(): Promise<Upload> {
     const token = await this.getToken();
+
     return new Upload(token);
   }
 }

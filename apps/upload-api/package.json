@@ -32,6 +32,7 @@
     "@fastify/type-provider-typebox": "^4.0.0",
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.16",
+    "building-blocks-sdk": "*",
     "api-auth": "*",
     "clamscan": "^2.2.1",
     "db-migrate": "^0.11.14",
