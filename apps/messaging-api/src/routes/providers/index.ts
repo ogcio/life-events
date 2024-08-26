@@ -285,6 +285,7 @@ export default async function providers(app: FastifyInstance) {
     },
     async function handleCreateProvider(request) {
       const errorProcess = "CREATE_PROVIDER";
+
       const organisationid = ensureOrganizationIdIsSet(request, errorProcess);
       const provider = request.body;
 

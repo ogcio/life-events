@@ -349,23 +349,29 @@ export const ProviderListItemSchema = Type.Object({
 export const ProviderListSchema = Type.Array(ProviderListItemSchema);
 
 export const EmailCreateSchema = Type.Object({
-  providerName: Type.String({ description: "Name of the provider" }),
+  providerName: Type.String({
+    description: "Name of the provider",
+    minLength: 1,
+  }),
   isPrimary: Type.Boolean({
     description:
       "If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type",
   }),
-  type: Type.Literal("email"),
+  type: TypeboxStringEnum(["email"]),
   smtpHost: Type.String({
     description: "Address of the SMTP host",
+    minLength: 1,
   }),
   smtpPort: Type.Number({
     description: "Port of the SMTP host",
   }),
   username: Type.String({
     description: "Username to use to log into the SMTP server",
+    minLength: 1,
   }),
   password: Type.String({
     description: "Password to use to log into the SMTP server",
+    minLength: 1,
   }),
   throttle: Type.Optional(
     Type.Number({
@@ -373,25 +379,31 @@ export const EmailCreateSchema = Type.Object({
         "Optional field to adjust how long time between each mail, in miliseconds",
     }),
   ),
-  fromAddress: Type.String({ description: "Email address to use as sender" }),
+  fromAddress: Type.String({
+    description: "Email address to use as sender",
+    minLength: 1,
+  }),
   ssl: Type.Boolean({
     description: "Is connection to the SMTP server secure?",
   }),
 });
 
 export const SmsCreateSchema = Type.Object({
-  providerName: Type.String({ description: "Name of the provider" }),
+  providerName: Type.String({
+    description: "Name of the provider",
+    minLength: 1,
+  }),
   isPrimary: Type.Boolean({
     description:
       "If true, the provider is set as primary for the selected type for the current organisation. Please note, each organisation can only have one primary provider for each type",
   }),
-  type: Type.Literal("sms"),
+  type: TypeboxStringEnum(["sms"]),
   config: Type.Union([
     Type.Object({
-      type: Type.Literal("AWS"),
-      accessKey: Type.String(),
-      secretAccessKey: Type.String(),
-      region: Type.String(),
+      type: TypeboxStringEnum(["AWS"]),
+      accessKey: Type.String({ minLength: 1 }),
+      secretAccessKey: Type.String({ minLength: 1 }),
+      region: Type.String({ minLength: 1 }),
     }),
   ]),
 });

@@ -98,3 +98,39 @@ export async function createPaymentRequest(paymentRequest) {
 
   return json;
 }
+
+export async function getTrueLayerPaymentDetails(id: string) {
+  const idempotencyKey = randomUUID();
+
+  const signature = tlSigning.sign({
+    kid: CERTIFICATE_ID,
+    privateKeyPem: PRIVATE_KEY,
+    // @ts-expect-error unable to use the correct ENUM due to TSconfig
+    method: "GET",
+    path: "/v3/payments/{id}",
+    headers: {
+      "Idempotency-Key": idempotencyKey,
+    },
+  });
+
+  const url = `${process.env.TL_ENVIRONMENT_URI}/v3/payments/${id}`;
+
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${await getAccessToken()}`,
+      "Idempotency-Key": idempotencyKey,
+      "Tl-Signature": signature,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    console.error("Error getting payment details", await res.text());
+    return;
+  }
+
+  const json = await res.json();
+
+  return json;
+}

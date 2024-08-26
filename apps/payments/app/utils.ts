@@ -1,6 +1,7 @@
 import { redirect, RedirectType } from "next/navigation";
 import { TransactionStatuses } from "../types/TransactionStatuses";
 import { ProviderType } from "./[locale]/(hosted)/paymentSetup/providers/types";
+import { validationFormatters } from "./validationMaps";
 
 export function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-IE", {
@@ -48,6 +49,7 @@ export type ValidationFieldMap = Record<
   {
     field: string;
     errorMessage: { [key in ValidationErrorTypes]?: string };
+    formatter?: Record<string, string>;
   }
 >;
 
@@ -70,7 +72,14 @@ export const getValidationErrors = (
       if (!validation.additionalInfo[variableName]) {
         return match;
       }
-      return validation.additionalInfo[variableName];
+
+      const value = validation.additionalInfo[variableName];
+      const formatterFn = fieldMap[errorField]?.formatter?.[variableName] ?? "";
+
+      if (validationFormatters[formatterFn]) {
+        return validationFormatters[formatterFn](value);
+      }
+      return value;
     });
 
     errors[field] = processedMessage;
@@ -216,4 +225,21 @@ export const buildPaginationLinks = (
     ...buildLinks(paginationLinks),
     pages: buildLinks(pagesLinks),
   } as PaginationLinks;
+};
+
+export const getInternalStatus = (status: string) => {
+  switch (status) {
+    case "processing":
+      return TransactionStatuses.Pending;
+    case "succeeded":
+      return TransactionStatuses.Succeeded;
+    case "payment_failed":
+      return TransactionStatuses.Failed;
+    case "executed":
+      return TransactionStatuses.Succeeded;
+    case "failed":
+      return TransactionStatuses.Failed;
+    default:
+      return TransactionStatuses.Succeeded;
+  }
 };

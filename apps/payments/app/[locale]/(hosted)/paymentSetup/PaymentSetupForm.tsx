@@ -92,8 +92,6 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
         label={t("form.amount")}
         prefix={t("form.currencySymbol")}
         error={state.errors.amount}
-        min="0.00"
-        max="10000.00"
         step="0.01"
         defaultValue={
           state.defaultState?.details?.amount
