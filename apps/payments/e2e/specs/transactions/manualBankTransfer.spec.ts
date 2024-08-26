@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../../fixtures/citizenPageFixtures";
+import { test } from "../../fixtures/paymentRequestsFixtures";
 import {
   Severity,
   owner,
@@ -20,7 +20,7 @@ import { PayPage } from "../../objects/payments/PayPage";
 
 test.describe("Transaction with manual bank transfer", () => {
   test("should initiate a payment with a manual bank transfer provider @smoke @blocker", async ({
-    browser,
+    publicServantPage,
     paymentRequestWithManualBankTransferProvider,
     citizenPage,
   }) => {
@@ -31,7 +31,6 @@ test.describe("Transaction with manual bank transfer", () => {
     await tags("Transaction", "Manual Bank Transfer");
     await severity(Severity.BLOCKER);
 
-    const publicServantPage = await browser.newPage();
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
@@ -64,11 +63,22 @@ test.describe("Transaction with manual bank transfer", () => {
     );
     await manualBankTransferTransactionPage.checkIban(mockIban);
     await manualBankTransferTransactionPage.checkReferenceCode();
+    const referenceCode =
+      await manualBankTransferTransactionPage.getReferenceCode();
     await manualBankTransferTransactionPage.confirmPayment();
 
     await expect(citizenPage).toHaveURL(mockRedirectUrl);
     await expect(
       citizenPage.getByRole("img", { name: "Google" }),
     ).toBeVisible();
+
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoDetails(
+      paymentRequestWithManualBankTransferProvider,
+    );
+
+    await detailsPage.checkPaymentsList([
+      { amount: mockAmount, status: "pending", referenceCode },
+    ]);
   });
 });

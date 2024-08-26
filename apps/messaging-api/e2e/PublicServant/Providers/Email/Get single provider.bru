@@ -1,0 +1,33 @@
+meta {
+  name: Get single provider
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/providers/{{emailProviderId}}?type=email
+  body: none
+  auth: bearer
+}
+
+query {
+  type: email
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data.providerName: eq update {{randomStringEmail}}
+  res.body.data.id: eq {{emailProviderId}}
+  res.body.data.isPrimary: isFalsy
+  res.body.data.type: eq email
+  res.body.data.smtpHost: eq update {{randomStringEmail}}
+  res.body.data.smtpPort: eq 12345
+  res.body.data.username: eq update user
+  res.body.data.password: eq update password
+  res.body.data.ssl: isFalsy
+}

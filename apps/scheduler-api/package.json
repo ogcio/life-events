@@ -10,7 +10,7 @@
     "start": "node --import tsx index.ts & node --import tsx worker.ts",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
-    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/services/scheduler/schema.d.ts"
+    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/src/services/scheduler/schema.d.ts"
   },
   "type": "module",
   "nodemonConfig": {

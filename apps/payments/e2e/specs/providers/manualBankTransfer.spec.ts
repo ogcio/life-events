@@ -1,5 +1,4 @@
-import { Page } from "@playwright/test";
-import { test } from "../../fixtures/auth";
+import { test } from "../../fixtures/pageFixtures";
 import { test as testWithProvider } from "../../fixtures/providersFixtures";
 import {
   mockAccountHolderName,
@@ -19,18 +18,15 @@ import {
 import { EditManualBankTransferProviderPage } from "../../objects/providers/EditManualBankTransferProviderPage";
 
 test.describe("Manual bank transfer provider creation", () => {
-  let page: Page;
   let providerName: string;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
 
   test.beforeEach(async () => {
     providerName = `Test manual bank transfer ${Date.now()}`;
   });
 
-  test("should add a manual bank transfer provider @smoke @blocker", async () => {
+  test("should add a manual bank transfer provider @smoke @blocker", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks the successful creation of a new manual bank transfer provider.",
     );
@@ -38,19 +34,19 @@ test.describe("Manual bank transfer provider creation", () => {
     await tags("Providers", "Manual Bank Transfer");
     await severity(Severity.BLOCKER);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectManualBankTransferProvider();
 
     const addManualBankTransferProviderPage =
-      new AddManualBankTransferProviderPage(page);
+      new AddManualBankTransferProviderPage(publicServantPage);
     await addManualBankTransferProviderPage.providerForm.enterName(
       providerName,
     );
@@ -63,7 +59,9 @@ test.describe("Manual bank transfer provider creation", () => {
     await providersPage.checkProviderVisible(providerName);
   });
 
-  test("should show error creating manual bank transfer provider if name is missing @regression @normal", async () => {
+  test("should show error creating manual bank transfer provider if name is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a validation error is shown when creating a new manual bank transfer provider if name is missing.",
     );
@@ -71,19 +69,19 @@ test.describe("Manual bank transfer provider creation", () => {
     await tags("Providers", "Manual Bank Transfer");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectManualBankTransferProvider();
 
     const addManualBankTransferProviderPage =
-      new AddManualBankTransferProviderPage(page);
+      new AddManualBankTransferProviderPage(publicServantPage);
     await addManualBankTransferProviderPage.providerForm.enterName("");
     await addManualBankTransferProviderPage.providerForm.enterAccountHolderName(
       mockAccountHolderName,
@@ -96,7 +94,9 @@ test.describe("Manual bank transfer provider creation", () => {
     );
   });
 
-  test("should not add a manual bank transfer provider if iban is missing @regression @normal", async () => {
+  test("should not add a manual bank transfer provider if iban is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a new manual bank transfer provider is not created if iban is missing.",
     );
@@ -104,19 +104,19 @@ test.describe("Manual bank transfer provider creation", () => {
     await tags("Providers", "Manual Bank Transfer");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectManualBankTransferProvider();
 
     const addManualBankTransferProviderPage =
-      new AddManualBankTransferProviderPage(page);
+      new AddManualBankTransferProviderPage(publicServantPage);
     await addManualBankTransferProviderPage.providerForm.enterName(
       providerName,
     );
@@ -134,7 +134,9 @@ test.describe("Manual bank transfer provider creation", () => {
     await providersPage.checkProviderNotVisible(providerName);
   });
 
-  test("should not add a manual bank transfer provider if account holder name is missing @regression @normal", async () => {
+  test("should not add a manual bank transfer provider if account holder name is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a new manual bank transfer provider is not created if account holder name is missing.",
     );
@@ -142,19 +144,19 @@ test.describe("Manual bank transfer provider creation", () => {
     await tags("Providers", "Manual Bank Transfer");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectManualBankTransferProvider();
 
     const addManualBankTransferProviderPage =
-      new AddManualBankTransferProviderPage(page);
+      new AddManualBankTransferProviderPage(publicServantPage);
     await addManualBankTransferProviderPage.providerForm.enterName(
       providerName,
     );
@@ -172,7 +174,9 @@ test.describe("Manual bank transfer provider creation", () => {
     await providersPage.checkProviderNotVisible(providerName);
   });
 
-  test("should not add a manual bank transfer provider if iban is invalid @regression @normal", async () => {
+  test("should not add a manual bank transfer provider if iban is invalid @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a new manual bank transfer provider is not created if an invalid iban is provided.",
     );
@@ -180,19 +184,19 @@ test.describe("Manual bank transfer provider creation", () => {
     await tags("Providers", "Manual Bank Transfer");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectManualBankTransferProvider();
 
     const addManualBankTransferProviderPage =
-      new AddManualBankTransferProviderPage(page);
+      new AddManualBankTransferProviderPage(publicServantPage);
     await addManualBankTransferProviderPage.providerForm.enterName(
       providerName,
     );
@@ -212,16 +216,11 @@ test.describe("Manual bank transfer provider creation", () => {
 });
 
 testWithProvider.describe("Manual bank transfer provider editing", () => {
-  let page: Page;
   const newAccountHolderName = "foo bar";
-
-  testWithProvider.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
 
   testWithProvider(
     "should edit a manual bank transfer provider @regression @normal",
-    async ({ bankTransferProvider }) => {
+    async ({ bankTransferProvider, publicServantPage }) => {
       await description(
         "This test checks the successful editing of a manual bank transfer provider.",
       );
@@ -232,16 +231,18 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       const providerName = bankTransferProvider;
       const newProviderName = `${providerName} edited`;
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(providerName);
-      const editProviderPage = new EditManualBankTransferProviderPage(page);
+      const editProviderPage = new EditManualBankTransferProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkName(providerName);
       await editProviderPage.providerForm.enterName(newProviderName);
@@ -267,7 +268,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
 
   testWithProvider(
     "should disable and enable a manual bank transfer provider @regression @normal",
-    async ({ bankTransferProvider }) => {
+    async ({ bankTransferProvider, publicServantPage }) => {
       await description(
         "This test checks that a manual bank transfer provider is successfully disabled and enabled.",
       );
@@ -275,16 +276,18 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await tags("Providers", "Manual Bank Transfer");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(bankTransferProvider);
-      const editProviderPage = new EditManualBankTransferProviderPage(page);
+      const editProviderPage = new EditManualBankTransferProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.disableProvider();
       await providersPage.checkProviderIsDisabled(bankTransferProvider);
@@ -298,7 +301,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
 
   testWithProvider(
     "should not edit a manual bank transfer provider if name is missing @regression @normal",
-    async ({ bankTransferProvider }) => {
+    async ({ bankTransferProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing a manual bank transfer provider it cannot be saved if name is missing.",
       );
@@ -306,16 +309,18 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await tags("Providers", "Manual Bank Transfer");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(bankTransferProvider);
-      const editProviderPage = new EditManualBankTransferProviderPage(page);
+      const editProviderPage = new EditManualBankTransferProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkName(bankTransferProvider);
       await editProviderPage.providerForm.enterName("");
@@ -326,7 +331,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
 
   testWithProvider(
     "should not edit a manual bank transfer provider if account holder name is missing @regression @normal",
-    async ({ bankTransferProvider }) => {
+    async ({ bankTransferProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing a manual bank transfer provider it cannot be saved if account holder name is missing.",
       );
@@ -334,16 +339,18 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await tags("Providers", "Manual Bank Transfer");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(bankTransferProvider);
-      const editProviderPage = new EditManualBankTransferProviderPage(page);
+      const editProviderPage = new EditManualBankTransferProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkAccountHolderName(
         mockAccountHolderName,
@@ -364,7 +371,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
 
   testWithProvider(
     "should not edit a manual bank transfer provider if iban is missing @regression @normal",
-    async ({ bankTransferProvider }) => {
+    async ({ bankTransferProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing a manual bank transfer provider it cannot be saved if iban is missing.",
       );
@@ -372,16 +379,18 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await tags("Providers", "Manual Bank Transfer");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(bankTransferProvider);
-      const editProviderPage = new EditManualBankTransferProviderPage(page);
+      const editProviderPage = new EditManualBankTransferProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkIban(mockIban);
       await editProviderPage.providerForm.enterIban("");
@@ -396,7 +405,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
 
   testWithProvider(
     "should not edit a manual bank transfer provider if iban is invalid @regression @normal",
-    async ({ bankTransferProvider }) => {
+    async ({ bankTransferProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing a manual bank transfer provider it cannot be saved if iban is invalid.",
       );
@@ -404,16 +413,18 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await tags("Providers", "Manual Bank Transfer");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(bankTransferProvider);
-      const editProviderPage = new EditManualBankTransferProviderPage(page);
+      const editProviderPage = new EditManualBankTransferProviderPage(
+        publicServantPage,
+      );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkIban(mockIban);
       await editProviderPage.providerForm.enterIban("foo");

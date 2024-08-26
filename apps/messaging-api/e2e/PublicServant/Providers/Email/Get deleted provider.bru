@@ -1,7 +1,7 @@
 meta {
-  name: Get single email provider
+  name: Get deleted provider
   type: http
-  seq: 4
+  seq: 11
 }
 
 get {
@@ -19,9 +19,7 @@ auth:bearer {
 }
 
 assert {
-  res.status: eq 200
-  res.body.data: isDefined
-  res.body.data: isDefined
-  res.body.data.providerName: isDefined
-  res.body.data.id: eq {{emailProviderId}}
+  res.status: eq 404
+  res.body.code: eq NOT_FOUND_ERROR
+  res.body.requestId: isDefined
 }

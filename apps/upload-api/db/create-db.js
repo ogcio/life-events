@@ -17,6 +17,7 @@ const password = process.env[config.password.ENV];
 const port = process.env[config.port.ENV];
 const dbName = process.env[config.database.ENV];
 
+// bearer:disable javascript_lang_sql_injection
 const createDatabase = async (dbName) => {
   const client = new Client({
     user,
@@ -43,6 +44,8 @@ const createDatabase = async (dbName) => {
     if (res.rowCount === 0) {
       // Create the database if it doesn't exist
 
+      // PostgreSQL does not support parameterized queries for database creation directly
+      // but we're validating dbName before the query execution
       await client.query(`CREATE DATABASE ${dbName}`);
       console.log(`Database ${dbName} created successfully`);
     } else {

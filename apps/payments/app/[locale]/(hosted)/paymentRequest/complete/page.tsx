@@ -1,9 +1,9 @@
 import { pgpool } from "../../../../dbConnection";
 import { RedirectType, notFound, redirect } from "next/navigation";
-import { getInternalStatus } from "../../../../integration/stripe";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
-import { errorHandler } from "../../../../utils";
+import { errorHandler, getInternalStatus } from "../../../../utils";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { getTrueLayerPaymentDetails } from "../../../../integration/trueLayer";
 
 type Props = {
   searchParams: {
@@ -56,19 +56,20 @@ export default async function Page(props: Props) {
   const { payment_id, payment_intent, redirect_status, error } =
     props.searchParams;
   let extPaymentId = payment_id ?? "";
-  let status = TransactionStatuses.Succeeded;
 
+  let status = TransactionStatuses.Succeeded;
   if (error) {
     status = TransactionStatuses.Failed;
-    return (
-      <h3 style={{ textAlign: "center", marginTop: "5rem" }}>
-        There was an error processing your payment.
-      </h3>
-    );
+  }
+  if (payment_id) {
+    // It's a TrueLayer transaction
+    const paymentDetails = await getTrueLayerPaymentDetails(payment_id);
+    status = getInternalStatus(paymentDetails.status);
   }
 
   if (!extPaymentId) {
     if (payment_intent && redirect_status) {
+      // It's a Stripe transaction
       extPaymentId = payment_intent;
 
       const mappedStatus = getInternalStatus(redirect_status);
@@ -83,6 +84,15 @@ export default async function Page(props: Props) {
   }
 
   const transactionDetail = await updateTransaction(extPaymentId, status);
+
+  if (status === TransactionStatuses.Failed) {
+    return (
+      <h3 style={{ textAlign: "center", marginTop: "5rem" }}>
+        There was an error processing your payment.
+      </h3>
+    );
+  }
+
   const requestDetail = await getRequestDetails(
     transactionDetail.payment_request_id,
   );

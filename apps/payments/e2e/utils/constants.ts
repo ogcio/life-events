@@ -5,11 +5,16 @@ export const landingPageUrl = "/en/info";
 export const landingPage2Url = "http://localhost:3004/en/payments";
 
 export const password = "123";
+export const citizens = ["Peter Parker", "Bruce Wayne"];
+export const publicServants = ["Tony Stark", "John Doe"];
 export const myGovIdMockSettings = {
   publicServantEmailDomain: "gov.ie",
-  publicServantUser: "Tony Stark",
-  citizen: "Peter Parker",
   citizenEmailDomain: "mail.ie",
+};
+
+export const referenceCodeSearchParam = {
+  openBanking: "payment_id",
+  stripe: "payment_intent",
 };
 
 export const BankTransferProviderValidationErrors = [
@@ -63,6 +68,7 @@ export const PaymentRequestValidationErrors = [
   "titleRequired",
   "referenceRequired",
   "amountRequired",
+  "amountMaximum",
   "redirectURLRequired",
   "statusInvalid",
 ] as const;
@@ -77,6 +83,7 @@ export const paymentRequestValidationErrorTexts: Record<
   titleRequired: "Title is required.",
   referenceRequired: "Reference is required.",
   amountRequired: "Amount is required.",
+  amountMaximum: "Amount must be less than 10000.",
   redirectURLRequired: "Redirect URL is required.",
   statusInvalid:
     "Payment Request Status cannot be active if no providers are selected.",

@@ -1,5 +1,4 @@
-import { Page } from "@playwright/test";
-import { test } from "../../fixtures/auth";
+import { test } from "../../fixtures/pageFixtures";
 import { test as testWithProvider } from "../../fixtures/providersFixtures";
 import {
   mockRealexMerchantId,
@@ -18,34 +17,33 @@ import { AddRealexProviderPage } from "../../objects/providers/AddRealexProvider
 import { EditRealexProviderPage } from "../../objects/providers/EditRealexProviderPage";
 
 test.describe("Realex provider creation", () => {
-  let page: Page;
   let providerName: string;
-
-  test.beforeAll(async ({ browser }) => (page = await browser.newPage()));
 
   test.beforeEach(async () => {
     providerName = `Test realex ${Date.now()}`;
   });
 
-  test("should add a realex provider @smoke @critical", async () => {
+  test("should add a realex provider @smoke @critical", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks the successful creation of a new realex provider.",
     );
     await owner("OGCIO");
     await tags("Providers", "Realex");
     await severity(Severity.CRITICAL);
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectRealexProvider();
 
-    const addRealexProviderPage = new AddRealexProviderPage(page);
+    const addRealexProviderPage = new AddRealexProviderPage(publicServantPage);
     await addRealexProviderPage.providerForm.enterName(providerName);
     await addRealexProviderPage.providerForm.enterMerchantId(
       mockRealexMerchantId,
@@ -58,7 +56,9 @@ test.describe("Realex provider creation", () => {
     await providersPage.checkProviderVisible(providerName);
   });
 
-  test("should show error creating realex provider if name is missing @regression @normal", async () => {
+  test("should show error creating realex provider if name is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a validation error is shown when creating a new realex provider if name is missing.",
     );
@@ -66,18 +66,18 @@ test.describe("Realex provider creation", () => {
     await tags("Providers", "Realex");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectRealexProvider();
 
-    const addRealexProviderPage = new AddRealexProviderPage(page);
+    const addRealexProviderPage = new AddRealexProviderPage(publicServantPage);
     await addRealexProviderPage.providerForm.enterName("");
     await addRealexProviderPage.providerForm.enterMerchantId(
       mockRealexMerchantId,
@@ -92,7 +92,9 @@ test.describe("Realex provider creation", () => {
     );
   });
 
-  test("should not add a realex provider if merchant id is missing @regression @normal", async () => {
+  test("should not add a realex provider if merchant id is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a new realex provider is not created if merchant id is missing.",
     );
@@ -100,18 +102,18 @@ test.describe("Realex provider creation", () => {
     await tags("Providers", "Realex");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectRealexProvider();
 
-    const addRealexProviderPage = new AddRealexProviderPage(page);
+    const addRealexProviderPage = new AddRealexProviderPage(publicServantPage);
     await addRealexProviderPage.providerForm.enterName(providerName);
     await addRealexProviderPage.providerForm.enterMerchantId("");
     await addRealexProviderPage.providerForm.enterSharedSecret(
@@ -127,7 +129,9 @@ test.describe("Realex provider creation", () => {
     await providersPage.checkProviderNotVisible(providerName);
   });
 
-  test("should not add a realex provider if shared secret is missing @regression @normal", async () => {
+  test("should not add a realex provider if shared secret is missing @regression @normal", async ({
+    publicServantPage,
+  }) => {
     await description(
       "This test checks that a new realex provider is not created if shared secret is missing.",
     );
@@ -135,18 +139,18 @@ test.describe("Realex provider creation", () => {
     await tags("Providers", "Realex");
     await severity(Severity.NORMAL);
 
-    await page.goto(paymentSetupUrl);
+    await publicServantPage.goto(paymentSetupUrl);
 
-    const providersMenuLink = await page.getByRole("link", {
+    const providersMenuLink = await publicServantPage.getByRole("link", {
       name: "Providers",
     });
     await providersMenuLink.click();
 
-    const providersPage = new ProvidersPage(page);
+    const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.createNewPaymentProvider();
     await providersPage.selectRealexProvider();
 
-    const addRealexProviderPage = new AddRealexProviderPage(page);
+    const addRealexProviderPage = new AddRealexProviderPage(publicServantPage);
     await addRealexProviderPage.providerForm.enterName(providerName);
     await addRealexProviderPage.providerForm.enterMerchantId(
       mockRealexMerchantId,
@@ -164,15 +168,9 @@ test.describe("Realex provider creation", () => {
 });
 
 testWithProvider.describe("Realex provider editing", () => {
-  let page: Page;
-
-  testWithProvider.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
-
   testWithProvider(
     "should edit a realex provider @regression @normal",
-    async ({ realexProvider }) => {
+    async ({ realexProvider, publicServantPage }) => {
       await description(
         "This test checks the successful editing of a realex provider.",
       );
@@ -184,16 +182,16 @@ testWithProvider.describe("Realex provider editing", () => {
       const newMerchantId = "new_mock_realex_id";
       const newSharedSecret = "new_mock_realex_secret";
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(realexProvider);
-      const editProviderPage = new EditRealexProviderPage(page);
+      const editProviderPage = new EditRealexProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkName(realexProvider);
       await editProviderPage.providerForm.enterName(newProviderName);
@@ -215,7 +213,7 @@ testWithProvider.describe("Realex provider editing", () => {
 
   testWithProvider(
     "should disable and enable a realex provider @regression @normal",
-    async ({ realexProvider }) => {
+    async ({ realexProvider, publicServantPage }) => {
       await description(
         "This test checks that a realex provider is successfully disabled and enabled.",
       );
@@ -223,16 +221,16 @@ testWithProvider.describe("Realex provider editing", () => {
       await tags("Providers", "Realex");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(realexProvider);
-      const editProviderPage = new EditRealexProviderPage(page);
+      const editProviderPage = new EditRealexProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.disableProvider();
       await providersPage.checkProviderIsDisabled(realexProvider);
@@ -246,7 +244,7 @@ testWithProvider.describe("Realex provider editing", () => {
 
   testWithProvider(
     "should not edit a realex provider if name is missing @regression @normal",
-    async ({ realexProvider }) => {
+    async ({ realexProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing a realex provider it cannot be saved if name is missing.",
       );
@@ -254,16 +252,16 @@ testWithProvider.describe("Realex provider editing", () => {
       await tags("Providers", "Realex");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(realexProvider);
-      const editProviderPage = new EditRealexProviderPage(page);
+      const editProviderPage = new EditRealexProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkName(realexProvider);
       await editProviderPage.providerForm.enterName("");
@@ -274,7 +272,7 @@ testWithProvider.describe("Realex provider editing", () => {
 
   testWithProvider(
     "should not edit a realex provider if merchant id is missing @regression @normal",
-    async ({ realexProvider }) => {
+    async ({ realexProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing a realex provider it cannot be saved if merchant id is missing.",
       );
@@ -282,16 +280,16 @@ testWithProvider.describe("Realex provider editing", () => {
       await tags("Providers", "Realex");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(realexProvider);
-      const editProviderPage = new EditRealexProviderPage(page);
+      const editProviderPage = new EditRealexProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkMerchantId(mockRealexMerchantId);
       await editProviderPage.providerForm.enterMerchantId("");
@@ -308,7 +306,7 @@ testWithProvider.describe("Realex provider editing", () => {
 
   testWithProvider(
     "should not edit a realex provider if shared secret is missing @regression @normal",
-    async ({ realexProvider }) => {
+    async ({ realexProvider, publicServantPage }) => {
       await description(
         "This test checks that while editing a realex provider it cannot be saved if shared secret is missing.",
       );
@@ -316,16 +314,16 @@ testWithProvider.describe("Realex provider editing", () => {
       await tags("Providers", "Realex");
       await severity(Severity.NORMAL);
 
-      await page.goto(paymentSetupUrl);
+      await publicServantPage.goto(paymentSetupUrl);
 
-      const providersMenuLink = await page.getByRole("link", {
+      const providersMenuLink = await publicServantPage.getByRole("link", {
         name: "Providers",
       });
       await providersMenuLink.click();
 
-      const providersPage = new ProvidersPage(page);
+      const providersPage = new ProvidersPage(publicServantPage);
       await providersPage.editProvider(realexProvider);
-      const editProviderPage = new EditRealexProviderPage(page);
+      const editProviderPage = new EditRealexProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkSharedSecret(
         mockRealexSharedSecret,

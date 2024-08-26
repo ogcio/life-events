@@ -5,6 +5,7 @@ dist
 **/.localstack/*
 .yalc
 yalc.*
+bearer-*-report.html
 .tap
 .vscode
 allure-results

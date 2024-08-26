@@ -623,6 +623,7 @@ export interface paths {
                   | "cancelled"
                   | "failed";
                 amount: number;
+                extPaymentId: string;
                 updatedAt: string;
                 title: string;
               }[];
@@ -678,9 +679,9 @@ export interface paths {
                   | "cancelled"
                   | "failed";
                 amount: number;
+                extPaymentId: string & string;
                 updatedAt: string;
                 title: string;
-                extPaymentId: string;
                 userId: string;
                 userData: {
                   name: string;
@@ -796,9 +797,9 @@ export interface paths {
                   | "cancelled"
                   | "failed";
                 amount: number;
+                extPaymentId: string & string;
                 updatedAt: string;
                 title: string;
-                extPaymentId: string;
                 userId: string;
                 userData: {
                   name: string;
@@ -1128,9 +1129,9 @@ export interface paths {
                   | "cancelled"
                   | "failed";
                 amount: number;
+                extPaymentId: string & string;
                 updatedAt: string;
                 title: string;
-                extPaymentId: string;
                 userId: string;
                 userData: {
                   name: string;

@@ -243,14 +243,14 @@ export const sanitizePagination = (
     limit: Math.max(
       Math.min(
         PAGINATION_MAX_LIMIT,
-        pagination.limit ?? PAGINATION_LIMIT_DEFAULT,
+        Number(pagination.limit) ?? PAGINATION_LIMIT_DEFAULT,
       ),
       PAGINATION_MIN_LIMIT,
-    ),
+    ).toString(),
 
     offset: Math.max(
-      pagination.offset ?? PAGINATION_OFFSET_DEFAULT,
+      Number(pagination.offset) ?? PAGINATION_OFFSET_DEFAULT,
       PAGINATION_MIN_OFFSET,
-    ),
+    ).toString(),
   };
 };
