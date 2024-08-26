@@ -863,6 +863,7 @@ paths:
                   properties:
                     providerName:
                       description: Name of the provider
+                      minLength: 1
                       type: string
                     isPrimary:
                       description: If true, the provider is set as primary for the selected type for
@@ -881,10 +882,13 @@ paths:
                           enum:
                             - AWS
                         accessKey:
+                          minLength: 1
                           type: string
                         secretAccessKey:
+                          minLength: 1
                           type: string
                         region:
+                          minLength: 1
                           type: string
                       required:
                         - type
@@ -1088,6 +1092,7 @@ paths:
                             type: string
                           providerName:
                             description: Name of the provider
+                            minLength: 1
                             type: string
                           isPrimary:
                             description: If true, the provider is set as primary for the selected type for
@@ -1107,10 +1112,13 @@ paths:
                                 enum:
                                   - AWS
                               accessKey:
+                                minLength: 1
                                 type: string
                               secretAccessKey:
+                                minLength: 1
                                 type: string
                               region:
+                                minLength: 1
                                 type: string
                             required:
                               - type
@@ -1333,6 +1341,7 @@ paths:
                       type: string
                     providerName:
                       description: Name of the provider
+                      minLength: 1
                       type: string
                     isPrimary:
                       description: If true, the provider is set as primary for the selected type for
@@ -1351,10 +1360,13 @@ paths:
                           enum:
                             - AWS
                         accessKey:
+                          minLength: 1
                           type: string
                         secretAccessKey:
+                          minLength: 1
                           type: string
                         region:
+                          minLength: 1
                           type: string
                       required:
                         - type
