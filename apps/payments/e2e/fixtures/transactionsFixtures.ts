@@ -16,11 +16,7 @@ type transactionFixtures = {
 
 export const test = base.extend<transactionFixtures>({
   manualBankTransferTransaction: async (
-    {
-      paymentRequestWithManualBankTransferProvider,
-      publicServantPage,
-      citizenPage,
-    },
+    { paymentRequestWithManualBankTransferProvider, publicServantPage, citizenPage },
     use,
   ) => {
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
