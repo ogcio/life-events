@@ -3,7 +3,6 @@ import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import fp from "fastify-plugin";
 import { EventEmitter } from "node:events";
 import { FieldDef } from "pg";
-import { PassThrough } from "stream";
 import t from "tap";
 import * as authenticationFactory from "../../../utils/authentication-factory.js";
 
@@ -38,25 +37,31 @@ t.test("metadata", async (t) => {
       "@fastify/postgres": {
         default: fp(async (fastify) => {
           fastify.decorate("pg", {
-            query: () => {
-              return new Promise<{
-                rows: unknown;
-                rowCount: number;
-                command: string;
-                oid: number;
-                fields: FieldDef[];
-              }>((resolve, reject) => {
-                pgEventEmitter.once("error", (err) => reject(err));
-                pgEventEmitter.once("done", (data) => {
-                  resolve({
-                    rows: data,
-                    command: "",
-                    rowCount: data?.length,
-                    oid: 1,
-                    fields: [],
-                  });
-                });
-              });
+            pool: {
+              connect: () =>
+                Promise.resolve({
+                  query: () => {
+                    return new Promise<{
+                      rows: unknown;
+                      rowCount: number;
+                      command: string;
+                      oid: number;
+                      fields: FieldDef[];
+                    }>((resolve, reject) => {
+                      pgEventEmitter.once("error", (err) => reject(err));
+                      pgEventEmitter.once("done", (data) => {
+                        resolve({
+                          rows: data,
+                          command: "",
+                          rowCount: data?.length,
+                          oid: 1,
+                          fields: [],
+                        });
+                      });
+                    });
+                  },
+                  release: () => Promise.resolve(),
+                }),
             },
           } as unknown as PostgresDb & Record<string, PostgresDb>);
         }),
@@ -167,6 +172,7 @@ t.test("metadata", async (t) => {
           },
         ]);
         await nextTick();
+        pgEventEmitter.emit("done", []);
         profileSdkEventEmitter.emit("done", { data: [ownerData], error: null });
         await nextTick();
       },
@@ -225,6 +231,8 @@ t.test("metadata", async (t) => {
 
       await nextTick();
       pgEventEmitter.emit("done", [{ key: "key" }]);
+      await nextTick();
+      pgEventEmitter.emit("done", []);
       await nextTick();
       profileSdkEventEmitter.emit("error", new Error("profile sdk error"));
       await nextTick();

@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { Permissions } from "../../types/permissions.js";
 import {
+  FileMetadataType,
   FileOwnerType,
   getGenericResponseSchema,
   ResponseMetadata,
@@ -41,10 +42,12 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       const userId = ensureUserIdIsSet(request, METADATA_INDEX);
       const organizationId = request.userData?.organizationId;
-
-      const data = await getUserFiles(app.pg, userId, organizationId);
-
-      const files = data.rows;
+      let files: FileMetadataType[];
+      try {
+        files = await getUserFiles(app.pg, userId, organizationId);
+      } catch (err) {
+        throw new ServerError(METADATA_INDEX, "Internal server error", err);
+      }
 
       const userIds = files.map((f) => f.ownerId);
       let usersData: { [key: string]: FileOwnerType };
