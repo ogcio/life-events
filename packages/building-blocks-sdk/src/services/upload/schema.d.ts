@@ -22,12 +22,19 @@ export interface paths {
           content: {
             "application/json": {
               data: {
-                filename: string;
+                fileName: string;
                 id?: string;
                 key: string;
-                owner: string;
+                owner: {
+                  id: string;
+                  firstName: string;
+                  lastName: string;
+                  ppsn: string;
+                  email?: string;
+                  phone?: string;
+                };
                 fileSize: number;
-                mimetype: string;
+                mimeType: string;
                 createdAt: string;
                 lastScan: string;
                 /** @default false */

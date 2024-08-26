@@ -16,7 +16,6 @@ import {
 import { redirect } from "next/navigation";
 import { LogtoNextConfig, UserScope } from "@logto/next";
 import { BadRequestError } from "shared-errors";
-import { decodeJwt } from "jose";
 import { getCommonLogger } from "nextjs-logging-wrapper";
 import { cookies } from "next/headers";
 

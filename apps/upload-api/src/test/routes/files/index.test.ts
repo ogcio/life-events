@@ -8,6 +8,7 @@ import { EventEmitter } from "node:events";
 import { FieldDef } from "pg";
 import { PassThrough } from "stream";
 import t from "tap";
+import * as authenticationFactory from "../../../utils/authentication-factory.js";
 
 const nextTick = () =>
   new Promise<void>((resolve) => setTimeout(() => resolve()));
@@ -36,6 +37,7 @@ t.test("files", async (t) => {
   let s3SendEventEmitter: EventEmitter;
   let antivirusVersionEventEmitter: EventEmitter;
   let pgEventEmitter: EventEmitter;
+  let profileSdkEventEmitter: EventEmitter;
 
   // supply type param so that TS knows what it returns
   const { build } = await t.mockImport<typeof import("../../../app.js")>(
@@ -86,7 +88,11 @@ t.test("files", async (t) => {
       "api-auth": {
         default: fp(async (fastify) => {
           fastify.decorate("checkPermissions", async (request) => {
-            request.userData = { userId: "userId", accessToken: "accessToken" };
+            request.userData = {
+              userId: "userId",
+              accessToken: "accessToken",
+              organizationId: "ogcio",
+            };
           });
         }),
       },
@@ -112,6 +118,19 @@ t.test("files", async (t) => {
         }
       },
     },
+    "../../../utils/authentication-factory.js": t.createMock(
+      authenticationFactory,
+      {
+        getProfileSdk: () =>
+          Promise.resolve({
+            selectUsers: () =>
+              new Promise<void>((resolve, reject) => {
+                profileSdkEventEmitter.on("done", (data) => resolve(data));
+                profileSdkEventEmitter.on("error", (err) => reject(err));
+              }),
+          }),
+      },
+    ),
   });
 
   const s3Plugin = fp(
@@ -146,6 +165,7 @@ t.test("files", async (t) => {
     s3SendEventEmitter = new EventEmitter();
     antivirusVersionEventEmitter = new EventEmitter();
     pgEventEmitter = new EventEmitter();
+    profileSdkEventEmitter = new EventEmitter();
     app = await build();
 
     antivirusPassthrough = new PassThrough();
@@ -463,6 +483,14 @@ t.test("files", async (t) => {
     t.test(
       "Should return a list of all files uploaded by a user",
       async (t) => {
+        const ownerData = {
+          id: "user",
+          firstName: "firstName",
+          lastName: "lastName",
+          email: "email@gov.ie",
+          ppsn: "ppsn",
+        };
+
         app
           .inject({
             method: "GET",
@@ -472,12 +500,12 @@ t.test("files", async (t) => {
             t.match(response.json(), {
               data: [
                 {
-                  filename: "filename",
+                  fileName: "fileName",
                   id: "1",
-                  key: "user/filename",
-                  owner: "user",
+                  key: "user/fileName",
+                  owner: ownerData,
                   fileSize: 100,
-                  mimetype: "image/png",
+                  mimeType: "image/png",
                   createdAt: "2024-08-12T13:12:18.681Z",
                   lastScan: "2024-08-12T13:12:18.681Z",
                   deleted: false,
@@ -495,12 +523,12 @@ t.test("files", async (t) => {
         await nextTick();
         pgEventEmitter.emit("done", [
           {
-            filename: "filename",
+            fileName: "fileName",
             id: "1",
-            key: "user/filename",
-            owner: "user",
+            key: "user/fileName",
+            ownerId: "user",
             fileSize: 100,
-            mimetype: "image/png",
+            mimeType: "image/png",
             createdAt: "2024-08-12T13:12:18.681Z",
             lastScan: "2024-08-12T13:12:18.681Z",
             deleted: false,
@@ -509,6 +537,8 @@ t.test("files", async (t) => {
             antivirusDbVersion: "1",
           },
         ]);
+        await nextTick();
+        profileSdkEventEmitter.emit("done", { data: [ownerData], error: null });
         await nextTick();
       },
     );
@@ -529,12 +559,13 @@ t.test("files", async (t) => {
           });
 
         await nextTick();
+        // profileSdkEventEmitter.emit('')
         pgEventEmitter.emit("done", []);
         await nextTick();
       },
     );
 
-    t.test("Should throw an errror when list files throws", async (t) => {
+    t.test("Should throw an error when list files throws", async (t) => {
       app
         .inject({
           method: "GET",
@@ -546,7 +577,48 @@ t.test("files", async (t) => {
         });
 
       await nextTick();
-      pgEventEmitter.emit("error");
+      profileSdkEventEmitter.emit("done", { data: [], error: null });
+      await nextTick();
+      pgEventEmitter.emit("error", new Error("pg error"));
+      await nextTick();
+    });
+
+    t.test("Should throw an error when profile sdk throws", async (t) => {
+      app
+        .inject({
+          method: "GET",
+          url: "/files",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 500);
+          t.end();
+        });
+
+      await nextTick();
+      pgEventEmitter.emit("done", [{ key: "key" }]);
+      await nextTick();
+      profileSdkEventEmitter.emit("error", new Error("profile sdk error"));
+      await nextTick();
+    });
+
+    t.test("Should throw an error when profile returns an error", async (t) => {
+      app
+        .inject({
+          method: "GET",
+          url: "/files",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 500);
+          t.end();
+        });
+
+      await nextTick();
+      pgEventEmitter.emit("done", [{ key: "key" }]);
+      await nextTick();
+      profileSdkEventEmitter.emit("done", {
+        data: null,
+        error: new Error("profile sdk error"),
+      });
       await nextTick();
     });
   });

@@ -1,42 +1,44 @@
-import { FastifyInstance } from "fastify";
 import { FileMetadataType } from "../../../types/schemaDefinitions.js";
+import fastifyPostgres from "@fastify/postgres";
 
-export default (app: FastifyInstance, metadata: FileMetadataType) => {
+export default (pg: fastifyPostgres.PostgresDb, metadata: FileMetadataType) => {
   const {
-    filename,
+    fileName,
     createdAt,
     fileSize,
     infectionDescription,
     key,
     lastScan,
     deleted,
-    mimetype,
+    mimeType,
     infected,
-    owner,
+    ownerId,
     antivirusDbVersion,
+    organizationId,
   } = metadata;
 
-  return app.pg.query(
+  return pg.query(
     `
       INSERT INTO files (
-        key, owner, fileSize, mimetype, createdAt, lastScan, infected, infection_description, filename, antivirus_db_version, deleted
+        key, owner, file_size, mime_type, created_at, last_scan, infected, infection_description, file_name, antivirus_db_version, deleted, organization_id
         ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
           )
           RETURNING *;
           `,
     [
       key,
-      owner,
+      ownerId,
       fileSize,
-      mimetype,
+      mimeType,
       createdAt,
       lastScan,
       infected,
       infectionDescription,
-      filename,
+      fileName,
       antivirusDbVersion,
       deleted,
+      organizationId,
     ],
   );
 };

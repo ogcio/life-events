@@ -1,5 +1,5 @@
-import { FastifyInstance } from "fastify";
+import fastifyPostgres from "@fastify/postgres";
 
-export default (app: FastifyInstance, fileId: string) => {
-  return app.pg.query(`DELETE FROM files WHERE ID = $1`, [fileId]);
+export default (pg: fastifyPostgres.PostgresDb, fileId: string) => {
+  return pg.query(`DELETE FROM files WHERE ID = $1`, [fileId]);
 };

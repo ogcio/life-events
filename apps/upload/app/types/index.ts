@@ -1,10 +1,19 @@
+type FileOwner = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  ppsn: string;
+  email?: string;
+  phone?: string;
+};
+
 export type FileMetadata = {
-  filename: string;
+  fileName: string;
   id?: string;
   key: string;
-  owner: string;
+  owner: FileOwner;
   fileSize: number;
-  mimetype: string;
+  mimeType: string;
   createdAt: string;
   lastScan: string;
   deleted?: boolean;
