@@ -111,3 +111,9 @@ start: init start-docker start-migrate
 start-no-scheduler: init start-docker-no-scheduler start-migrate kill-services
 start-full: init start-docker start-migrate-logto
 start-logto: init start-docker-no-scheduler start-migrate-logto
+
+security-privacy-report: 
+	docker run --rm -v $(shell pwd):/tmp/scan bearer/bearer:latest scan --report privacy -f html /tmp/scan > bearer-privacy-report.html
+security-scan: 
+	docker run --rm -v $(shell pwd):/tmp/scan bearer/bearer:latest scan -f html /tmp/scan > bearer-scan-report.html
+
