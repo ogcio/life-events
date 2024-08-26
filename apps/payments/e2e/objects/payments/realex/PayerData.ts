@@ -16,10 +16,8 @@ export class PayerData {
       name: "Full Name (First and Last",
     });
     this.streetInput = page.getByRole("textbox", { name: "Street Address" });
-    this.countrySelect = page.getByLabel("Country");
-    this.stateInput = page.getByRole("textbox", {
-      name: "State / Province / Region / Country",
-    });
+    this.countrySelect = page.getByRole("combobox", { name: "Country" });
+    this.stateInput = page.locator("input#countyText_b");
     this.cityInput = page.getByRole("textbox", { name: "City / Town" });
     this.ZIPInput = page.getByRole("textbox", {
       name: "ZIP / Postal Code / Eircode",

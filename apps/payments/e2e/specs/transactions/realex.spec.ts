@@ -46,18 +46,19 @@ test.describe("Transaction with Realex", () => {
 
     const realexTransactionPage = new RealexTransactionPage(citizenPage);
     await realexTransactionPage.checkHeader();
+    await citizenPage.waitForLoadState("networkidle");
     await realexTransactionPage.chooseManualCheckout();
     const citizenName = citizens[0];
     const [name, surname] = citizenName.split(" ");
     const citizenEmail = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.citizenEmailDomain}`;
-    await realexTransactionPage.PayerData.enterEmail(citizenEmail);
-    await realexTransactionPage.PayerData.enterName(citizenName);
-    await realexTransactionPage.PayerData.enterStreet(mockAddress.street);
-    await realexTransactionPage.PayerData.enterCountry(mockAddress.country);
-    await realexTransactionPage.PayerData.enterState(mockAddress.state);
-    await realexTransactionPage.PayerData.enterCity(mockAddress.city);
-    await realexTransactionPage.PayerData.enterZIP(mockAddress.ZIP);
-    await realexTransactionPage.PayerData.enterPhoneNumber(mockPhoneNumber);
+    await realexTransactionPage.payerData.enterEmail(citizenEmail);
+    await realexTransactionPage.payerData.enterName(citizenName);
+    await realexTransactionPage.payerData.enterStreet(mockAddress.street);
+    await realexTransactionPage.payerData.enterCountry(mockAddress.country);
+    await realexTransactionPage.payerData.enterState(mockAddress.state);
+    await realexTransactionPage.payerData.enterCity(mockAddress.city);
+    await realexTransactionPage.payerData.enterZIP(mockAddress.ZIP);
+    await realexTransactionPage.payerData.enterPhoneNumber(mockPhoneNumber);
     await realexTransactionPage.continue();
   });
 });
