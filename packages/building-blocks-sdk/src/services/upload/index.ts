@@ -44,8 +44,16 @@ export class Upload {
     }
   }
 
-  async getFiles() {
-    const { error, data } = await this.client.GET("/api/v1/files/");
+  async getFilesMetadata() {
+    const { error, data } = await this.client.GET("/api/v1/metadata/");
+    return { error, data: data?.data };
+  }
+
+  async getFileMetadata(key: string) {
+    const { data, error } = await this.client.GET("/api/v1/metadata/{key}", {
+      params: { path: { key } },
+    });
+
     return { error, data: data?.data };
   }
 

@@ -1,6 +1,6 @@
 import t from "tap";
-import getFileMetadata from "../../../../routes/files/utils/getFileMetadata.js";
 import fastifyPostgres from "@fastify/postgres";
+import getFileMetadata from "../../../routes/utils/getFileMetadata.js";
 
 t.test("getFileMetdata", async (t) => {
   t.test(

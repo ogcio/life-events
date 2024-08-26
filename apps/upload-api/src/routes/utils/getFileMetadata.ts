@@ -1,5 +1,5 @@
-import { FileMetadataType } from "../../../types/schemaDefinitions.js";
 import fastifyPostgres from "@fastify/postgres";
+import { FileMetadataType } from "../../types/schemaDefinitions.js";
 
 export default (
   pg: fastifyPostgres.PostgresDb,
