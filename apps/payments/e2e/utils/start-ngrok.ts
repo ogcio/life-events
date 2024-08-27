@@ -1,6 +1,11 @@
 import { exec } from "child_process";
 import fs from "fs";
-import { PID_FILE } from "./constants";
+import { PID_FILE_PATH } from "./constants";
+import path from "path";
+import os from "os";
+
+const SAFE_DIRECTORY = os.tmpdir(); // You can customize this as needed
+const PID_FILE = path.resolve(SAFE_DIRECTORY, PID_FILE_PATH);
 
 export const startNgrok = () => {
   return new Promise((resolve, reject) => {
