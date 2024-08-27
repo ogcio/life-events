@@ -6,6 +6,7 @@ type pageFixtures = {
   secondCitizenPage: Page;
   publicServantPage: Page;
   secondPublicServantPage: Page;
+  inactivePublicServantPage: Page;
 };
 
 export const test = base.extend<pageFixtures>({
@@ -45,6 +46,18 @@ export const test = base.extend<pageFixtures>({
     });
     const publicServantPage = await context.newPage();
     await use(publicServantPage);
+    await context.close();
+  },
+
+  inactivePublicServantPage: async (
+    { browser, inactivePubServantWorkerStorageState },
+    use,
+  ) => {
+    const context = await browser.newContext({
+      storageState: inactivePubServantWorkerStorageState,
+    });
+    const inactivePublicServantPage = await context.newPage();
+    await use(inactivePublicServantPage);
     await context.close();
   },
 });
