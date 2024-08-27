@@ -13,7 +13,7 @@ import {
   getProfileSdk,
 } from "../../utils/authentication-factory.js";
 import { NotFoundError, ServerError } from "shared-errors";
-import getFilesMetadata from "../utils/getFilesMetadata.js";
+import { getOwnedFiles, getOrganizationFiles } from "../utils/filesMetadata.js";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
 
 const METADATA_INDEX = "METADATA_INDEX";
@@ -42,9 +42,28 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       const userId = ensureUserIdIsSet(request, METADATA_INDEX);
       const organizationId = request.userData?.organizationId;
-      let files: FileMetadataType[];
+      const files: FileMetadataType[] = [];
+
+      const client = await app.pg.pool.connect();
       try {
-        files = await getFilesMetadata(app.pg, userId, organizationId);
+        const ownedFilesData = await getOwnedFiles(client, userId);
+        const ownedFiles = ownedFilesData.rows;
+
+        files.push(...ownedFiles);
+
+        const filesToExclude = ownedFiles.map(({ id }) => id as string);
+
+        if (organizationId) {
+          const organizationFilesData = await getOrganizationFiles(
+            client,
+            organizationId,
+            filesToExclude,
+          );
+
+          if (organizationFilesData.rows.length > 0) {
+            files.push(...organizationFilesData.rows);
+          }
+        }
       } catch (err) {
         throw new ServerError(METADATA_INDEX, "Internal server error", err);
       }
@@ -109,6 +128,7 @@ export default async function routes(app: FastifyInstance) {
       const organizationId = request.userData?.organizationId;
 
       const fileId = request.params.id;
+
       const fileData = await getFileMetadataById(
         app.pg,
         fileId,

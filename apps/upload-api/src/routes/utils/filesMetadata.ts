@@ -1,4 +1,3 @@
-import fastifyPostgres from "@fastify/postgres";
 import { FileMetadataType } from "../../types/schemaDefinitions.js";
 import { PoolClient } from "pg";
 
@@ -33,32 +32,4 @@ const getOrganizationFiles = (
   return client.query<FileMetadataType>(query, [organizationId, ...toExclude]);
 };
 
-export default async (
-  pg: fastifyPostgres.PostgresDb,
-  owner: string,
-  organizationId?: string,
-) => {
-  const client = await pg.pool.connect();
-  try {
-    const ownedFilesData = await getOwnedFiles(client, owner);
-
-    const ownedFiles = ownedFilesData.rows;
-
-    let organizationFiles: FileMetadataType[] = [];
-    if (organizationId) {
-      const organizationFilesData = await getOrganizationFiles(
-        client,
-        organizationId,
-        ownedFiles.map(({ id }) => id as string),
-      );
-
-      if (organizationFilesData.rows.length > 0) {
-        organizationFiles = organizationFilesData.rows;
-      }
-    }
-
-    return [...ownedFiles, ...organizationFiles];
-  } finally {
-    client.release();
-  }
-};
+export { getOwnedFiles, getOrganizationFiles };
