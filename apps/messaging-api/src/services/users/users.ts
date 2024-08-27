@@ -80,7 +80,7 @@ export const getUser = async (params: {
 
 const buildGetRecipientsQueries = (params: {
   organisationId: string;
-  pagination: { limit: number; offset: number };
+  pagination: { limit: string; offset: string };
   search?: string;
   transports?: string[];
   activeOnly?: boolean;
@@ -118,7 +118,7 @@ const buildGetRecipientsQueries = (params: {
 
 const buildGetRecipientsPerImportQueries = (params: {
   organisationId: string;
-  pagination: { limit: number; offset: number };
+  pagination: { limit: string; offset: string };
   search?: string;
   transports?: string[];
   activeOnly?: boolean;

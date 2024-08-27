@@ -21,6 +21,10 @@ parameters:
     displayName: List of valid environments to deploy (do not change)
     default: ['dev','sta', 'uat', 'prd']
 
+  - name: vmImage
+    type: string
+    default: "ubuntu-22.04"
+
 variables:
   - name: pushArtefacts
     value: ${{ containsValue(parameters.buildBranches, variables['Build.SourceBranchName']) }}
@@ -40,15 +44,33 @@ resources:
 stages:
   - stage: securityScan
     displayName: Security Scans
+    pool:
+      vmImage: ${{ parameters.vmImage }}
     jobs:
-      - template: security/gitleaks.yml@pipeline-templates
+      -  template: security/gitleaks.yml@pipeline-templates
+      - ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+        - job: bearerScan
+          displayName: Bearer
+          steps:
+            - task: DockerInstaller@0
+              displayName: Docker Installer
+              inputs:
+                dockerVersion: 17.09.0-ce
+                releaseType: stable
+            - script: |
+                docker run --rm -v $(pwd):/tmp/scan bearer/bearer:latest-amd64 scan --no-color --hide-progress-bar --fail-on-severity critical,high /tmp/scan
+              displayName: Code Scan
   - stage: BuildDeps
     displayName: Build service dependencies
+    pool:
+      vmImage: ${{ parameters.vmImage }}
     jobs:
       - template: pipeline-templates/build_dependencies.yml
   - ${{ each serviceName in split(replace(variables.services, ' ', ''), ',') }}:
     - stage: Build_${{ replace(serviceName, '-', '_') }}
       displayName: Build ${{ serviceName }}
+      pool:
+        vmImage: ${{ parameters.vmImage }}
       dependsOn: 
         - securityScan
         - BuildDeps
@@ -82,6 +104,8 @@ stages:
   - ${{ each serviceName in split(replace(variables.services, ' ', ''), ',') }}:
     - stage: Push_${{ replace(serviceName, '-', '_') }}
       displayName: Push ${{ serviceName }} to ECR
+      pool:
+        vmImage: ${{ parameters.vmImage }}
       dependsOn: 
         - EnvApproval
       condition: and(${{ variables.pushArtefacts }}, succeeded())
@@ -94,6 +118,8 @@ stages:
           repositoryName: life-events-${{ serviceName }}
     - stage: Deploy_${{ replace(serviceName, '-', '_') }}
       displayName: Deploy to ECS - ${{ serviceName }}
+      pool:
+        vmImage: ${{ parameters.vmImage }}
       dependsOn: Push_${{ replace(serviceName, '-', '_') }}
       jobs:
       - template: deploy/deploy_ecs.yml@pipeline-templates

@@ -202,7 +202,12 @@ export default async function messages(app: FastifyInstance) {
 
       const totalCount = messagesQueryResult?.rows.at(0)?.count || 0;
 
-      const links = getPaginationLinks({ totalCount, url, limit, offset });
+      const links = getPaginationLinks({
+        totalCount,
+        url,
+        limit: Number(limit),
+        offset: Number(offset),
+      });
       const response: GenericResponse<Static<typeof MessageListItemSchema>[]> =
         {
           data:

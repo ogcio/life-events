@@ -186,8 +186,8 @@ export default async function providers(app: FastifyInstance) {
       const links = getPaginationLinks({
         totalCount,
         url,
-        limit,
-        offset,
+        limit: Number(limit),
+        offset: Number(offset),
       });
 
       const response: GenericResponse<Static<typeof ProviderListSchema>> = {
@@ -285,6 +285,7 @@ export default async function providers(app: FastifyInstance) {
     },
     async function handleCreateProvider(request) {
       const errorProcess = "CREATE_PROVIDER";
+
       const organisationid = ensureOrganizationIdIsSet(request, errorProcess);
       const provider = request.body;
 

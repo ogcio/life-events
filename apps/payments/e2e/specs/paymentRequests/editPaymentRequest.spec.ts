@@ -165,5 +165,10 @@ test.describe("Edit payment Request", () => {
     await editPaymentRequestErrorPage.expectValidationError(
       "redirectURLRequired",
     );
+
+    // Amount maximum validation
+    await editPaymentRequestPage.enterAmount("10001");
+    await editPaymentRequestPage.saveChanges();
+    await editPaymentRequestErrorPage.expectValidationError("amountMaximum");
   });
 });

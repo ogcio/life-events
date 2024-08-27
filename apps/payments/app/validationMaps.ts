@@ -114,6 +114,9 @@ export const paymentRequestValidationMap = (t): ValidationFieldMap => {
         [ValidationErrorTypes.MINIMUM]: t("amountRequired"),
         [ValidationErrorTypes.MAXIMUM]: t("amountMaximumValidation"),
       },
+      formatter: {
+        limit: "formatLimitValue",
+      },
     },
     redirectUrl: {
       field: "redirectUrl",
@@ -128,4 +131,8 @@ export const paymentRequestValidationMap = (t): ValidationFieldMap => {
       },
     },
   };
+};
+
+export const validationFormatters = {
+  formatLimitValue: (value) => value / 100,
 };

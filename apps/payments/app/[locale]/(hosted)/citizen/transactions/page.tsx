@@ -98,7 +98,11 @@ export default async function (props: Props) {
               </thead>
               <tbody className="govie-table__body">
                 {transactions?.map((trx) => (
-                  <tr className="govie-table__row" key={trx.transactionId}>
+                  <tr
+                    className="govie-table__row"
+                    key={trx.transactionId}
+                    data-reference-code={trx.extPaymentId}
+                  >
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                       <strong
                         className={`govie-tag ${mapTransactionStatusColorClassName(trx.status)} govie-body-s`}

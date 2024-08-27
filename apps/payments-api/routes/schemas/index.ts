@@ -135,7 +135,7 @@ export const CreatePaymentRequest = Type.Object({
   title: Type.String({ validator: "RequiredValidator" }),
   description: Type.String(),
   reference: Type.String({ validator: "RequiredValidator" }),
-  amount: Type.Number({ minimum: 1, maximum: 10000 }),
+  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
   redirectUrl: Type.String({ validator: "RequiredValidator" }),
   allowAmountOverride: Type.Boolean(),
   allowCustomAmount: Type.Boolean(),
@@ -312,6 +312,7 @@ export const CitizenTransaction = Type.Pick(Transaction, [
   "status",
   "title",
   "updatedAt",
+  "extPaymentId",
   "amount",
 ]);
 export const CitizenTransactions = Type.Array(CitizenTransaction);

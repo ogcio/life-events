@@ -15,6 +15,9 @@ export const envSchema = {
     "POSTGRES_HOST",
     "POSTGRES_PORT",
     "POSTGRES_DB_NAME",
+    "LOGTO_M2M_PROFILE_APP_SECRET",
+    "LOGTO_M2M_PROFILE_APP_ID",
+    "PROFILE_BACKEND_URL",
   ],
   properties: {
     CLAMAV_HOST: { type: "string" },
@@ -41,6 +44,15 @@ export const envSchema = {
       type: "number",
     },
     POSTGRES_DB_NAME: {
+      type: "string",
+    },
+    LOGTO_M2M_PROFILE_APP_SECRET: {
+      type: "string",
+    },
+    LOGTO_M2M_PROFILE_APP_ID: {
+      type: "string",
+    },
+    PROFILE_BACKEND_URL: {
       type: "string",
     },
   },
