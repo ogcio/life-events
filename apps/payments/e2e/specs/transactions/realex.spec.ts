@@ -13,11 +13,17 @@ import {
   mockAddress,
   mockAmount,
   mockPhoneNumber,
+  mockRedirectUrl,
   realexCardData,
 } from "../../utils/mocks";
 import { PayPage } from "../../objects/payments/PayPage";
 import { RealexTransactionPage } from "../../objects/payments/realex/RealexTransactionPage";
-import { citizens, myGovIdMockSettings } from "../../utils/constants";
+import {
+  citizens,
+  myGovIdMockSettings,
+  referenceCodeSearchParam,
+} from "../../utils/constants";
+import { expect } from "@playwright/test";
 
 test.describe("Transaction with Realex", () => {
   test("should complete a payment with a realex provider @smoke @critical", async ({
@@ -66,12 +72,43 @@ test.describe("Transaction with Realex", () => {
     await realexTransactionPage.payerData.enterZIP(mockAddress.ZIP);
     await realexTransactionPage.payerData.enterPhoneNumber(mockPhoneNumber);
     await realexTransactionPage.payerData.continue();
-    await realexTransactionPage.cardData.enterCardNumber(realexCardData.number);
+    await realexTransactionPage.cardData.enterCardNumber(
+      realexCardData.successNumber,
+    );
     await realexTransactionPage.cardData.enterExpiry(realexCardData.expiry);
     await realexTransactionPage.cardData.enterSecurityCode(realexCardData.code);
     await realexTransactionPage.cardData.enterCardholderName(
       mockAccountHolderName,
     );
+
+    let temporaryRedirectionUrl = "";
+    let paymentReferenceCode;
+    citizenPage.on("response", async (response) => {
+      if (response.status() === 307) {
+        temporaryRedirectionUrl = response.url();
+        const urlObj = new URL(temporaryRedirectionUrl);
+        paymentReferenceCode = urlObj.searchParams.get(
+          referenceCodeSearchParam.realex,
+        );
+      }
+    });
+
     await realexTransactionPage.cardData.pay();
+
+    await expect(
+      citizenPage.getByRole("img", { name: "Google" }),
+    ).toBeVisible();
+    await expect(citizenPage.url()).toContain(mockRedirectUrl);
+
+    await paymentRequestsPage.goto();
+    await paymentRequestsPage.gotoDetails(paymentRequestWithRealexProvider);
+
+    await detailsPage.checkPaymentsList([
+      {
+        amount: mockAmount,
+        status: "succeeded",
+        referenceCode: paymentReferenceCode,
+      },
+    ]);
   });
 });

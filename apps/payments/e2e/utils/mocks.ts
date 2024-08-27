@@ -24,7 +24,8 @@ export const mockAddress = {
 };
 
 export const realexCardData = {
-  number: "4263970000005262",
+  successNumber: "4263970000005262",
+  failNumber: "4000120000001154",
   expiry: "0230",
   code: "123",
 };
