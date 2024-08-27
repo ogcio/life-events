@@ -56,11 +56,11 @@ export interface paths {
       };
     };
   };
-  "/api/v1/files/{key}": {
+  "/api/v1/files/{id}": {
     get: {
       parameters: {
         path: {
-          key: string;
+          id: string;
         };
       };
       responses: {
@@ -101,7 +101,7 @@ export interface paths {
     delete: {
       parameters: {
         path: {
-          key: string;
+          id: string;
         };
       };
       responses: {
@@ -205,11 +205,11 @@ export interface paths {
       };
     };
   };
-  "/api/v1/metadata/{key}": {
+  "/api/v1/metadata/{id}": {
     get: {
       parameters: {
         path: {
-          key: string;
+          id: string;
         };
       };
       responses: {

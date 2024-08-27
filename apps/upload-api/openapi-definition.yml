@@ -78,7 +78,7 @@ paths:
                   - detail
                   - requestId
                   - name
-  /api/v1/files/{key}:
+  /api/v1/files/{id}:
     delete:
       tags:
         - Files
@@ -86,7 +86,7 @@ paths:
         - schema:
             type: string
           in: path
-          name: key
+          name: id
           required: true
       responses:
         "200":
@@ -158,7 +158,7 @@ paths:
         - schema:
             type: string
           in: path
-          name: key
+          name: id
           required: true
       responses:
         "200":
@@ -330,7 +330,7 @@ paths:
                   - detail
                   - requestId
                   - name
-  /api/v1/metadata/{key}:
+  /api/v1/metadata/{id}:
     get:
       tags:
         - Metadata
@@ -338,7 +338,7 @@ paths:
         - schema:
             type: string
           in: path
-          name: key
+          name: id
           required: true
       responses:
         "200":

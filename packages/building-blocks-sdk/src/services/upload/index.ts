@@ -17,14 +17,14 @@ export class Upload {
     this.client.use(authMiddleware);
   }
 
-  async getFile(key: string) {
+  async getFile(id: string) {
     try {
       const {
         error,
         data,
         response: { headers, status },
-      } = await this.client.GET("/api/v1/files/{key}", {
-        params: { path: { key } },
+      } = await this.client.GET("/api/v1/files/{id}", {
+        params: { path: { id } },
         parseAs: "stream",
       });
 
@@ -49,9 +49,9 @@ export class Upload {
     return { error, data: data?.data };
   }
 
-  async getFileMetadata(key: string) {
-    const { data, error } = await this.client.GET("/api/v1/metadata/{key}", {
-      params: { path: { key } },
+  async getFileMetadata(id: string) {
+    const { data, error } = await this.client.GET("/api/v1/metadata/{id}", {
+      params: { path: { id } },
     });
 
     return { error, data: data?.data };
@@ -71,9 +71,9 @@ export class Upload {
     return { error };
   }
 
-  async deleteFile(key: string) {
-    const { error } = await this.client.DELETE("/api/v1/files/{key}", {
-      params: { path: { key } },
+  async deleteFile(id: string) {
+    const { error } = await this.client.DELETE("/api/v1/files/{id}", {
+      params: { path: { id } },
     });
 
     return { error };

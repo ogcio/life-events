@@ -13,8 +13,8 @@ import {
   getProfileSdk,
 } from "../../utils/authentication-factory.js";
 import { NotFoundError, ServerError } from "shared-errors";
-import getUserFiles from "../utils/getUserFiles.js";
-import getFileMetadata from "../utils/getFileMetadata.js";
+import getFilesMetadata from "../utils/getFilesMetadata.js";
+import getFileMetadataById from "../utils/getFileMetadataById.js";
 
 const METADATA_INDEX = "METADATA_INDEX";
 const GET_METADATA = "GET_METADATA";
@@ -44,7 +44,7 @@ export default async function routes(app: FastifyInstance) {
       const organizationId = request.userData?.organizationId;
       let files: FileMetadataType[];
       try {
-        files = await getUserFiles(app.pg, userId, organizationId);
+        files = await getFilesMetadata(app.pg, userId, organizationId);
       } catch (err) {
         throw new ServerError(METADATA_INDEX, "Internal server error", err);
       }
@@ -86,8 +86,8 @@ export default async function routes(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Params: { key: string } }>(
-    "/:key",
+  app.get<{ Params: { id: string } }>(
+    "/:id",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [
@@ -96,7 +96,7 @@ export default async function routes(app: FastifyInstance) {
         ]),
       schema: {
         tags: [API_DOCS_TAG],
-        params: Type.Object({ key: Type.String() }),
+        params: Type.Object({ id: Type.String() }),
         response: {
           200: getGenericResponseSchema(ResponseMetadata),
           "4xx": HttpError,
@@ -108,10 +108,10 @@ export default async function routes(app: FastifyInstance) {
       const userId = ensureUserIdIsSet(request, GET_METADATA);
       const organizationId = request.userData?.organizationId;
 
-      const key = request.params.key;
-      const fileData = await getFileMetadata(
+      const fileId = request.params.id;
+      const fileData = await getFileMetadataById(
         app.pg,
-        key,
+        fileId,
         userId,
         organizationId,
       );

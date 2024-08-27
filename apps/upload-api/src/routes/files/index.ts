@@ -21,7 +21,7 @@ import {
   ServerError,
 } from "shared-errors";
 import deleteFileMetadata from "../utils/deleteFileMetadata.js";
-import getFileMetadata from "../utils/getFileMetadata.js";
+import getFileMetadataById from "../utils/getFileMetadataById.js";
 import insertFileMetadata from "../utils/insertFileMetadata.js";
 import updateFileMetadata from "../utils/updateFileMetadata.js";
 import getDbVersion from "../utils/getDbVersion.js";
@@ -216,14 +216,14 @@ export default async function routes(app: FastifyInstance) {
     },
   );
 
-  app.delete<{ Params: { key: string } }>(
-    "/:key",
+  app.delete<{ Params: { id: string } }>(
+    "/:id",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Upload.Write]),
       schema: {
         tags: [API_DOCS_TAG],
-        params: Type.Object({ key: Type.String() }),
+        params: Type.Object({ id: Type.String() }),
         response: {
           200: getGenericResponseSchema(
             Type.Object({ message: Type.String() }),
@@ -235,16 +235,17 @@ export default async function routes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const userId = request.userData?.userId as string;
+      const fileId = request.params.id;
 
-      if (!request.params.key) {
+      if (!fileId) {
         throw new BadRequestError(FILE_DELETE, "File key not provided");
       }
 
       const organizationId = ensureOrganizationIdIsSet(request, FILE_DELETE);
 
-      const fileData = await getFileMetadata(
+      const fileData = await getFileMetadataById(
         app.pg,
-        request.params.key,
+        fileId,
         userId,
         organizationId,
       );
@@ -263,7 +264,7 @@ export default async function routes(app: FastifyInstance) {
           }),
         );
 
-        await deleteFileMetadata(app.pg, request.params.key);
+        await deleteFileMetadata(app.pg, fileId);
       } catch (err) {
         throw new ServerError(FILE_DELETE, "Internal server error", err);
       }
@@ -272,8 +273,8 @@ export default async function routes(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Params: { key: string } }>(
-    "/:key",
+  app.get<{ Params: { id: string } }>(
+    "/:id",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [
@@ -282,7 +283,7 @@ export default async function routes(app: FastifyInstance) {
         ]),
       schema: {
         tags: [API_DOCS_TAG],
-        params: Type.Object({ key: Type.String() }),
+        params: Type.Object({ id: Type.String() }),
         response: {
           200: Type.String(),
           "4xx": HttpError,
@@ -296,10 +297,11 @@ export default async function routes(app: FastifyInstance) {
       const userId = ensureUserIdIsSet(request, FILE_DOWNLOAD);
       const organizationId = request.userData?.organizationId;
 
-      const key = request.params.key;
-      const fileData = await getFileMetadata(
+      const fileId = request.params.id;
+
+      const fileData = await getFileMetadataById(
         app.pg,
-        key,
+        fileId,
         userId,
         organizationId,
       );

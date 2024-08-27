@@ -1,6 +1,6 @@
 import t from "tap";
 import fastifyPostgres from "@fastify/postgres";
-import getFileMetadata from "../../../routes/utils/getFileMetadata.js";
+import getFileMetadataById from "../../../routes/utils/getFileMetadataById.js";
 
 t.test("getFileMetdata", async (t) => {
   t.test(
@@ -11,7 +11,7 @@ t.test("getFileMetdata", async (t) => {
         query: (...params: string[]) => params,
       };
 
-      const [query, queryParams] = (await getFileMetadata(
+      const [query, queryParams] = (await getFileMetadataById(
         pg as fastifyPostgres.PostgresDb,
         "fileId",
         "owner",
@@ -28,7 +28,7 @@ t.test("getFileMetdata", async (t) => {
       query: (...params: string[]) => params,
     };
 
-    const [query, queryParams] = (await getFileMetadata(
+    const [query, queryParams] = (await getFileMetadataById(
       pg as fastifyPostgres.PostgresDb,
       "fileId",
       "owner",
